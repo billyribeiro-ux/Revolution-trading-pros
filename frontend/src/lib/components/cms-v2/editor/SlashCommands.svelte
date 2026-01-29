@@ -17,7 +17,13 @@
 	@since January 2026
 -->
 
+<script module lang="ts">
+	// Re-export types from the centralized types file
+	export type { SlashCommand, CommandCategory } from './types';
+</script>
+
 <script lang="ts">
+	import type { SlashCommand, CommandCategory } from './types';
 	import { onMount } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
@@ -52,26 +58,8 @@
 	import IconCornerDownLeft from '@tabler/icons-svelte/icons/corner-down-left';
 
 	// ==========================================================================
-	// Types
+	// Types (Internal)
 	// ==========================================================================
-
-	export interface SlashCommand {
-		id: string;
-		label: string;
-		description: string;
-		category: CommandCategory;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon: any;
-		keywords: string[];
-		shortcut?: string;
-	}
-
-	export type CommandCategory =
-		| 'formatting'
-		| 'blocks'
-		| 'trading'
-		| 'embeds'
-		| 'actions';
 
 	interface CategoryMeta {
 		id: CommandCategory;
@@ -319,12 +307,7 @@
 		if (!normalizedFilter) return COMMANDS;
 
 		return COMMANDS.filter((cmd) => {
-			const searchTarget = [
-				cmd.id,
-				cmd.label,
-				cmd.description,
-				...cmd.keywords
-			]
+			const searchTarget = [cmd.id, cmd.label, cmd.description, ...cmd.keywords]
 				.join(' ')
 				.toLowerCase();
 
@@ -501,12 +484,7 @@
 					Type to filter commands...
 				{/if}
 			</span>
-			<button
-				type="button"
-				class="slash-close-btn"
-				onclick={onClose}
-				aria-label="Close"
-			>
+			<button type="button" class="slash-close-btn" onclick={onClose} aria-label="Close">
 				<IconX size={16} />
 			</button>
 		</div>
@@ -520,10 +498,7 @@
 						transition:fly={{ y: -8, duration: 150, delay: groupIndex * 30, easing: quintOut }}
 					>
 						<!-- Category Header -->
-						<div
-							class="slash-category-header"
-							style:--category-color={group.color}
-						>
+						<div class="slash-category-header" style:--category-color={group.color}>
 							<span class="slash-category-dot"></span>
 							<span class="slash-category-label">{group.label}</span>
 							<span class="slash-category-count">{group.commands.length}</span>
@@ -547,10 +522,7 @@
 								onmouseenter={() => handleMouseEnter(globalIndex)}
 								onfocus={() => handleMouseEnter(globalIndex)}
 							>
-								<div
-									class="slash-command-icon"
-									style:--icon-color={group.color}
-								>
+								<div class="slash-command-icon" style:--icon-color={group.color}>
 									<Icon size={18} />
 								</div>
 								<div class="slash-command-content">
@@ -620,11 +592,7 @@
 		z-index: 9999;
 		width: 320px;
 		max-height: 420px;
-		background: linear-gradient(
-			135deg,
-			rgba(30, 41, 59, 0.98),
-			rgba(15, 23, 42, 0.98)
-		);
+		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 12px;
 		box-shadow:

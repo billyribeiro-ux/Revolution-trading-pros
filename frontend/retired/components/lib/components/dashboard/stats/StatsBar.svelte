@@ -54,14 +54,14 @@
 		<div class="stat stat-with-ring">
 			<div class="win-rate-ring" role="img" aria-label="Win rate: {stats.winRate}%">
 				<svg viewBox="0 0 36 36" class="circular-chart" aria-hidden="true">
-					<path 
-						class="circle-bg" 
-						d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+					<path
+						class="circle-bg"
+						d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
 					/>
-					<path 
-						class="circle" 
-						stroke-dasharray="{stats.winRate}, 100" 
-						d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+					<path
+						class="circle"
+						stroke-dasharray="{stats.winRate}, 100"
+						d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
 					/>
 				</svg>
 				<span class="stat-value-ring">{stats.winRate}%</span>
@@ -212,8 +212,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Responsive */

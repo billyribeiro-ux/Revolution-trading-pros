@@ -296,16 +296,12 @@ export function createAnalyticsState() {
 
 	// Top performing tickers (by total P&L %)
 	const topTickers = $derived(
-		[...tickerPerformance]
-			.sort((a, b) => b.total_pnl_percent - a.total_pnl_percent)
-			.slice(0, 10)
+		[...tickerPerformance].sort((a, b) => b.total_pnl_percent - a.total_pnl_percent).slice(0, 10)
 	);
 
 	// Worst performing tickers
 	const worstTickers = $derived(
-		[...tickerPerformance]
-			.sort((a, b) => a.total_pnl_percent - b.total_pnl_percent)
-			.slice(0, 5)
+		[...tickerPerformance].sort((a, b) => a.total_pnl_percent - b.total_pnl_percent).slice(0, 5)
 	);
 
 	// Best and worst months
@@ -322,7 +318,9 @@ export function createAnalyticsState() {
 	);
 
 	// Has any error
-	const hasAnyError = $derived(error !== null || equityCurveError !== null || drawdownsError !== null);
+	const hasAnyError = $derived(
+		error !== null || equityCurveError !== null || drawdownsError !== null
+	);
 	const isInitialLoading = $derived(isLoading && !hasData);
 
 	// ═══════════════════════════════════════════════════════════════════════════

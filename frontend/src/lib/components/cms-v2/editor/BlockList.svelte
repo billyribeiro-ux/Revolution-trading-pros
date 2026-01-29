@@ -90,7 +90,7 @@
 		const isAboveMidpoint = e.clientY < midpoint;
 
 		// Set drop target
-		const currentIndex = blocks.findIndex(b => b.id === draggedBlockId);
+		const currentIndex = blocks.findIndex((b) => b.id === draggedBlockId);
 		let newDropIndex = isAboveMidpoint ? index : index + 1;
 
 		// Don't show indicator if dropping in same position
@@ -120,7 +120,7 @@
 			return;
 		}
 
-		const currentIndex = blocks.findIndex(b => b.id === draggedBlockId);
+		const currentIndex = blocks.findIndex((b) => b.id === draggedBlockId);
 		if (currentIndex === -1) {
 			resetDragState();
 			return;
@@ -220,33 +220,21 @@
 					e.preventDefault();
 					const wrapper = e.currentTarget as HTMLElement;
 					const rect = wrapper.getBoundingClientRect();
-					editorContext?.openSlashMenu(
-						{ x: rect.left + 40, y: rect.bottom + 10 },
-						block.id
-					);
+					editorContext?.openSlashMenu({ x: rect.left + 40, y: rect.bottom + 10 }, block.id);
 				}
 				break;
 		}
 	}
 </script>
 
-<div
-	bind:this={listRef}
-	class="block-list"
-	role="list"
-	aria-label="Content blocks"
->
+<div bind:this={listRef} class="block-list" role="list" aria-label="Content blocks">
 	{#each blocks as block, index (block.id)}
 		{@const isSelected = editorContext?.selectedBlockId === block.id}
 		{@const isDraggedBlock = draggedBlockId === block.id}
 
 		<!-- Drop Zone Indicator (before) -->
 		{#if dropTargetIndex === index && !isDraggedBlock}
-			<div
-				class="drop-indicator"
-				transition:fade={{ duration: 100 }}
-				aria-hidden="true"
-			>
+			<div class="drop-indicator" transition:fade={{ duration: 100 }} aria-hidden="true">
 				<div class="drop-line"></div>
 			</div>
 		{/if}
@@ -272,11 +260,7 @@
 
 		<!-- Drop Zone Indicator (after last) -->
 		{#if index === blocks.length - 1 && dropTargetIndex === blocks.length && !isDraggedBlock}
-			<div
-				class="drop-indicator"
-				transition:fade={{ duration: 100 }}
-				aria-hidden="true"
-			>
+			<div class="drop-indicator" transition:fade={{ duration: 100 }} aria-hidden="true">
 				<div class="drop-line"></div>
 			</div>
 		{/if}
@@ -293,7 +277,9 @@
 	.block-list-item {
 		position: relative;
 		outline: none;
-		transition: opacity 0.2s, transform 0.2s;
+		transition:
+			opacity 0.2s,
+			transform 0.2s;
 	}
 
 	.block-list-item:focus-visible {

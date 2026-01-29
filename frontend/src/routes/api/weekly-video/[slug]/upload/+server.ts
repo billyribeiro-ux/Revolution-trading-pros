@@ -56,14 +56,14 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${accessToken}`
+				Accept: 'application/json',
+				Authorization: `Bearer ${accessToken}`
 			},
 			body: JSON.stringify({
 				title: body.title,
 				library_id: libraryId,
 				collection_id: body.collection_id,
-				room_slug: slug  // Pass room_slug to backend for Bunny title prefix
+				room_slug: slug // Pass room_slug to backend for Bunny title prefix
 			})
 		});
 
@@ -123,7 +123,9 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 			throw error(400, 'No file data provided');
 		}
 
-		console.log(`[Weekly Video Upload] Uploading ${fileBuffer.byteLength} bytes to ${slug} video ${videoGuid}`);
+		console.log(
+			`[Weekly Video Upload] Uploading ${fileBuffer.byteLength} bytes to ${slug} video ${videoGuid}`
+		);
 
 		const uploadUrl = `${BACKEND_URL}/api/admin/bunny/upload?video_guid=${videoGuid}&library_id=${libraryId}`;
 
@@ -131,7 +133,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 			method: 'PUT',
 			headers: {
 				'Content-Type': contentType,
-				'Authorization': `Bearer ${accessToken}`,
+				Authorization: `Bearer ${accessToken}`,
 				'Content-Length': fileBuffer.byteLength.toString()
 			},
 			body: fileBuffer
@@ -148,7 +150,6 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 			...result,
 			room_slug: slug
 		});
-
 	} catch (err) {
 		console.error('[Weekly Video Upload] Error:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

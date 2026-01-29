@@ -31,11 +31,11 @@
 		itemLabel?: string;
 	}
 
-	let { 
-		currentPage, 
-		totalPages, 
-		totalItems, 
-		itemsPerPage, 
+	let {
+		currentPage,
+		totalPages,
+		totalItems,
+		itemsPerPage,
 		onPageChange,
 		itemLabel = 'items'
 	}: Props = $props();
@@ -49,7 +49,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGE NUMBER LOGIC
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	/**
 	 * Generate visible page numbers with ellipsis for pagination UI
 	 */
@@ -87,7 +87,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function goToPage(page: number) {
 		if (page < 1 || page > totalPages || page === currentPage) return;
 		onPageChange(page);
@@ -111,8 +111,16 @@
 			onkeydown={(e) => handleKeyDown(e, currentPage - 1)}
 			aria-label="Go to previous page"
 		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
-				<path d="M15 19l-7-7 7-7"/>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				width="18"
+				height="18"
+				aria-hidden="true"
+			>
+				<path d="M15 19l-7-7 7-7" />
 			</svg>
 			<span class="nav-text">Previous</span>
 		</button>
@@ -146,15 +154,24 @@
 			aria-label="Go to next page"
 		>
 			<span class="nav-text">Next</span>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
-				<path d="M9 5l7 7-7 7"/>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				width="18"
+				height="18"
+				aria-hidden="true"
+			>
+				<path d="M9 5l7 7-7 7" />
 			</svg>
 		</button>
 	</div>
 
 	<!-- Results Count -->
 	<p class="pagination-info" aria-live="polite">
-		Showing {showingFrom}-{showingTo} of {totalItems} {itemLabel}
+		Showing {showingFrom}-{showingTo} of {totalItems}
+		{itemLabel}
 	</p>
 </nav>
 

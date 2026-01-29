@@ -35,7 +35,7 @@
 	const acceptString = $derived(accept.join(','));
 	const maxSizeDisplay = $derived(formatFileSize(maxSizeBytes));
 	const acceptedFormatsDisplay = $derived(
-		accept.map(t => t.split('/')[1]?.toUpperCase() || t).join(', ')
+		accept.map((t) => t.split('/')[1]?.toUpperCase() || t).join(', ')
 	);
 
 	function formatFileSize(bytes: number): string {
@@ -114,7 +114,13 @@
 >
 	<div class="drop-zone-content">
 		<div class="upload-icon">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+				aria-hidden="true"
+			>
 				<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 				<polyline points="17 8 12 3 7 8"></polyline>
 				<line x1="12" y1="3" x2="12" y2="15"></line>
@@ -123,15 +129,19 @@
 		<p class="drop-text">Drag and drop file here</p>
 		<p class="drop-hint">{hint}</p>
 		<span class="supported-formats">{acceptedFormatsDisplay} (max {maxSizeDisplay})</span>
-		
-		<button 
-			type="button" 
-			class="btn-browse"
-			onclick={openFileBrowser}
-			{disabled}
-		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
-				<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+
+		<button type="button" class="btn-browse" onclick={openFileBrowser} {disabled}>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				width="18"
+				height="18"
+				aria-hidden="true"
+			>
+				<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+				></path>
 			</svg>
 			Browse Files & Folders
 		</button>
@@ -167,7 +177,7 @@
 	}
 
 	.drop-zone.drag-over {
-		border-color: #143E59;
+		border-color: #143e59;
 		background: rgba(20, 62, 89, 0.08);
 		border-style: solid;
 		transform: scale(1.01);
@@ -188,7 +198,7 @@
 	.upload-icon {
 		width: 56px;
 		height: 56px;
-		color: #143E59;
+		color: #143e59;
 		margin-bottom: 0.5rem;
 	}
 
@@ -222,7 +232,7 @@
 		gap: 8px;
 		margin-top: 16px;
 		padding: 12px 24px;
-		background: linear-gradient(135deg, #143E59 0%, #1a5a7e 100%);
+		background: linear-gradient(135deg, #143e59 0%, #1a5a7e 100%);
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;
@@ -236,7 +246,7 @@
 	.btn-browse:hover:not(:disabled) {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 16px rgba(20, 62, 89, 0.4);
-		background: linear-gradient(135deg, #0f2d42 0%, #143E59 100%);
+		background: linear-gradient(135deg, #0f2d42 0%, #143e59 100%);
 	}
 
 	.btn-browse:active:not(:disabled) {

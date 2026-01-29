@@ -55,7 +55,9 @@
 	<!-- Loading skeleton for consistent SSR/CSR output -->
 	<div class="bg-rtp-bg py-12 px-4">
 		<div class="max-w-7xl mx-auto">
-			<div class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8 animate-pulse">
+			<div
+				class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8 animate-pulse"
+			>
 				<div class="h-8 bg-gray-200 rounded w-48 mb-4"></div>
 				<div class="h-4 bg-gray-200 rounded w-32"></div>
 			</div>

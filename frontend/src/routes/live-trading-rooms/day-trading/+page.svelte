@@ -218,9 +218,7 @@
 	productAvailability="in stock"
 />
 
-<div
-	class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"
->
+<div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
@@ -264,19 +262,13 @@
 					>
 				</h1>
 
-				<p
-					data-gsap
-					class="text-xl text-rtp-muted max-w-2xl mx-auto lg:mx-0 leading-relaxed"
-				>
+				<p data-gsap class="text-xl text-rtp-muted max-w-2xl mx-auto lg:mx-0 leading-relaxed">
 					Join the digital trading floor. Watch our screens, hear our professional voice commentary,
 					and execute
 					<strong>SPX 0DTE trades</strong> alongside 500+ serious traders every single morning.
 				</p>
 
-				<div
-					data-gsap
-					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-				>
+				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
 					<a
 						href="#pricing"
 						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-primary rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-primary offset-rtp-bg shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
@@ -1065,7 +1057,6 @@
 			<p class="mt-8 text-sm text-white/60">30-Day Money Back Guarantee • Cancel Anytime</p>
 		</div>
 	</section>
-
 </div>
 
 <MarketingFooter />

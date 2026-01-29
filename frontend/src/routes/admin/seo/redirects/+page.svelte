@@ -213,7 +213,9 @@
 			<table>
 				<thead>
 					<tr>
-						<th style="width: 40px"><input id="select-all-redirects" name="select-all" type="checkbox" /></th>
+						<th style="width: 40px"
+							><input id="select-all-redirects" name="select-all" type="checkbox" /></th
+						>
 						<th>Source URL</th>
 						<th>Destination URL</th>
 						<th>Type</th>

@@ -124,6 +124,9 @@
 	<div
 		class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden {className}"
 		transition:slide
+		role="region"
+		aria-label="File uploads"
+		aria-live="polite"
 	>
 		<!-- Header -->
 		<div
@@ -159,8 +162,15 @@
 					class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
 					onclick={() => onClear?.()}
 					title="Clear all"
+					aria-label="Clear all uploads"
 				>
-					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg
+						class="w-4 h-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+					>
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -174,7 +184,14 @@
 
 		<!-- Overall progress bar -->
 		{#if !isComplete}
-			<div class="h-1 bg-gray-200 dark:bg-gray-700">
+			<div
+				class="h-1 bg-gray-200 dark:bg-gray-700"
+				role="progressbar"
+				aria-valuenow={totalProgress}
+				aria-valuemin={0}
+				aria-valuemax={100}
+				aria-label="Overall upload progress: {totalProgress}%"
+			>
 				<div
 					class="h-full bg-blue-500 transition-all duration-300"
 					style="width: {totalProgress}%"
@@ -192,11 +209,20 @@
 					<!-- Thumbnail -->
 					<div
 						class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center"
+						aria-hidden="true"
 					>
 						{#if upload.result?.thumbnailUrl}
-							<img src={upload.result.thumbnailUrl} alt="" class="w-full h-full object-cover" />
+							<img
+								src={upload.result.thumbnailUrl}
+								alt="Thumbnail preview of {upload.file.name}"
+								class="w-full h-full object-cover"
+							/>
 						{:else if upload.file.type.startsWith('image/')}
-							<img src={getFileThumbnail(upload.file)} alt="" class="w-full h-full object-cover" />
+							<img
+								src={getFileThumbnail(upload.file)}
+								alt="Preview of {upload.file.name}"
+								class="w-full h-full object-cover"
+							/>
 						{:else}
 							<svg
 								class="w-6 h-6 text-gray-400"
@@ -279,8 +305,15 @@
 								class="p-1.5 rounded-lg transition-colors text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
 								onclick={() => onCancel?.(upload.id)}
 								title="Cancel"
+								aria-label="Cancel upload of {upload.file.name}"
 							>
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									class="w-4 h-4"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -294,8 +327,15 @@
 								class="p-1.5 rounded-lg transition-colors text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
 								onclick={() => onRetry?.(upload.id)}
 								title="Retry"
+								aria-label="Retry upload of {upload.file.name}"
 							>
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									class="w-4 h-4"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -309,8 +349,15 @@
 								class="p-1.5 rounded-lg transition-colors text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
 								onclick={() => onRemove?.(upload.id)}
 								title="Remove"
+								aria-label="Remove {upload.file.name} from list"
 							>
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									class="w-4 h-4"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"

@@ -211,9 +211,7 @@
 	productAvailability="in stock"
 />
 
-<div
-	class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-emerald selection:text-white"
->
+<div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-emerald selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
@@ -257,10 +255,7 @@
 					>
 				</h1>
 
-				<p
-					data-gsap
-					class="text-xl text-rtp-muted mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
-				>
+				<p data-gsap class="text-xl text-rtp-muted mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
 					Stop staring at the 1-minute chart. Get high-precision <strong
 						>multi-day swing alerts</strong
 					> designed for traders who want freedom, not another 9-to-5 job.
@@ -707,7 +702,11 @@
 				<div class="divide-y divide-rtp-border/50 font-mono text-sm">
 					<div class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/nvda.svg" alt="" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img
+								src="/logos/nvda.svg"
+								alt="NVIDIA logo"
+								class="w-5 h-5 opacity-70 hidden sm:block"
+							/>
 							NVDA
 						</div>
 						<div class="col-span-3 md:col-span-2 text-emerald-400 font-bold">CALLS</div>
@@ -719,7 +718,7 @@
 					</div>
 					<div class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/amd.svg" alt="" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img src="/logos/amd.svg" alt="AMD logo" class="w-5 h-5 opacity-70 hidden sm:block" />
 							AMD
 						</div>
 						<div class="col-span-3 md:col-span-2 text-emerald-400 font-bold">CALLS</div>
@@ -733,7 +732,11 @@
 						class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors bg-red-500/5"
 					>
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/tsla.svg" alt="" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img
+								src="/logos/tsla.svg"
+								alt="Tesla logo"
+								class="w-5 h-5 opacity-70 hidden sm:block"
+							/>
 							TSLA
 						</div>
 						<div class="col-span-3 md:col-span-2 text-red-400 font-bold">PUTS</div>
@@ -745,7 +748,11 @@
 					</div>
 					<div class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/meta.svg" alt="" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img
+								src="/logos/meta.svg"
+								alt="Meta logo"
+								class="w-5 h-5 opacity-70 hidden sm:block"
+							/>
 							META
 						</div>
 						<div class="col-span-3 md:col-span-2 text-emerald-400 font-bold">CALLS</div>
@@ -1023,7 +1030,6 @@
 			<p class="mt-6 text-sm text-emerald-100/70">Secure Checkout • Cancel Anytime</p>
 		</div>
 	</section>
-
 </div>
 
 <MarketingFooter />

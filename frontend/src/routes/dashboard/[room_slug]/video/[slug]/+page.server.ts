@@ -10,6 +10,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
 const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
@@ -49,8 +50,7 @@ export interface PageData {
 	roomName: string;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ params, fetch, cookies }): Promise<PageData> {
+export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<PageData> => {
 	const { room_slug, slug } = params;
 
 	if (!slug || !room_slug) {
@@ -122,7 +122,7 @@ export async function load({ params, fetch, cookies }): Promise<PageData> {
 		// Return mock data as fallback
 		return getMockVideoData(room_slug, slug);
 	}
-}
+};
 
 function formatDate(dateStr: string): string {
 	try {

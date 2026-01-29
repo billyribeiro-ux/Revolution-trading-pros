@@ -57,11 +57,7 @@ export const DELETE: RequestHandler = async ({ params, cookies }) => {
 		throw error(400, 'Favorite ID is required');
 	}
 
-	const backendData = await fetchFromBackend(
-		`/api/favorites/${id}`,
-		{ method: 'DELETE' },
-		cookies
-	);
+	const backendData = await fetchFromBackend(`/api/favorites/${id}`, { method: 'DELETE' }, cookies);
 
 	if (backendData?.success) {
 		return json(backendData);

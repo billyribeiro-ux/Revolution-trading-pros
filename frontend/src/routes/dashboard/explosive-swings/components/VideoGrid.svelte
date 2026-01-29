@@ -20,8 +20,8 @@
 		roomSlug?: string;
 	}
 
-	const { 
-		videos, 
+	const {
+		videos,
 		isLoading = false,
 		title = '',
 		subtitle = '',
@@ -48,7 +48,6 @@
 </script>
 
 <div class="video-grid-container">
-
 	{#if isLoading}
 		<!-- Loading State -->
 		<div class="loading-container">
@@ -71,9 +70,23 @@
 		<!-- Empty State -->
 		<div class="empty-state">
 			<div class="empty-icon">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-					<path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					aria-hidden="true"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"
+					/>
 				</svg>
 			</div>
 			<h3 class="empty-title">No video updates yet</h3>
@@ -87,7 +100,11 @@
 				<div class="featured-container">
 					<div class="featured-badge">
 						<svg viewBox="0 0 20 20" fill="currentColor" class="badge-icon" aria-hidden="true">
-							<path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+							<path
+								fill-rule="evenodd"
+								d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
+								clip-rule="evenodd"
+							/>
 						</svg>
 						<span>Featured</span>
 					</div>
@@ -114,7 +131,11 @@
 					<a href="/dashboard/{roomSlug}/video-library" class="view-more-btn">
 						<span>View All Videos</span>
 						<svg viewBox="0 0 20 20" fill="currentColor" class="view-more-icon">
-							<path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+							<path
+								fill-rule="evenodd"
+								d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
+								clip-rule="evenodd"
+							/>
 						</svg>
 					</a>
 				</div>
@@ -169,7 +190,7 @@
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		border-radius: 8px;
-		box-shadow: 
+		box-shadow:
 			0 4px 12px rgba(246, 149, 50, 0.4),
 			0 1px 3px rgba(0, 0, 0, 0.1);
 	}
@@ -219,7 +240,11 @@
 		font-size: 14px;
 		font-weight: 600;
 		color: var(--color-bg-card);
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-light) 100%
+		);
 		border: none;
 		border-radius: 12px;
 		text-decoration: none;
@@ -263,7 +288,12 @@
 		max-width: 880px;
 		margin: 0 auto;
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 		border-radius: 16px;
@@ -296,7 +326,12 @@
 
 	.skeleton-thumb {
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 	}
@@ -308,7 +343,12 @@
 	.skeleton-title {
 		height: 18px;
 		width: 85%;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 		border-radius: 6px;
@@ -318,7 +358,12 @@
 	.skeleton-date {
 		height: 14px;
 		width: 45%;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 		border-radius: 4px;

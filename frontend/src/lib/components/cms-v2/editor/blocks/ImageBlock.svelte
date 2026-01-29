@@ -30,13 +30,15 @@
 	// Derived
 	// ==========================================================================
 
-	let data = $derived(block.data as {
-		assetId?: string;
-		url?: string;
-		alt?: string;
-		caption?: string;
-		width?: string;
-	});
+	let data = $derived(
+		block.data as {
+			assetId?: string;
+			url?: string;
+			alt?: string;
+			caption?: string;
+			width?: string;
+		}
+	);
 
 	let imageUrl = $derived(data.url ?? '');
 	let hasImage = $derived(!!imageUrl || !!data.assetId);
@@ -64,11 +66,7 @@
 <div class="image-block">
 	{#if hasImage}
 		<figure class="image-figure">
-			<img
-				src={imageUrl}
-				alt={data.alt || 'Image'}
-				class="image-preview"
-			/>
+			<img src={imageUrl} alt={data.alt || 'Image'} class="image-preview" />
 			{#if data.caption}
 				<figcaption class="image-caption">{data.caption}</figcaption>
 			{/if}

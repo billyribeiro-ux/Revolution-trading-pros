@@ -1,4 +1,5 @@
 # EXPLOSIVE SWINGS TRADING ROOM - NUCLEAR WORKFLOW AUDIT
+
 ## Apple Principal Engineer ICT 7+ Grade | January 2026
 
 ---
@@ -86,16 +87,16 @@
 
 ## 1.2 Route Purpose Matrix
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/dashboard/explosive-swings` | Main dashboard with performance, alerts, positions | ✅ WORKING |
-| `/dashboard/explosive-swings/alerts` | Full alerts archive with filters/search | ✅ WORKING |
-| `/dashboard/explosive-swings/trades` | Trade history with stats | ✅ EXISTS |
-| `/dashboard/explosive-swings/start-here` | Onboarding content | ✅ EXISTS |
-| `/dashboard/explosive-swings/video/[slug]` | Individual video playback | ✅ EXISTS |
-| `/dashboard/explosive-swings/video-library` | Video archive | ⚠️ NEEDS VERIFICATION |
-| `/dashboard/explosive-swings/watchlist` | Watchlist feature | ⚠️ NEEDS VERIFICATION |
-| `/dashboard/explosive-swings/favorites` | User favorites | ⚠️ NEEDS VERIFICATION |
+| Route                                       | Purpose                                            | Status                |
+| ------------------------------------------- | -------------------------------------------------- | --------------------- |
+| `/dashboard/explosive-swings`               | Main dashboard with performance, alerts, positions | ✅ WORKING            |
+| `/dashboard/explosive-swings/alerts`        | Full alerts archive with filters/search            | ✅ WORKING            |
+| `/dashboard/explosive-swings/trades`        | Trade history with stats                           | ✅ EXISTS             |
+| `/dashboard/explosive-swings/start-here`    | Onboarding content                                 | ✅ EXISTS             |
+| `/dashboard/explosive-swings/video/[slug]`  | Individual video playback                          | ✅ EXISTS             |
+| `/dashboard/explosive-swings/video-library` | Video archive                                      | ⚠️ NEEDS VERIFICATION |
+| `/dashboard/explosive-swings/watchlist`     | Watchlist feature                                  | ⚠️ NEEDS VERIFICATION |
+| `/dashboard/explosive-swings/favorites`     | User favorites                                     | ⚠️ NEEDS VERIFICATION |
 
 ---
 
@@ -103,28 +104,28 @@
 
 ## 2.1 Frontend API Calls (from page.api.ts)
 
-| Function | Endpoint | Method | Purpose |
-|----------|----------|--------|---------|
-| `fetchAlerts` | `/api/alerts/{slug}` | GET | Get paginated alerts |
-| `fetchTradePlan` | `/api/trade-plans/{slug}` | GET | Get trade plan entries |
-| `fetchStats` | `/api/stats/{slug}` | GET | Get room statistics |
-| `fetchAllTrades` | `/api/trades/{slug}` | GET | Get all trades (open + closed) |
-| `fetchWeeklyVideo` | `/api/weekly-video/{slug}` | GET | Get current weekly video |
-| `checkAdminStatus` | `/api/auth/me` | GET | Check if user is admin |
+| Function           | Endpoint                   | Method | Purpose                        |
+| ------------------ | -------------------------- | ------ | ------------------------------ |
+| `fetchAlerts`      | `/api/alerts/{slug}`       | GET    | Get paginated alerts           |
+| `fetchTradePlan`   | `/api/trade-plans/{slug}`  | GET    | Get trade plan entries         |
+| `fetchStats`       | `/api/stats/{slug}`        | GET    | Get room statistics            |
+| `fetchAllTrades`   | `/api/trades/{slug}`       | GET    | Get all trades (open + closed) |
+| `fetchWeeklyVideo` | `/api/weekly-video/{slug}` | GET    | Get current weekly video       |
+| `checkAdminStatus` | `/api/auth/me`             | GET    | Check if user is admin         |
 
 ## 2.2 Admin Action Endpoints (from modals)
 
-| Action | Endpoint | Method | Source |
-|--------|----------|--------|--------|
-| Create Alert | `/api/alerts/{slug}` | POST | TradeAlertModal |
-| Update Alert | `/api/alerts/{slug}/{id}` | PUT | TradeAlertModal |
-| Delete Alert | `/api/alerts/{slug}/{id}` | DELETE | AlertCard |
-| Create Trade | `/api/trades/{slug}` | POST | AddTradeModal |
-| Update Trade | `/api/trades/{slug}/{id}` | PUT | ClosePositionModal |
-| Delete Trade | `/api/admin/trades/{id}` | DELETE | page.state.svelte.ts |
-| Invalidate Trade | `/api/admin/trades/{id}/invalidate` | POST | InvalidatePositionModal |
-| Create Trade Plan Entry | `/api/trade-plans/{slug}` | POST | TradeEntryModal |
-| Upload Video | `/api/weekly-video/{slug}` | POST | VideoUploadModal |
+| Action                  | Endpoint                            | Method | Source                  |
+| ----------------------- | ----------------------------------- | ------ | ----------------------- |
+| Create Alert            | `/api/alerts/{slug}`                | POST   | TradeAlertModal         |
+| Update Alert            | `/api/alerts/{slug}/{id}`           | PUT    | TradeAlertModal         |
+| Delete Alert            | `/api/alerts/{slug}/{id}`           | DELETE | AlertCard               |
+| Create Trade            | `/api/trades/{slug}`                | POST   | AddTradeModal           |
+| Update Trade            | `/api/trades/{slug}/{id}`           | PUT    | ClosePositionModal      |
+| Delete Trade            | `/api/admin/trades/{id}`            | DELETE | page.state.svelte.ts    |
+| Invalidate Trade        | `/api/admin/trades/{id}/invalidate` | POST   | InvalidatePositionModal |
+| Create Trade Plan Entry | `/api/trade-plans/{slug}`           | POST   | TradeEntryModal         |
+| Upload Video            | `/api/weekly-video/{slug}`          | POST   | VideoUploadModal        |
 
 ## 2.3 Backend Rust Handlers (room_content.rs)
 
@@ -138,22 +139,22 @@ pub fn routes() -> Router<AppState> {
         .route("/trade-plans/:slug", post(create_trade_plan_entry))
         .route("/trade-plans/:slug/:id", put(update_trade_plan_entry))
         .route("/trade-plans/:slug/:id", delete(delete_trade_plan_entry))
-        
+
         // Alerts
         .route("/alerts/:slug", get(list_alerts))
         .route("/alerts/:slug", post(create_alert))
         .route("/alerts/:slug/:id", get(get_alert))
         .route("/alerts/:slug/:id", put(update_alert))
         .route("/alerts/:slug/:id", delete(delete_alert))
-        
+
         // Weekly Videos
         .route("/weekly-video/:slug", get(get_weekly_video))
         .route("/weekly-video/:slug", post(create_weekly_video))
         .route("/weekly-video/:slug/:id", put(update_weekly_video))
-        
+
         // Stats
         .route("/stats/:slug", get(get_stats))
-        
+
         // Trades
         .route("/trades/:slug", get(list_trades))
         .route("/trades/:slug", post(create_trade))
@@ -167,8 +168,8 @@ pub fn routes() -> Router<AppState> {
 ```typescript
 // From constants.ts
 export const ROOM_SLUG = 'explosive-swings';
-export const ROOM_CONTENT_ID = 4;    // For room_content API
-export const ROOM_RESOURCES_ID = 2;  // For room_resources API
+export const ROOM_CONTENT_ID = 4; // For room_content API
+export const ROOM_RESOURCES_ID = 2; // For room_resources API
 export const ALERTS_PER_PAGE = 10;
 export const TRADES_PER_PAGE = 50;
 ```
@@ -187,7 +188,7 @@ export const TRADES_PER_PAGE = 50;
 │
 ├── PerformanceSummary
 │   ├── Props: performance, closedTrades, activePositions, isLoading, isAdmin
-│   ├── Callbacks: onClosePosition, onUpdatePosition, onInvalidatePosition, 
+│   ├── Callbacks: onClosePosition, onUpdatePosition, onInvalidatePosition,
 │   │              onDeletePosition, onAddTrade
 │   │
 │   ├── Win Rate Badge
@@ -251,15 +252,15 @@ export const TRADES_PER_PAGE = 50;
 
 ## 3.2 Modal Components Summary
 
-| Modal | File | Purpose | API Endpoint |
-|-------|------|---------|--------------|
-| TradeAlertModal | $lib/components/dashboard | Create/Edit alerts | POST/PUT /api/alerts/{slug} |
-| TradeEntryModal | ./components | Create/Edit trade plan entries | POST/PUT /api/trade-plans/{slug} |
-| VideoUploadModal | ./components | Upload weekly video | POST /api/weekly-video/{slug} |
-| AddTradeModal | ./components | Create new trade/position | POST /api/trades/{slug} |
-| UpdatePositionModal | ./components | Update existing position | PATCH /api/trades/{slug}/{id} |
-| ClosePositionModal | ./components | Close position with exit price | PUT /api/trades/{slug}/{id} |
-| InvalidatePositionModal | ./components | Mark trade as invalidated | POST /api/admin/trades/{id}/invalidate |
+| Modal                   | File                      | Purpose                        | API Endpoint                           |
+| ----------------------- | ------------------------- | ------------------------------ | -------------------------------------- |
+| TradeAlertModal         | $lib/components/dashboard | Create/Edit alerts             | POST/PUT /api/alerts/{slug}            |
+| TradeEntryModal         | ./components              | Create/Edit trade plan entries | POST/PUT /api/trade-plans/{slug}       |
+| VideoUploadModal        | ./components              | Upload weekly video            | POST /api/weekly-video/{slug}          |
+| AddTradeModal           | ./components              | Create new trade/position      | POST /api/trades/{slug}                |
+| UpdatePositionModal     | ./components              | Update existing position       | PATCH /api/trades/{slug}/{id}          |
+| ClosePositionModal      | ./components              | Close position with exit price | PUT /api/trades/{slug}/{id}            |
+| InvalidatePositionModal | ./components              | Mark trade as invalidated      | POST /api/admin/trades/{id}/invalidate |
 
 ---
 
@@ -818,60 +819,60 @@ CONDITIONAL UI ELEMENTS:
 
 ## 7.1 Working Features ✅
 
-| Feature | Route/Component | API Endpoint | Status |
-|---------|-----------------|--------------|--------|
-| View dashboard | /dashboard/explosive-swings | Multiple | ✅ Working |
-| View alerts | AlertCard + AlertsFeed | /api/alerts/{slug} | ✅ Working |
-| Filter alerts | AlertFilters | Client-side | ✅ Working |
-| Paginate alerts | Pagination | Query params | ✅ Working |
-| Expand alert notes | AlertCard | Client-side | ✅ Working |
-| Copy trade details | AlertCard | Clipboard API | ✅ Working |
-| View trade plan | WeeklyHero | /api/trade-plans/{slug} | ✅ Working |
-| View weekly video | WeeklyHero | /api/weekly-video/{slug} | ✅ Working |
-| View performance stats | PerformanceSummary | /api/stats/{slug} | ✅ Working |
-| View active positions | ActivePositionCard | /api/trades/{slug} | ✅ Working |
-| View closed trades | TickerPill | /api/trades/{slug} | ✅ Working |
-| Create alert (admin) | TradeAlertModal | POST /api/alerts/{slug} | ✅ Working |
-| Edit alert (admin) | TradeAlertModal | PUT /api/alerts/{slug}/{id} | ✅ Working |
-| Delete alert (admin) | AlertCard | DELETE /api/alerts/{slug}/{id} | ✅ Working |
-| Add trade (admin) | AddTradeModal | POST /api/trades/{slug} | ✅ Working |
-| Close position (admin) | ClosePositionModal | PUT /api/trades/{slug}/{id} | ✅ Working |
-| Update position (admin) | UpdatePositionModal | PUT /api/trades/{slug}/{id} | ✅ Working |
-| Invalidate position (admin) | InvalidatePositionModal | POST /api/admin/trades/{id}/invalidate | ✅ Working |
-| Delete position (admin) | Confirm dialog | DELETE /api/admin/trades/{id} | ✅ Working |
-| Add trade plan entry (admin) | TradeEntryModal | POST /api/trade-plans/{slug} | ✅ Working |
-| Upload video (admin) | VideoUploadModal | POST /api/weekly-video/{slug} | ✅ Working |
-| Alerts archive page | /alerts/+page.svelte | /api/alerts/{slug} | ✅ Working |
+| Feature                      | Route/Component             | API Endpoint                           | Status     |
+| ---------------------------- | --------------------------- | -------------------------------------- | ---------- |
+| View dashboard               | /dashboard/explosive-swings | Multiple                               | ✅ Working |
+| View alerts                  | AlertCard + AlertsFeed      | /api/alerts/{slug}                     | ✅ Working |
+| Filter alerts                | AlertFilters                | Client-side                            | ✅ Working |
+| Paginate alerts              | Pagination                  | Query params                           | ✅ Working |
+| Expand alert notes           | AlertCard                   | Client-side                            | ✅ Working |
+| Copy trade details           | AlertCard                   | Clipboard API                          | ✅ Working |
+| View trade plan              | WeeklyHero                  | /api/trade-plans/{slug}                | ✅ Working |
+| View weekly video            | WeeklyHero                  | /api/weekly-video/{slug}               | ✅ Working |
+| View performance stats       | PerformanceSummary          | /api/stats/{slug}                      | ✅ Working |
+| View active positions        | ActivePositionCard          | /api/trades/{slug}                     | ✅ Working |
+| View closed trades           | TickerPill                  | /api/trades/{slug}                     | ✅ Working |
+| Create alert (admin)         | TradeAlertModal             | POST /api/alerts/{slug}                | ✅ Working |
+| Edit alert (admin)           | TradeAlertModal             | PUT /api/alerts/{slug}/{id}            | ✅ Working |
+| Delete alert (admin)         | AlertCard                   | DELETE /api/alerts/{slug}/{id}         | ✅ Working |
+| Add trade (admin)            | AddTradeModal               | POST /api/trades/{slug}                | ✅ Working |
+| Close position (admin)       | ClosePositionModal          | PUT /api/trades/{slug}/{id}            | ✅ Working |
+| Update position (admin)      | UpdatePositionModal         | PUT /api/trades/{slug}/{id}            | ✅ Working |
+| Invalidate position (admin)  | InvalidatePositionModal     | POST /api/admin/trades/{id}/invalidate | ✅ Working |
+| Delete position (admin)      | Confirm dialog              | DELETE /api/admin/trades/{id}          | ✅ Working |
+| Add trade plan entry (admin) | TradeEntryModal             | POST /api/trade-plans/{slug}           | ✅ Working |
+| Upload video (admin)         | VideoUploadModal            | POST /api/weekly-video/{slug}          | ✅ Working |
+| Alerts archive page          | /alerts/+page.svelte        | /api/alerts/{slug}                     | ✅ Working |
 
 ## 7.2 Partially Working ⚠️
 
-| Feature | Issue | Missing Piece |
-|---------|-------|---------------|
+| Feature               | Issue                                        | Missing Piece                                       |
+| --------------------- | -------------------------------------------- | --------------------------------------------------- |
 | Update position badge | "UPDATED" badge exists in ActivePositionCard | Need to verify `wasUpdated` is being set by backend |
-| Video library | Route exists at /video-library | Need to verify content and functionality |
-| Watchlist page | Route exists at /watchlist | Need to verify functionality |
-| Favorites page | Route exists at /favorites | Need to verify functionality |
+| Video library         | Route exists at /video-library               | Need to verify content and functionality            |
+| Watchlist page        | Route exists at /watchlist                   | Need to verify functionality                        |
+| Favorites page        | Route exists at /favorites                   | Need to verify functionality                        |
 
 ## 7.3 Missing Features ❌
 
-| Feature | Expected Behavior | Current State |
-|---------|-------------------|---------------|
-| **Invalidated trades display** | Show invalidated trades with reason somewhere visible | Trades disappear - nowhere to see them |
-| **Weekly archive page** | Browse past weeks with videos + alerts grouped | No dedicated archive page |
-| **Alert grouping by week** | Group alerts by week in archive | All alerts in flat list |
-| **Video ↔ Alert linking** | Link weekly video to associated alerts | No linking mechanism |
-| **Auto weekly rollover** | Automated weekly content rotation | Manual admin process only |
-| **Trade ↔ Alert linking** | Connect ENTRY/EXIT alerts to trades | Fields exist but not utilized in UI |
-| **Individual alert detail pages** | /alerts/[id] route | Links exist but pages may not |
+| Feature                           | Expected Behavior                                     | Current State                          |
+| --------------------------------- | ----------------------------------------------------- | -------------------------------------- |
+| **Invalidated trades display**    | Show invalidated trades with reason somewhere visible | Trades disappear - nowhere to see them |
+| **Weekly archive page**           | Browse past weeks with videos + alerts grouped        | No dedicated archive page              |
+| **Alert grouping by week**        | Group alerts by week in archive                       | All alerts in flat list                |
+| **Video ↔ Alert linking**         | Link weekly video to associated alerts                | No linking mechanism                   |
+| **Auto weekly rollover**          | Automated weekly content rotation                     | Manual admin process only              |
+| **Trade ↔ Alert linking**         | Connect ENTRY/EXIT alerts to trades                   | Fields exist but not utilized in UI    |
+| **Individual alert detail pages** | /alerts/[id] route                                    | Links exist but pages may not          |
 
 ## 7.4 Technical Debt
 
-| Issue | File | Impact |
-|-------|------|--------|
-| Menu dropdown z-index | ActivePositionCard.svelte | z-index: 50 (should be higher) |
-| Fallback data showing | All API failures | Users see mock data instead of error |
-| Missing error states | Some modals | Poor UX when API fails |
-| Type inconsistencies | types.ts vs API | Some fields not matching backend |
+| Issue                 | File                      | Impact                               |
+| --------------------- | ------------------------- | ------------------------------------ |
+| Menu dropdown z-index | ActivePositionCard.svelte | z-index: 50 (should be higher)       |
+| Fallback data showing | All API failures          | Users see mock data instead of error |
+| Missing error states  | Some modals               | Poor UX when API fails               |
+| Type inconsistencies  | types.ts vs API           | Some fields not matching backend     |
 
 ---
 
@@ -945,34 +946,34 @@ export type TradeBias = 'BULLISH' | 'BEARISH' | 'NEUTRAL';
 
 // API Response Types
 export interface ApiTrade {
-  id: number;
-  ticker: string;
-  status: 'open' | 'closed';
-  entry_price: number;
-  exit_price: number | null;
-  pnl_percent: number | null;
-  entry_date: string;
-  exit_date: string | null;
-  direction: string;
-  setup?: string;
-  notes?: string;
+	id: number;
+	ticker: string;
+	status: 'open' | 'closed';
+	entry_price: number;
+	exit_price: number | null;
+	pnl_percent: number | null;
+	entry_date: string;
+	exit_date: string | null;
+	direction: string;
+	setup?: string;
+	notes?: string;
 }
 
 export interface ApiWeeklyVideo {
-  id: number;
-  video_title: string;
-  video_url: string;
-  thumbnail_url: string | null;
-  duration: string | null;
-  published_at: string;
-  week_title: string;
+	id: number;
+	video_title: string;
+	video_url: string;
+	thumbnail_url: string | null;
+	duration: string | null;
+	published_at: string;
+	week_title: string;
 }
 
 export interface QuickStats {
-  winRate: number;
-  weeklyProfit: string;
-  activeTrades: number;
-  closedThisWeek: number;
+	winRate: number;
+	weeklyProfit: string;
+	activeTrades: number;
+	closedThisWeek: number;
 }
 ```
 
@@ -983,8 +984,8 @@ export interface QuickStats {
 ```typescript
 // From constants.ts
 export const ROOM_SLUG = 'explosive-swings';
-export const ROOM_CONTENT_ID = 4;    // Backend room_content.rooms table
-export const ROOM_RESOURCES_ID = 2;  // Backend room_resources.rooms table
+export const ROOM_CONTENT_ID = 4; // Backend room_content.rooms table
+export const ROOM_RESOURCES_ID = 2; // Backend room_resources.rooms table
 export const ALERTS_PER_PAGE = 10;
 export const TRADES_PER_PAGE = 50;
 export const ROOM_NAME = 'Explosive Swings';

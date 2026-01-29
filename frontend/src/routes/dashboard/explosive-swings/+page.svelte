@@ -61,7 +61,7 @@
 
 	// Local modal state (bind: requires local variables)
 	let alertModalOpen = $state(false);
-	
+
 	// Expanded notes tracking (local UI state)
 	let expandedNotes = $state(new Set<number>());
 
@@ -82,15 +82,16 @@
 
 	// Alert handlers
 	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean) {
-		const url = isEdit && ps.editingAlert
-			? `/api/alerts/${ps.ROOM_SLUG}/${ps.editingAlert.id}`
-			: `/api/alerts/${ps.ROOM_SLUG}`;
+		const url =
+			isEdit && ps.editingAlert
+				? `/api/alerts/${ps.ROOM_SLUG}/${ps.editingAlert.id}`
+				: `/api/alerts/${ps.ROOM_SLUG}`;
 
 		const response = await fetch(url, {
-method: isEdit ? 'PUT' : 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(alertData)
-});
+			method: isEdit ? 'PUT' : 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(alertData)
+		});
 
 		if (!response.ok) throw new Error('Failed to save alert');
 		await ps.fetchAlerts();
@@ -99,9 +100,9 @@ body: JSON.stringify(alertData)
 	async function handleDeleteAlert(alertId: number) {
 		if (!confirm('Are you sure you want to delete this alert?')) return;
 		const response = await fetch(`/api/alerts/${ps.ROOM_SLUG}/${alertId}`, {
-method: 'DELETE',
-credentials: 'include'
-});
+			method: 'DELETE',
+			credentials: 'include'
+		});
 		if (response.ok) await ps.fetchAlerts();
 	}
 
@@ -122,7 +123,10 @@ credentials: 'include'
 	<title>Explosive Swings Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader roomName="Explosive Swings" startHereUrl="/dashboard/explosive-swings/start-here" />
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
+/>
 
 <div class="page">
 	<!-- Performance Summary -->
@@ -158,7 +162,11 @@ credentials: 'include'
 				<div class="header-left">
 					<h2>Live Alerts</h2>
 					<!-- ICT 7+ Phase 3: Real-time connection status -->
-					<div class="connection-status" class:connected={realtime.isConnected} class:reconnecting={realtime.isReconnecting}>
+					<div
+						class="connection-status"
+						class:connected={realtime.isConnected}
+						class:reconnecting={realtime.isReconnecting}
+					>
 						<span class="status-dot"></span>
 						<span class="status-text">
 							{#if realtime.isConnected}
@@ -171,7 +179,12 @@ credentials: 'include'
 						</span>
 					</div>
 					{#if realtime.unreadCount > 0}
-						<NewAlertPulse size="sm" variant="entry" active={true} label="{realtime.unreadCount} new" />
+						<NewAlertPulse
+							size="sm"
+							variant="entry"
+							active={true}
+							label="{realtime.unreadCount} new"
+						/>
 					{/if}
 				</div>
 				{#if ps.isAdmin}
@@ -236,7 +249,9 @@ credentials: 'include'
 			thirtyDayPerformance={{
 				winRate: ps.stats?.winRate ?? 75,
 				totalAlerts: ps.stats?.closedThisWeek ?? 0,
-				profitableAlerts: Math.round((ps.stats?.winRate ?? 75) / 100 * (ps.stats?.closedThisWeek ?? 0)),
+				profitableAlerts: Math.round(
+					((ps.stats?.winRate ?? 75) / 100) * (ps.stats?.closedThisWeek ?? 0)
+				),
 				avgWinPercent: 5.7,
 				avgLossPercent: 2.1
 			}}
@@ -252,8 +267,11 @@ credentials: 'include'
 	bind:isOpen={alertModalOpen}
 	roomSlug={ps.ROOM_SLUG}
 	editAlert={ps.editingAlert as any}
-	entryAlerts={ps.alerts.filter(a => a.type === 'ENTRY') as any}
-	onClose={() => { alertModalOpen = false; ps.closeAlertModal(); }}
+	entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as any}
+	onClose={() => {
+		alertModalOpen = false;
+		ps.closeAlertModal();
+	}}
 	onSave={handleSaveAlert}
 />
 
@@ -277,14 +295,20 @@ credentials: 'include'
 	position={ps.closingPosition}
 	roomSlug={ps.ROOM_SLUG}
 	onClose={ps.closeClosePositionModal}
-	onSuccess={() => { ps.fetchAllTrades(); ps.fetchStats(); }}
+	onSuccess={() => {
+		ps.fetchAllTrades();
+		ps.fetchStats();
+	}}
 />
 
 <AddTradeModal
 	isOpen={ps.isAddTradeModalOpen}
 	roomSlug={ps.ROOM_SLUG}
 	onClose={ps.closeAddTradeModal}
-	onSuccess={() => { ps.fetchAllTrades(); ps.fetchStats(); }}
+	onSuccess={() => {
+		ps.fetchAllTrades();
+		ps.fetchStats();
+	}}
 />
 
 <UpdatePositionModal
@@ -300,7 +324,10 @@ credentials: 'include'
 	position={ps.invalidatingPosition}
 	roomSlug={ps.ROOM_SLUG}
 	onClose={ps.closeInvalidatePositionModal}
-	onSuccess={() => { ps.fetchAllTrades(); ps.fetchStats(); }}
+	onSuccess={() => {
+		ps.fetchAllTrades();
+		ps.fetchStats();
+	}}
 />
 
 <style>
@@ -381,7 +408,8 @@ credentials: 'include'
 	}
 
 	@keyframes pulse-dot {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {
@@ -419,7 +447,12 @@ credentials: 'include'
 
 	.alert-skeleton {
 		height: 100px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -482,8 +515,12 @@ credentials: 'include'
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 1024px) {

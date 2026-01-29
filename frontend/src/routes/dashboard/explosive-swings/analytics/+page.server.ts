@@ -106,9 +106,7 @@ async function fetchAnalyticsData(
 	period: string
 ): Promise<Partial<AnalyticsPageData>> {
 	try {
-		const response = await fetchFn(
-			`${baseUrl}/api/analytics/${ROOM_SLUG}?period=${period}`
-		);
+		const response = await fetchFn(`${baseUrl}/api/analytics/${ROOM_SLUG}?period=${period}`);
 
 		if (!response.ok) {
 			console.warn(`${LOG_PREFIX} Analytics fetch returned:`, response.status);

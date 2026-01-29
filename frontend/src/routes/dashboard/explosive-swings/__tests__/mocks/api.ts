@@ -233,7 +233,9 @@ export function createApiTrade(overrides: Partial<ApiTrade> = {}): ApiTrade {
 /**
  * Create a mock trade plan entry with customizable properties
  */
-export function createApiTradePlanEntry(overrides: Partial<ApiTradePlanEntry> = {}): ApiTradePlanEntry {
+export function createApiTradePlanEntry(
+	overrides: Partial<ApiTradePlanEntry> = {}
+): ApiTradePlanEntry {
 	return {
 		ticker: 'NVDA',
 		bias: 'BULLISH',
@@ -415,7 +417,7 @@ export function createTradeBatch(count: number, startId = 1): ApiTrade[] {
 			id: startId + i,
 			ticker: ['NVDA', 'TSLA', 'AAPL', 'MSFT', 'META'][i % 5],
 			status: i % 3 === 0 ? 'closed' : 'open',
-			pnl_percent: i % 3 === 0 ? (Math.random() * 20 - 5) : null
+			pnl_percent: i % 3 === 0 ? Math.random() * 20 - 5 : null
 		})
 	);
 }

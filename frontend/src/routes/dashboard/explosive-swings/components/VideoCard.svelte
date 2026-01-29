@@ -24,11 +24,11 @@
 		UPDATE: 'type-update',
 		BREAKDOWN: 'type-breakdown'
 	} as const;
-	
+
 	const typeClass = $derived(
-		video.type ? TYPE_STYLES[video.type] ?? 'type-default' : 'type-default'
+		video.type ? (TYPE_STYLES[video.type] ?? 'type-default') : 'type-default'
 	);
-	
+
 	const typeText = $derived(video.type || '');
 </script>
 
@@ -40,17 +40,11 @@
 	aria-label="Watch {video.title}"
 >
 	<div class="thumbnail-wrapper">
-		<img
-			src={video.thumbnailUrl}
-			alt=""
-			role="presentation"
-			class="thumbnail"
-			loading="lazy"
-		/>
-		
+		<img src={video.thumbnailUrl} alt="" role="presentation" class="thumbnail" loading="lazy" />
+
 		<!-- Gradient Overlay -->
 		<div class="thumbnail-gradient"></div>
-		
+
 		<!-- Play Button Overlay -->
 		<div class="play-overlay">
 			<div class="play-button">
@@ -78,7 +72,11 @@
 		<!-- Duration Badge -->
 		<div class="duration-badge">
 			<svg viewBox="0 0 20 20" fill="currentColor" class="duration-icon">
-				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+				<path
+					fill-rule="evenodd"
+					d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z"
+					clip-rule="evenodd"
+				/>
 			</svg>
 			{video.duration}
 		</div>
@@ -156,11 +154,7 @@
 	.thumbnail-gradient {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			180deg,
-			rgba(0, 0, 0, 0) 50%,
-			rgba(0, 0, 0, 0.4) 100%
-		);
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.4) 100%);
 		pointer-events: none;
 	}
 
@@ -267,11 +261,21 @@
 	}
 
 	/* Badge Type Colors */
-	.ticker-badge.type-entry { background: #0d9488; }
-	.ticker-badge.type-exit { background: var(--color-profit); }
-	.ticker-badge.type-update { background: var(--color-watching-hover); }
-	.ticker-badge.type-breakdown { background: var(--color-text-tertiary); }
-	.ticker-badge.type-default { background: var(--color-text-tertiary); }
+	.ticker-badge.type-entry {
+		background: #0d9488;
+	}
+	.ticker-badge.type-exit {
+		background: var(--color-profit);
+	}
+	.ticker-badge.type-update {
+		background: var(--color-watching-hover);
+	}
+	.ticker-badge.type-breakdown {
+		background: var(--color-text-tertiary);
+	}
+	.ticker-badge.type-default {
+		background: var(--color-text-tertiary);
+	}
 
 	.duration-badge {
 		position: absolute;

@@ -22,14 +22,16 @@
 
 	let { block, readonly = false, onUpdate }: Props = $props();
 
-	let data = $derived(block.data as {
-		ticker?: string;
-		direction?: 'long' | 'short';
-		entry?: string;
-		target?: string;
-		stop?: string;
-		notes?: string;
-	});
+	let data = $derived(
+		block.data as {
+			ticker?: string;
+			direction?: 'long' | 'short';
+			entry?: string;
+			target?: string;
+			stop?: string;
+			notes?: string;
+		}
+	);
 
 	let isLong = $derived(data.direction !== 'short');
 

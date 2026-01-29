@@ -23,7 +23,9 @@
 <div class="weekly-video-card" role="region" aria-labelledby="weekly-video-heading">
 	<h3 id="weekly-video-heading" class="card-title">
 		<svg viewBox="0 0 20 20" fill="currentColor" class="title-icon">
-			<path d="M3.25 4A2.25 2.25 0 001 6.25v7.5A2.25 2.25 0 003.25 16h7.5A2.25 2.25 0 0013 13.75v-7.5A2.25 2.25 0 0010.75 4h-7.5zM19 4.75a.75.75 0 00-1.28-.53l-3 3a.75.75 0 00-.22.53v4.5c0 .199.079.39.22.53l3 3a.75.75 0 001.28-.53V4.75z" />
+			<path
+				d="M3.25 4A2.25 2.25 0 001 6.25v7.5A2.25 2.25 0 003.25 16h7.5A2.25 2.25 0 0013 13.75v-7.5A2.25 2.25 0 0010.75 4h-7.5zM19 4.75a.75.75 0 00-1.28-.53l-3 3a.75.75 0 00-.22.53v4.5c0 .199.079.39.22.53l3 3a.75.75 0 001.28-.53V4.75z"
+			/>
 		</svg>
 		Weekly Breakdown
 	</h3>
@@ -40,11 +42,7 @@
 				class="video-thumbnail"
 				loading="lazy"
 			/>
-			<button
-				class="play-overlay"
-				onclick={onPlay}
-				aria-label="Play {video.title}"
-			>
+			<button class="play-overlay" onclick={onPlay} aria-label="Play {video.title}">
 				<div class="play-button">
 					<svg viewBox="0 0 24 24" fill="currentColor" class="play-icon">
 						<path d="M8 5v14l11-7z" />
@@ -69,7 +67,9 @@
 		border: 1px solid var(--color-border-default);
 		border-radius: 14px;
 		padding: 22px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+		box-shadow:
+			0 1px 3px rgba(0, 0, 0, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.06);
 		transition: all 0.2s ease-out;
 	}
 
@@ -203,7 +203,12 @@
 	.skeleton-thumbnail {
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -212,7 +217,12 @@
 
 	.skeleton-text {
 		height: 16px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 4px;

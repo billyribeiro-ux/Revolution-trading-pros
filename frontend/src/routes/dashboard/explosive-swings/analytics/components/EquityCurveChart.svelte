@@ -68,10 +68,7 @@
 	// Generate SVG path for area (gradient fill)
 	const areaPath = $derived(
 		data.length > 0
-			? linePath +
-				` L ${scaleX(data.length - 1)} ${zeroY}` +
-				` L ${padding.left} ${zeroY}` +
-				` Z`
+			? linePath + ` L ${scaleX(data.length - 1)} ${zeroY}` + ` L ${padding.left} ${zeroY}` + ` Z`
 			: ''
 	);
 
@@ -145,7 +142,11 @@
 	<div class="chart-header">
 		<h3 class="chart-title">Equity Curve</h3>
 		{#if data.length > 0}
-			<span class="chart-value" class:profit={data[data.length - 1]?.equity_percent >= 0} class:loss={data[data.length - 1]?.equity_percent < 0}>
+			<span
+				class="chart-value"
+				class:profit={data[data.length - 1]?.equity_percent >= 0}
+				class:loss={data[data.length - 1]?.equity_percent < 0}
+			>
 				{formatValue(data[data.length - 1]?.equity_percent ?? 0)}
 			</span>
 		{/if}
@@ -214,12 +215,7 @@
 				<!-- X-axis labels -->
 				{#each xLabels() as item}
 					{@const index = data.indexOf(item)}
-					<text
-						x={scaleX(index)}
-						y={height - 8}
-						text-anchor="middle"
-						class="axis-label"
-					>
+					<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="axis-label">
 						{formatDate(item.date)}
 					</text>
 				{/each}
@@ -267,11 +263,12 @@
 			<!-- Tooltip -->
 			{#if hoveredIndex !== null}
 				{@const point = data[hoveredIndex]}
-				<div
-					class="tooltip"
-					style="left: {tooltipX}px; top: {tooltipY - 60}px"
-				>
-					<div class="tooltip-value" class:profit={point.equity_percent >= 0} class:loss={point.equity_percent < 0}>
+				<div class="tooltip" style="left: {tooltipX}px; top: {tooltipY - 60}px">
+					<div
+						class="tooltip-value"
+						class:profit={point.equity_percent >= 0}
+						class:loss={point.equity_percent < 0}
+					>
 						{formatValue(point.equity_percent)}
 					</div>
 					<div class="tooltip-date">{formatDate(point.date)}</div>
@@ -379,7 +376,12 @@
 	.skel-line {
 		width: 100%;
 		height: 200px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -395,8 +397,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 640px) {

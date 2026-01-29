@@ -47,12 +47,12 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 
 		// Forward to backend upload endpoint
 		const uploadUrl = `${BACKEND_URL}/api/admin/bunny/upload?video_guid=${videoGuid}&library_id=${libraryId}`;
-		
+
 		const response = await fetch(uploadUrl, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': contentType,
-				'Authorization': `Bearer ${accessToken}`,
+				Authorization: `Bearer ${accessToken}`,
 				'Content-Length': fileBuffer.byteLength.toString()
 			},
 			body: fileBuffer
@@ -66,7 +66,6 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 
 		const result = await response.json();
 		return json(result);
-
 	} catch (err) {
 		console.error('[Bunny Upload] Error:', err);
 		if (err instanceof Error && 'status' in err) {

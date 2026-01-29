@@ -43,10 +43,19 @@
 	const relevancePercent = $derived(Math.round(trade.relevance_score * 100));
 </script>
 
-<article class="trade-card" class:win={isWin && !isOpen} class:loss={!isWin && !isOpen} class:open={isOpen}>
+<article
+	class="trade-card"
+	class:win={isWin && !isOpen}
+	class:loss={!isWin && !isOpen}
+	class:open={isOpen}
+>
 	<div class="card-header">
 		<span class="ticker-badge">{trade.ticker}</span>
-		<span class="direction-badge" class:long={trade.direction === 'long'} class:short={trade.direction === 'short'}>
+		<span
+			class="direction-badge"
+			class:long={trade.direction === 'long'}
+			class:short={trade.direction === 'short'}
+		>
 			{trade.direction.toUpperCase()}
 		</span>
 		<span class="status-badge" class:open={isOpen} class:closed={!isOpen}>
@@ -55,7 +64,9 @@
 		<span class="date">{formatDate(trade.entry_date)}</span>
 		<span class="relevance" title="Relevance score">
 			<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-				<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+				<polygon
+					points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+				/>
 			</svg>
 			{relevancePercent}%
 		</span>

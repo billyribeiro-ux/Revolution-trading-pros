@@ -36,13 +36,16 @@ export const load: ServerLoad = async ({ url, fetch, cookies }) => {
 			const apiUrl = API_BASE_URL;
 			const token = cookies.get('auth_token');
 
-			const response = await fetch(`${apiUrl}/api/my/orders/by-number/${encodeURIComponent(orderNumber)}`, {
-				headers: {
-					'Content-Type': 'application/json',
-					...(token ? { Authorization: `Bearer ${token}` } : {})
-				},
-				credentials: 'include'
-			});
+			const response = await fetch(
+				`${apiUrl}/api/my/orders/by-number/${encodeURIComponent(orderNumber)}`,
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						...(token ? { Authorization: `Bearer ${token}` } : {})
+					},
+					credentials: 'include'
+				}
+			);
 
 			if (response.ok) {
 				const data = await response.json();

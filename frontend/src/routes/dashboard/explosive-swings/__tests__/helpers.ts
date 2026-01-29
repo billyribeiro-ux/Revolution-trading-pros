@@ -243,7 +243,11 @@ export function submitForm(form: HTMLFormElement): void {
 /**
  * Simulate keyboard event
  */
-export function keyDown(element: HTMLElement, key: string, options: Partial<KeyboardEventInit> = {}): void {
+export function keyDown(
+	element: HTMLElement,
+	key: string,
+	options: Partial<KeyboardEventInit> = {}
+): void {
 	element.dispatchEvent(
 		new KeyboardEvent('keydown', {
 			key,
@@ -326,11 +330,7 @@ export function assertHasClass(element: HTMLElement, className: string): void {
  */
 export function assertIsVisible(element: HTMLElement): void {
 	const style = window.getComputedStyle(element);
-	if (
-		style.display === 'none' ||
-		style.visibility === 'hidden' ||
-		style.opacity === '0'
-	) {
+	if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
 		throw new Error('Expected element to be visible');
 	}
 }

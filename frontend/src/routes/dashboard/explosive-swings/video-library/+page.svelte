@@ -56,8 +56,11 @@
 					date: formatDate(wv.published_at || wv.week_of),
 					duration: wv.duration || '',
 					category: 'weekly',
-					thumbnail: wv.thumbnail_url || 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
-					excerpt: wv.description || "Complete breakdown of this week's top swing trade opportunities.",
+					thumbnail:
+						wv.thumbnail_url ||
+						'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
+					excerpt:
+						wv.description || "Complete breakdown of this week's top swing trade opportunities.",
 					href: `/dashboard/explosive-swings/video/weekly`
 				});
 			}
@@ -72,9 +75,10 @@
 							date: formatDate(alert.published_at),
 							duration: '5:00',
 							category: alert.alert_type.toLowerCase() as 'entry' | 'exit',
-							thumbnail: alert.alert_type === 'ENTRY'
-								? `https://placehold.co/640x360/22c55e/FFFFFF/png?text=${alert.ticker}+ENTRY`
-								: `https://placehold.co/640x360/3b82f6/FFFFFF/png?text=${alert.ticker}+EXIT`,
+							thumbnail:
+								alert.alert_type === 'ENTRY'
+									? `https://placehold.co/640x360/22c55e/FFFFFF/png?text=${alert.ticker}+ENTRY`
+									: `https://placehold.co/640x360/3b82f6/FFFFFF/png?text=${alert.ticker}+EXIT`,
 							excerpt: alert.message,
 							href: `/dashboard/explosive-swings/updates/${alert.ticker.toLowerCase()}-${alert.alert_type.toLowerCase()}`
 						});
@@ -318,23 +322,23 @@
 	{:else}
 		<div class="videos-grid">
 			{#each filteredVideos as video}
-			<a href={video.href} class="video-card">
-				<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
-					<div class="play-overlay">
-						<svg viewBox="0 0 24 24" fill="currentColor" width="56" height="56">
-							<path d="M8 5v14l11-7z" />
-						</svg>
+				<a href={video.href} class="video-card">
+					<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
+						<div class="play-overlay">
+							<svg viewBox="0 0 24 24" fill="currentColor" width="56" height="56">
+								<path d="M8 5v14l11-7z" />
+							</svg>
+						</div>
+						<div class="video-duration">{video.duration}</div>
 					</div>
-					<div class="video-duration">{video.duration}</div>
-				</div>
-				<div class="video-content">
-					<div class="video-category">{video.category.toUpperCase()}</div>
-					<h3>{video.title}</h3>
-					<p class="video-date">{video.date}</p>
-					<p class="video-excerpt">{video.excerpt}</p>
-				</div>
-			</a>
-		{/each}
+					<div class="video-content">
+						<div class="video-category">{video.category.toUpperCase()}</div>
+						<h3>{video.title}</h3>
+						<p class="video-date">{video.date}</p>
+						<p class="video-excerpt">{video.excerpt}</p>
+					</div>
+				</a>
+			{/each}
 		</div>
 	{/if}
 </div>

@@ -24,7 +24,15 @@
 		dataSource?: 'backend' | 'mock' | null;
 	}
 
-	let { data = [], totalPnl = '$0', wins = 0, losses = 0, winRate = 0, isLoading = false, dataSource = null }: Props = $props();
+	let {
+		data = [],
+		totalPnl = '$0',
+		wins = 0,
+		losses = 0,
+		winRate = 0,
+		isLoading = false,
+		dataSource = null
+	}: Props = $props();
 
 	// Chart dimensions
 	const width = 280;
@@ -40,7 +48,7 @@
 			return generatePlaceholderPath();
 		}
 
-		const values = data.map(d => d.cumulative);
+		const values = data.map((d) => d.cumulative);
 		const minVal = Math.min(...values, 0);
 		const maxVal = Math.max(...values, 0);
 		const range = maxVal - minVal || 1;
@@ -70,7 +78,7 @@
 			return generatePlaceholderArea();
 		}
 
-		const values = data.map(d => d.cumulative);
+		const values = data.map((d) => d.cumulative);
 		const minVal = Math.min(...values, 0);
 		const maxVal = Math.max(...values, 0);
 		const range = maxVal - minVal || 1;
@@ -112,7 +120,7 @@
 
 <div class="performance-chart">
 	<h3>30-Day Performance</h3>
-	
+
 	{#if dataSource === 'mock'}
 		<span class="data-badge">Demo</span>
 	{/if}
@@ -130,25 +138,25 @@
 						<stop offset="100%" stop-color={gradientColor().end} stop-opacity="0.05" />
 					</linearGradient>
 				</defs>
-				
+
 				<!-- Area fill -->
 				<path d={areaPath()} fill="url(#chartGradient)" />
-				
+
 				<!-- Line -->
-				<path 
-					d={chartPath()} 
-					fill="none" 
+				<path
+					d={chartPath()}
+					fill="none"
 					stroke={gradientColor().start}
 					stroke-width="2.5"
 					stroke-linecap="round"
 					stroke-linejoin="round"
 				/>
-				
+
 				<!-- Zero line -->
-				<line 
-					x1={padding.left} 
-					y1={padding.top + chartHeight / 2} 
-					x2={padding.left + chartWidth} 
+				<line
+					x1={padding.left}
+					y1={padding.top + chartHeight / 2}
+					x2={padding.left + chartWidth}
 					y2={padding.top + chartHeight / 2}
 					stroke="#e5e7eb"
 					stroke-width="1"
@@ -278,7 +286,11 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 </style>

@@ -357,292 +357,220 @@
 	<div class="admin-page-container">
 		<!-- Header -->
 		<header class="page-header">
-		<h1>
-			<IconBriefcase size={28} />
-			Deal Pipeline
-		</h1>
-		<p class="subtitle">Manage your sales pipeline and track deal progress</p>
-		<div class="header-actions">
-			<div class="view-toggle">
-				<button
-					class="toggle-btn"
-					class:active={viewMode === 'kanban'}
-					onclick={() => (viewMode = 'kanban')}
-				>
-					<IconLayoutKanban size={18} />
+			<h1>
+				<IconBriefcase size={28} />
+				Deal Pipeline
+			</h1>
+			<p class="subtitle">Manage your sales pipeline and track deal progress</p>
+			<div class="header-actions">
+				<div class="view-toggle">
+					<button
+						class="toggle-btn"
+						class:active={viewMode === 'kanban'}
+						onclick={() => (viewMode = 'kanban')}
+					>
+						<IconLayoutKanban size={18} />
+					</button>
+					<button
+						class="toggle-btn"
+						class:active={viewMode === 'list'}
+						onclick={() => (viewMode = 'list')}
+					>
+						<IconList size={18} />
+					</button>
+				</div>
+				<button class="btn-secondary" onclick={() => loadData()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
-				<button
-					class="toggle-btn"
-					class:active={viewMode === 'list'}
-					onclick={() => (viewMode = 'list')}
-				>
-					<IconList size={18} />
-				</button>
+				<a href="/admin/crm/deals/new" class="btn-primary">
+					<IconPlus size={18} />
+					New Deal
+				</a>
 			</div>
-			<button class="btn-secondary" onclick={() => loadData()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<a href="/admin/crm/deals/new" class="btn-primary">
-				<IconPlus size={18} />
-				New Deal
-			</a>
-		</div>
-	</header>
+		</header>
 
-	<!-- Stats Cards -->
-	<section class="stats-grid">
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconBriefcase size={24} />
+		<!-- Stats Cards -->
+		<section class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconBriefcase size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.openDeals}</span>
+					<span class="stat-label">Open Deals</span>
+				</div>
 			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.openDeals}</span>
-				<span class="stat-label">Open Deals</span>
+			<div class="stat-card">
+				<div class="stat-icon purple">
+					<IconCurrencyDollar size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatCurrency(stats.totalValue)}</span>
+					<span class="stat-label">Pipeline Value</span>
+				</div>
 			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon purple">
-				<IconCurrencyDollar size={24} />
+			<div class="stat-card">
+				<div class="stat-icon cyan">
+					<IconTarget size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatCurrency(stats.weightedValue)}</span>
+					<span class="stat-label">Weighted Value</span>
+				</div>
 			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatCurrency(stats.totalValue)}</span>
-				<span class="stat-label">Pipeline Value</span>
+			<div class="stat-card">
+				<div class="stat-icon green">
+					<IconTrendingUp size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.winRate.toFixed(1)}%</span>
+					<span class="stat-label">Win Rate</span>
+				</div>
 			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon cyan">
-				<IconTarget size={24} />
+			<div class="stat-card">
+				<div class="stat-icon amber">
+					<IconChartBar size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatCurrency(stats.avgDealSize)}</span>
+					<span class="stat-label">Avg Deal Size</span>
+				</div>
 			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatCurrency(stats.weightedValue)}</span>
-				<span class="stat-label">Weighted Value</span>
+			<div class="stat-card">
+				<div class="stat-icon emerald">
+					<IconTrophy size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.wonDeals}</span>
+					<span class="stat-label">Won This Period</span>
+				</div>
 			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon green">
-				<IconTrendingUp size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.winRate.toFixed(1)}%</span>
-				<span class="stat-label">Win Rate</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon amber">
-				<IconChartBar size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatCurrency(stats.avgDealSize)}</span>
-				<span class="stat-label">Avg Deal Size</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon emerald">
-				<IconTrophy size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.wonDeals}</span>
-				<span class="stat-label">Won This Period</span>
-			</div>
-		</div>
-	</section>
+		</section>
 
-	<!-- Filters Bar -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input type="text" id="search-deals" name="search" placeholder="Search deals..." bind:value={searchQuery} />
-		</div>
+		<!-- Filters Bar -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					type="text"
+					id="search-deals"
+					name="search"
+					placeholder="Search deals..."
+					bind:value={searchQuery}
+				/>
+			</div>
 
-		{#if pipelines.length > 0}
-			<select class="filter-select" bind:value={selectedPipeline}>
-				{#each pipelines as pipeline}
-					<option value={pipeline}>{pipeline.name}</option>
-				{/each}
+			{#if pipelines.length > 0}
+				<select class="filter-select" bind:value={selectedPipeline}>
+					{#each pipelines as pipeline}
+						<option value={pipeline}>{pipeline.name}</option>
+					{/each}
+				</select>
+			{/if}
+
+			<select class="filter-select" bind:value={selectedStatus}>
+				<option value="all">All Status</option>
+				<option value="open">Open</option>
+				<option value="won">Won</option>
+				<option value="lost">Lost</option>
 			</select>
-		{/if}
 
-		<select class="filter-select" bind:value={selectedStatus}>
-			<option value="all">All Status</option>
-			<option value="open">Open</option>
-			<option value="won">Won</option>
-			<option value="lost">Lost</option>
-		</select>
+			<div class="pipeline-stats">
+				<span class="stat-item">
+					<IconBriefcase size={14} />
+					{pipelineStats.dealsCount} deals
+				</span>
+				<span class="stat-item">
+					<IconCurrencyDollar size={14} />
+					{formatCurrency(pipelineStats.totalValue)}
+				</span>
+			</div>
+		</div>
 
-		<div class="pipeline-stats">
-			<span class="stat-item">
-				<IconBriefcase size={14} />
-				{pipelineStats.dealsCount} deals
-			</span>
-			<span class="stat-item">
-				<IconCurrencyDollar size={14} />
-				{formatCurrency(pipelineStats.totalValue)}
-			</span>
-		</div>
-	</div>
-
-	<!-- Main Content -->
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading deals...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<IconAlertTriangle size={48} />
-			<p>{error}</p>
-			<button class="btn-primary" onclick={() => loadData()}>Try Again</button>
-		</div>
-	{:else if viewMode === 'kanban'}
-		<!-- Kanban Board -->
-		<div class="kanban-board">
-			{#each stages as stage (stage.id)}
-				{@const stageDeals = dealsByStage[stage.id] || []}
-				{@const stageValue = stageDeals.reduce((sum, d) => sum + d.amount, 0)}
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div
-					class="kanban-column"
-					class:drag-over={dragOverStage === stage.id}
-					ondragover={(e) => handleDragOver(e, stage.id)}
-					ondragleave={handleDragLeave}
-					ondrop={(e) => handleDrop(e, stage.id)}
-				>
-					<div class="column-header" style="border-color: {getStageColor(stage)}">
-						<div class="column-title">
-							<span class="stage-name">{stage.name}</span>
-							<span class="stage-count">{stageDeals.length}</span>
+		<!-- Main Content -->
+		{#if isLoading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading deals...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<IconAlertTriangle size={48} />
+				<p>{error}</p>
+				<button class="btn-primary" onclick={() => loadData()}>Try Again</button>
+			</div>
+		{:else if viewMode === 'kanban'}
+			<!-- Kanban Board -->
+			<div class="kanban-board">
+				{#each stages as stage (stage.id)}
+					{@const stageDeals = dealsByStage[stage.id] || []}
+					{@const stageValue = stageDeals.reduce((sum, d) => sum + d.amount, 0)}
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<div
+						class="kanban-column"
+						class:drag-over={dragOverStage === stage.id}
+						ondragover={(e) => handleDragOver(e, stage.id)}
+						ondragleave={handleDragLeave}
+						ondrop={(e) => handleDrop(e, stage.id)}
+					>
+						<div class="column-header" style="border-color: {getStageColor(stage)}">
+							<div class="column-title">
+								<span class="stage-name">{stage.name}</span>
+								<span class="stage-count">{stageDeals.length}</span>
+							</div>
+							<div class="column-value">{formatCurrency(stageValue)}</div>
+							{#if stage.probability > 0}
+								<div class="column-probability">{stage.probability}% probability</div>
+							{/if}
 						</div>
-						<div class="column-value">{formatCurrency(stageValue)}</div>
-						{#if stage.probability > 0}
-							<div class="column-probability">{stage.probability}% probability</div>
-						{/if}
-					</div>
 
-					<div class="column-cards">
-						{#each stageDeals as deal (deal.id)}
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<div
-								class="deal-card"
-								draggable="true"
-								class:dragging={draggingDeal?.id === deal.id}
-								ondragstart={(e) => handleDragStart(e, deal)}
-								ondragend={handleDragEnd}
-								role="listitem"
-							>
-								<div class="card-grip">
-									<IconGripVertical size={14} />
-								</div>
-
-								<div class="card-content">
-									<a href="/admin/crm/deals/{deal.id}" class="deal-name">
-										{deal.name}
-									</a>
-
-									<div class="deal-amount">
-										{formatCurrency(deal.amount)}
+						<div class="column-cards">
+							{#each stageDeals as deal (deal.id)}
+								<!-- svelte-ignore a11y_no_static_element_interactions -->
+								<div
+									class="deal-card"
+									draggable="true"
+									class:dragging={draggingDeal?.id === deal.id}
+									ondragstart={(e) => handleDragStart(e, deal)}
+									ondragend={handleDragEnd}
+									role="listitem"
+								>
+									<div class="card-grip">
+										<IconGripVertical size={14} />
 									</div>
 
-									{#if deal.contact}
-										<div class="deal-contact">
-											<IconUser size={12} />
-											<span>{deal.contact.full_name}</span>
+									<div class="card-content">
+										<a href="/admin/crm/deals/{deal.id}" class="deal-name">
+											{deal.name}
+										</a>
+
+										<div class="deal-amount">
+											{formatCurrency(deal.amount)}
 										</div>
-									{/if}
 
-									<div class="deal-meta">
-										<span class="meta-item" style="color: {getDaysColor(deal.days_in_stage)}">
-											<IconClock size={12} />
-											{deal.days_in_stage}d in stage
-										</span>
-										{#if deal.expected_close_date}
-											<span class="meta-item">
-												<IconCalendar size={12} />
-												{formatDate(deal.expected_close_date)}
-											</span>
+										{#if deal.contact}
+											<div class="deal-contact">
+												<IconUser size={12} />
+												<span>{deal.contact.full_name}</span>
+											</div>
 										{/if}
-									</div>
 
-									{#if deal.priority && deal.priority !== 'normal'}
-										<span
-											class="priority-badge"
-											style="background: {getPriorityColor(
-												deal.priority
-											)}15; color: {getPriorityColor(deal.priority)}"
-										>
-											{deal.priority}
-										</span>
-									{/if}
-								</div>
+										<div class="deal-meta">
+											<span class="meta-item" style="color: {getDaysColor(deal.days_in_stage)}">
+												<IconClock size={12} />
+												{deal.days_in_stage}d in stage
+											</span>
+											{#if deal.expected_close_date}
+												<span class="meta-item">
+													<IconCalendar size={12} />
+													{formatDate(deal.expected_close_date)}
+												</span>
+											{/if}
+										</div>
 
-								<div class="card-actions">
-									{#if deal.status === 'open'}
-										<button
-											class="action-btn success"
-											title="Mark as Won"
-											onclick={() => openWinModal(deal)}
-										>
-											<IconCheck size={14} />
-										</button>
-										<button
-											class="action-btn danger"
-											title="Mark as Lost"
-											onclick={() => openLoseModal(deal)}
-										>
-											<IconX size={14} />
-										</button>
-									{/if}
-									<a href="/admin/crm/deals/{deal.id}/edit" class="action-btn" title="Edit">
-										<IconEdit size={14} />
-									</a>
-								</div>
-							</div>
-						{/each}
-
-						{#if stageDeals.length === 0}
-							<div class="empty-column">
-								<p>No deals</p>
-							</div>
-						{/if}
-					</div>
-				</div>
-			{/each}
-		</div>
-	{:else}
-		<!-- List View -->
-		<div class="table-container">
-			{#if filteredDeals.length === 0}
-				<div class="empty-state">
-					<IconBriefcase size={48} />
-					<h3>No deals found</h3>
-					<p>Create your first deal to start tracking your sales pipeline</p>
-					<a href="/admin/crm/deals/new" class="btn-primary">
-						<IconPlus size={18} />
-						Create Deal
-					</a>
-				</div>
-			{:else}
-				<table class="data-table">
-					<thead>
-						<tr>
-							<th>Deal</th>
-							<th>Contact</th>
-							<th>Stage</th>
-							<th>Amount</th>
-							<th>Probability</th>
-							<th>Close Date</th>
-							<th>Days in Stage</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filteredDeals as deal (deal.id)}
-							<tr>
-								<td>
-									<a href="/admin/crm/deals/{deal.id}" class="deal-link">
-										<span class="deal-title">{deal.name}</span>
 										{#if deal.priority && deal.priority !== 'normal'}
 											<span
-												class="priority-badge small"
+												class="priority-badge"
 												style="background: {getPriorityColor(
 													deal.priority
 												)}15; color: {getPriorityColor(deal.priority)}"
@@ -650,90 +578,172 @@
 												{deal.priority}
 											</span>
 										{/if}
-									</a>
-								</td>
-								<td>
-									{#if deal.contact}
-										<a href="/admin/crm/contacts/{deal.contact_id}" class="contact-link">
-											{deal.contact.full_name}
-										</a>
-									{:else}
-										<span class="text-muted">-</span>
-									{/if}
-								</td>
-								<td>
-									<span
-										class="stage-badge"
-										style="background: {getStageColor(
-											deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
-										)}15; color: {getStageColor(
-											deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
-										)}"
-									>
-										{deal.stage?.name ||
-											stages.find((s) => s.id === deal.stage_id)?.name ||
-											'Unknown'}
-									</span>
-								</td>
-								<td class="amount-cell">
-									{formatCurrency(deal.amount)}
-								</td>
-								<td>
-									<div class="probability-bar">
-										<div class="bar-fill" style="width: {deal.probability}%"></div>
-										<span class="bar-text">{deal.probability}%</span>
 									</div>
-								</td>
-								<td>
-									{formatDate(deal.expected_close_date)}
-								</td>
-								<td>
-									<span style="color: {getDaysColor(deal.days_in_stage)}">
-										{deal.days_in_stage} days
-									</span>
-								</td>
-								<td>
-									<div class="action-buttons">
+
+									<div class="card-actions">
 										{#if deal.status === 'open'}
 											<button
-												class="btn-icon success"
+												class="action-btn success"
 												title="Mark as Won"
 												onclick={() => openWinModal(deal)}
 											>
-												<IconCheck size={16} />
+												<IconCheck size={14} />
 											</button>
 											<button
-												class="btn-icon danger"
+												class="action-btn danger"
 												title="Mark as Lost"
 												onclick={() => openLoseModal(deal)}
 											>
-												<IconX size={16} />
+												<IconX size={14} />
 											</button>
 										{/if}
-										<a href="/admin/crm/deals/{deal.id}" class="btn-icon" title="View">
-											<IconEye size={16} />
+										<a href="/admin/crm/deals/{deal.id}/edit" class="action-btn" title="Edit">
+											<IconEdit size={14} />
 										</a>
-										<a href="/admin/crm/deals/{deal.id}/edit" class="btn-icon" title="Edit">
-											<IconEdit size={16} />
-										</a>
-										<button class="btn-icon danger" title="Delete" onclick={() => deleteDeal(deal)}>
-											<IconTrash size={16} />
-										</button>
 									</div>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+								</div>
+							{/each}
 
-				<div class="table-footer">
-					<span class="results-count">
-						Showing {filteredDeals.length} of {deals.length} deals
-					</span>
-				</div>
-			{/if}
-		</div>
-	{/if}
+							{#if stageDeals.length === 0}
+								<div class="empty-column">
+									<p>No deals</p>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<!-- List View -->
+			<div class="table-container">
+				{#if filteredDeals.length === 0}
+					<div class="empty-state">
+						<IconBriefcase size={48} />
+						<h3>No deals found</h3>
+						<p>Create your first deal to start tracking your sales pipeline</p>
+						<a href="/admin/crm/deals/new" class="btn-primary">
+							<IconPlus size={18} />
+							Create Deal
+						</a>
+					</div>
+				{:else}
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>Deal</th>
+								<th>Contact</th>
+								<th>Stage</th>
+								<th>Amount</th>
+								<th>Probability</th>
+								<th>Close Date</th>
+								<th>Days in Stage</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each filteredDeals as deal (deal.id)}
+								<tr>
+									<td>
+										<a href="/admin/crm/deals/{deal.id}" class="deal-link">
+											<span class="deal-title">{deal.name}</span>
+											{#if deal.priority && deal.priority !== 'normal'}
+												<span
+													class="priority-badge small"
+													style="background: {getPriorityColor(
+														deal.priority
+													)}15; color: {getPriorityColor(deal.priority)}"
+												>
+													{deal.priority}
+												</span>
+											{/if}
+										</a>
+									</td>
+									<td>
+										{#if deal.contact}
+											<a href="/admin/crm/contacts/{deal.contact_id}" class="contact-link">
+												{deal.contact.full_name}
+											</a>
+										{:else}
+											<span class="text-muted">-</span>
+										{/if}
+									</td>
+									<td>
+										<span
+											class="stage-badge"
+											style="background: {getStageColor(
+												deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
+											)}15; color: {getStageColor(
+												deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
+											)}"
+										>
+											{deal.stage?.name ||
+												stages.find((s) => s.id === deal.stage_id)?.name ||
+												'Unknown'}
+										</span>
+									</td>
+									<td class="amount-cell">
+										{formatCurrency(deal.amount)}
+									</td>
+									<td>
+										<div class="probability-bar">
+											<div class="bar-fill" style="width: {deal.probability}%"></div>
+											<span class="bar-text">{deal.probability}%</span>
+										</div>
+									</td>
+									<td>
+										{formatDate(deal.expected_close_date)}
+									</td>
+									<td>
+										<span style="color: {getDaysColor(deal.days_in_stage)}">
+											{deal.days_in_stage} days
+										</span>
+									</td>
+									<td>
+										<div class="action-buttons">
+											{#if deal.status === 'open'}
+												<button
+													class="btn-icon success"
+													title="Mark as Won"
+													onclick={() => openWinModal(deal)}
+												>
+													<IconCheck size={16} />
+												</button>
+												<button
+													class="btn-icon danger"
+													title="Mark as Lost"
+													onclick={() => openLoseModal(deal)}
+												>
+													<IconX size={16} />
+												</button>
+											{/if}
+											<a href="/admin/crm/deals/{deal.id}" class="btn-icon" title="View">
+												<IconEye size={16} />
+											</a>
+											<a href="/admin/crm/deals/{deal.id}/edit" class="btn-icon" title="Edit">
+												<IconEdit size={16} />
+											</a>
+											<button
+												class="btn-icon danger"
+												title="Delete"
+												onclick={() => deleteDeal(deal)}
+											>
+												<IconTrash size={16} />
+											</button>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+
+					<div class="table-footer">
+						<span class="results-count">
+							Showing {filteredDeals.length} of {deals.length} deals
+						</span>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>

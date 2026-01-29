@@ -83,7 +83,11 @@
 </script>
 
 {#if !hasPermission && browser}
-	<button onclick={requestPermission} class="notification-btn" aria-label="Enable browser notifications">
+	<button
+		onclick={requestPermission}
+		class="notification-btn"
+		aria-label="Enable browser notifications"
+	>
 		<svg
 			class="bell-icon"
 			viewBox="0 0 24 24"

@@ -247,14 +247,17 @@
 		let current = $state(0);
 		$effect(() => {
 			if (mounted && gsapInstance) {
-				gsapInstance.to({ val: 0 }, {
-					duration,
-					val: target,
-					ease: 'power2.out',
-					onUpdate: function () {
-						current = Math.round(this.targets()[0].val * 10) / 10;
+				gsapInstance.to(
+					{ val: 0 },
+					{
+						duration,
+						val: target,
+						ease: 'power2.out',
+						onUpdate: function () {
+							current = Math.round(this.targets()[0].val * 10) / 10;
+						}
 					}
-				});
+				);
 			}
 		});
 		return {

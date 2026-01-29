@@ -386,7 +386,6 @@
 	</div>
 
 	<div class="admin-page-container">
-
 		<!-- Error Banner -->
 		{#if initError}
 			<div class="error-banner">
@@ -1029,7 +1028,9 @@
 
 	/* Outer Container with Gradient Background */
 	.admin-members {
-		min-height: calc(100vh - 70px - 4rem); /* Account for header (70px) and admin-content padding (2rem top + 2rem bottom) */
+		min-height: calc(
+			100vh - 70px - 4rem
+		); /* Account for header (70px) and admin-content padding (2rem top + 2rem bottom) */
 		background: var(--admin-bg, linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%));
 		color: white;
 		position: relative;
@@ -1781,7 +1782,9 @@
 		max-width: 600px;
 		max-height: 90vh;
 		overflow-y: auto;
-		box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(230, 184, 0, 0.1);
+		box-shadow:
+			0 25px 60px -15px rgba(0, 0, 0, 0.7),
+			0 0 40px -10px rgba(230, 184, 0, 0.1);
 	}
 
 	.modal-header {

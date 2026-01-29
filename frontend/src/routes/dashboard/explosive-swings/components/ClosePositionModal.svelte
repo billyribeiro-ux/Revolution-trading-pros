@@ -37,21 +37,21 @@
 		if (!position || !form.exit_price) return null;
 		const exitPrice = parseFloat(form.exit_price);
 		if (isNaN(exitPrice) || !position.entryPrice) return null;
-		
+
 		const priceDiff = exitPrice - position.entryPrice;
 		const pnlPercent = (priceDiff / position.entryPrice) * 100;
 		const isProfit = priceDiff >= 0;
-		
+
 		return { priceDiff, pnlPercent, isProfit, result: isProfit ? 'WIN' : 'LOSS' };
 	});
 
 	// Focus trap and body scroll lock
 	$effect(() => {
 		if (!isOpen) return;
-		
+
 		const previousOverflow = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
-		
+
 		// Reset form when opening
 		form = {
 			exit_price: '',
@@ -59,9 +59,9 @@
 			notes: position?.notes || ''
 		};
 		errorMessage = '';
-		
+
 		requestAnimationFrame(() => modalRef?.focus());
-		
+
 		return () => {
 			document.body.style.overflow = previousOverflow;
 		};
@@ -101,28 +101,33 @@
 		try {
 			// We need to find the trade ID from the position
 			// The position has a ticker, so we search for open trade with that ticker
-			const response = await fetch(`/api/trades/${roomSlug}?status=open&ticker=${position.ticker}`, {
-				credentials: 'include'
-			});
+			const response = await fetch(
+				`/api/trades/${roomSlug}?status=open&ticker=${position.ticker}`,
+				{
+					credentials: 'include'
+				}
+			);
 			const tradesData = await response.json();
-			
+
 			if (!tradesData.success || !tradesData.data?.length) {
 				errorMessage = 'Could not find matching trade to close';
 				return;
 			}
 
 			// Match on ticker AND entry price to avoid closing wrong position
-			const trade = tradesData.data.find((t: any) => 
-				t.ticker === position.ticker && 
-				position.entryPrice !== null &&
-				Math.abs(t.entry_price - position.entryPrice) < 0.01
-			) || tradesData.data[0];  // Fallback to first if no exact match
-			
+			const trade =
+				tradesData.data.find(
+					(t: any) =>
+						t.ticker === position.ticker &&
+						position.entryPrice !== null &&
+						Math.abs(t.entry_price - position.entryPrice) < 0.01
+				) || tradesData.data[0]; // Fallback to first if no exact match
+
 			if (!trade) {
 				errorMessage = 'Could not find matching trade to close';
 				return;
 			}
-			
+
 			// Close the trade
 			const closeResponse = await fetch(`/api/trades/${roomSlug}/${trade.id}`, {
 				method: 'PUT',
@@ -155,7 +160,7 @@
 
 {#if isOpen && position}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div 
+	<div
 		class="modal-overlay"
 		onclick={handleOverlayClick}
 		onkeydown={handleKeydown}
@@ -164,16 +169,19 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<div 
-			class="modal-container"
-			bind:this={modalRef}
-			tabindex="-1"
-		>
+		<div class="modal-container" bind:this={modalRef} tabindex="-1">
 			<!-- Header -->
 			<div class="modal-header">
 				<div class="header-content">
 					<div class="header-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="24"
+							height="24"
+						>
 							<path d="M9 12l2 2 4-4" />
 							<circle cx="12" cy="12" r="10" />
 						</svg>
@@ -184,14 +192,27 @@
 					</div>
 				</div>
 				<button class="modal-close" onclick={handleClose} aria-label="Close modal">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="20"
+						height="20"
+					>
 						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
 			</div>
 
 			<!-- Form -->
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				<!-- Position Summary -->
 				<div class="position-summary">
 					<div class="summary-row">
@@ -209,7 +230,11 @@
 					{#if position.unrealizedPercent !== null}
 						<div class="summary-row">
 							<span class="summary-label">Unrealized</span>
-							<span class="summary-value" class:profit={position.unrealizedPercent >= 0} class:loss={position.unrealizedPercent < 0}>
+							<span
+								class="summary-value"
+								class:profit={position.unrealizedPercent >= 0}
+								class:loss={position.unrealizedPercent < 0}
+							>
 								{formatPercent(position.unrealizedPercent)}
 							</span>
 						</div>
@@ -237,12 +262,7 @@
 
 					<div class="form-group">
 						<label for="exit_date">Exit Date</label>
-						<input
-							id="exit_date"
-							type="date"
-							bind:value={form.exit_date}
-							class="form-input"
-						/>
+						<input id="exit_date" type="date" bind:value={form.exit_date} class="form-input" />
 					</div>
 				</div>
 
@@ -252,8 +272,12 @@
 					<div class="pnl-preview" class:profit={preview.isProfit} class:loss={!preview.isProfit}>
 						<div class="pnl-result">{preview.result}</div>
 						<div class="pnl-details">
-							<span class="pnl-percent">{preview.isProfit ? '+' : ''}{preview.pnlPercent.toFixed(2)}%</span>
-							<span class="pnl-diff">{preview.isProfit ? '+' : ''}{formatPrice(preview.priceDiff)} per share</span>
+							<span class="pnl-percent"
+								>{preview.isProfit ? '+' : ''}{preview.pnlPercent.toFixed(2)}%</span
+							>
+							<span class="pnl-diff"
+								>{preview.isProfit ? '+' : ''}{formatPrice(preview.priceDiff)} per share</span
+							>
 						</div>
 					</div>
 				{/if}
@@ -274,7 +298,9 @@
 				{#if errorMessage}
 					<div class="error-message">
 						<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-							<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+							<path
+								d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+							/>
 						</svg>
 						{errorMessage}
 					</div>
@@ -282,21 +308,30 @@
 
 				<!-- Actions Footer -->
 				<div class="form-actions">
-					<button type="button" class="btn-cancel" onclick={handleClose}>
-						Cancel
-					</button>
-					<button 
-						type="submit" 
-						class="btn-close-position"
-						disabled={isSaving || !form.exit_price}
-					>
+					<button type="button" class="btn-cancel" onclick={handleClose}> Cancel </button>
+					<button type="submit" class="btn-close-position" disabled={isSaving || !form.exit_price}>
 						{#if isSaving}
 							<svg class="spinner" viewBox="0 0 24 24" width="18" height="18">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" />
+								<circle
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="3"
+									fill="none"
+									stroke-dasharray="31.4 31.4"
+								/>
 							</svg>
 							Closing...
 						{:else}
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="18"
+								height="18"
+							>
 								<path d="M9 12l2 2 4-4" />
 								<circle cx="12" cy="12" r="10" />
 							</svg>
@@ -328,8 +363,12 @@
 	}
 
 	@keyframes overlayFadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -345,13 +384,22 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 25px 50px -12px rgba(0,0,0,0.4), 0 0 100px -20px rgba(20,62,89,0.3);
+		box-shadow:
+			0 0 0 1px rgba(0, 0, 0, 0.05),
+			0 25px 50px -12px rgba(0, 0, 0, 0.4),
+			0 0 100px -20px rgba(20, 62, 89, 0.3);
 		animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	@keyframes modalSlideUp {
-		from { opacity: 0; transform: translateY(20px) scale(0.98); }
-		to { opacity: 1; transform: translateY(0) scale(1); }
+		from {
+			opacity: 0;
+			transform: translateY(20px) scale(0.98);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -362,8 +410,12 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 20px 24px;
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
-		border-bottom: 1px solid rgba(255,255,255,0.1);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
 	.header-content {
@@ -375,7 +427,7 @@
 	.header-icon {
 		width: 44px;
 		height: 44px;
-		background: rgba(255,255,255,0.15);
+		background: rgba(255, 255, 255, 0.15);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
@@ -393,16 +445,16 @@
 	.header-subtitle {
 		margin: 4px 0 0;
 		font-size: 13px;
-		color: rgba(255,255,255,0.7);
+		color: rgba(255, 255, 255, 0.7);
 	}
 
 	.modal-close {
 		width: 36px;
 		height: 36px;
 		border: none;
-		background: rgba(255,255,255,0.1);
+		background: rgba(255, 255, 255, 0.1);
 		border-radius: 10px;
-		color: rgba(255,255,255,0.8);
+		color: rgba(255, 255, 255, 0.8);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -411,7 +463,7 @@
 	}
 
 	.modal-close:hover {
-		background: rgba(255,255,255,0.2);
+		background: rgba(255, 255, 255, 0.2);
 		color: var(--color-bg-card);
 	}
 
@@ -459,8 +511,12 @@
 		font-size: 18px;
 	}
 
-	.summary-value.profit { color: var(--color-profit-light); }
-	.summary-value.loss { color: var(--color-loss); }
+	.summary-value.profit {
+		color: var(--color-profit-light);
+	}
+	.summary-value.loss {
+		color: var(--color-loss);
+	}
 
 	.form-section {
 		display: grid;
@@ -560,8 +616,12 @@
 		letter-spacing: 0.1em;
 	}
 
-	.pnl-preview.profit .pnl-result { color: var(--color-profit-dark); }
-	.pnl-preview.loss .pnl-result { color: var(--color-loss-dark); }
+	.pnl-preview.profit .pnl-result {
+		color: var(--color-profit-dark);
+	}
+	.pnl-preview.loss .pnl-result {
+		color: var(--color-loss-dark);
+	}
 
 	.pnl-details {
 		text-align: right;
@@ -573,8 +633,12 @@
 		font-weight: 800;
 	}
 
-	.pnl-preview.profit .pnl-percent { color: var(--color-profit-dark); }
-	.pnl-preview.loss .pnl-percent { color: var(--color-loss-dark); }
+	.pnl-preview.profit .pnl-percent {
+		color: var(--color-profit-dark);
+	}
+	.pnl-preview.loss .pnl-percent {
+		color: var(--color-loss-dark);
+	}
 
 	.pnl-diff {
 		display: block;
@@ -634,7 +698,11 @@
 		justify-content: center;
 		gap: 8px;
 		padding: 14px 24px;
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
 		border: none;
 		border-radius: 12px;
 		font-size: 14px;
@@ -670,8 +738,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

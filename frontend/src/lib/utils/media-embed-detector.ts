@@ -145,7 +145,10 @@ const DEFAULT_EMBED_OPTIONS: EmbedOptions = {
 // Platform Configurations
 // =============================================================================
 
-const PLATFORM_CONFIG: Record<EmbedPlatform, Omit<EmbedMetadata, 'username' | 'playlistId' | 'startTime' | 'isShort' | 'symbol' | 'chartType'>> = {
+const PLATFORM_CONFIG: Record<
+	EmbedPlatform,
+	Omit<EmbedMetadata, 'username' | 'playlistId' | 'startTime' | 'isShort' | 'symbol' | 'chartType'>
+> = {
 	youtube: {
 		platformName: 'YouTube',
 		platformIcon: 'brand-youtube',
@@ -446,7 +449,7 @@ function getResponsivePadding(aspectRatio: AspectRatio): string {
 		'4:3': 75,
 		'1:1': 100,
 		'9:16': 177.78,
-		'auto': 56.25
+		auto: 56.25
 	};
 	return `${ratios[aspectRatio]}%`;
 }
@@ -754,7 +757,7 @@ export function getEmbedThumbnail(url: string): string | null {
  * @returns Array of detection results
  */
 export function detectEmbeds(urls: string[], options?: Partial<EmbedOptions>): DetectionResult[] {
-	return urls.map(url => detectEmbed(url, options));
+	return urls.map((url) => detectEmbed(url, options));
 }
 
 /**
@@ -798,11 +801,11 @@ export function getYouTubeThumbnails(videoId: string): {
 } {
 	const base = `https://img.youtube.com/vi/${videoId}`;
 	return {
-		default: `${base}/default.jpg`,      // 120x90
-		medium: `${base}/mqdefault.jpg`,     // 320x180
-		high: `${base}/hqdefault.jpg`,       // 480x360
-		standard: `${base}/sddefault.jpg`,   // 640x480
-		maxres: `${base}/maxresdefault.jpg`  // 1280x720
+		default: `${base}/default.jpg`, // 120x90
+		medium: `${base}/mqdefault.jpg`, // 320x180
+		high: `${base}/hqdefault.jpg`, // 480x360
+		standard: `${base}/sddefault.jpg`, // 640x480
+		maxres: `${base}/maxresdefault.jpg` // 1280x720
 	};
 }
 

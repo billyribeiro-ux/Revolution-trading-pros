@@ -80,14 +80,14 @@ export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
 	try {
 		// Fetch dashboard data from our API endpoint
 		const response = await fetch('/api/dashboard/spx-profit-pulse');
-		
+
 		if (!response.ok) {
 			console.warn('[SPX SSR] API returned non-ok status:', response.status);
 			return getDefaultData();
 		}
 
 		const result = await response.json();
-		
+
 		if (!result.success || !result.data) {
 			console.warn('[SPX SSR] API returned unsuccessful response');
 			return getDefaultData();

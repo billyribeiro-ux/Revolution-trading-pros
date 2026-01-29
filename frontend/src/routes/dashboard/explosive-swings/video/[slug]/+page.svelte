@@ -165,17 +165,37 @@
 
 			<div class="video-actions">
 				<a href="/dashboard/explosive-swings/video-library" class="action-btn secondary">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<rect width="7" height="7" x="3" y="3" rx="1"/>
-						<rect width="7" height="7" x="14" y="3" rx="1"/>
-						<rect width="7" height="7" x="14" y="14" rx="1"/>
-						<rect width="7" height="7" x="3" y="14" rx="1"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<rect width="7" height="7" x="3" y="3" rx="1" />
+						<rect width="7" height="7" x="14" y="3" rx="1" />
+						<rect width="7" height="7" x="14" y="14" rx="1" />
+						<rect width="7" height="7" x="3" y="14" rx="1" />
 					</svg>
 					Video Library
 				</a>
 				<a href="/dashboard/explosive-swings" class="action-btn primary">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="m15 18-6-6 6-6"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="m15 18-6-6 6-6" />
 					</svg>
 					Back to Dashboard
 				</a>
@@ -210,7 +230,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading-state p,

@@ -21,7 +21,13 @@
  */
 -->
 
+<script module lang="ts">
+	// Re-export types from the centralized types file
+	export type { ContentData, ResolutionType } from './types';
+</script>
+
 <script lang="ts">
+	import type { ContentData, ResolutionType } from './types';
 	import { onMount, tick } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -38,22 +44,8 @@
 	} from '$lib/icons';
 
 	// ==========================================================================
-	// Types
+	// Types (Internal)
 	// ==========================================================================
-
-	export interface ContentData {
-		id: string;
-		title: string;
-		slug?: string;
-		content?: string;
-		excerpt?: string;
-		updatedAt: string;
-		version?: number;
-		status?: string;
-		[key: string]: unknown;
-	}
-
-	export type ResolutionType = 'mine' | 'theirs' | 'merge';
 
 	interface Props {
 		/** Whether the modal is open */
@@ -72,15 +64,8 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		localData,
-		serverData,
-		serverEditedBy,
-		serverEditedAt,
-		onResolve,
-		onClose
-	}: Props = $props();
+	let { isOpen, localData, serverData, serverEditedBy, serverEditedAt, onResolve, onClose }: Props =
+		$props();
 
 	// ==========================================================================
 	// State
@@ -183,15 +168,18 @@
 
 	/** Get resolution button styles based on selection state */
 	let resolutionButtonClasses = $derived.by(() => ({
-		mine: selectedResolution === 'mine'
-			? 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30'
-			: 'border-slate-700 bg-slate-800/50 hover:border-emerald-500/50 hover:bg-emerald-500/5',
-		theirs: selectedResolution === 'theirs'
-			? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/30'
-			: 'border-slate-700 bg-slate-800/50 hover:border-blue-500/50 hover:bg-blue-500/5',
-		merge: selectedResolution === 'merge'
-			? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/30'
-			: 'border-slate-700 bg-slate-800/50 hover:border-amber-500/50 hover:bg-amber-500/5'
+		mine:
+			selectedResolution === 'mine'
+				? 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30'
+				: 'border-slate-700 bg-slate-800/50 hover:border-emerald-500/50 hover:bg-emerald-500/5',
+		theirs:
+			selectedResolution === 'theirs'
+				? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/30'
+				: 'border-slate-700 bg-slate-800/50 hover:border-blue-500/50 hover:bg-blue-500/5',
+		merge:
+			selectedResolution === 'merge'
+				? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/30'
+				: 'border-slate-700 bg-slate-800/50 hover:border-amber-500/50 hover:bg-amber-500/5'
 	}));
 
 	// ==========================================================================
@@ -352,9 +340,13 @@
 			transition:fly={{ y: 20, duration: 300, easing: quintOut }}
 		>
 			<!-- Header -->
-			<header class="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-slate-800/30">
+			<header
+				class="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-slate-800/30"
+			>
 				<div class="flex items-center gap-3">
-					<div class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-500/10 text-amber-500">
+					<div
+						class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-500/10 text-amber-500"
+					>
 						<IconAlertTriangle size={22} />
 					</div>
 					<div>
@@ -391,7 +383,9 @@
 									class="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
 								/>
 							{:else}
-								<div class="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-slate-400">
+								<div
+									class="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-slate-400"
+								>
 									<IconUserCircle size={28} />
 								</div>
 							{/if}
@@ -422,8 +416,8 @@
 						<div class="text-sm text-amber-200/90">
 							<p class="font-medium text-amber-100">Warning: Potential Data Loss</p>
 							<p class="mt-1">
-								Choosing "Keep mine" or "Keep theirs" will overwrite one version permanently.
-								If you need to combine changes from both versions, select "View diff" to merge manually.
+								Choosing "Keep mine" or "Keep theirs" will overwrite one version permanently. If you
+								need to combine changes from both versions, select "View diff" to merge manually.
 							</p>
 						</div>
 					</div>
@@ -440,7 +434,9 @@
 							<!-- Your Version -->
 							<div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/30">
 								<div class="flex items-center gap-2 mb-3">
-									<div class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400">
+									<div
+										class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400"
+									>
 										<IconUser size={14} />
 									</div>
 									<h4 class="text-sm font-medium text-emerald-400">Your Version</h4>
@@ -449,7 +445,9 @@
 								<div class="space-y-3">
 									{#each differences as diff}
 										<div class="text-sm">
-											<span class="text-slate-500 text-xs uppercase tracking-wide">{diff.label}</span>
+											<span class="text-slate-500 text-xs uppercase tracking-wide"
+												>{diff.label}</span
+											>
 											<p class="text-slate-300 mt-0.5 break-words">{diff.localValue}</p>
 										</div>
 									{/each}
@@ -466,7 +464,9 @@
 											class="w-6 h-6 rounded-full object-cover"
 										/>
 									{:else}
-										<div class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400">
+										<div
+											class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400"
+										>
 											<IconUser size={14} />
 										</div>
 									{/if}
@@ -476,7 +476,9 @@
 								<div class="space-y-3">
 									{#each differences as diff}
 										<div class="text-sm">
-											<span class="text-slate-500 text-xs uppercase tracking-wide">{diff.label}</span>
+											<span class="text-slate-500 text-xs uppercase tracking-wide"
+												>{diff.label}</span
+											>
 											<p class="text-slate-300 mt-0.5 break-words">{diff.serverValue}</p>
 										</div>
 									{/each}
@@ -486,7 +488,9 @@
 					</div>
 				{:else}
 					<div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center">
-						<p class="text-slate-400">No visible differences in key fields, but the content may have other changes.</p>
+						<p class="text-slate-400">
+							No visible differences in key fields, but the content may have other changes.
+						</p>
 					</div>
 				{/if}
 
@@ -507,7 +511,9 @@
 								aria-pressed={selectedResolution === 'mine'}
 							>
 								<div class="flex items-center gap-2 mb-2">
-									<div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+									<div
+										class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400"
+									>
 										<IconUser size={18} />
 									</div>
 									<span class="font-medium text-white">Keep Mine</span>
@@ -532,14 +538,14 @@
 								aria-pressed={selectedResolution === 'theirs'}
 							>
 								<div class="flex items-center gap-2 mb-2">
-									<div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+									<div
+										class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400"
+									>
 										<IconUserCircle size={18} />
 									</div>
 									<span class="font-medium text-white">Keep Theirs</span>
 								</div>
-								<p class="text-sm text-slate-400">
-									Accept server version and discard your changes
-								</p>
+								<p class="text-sm text-slate-400">Accept server version and discard your changes</p>
 								{#if selectedResolution === 'theirs'}
 									<div class="mt-3 flex items-center gap-1.5 text-xs text-blue-400">
 										<IconCheck size={14} />
@@ -557,14 +563,14 @@
 								aria-pressed={selectedResolution === 'merge'}
 							>
 								<div class="flex items-center gap-2 mb-2">
-									<div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
+									<div
+										class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400"
+									>
 										<IconFileDiff size={18} />
 									</div>
 									<span class="font-medium text-white">View Diff</span>
 								</div>
-								<p class="text-sm text-slate-400">
-									Open diff view to manually merge both versions
-								</p>
+								<p class="text-sm text-slate-400">Open diff view to manually merge both versions</p>
 								{#if selectedResolution === 'merge'}
 									<div class="mt-3 flex items-center gap-1.5 text-xs text-amber-400">
 										<IconCheck size={14} />
@@ -581,18 +587,20 @@
 						transition:scale={{ duration: 200, easing: quintOut }}
 					>
 						<div class="flex items-start gap-4">
-							<div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-red-400">
+							<div
+								class="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-red-400"
+							>
 								<IconAlertTriangle size={24} />
 							</div>
 							<div class="flex-1">
 								<h3 class="text-lg font-semibold text-red-400">Confirm Resolution</h3>
 								<p class="mt-2 text-slate-300">
 									{#if selectedResolution === 'mine'}
-										You are about to <strong class="text-red-300">permanently discard</strong> all changes made by {serverEditedBy.name}.
-										This action cannot be undone.
+										You are about to <strong class="text-red-300">permanently discard</strong> all
+										changes made by {serverEditedBy.name}. This action cannot be undone.
 									{:else if selectedResolution === 'theirs'}
-										You are about to <strong class="text-red-300">permanently discard</strong> all your local changes.
-										This action cannot be undone.
+										You are about to <strong class="text-red-300">permanently discard</strong> all your
+										local changes. This action cannot be undone.
 									{:else}
 										You will be taken to a diff view where you can manually merge both versions.
 									{/if}
@@ -629,7 +637,9 @@
 			</div>
 
 			<!-- Footer -->
-			<footer class="flex items-center justify-between gap-4 px-6 py-4 border-t border-slate-700/50 bg-slate-800/30">
+			<footer
+				class="flex items-center justify-between gap-4 px-6 py-4 border-t border-slate-700/50 bg-slate-800/30"
+			>
 				<p class="text-xs text-slate-500">
 					Content ID: {localData.id.slice(0, 8)}...
 				</p>

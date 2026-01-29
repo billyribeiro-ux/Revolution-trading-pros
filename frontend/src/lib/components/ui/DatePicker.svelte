@@ -10,7 +10,20 @@
 -->
 <script lang="ts">
 	const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
-	const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as const;
+	const MONTHS = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
+	] as const;
 
 	interface Props {
 		value: string;
@@ -43,18 +56,18 @@
 	// Click outside to close
 	$effect(() => {
 		if (!isOpen) return;
-		
+
 		const handler = (e: MouseEvent) => {
 			if (containerRef && !containerRef.contains(e.target as Node)) {
 				isOpen = false;
 			}
 		};
-		
+
 		// Delay to avoid immediate close from the toggle click
 		const timer = setTimeout(() => {
 			document.addEventListener('click', handler);
 		}, 0);
-		
+
 		return () => {
 			clearTimeout(timer);
 			document.removeEventListener('click', handler);
@@ -66,7 +79,7 @@
 		const month = date.getMonth();
 		const firstDay = new Date(year, month, 1).getDay();
 		const daysInMonth = new Date(year, month + 1, 0).getDate();
-		
+
 		const result: (number | null)[] = [];
 		for (let i = 0; i < firstDay; i++) result.push(null);
 		for (let i = 1; i <= daysInMonth; i++) result.push(i);
@@ -134,18 +147,26 @@
 			{label}{#if required}<span class="required">*</span>{/if}
 		</span>
 	{/if}
-	
+
 	<button
 		type="button"
 		class="date-picker-trigger"
-		onclick={() => isOpen = !isOpen}
+		onclick={() => (isOpen = !isOpen)}
 		{disabled}
 		aria-expanded={isOpen}
 		aria-haspopup="dialog"
 		aria-labelledby={label ? 'date-picker-label' : undefined}
 	>
 		<span class="date-picker-value">{formattedValue}</span>
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+		<svg
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			width="18"
+			height="18"
+			aria-hidden="true"
+		>
 			<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
 			<line x1="16" y1="2" x2="16" y2="6"></line>
 			<line x1="8" y1="2" x2="8" y2="6"></line>
@@ -155,22 +176,36 @@
 
 	{#if isOpen}
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div 
-			class="calendar-dropdown" 
-			role="dialog" 
+		<div
+			class="calendar-dropdown"
+			role="dialog"
 			aria-label="Choose date"
 			tabindex="-1"
 			onkeydown={handleKeydown}
 		>
 			<div class="calendar-header">
 				<button type="button" class="calendar-nav" onclick={prevMonth} aria-label="Previous month">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="18"
+						height="18"
+					>
 						<path d="M15 18l-6-6 6-6" />
 					</svg>
 				</button>
 				<span class="calendar-title">{monthYear}</span>
 				<button type="button" class="calendar-nav" onclick={nextMonth} aria-label="Next month">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="18"
+						height="18"
+					>
 						<path d="M9 18l6-6-6-6" />
 					</svg>
 				</button>
@@ -248,7 +283,7 @@
 
 	.date-picker-trigger:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: #143e59;
 		background: #fff;
 		box-shadow: 0 0 0 4px rgba(20, 62, 89, 0.1);
 	}
@@ -276,7 +311,7 @@
 		background: #fff;
 		border: 1px solid #e2e8f0;
 		border-radius: 12px;
-		box-shadow: 
+		box-shadow:
 			0 10px 40px -8px rgba(0, 0, 0, 0.2),
 			0 4px 12px rgba(0, 0, 0, 0.08);
 		animation: dropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -299,7 +334,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 14px 12px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -379,7 +414,7 @@
 	}
 
 	.day.selected {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		font-weight: 600;
 	}

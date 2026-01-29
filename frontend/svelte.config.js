@@ -117,8 +117,8 @@ const config = {
 					'https://*.mediadelivery.net',
 					'https://vz-5a23b520-193.b-cdn.net',
 					'https://*.b-cdn.net',
-					'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev',
-							],
+					'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev'
+				],
 				'connect-src': [
 					'self',
 					'ws:',
@@ -130,11 +130,7 @@ const config = {
 					'https://*.mediadelivery.net',
 					'https://vz-5a23b520-193.b-cdn.net'
 				],
-				'frame-src': [
-					'self',
-					'https://iframe.mediadelivery.net',
-					'https://*.mediadelivery.net',
-								],
+				'frame-src': ['self', 'https://iframe.mediadelivery.net', 'https://*.mediadelivery.net'],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']

@@ -2,7 +2,7 @@
 	/**
 	 * InvalidatePositionModal - Mark trade as invalidated with reason
 	 * @version 1.0.0
-	 * 
+	 *
 	 * For trades that didn't trigger or moved away before entry
 	 */
 	import type { ActivePosition } from '../types';
@@ -64,9 +64,10 @@
 		isSubmitting = true;
 		error = null;
 
-		const finalReason = selectedReason === 'Other (specify in notes)' 
-			? customNotes 
-			: `${selectedReason}${customNotes ? ` - ${customNotes}` : ''}`;
+		const finalReason =
+			selectedReason === 'Other (specify in notes)'
+				? customNotes
+				: `${selectedReason}${customNotes ? ` - ${customNotes}` : ''}`;
 
 		try {
 			const response = await fetch(`/api/admin/trades/${position.id}/invalidate`, {
@@ -94,14 +95,29 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen && position}
-	<div class="modal-backdrop" onclick={handleBackdropClick} onkeydown={handleKeydown} role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+	<div
+		class="modal-backdrop"
+		onclick={handleBackdropClick}
+		onkeydown={handleKeydown}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="modal-title"
+		tabindex="-1"
+	>
 		<div class="modal">
 			<header class="modal-header">
 				<h2 id="modal-title">Invalidate Position</h2>
 				<span class="ticker-badge">{position.ticker}</span>
 				<button type="button" class="close-btn" onclick={handleClose} aria-label="Close">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-						<path d="M18 6L6 18M6 6l12 12"/>
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="20"
+						height="20"
+					>
+						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
 			</header>
@@ -113,7 +129,8 @@
 			<form onsubmit={handleSubmit}>
 				<div class="form-body">
 					<p class="info-text">
-						Mark this trade as invalidated. This is for setups that didn't trigger or moved away before entry.
+						Mark this trade as invalidated. This is for setups that didn't trigger or moved away
+						before entry.
 					</p>
 
 					<div class="form-group">
@@ -127,8 +144,8 @@
 
 					<div class="form-group">
 						<label for="notes">Additional Notes (optional)</label>
-						<textarea 
-							id="notes" 
+						<textarea
+							id="notes"
 							bind:value={customNotes}
 							rows="3"
 							placeholder="Add any additional context..."
@@ -169,8 +186,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.modal {
@@ -184,8 +205,14 @@
 	}
 
 	@keyframes slideUp {
-		from { opacity: 0; transform: translateY(20px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.modal-header {

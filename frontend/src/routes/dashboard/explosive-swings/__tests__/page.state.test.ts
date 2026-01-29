@@ -277,7 +277,19 @@ describe('createPageState()', () => {
 	describe('fetchTradePlan()', () => {
 		it('should update trade plan on successful fetch', async () => {
 			const mockEntries = [
-				{ ticker: 'NVDA', bias: 'BULLISH', entry: '$142', target1: '$148', target2: '$152', target3: '$158', runner: '$165', stop: '$136', options_strike: '$145 Call', options_exp: 'Jan 24', notes: 'Test' }
+				{
+					ticker: 'NVDA',
+					bias: 'BULLISH',
+					entry: '$142',
+					target1: '$148',
+					target2: '$152',
+					target3: '$158',
+					runner: '$165',
+					stop: '$136',
+					options_strike: '$145 Call',
+					options_exp: 'Jan 24',
+					notes: 'Test'
+				}
 			];
 
 			vi.mocked(api.fetchTradePlan).mockResolvedValueOnce(mockEntries as any);

@@ -335,222 +335,222 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Email Sequences</h1>
-		<p class="subtitle">Create automated drip campaigns for your contacts</p>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadSequences()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<a href="/admin/crm/sequences/new" class="btn-primary">
-				<IconPlus size={18} />
-				New Sequence
-			</a>
-		</div>
-	</header>
-
-	<!-- Stats Cards -->
-	<div class="stats-grid">
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconMail size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.total)}</span>
-				<span class="stat-label">Total Sequences</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon green">
-				<IconPlayerPlay size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.active)}</span>
-				<span class="stat-label">Active</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon purple">
-				<IconUsers size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.totalSubscribers)}</span>
-				<span class="stat-label">Total Subscribers</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon amber">
-				<IconMailForward size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.totalSent)}</span>
-				<span class="stat-label">Emails Sent</span>
-			</div>
-		</div>
-	</div>
-
-	<!-- Search & Filters -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search sequences..."
-				bind:value={searchQuery}
-				aria-label="Search sequences"
-			/>
-			{#if searchQuery}
-				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
-					<IconX size={14} />
+			<p class="subtitle">Create automated drip campaigns for your contacts</p>
+			<div class="header-actions">
+				<button class="btn-refresh" onclick={() => loadSequences()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
-			{/if}
-		</div>
-		<select class="filter-select" bind:value={selectedStatus} aria-label="Filter by status">
-			{#each statusOptions as option}
-				<option value={option.value}>{option.label}</option>
-			{/each}
-		</select>
-	</div>
+				<a href="/admin/crm/sequences/new" class="btn-primary">
+					<IconPlus size={18} />
+					New Sequence
+				</a>
+			</div>
+		</header>
 
-	<!-- Error Alert -->
-	{#if error}
-		<div class="error-alert">
-			<IconAlertCircle size={18} />
-			<span>{error}</span>
-			<button onclick={() => (error = '')} aria-label="Dismiss error">
-				<IconX size={16} />
-			</button>
+		<!-- Stats Cards -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconMail size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.total)}</span>
+					<span class="stat-label">Total Sequences</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon green">
+					<IconPlayerPlay size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.active)}</span>
+					<span class="stat-label">Active</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon purple">
+					<IconUsers size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.totalSubscribers)}</span>
+					<span class="stat-label">Total Subscribers</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon amber">
+					<IconMailForward size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.totalSent)}</span>
+					<span class="stat-label">Emails Sent</span>
+				</div>
+			</div>
 		</div>
-	{/if}
 
-	<!-- Sequences Table -->
-	{#if isLoading && !isInitialized}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading sequences...</p>
+		<!-- Search & Filters -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					type="text"
+					placeholder="Search sequences..."
+					bind:value={searchQuery}
+					aria-label="Search sequences"
+				/>
+				{#if searchQuery}
+					<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
+						<IconX size={14} />
+					</button>
+				{/if}
+			</div>
+			<select class="filter-select" bind:value={selectedStatus} aria-label="Filter by status">
+				{#each statusOptions as option}
+					<option value={option.value}>{option.label}</option>
+				{/each}
+			</select>
 		</div>
-	{:else if filteredSequences.length === 0}
-		<div class="empty-state">
-			<IconMail size={48} />
-			<h3>No sequences found</h3>
-			<p>Create your first email sequence to start automating your campaigns</p>
-			<a href="/admin/crm/sequences/new" class="btn-primary">
-				<IconPlus size={18} />
-				Create Sequence
-			</a>
-		</div>
-	{:else}
-		<div class="table-container" class:loading={isLoading}>
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th>Sequence</th>
-						<th>Status</th>
-						<th>Emails</th>
-						<th>Subscribers</th>
-						<th>Open Rate</th>
-						<th>Click Rate</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredSequences as sequence (sequence.id)}
-						{@const StatusIcon = getStatusIcon(sequence.status)}
-						<tr class:action-in-progress={actionInProgress === sequence.id}>
-							<td>
-								<div class="sequence-cell">
-									<div class="sequence-icon">
-										<IconMail size={20} />
+
+		<!-- Error Alert -->
+		{#if error}
+			<div class="error-alert">
+				<IconAlertCircle size={18} />
+				<span>{error}</span>
+				<button onclick={() => (error = '')} aria-label="Dismiss error">
+					<IconX size={16} />
+				</button>
+			</div>
+		{/if}
+
+		<!-- Sequences Table -->
+		{#if isLoading && !isInitialized}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading sequences...</p>
+			</div>
+		{:else if filteredSequences.length === 0}
+			<div class="empty-state">
+				<IconMail size={48} />
+				<h3>No sequences found</h3>
+				<p>Create your first email sequence to start automating your campaigns</p>
+				<a href="/admin/crm/sequences/new" class="btn-primary">
+					<IconPlus size={18} />
+					Create Sequence
+				</a>
+			</div>
+		{:else}
+			<div class="table-container" class:loading={isLoading}>
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Sequence</th>
+							<th>Status</th>
+							<th>Emails</th>
+							<th>Subscribers</th>
+							<th>Open Rate</th>
+							<th>Click Rate</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each filteredSequences as sequence (sequence.id)}
+							{@const StatusIcon = getStatusIcon(sequence.status)}
+							<tr class:action-in-progress={actionInProgress === sequence.id}>
+								<td>
+									<div class="sequence-cell">
+										<div class="sequence-icon">
+											<IconMail size={20} />
+										</div>
+										<div class="sequence-info">
+											<span class="sequence-title">{sequence.title}</span>
+											<span class="sequence-meta">
+												<IconClock size={12} />
+												{sequence.emails_count} emails
+											</span>
+										</div>
 									</div>
-									<div class="sequence-info">
-										<span class="sequence-title">{sequence.title}</span>
-										<span class="sequence-meta">
-											<IconClock size={12} />
-											{sequence.emails_count} emails
-										</span>
-									</div>
-								</div>
-							</td>
-							<td>
-								<span class="status-badge {getStatusColor(sequence.status)}">
-									<StatusIcon size={12} />
-									{sequence.status}
-								</span>
-							</td>
-							<td>{sequence.emails_count}</td>
-							<td>{formatNumber(sequence.subscribers_count)}</td>
-							<td>
-								<span class="rate-value"
-									>{formatRate(sequence.total_sent, sequence.total_opened)}</span
-								>
-							</td>
-							<td>
-								<span class="rate-value"
-									>{formatRate(sequence.total_sent, sequence.total_clicked)}</span
-								>
-							</td>
-							<td>
-								<div class="action-buttons">
-									{#if sequence.status === 'draft' || sequence.status === 'active' || sequence.status === 'paused'}
+								</td>
+								<td>
+									<span class="status-badge {getStatusColor(sequence.status)}">
+										<StatusIcon size={12} />
+										{sequence.status}
+									</span>
+								</td>
+								<td>{sequence.emails_count}</td>
+								<td>{formatNumber(sequence.subscribers_count)}</td>
+								<td>
+									<span class="rate-value"
+										>{formatRate(sequence.total_sent, sequence.total_opened)}</span
+									>
+								</td>
+								<td>
+									<span class="rate-value"
+										>{formatRate(sequence.total_sent, sequence.total_clicked)}</span
+									>
+								</td>
+								<td>
+									<div class="action-buttons">
+										{#if sequence.status === 'draft' || sequence.status === 'active' || sequence.status === 'paused'}
+											<button
+												class="btn-icon"
+												title={sequence.status === 'active' ? 'Pause' : 'Activate'}
+												onclick={() => toggleSequenceStatus(sequence)}
+												disabled={actionInProgress === sequence.id}
+											>
+												{#if sequence.status === 'active'}
+													<IconPlayerPause size={16} />
+												{:else}
+													<IconPlayerPlay size={16} />
+												{/if}
+											</button>
+										{/if}
+										<a
+											href="/admin/crm/sequences/{sequence.id}"
+											class="btn-icon"
+											title="View Analytics"
+										>
+											<IconChartBar size={16} />
+										</a>
+										<a
+											href="/admin/crm/sequences/{sequence.id}/subscribers"
+											class="btn-icon"
+											title="View Subscribers"
+										>
+											<IconUsers size={16} />
+										</a>
 										<button
 											class="btn-icon"
-											title={sequence.status === 'active' ? 'Pause' : 'Activate'}
-											onclick={() => toggleSequenceStatus(sequence)}
+											title="Send Test Email"
+											onclick={() => openSendEmailModal(sequence)}
+										>
+											<IconSend size={16} />
+										</button>
+										<a href="/admin/crm/sequences/{sequence.id}/edit" class="btn-icon" title="Edit">
+											<IconEdit size={16} />
+										</a>
+										<button
+											class="btn-icon"
+											title="Duplicate"
+											onclick={() => duplicateSequence(sequence.id)}
 											disabled={actionInProgress === sequence.id}
 										>
-											{#if sequence.status === 'active'}
-												<IconPlayerPause size={16} />
-											{:else}
-												<IconPlayerPlay size={16} />
-											{/if}
+											<IconCopy size={16} />
 										</button>
-									{/if}
-									<a
-										href="/admin/crm/sequences/{sequence.id}"
-										class="btn-icon"
-										title="View Analytics"
-									>
-										<IconChartBar size={16} />
-									</a>
-									<a
-										href="/admin/crm/sequences/{sequence.id}/subscribers"
-										class="btn-icon"
-										title="View Subscribers"
-									>
-										<IconUsers size={16} />
-									</a>
-									<button
-										class="btn-icon"
-										title="Send Test Email"
-										onclick={() => openSendEmailModal(sequence)}
-									>
-										<IconSend size={16} />
-									</button>
-									<a href="/admin/crm/sequences/{sequence.id}/edit" class="btn-icon" title="Edit">
-										<IconEdit size={16} />
-									</a>
-									<button
-										class="btn-icon"
-										title="Duplicate"
-										onclick={() => duplicateSequence(sequence.id)}
-										disabled={actionInProgress === sequence.id}
-									>
-										<IconCopy size={16} />
-									</button>
-									<button
-										class="btn-icon danger"
-										title="Delete"
-										onclick={() => deleteSequence(sequence.id)}
-										disabled={actionInProgress === sequence.id}
-									>
-										<IconTrash size={16} />
-									</button>
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
+										<button
+											class="btn-icon danger"
+											title="Delete"
+											onclick={() => deleteSequence(sequence.id)}
+											disabled={actionInProgress === sequence.id}
+										>
+											<IconTrash size={16} />
+										</button>
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>

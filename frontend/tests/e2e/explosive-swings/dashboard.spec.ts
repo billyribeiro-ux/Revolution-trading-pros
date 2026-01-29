@@ -119,7 +119,9 @@ test.describe('Explosive Swings Dashboard', () => {
 			}
 
 			// Submit login form
-			const submitBtn = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")').first();
+			const submitBtn = page
+				.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")')
+				.first();
 			if (await submitBtn.isVisible().catch(() => false)) {
 				await submitBtn.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
@@ -169,21 +171,31 @@ test.describe('Explosive Swings Dashboard', () => {
 			}
 
 			// Verify performance summary section
-			const performanceSummary = page.locator('[data-testid="performance-summary"], .performance-summary, [class*="performance"]').first();
-			const hasPerformanceSummary = await performanceSummary.isVisible({ timeout: 5000 }).catch(() => false);
+			const performanceSummary = page
+				.locator(
+					'[data-testid="performance-summary"], .performance-summary, [class*="performance"]'
+				)
+				.first();
+			const hasPerformanceSummary = await performanceSummary
+				.isVisible({ timeout: 5000 })
+				.catch(() => false);
 			if (hasPerformanceSummary) {
 				await expect(performanceSummary).toBeVisible();
 			}
 
 			// Verify weekly hero section
-			const weeklyHero = page.locator('[data-testid="weekly-hero"], .weekly-hero, [class*="weekly"]').first();
+			const weeklyHero = page
+				.locator('[data-testid="weekly-hero"], .weekly-hero, [class*="weekly"]')
+				.first();
 			const hasWeeklyHero = await weeklyHero.isVisible({ timeout: 5000 }).catch(() => false);
 			if (hasWeeklyHero) {
 				await expect(weeklyHero).toBeVisible();
 			}
 
 			// Verify alert feed section
-			const alertFeed = page.locator('[data-testid="alert-feed"], .alert-feed, [class*="alert"]').first();
+			const alertFeed = page
+				.locator('[data-testid="alert-feed"], .alert-feed, [class*="alert"]')
+				.first();
 			const hasAlertFeed = await alertFeed.isVisible({ timeout: 5000 }).catch(() => false);
 			if (hasAlertFeed) {
 				await expect(alertFeed).toBeVisible();
@@ -217,7 +229,11 @@ test.describe('Explosive Swings Dashboard', () => {
 			}
 
 			// Look for pagination controls
-			const paginationNext = page.locator('[data-testid="pagination-next"], button:has-text("Next"), [class*="pagination"] button:last-child, [aria-label="Next page"]').first();
+			const paginationNext = page
+				.locator(
+					'[data-testid="pagination-next"], button:has-text("Next"), [class*="pagination"] button:last-child, [aria-label="Next page"]'
+				)
+				.first();
 			const hasPagination = await paginationNext.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasPagination) {
@@ -262,7 +278,11 @@ test.describe('Explosive Swings Dashboard', () => {
 			}
 
 			// Look for filter controls
-			const filterEntry = page.locator('[data-testid="filter-entry"], button:has-text("ENTRY"), [class*="filter"] button:has-text("Entry"), select option[value="ENTRY"]').first();
+			const filterEntry = page
+				.locator(
+					'[data-testid="filter-entry"], button:has-text("ENTRY"), [class*="filter"] button:has-text("Entry"), select option[value="ENTRY"]'
+				)
+				.first();
 			const hasFilter = await filterEntry.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasFilter) {
@@ -273,7 +293,9 @@ test.describe('Explosive Swings Dashboard', () => {
 				await page.waitForLoadState('networkidle').catch(() => {});
 
 				// Check for alert cards
-				const alerts = page.locator('[data-testid="alert-card"], .alert-card, [class*="alert-item"]');
+				const alerts = page.locator(
+					'[data-testid="alert-card"], .alert-card, [class*="alert-item"]'
+				);
 				const alertCount = await alerts.count();
 
 				if (alertCount > 0) {
@@ -287,7 +309,11 @@ test.describe('Explosive Swings Dashboard', () => {
 				console.log('Filter controls not found - checking for select dropdown');
 
 				// Try select dropdown
-				const filterSelect = page.locator('select[data-testid="alert-type-filter"], select[name*="filter"], select[name*="type"]').first();
+				const filterSelect = page
+					.locator(
+						'select[data-testid="alert-type-filter"], select[name*="filter"], select[name*="type"]'
+					)
+					.first();
 				const hasSelectFilter = await filterSelect.isVisible({ timeout: 5000 }).catch(() => false);
 
 				if (hasSelectFilter) {
@@ -324,7 +350,11 @@ test.describe('Explosive Swings Dashboard', () => {
 			}
 
 			// Look for performance metrics
-			const metricsSection = page.locator('[data-testid="performance-metrics"], .metrics, [class*="stat"], [class*="metric"]').first();
+			const metricsSection = page
+				.locator(
+					'[data-testid="performance-metrics"], .metrics, [class*="stat"], [class*="metric"]'
+				)
+				.first();
 			const hasMetrics = await metricsSection.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasMetrics) {
@@ -332,15 +362,21 @@ test.describe('Explosive Swings Dashboard', () => {
 
 				// Check for common metric elements
 				const winRate = page.locator('text=/win.*rate/i, [data-testid="win-rate"]').first();
-				const totalTrades = page.locator('text=/total.*trades/i, [data-testid="total-trades"]').first();
-				const profitLoss = page.locator('text=/P.*L/i, text=/profit/i, [data-testid="profit-loss"]').first();
+				const totalTrades = page
+					.locator('text=/total.*trades/i, [data-testid="total-trades"]')
+					.first();
+				const profitLoss = page
+					.locator('text=/P.*L/i, text=/profit/i, [data-testid="profit-loss"]')
+					.first();
 
 				// At least one metric should be present
 				const hasWinRate = await winRate.isVisible().catch(() => false);
 				const hasTotalTrades = await totalTrades.isVisible().catch(() => false);
 				const hasProfitLoss = await profitLoss.isVisible().catch(() => false);
 
-				console.log(`Metrics found - Win Rate: ${hasWinRate}, Total Trades: ${hasTotalTrades}, P/L: ${hasProfitLoss}`);
+				console.log(
+					`Metrics found - Win Rate: ${hasWinRate}, Total Trades: ${hasTotalTrades}, P/L: ${hasProfitLoss}`
+				);
 			}
 
 			// Page should be visible

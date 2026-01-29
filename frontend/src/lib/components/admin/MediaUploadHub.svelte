@@ -94,7 +94,13 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-	const videoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+	const videoTypes = [
+		'video/mp4',
+		'video/webm',
+		'video/quicktime',
+		'video/x-msvideo',
+		'video/x-matroska'
+	];
 	const documentTypes = [
 		'application/pdf',
 		'application/msword',
@@ -433,7 +439,11 @@
 	}
 
 	function retryFailed() {
-		uploadQueue = uploadQueue.map((u) => (u.status === 'error' ? { ...u, status: 'pending' as UploadStatus, error: undefined, progress: 0 } : u));
+		uploadQueue = uploadQueue.map((u) =>
+			u.status === 'error'
+				? { ...u, status: 'pending' as UploadStatus, error: undefined, progress: 0 }
+				: u
+		);
 		startUploads();
 	}
 
@@ -490,7 +500,11 @@
 	// Derived values
 	const completedCount = $derived(uploadQueue.filter((u) => u.status === 'complete').length);
 	const failedCount = $derived(uploadQueue.filter((u) => u.status === 'error').length);
-	const pendingCount = $derived(uploadQueue.filter((u) => u.status === 'pending' || u.status === 'uploading' || u.status === 'processing').length);
+	const pendingCount = $derived(
+		uploadQueue.filter(
+			(u) => u.status === 'pending' || u.status === 'uploading' || u.status === 'processing'
+		).length
+	);
 </script>
 
 <div class="upload-hub" class:compact class:dragging={isDragging}>
@@ -573,7 +587,9 @@
 						<span class="stat failed"><IconAlertCircle size={14} /> {failedCount}</span>
 					{/if}
 					{#if pendingCount > 0}
-						<span class="stat pending"><IconLoader size={14} class="spinning" /> {pendingCount}</span>
+						<span class="stat pending"
+							><IconLoader size={14} class="spinning" /> {pendingCount}</span
+						>
 					{/if}
 				</div>
 			</div>
@@ -616,7 +632,12 @@
 
 						<!-- Status -->
 						<div class="item-status" style="color: {getStatusColor(item.status)}">
-							<StatusIcon size={20} class={item.status === 'uploading' || item.status === 'processing' ? 'spinning' : ''} />
+							<StatusIcon
+								size={20}
+								class={item.status === 'uploading' || item.status === 'processing'
+									? 'spinning'
+									: ''}
+							/>
 						</div>
 
 						<!-- Remove -->

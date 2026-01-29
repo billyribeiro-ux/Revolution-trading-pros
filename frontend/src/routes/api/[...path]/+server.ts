@@ -77,8 +77,7 @@ function sleep(ms: number): Promise<void> {
 
 function isRetryable(method: string, status: number): boolean {
 	return (
-		RETRYABLE_METHODS.includes(method as RetryableMethod) &&
-		RETRYABLE_STATUS_CODES.includes(status)
+		RETRYABLE_METHODS.includes(method as RetryableMethod) && RETRYABLE_STATUS_CODES.includes(status)
 	);
 }
 

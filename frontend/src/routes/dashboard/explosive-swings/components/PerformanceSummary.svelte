@@ -25,13 +25,22 @@
 		onAddTrade?: () => void;
 	}
 
-	const { performance, closedTrades, activePositions, isLoading = false, isAdmin = false, onClosePosition, onUpdatePosition, onInvalidatePosition, onDeletePosition, onAddTrade }: Props = $props();
+	const {
+		performance,
+		closedTrades,
+		activePositions,
+		isLoading = false,
+		isAdmin = false,
+		onClosePosition,
+		onUpdatePosition,
+		onInvalidatePosition,
+		onDeletePosition,
+		onAddTrade
+	}: Props = $props();
 
 	// Calculate risk/reward display
 	const rrDisplay = $derived(
-		performance.riskRewardRatio > 0 
-			? `${performance.riskRewardRatio.toFixed(1)}:1` 
-			: '—'
+		performance.riskRewardRatio > 0 ? `${performance.riskRewardRatio.toFixed(1)}:1` : '—'
 	);
 </script>
 
@@ -44,7 +53,7 @@
 			<h2 id="performance-heading" class="summary-title">This Week's Performance</h2>
 			<span class="summary-subtitle">Trade results and active positions</span>
 		</div>
-		
+
 		<div class="win-rate-container">
 			<div class="win-rate-badge">
 				<span class="win-rate-value">{performance.winRate}%</span>
@@ -71,7 +80,9 @@
 					<span class="metric-divider">|</span>
 					<div class="metric">
 						<span class="metric-label">Avg Loser:</span>
-						<span class="metric-value negative">{formatPercent(-Math.abs(performance.avgLossPercent))}</span>
+						<span class="metric-value negative"
+							>{formatPercent(-Math.abs(performance.avgLossPercent))}</span
+						>
 					</div>
 					{#if performance.riskRewardRatio > 0}
 						<span class="metric-divider">|</span>
@@ -104,14 +115,21 @@
 		<div class="active-section">
 			<div class="section-header-row">
 				<h3 class="section-label">
-					Active Positions 
+					Active Positions
 					{#if !isLoading}
 						<span class="position-count">({activePositions.length})</span>
 					{/if}
 				</h3>
 				{#if isAdmin && onAddTrade}
 					<button class="add-trade-btn" onclick={onAddTrade} aria-label="Add new trade">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="16"
+							height="16"
+						>
 							<path d="M12 4v16m8-8H4" />
 						</svg>
 						Add Trade
@@ -126,12 +144,26 @@
 					{/each}
 				{:else if activePositions.length === 0 && isAdmin}
 					<div class="empty-positions">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							width="48"
+							height="48"
+						>
 							<path d="M12 20V10M18 20V4M6 20v-4" />
 						</svg>
 						<p>No active positions yet</p>
 						<button class="add-first-trade-btn" onclick={onAddTrade}>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="18"
+								height="18"
+							>
 								<path d="M12 4v16m8-8H4" />
 							</svg>
 							Add Your First Trade
@@ -139,9 +171,9 @@
 					</div>
 				{:else}
 					{#each activePositions as position (position.id)}
-						<ActivePositionCard 
-							{position} 
-							{isAdmin} 
+						<ActivePositionCard
+							{position}
+							{isAdmin}
 							onUpdate={onUpdatePosition}
 							onInvalidate={onInvalidatePosition}
 							onClose={onClosePosition}
@@ -160,7 +192,11 @@
 		<div class="empty-state">
 			<div class="empty-icon">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+					/>
 				</svg>
 			</div>
 			<h4 class="empty-title">No trades this week yet</h4>
@@ -364,7 +400,12 @@
 	.ticker-pill-skeleton {
 		min-width: 88px;
 		height: 82px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-md);
@@ -395,7 +436,11 @@
 		align-items: center;
 		gap: var(--space-2);
 		padding: var(--space-2) var(--space-4);
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
 		color: white;
 		border: none;
 		border-radius: var(--radius-md);
@@ -449,7 +494,11 @@
 		align-items: center;
 		gap: var(--space-2);
 		padding: var(--space-2) var(--space-4);
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
 		color: white;
 		border: none;
 		border-radius: var(--radius-lg);
@@ -473,7 +522,12 @@
 	/* Skeleton for Position Cards */
 	.position-skeleton {
 		height: 220px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-lg);

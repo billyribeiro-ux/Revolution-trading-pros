@@ -147,10 +147,7 @@
 
 		<!-- Ticker Performance Table - Full Width -->
 		<section class="grid-item full-width">
-			<TickerPerformanceTable
-				data={analytics.tickerPerformance}
-				isLoading={analytics.isLoading}
-			/>
+			<TickerPerformanceTable data={analytics.tickerPerformance} isLoading={analytics.isLoading} />
 		</section>
 	</div>
 

@@ -292,12 +292,20 @@ test.describe('Admin Permission Verification', () => {
 
 			// These should be hidden for regular users
 			const hasAddTrade = await addTradeButton.isVisible().catch(() => false);
-			const hasEdit = await editButtons.first().isVisible().catch(() => false);
-			const hasDelete = await deleteButtons.first().isVisible().catch(() => false);
+			const hasEdit = await editButtons
+				.first()
+				.isVisible()
+				.catch(() => false);
+			const hasDelete = await deleteButtons
+				.first()
+				.isVisible()
+				.catch(() => false);
 
 			// For regular users, admin controls should not be visible
 			// (Unless they're on alert cards - which might show for both)
-			console.log(`Regular user - Add Trade: ${hasAddTrade}, Edit: ${hasEdit}, Delete: ${hasDelete}`);
+			console.log(
+				`Regular user - Add Trade: ${hasAddTrade}, Edit: ${hasEdit}, Delete: ${hasDelete}`
+			);
 
 			await expect(page.locator('body')).toBeVisible();
 		} catch (error) {
@@ -318,7 +326,9 @@ test.describe('Create Alert Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const addAlertButton = page.getByRole('button', { name: /add alert|new alert|create alert/i });
+			const addAlertButton = page.getByRole('button', {
+				name: /add alert|new alert|create alert/i
+			});
 			const isVisible = await addAlertButton.isVisible().catch(() => false);
 
 			if (isVisible) {
@@ -344,7 +354,9 @@ test.describe('Create Alert Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const addAlertButton = page.getByRole('button', { name: /add alert|new alert|create alert/i });
+			const addAlertButton = page.getByRole('button', {
+				name: /add alert|new alert|create alert/i
+			});
 			const isVisible = await addAlertButton.isVisible().catch(() => false);
 
 			if (isVisible) {
@@ -352,9 +364,13 @@ test.describe('Create Alert Flow', () => {
 				await page.waitForTimeout(500);
 
 				// Fill form fields (selectors depend on actual form implementation)
-				const tickerInput = page.locator('input[name="ticker"], input[placeholder*="ticker"], #ticker');
+				const tickerInput = page.locator(
+					'input[name="ticker"], input[placeholder*="ticker"], #ticker'
+				);
 				const titleInput = page.locator('input[name="title"], input[placeholder*="title"], #title');
-				const messageInput = page.locator('textarea[name="message"], textarea[placeholder*="message"], #message');
+				const messageInput = page.locator(
+					'textarea[name="message"], textarea[placeholder*="message"], #message'
+				);
 
 				if (await tickerInput.isVisible()) {
 					await tickerInput.fill('NVDA');
@@ -387,7 +403,9 @@ test.describe('Create Alert Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const addAlertButton = page.getByRole('button', { name: /add alert|new alert|create alert/i });
+			const addAlertButton = page.getByRole('button', {
+				name: /add alert|new alert|create alert/i
+			});
 
 			if (await addAlertButton.isVisible()) {
 				await addAlertButton.click();
@@ -424,7 +442,10 @@ test.describe('Edit Alert Flow', () => {
 			await page.waitForLoadState('networkidle');
 
 			// Find edit button on an alert card
-			const editButton = page.locator('button').filter({ hasText: /^edit$/i }).first();
+			const editButton = page
+				.locator('button')
+				.filter({ hasText: /^edit$/i })
+				.first();
 
 			if (await editButton.isVisible()) {
 				await editButton.click();
@@ -449,7 +470,10 @@ test.describe('Edit Alert Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const editButton = page.locator('button').filter({ hasText: /^edit$/i }).first();
+			const editButton = page
+				.locator('button')
+				.filter({ hasText: /^edit$/i })
+				.first();
 
 			if (await editButton.isVisible()) {
 				await editButton.click();
@@ -489,7 +513,10 @@ test.describe('Delete Alert Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const deleteButton = page.locator('button').filter({ hasText: /^delete$/i }).first();
+			const deleteButton = page
+				.locator('button')
+				.filter({ hasText: /^delete$/i })
+				.first();
 
 			if (await deleteButton.isVisible()) {
 				await deleteButton.click();
@@ -520,7 +547,10 @@ test.describe('Delete Alert Flow', () => {
 			const alertCards = page.locator('article').filter({ hasText: /ENTRY|UPDATE|EXIT/ });
 			const initialCount = await alertCards.count();
 
-			const deleteButton = page.locator('button').filter({ hasText: /^delete$/i }).first();
+			const deleteButton = page
+				.locator('button')
+				.filter({ hasText: /^delete$/i })
+				.first();
 
 			if (await deleteButton.isVisible()) {
 				await deleteButton.click();
@@ -554,7 +584,9 @@ test.describe('Create Trade Plan Flow', () => {
 			await page.waitForLoadState('networkidle');
 
 			// Look for add trade plan button
-			const addTradePlanButton = page.getByRole('button', { name: /add.*trade.*plan|new.*entry|add entry/i });
+			const addTradePlanButton = page.getByRole('button', {
+				name: /add.*trade.*plan|new.*entry|add entry/i
+			});
 
 			if (await addTradePlanButton.isVisible()) {
 				await addTradePlanButton.click();
@@ -576,7 +608,9 @@ test.describe('Create Trade Plan Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const addButton = page.getByRole('button', { name: /add.*trade.*plan|new.*entry|add entry/i });
+			const addButton = page.getByRole('button', {
+				name: /add.*trade.*plan|new.*entry|add entry/i
+			});
 
 			if (await addButton.isVisible()) {
 				await addButton.click();
@@ -620,7 +654,9 @@ test.describe('Close Trade Flow', () => {
 			await page.waitForLoadState('networkidle');
 
 			// Find close button on position card
-			const closeButton = page.getByRole('button', { name: /close.*position|close.*trade/i }).first();
+			const closeButton = page
+				.getByRole('button', { name: /close.*position|close.*trade/i })
+				.first();
 
 			if (await closeButton.isVisible()) {
 				await closeButton.click();
@@ -642,7 +678,9 @@ test.describe('Close Trade Flow', () => {
 			await page.goto('/dashboard/explosive-swings');
 			await page.waitForLoadState('networkidle');
 
-			const closeButton = page.getByRole('button', { name: /close.*position|close.*trade/i }).first();
+			const closeButton = page
+				.getByRole('button', { name: /close.*position|close.*trade/i })
+				.first();
 
 			if (await closeButton.isVisible()) {
 				await closeButton.click();

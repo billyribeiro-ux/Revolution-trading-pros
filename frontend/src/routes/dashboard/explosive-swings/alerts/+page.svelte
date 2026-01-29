@@ -25,7 +25,7 @@
 	// Svelte 5 $state for filter state
 	let selectedFilter = $state('all');
 	let searchQuery = $state('');
-	
+
 	// SSR error state (derived to stay reactive with props)
 	const errorMessage = $derived(data.error ?? '');
 
@@ -39,7 +39,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Mock alerts for development/testing only.
 	 * In production, data comes from SSR via +page.server.ts
-	 * 
+	 *
 	 * To use: Set USE_MOCK_DATA = true below
 	 */
 	const USE_MOCK_DATA = false; // Set true for local dev without backend
@@ -171,21 +171,23 @@
 		if (USE_MOCK_DATA) {
 			return mockAlerts;
 		}
-		
+
 		// Production: transform SSR data
-		return data.alerts.map((a): DisplayAlert => ({
-			id: a.id,
-			type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
-			alertType: a.alert_type,
-			title: a.title,
-			date: formatAlertDate(a.published_at),
-			excerpt: a.message,
-			status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
-			profitLoss: null,
-			href: `/dashboard/explosive-swings/alerts/${a.id}`,
-			tosString: a.tos_string,
-			ticker: a.ticker
-		}));
+		return data.alerts.map(
+			(a): DisplayAlert => ({
+				id: a.id,
+				type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
+				alertType: a.alert_type,
+				title: a.title,
+				date: formatAlertDate(a.published_at),
+				excerpt: a.message,
+				status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
+				profitLoss: null,
+				href: `/dashboard/explosive-swings/alerts/${a.id}`,
+				tosString: a.tos_string,
+				ticker: a.ticker
+			})
+		);
 	});
 
 	// Filtered alerts based on selection and search
@@ -292,7 +294,15 @@
 			<!-- Error State -->
 			{#if errorMessage}
 				<div class="error-banner" role="alert">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="20"
+						height="20"
+						aria-hidden="true"
+					>
 						<circle cx="12" cy="12" r="10" />
 						<path d="M12 8v4M12 16h.01" />
 					</svg>

@@ -238,7 +238,8 @@
 			}
 		} catch (error) {
 			console.error('Checkout error:', error);
-			checkoutError = error instanceof Error ? error.message : 'Failed to process order. Please try again.';
+			checkoutError =
+				error instanceof Error ? error.message : 'Failed to process order. Please try again.';
 		} finally {
 			isProcessing = false;
 		}
@@ -474,7 +475,11 @@
 									<div class="checkout-error" role="alert">
 										<IconX size={18} />
 										<span>{checkoutError}</span>
-										<button type="button" onclick={() => checkoutError = ''} aria-label="Dismiss error">
+										<button
+											type="button"
+											onclick={() => (checkoutError = '')}
+											aria-label="Dismiss error"
+										>
 											<IconX size={14} />
 										</button>
 									</div>
@@ -541,8 +546,16 @@
 											disabled
 										/>
 										<label for="payment_paypal">
-											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-												<path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.794.679H7.72a.483.483 0 01-.477-.558L7.418 21h1.518l.95-6.02h1.385c4.678 0 7.75-2.203 8.796-6.502zm-2.96-5.09c.762.868.983 1.81.752 3.285-.019.123-.04.24-.062.36-.735 3.773-3.089 5.446-6.956 5.446H8.957a1.01 1.01 0 00-.996.852l-.68 4.312-.472 2.987H4.907a.573.573 0 01-.567-.663l2.01-12.748a1.208 1.208 0 011.194-1.02h5.862c1.5 0 2.637.182 3.701.19z" />
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												viewBox="0 0 24 24"
+												fill="currentColor"
+												width="24"
+												height="24"
+											>
+												<path
+													d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.794.679H7.72a.483.483 0 01-.477-.558L7.418 21h1.518l.95-6.02h1.385c4.678 0 7.75-2.203 8.796-6.502zm-2.96-5.09c.762.868.983 1.81.752 3.285-.019.123-.04.24-.062.36-.735 3.773-3.089 5.446-6.956 5.446H8.957a1.01 1.01 0 00-.996.852l-.68 4.312-.472 2.987H4.907a.573.573 0 01-.567-.663l2.01-12.748a1.208 1.208 0 011.194-1.02h5.862c1.5 0 2.637.182 3.701.19z"
+												/>
 											</svg>
 											<span class="method-title">PayPal</span>
 											<span class="method-description method-description--coming-soon">

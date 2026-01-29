@@ -511,18 +511,18 @@
 			<h1>Automation Funnels</h1>
 			<p class="subtitle">Create powerful marketing automations triggered by events</p>
 			<div class="header-actions">
-			<button class="btn-secondary" onclick={openImportModal} title="Import Automation">
-				<IconUpload size={18} />
-				Import
-			</button>
-			<button class="btn-refresh" onclick={() => loadFunnels()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<a href="/admin/crm/automations/new" class="btn-primary">
-				<IconPlus size={18} />
-				New Automation
-			</a>
-		</div>
+				<button class="btn-secondary" onclick={openImportModal} title="Import Automation">
+					<IconUpload size={18} />
+					Import
+				</button>
+				<button class="btn-refresh" onclick={() => loadFunnels()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<a href="/admin/crm/automations/new" class="btn-primary">
+					<IconPlus size={18} />
+					New Automation
+				</a>
+			</div>
 		</header>
 	</div>
 

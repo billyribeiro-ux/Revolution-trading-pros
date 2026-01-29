@@ -41,12 +41,7 @@
 </script>
 
 {#if error}
-	<div
-		class="api-error"
-		class:compact
-		role="alert"
-		aria-live="polite"
-	>
+	<div class="api-error" class:compact role="alert" aria-live="polite">
 		<div class="error-content">
 			<svg
 				class="error-icon"

@@ -63,11 +63,7 @@
 			{#each navItems as item}
 				{@const Icon = item.icon}
 				<li>
-					<a
-						href={item.href}
-						class="cms-nav-item"
-						class:active={isActive(item.href, item.exact)}
-					>
+					<a href={item.href} class="cms-nav-item" class:active={isActive(item.href, item.exact)}>
 						<Icon size={18} />
 						<span>{item.label}</span>
 					</a>

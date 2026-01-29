@@ -24,8 +24,16 @@
 
 	// Colors for pie chart slices
 	const colors = [
-		'#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-		'#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
+		'#3B82F6',
+		'#10B981',
+		'#F59E0B',
+		'#EF4444',
+		'#8B5CF6',
+		'#EC4899',
+		'#06B6D4',
+		'#84CC16',
+		'#F97316',
+		'#6366F1'
 	];
 
 	// Calculate pie chart angles
@@ -54,7 +62,7 @@
 	// Pie slices with angles
 	const pieSlices = $derived(() => {
 		let currentAngle = -Math.PI / 2;
-		return pieData.map(d => {
+		return pieData.map((d) => {
 			const sliceAngle = (d.percentage / 100) * Math.PI * 2;
 			const startAngle = currentAngle;
 			const endAngle = currentAngle + sliceAngle;
@@ -111,8 +119,8 @@
 							class="pie-slice"
 							role="img"
 							aria-label="{slice.setup}: {slice.percentage.toFixed(0)}% of trades"
-							onmouseenter={() => hoveredSetup = slice.setup}
-							onmouseleave={() => hoveredSetup = null}
+							onmouseenter={() => (hoveredSetup = slice.setup)}
+							onmouseleave={() => (hoveredSetup = null)}
 						/>
 					{/each}
 					<!-- Center circle for donut effect -->
@@ -132,20 +140,30 @@
 						role="button"
 						tabindex="0"
 						aria-label="{setup.setup} trading setup details"
-						onmouseenter={() => hoveredSetup = setup.setup}
-						onmouseleave={() => hoveredSetup = null}
+						onmouseenter={() => (hoveredSetup = setup.setup)}
+						onmouseleave={() => (hoveredSetup = null)}
 					>
 						<div class="legend-color" style="background-color: {setup.color}"></div>
 						<div class="legend-content">
 							<div class="legend-header">
 								<span class="setup-name">{setup.setup}</span>
-								<span class="setup-count">{setup.total_trades} trades ({setup.percentage.toFixed(0)}%)</span>
+								<span class="setup-count"
+									>{setup.total_trades} trades ({setup.percentage.toFixed(0)}%)</span
+								>
 							</div>
 							<div class="setup-stats">
-								<span class="stat" class:profit={setup.win_rate >= 50} class:loss={setup.win_rate < 50}>
+								<span
+									class="stat"
+									class:profit={setup.win_rate >= 50}
+									class:loss={setup.win_rate < 50}
+								>
 									{setup.win_rate.toFixed(0)}% WR
 								</span>
-								<span class="stat" class:profit={setup.total_pnl >= 0} class:loss={setup.total_pnl < 0}>
+								<span
+									class="stat"
+									class:profit={setup.total_pnl >= 0}
+									class:loss={setup.total_pnl < 0}
+								>
 									P&L: ${setup.total_pnl.toFixed(2)}
 								</span>
 								<span class="stat">PF: {formatRatio(setup.profit_factor)}</span>
@@ -269,8 +287,12 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	.stat.profit { color: var(--color-profit); }
-	.stat.loss { color: var(--color-loss); }
+	.stat.profit {
+		color: var(--color-profit);
+	}
+	.stat.loss {
+		color: var(--color-loss);
+	}
 
 	/* Skeleton */
 	.skeleton-content {
@@ -283,7 +305,12 @@
 		width: 160px;
 		height: 160px;
 		border-radius: 50%;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
@@ -298,7 +325,12 @@
 	.skel-item {
 		height: 40px;
 		border-radius: 8px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
@@ -313,8 +345,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 640px) {

@@ -245,7 +245,13 @@
 	<div class="filters">
 		<div class="search-box">
 			<span class="search-icon">🔍</span>
-			<input type="text" id="search-revisions" name="search" placeholder="Search revisions..." bind:value={searchQuery} />
+			<input
+				type="text"
+				id="search-revisions"
+				name="search"
+				placeholder="Search revisions..."
+				bind:value={searchQuery}
+			/>
 		</div>
 		<div class="filter-tabs">
 			<button

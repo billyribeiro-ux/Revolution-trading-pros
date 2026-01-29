@@ -79,7 +79,6 @@
 		Search: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`
 	};
 
-
 	// --- INTERACTIVE RISK CALCULATOR LOGIC ---
 	// A comprehensive simulator showing the power of compounding vs ruin
 	// Svelte 5 state runes
@@ -328,9 +327,7 @@
 	author="Billy Ribeiro"
 />
 
-<div
-	class="bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white"
->
+<div class="bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white">
 	<div class="fixed inset-0 z-0 pointer-events-none">
 		<div
 			class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-rtp-primary/5 blur-[120px] rounded-full mix-blend-screen"
@@ -390,10 +387,7 @@
 				</p>
 			</div>
 
-			<div
-				data-gsap
-				class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
-			>
+			<div data-gsap class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
 				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-white font-mono">90%</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
@@ -692,10 +686,7 @@
 							>The Ecosystem</span
 						>
 					</div>
-					<h2
-						data-gsap
-						class="text-4xl md:text-5xl font-heading font-bold text-white mb-6"
-					>
+					<h2 data-gsap class="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
 						Institutional Grade.<br />Retail Accessible.
 					</h2>
 					<p data-gsap class="text-slate-400 max-w-2xl mx-auto text-lg">
@@ -1103,7 +1094,6 @@
 			</div>
 		</section>
 	</div>
-
 </div>
 
 <MarketingFooter />

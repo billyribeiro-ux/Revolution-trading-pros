@@ -281,7 +281,10 @@ export const tradePlanApi = {
 	 * List trade plan entries for a room
 	 * Uses frontend proxy at /api/trade-plans/[slug] which handles auth
 	 */
-	list: async (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<TradePlanEntry>> => {
+	list: async (
+		roomSlug: string,
+		params?: ListParams
+	): Promise<PaginatedResponse<TradePlanEntry>> => {
 		const searchParams = new URLSearchParams();
 		if (params?.page) searchParams.set('page', String(params.page));
 		if (params?.per_page) searchParams.set('per_page', String(params.per_page));
@@ -336,7 +339,10 @@ export const tradePlanApi = {
 	 * Delete a trade plan entry
 	 * Uses frontend proxy at /api/trade-plans/[slug]/[id] which handles auth
 	 */
-	delete: async (id: number, roomSlug: string = 'explosive-swings'): Promise<{ success: boolean; message: string }> => {
+	delete: async (
+		id: number,
+		roomSlug: string = 'explosive-swings'
+	): Promise<{ success: boolean; message: string }> => {
 		const response = await fetch(`/api/trade-plans/${roomSlug}/${id}`, {
 			method: 'DELETE',
 			credentials: 'include'
@@ -351,7 +357,10 @@ export const tradePlanApi = {
 	/**
 	 * Reorder trade plan entries
 	 */
-	reorder: async (roomSlug: string, items: ReorderRequest['items']): Promise<{ success: boolean }> => {
+	reorder: async (
+		roomSlug: string,
+		items: ReorderRequest['items']
+	): Promise<{ success: boolean }> => {
 		const response = await fetch(`/api/trade-plans/${roomSlug}/reorder`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },

@@ -28,14 +28,14 @@
 	let showDeleteConfirm = $state(false);
 	let modalRef = $state<HTMLDivElement | null>(null);
 	let deleteConfirmRef = $state<HTMLDivElement | null>(null);
-	
+
 	// Validation functions
 	function isValidTicker(ticker: string): boolean {
 		if (!ticker) return false;
 		const cleaned = ticker.trim().toUpperCase();
 		return /^[A-Z]{1,5}$/.test(cleaned);
 	}
-	
+
 	function isValidPrice(price: string): boolean {
 		if (!price || price.trim() === '') return true;
 		const cleaned = price.replace(/[$,]/g, '');
@@ -61,13 +61,13 @@
 	const isEditMode = $derived(editEntry !== null && editEntry !== undefined);
 	const isFormValid = $derived(
 		isValidTicker(form.ticker) &&
-		isValidPrice(form.entry) &&
-		isValidPrice(form.stop) &&
-		isValidPrice(form.target1) &&
-		isValidPrice(form.target2) &&
-		isValidPrice(form.target3) &&
-		isValidPrice(form.runner) &&
-		isValidPrice(form.runner_stop)
+			isValidPrice(form.entry) &&
+			isValidPrice(form.stop) &&
+			isValidPrice(form.target1) &&
+			isValidPrice(form.target2) &&
+			isValidPrice(form.target3) &&
+			isValidPrice(form.runner) &&
+			isValidPrice(form.runner_stop)
 	);
 	const modalTitle = $derived(isEditMode ? 'Edit Trade Entry' : 'Add Trade Entry');
 	const submitLabel = $derived(isEditMode ? 'Save Changes' : 'Add Entry');
@@ -95,17 +95,17 @@
 	// Focus trap and body scroll lock
 	$effect(() => {
 		if (!isOpen) return;
-		
+
 		const previousOverflow = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
-		
+
 		requestAnimationFrame(() => modalRef?.focus());
-		
+
 		return () => {
 			document.body.style.overflow = previousOverflow;
 		};
 	});
-	
+
 	// Focus delete confirm when shown
 	$effect(() => {
 		if (showDeleteConfirm && deleteConfirmRef) {
@@ -134,13 +134,13 @@
 
 	async function handleSubmit() {
 		if (!isFormValid) return;
-		
+
 		// Double-check validation with specific error
 		if (!isValidTicker(form.ticker)) {
 			errorMessage = 'Please enter a valid ticker symbol (1-5 letters).';
 			return;
 		}
-		
+
 		isSaving = true;
 		errorMessage = '';
 
@@ -185,7 +185,7 @@
 			onSuccess?.();
 			onClose();
 		} catch (err) {
-			errorMessage = isEditMode 
+			errorMessage = isEditMode
 				? 'Failed to update entry. Please try again.'
 				: 'Failed to add entry. Please try again.';
 			console.error(err);
@@ -235,11 +235,11 @@
 
 {#if isOpen}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div 
+	<div
 		bind:this={modalRef}
-		class="modal-overlay" 
-		role="dialog" 
-		aria-modal="true" 
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
 		aria-labelledby="modal-title"
 		tabindex="-1"
 		onclick={handleOverlayClick}
@@ -250,7 +250,14 @@
 			<div class="modal-header">
 				<div class="header-content">
 					<div class="header-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="22"
+							height="22"
+						>
 							<path d="M12 20V10M18 20V4M6 20v-4" />
 						</svg>
 					</div>
@@ -266,7 +273,14 @@
 					</div>
 				</div>
 				<button class="modal-close" onclick={handleClose} aria-label="Close modal">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="20"
+						height="20"
+					>
 						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
@@ -275,7 +289,14 @@
 			<!-- Error Banner -->
 			{#if errorMessage}
 				<div class="error-banner">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="18"
+						height="18"
+					>
 						<circle cx="12" cy="12" r="10" />
 						<path d="M12 8v4M12 16h.01" />
 					</svg>
@@ -285,7 +306,7 @@
 
 			<!-- Delete Confirmation Overlay -->
 			{#if showDeleteConfirm}
-				<div 
+				<div
 					bind:this={deleteConfirmRef}
 					class="delete-confirm-overlay"
 					tabindex="-1"
@@ -295,14 +316,23 @@
 				>
 					<div class="delete-confirm-card">
 						<div class="delete-icon">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
-								<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="32"
+								height="32"
+							>
+								<path
+									d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"
+								/>
 							</svg>
 						</div>
 						<h4 id="delete-confirm-title">Delete {form.ticker}?</h4>
 						<p>This action cannot be undone. The trade entry will be permanently removed.</p>
 						<div class="delete-actions">
-							<button class="btn-cancel-delete" onclick={() => showDeleteConfirm = false}>
+							<button class="btn-cancel-delete" onclick={() => (showDeleteConfirm = false)}>
 								Cancel
 							</button>
 							<button class="btn-confirm-delete" onclick={handleDelete} disabled={isDeleting}>
@@ -319,7 +349,13 @@
 			{/if}
 
 			<!-- Form Body -->
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				<!-- Ticker & Bias Row -->
 				<div class="form-section">
 					<div class="section-label">
@@ -362,14 +398,28 @@
 							<label for="entry">Entry Price</label>
 							<div class="price-input-wrapper">
 								<span class="price-prefix">$</span>
-								<input id="entry" type="text" inputmode="decimal" bind:value={form.entry} placeholder="142.50" class="form-input price-input" />
+								<input
+									id="entry"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.entry}
+									placeholder="142.50"
+									class="form-input price-input"
+								/>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="stop">Stop Loss</label>
 							<div class="price-input-wrapper stop-wrapper">
 								<span class="price-prefix">$</span>
-								<input id="stop" type="text" inputmode="decimal" bind:value={form.stop} placeholder="136.00" class="form-input price-input stop-input" />
+								<input
+									id="stop"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.stop}
+									placeholder="136.00"
+									class="form-input price-input stop-input"
+								/>
 							</div>
 						</div>
 					</div>
@@ -386,35 +436,70 @@
 							<label for="target1">T1</label>
 							<div class="price-input-wrapper target-wrapper">
 								<span class="price-prefix-sm">$</span>
-								<input id="target1" type="text" inputmode="decimal" bind:value={form.target1} placeholder="148" class="form-input-sm price-input-sm target-input" />
+								<input
+									id="target1"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.target1}
+									placeholder="148"
+									class="form-input-sm price-input-sm target-input"
+								/>
 							</div>
 						</div>
 						<div class="form-group compact">
 							<label for="target2">T2</label>
 							<div class="price-input-wrapper target-wrapper">
 								<span class="price-prefix-sm">$</span>
-								<input id="target2" type="text" inputmode="decimal" bind:value={form.target2} placeholder="155" class="form-input-sm price-input-sm target-input" />
+								<input
+									id="target2"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.target2}
+									placeholder="155"
+									class="form-input-sm price-input-sm target-input"
+								/>
 							</div>
 						</div>
 						<div class="form-group compact">
 							<label for="target3">T3</label>
 							<div class="price-input-wrapper target-wrapper">
 								<span class="price-prefix-sm">$</span>
-								<input id="target3" type="text" inputmode="decimal" bind:value={form.target3} placeholder="162" class="form-input-sm price-input-sm target-input" />
+								<input
+									id="target3"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.target3}
+									placeholder="162"
+									class="form-input-sm price-input-sm target-input"
+								/>
 							</div>
 						</div>
 						<div class="form-group compact">
 							<label for="runner">Runner</label>
 							<div class="price-input-wrapper runner-wrapper">
 								<span class="price-prefix-sm">$</span>
-								<input id="runner" type="text" inputmode="decimal" bind:value={form.runner} placeholder="170" class="form-input-sm price-input-sm runner-input" />
+								<input
+									id="runner"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.runner}
+									placeholder="170"
+									class="form-input-sm price-input-sm runner-input"
+								/>
 							</div>
 						</div>
 						<div class="form-group compact">
 							<label for="runner_stop">Stop Out</label>
 							<div class="price-input-wrapper stop-out-wrapper">
 								<span class="price-prefix-sm">$</span>
-								<input id="runner_stop" type="text" inputmode="decimal" bind:value={form.runner_stop} placeholder="165" class="form-input-sm price-input-sm stop-out-input" />
+								<input
+									id="runner_stop"
+									type="text"
+									inputmode="decimal"
+									bind:value={form.runner_stop}
+									placeholder="165"
+									class="form-input-sm price-input-sm stop-out-input"
+								/>
 							</div>
 						</div>
 					</div>
@@ -429,11 +514,23 @@
 					<div class="form-row">
 						<div class="form-group">
 							<label for="options_strike">Strike Price</label>
-							<input id="options_strike" type="text" bind:value={form.options_strike} placeholder="$145C" class="form-input" />
+							<input
+								id="options_strike"
+								type="text"
+								bind:value={form.options_strike}
+								placeholder="$145C"
+								class="form-input"
+							/>
 						</div>
 						<div class="form-group">
 							<label for="options_exp">Expiration</label>
-							<input id="options_exp" type="text" bind:value={form.options_exp} placeholder="Feb 21" class="form-input" />
+							<input
+								id="options_exp"
+								type="text"
+								bind:value={form.options_exp}
+								placeholder="Feb 21"
+								class="form-input"
+							/>
 						</div>
 					</div>
 				</div>
@@ -458,9 +555,18 @@
 				<!-- Actions Footer -->
 				<div class="form-actions">
 					{#if isEditMode}
-						<button type="button" class="btn-delete" onclick={() => showDeleteConfirm = true}>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+						<button type="button" class="btn-delete" onclick={() => (showDeleteConfirm = true)}>
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="16"
+								height="16"
+							>
+								<path
+									d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"
+								/>
 							</svg>
 							Delete
 						</button>
@@ -505,8 +611,12 @@
 	}
 
 	@keyframes overlayFadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -522,7 +632,7 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 
+		box-shadow:
 			0 0 0 1px rgba(0, 0, 0, 0.05),
 			0 25px 50px -12px rgba(0, 0, 0, 0.4),
 			0 0 100px -20px rgba(20, 62, 89, 0.3);
@@ -751,9 +861,15 @@
 		border-radius: 50%;
 	}
 
-	.section-dot.target-dot { background: var(--color-profit-light); }
-	.section-dot.options-dot { background: var(--color-purple); }
-	.section-dot.notes-dot { background: var(--color-watching); }
+	.section-dot.target-dot {
+		background: var(--color-profit-light);
+	}
+	.section-dot.options-dot {
+		background: var(--color-purple);
+	}
+	.section-dot.notes-dot {
+		background: var(--color-watching);
+	}
 
 	.form-row {
 		display: grid;
@@ -882,9 +998,15 @@
 		z-index: 1;
 	}
 
-	.target-wrapper .price-prefix-sm { color: var(--color-profit-light); }
-	.stop-out-wrapper .price-prefix-sm { color: #f97316; }
-	.runner-wrapper .price-prefix-sm { color: var(--color-purple); }
+	.target-wrapper .price-prefix-sm {
+		color: var(--color-profit-light);
+	}
+	.stop-out-wrapper .price-prefix-sm {
+		color: #f97316;
+	}
+	.runner-wrapper .price-prefix-sm {
+		color: var(--color-purple);
+	}
 
 	/* Price Input with $ Prefix */
 	.price-input-wrapper {
@@ -907,7 +1029,9 @@
 		padding-left: 28px !important;
 	}
 
-	.stop-wrapper .price-prefix { color: var(--color-loss); }
+	.stop-wrapper .price-prefix {
+		color: var(--color-loss);
+	}
 
 	.select-wrapper {
 		position: relative;
@@ -996,7 +1120,11 @@
 	}
 
 	.btn-save:hover:not(:disabled) {
-		background: linear-gradient(135deg, var(--color-brand-primary-hover) 0%, var(--color-brand-primary) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary-hover) 0%,
+			var(--color-brand-primary) 100%
+		);
 		transform: translateY(-1px);
 		box-shadow: 0 6px 16px rgba(20, 62, 89, 0.35);
 	}
@@ -1011,14 +1139,16 @@
 	.spinner {
 		width: 16px;
 		height: 16px;
-		border: 2px solid rgba(255,255,255,0.3);
+		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-top-color: white;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

@@ -139,12 +139,7 @@
 
 		<!-- Pricing Section -->
 		<section class="pricing-section">
-			<PricingSelector
-				{plans}
-				bind:selectedPlanId
-				onSelect={handlePlanSelect}
-				{loading}
-			/>
+			<PricingSelector {plans} bind:selectedPlanId onSelect={handlePlanSelect} {loading} />
 		</section>
 
 		<!-- Selected Plan Summary -->

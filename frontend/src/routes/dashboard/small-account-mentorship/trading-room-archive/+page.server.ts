@@ -9,6 +9,7 @@
  */
 
 import { env } from '$env/dynamic/private';
+import type { PageServerLoad } from './$types';
 
 // Video response from API
 interface VideoResponse {
@@ -63,8 +64,7 @@ export interface ArchivePageData {
 	error: string | null;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export const load = async ({ url, fetch }): Promise<ArchivePageData> => {
+export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageData> => {
 	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 	// Get query params

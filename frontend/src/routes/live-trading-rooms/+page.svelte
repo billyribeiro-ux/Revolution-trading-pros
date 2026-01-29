@@ -386,9 +386,7 @@
 	<!-- JSON-LD Structured Data would go here if needed -->
 </svelte:head>
 
-<div
-	class="bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative"
->
+<div class="bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative">
 	<div class="fixed inset-0 pointer-events-none z-0">
 		<div
 			class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"

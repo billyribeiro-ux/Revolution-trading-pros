@@ -76,19 +76,19 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	}
 
 	// Fallback: fetch all favorites and check locally
-	const params = new URLSearchParams({ 
+	const params = new URLSearchParams({
 		item_type: itemType,
 		per_page: '100'
 	});
-	
+
 	const listData = await fetchFromBackend(`/api/favorites?${params.toString()}`, {}, cookies);
-	
+
 	if (listData?.data && Array.isArray(listData.data)) {
 		const numericId = parseInt(itemId, 10);
 		const favorite = listData.data.find(
 			(f: any) => f.item_type === itemType && f.item_id === numericId
 		);
-		
+
 		return json({
 			success: true,
 			is_favorited: !!favorite,

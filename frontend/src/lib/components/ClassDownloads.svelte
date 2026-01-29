@@ -211,7 +211,9 @@
 							<button type="button" class="sort-btn" onclick={() => toggleSort('name')}>
 								Name
 								{#if sortColumn === 'name'}
-									<span class="sort-indicator" aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+									<span class="sort-indicator" aria-hidden="true"
+										>{sortDirection === 'asc' ? '▲' : '▼'}</span
+									>
 								{/if}
 							</button>
 						</th>
@@ -220,7 +222,9 @@
 								<button type="button" class="sort-btn" onclick={() => toggleSort('size')}>
 									Size
 									{#if sortColumn === 'size'}
-										<span class="sort-indicator" aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+										<span class="sort-indicator" aria-hidden="true"
+											>{sortDirection === 'asc' ? '▲' : '▼'}</span
+										>
 									{/if}
 								</button>
 							</th>
@@ -230,7 +234,9 @@
 								<button type="button" class="sort-btn" onclick={() => toggleSort('date')}>
 									Modified
 									{#if sortColumn === 'date'}
-										<span class="sort-indicator" aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+										<span class="sort-indicator" aria-hidden="true"
+											>{sortDirection === 'asc' ? '▲' : '▼'}</span
+										>
 									{/if}
 								</button>
 							</th>

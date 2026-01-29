@@ -490,12 +490,7 @@
 						</p>
 					</div>
 				</div>
-				<button
-					type="button"
-					class="close-button"
-					onclick={closeModal}
-					aria-label="Close modal"
-				>
+				<button type="button" class="close-button" onclick={closeModal} aria-label="Close modal">
 					<IconX size={20} />
 				</button>
 			</div>
@@ -574,9 +569,7 @@
 							<IconAlertCircle size={40} />
 						</div>
 						<p class="error-message">{error}</p>
-						<button type="button" class="retry-button" onclick={fetchBlocks}>
-							Try Again
-						</button>
+						<button type="button" class="retry-button" onclick={fetchBlocks}> Try Again </button>
 					</div>
 				{:else if !hasResults}
 					<!-- Empty State -->
@@ -617,7 +610,12 @@
 								tabindex="0"
 								aria-selected={isSelected}
 								onclick={() => handleBlockClick(block)}
-								onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBlockClick(block); }}}
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										handleBlockClick(block);
+									}
+								}}
 								onmouseenter={() => handleBlockHover(block.id)}
 								onmouseleave={() => handleBlockHover(null)}
 								transition:scale={{ duration: 200, start: 0.95, easing: backOut }}
@@ -643,10 +641,7 @@
 
 									<!-- Hover Preview Overlay -->
 									{#if isHovered && block.preview_html}
-										<div
-											class="preview-overlay"
-											transition:fade={{ duration: 150 }}
-										>
+										<div class="preview-overlay" transition:fade={{ duration: 150 }}>
 											<div class="preview-overlay-content">
 												{@html block.preview_html}
 											</div>
@@ -656,9 +651,7 @@
 									<!-- Category Badge -->
 									{#if categoryMeta}
 										{@const CategoryIcon = categoryMeta.icon}
-										<div
-											class="category-badge {categoryMeta.bgColor} {categoryMeta.color}"
-										>
+										<div class="category-badge {categoryMeta.bgColor} {categoryMeta.color}">
 											<CategoryIcon size={12} />
 											<span>{categoryMeta.label}</span>
 										</div>
@@ -740,9 +733,7 @@
 												<IconCopy size={16} />
 												<div class="dropdown-item-content">
 													<span class="dropdown-item-label">Insert as Copy</span>
-													<span class="dropdown-item-desc">
-														Independent copy, not synced
-													</span>
+													<span class="dropdown-item-desc"> Independent copy, not synced </span>
 												</div>
 											</button>
 										</div>

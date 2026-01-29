@@ -102,7 +102,11 @@
 	// Fallback data constants - ICT 7 Standards: No video state
 	// When no video exists in database, show clear admin prompt instead of broken player
 	const fallbackWeeklyContent: WeeklyContent = {
-		title: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+		title: new Date().toLocaleDateString('en-US', {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric'
+		}),
 		videoTitle: 'Weekly video not yet published',
 		videoUrl: '', // Empty string prevents invalid URL attempts
 		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=No+Video+Available',

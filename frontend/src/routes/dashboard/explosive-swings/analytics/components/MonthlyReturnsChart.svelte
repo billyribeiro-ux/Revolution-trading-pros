@@ -34,10 +34,12 @@
 
 	// Calculate scales
 	const values = $derived(data.map((d) => d.pnl_percent));
-	const maxAbsValue = $derived(Math.max(Math.abs(Math.min(...values, 0)), Math.max(...values, 0)) || 10);
+	const maxAbsValue = $derived(
+		Math.max(Math.abs(Math.min(...values, 0)), Math.max(...values, 0)) || 10
+	);
 
 	// Bar width
-	const barWidth = $derived(Math.max(20, (chartWidth / Math.max(data.length, 1)) - 8));
+	const barWidth = $derived(Math.max(20, chartWidth / Math.max(data.length, 1) - 8));
 
 	// Scale functions
 	function scaleX(index: number): number {
@@ -48,7 +50,7 @@
 
 	function scaleY(value: number): number {
 		const normalized = value / maxAbsValue;
-		return padding.top + chartHeight / 2 - (normalized * chartHeight / 2);
+		return padding.top + chartHeight / 2 - (normalized * chartHeight) / 2;
 	}
 
 	// Zero line position
@@ -109,7 +111,7 @@
 			<svg {width} {height} class="chart-svg">
 				<!-- Grid lines -->
 				{#each [-1, -0.5, 0, 0.5, 1] as tick}
-					{@const y = padding.top + chartHeight / 2 - (tick * chartHeight / 2)}
+					{@const y = padding.top + chartHeight / 2 - (tick * chartHeight) / 2}
 					<line
 						x1={padding.left}
 						y1={y}
@@ -120,7 +122,7 @@
 					/>
 					<text
 						x={padding.left - 8}
-						y={y}
+						{y}
 						text-anchor="end"
 						dominant-baseline="middle"
 						class="axis-label"
@@ -145,26 +147,18 @@
 						class="bar"
 						class:hovered={hoveredIndex === index}
 						role="img"
-						aria-label="{month.month}: {formatPercent(month.pnl_percent)} ({month.pnl_percent >= 0 ? 'profit' : 'loss'})"
-						onmouseenter={() => hoveredIndex = index}
-						onmouseleave={() => hoveredIndex = null}
+						aria-label="{month.month}: {formatPercent(month.pnl_percent)} ({month.pnl_percent >= 0
+							? 'profit'
+							: 'loss'})"
+						onmouseenter={() => (hoveredIndex = index)}
+						onmouseleave={() => (hoveredIndex = null)}
 					/>
 
 					<!-- X-axis labels -->
-					<text
-						x={scaleX(index)}
-						y={height - 28}
-						text-anchor="middle"
-						class="axis-label"
-					>
+					<text x={scaleX(index)} y={height - 28} text-anchor="middle" class="axis-label">
 						{formatMonth(month.month_name)}
 					</text>
-					<text
-						x={scaleX(index)}
-						y={height - 14}
-						text-anchor="middle"
-						class="axis-label year"
-					>
+					<text x={scaleX(index)} y={height - 14} text-anchor="middle" class="axis-label year">
 						{month.year}
 					</text>
 				{/each}
@@ -175,10 +169,15 @@
 				{@const month = data[hoveredIndex]}
 				<div
 					class="tooltip"
-					style="left: {scaleX(hoveredIndex)}px; top: {scaleY(Math.max(month.pnl_percent, 0)) - 60}px"
+					style="left: {scaleX(hoveredIndex)}px; top: {scaleY(Math.max(month.pnl_percent, 0)) -
+						60}px"
 				>
 					<div class="tooltip-month">{formatFullMonth(month.month_name, month.year)}</div>
-					<div class="tooltip-value" class:profit={month.pnl_percent >= 0} class:loss={month.pnl_percent < 0}>
+					<div
+						class="tooltip-value"
+						class:profit={month.pnl_percent >= 0}
+						class:loss={month.pnl_percent < 0}
+					>
 						{formatPercent(month.pnl_percent)}
 					</div>
 					<div class="tooltip-stats">
@@ -190,8 +189,8 @@
 
 		<!-- Summary Stats -->
 		{#if data.length > 0}
-			{@const positiveMonths = data.filter(m => m.pnl_percent > 0).length}
-			{@const negativeMonths = data.filter(m => m.pnl_percent < 0).length}
+			{@const positiveMonths = data.filter((m) => m.pnl_percent > 0).length}
+			{@const negativeMonths = data.filter((m) => m.pnl_percent < 0).length}
 			{@const avgReturn = data.reduce((acc, m) => acc + m.pnl_percent, 0) / data.length}
 
 			<div class="summary-row">
@@ -245,7 +244,7 @@
 
 	.axis-label.year {
 		font-size: 9px;
-		fill: var(--color-text-quaternary, #9CA3AF);
+		fill: var(--color-text-quaternary, #9ca3af);
 	}
 
 	.bar {
@@ -354,17 +353,32 @@
 	.skel-bar {
 		width: 30px;
 		height: 60px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 4px;
 	}
 
-	.skel-bar:nth-child(2) { height: 100px; }
-	.skel-bar:nth-child(3) { height: 40px; }
-	.skel-bar:nth-child(4) { height: 80px; }
-	.skel-bar:nth-child(5) { height: 30px; }
-	.skel-bar:nth-child(6) { height: 70px; }
+	.skel-bar:nth-child(2) {
+		height: 100px;
+	}
+	.skel-bar:nth-child(3) {
+		height: 40px;
+	}
+	.skel-bar:nth-child(4) {
+		height: 80px;
+	}
+	.skel-bar:nth-child(5) {
+		height: 30px;
+	}
+	.skel-bar:nth-child(6) {
+		height: 70px;
+	}
 
 	.empty-state {
 		height: 180px;
@@ -376,8 +390,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 640px) {

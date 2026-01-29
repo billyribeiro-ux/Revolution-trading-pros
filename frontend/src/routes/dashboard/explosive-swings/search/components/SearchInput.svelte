@@ -39,8 +39,8 @@
 
 	// Computed: should show dropdown
 	const hasDropdownContent = $derived(
-		showSuggestions && suggestions.length > 0 ||
-		(!query && searchHistory.length > 0 && showDropdown)
+		(showSuggestions && suggestions.length > 0) ||
+			(!query && searchHistory.length > 0 && showDropdown)
 	);
 
 	function handleInput(event: Event) {
@@ -93,7 +93,14 @@
 <div class="search-input-wrapper">
 	<div class="search-input-container">
 		<div class="search-icon">
-			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="11" cy="11" r="8" />
 				<path d="M21 21l-4.35-4.35" />
 			</svg>
@@ -118,22 +125,41 @@
 		{#if isLoading}
 			<div class="loading-spinner">
 				<svg width="20" height="20" viewBox="0 0 24 24" class="spinner">
-					<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" opacity="0.25" />
-					<path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" />
+					<circle
+						cx="12"
+						cy="12"
+						r="10"
+						stroke="currentColor"
+						stroke-width="3"
+						fill="none"
+						opacity="0.25"
+					/>
+					<path
+						d="M12 2a10 10 0 0 1 10 10"
+						stroke="currentColor"
+						stroke-width="3"
+						fill="none"
+						stroke-linecap="round"
+					/>
 				</svg>
 			</div>
 		{:else if query}
 			<button class="clear-btn" onclick={clearInput} aria-label="Clear search">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<line x1="18" y1="6" x2="6" y2="18" />
 					<line x1="6" y1="6" x2="18" y2="18" />
 				</svg>
 			</button>
 		{/if}
 
-		<button class="search-btn" onclick={onSearch} aria-label="Submit search">
-			Search
-		</button>
+		<button class="search-btn" onclick={onSearch} aria-label="Submit search"> Search </button>
 	</div>
 
 	<!-- Dropdown -->
@@ -156,9 +182,7 @@
 				<div class="dropdown-section">
 					<div class="section-header">
 						<span class="section-label">Recent Searches</span>
-						<button class="clear-history-btn" onclick={onClearHistory}>
-							Clear
-						</button>
+						<button class="clear-history-btn" onclick={onClearHistory}> Clear </button>
 					</div>
 					{#each searchHistory.slice(0, 5) as historyItem}
 						<button
@@ -166,7 +190,14 @@
 							onclick={() => onHistorySelect(historyItem)}
 							role="option"
 						>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<circle cx="12" cy="12" r="10" />
 								<polyline points="12 6 12 12 16 14" />
 							</svg>
@@ -193,7 +224,9 @@
 		background: var(--color-bg-card);
 		border: 2px solid var(--color-border-default);
 		border-radius: 12px;
-		transition: border-color 0.15s, box-shadow 0.15s;
+		transition:
+			border-color 0.15s,
+			box-shadow 0.15s;
 	}
 
 	.search-input-container:focus-within {
@@ -228,8 +261,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.clear-btn {

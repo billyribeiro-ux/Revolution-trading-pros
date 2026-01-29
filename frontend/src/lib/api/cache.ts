@@ -106,7 +106,7 @@ const DEFAULT_CACHE_CONFIG: CacheConfig = Object.freeze({
 	maxStaleTime: 3_600_000, // 1 hour max stale
 	tags: [],
 	strategy: 'stale-while-revalidate',
-	persist: false,
+	persist: false
 });
 
 const STORAGE_PREFIX = 'rtp_cache_';
@@ -155,7 +155,8 @@ export class RequestCache implements Disposable {
 	constructor(config: Partial<CacheConfig> & { maxSize?: number } = {}) {
 		this.maxSize = config.maxSize ?? 100;
 		this.defaultTtl = config.ttl ?? DEFAULT_CACHE_CONFIG.ttl;
-		this.staleWhileRevalidate = config.staleWhileRevalidate ?? DEFAULT_CACHE_CONFIG.staleWhileRevalidate;
+		this.staleWhileRevalidate =
+			config.staleWhileRevalidate ?? DEFAULT_CACHE_CONFIG.staleWhileRevalidate;
 
 		// Start periodic cleanup
 		if (browser) {
@@ -223,7 +224,7 @@ export class RequestCache implements Disposable {
 			data: entry.data,
 			isStale: isExpired,
 			age,
-			tags: entry.tags,
+			tags: entry.tags
 		});
 	}
 
@@ -249,7 +250,7 @@ export class RequestCache implements Disposable {
 			timestamp: Date.now(),
 			ttl,
 			tags: Object.freeze([...tags]),
-			isRevalidating: false,
+			isRevalidating: false
 		});
 
 		this.cache.set(key, entry as CacheEntry<unknown>);
@@ -308,9 +309,10 @@ export class RequestCache implements Disposable {
 	 * Invalidate cache entries by pattern or exact match
 	 */
 	invalidate(pattern: string | RegExp): number {
-		const regex = typeof pattern === 'string'
-			? new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-			: pattern;
+		const regex =
+			typeof pattern === 'string'
+				? new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+				: pattern;
 
 		let count = 0;
 
@@ -418,7 +420,7 @@ export class RequestCache implements Disposable {
 					data,
 					isStale: false,
 					age: 0,
-					tags: [],
+					tags: []
 				});
 			}
 
@@ -441,7 +443,7 @@ export class RequestCache implements Disposable {
 					data,
 					isStale: false,
 					age: 0,
-					tags: config?.tags ?? [],
+					tags: config?.tags ?? []
 				});
 			}
 
@@ -453,7 +455,7 @@ export class RequestCache implements Disposable {
 						data,
 						isStale: false,
 						age: 0,
-						tags: config?.tags ?? [],
+						tags: config?.tags ?? []
 					});
 				} catch (error) {
 					// Fallback to cache on network error
@@ -482,7 +484,7 @@ export class RequestCache implements Disposable {
 					data,
 					isStale: false,
 					age: 0,
-					tags: config?.tags ?? [],
+					tags: config?.tags ?? []
 				});
 			}
 		}
@@ -531,7 +533,7 @@ export class RequestCache implements Disposable {
 			hits: this.hits,
 			misses: this.misses,
 			evictions: this.evictions,
-			hitRate: total > 0 ? this.hits / total : 0,
+			hitRate: total > 0 ? this.hits / total : 0
 		});
 	}
 
@@ -618,7 +620,7 @@ export class RequestCache implements Disposable {
 				data: entry.data,
 				timestamp: entry.timestamp,
 				ttl: entry.ttl,
-				tags: entry.tags,
+				tags: entry.tags
 			});
 			localStorage.setItem(STORAGE_PREFIX + key, serialized);
 		} catch {
@@ -653,7 +655,7 @@ export class RequestCache implements Disposable {
 						timestamp: parsed.timestamp,
 						ttl: parsed.ttl,
 						tags: Object.freeze(parsed.tags ?? []),
-						isRevalidating: false,
+						isRevalidating: false
 					};
 
 					this.cache.set(key, entry);
@@ -688,7 +690,10 @@ export class RequestCache implements Disposable {
 			const toRemove = keys.slice(0, Math.max(Math.floor(keys.length / 2), 10));
 			toRemove.forEach(({ key, timestamp }) => {
 				const age = now - timestamp;
-				if (age > MAX_STORAGE_AGE || keys.indexOf({ key, timestamp }) < Math.floor(keys.length / 2)) {
+				if (
+					age > MAX_STORAGE_AGE ||
+					keys.indexOf({ key, timestamp }) < Math.floor(keys.length / 2)
+				) {
 					localStorage.removeItem(key);
 				}
 			});
@@ -763,7 +768,10 @@ export function createCachedFetcher<T, P extends Record<string, unknown> = Recor
 /**
  * Cache invalidation helper for mutations
  */
-export function invalidateAfterMutation(patterns: readonly string[], tags?: readonly string[]): void {
+export function invalidateAfterMutation(
+	patterns: readonly string[],
+	tags?: readonly string[]
+): void {
 	const cache = getCache();
 
 	for (const pattern of patterns) {
@@ -820,7 +828,11 @@ class LegacyApiCache {
 		fetcher: () => Promise<T>,
 		options?: { ttl?: number; persist?: boolean }
 	): Promise<T> {
-		const result = await this.cache.getOrFetch(key, fetcher, options ? { ttl: options.ttl, persist: options.persist } : undefined);
+		const result = await this.cache.getOrFetch(
+			key,
+			fetcher,
+			options ? { ttl: options.ttl, persist: options.persist } : undefined
+		);
 		return result.data;
 	}
 
@@ -839,10 +851,7 @@ export const apiCache = new LegacyApiCache();
  * Legacy export: build cache key
  * @deprecated Use generateCacheKey instead
  */
-export function buildCacheKey(
-	url: string,
-	params?: Record<string, unknown>
-): string {
+export function buildCacheKey(url: string, params?: Record<string, unknown>): string {
 	return generateCacheKey('GET', url, params);
 }
 

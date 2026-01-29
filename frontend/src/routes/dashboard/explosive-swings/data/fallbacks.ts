@@ -34,7 +34,9 @@ export const fallbackData = {
 		videoUrl: 'https://iframe.mediadelivery.net/embed/585929/d8477a4f-6b2f-4a2a-9e3e-e8e3c1e0e0e0',
 		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
 		duration: '24:35',
-		publishedDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' at 6:40 PM ET'
+		publishedDate:
+			new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) +
+			' at 6:40 PM ET'
 	} as WeeklyContent,
 
 	// Trade Plan Entries
@@ -148,12 +150,60 @@ export const fallbackData = {
 
 	// Closed Trades for Ticker Pills
 	closedTrades: [
-		{ id: '1', ticker: 'MSFT', percentageGain: 8.2, isWinner: true, closedAt: new Date('2026-01-12'), entryPrice: 425, exitPrice: 460 },
-		{ id: '2', ticker: 'AAPL', percentageGain: 5.1, isWinner: true, closedAt: new Date('2026-01-11'), entryPrice: 185, exitPrice: 194.4 },
-		{ id: '3', ticker: 'GOOGL', percentageGain: 4.8, isWinner: true, closedAt: new Date('2026-01-10'), entryPrice: 175, exitPrice: 183.4 },
-		{ id: '4', ticker: 'AMZN', percentageGain: 6.3, isWinner: true, closedAt: new Date('2026-01-10'), entryPrice: 185, exitPrice: 196.7 },
-		{ id: '5', ticker: 'AMD', percentageGain: 3.9, isWinner: true, closedAt: new Date('2026-01-09'), entryPrice: 125, exitPrice: 129.9 },
-		{ id: '6', ticker: 'NFLX', percentageGain: -2.1, isWinner: false, closedAt: new Date('2026-01-09'), entryPrice: 520, exitPrice: 509.1 }
+		{
+			id: '1',
+			ticker: 'MSFT',
+			percentageGain: 8.2,
+			isWinner: true,
+			closedAt: new Date('2026-01-12'),
+			entryPrice: 425,
+			exitPrice: 460
+		},
+		{
+			id: '2',
+			ticker: 'AAPL',
+			percentageGain: 5.1,
+			isWinner: true,
+			closedAt: new Date('2026-01-11'),
+			entryPrice: 185,
+			exitPrice: 194.4
+		},
+		{
+			id: '3',
+			ticker: 'GOOGL',
+			percentageGain: 4.8,
+			isWinner: true,
+			closedAt: new Date('2026-01-10'),
+			entryPrice: 175,
+			exitPrice: 183.4
+		},
+		{
+			id: '4',
+			ticker: 'AMZN',
+			percentageGain: 6.3,
+			isWinner: true,
+			closedAt: new Date('2026-01-10'),
+			entryPrice: 185,
+			exitPrice: 196.7
+		},
+		{
+			id: '5',
+			ticker: 'AMD',
+			percentageGain: 3.9,
+			isWinner: true,
+			closedAt: new Date('2026-01-09'),
+			entryPrice: 125,
+			exitPrice: 129.9
+		},
+		{
+			id: '6',
+			ticker: 'NFLX',
+			percentageGain: -2.1,
+			isWinner: false,
+			closedAt: new Date('2026-01-09'),
+			entryPrice: 520,
+			exitPrice: 509.1
+		}
 	] as ClosedTrade[],
 
 	// Active Positions for Position Cards
@@ -162,8 +212,8 @@ export const fallbackData = {
 			id: '1',
 			ticker: 'NVDA',
 			status: 'ENTRY',
-			entryPrice: 142.50,
-			currentPrice: 143.80,
+			entryPrice: 142.5,
+			currentPrice: 143.8,
 			unrealizedPercent: 0.9,
 			targets: [
 				{ price: 156, percentFromEntry: 9.5, label: 'Target 1' },
@@ -179,7 +229,7 @@ export const fallbackData = {
 			status: 'WATCHING',
 			entryPrice: null,
 			entryZone: { low: 180, high: 185 },
-			currentPrice: 188.40,
+			currentPrice: 188.4,
 			unrealizedPercent: null,
 			targets: [{ price: 210, percentFromEntry: 13.5, label: 'Target' }],
 			stopLoss: { price: 172, percentFromEntry: -7.0 },
@@ -191,7 +241,7 @@ export const fallbackData = {
 			ticker: 'META',
 			status: 'ACTIVE',
 			entryPrice: 585,
-			currentPrice: 597.30,
+			currentPrice: 597.3,
 			unrealizedPercent: 2.1,
 			targets: [
 				{ price: 620, percentFromEntry: 6.0, label: 'Target 1' },
@@ -206,7 +256,7 @@ export const fallbackData = {
 			ticker: 'AMD',
 			status: 'ACTIVE',
 			entryPrice: 125,
-			currentPrice: 126.00,
+			currentPrice: 126.0,
 			unrealizedPercent: 0.8,
 			targets: [{ price: 138, percentFromEntry: 10.4, label: 'Target 1' }],
 			stopLoss: { price: 118, percentFromEntry: -5.6 },
@@ -226,10 +276,47 @@ export const fallbackData = {
 
 	// Recent Videos for grid
 	recentVideos: [
-		{ id: '1', ticker: 'NVDA', type: 'ENTRY', title: 'NVDA Entry Alert - Opening Swing Position', thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY', videoUrl: '/dashboard/explosive-swings/updates/nvda-entry', duration: '8:45', publishedAt: new Date('2026-01-13'), isFeatured: true },
-		{ id: '2', ticker: 'MSFT', type: 'EXIT', title: 'MSFT Exit - Closing for +8.2% Profit', thumbnailUrl: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT', videoUrl: '/dashboard/explosive-swings/updates/msft-exit', duration: '6:20', publishedAt: new Date('2026-01-12') },
-		{ id: '3', ticker: 'META', type: 'ENTRY', title: 'META Entry - Momentum Play Setup', thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY', videoUrl: '/dashboard/explosive-swings/updates/meta-entry', duration: '7:15', publishedAt: new Date('2026-01-11') },
-		{ id: '4', ticker: 'TSLA', type: 'UPDATE', title: 'TSLA Update - Approaching Entry Zone', thumbnailUrl: 'https://placehold.co/640x360/f59e0b/FFFFFF/png?text=TSLA+UPDATE', videoUrl: '/dashboard/explosive-swings/updates/tsla-update', duration: '5:30', publishedAt: new Date('2026-01-11') }
+		{
+			id: '1',
+			ticker: 'NVDA',
+			type: 'ENTRY',
+			title: 'NVDA Entry Alert - Opening Swing Position',
+			thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY',
+			videoUrl: '/dashboard/explosive-swings/updates/nvda-entry',
+			duration: '8:45',
+			publishedAt: new Date('2026-01-13'),
+			isFeatured: true
+		},
+		{
+			id: '2',
+			ticker: 'MSFT',
+			type: 'EXIT',
+			title: 'MSFT Exit - Closing for +8.2% Profit',
+			thumbnailUrl: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT',
+			videoUrl: '/dashboard/explosive-swings/updates/msft-exit',
+			duration: '6:20',
+			publishedAt: new Date('2026-01-12')
+		},
+		{
+			id: '3',
+			ticker: 'META',
+			type: 'ENTRY',
+			title: 'META Entry - Momentum Play Setup',
+			thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY',
+			videoUrl: '/dashboard/explosive-swings/updates/meta-entry',
+			duration: '7:15',
+			publishedAt: new Date('2026-01-11')
+		},
+		{
+			id: '4',
+			ticker: 'TSLA',
+			type: 'UPDATE',
+			title: 'TSLA Update - Approaching Entry Zone',
+			thumbnailUrl: 'https://placehold.co/640x360/f59e0b/FFFFFF/png?text=TSLA+UPDATE',
+			videoUrl: '/dashboard/explosive-swings/updates/tsla-update',
+			duration: '5:30',
+			publishedAt: new Date('2026-01-11')
+		}
 	] as Video[],
 
 	// Video Updates for latest content section
@@ -274,9 +361,11 @@ export const fallbackData = {
 			ticker: 'NVDA',
 			title: 'Opening NVDA Swing Position',
 			time: 'Today at 10:32 AM',
-			message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
+			message:
+				'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
 			isNew: true,
-			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.'
+			notes:
+				'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.'
 		},
 		{
 			id: 2,
@@ -286,7 +375,8 @@ export const fallbackData = {
 			time: 'Today at 9:15 AM',
 			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
 			isNew: true,
-			notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.'
+			notes:
+				'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.'
 		},
 		{
 			id: 3,
@@ -296,7 +386,8 @@ export const fallbackData = {
 			time: 'Yesterday at 3:45 PM',
 			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
 			isNew: false,
-			notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.'
+			notes:
+				'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.'
 		},
 		{
 			id: 4,
@@ -306,7 +397,8 @@ export const fallbackData = {
 			time: 'Yesterday at 11:20 AM',
 			message: 'META hit our entry at $585. Position active. Targets in trade plan.',
 			isNew: false,
-			notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.'
+			notes:
+				'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.'
 		},
 		{
 			id: 5,
@@ -316,7 +408,8 @@ export const fallbackData = {
 			time: 'Jan 10 at 2:30 PM',
 			message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.',
 			isNew: false,
-			notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.'
+			notes:
+				'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.'
 		}
 	] as FormattedAlert[]
 };

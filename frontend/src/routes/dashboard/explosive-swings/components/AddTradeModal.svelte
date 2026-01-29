@@ -41,9 +41,9 @@
 
 	const isFormValid = $derived(
 		form.ticker.trim() !== '' &&
-		form.entry_price !== '' &&
-		parseFloat(form.entry_price) > 0 &&
-		form.quantity > 0
+			form.entry_price !== '' &&
+			parseFloat(form.entry_price) > 0 &&
+			form.quantity > 0
 	);
 
 	// Focus trap and body scroll lock
@@ -115,7 +115,8 @@
 			onSuccess?.();
 			onClose();
 		} catch (err) {
-			errorMessage = err instanceof Error ? err.message : 'Failed to create trade. Please try again.';
+			errorMessage =
+				err instanceof Error ? err.message : 'Failed to create trade. Please try again.';
 			console.error(err);
 		} finally {
 			isSaving = false;
@@ -140,11 +141,11 @@
 
 {#if isOpen}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div 
+	<div
 		bind:this={modalRef}
-		class="modal-overlay" 
-		role="dialog" 
-		aria-modal="true" 
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
 		aria-labelledby="modal-title"
 		tabindex="-1"
 		onclick={handleOverlayClick}
@@ -155,7 +156,14 @@
 			<div class="modal-header">
 				<div class="header-content">
 					<div class="header-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="22"
+							height="22"
+						>
 							<path d="M12 4v16m8-8H4" />
 						</svg>
 					</div>
@@ -165,7 +173,14 @@
 					</div>
 				</div>
 				<button class="modal-close" onclick={handleClose} aria-label="Close modal">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="20"
+						height="20"
+					>
 						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
@@ -174,7 +189,14 @@
 			<!-- Error Banner -->
 			{#if errorMessage}
 				<div class="error-banner">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="18"
+						height="18"
+					>
 						<circle cx="12" cy="12" r="10" />
 						<path d="M12 8v4M12 16h.01" />
 					</svg>
@@ -183,7 +205,13 @@
 			{/if}
 
 			<!-- Form Body -->
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				<!-- Ticker & Type Row -->
 				<div class="form-section">
 					<div class="section-label">
@@ -206,7 +234,12 @@
 						<div class="form-group">
 							<label for="trade_type">Trade Type *</label>
 							<div class="select-wrapper">
-								<select id="trade_type" name="trade_type" bind:value={form.trade_type} class="form-select">
+								<select
+									id="trade_type"
+									name="trade_type"
+									bind:value={form.trade_type}
+									class="form-select"
+								>
 									<option value="shares">Shares</option>
 									<option value="options">Options</option>
 								</select>
@@ -225,7 +258,12 @@
 						<div class="form-group">
 							<label for="direction">Direction *</label>
 							<div class="select-wrapper">
-								<select id="direction" name="direction" bind:value={form.direction} class="form-select">
+								<select
+									id="direction"
+									name="direction"
+									bind:value={form.direction}
+									class="form-select"
+								>
 									<option value="long">🟢 Long</option>
 									<option value="short">🔴 Short</option>
 								</select>
@@ -258,7 +296,12 @@
 							<div class="form-group">
 								<label for="option_type">Option Type</label>
 								<div class="select-wrapper">
-									<select id="option_type" name="option_type" bind:value={form.option_type} class="form-select">
+									<select
+										id="option_type"
+										name="option_type"
+										bind:value={form.option_type}
+										class="form-select"
+									>
 										<option value={undefined}>Select...</option>
 										<option value="call">Call</option>
 										<option value="put">Put</option>
@@ -292,7 +335,12 @@
 							<div class="form-group">
 								<label for="contract_type">Contract Type</label>
 								<div class="select-wrapper">
-									<select id="contract_type" name="contract_type" bind:value={form.contract_type} class="form-select">
+									<select
+										id="contract_type"
+										name="contract_type"
+										bind:value={form.contract_type}
+										class="form-select"
+									>
 										<option value={undefined}>Select...</option>
 										<option value="weekly">Weekly</option>
 										<option value="monthly">Monthly</option>
@@ -412,8 +460,12 @@
 	}
 
 	@keyframes overlayFadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -429,7 +481,7 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 
+		box-shadow:
 			0 25px 50px -12px rgba(0, 0, 0, 0.25),
 			0 0 0 1px rgba(0, 0, 0, 0.05);
 		animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -450,7 +502,11 @@
 	   MODAL HEADER - Dark theme with icon
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-header {
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
 		padding: 24px 28px;
 		display: flex;
 		align-items: center;
@@ -566,7 +622,11 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
 		flex-shrink: 0;
 	}
 
@@ -726,7 +786,11 @@
 	}
 
 	.btn-save {
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-hover) 100%
+		);
 		color: var(--color-bg-card);
 		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.2);
 	}
@@ -752,7 +816,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

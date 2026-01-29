@@ -107,7 +107,6 @@
 			href: '/alerts/spx-profit-pulse'
 		}
 	];
-
 </script>
 
 <SEOHead

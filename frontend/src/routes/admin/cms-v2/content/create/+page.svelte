@@ -190,19 +190,11 @@
 		</div>
 
 		<div class="header-actions">
-			<button
-				class="btn-secondary"
-				onclick={() => save(false)}
-				disabled={isSaving || isPublishing}
-			>
+			<button class="btn-secondary" onclick={() => save(false)} disabled={isSaving || isPublishing}>
 				<IconDeviceFloppy size={18} />
 				{isSaving ? 'Saving...' : 'Save Draft'}
 			</button>
-			<button
-				class="btn-primary"
-				onclick={() => save(true)}
-				disabled={isSaving || isPublishing}
-			>
+			<button class="btn-primary" onclick={() => save(true)} disabled={isSaving || isPublishing}>
 				<IconSend size={18} />
 				{isPublishing ? 'Publishing...' : 'Publish'}
 			</button>
@@ -415,9 +407,7 @@
 							<IconPhoto size={20} />
 							<span>Select Image</span>
 						</button>
-						<span class="field-hint">
-							Recommended size: 1200x630 pixels for social sharing
-						</span>
+						<span class="field-hint"> Recommended size: 1200x630 pixels for social sharing </span>
 					</div>
 				</div>
 			{/if}

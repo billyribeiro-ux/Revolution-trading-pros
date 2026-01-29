@@ -286,7 +286,8 @@
 					/>
 				</svg>
 				{error}
-				<button onclick={() => (error = '')} class="ml-auto text-red-300 hover:text-white">×</button>
+				<button onclick={() => (error = '')} class="ml-auto text-red-300 hover:text-white">×</button
+				>
 			</div>
 		{/if}
 
@@ -420,7 +421,12 @@
 				</div>
 			{:else if filteredPlans.length === 0}
 				<div class="empty-state">
-					<svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg
+						class="w-12 h-12 text-slate-500"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -498,7 +504,11 @@
 		<div class="help-section">
 			<h3>Setting Up Stripe Price IDs</h3>
 			<ol>
-				<li>Go to <a href="https://dashboard.stripe.com/products" target="_blank" rel="noopener">Stripe Dashboard → Products</a></li>
+				<li>
+					Go to <a href="https://dashboard.stripe.com/products" target="_blank" rel="noopener"
+						>Stripe Dashboard → Products</a
+					>
+				</li>
 				<li>Create a product for each trading room (e.g., "Explosive Swings")</li>
 				<li>Add prices: Monthly, Quarterly, Annual with matching amounts</li>
 				<li>Copy each Price ID (starts with <code>price_</code>)</li>

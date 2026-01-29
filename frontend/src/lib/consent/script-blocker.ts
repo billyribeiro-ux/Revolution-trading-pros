@@ -387,7 +387,13 @@ export function generateBlockingScript(): string {
   try {
     var stored = localStorage.getItem('rtp_consent');
     if (stored) consent = JSON.parse(stored);
-  } catch(e) {}
+  } catch(e) {
+    // SSR safety: localStorage may not be available or consent data may be corrupted
+    // Log error in development for debugging
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('[ScriptBlocker] Failed to read consent from localStorage:', e.message || e);
+    }
+  }
 
   if (consent && consent.hasInteracted) return; // Already has consent
 

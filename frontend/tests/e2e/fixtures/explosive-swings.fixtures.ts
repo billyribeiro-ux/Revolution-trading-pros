@@ -120,7 +120,9 @@ export function createTradeFixture(overrides: Partial<TradeFixture> = {}): Trade
 /**
  * Create a mock trade plan fixture
  */
-export function createTradePlanFixture(overrides: Partial<TradePlanFixture> = {}): TradePlanFixture {
+export function createTradePlanFixture(
+	overrides: Partial<TradePlanFixture> = {}
+): TradePlanFixture {
 	return {
 		ticker: 'NVDA',
 		bias: 'BULLISH',
@@ -153,7 +155,9 @@ export function createStatsFixture(overrides: Partial<StatsFixture> = {}): Stats
 /**
  * Create mock weekly video fixture
  */
-export function createWeeklyVideoFixture(overrides: Partial<WeeklyVideoFixture> = {}): WeeklyVideoFixture {
+export function createWeeklyVideoFixture(
+	overrides: Partial<WeeklyVideoFixture> = {}
+): WeeklyVideoFixture {
 	return {
 		id: 1,
 		video_title: 'Weekly Breakdown: Top Swing Setups',
@@ -214,7 +218,9 @@ export function mockStatsResponse(stats: StatsFixture = createStatsFixture()) {
 /**
  * Mock response for GET /api/weekly-video/:room
  */
-export function mockWeeklyVideoResponse(video: WeeklyVideoFixture | null = createWeeklyVideoFixture()) {
+export function mockWeeklyVideoResponse(
+	video: WeeklyVideoFixture | null = createWeeklyVideoFixture()
+) {
 	return {
 		success: true,
 		data: video
@@ -276,8 +282,22 @@ export const activeDashboardScenario = {
 	trades: [
 		createTradeFixture({ id: 1, ticker: 'NVDA', status: 'open', entry_price: 142.5 }),
 		createTradeFixture({ id: 2, ticker: 'META', status: 'open', entry_price: 585.0 }),
-		createTradeFixture({ id: 3, ticker: 'MSFT', status: 'closed', entry_price: 425, exit_price: 460, pnl_percent: 8.2 }),
-		createTradeFixture({ id: 4, ticker: 'AAPL', status: 'closed', entry_price: 185, exit_price: 194.4, pnl_percent: 5.1 })
+		createTradeFixture({
+			id: 3,
+			ticker: 'MSFT',
+			status: 'closed',
+			entry_price: 425,
+			exit_price: 460,
+			pnl_percent: 8.2
+		}),
+		createTradeFixture({
+			id: 4,
+			ticker: 'AAPL',
+			status: 'closed',
+			entry_price: 185,
+			exit_price: 194.4,
+			pnl_percent: 5.1
+		})
 	],
 	tradePlans: [
 		createTradePlanFixture({ ticker: 'NVDA', bias: 'BULLISH' }),
@@ -296,7 +316,12 @@ export const emptyDashboardScenario = {
 	alerts: [],
 	trades: [],
 	tradePlans: [],
-	stats: createStatsFixture({ win_rate: 0, active_trades: 0, closed_this_week: 0, weekly_profit: '$0' }),
+	stats: createStatsFixture({
+		win_rate: 0,
+		active_trades: 0,
+		closed_this_week: 0,
+		weekly_profit: '$0'
+	}),
 	weeklyVideo: createWeeklyVideoFixture()
 };
 
@@ -309,8 +334,22 @@ export const closedTradesOnlyScenario = {
 		createAlertFixture({ id: 2, alert_type: 'EXIT', ticker: 'AAPL' })
 	],
 	trades: [
-		createTradeFixture({ id: 1, ticker: 'MSFT', status: 'closed', entry_price: 425, exit_price: 460, pnl_percent: 8.2 }),
-		createTradeFixture({ id: 2, ticker: 'AAPL', status: 'closed', entry_price: 185, exit_price: 194.4, pnl_percent: 5.1 })
+		createTradeFixture({
+			id: 1,
+			ticker: 'MSFT',
+			status: 'closed',
+			entry_price: 425,
+			exit_price: 460,
+			pnl_percent: 8.2
+		}),
+		createTradeFixture({
+			id: 2,
+			ticker: 'AAPL',
+			status: 'closed',
+			entry_price: 185,
+			exit_price: 194.4,
+			pnl_percent: 5.1
+		})
 	],
 	tradePlans: [],
 	stats: createStatsFixture({ win_rate: 100, active_trades: 0, closed_this_week: 2 }),

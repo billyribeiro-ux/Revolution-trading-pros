@@ -71,8 +71,12 @@
 
 	// Provide editor context to child components
 	setContext('blockEditor', {
-		get readonly() { return readonly; },
-		get selectedBlockId() { return selectedBlockId; },
+		get readonly() {
+			return readonly;
+		},
+		get selectedBlockId() {
+			return selectedBlockId;
+		},
 		selectBlock: (id: string | null) => editorStore.setActiveBlock(id),
 		openSlashMenu: (position: { x: number; y: number }, afterBlockId?: string) => {
 			slashMenuPosition = position;
@@ -114,27 +118,27 @@
 
 		// Map slash command ID to block type
 		const blockTypeMap: Record<string, string> = {
-			'heading1': 'heading',
-			'heading2': 'heading',
-			'heading3': 'heading',
-			'paragraph': 'rich-text',
-			'quote': 'quote',
-			'divider': 'divider',
+			heading1: 'heading',
+			heading2: 'heading',
+			heading3: 'heading',
+			paragraph: 'rich-text',
+			quote: 'quote',
+			divider: 'divider',
 			'bullet-list': 'list',
 			'numbered-list': 'list',
 			'code-block': 'code',
-			'image': 'image',
-			'video': 'video',
-			'table': 'table',
-			'callout': 'callout',
+			image: 'image',
+			video: 'video',
+			table: 'table',
+			callout: 'callout',
 			'alert-box': 'callout',
 			'trade-setup': 'trade-setup',
 			'performance-stats': 'performance-stats',
 			'tradingview-chart': 'tradingview-chart',
-			'youtube': 'video',
-			'vimeo': 'video',
-			'twitter': 'embed',
-			'columns': 'columns',
+			youtube: 'video',
+			vimeo: 'video',
+			twitter: 'embed',
+			columns: 'columns',
 			'reusable-block': 'reusable'
 		};
 
@@ -196,9 +200,8 @@
 		if (e.key === '/' && !showSlashMenu && !e.ctrlKey && !e.metaKey) {
 			// Only if not inside an input/contenteditable
 			const target = e.target as HTMLElement;
-			const isEditable = target.isContentEditable || 
-				target.tagName === 'INPUT' || 
-				target.tagName === 'TEXTAREA';
+			const isEditable =
+				target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
 
 			if (!isEditable || isEmpty) {
 				e.preventDefault();
@@ -228,7 +231,7 @@
 
 	function handleAddBlock() {
 		if (readonly) return;
-		
+
 		const rect = editorRef?.getBoundingClientRect();
 		if (rect) {
 			slashMenuPosition = {
@@ -268,15 +271,29 @@
 	{#if isEmpty && !readonly}
 		<div class="empty-state">
 			<div class="empty-icon">
-				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-					<path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+				<svg
+					width="48"
+					height="48"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+				>
+					<path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round" />
 				</svg>
 			</div>
 			<p class="empty-title">Start Creating</p>
 			<p class="empty-hint">{placeholder}</p>
 			<button type="button" class="empty-cta" onclick={handleAddBlock}>
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round" />
 				</svg>
 				Add your first block
 			</button>

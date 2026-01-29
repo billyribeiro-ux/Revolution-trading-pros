@@ -39,9 +39,7 @@
 				<div class="error-icon">⚠️</div>
 				<h3 class="error-title">Something went wrong</h3>
 				<p class="error-message">{error.message}</p>
-				<button type="button" class="error-retry" onclick={reset}>
-					Try again
-				</button>
+				<button type="button" class="error-retry" onclick={reset}> Try again </button>
 			</div>
 		{/if}
 	{:else}

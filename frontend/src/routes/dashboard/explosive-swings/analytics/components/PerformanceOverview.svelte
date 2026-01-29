@@ -8,7 +8,11 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5 January 2026
 	 */
 	import MetricCard from './MetricCard.svelte';
-	import type { AnalyticsSummary, StreakAnalysis, AlertEffectiveness } from '../analytics.state.svelte';
+	import type {
+		AnalyticsSummary,
+		StreakAnalysis,
+		AlertEffectiveness
+	} from '../analytics.state.svelte';
 
 	interface Props {
 		summary: AnalyticsSummary;
@@ -36,7 +40,7 @@
 
 	// Calculate wins and losses from summary
 	const totalTrades = $derived(summary.total_trades);
-	const wins = $derived(Math.round(totalTrades * summary.win_rate / 100));
+	const wins = $derived(Math.round((totalTrades * summary.win_rate) / 100));
 	const losses = $derived(totalTrades - wins);
 
 	// Metric card definitions
@@ -51,8 +55,14 @@
 		{
 			label: 'Profit Factor',
 			value: formatRatio(summary.profit_factor),
-			subtext: summary.profit_factor >= 1.5 ? 'Excellent' : summary.profit_factor >= 1 ? 'Good' : 'Needs Work',
-			color: summary.profit_factor >= 1.5 ? 'profit' : summary.profit_factor >= 1 ? 'neutral' : 'loss',
+			subtext:
+				summary.profit_factor >= 1.5
+					? 'Excellent'
+					: summary.profit_factor >= 1
+						? 'Good'
+						: 'Needs Work',
+			color:
+				summary.profit_factor >= 1.5 ? 'profit' : summary.profit_factor >= 1 ? 'neutral' : 'loss',
 			icon: 'scale'
 		},
 		{
@@ -65,7 +75,8 @@
 		{
 			label: 'Sharpe Ratio',
 			value: summary.sharpe_ratio.toFixed(2),
-			subtext: summary.sharpe_ratio >= 2 ? 'Excellent' : summary.sharpe_ratio >= 1 ? 'Good' : 'Below avg',
+			subtext:
+				summary.sharpe_ratio >= 2 ? 'Excellent' : summary.sharpe_ratio >= 1 ? 'Good' : 'Below avg',
 			color: summary.sharpe_ratio >= 2 ? 'profit' : summary.sharpe_ratio >= 1 ? 'neutral' : 'loss',
 			icon: 'chart'
 		},
@@ -121,8 +132,11 @@
 	);
 
 	const streakColor = $derived(
-		streakAnalysis?.current_streak_type === 'WIN' ? 'profit' :
-		streakAnalysis?.current_streak_type === 'LOSS' ? 'loss' : 'neutral'
+		streakAnalysis?.current_streak_type === 'WIN'
+			? 'profit'
+			: streakAnalysis?.current_streak_type === 'LOSS'
+				? 'loss'
+				: 'neutral'
 	);
 </script>
 
@@ -144,50 +158,145 @@
 				{:else}
 					<div class="metric-icon {metric.color}">
 						{#if metric.icon === 'target'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<circle cx="12" cy="12" r="10"/>
-								<circle cx="12" cy="12" r="6"/>
-								<circle cx="12" cy="12" r="2"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<circle cx="12" cy="12" r="10" />
+								<circle cx="12" cy="12" r="6" />
+								<circle cx="12" cy="12" r="2" />
 							</svg>
 						{:else if metric.icon === 'scale'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/>
-								<path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/>
-								<path d="M7 21h10"/><path d="M12 3v18"/>
-								<path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z" />
+								<path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z" />
+								<path d="M7 21h10" /><path d="M12 3v18" />
+								<path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
 							</svg>
 						{:else if metric.icon === 'chart'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="M3 3v18h18" /><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
 							</svg>
 						{:else if metric.icon === 'trending-up'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-								<polyline points="17 6 23 6 23 12"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+								<polyline points="17 6 23 6 23 12" />
 							</svg>
 						{:else if metric.icon === 'trending-down'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
-								<polyline points="17 18 23 18 23 12"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+								<polyline points="17 18 23 18 23 12" />
 							</svg>
 						{:else if metric.icon === 'calculator'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="4" y="2" width="16" height="20" rx="2"/>
-								<line x1="8" y1="6" x2="16" y2="6"/>
-								<line x1="8" y1="10" x2="16" y2="10"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<rect x="4" y="2" width="16" height="20" rx="2" />
+								<line x1="8" y1="6" x2="16" y2="6" />
+								<line x1="8" y1="10" x2="16" y2="10" />
 							</svg>
 						{:else if metric.icon === 'arrow-down'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="5" x2="12" y2="19"/>
-								<polyline points="19 12 12 19 5 12"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<line x1="12" y1="5" x2="12" y2="19" />
+								<polyline points="19 12 12 19 5 12" />
 							</svg>
 						{:else if metric.icon === 'balance'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M12 3v18"/><rect x="3" y="8" width="6" height="4"/><rect x="15" y="12" width="6" height="4"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="M12 3v18" /><rect x="3" y="8" width="6" height="4" /><rect
+									x="15"
+									y="12"
+									width="6"
+									height="4"
+								/>
 							</svg>
 						{:else if metric.icon === 'clock'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
 							</svg>
 						{/if}
 					</div>
@@ -207,7 +316,9 @@
 				<div class="streak-card {streakColor}">
 					<span class="streak-label">Current Streak</span>
 					<span class="streak-value">{streakDisplay}</span>
-					<span class="streak-subtext">Max: {streakAnalysis.max_win_streak}W / {streakAnalysis.max_loss_streak}L</span>
+					<span class="streak-subtext"
+						>Max: {streakAnalysis.max_win_streak}W / {streakAnalysis.max_loss_streak}L</span
+					>
 				</div>
 			{/if}
 
@@ -215,7 +326,9 @@
 				<div class="alert-card">
 					<span class="alert-label">Alert Conversion</span>
 					<span class="alert-value">{alertEffectiveness.conversion_rate.toFixed(1)}%</span>
-					<span class="alert-subtext">{alertEffectiveness.alerts_with_trades} of {alertEffectiveness.total_alerts} alerts</span>
+					<span class="alert-subtext"
+						>{alertEffectiveness.alerts_with_trades} of {alertEffectiveness.total_alerts} alerts</span
+					>
 				</div>
 			{/if}
 		</div>
@@ -307,9 +420,15 @@
 		line-height: 1.2;
 	}
 
-	.metric-value.profit { color: var(--color-profit); }
-	.metric-value.loss { color: var(--color-loss); }
-	.metric-value.neutral { color: var(--color-text-primary); }
+	.metric-value.profit {
+		color: var(--color-profit);
+	}
+	.metric-value.loss {
+		color: var(--color-loss);
+	}
+	.metric-value.neutral {
+		color: var(--color-text-primary);
+	}
 
 	.metric-label {
 		font-size: 12px;
@@ -347,9 +466,17 @@
 		border: 1px solid var(--color-border-default);
 	}
 
-	.streak-card.profit { background: var(--color-profit-bg); border-color: var(--color-profit-border); }
-	.streak-card.loss { background: var(--color-loss-bg); border-color: var(--color-loss-border); }
-	.streak-card.neutral { background: var(--color-bg-subtle); }
+	.streak-card.profit {
+		background: var(--color-profit-bg);
+		border-color: var(--color-profit-border);
+	}
+	.streak-card.loss {
+		background: var(--color-loss-bg);
+		border-color: var(--color-loss-border);
+	}
+	.streak-card.neutral {
+		background: var(--color-bg-subtle);
+	}
 
 	.streak-label,
 	.alert-label {
@@ -367,8 +494,12 @@
 		color: var(--color-text-primary);
 	}
 
-	.streak-card.profit .streak-value { color: var(--color-profit); }
-	.streak-card.loss .streak-value { color: var(--color-loss); }
+	.streak-card.profit .streak-value {
+		color: var(--color-profit);
+	}
+	.streak-card.loss .streak-value {
+		color: var(--color-loss);
+	}
 
 	.streak-subtext,
 	.alert-subtext {
@@ -388,7 +519,12 @@
 		width: 36px;
 		height: 36px;
 		border-radius: 8px;
-		background: linear-gradient(90deg, var(--color-bg-muted) 25%, var(--color-bg-subtle) 50%, var(--color-bg-muted) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-muted) 25%,
+			var(--color-bg-subtle) 50%,
+			var(--color-bg-muted) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
@@ -397,7 +533,12 @@
 		width: 60%;
 		height: 24px;
 		border-radius: 4px;
-		background: linear-gradient(90deg, var(--color-bg-muted) 25%, var(--color-bg-subtle) 50%, var(--color-bg-muted) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-muted) 25%,
+			var(--color-bg-subtle) 50%,
+			var(--color-bg-muted) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
@@ -406,14 +547,23 @@
 		width: 80%;
 		height: 14px;
 		border-radius: 4px;
-		background: linear-gradient(90deg, var(--color-bg-muted) 25%, var(--color-bg-subtle) 50%, var(--color-bg-muted) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-muted) 25%,
+			var(--color-bg-subtle) 50%,
+			var(--color-bg-muted) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Responsive */

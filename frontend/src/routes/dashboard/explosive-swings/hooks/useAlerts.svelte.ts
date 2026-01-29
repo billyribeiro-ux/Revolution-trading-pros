@@ -103,12 +103,7 @@ function formatAlert(apiAlert: Record<string, unknown>): FormattedAlert {
  * Uses Svelte 5 runes for reactive state management.
  */
 export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
-	const {
-		initialPage = 1,
-		filter = 'all',
-		autoRefresh = false,
-		refreshInterval = 30000
-	} = options;
+	const { initialPage = 1, filter = 'all', autoRefresh = false, refreshInterval = 30000 } = options;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE

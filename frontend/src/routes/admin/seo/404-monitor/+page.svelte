@@ -186,7 +186,9 @@
 			<table>
 				<thead>
 					<tr>
-						<th style="width: 40px"><input id="select-all-404" name="select-all" type="checkbox" /></th>
+						<th style="width: 40px"
+							><input id="select-all-404" name="select-all" type="checkbox" /></th
+						>
 						<th>URL</th>
 						<th>Hits</th>
 						<th>Last Hit</th>

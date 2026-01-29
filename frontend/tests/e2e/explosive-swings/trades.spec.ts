@@ -160,12 +160,14 @@ async function setupTradesMocks(
 	} = {}
 ) {
 	const trades = options.trades ?? createTestTrades();
-	const stats = options.stats ?? createStatsFixture({
-		win_rate: 75,
-		active_trades: trades.filter(t => t.status === 'open').length,
-		closed_this_week: trades.filter(t => t.status === 'closed').length,
-		weekly_profit: '+$3,245'
-	});
+	const stats =
+		options.stats ??
+		createStatsFixture({
+			win_rate: 75,
+			active_trades: trades.filter((t) => t.status === 'open').length,
+			closed_this_week: trades.filter((t) => t.status === 'closed').length,
+			weekly_profit: '+$3,245'
+		});
 
 	// Mock trades endpoint
 	await page.route('**/api/trades/explosive-swings*', async (route) => {
@@ -174,9 +176,9 @@ async function setupTradesMocks(
 
 		let filteredTrades = trades;
 		if (status === 'open') {
-			filteredTrades = trades.filter(t => t.status === 'open');
+			filteredTrades = trades.filter((t) => t.status === 'open');
 		} else if (status === 'closed') {
-			filteredTrades = trades.filter(t => t.status === 'closed');
+			filteredTrades = trades.filter((t) => t.status === 'closed');
 		}
 
 		await route.fulfill({
@@ -200,9 +202,7 @@ async function setupTradesMocks(
 		await route.fulfill({
 			status: 200,
 			contentType: 'application/json',
-			body: JSON.stringify(
-				options.isAdmin ? mockAdminUserResponse() : mockRegularUserResponse()
-			)
+			body: JSON.stringify(options.isAdmin ? mockAdminUserResponse() : mockRegularUserResponse())
 		});
 	});
 }
@@ -232,7 +232,9 @@ test.describe('Explosive Swings Trades Page', () => {
 				await passwordInput.fill(process.env.E2E_TEST_PASSWORD || 'testpassword');
 			}
 
-			const submitBtn = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")').first();
+			const submitBtn = page
+				.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")')
+				.first();
 			if (await submitBtn.isVisible().catch(() => false)) {
 				await submitBtn.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
@@ -317,8 +319,16 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Look for tab controls
-			const openTab = page.locator('[data-testid="open-trades-tab"], button:has-text("Open"), [role="tab"]:has-text("Open")').first();
-			const closedTab = page.locator('[data-testid="closed-trades-tab"], button:has-text("Closed"), [role="tab"]:has-text("Closed")').first();
+			const openTab = page
+				.locator(
+					'[data-testid="open-trades-tab"], button:has-text("Open"), [role="tab"]:has-text("Open")'
+				)
+				.first();
+			const closedTab = page
+				.locator(
+					'[data-testid="closed-trades-tab"], button:has-text("Closed"), [role="tab"]:has-text("Closed")'
+				)
+				.first();
 
 			const hasOpenTab = await openTab.isVisible({ timeout: 5000 }).catch(() => false);
 			const hasClosedTab = await closedTab.isVisible({ timeout: 5000 }).catch(() => false);
@@ -355,7 +365,11 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Find and click closed trades tab
-			const closedTab = page.locator('[data-testid="closed-trades-tab"], button:has-text("Closed"), [role="tab"]:has-text("Closed")').first();
+			const closedTab = page
+				.locator(
+					'[data-testid="closed-trades-tab"], button:has-text("Closed"), [role="tab"]:has-text("Closed")'
+				)
+				.first();
 			const hasClosedTab = await closedTab.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasClosedTab) {
@@ -363,14 +377,19 @@ test.describe('Explosive Swings Trades Page', () => {
 				await page.waitForLoadState('networkidle').catch(() => {});
 
 				// Check if tab is now active
-				const isActive = await closedTab.getAttribute('aria-selected') === 'true' ||
-					await closedTab.getAttribute('data-state') === 'active' ||
+				const isActive =
+					(await closedTab.getAttribute('aria-selected')) === 'true' ||
+					(await closedTab.getAttribute('data-state')) === 'active' ||
 					(await closedTab.getAttribute('class'))?.includes('active');
 
 				console.log(`Closed tab active state: ${isActive}`);
 
 				// Switch back to open
-				const openTab = page.locator('[data-testid="open-trades-tab"], button:has-text("Open"), [role="tab"]:has-text("Open")').first();
+				const openTab = page
+					.locator(
+						'[data-testid="open-trades-tab"], button:has-text("Open"), [role="tab"]:has-text("Open")'
+					)
+					.first();
 				if (await openTab.isVisible().catch(() => false)) {
 					await openTab.click();
 					await page.waitForLoadState('networkidle').catch(() => {});
@@ -405,12 +424,20 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Find trade card or row
-			const tradeCard = page.locator('[data-testid="trade-card"], .trade-card, [class*="trade-item"], tr[data-trade-id]').first();
+			const tradeCard = page
+				.locator(
+					'[data-testid="trade-card"], .trade-card, [class*="trade-item"], tr[data-trade-id]'
+				)
+				.first();
 			const hasTradeCard = await tradeCard.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasTradeCard) {
 				// Look for expand button or clickable area
-				const expandBtn = tradeCard.locator('[data-testid="expand-btn"], button[aria-label*="expand"], .expand-icon, [class*="chevron"]').first();
+				const expandBtn = tradeCard
+					.locator(
+						'[data-testid="expand-btn"], button[aria-label*="expand"], .expand-icon, [class*="chevron"]'
+					)
+					.first();
 				const hasExpandBtn = await expandBtn.isVisible().catch(() => false);
 
 				if (hasExpandBtn) {
@@ -418,7 +445,9 @@ test.describe('Explosive Swings Trades Page', () => {
 					await page.waitForTimeout(300);
 
 					// Check for expanded content
-					const expandedContent = page.locator('[data-testid="trade-details"], .trade-details, [class*="expanded"]').first();
+					const expandedContent = page
+						.locator('[data-testid="trade-details"], .trade-details, [class*="expanded"]')
+						.first();
 					const isExpanded = await expandedContent.isVisible({ timeout: 3000 }).catch(() => false);
 					console.log(`Trade details expanded: ${isExpanded}`);
 				} else {
@@ -455,7 +484,9 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Find and expand a trade
-			const tradeCard = page.locator('[data-testid="trade-card"], .trade-card, [class*="trade-item"]').first();
+			const tradeCard = page
+				.locator('[data-testid="trade-card"], .trade-card, [class*="trade-item"]')
+				.first();
 			const hasTradeCard = await tradeCard.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasTradeCard) {
@@ -463,7 +494,9 @@ test.describe('Explosive Swings Trades Page', () => {
 				await page.waitForTimeout(500);
 
 				// Look for notes section
-				const notesSection = page.locator('[data-testid="trade-notes"], .trade-notes, [class*="notes"]').first();
+				const notesSection = page
+					.locator('[data-testid="trade-notes"], .trade-notes, [class*="notes"]')
+					.first();
 				const hasNotes = await notesSection.isVisible({ timeout: 3000 }).catch(() => false);
 
 				if (hasNotes) {
@@ -502,14 +535,20 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Switch to closed trades if tab exists
-			const closedTab = page.locator('[data-testid="closed-trades-tab"], button:has-text("Closed"), [role="tab"]:has-text("Closed")').first();
+			const closedTab = page
+				.locator(
+					'[data-testid="closed-trades-tab"], button:has-text("Closed"), [role="tab"]:has-text("Closed")'
+				)
+				.first();
 			if (await closedTab.isVisible({ timeout: 3000 }).catch(() => false)) {
 				await closedTab.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
 			}
 
 			// Look for P&L display
-			const pnlElements = page.locator('[data-testid="pnl"], .pnl, [class*="profit"], [class*="loss"], text=/[+-]?\\d+\\.\\d+%/');
+			const pnlElements = page.locator(
+				'[data-testid="pnl"], .pnl, [class*="profit"], [class*="loss"], text=/[+-]?\\d+\\.\\d+%/'
+			);
 			const pnlCount = await pnlElements.count();
 
 			if (pnlCount > 0) {
@@ -545,11 +584,15 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Look for profit (green) elements
-			const profitElements = page.locator('[class*="green"], [class*="profit"], [class*="positive"], .text-green');
+			const profitElements = page.locator(
+				'[class*="green"], [class*="profit"], [class*="positive"], .text-green'
+			);
 			const profitCount = await profitElements.count();
 
 			// Look for loss (red) elements
-			const lossElements = page.locator('[class*="red"], [class*="loss"], [class*="negative"], .text-red');
+			const lossElements = page.locator(
+				'[class*="red"], [class*="loss"], [class*="negative"], .text-red'
+			);
 			const lossCount = await lossElements.count();
 
 			console.log(`Profit elements: ${profitCount}, Loss elements: ${lossCount}`);
@@ -582,7 +625,9 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Look for stats grid or metrics section
-			const statsSection = page.locator('[data-testid="stats-grid"], .stats-grid, [class*="metrics"], [class*="stats"]').first();
+			const statsSection = page
+				.locator('[data-testid="stats-grid"], .stats-grid, [class*="metrics"], [class*="stats"]')
+				.first();
 			const hasStats = await statsSection.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasStats) {
@@ -590,14 +635,20 @@ test.describe('Explosive Swings Trades Page', () => {
 
 				// Check for specific metrics
 				const winRate = page.locator('text=/win.*rate/i, [data-testid="win-rate"]').first();
-				const totalTrades = page.locator('text=/total.*trades/i, [data-testid="total-trades"]').first();
-				const profitLoss = page.locator('text=/P.*L/i, text=/profit/i, [data-testid="total-pnl"]').first();
+				const totalTrades = page
+					.locator('text=/total.*trades/i, [data-testid="total-trades"]')
+					.first();
+				const profitLoss = page
+					.locator('text=/P.*L/i, text=/profit/i, [data-testid="total-pnl"]')
+					.first();
 
 				const hasWinRate = await winRate.isVisible().catch(() => false);
 				const hasTotalTrades = await totalTrades.isVisible().catch(() => false);
 				const hasProfitLoss = await profitLoss.isVisible().catch(() => false);
 
-				console.log(`Win Rate: ${hasWinRate}, Total Trades: ${hasTotalTrades}, P/L: ${hasProfitLoss}`);
+				console.log(
+					`Win Rate: ${hasWinRate}, Total Trades: ${hasTotalTrades}, P/L: ${hasProfitLoss}`
+				);
 			} else {
 				console.log('Stats grid not found on trades page');
 			}
@@ -630,7 +681,11 @@ test.describe('Explosive Swings Trades Page', () => {
 			}
 
 			// Look for empty state indicators
-			const emptyState = page.locator('[data-testid="empty-state"], .empty-state, text=/no trades/i, text=/no open/i, text=/no closed/i').first();
+			const emptyState = page
+				.locator(
+					'[data-testid="empty-state"], .empty-state, text=/no trades/i, text=/no open/i, text=/no closed/i'
+				)
+				.first();
 			const hasEmptyState = await emptyState.isVisible({ timeout: 3000 }).catch(() => false);
 
 			if (hasEmptyState) {
@@ -676,7 +731,9 @@ test.describe('Explosive Swings Trades Page', () => {
 			await expect(page.locator('body')).toBeVisible();
 
 			// Check for mobile menu or hamburger
-			const mobileMenu = page.locator('[data-testid="mobile-menu"], .hamburger, [class*="mobile-nav"]').first();
+			const mobileMenu = page
+				.locator('[data-testid="mobile-menu"], .hamburger, [class*="mobile-nav"]')
+				.first();
 			const hasMobileMenu = await mobileMenu.isVisible().catch(() => false);
 			console.log(`Mobile menu visible: ${hasMobileMenu}`);
 
@@ -738,13 +795,19 @@ test.describe('Explosive Swings Trades Page', () => {
 			await page.waitForLoadState('domcontentloaded');
 
 			// Look for error states
-			const errorBanner = page.locator('[data-testid="error-banner"], .error-banner, [class*="error"], [role="alert"]').first();
+			const errorBanner = page
+				.locator('[data-testid="error-banner"], .error-banner, [class*="error"], [role="alert"]')
+				.first();
 			const hasError = await errorBanner.isVisible({ timeout: 3000 }).catch(() => false);
 
 			if (hasError) {
 				console.log('Error state displayed');
 				// Check for retry button
-				const retryBtn = page.locator('[data-testid="retry-btn"], button:has-text("Retry"), button:has-text("Try again")').first();
+				const retryBtn = page
+					.locator(
+						'[data-testid="retry-btn"], button:has-text("Retry"), button:has-text("Try again")'
+					)
+					.first();
 				const hasRetry = await retryBtn.isVisible().catch(() => false);
 				console.log(`Retry button present: ${hasRetry}`);
 			}
@@ -881,7 +944,11 @@ test.describe('Trades Filtering and Sorting', () => {
 			}
 
 			// Look for direction filter
-			const longFilter = page.locator('[data-testid="filter-long"], button:has-text("Long"), select option[value="long"]').first();
+			const longFilter = page
+				.locator(
+					'[data-testid="filter-long"], button:has-text("Long"), select option[value="long"]'
+				)
+				.first();
 			const hasLongFilter = await longFilter.isVisible({ timeout: 3000 }).catch(() => false);
 
 			if (hasLongFilter) {
@@ -916,7 +983,9 @@ test.describe('Trades Filtering and Sorting', () => {
 			}
 
 			// Look for sort controls
-			const sortSelect = page.locator('[data-testid="sort-select"], select[name*="sort"], [class*="sort"]').first();
+			const sortSelect = page
+				.locator('[data-testid="sort-select"], select[name*="sort"], [class*="sort"]')
+				.first();
 			const hasSortSelect = await sortSelect.isVisible({ timeout: 3000 }).catch(() => false);
 
 			if (hasSortSelect) {
@@ -924,7 +993,9 @@ test.describe('Trades Filtering and Sorting', () => {
 				console.log('Sort control clicked');
 			} else {
 				// Try column header sort
-				const dateHeader = page.locator('th:has-text("Date"), [data-testid="sort-date"], button:has-text("Date")').first();
+				const dateHeader = page
+					.locator('th:has-text("Date"), [data-testid="sort-date"], button:has-text("Date")')
+					.first();
 				const hasDateHeader = await dateHeader.isVisible().catch(() => false);
 				if (hasDateHeader) {
 					await dateHeader.click();

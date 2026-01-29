@@ -104,9 +104,7 @@
 		<!-- Header - Centered Style -->
 		<header class="page-header">
 			<h1>Behavior Tracking</h1>
-			<p class="subtitle">
-				Analyze user interactions, clicks, scrolls, and session recordings
-			</p>
+			<p class="subtitle">Analyze user interactions, clicks, scrolls, and session recordings</p>
 			{#if $isBehaviorConnected}
 				<div class="header-actions">
 					<div class="period-selector">
@@ -354,7 +352,12 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-behavior {
-		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--bg-base) 0%,
+			var(--bg-elevated) 50%,
+			var(--bg-base) 100%
+		);
 		color: var(--text-primary);
 		position: relative;
 		overflow: hidden;
@@ -412,9 +415,16 @@
 	}
 
 	@keyframes float {
-		0%, 100% { transform: translate(0, 0) scale(1); }
-		33% { transform: translate(30px, -30px) scale(1.05); }
-		66% { transform: translate(-20px, 20px) scale(0.95); }
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		33% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		66% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
 	}
 
 	/* Page Header - CENTERED */

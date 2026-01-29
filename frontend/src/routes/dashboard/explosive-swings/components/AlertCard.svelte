@@ -108,7 +108,7 @@
 			<span class="ticker">{alert.ticker}</span>
 			<span class="timestamp">{alert.time}</span>
 		</div>
-		
+
 		<button
 			class="notes-toggle"
 			class:expanded={isNotesExpanded}
@@ -118,7 +118,11 @@
 		>
 			<span class="notes-label">Notes</span>
 			<svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
-				<path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+				<path
+					fill-rule="evenodd"
+					d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+					clip-rule="evenodd"
+				/>
 			</svg>
 		</button>
 	</div>
@@ -155,7 +159,11 @@
 
 	<!-- Result (for EXIT alerts) -->
 	{#if alert.type === 'EXIT' && alert.resultPercent !== undefined}
-		<div class="exit-result" class:positive={alert.resultPercent >= 0} class:negative={alert.resultPercent < 0}>
+		<div
+			class="exit-result"
+			class:positive={alert.resultPercent >= 0}
+			class:negative={alert.resultPercent < 0}
+		>
 			<span class="result-value">{formatPercent(alert.resultPercent)}</span>
 			<span class="result-label">{alert.resultPercent >= 0 ? 'Profit' : 'Loss'}</span>
 		</div>
@@ -168,12 +176,20 @@
 			<button class="tos-copy" onclick={handleCopy} aria-label="Copy ThinkOrSwim string">
 				{#if isCopied}
 					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+						<path
+							fill-rule="evenodd"
+							d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+							clip-rule="evenodd"
+						/>
 					</svg>
 				{:else}
 					<svg viewBox="0 0 20 20" fill="currentColor">
-						<path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
-						<path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+						<path
+							d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z"
+						/>
+						<path
+							d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z"
+						/>
 					</svg>
 				{/if}
 			</button>
@@ -185,13 +201,21 @@
 		<button class="action-btn copy-btn" class:copied={isCopied} onclick={handleCopy}>
 			{#if isCopied}
 				<svg viewBox="0 0 20 20" fill="currentColor">
-					<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+					<path
+						fill-rule="evenodd"
+						d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+						clip-rule="evenodd"
+					/>
 				</svg>
 				Copied!
 			{:else}
 				<svg viewBox="0 0 20 20" fill="currentColor">
-					<path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
-					<path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+					<path
+						d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z"
+					/>
+					<path
+						d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z"
+					/>
 				</svg>
 				Copy
 			{/if}
@@ -201,7 +225,11 @@
 			<button class="action-btn primary" onclick={() => onViewTradePlan(alert)}>
 				View Trade Plan
 				<svg viewBox="0 0 20 20" fill="currentColor">
-					<path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+					<path
+						fill-rule="evenodd"
+						d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
+						clip-rule="evenodd"
+					/>
 				</svg>
 			</button>
 		{/if}
@@ -270,7 +298,11 @@
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		background: linear-gradient(135deg, var(--color-brand-secondary) 0%, var(--color-brand-secondary-hover) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-secondary) 0%,
+			var(--color-brand-secondary-hover) 100%
+		);
 		color: var(--color-bg-card);
 		font-size: 9px;
 		font-weight: 800;
@@ -289,8 +321,15 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; transform: scale(1); }
-		50% { opacity: 0.6; transform: scale(1.2); }
+		0%,
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.6;
+			transform: scale(1.2);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -658,7 +697,11 @@
 		align-items: center;
 		gap: 12px;
 		padding: 14px 18px;
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-light) 100%
+		);
 	}
 
 	.notes-ticker {

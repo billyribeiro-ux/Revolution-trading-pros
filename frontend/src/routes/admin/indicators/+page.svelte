@@ -151,7 +151,12 @@
 				/>
 			</div>
 			<!-- ICT 7 FIX: Backend uses is_active boolean, not status string -->
-			<select id="status-filter" name="status-filter" bind:value={statusFilter} onchange={fetchIndicators}>
+			<select
+				id="status-filter"
+				name="status-filter"
+				bind:value={statusFilter}
+				onchange={fetchIndicators}
+			>
 				<option value="">All Status</option>
 				<option value="true">Active</option>
 				<option value="false">Inactive</option>
@@ -362,7 +367,12 @@
 <style>
 	/* Page wrapper */
 	.admin-indicators {
-		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--bg-base) 0%,
+			var(--bg-elevated) 50%,
+			var(--bg-base) 100%
+		);
 		position: relative;
 		overflow: hidden;
 	}

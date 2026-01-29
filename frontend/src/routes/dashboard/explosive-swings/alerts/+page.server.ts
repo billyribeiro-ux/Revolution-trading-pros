@@ -17,14 +17,11 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 	try {
-		const response = await fetch(
-			`${baseUrl}/room-content/rooms/${ROOM_SLUG}/alerts?per_page=50`,
-			{
-				headers: {
-					cookie: cookies.get('session') ? `session=${cookies.get('session')}` : ''
-				}
+		const response = await fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/alerts?per_page=50`, {
+			headers: {
+				cookie: cookies.get('session') ? `session=${cookies.get('session')}` : ''
 			}
-		);
+		});
 
 		if (!response.ok) {
 			return {

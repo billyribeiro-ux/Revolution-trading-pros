@@ -67,24 +67,24 @@
 
 	// Upload mode
 	let uploadMode = $state<'file' | 'url'>('file');
-	
+
 	// Core states
 	let isSaving = $state(false);
 	let errorMessage = $state('');
-	
+
 	// File upload states
 	let videoFile = $state<File | null>(null);
 	let uploadProgress = $state(0);
 	let uploadStatus = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete'>('idle');
-	
+
 	// Thumbnail selection
 	let generatedThumbnails = $state<string[]>([]);
 	let selectedThumbnailIndex = $state(0);
-	
+
 	// Abort control state
 	let activeXhr = $state<XMLHttpRequest | null>(null);
 	let processingAborted = $state(false);
-	
+
 	// A11y status announcements
 	let statusAnnouncement = $state('');
 
@@ -99,20 +99,19 @@
 		duration: '',
 		description: ''
 	});
-	
-	
+
 	// Lock body scroll when modal is open
 	$effect(() => {
 		if (!isOpen) return;
-		
+
 		const previousOverflow = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
-		
+
 		return () => {
 			document.body.style.overflow = previousOverflow;
 		};
 	});
-	
+
 	// A11y: Announce upload status changes
 	$effect(() => {
 		if (uploadStatus === 'uploading') {
@@ -125,7 +124,7 @@
 			statusAnnouncement = '';
 		}
 	});
-	
+
 	function getNextMonday(): string {
 		const today = new Date();
 		const dayOfWeek = today.getDay();
@@ -135,13 +134,12 @@
 		return nextMonday.toISOString().split('T')[0];
 	}
 
-	
 	function formatDuration(seconds: number): string {
 		const mins = Math.floor(seconds / 60);
 		const secs = Math.floor(seconds % 60);
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
-	
+
 	// Bunny.net only - strict URL validation
 	function isValidBunnyUrl(url: string): boolean {
 		if (!url || typeof url !== 'string') return false;
@@ -152,13 +150,11 @@
 			return false;
 		}
 	}
-	
+
 	const isFormValid = $derived(
-		isValidBunnyUrl(form.video_url) && 
-		form.video_title.trim().length >= 3 &&
-		form.week_of !== ''
+		isValidBunnyUrl(form.video_url) && form.video_title.trim().length >= 3 && form.week_of !== ''
 	);
-	
+
 	const canShowPreview = $derived(isValidBunnyUrl(form.video_url));
 
 	function resetForm() {
@@ -168,7 +164,7 @@
 			activeXhr = null;
 		}
 		processingAborted = true;
-		
+
 		// Reset form state
 		form = {
 			week_of: getNextMonday(),
@@ -187,18 +183,18 @@
 		uploadStatus = 'idle';
 		generatedThumbnails = [];
 		selectedThumbnailIndex = 0;
-		
+
 		// Reset abort flag for next upload cycle
 		processingAborted = false;
 	}
-	
+
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
 		if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 		return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
 	}
-	
+
 	function handleFileSelect(file: File) {
 		errorMessage = '';
 		videoFile = file;
@@ -210,19 +206,19 @@
 		}
 		startBunnyUpload();
 	}
-	
+
 	function handleFileError(message: string) {
 		errorMessage = message;
 	}
-	
+
 	// Bunny.net upload functions
 	async function startBunnyUpload() {
 		if (!videoFile) return;
-		
+
 		errorMessage = '';
 		uploadStatus = 'preparing';
 		processingAborted = false;
-		
+
 		try {
 			// Step 1: Create video entry on Bunny.net
 			const createResponse = await fetch(`/api/weekly-video/${roomSlug}/upload`, {
@@ -233,43 +229,43 @@
 					title: form.video_title || videoFile.name.replace(/\.[^/.]+$/, '')
 				})
 			});
-			
+
 			if (!createResponse.ok) {
 				const errorData = await createResponse.json().catch(() => ({}));
 				throw new Error(errorData.error || `Server error: ${createResponse.status}`);
 			}
-			
+
 			const createData: BunnyCreateResponse = await createResponse.json();
-			
+
 			if (!createData.video_guid) {
 				throw new Error('Server did not return video GUID');
 			}
-			
+
 			form.video_guid = createData.video_guid;
 			form.video_url = createData.embed_url || createData.video_url || '';
-			
+
 			// Check if aborted during API call
 			if (processingAborted) {
 				throw new Error('Upload cancelled');
 			}
-			
+
 			// Step 2: Upload file to Bunny.net via proxy
 			uploadStatus = 'uploading';
 			await uploadFileToBunny(createData.video_guid, videoFile);
-			
+
 			// Check if aborted during upload
 			if (processingAborted) {
 				throw new Error('Upload cancelled');
 			}
-			
+
 			// Step 3: Wait for processing and get thumbnails
 			uploadStatus = 'processing';
 			const finalData = await waitForBunnyProcessing(createData.video_guid);
-			
+
 			// Set thumbnail from processed video
 			if (finalData.thumbnail_url) {
 				form.thumbnail_url = finalData.thumbnail_url;
-				
+
 				// Generate thumbnail variants if URL follows expected pattern
 				if (finalData.thumbnail_url.includes('thumbnail.jpg')) {
 					generatedThumbnails = [
@@ -282,14 +278,13 @@
 					generatedThumbnails = [finalData.thumbnail_url];
 				}
 			}
-			
+
 			// Set duration from processed video
 			if (finalData.duration && finalData.duration > 0) {
 				form.duration = formatDuration(finalData.duration);
 			}
-			
+
 			uploadStatus = 'complete';
-			
 		} catch (err) {
 			if (err instanceof Error && err.message.includes('cancelled')) {
 				// Silent abort — user closed modal
@@ -300,18 +295,18 @@
 			}
 		}
 	}
-	
+
 	async function uploadFileToBunny(videoGuid: string, file: File): Promise<void> {
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			activeXhr = xhr;
-			
+
 			xhr.upload.addEventListener('progress', (event) => {
 				if (event.lengthComputable) {
 					uploadProgress = Math.round((event.loaded / event.total) * 100);
 				}
 			});
-			
+
 			xhr.addEventListener('load', () => {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					resolve();
@@ -319,19 +314,19 @@
 					reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
 				}
 			});
-			
+
 			xhr.addEventListener('error', () => {
 				reject(new Error('Network error during upload. Check your connection.'));
 			});
-			
+
 			xhr.addEventListener('abort', () => {
 				reject(new Error('Upload cancelled'));
 			});
-			
+
 			xhr.addEventListener('loadend', () => {
 				activeXhr = null;
 			});
-			
+
 			const proxyUrl = `/api/weekly-video/${roomSlug}/upload?video_guid=${encodeURIComponent(videoGuid)}`;
 			xhr.open('PUT', proxyUrl, true);
 			xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
@@ -339,45 +334,44 @@
 			xhr.send(file);
 		});
 	}
-	
+
 	async function waitForBunnyProcessing(videoGuid: string): Promise<BunnyProcessingResult> {
 		for (let attempt = 0; attempt < PROCESSING_MAX_ATTEMPTS; attempt++) {
 			// Check abort flag before each poll
 			if (processingAborted) {
 				throw new Error('Processing cancelled');
 			}
-			
+
 			await new Promise((resolve) => setTimeout(resolve, PROCESSING_POLL_INTERVAL_MS));
-			
+
 			// Check again after wait
 			if (processingAborted) {
 				throw new Error('Processing cancelled');
 			}
-			
+
 			try {
 				const response = await fetch(
 					`/api/weekly-video/${roomSlug}/upload/status/${encodeURIComponent(videoGuid)}`,
 					{ credentials: 'include' }
 				);
-				
+
 				if (!response.ok) {
 					// Non-2xx status — continue polling, server might be busy
 					continue;
 				}
-				
+
 				const data: BunnyProcessingResult = await response.json();
-				
+
 				// Bunny.net status codes: 4 = ready, 5 = failed
 				if (data.status === 'ready' || data.status === 4) {
 					return data;
 				}
-				
+
 				if (data.status === 'failed' || data.status === 5) {
 					throw new Error('Video processing failed on Bunny.net. Try uploading again.');
 				}
-				
+
 				// Any other status — continue polling
-				
 			} catch (err) {
 				// Rethrow cancellation and explicit failures
 				if (err instanceof Error) {
@@ -388,17 +382,17 @@
 				// Network errors — continue polling
 			}
 		}
-		
+
 		// Timeout after all attempts
 		const totalSeconds = (PROCESSING_MAX_ATTEMPTS * PROCESSING_POLL_INTERVAL_MS) / 1000;
 		throw new Error(`Video processing timed out after ${totalSeconds} seconds. Please try again.`);
 	}
-	
+
 	function selectThumbnail(index: number) {
 		selectedThumbnailIndex = index;
 		form.thumbnail_url = generatedThumbnails[index] || '';
 	}
-	
+
 	function clearFile() {
 		// Abort active upload if any
 		if (activeXhr) {
@@ -406,7 +400,7 @@
 			activeXhr = null;
 		}
 		processingAborted = true;
-		
+
 		videoFile = null;
 		uploadProgress = 0;
 		uploadStatus = 'idle';
@@ -416,18 +410,23 @@
 		form.video_guid = '';
 		form.thumbnail_url = '';
 		form.duration = '';
-		
+
 		// Reset for next upload
 		processingAborted = false;
 	}
-	
+
 	function getUploadStatusText(): string {
 		switch (uploadStatus) {
-			case 'preparing': return 'Preparing upload...';
-			case 'uploading': return `Uploading... ${uploadProgress}%`;
-			case 'processing': return 'Processing video...';
-			case 'complete': return 'Upload complete!';
-			default: return '';
+			case 'preparing':
+				return 'Preparing upload...';
+			case 'uploading':
+				return `Uploading... ${uploadProgress}%`;
+			case 'processing':
+				return 'Processing video...';
+			case 'complete':
+				return 'Upload complete!';
+			default:
+				return '';
 		}
 	}
 
@@ -467,7 +466,7 @@
 			activeXhr = null;
 		}
 		processingAborted = true;
-		
+
 		resetForm();
 		onClose();
 	}
@@ -475,7 +474,7 @@
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') handleClose();
 	}
-	
+
 	function handleThumbnailSelect(index: number) {
 		selectedThumbnailIndex = index;
 		form.thumbnail_url = generatedThumbnails[index] || '';
@@ -487,12 +486,12 @@
 	<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
 		{statusAnnouncement}
 	</div>
-	
+
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div 
-		class="modal-portal" 
-		role="dialog" 
-		aria-modal="true" 
+	<div
+		class="modal-portal"
+		role="dialog"
+		aria-modal="true"
 		aria-labelledby="modal-title"
 		tabindex="-1"
 		onclick={(e) => e.target === e.currentTarget && handleClose()}
@@ -504,8 +503,17 @@
 			<div class="modal-header">
 				<div class="header-content">
 					<div class="header-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-							<path d="M23 7l-7 5 7 5V7zM14 5H3a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z" />
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="22"
+							height="22"
+						>
+							<path
+								d="M23 7l-7 5 7 5V7zM14 5H3a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z"
+							/>
 						</svg>
 					</div>
 					<div class="header-text">
@@ -514,7 +522,14 @@
 					</div>
 				</div>
 				<button class="modal-close" onclick={handleClose} aria-label="Close modal">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="20"
+						height="20"
+					>
 						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
@@ -522,7 +537,15 @@
 
 			{#if errorMessage}
 				<div class="error-banner" role="alert" aria-live="assertive">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="18"
+						height="18"
+						aria-hidden="true"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<line x1="12" y1="8" x2="12" y2="12"></line>
 						<line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -534,24 +557,38 @@
 			<div class="modal-body">
 				<!-- Upload Mode Tabs -->
 				<div class="mode-tabs">
-					<button 
+					<button
 						type="button"
-						class="mode-tab" 
+						class="mode-tab"
 						class:active={uploadMode === 'file'}
-						onclick={() => uploadMode = 'file'}
+						onclick={() => (uploadMode = 'file')}
 					>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="18"
+							height="18"
+						>
 							<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
 						</svg>
 						Upload File
 					</button>
-					<button 
+					<button
 						type="button"
-						class="mode-tab" 
+						class="mode-tab"
 						class:active={uploadMode === 'url'}
-						onclick={() => uploadMode = 'url'}
+						onclick={() => (uploadMode = 'url')}
 					>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							width="18"
+							height="18"
+						>
 							<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
 							<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
 						</svg>
@@ -559,7 +596,13 @@
 					</button>
 				</div>
 
-				<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+				<form
+					class="modal-form"
+					onsubmit={(e) => {
+						e.preventDefault();
+						handleSubmit();
+					}}
+				>
 					{#if uploadMode === 'file'}
 						<!-- FILE UPLOAD MODE -->
 						{#if uploadStatus === 'complete'}
@@ -577,7 +620,7 @@
 									Upload a different video
 								</button>
 							</div>
-							
+
 							<!-- Thumbnail Selection - Extracted Component -->
 							<ThumbnailSelector
 								thumbnails={generatedThumbnails}
@@ -599,7 +642,12 @@
 										<span class="file-size">{formatFileSize(videoFile.size)}</span>
 									</div>
 									{#if uploadStatus === 'idle'}
-										<button type="button" class="btn-remove" onclick={clearFile} aria-label="Remove file">
+										<button
+											type="button"
+											class="btn-remove"
+											onclick={clearFile}
+											aria-label="Remove file"
+										>
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 												<line x1="18" y1="6" x2="6" y2="18"></line>
 												<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -607,9 +655,9 @@
 										</button>
 									{/if}
 								</div>
-								
+
 								{#if uploadStatus !== 'idle'}
-									<UploadProgress 
+									<UploadProgress
 										progress={uploadProgress}
 										status={uploadStatus}
 										statusText={getUploadStatusText()}
@@ -648,7 +696,7 @@
 							/>
 							<p class="input-hint">Paste the embed URL from your Bunny.net video library</p>
 						</div>
-						
+
 						{#if canShowPreview}
 							<div class="video-preview">
 								<iframe
@@ -659,7 +707,7 @@
 								></iframe>
 							</div>
 						{/if}
-						
+
 						<!-- Manual Thumbnail/Duration for URL mode -->
 						<div class="form-row">
 							<div class="form-group">
@@ -684,7 +732,7 @@
 							</div>
 						</div>
 					{/if}
-					
+
 					<!-- Common Form Fields Divider -->
 					<div class="form-divider"></div>
 
@@ -693,7 +741,7 @@
 							<!-- Date Picker - Extracted Component -->
 							<DatePicker
 								value={form.week_of}
-								onchange={(date) => form.week_of = date}
+								onchange={(date) => (form.week_of = date)}
 								label="Week Of"
 								required
 							/>
@@ -735,7 +783,14 @@
 
 					<div class="form-actions">
 						<div class="archive-notice">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="16"
+								height="16"
+							>
 								<path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4" />
 							</svg>
 							<span>Publishing will archive the current video</span>
@@ -747,7 +802,14 @@
 									<span class="spinner"></span>
 									Publishing...
 								{:else}
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+									<svg
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										width="16"
+										height="16"
+									>
 										<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
 									</svg>
 									Publish Video
@@ -789,8 +851,12 @@
 	}
 
 	@keyframes backdropFade {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -807,7 +873,7 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 
+		box-shadow:
 			0 0 0 1px rgba(0, 0, 0, 0.08),
 			0 20px 40px -8px rgba(0, 0, 0, 0.4);
 		animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -823,7 +889,7 @@
 			transform: translateY(0) scale(1);
 		}
 	}
-	
+
 	.modal-body {
 		flex: 1;
 		overflow-y: auto;
@@ -1024,7 +1090,7 @@
 	}
 
 	/* NOTE: Thumbnail, Drop Zone, Progress, and DatePicker styles moved to extracted components */
-	
+
 	.form-divider {
 		height: 1px;
 		background: var(--color-border-default);
@@ -1269,7 +1335,11 @@
 	}
 
 	.btn-publish:hover:not(:disabled) {
-		background: linear-gradient(135deg, var(--color-brand-primary-hover) 0%, var(--color-brand-primary) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary-hover) 0%,
+			var(--color-brand-primary) 100%
+		);
 		transform: translateY(-1px);
 		box-shadow: 0 6px 16px rgba(20, 62, 89, 0.35);
 	}
@@ -1284,20 +1354,22 @@
 	.spinner {
 		width: 16px;
 		height: 16px;
-		border: 2px solid rgba(255,255,255,0.3);
+		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-top-color: white;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE - ICT 7+ Grade: Perfect on all devices
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	/* Tablets and small laptops */
 	@media (max-width: 768px) {
 		.modal-container {

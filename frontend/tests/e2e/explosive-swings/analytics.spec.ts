@@ -35,7 +35,9 @@ test.describe('Explosive Swings Analytics', () => {
 				await passwordInput.fill(process.env.E2E_TEST_PASSWORD || 'testpassword');
 			}
 
-			const submitBtn = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")').first();
+			const submitBtn = page
+				.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")')
+				.first();
 			if (await submitBtn.isVisible().catch(() => false)) {
 				await submitBtn.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
@@ -85,7 +87,11 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for chart containers
-			const chartContainer = page.locator('[data-testid="performance-chart"], .chart, canvas, svg[class*="chart"], [class*="recharts"]').first();
+			const chartContainer = page
+				.locator(
+					'[data-testid="performance-chart"], .chart, canvas, svg[class*="chart"], [class*="recharts"]'
+				)
+				.first();
 			const hasChart = await chartContainer.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasChart) {
@@ -120,7 +126,11 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for win rate display
-			const winRate = page.locator('[data-testid="win-rate"], text=/win.*rate/i, [class*="win-rate"], .metric:has-text("%")').first();
+			const winRate = page
+				.locator(
+					'[data-testid="win-rate"], text=/win.*rate/i, [class*="win-rate"], .metric:has-text("%")'
+				)
+				.first();
 			const hasWinRate = await winRate.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasWinRate) {
@@ -161,7 +171,11 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for total P&L display
-			const totalPL = page.locator('[data-testid="total-pnl"], text=/total.*P.*L/i, text=/profit.*loss/i, [class*="pnl"], [class*="profit"]').first();
+			const totalPL = page
+				.locator(
+					'[data-testid="total-pnl"], text=/total.*P.*L/i, text=/profit.*loss/i, [class*="pnl"], [class*="profit"]'
+				)
+				.first();
 			const hasTotalPL = await totalPL.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasTotalPL) {
@@ -202,14 +216,20 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for time period controls
-			const timePeriod = page.locator('[data-testid="time-period"], select[name*="period"], button:has-text("1W"), button:has-text("1M"), button:has-text("3M"), button:has-text("YTD"), [class*="period"]').first();
+			const timePeriod = page
+				.locator(
+					'[data-testid="time-period"], select[name*="period"], button:has-text("1W"), button:has-text("1M"), button:has-text("3M"), button:has-text("YTD"), [class*="period"]'
+				)
+				.first();
 			const hasTimePeriod = await timePeriod.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasTimePeriod) {
 				console.log('Time period selector found');
 
 				// Try clicking a period option
-				const monthBtn = page.locator('button:has-text("1M"), button:has-text("Month"), [data-period="1M"]').first();
+				const monthBtn = page
+					.locator('button:has-text("1M"), button:has-text("Month"), [data-period="1M"]')
+					.first();
 				if (await monthBtn.isVisible().catch(() => false)) {
 					await monthBtn.click();
 					await page.waitForLoadState('networkidle').catch(() => {});
@@ -244,7 +264,11 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for ticker breakdown section
-			const tickerBreakdown = page.locator('[data-testid="ticker-breakdown"], .ticker-breakdown, [class*="breakdown"], table:has-text("Symbol")').first();
+			const tickerBreakdown = page
+				.locator(
+					'[data-testid="ticker-breakdown"], .ticker-breakdown, [class*="breakdown"], table:has-text("Symbol")'
+				)
+				.first();
 			const hasBreakdown = await tickerBreakdown.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasBreakdown) {
@@ -284,8 +308,16 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for average gain/loss metrics
-			const avgGain = page.locator('[data-testid="avg-gain"], text=/avg.*gain/i, text=/average.*win/i, [class*="avg-gain"]').first();
-			const avgLoss = page.locator('[data-testid="avg-loss"], text=/avg.*loss/i, text=/average.*loss/i, [class*="avg-loss"]').first();
+			const avgGain = page
+				.locator(
+					'[data-testid="avg-gain"], text=/avg.*gain/i, text=/average.*win/i, [class*="avg-gain"]'
+				)
+				.first();
+			const avgLoss = page
+				.locator(
+					'[data-testid="avg-loss"], text=/avg.*loss/i, text=/average.*loss/i, [class*="avg-loss"]'
+				)
+				.first();
 
 			const hasAvgGain = await avgGain.isVisible({ timeout: 5000 }).catch(() => false);
 			const hasAvgLoss = await avgLoss.isVisible({ timeout: 5000 }).catch(() => false);
@@ -317,7 +349,11 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for risk/reward ratio
-			const riskReward = page.locator('[data-testid="risk-reward"], text=/risk.*reward/i, text=/R:R/i, text=/RR ratio/i, [class*="risk-reward"]').first();
+			const riskReward = page
+				.locator(
+					'[data-testid="risk-reward"], text=/risk.*reward/i, text=/R:R/i, text=/RR ratio/i, [class*="risk-reward"]'
+				)
+				.first();
 			const hasRiskReward = await riskReward.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasRiskReward) {
@@ -353,7 +389,11 @@ test.describe('Explosive Swings Analytics', () => {
 			}
 
 			// Look for total trades count
-			const totalTrades = page.locator('[data-testid="total-trades"], text=/total.*trades/i, text=/trades.*total/i, [class*="trade-count"]').first();
+			const totalTrades = page
+				.locator(
+					'[data-testid="total-trades"], text=/total.*trades/i, text=/trades.*total/i, [class*="trade-count"]'
+				)
+				.first();
 			const hasTotalTrades = await totalTrades.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasTotalTrades) {
@@ -396,7 +436,9 @@ test.describe('Analytics Charts Interaction', () => {
 			}
 
 			// Find a chart
-			const chart = page.locator('[data-testid="performance-chart"], .chart, canvas, svg[class*="chart"]').first();
+			const chart = page
+				.locator('[data-testid="performance-chart"], .chart, canvas, svg[class*="chart"]')
+				.first();
 			const hasChart = await chart.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasChart) {
@@ -445,7 +487,9 @@ test.describe('Analytics Charts Interaction', () => {
 			}
 
 			// Find chart area
-			const chart = page.locator('[data-testid="performance-chart"], .chart, canvas, svg[class*="chart"]').first();
+			const chart = page
+				.locator('[data-testid="performance-chart"], .chart, canvas, svg[class*="chart"]')
+				.first();
 			const hasChart = await chart.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasChart) {
@@ -454,7 +498,9 @@ test.describe('Analytics Charts Interaction', () => {
 				await page.waitForTimeout(500);
 
 				// Look for tooltip
-				const tooltip = page.locator('[role="tooltip"], .tooltip, [class*="tooltip"], [class*="recharts-tooltip"]').first();
+				const tooltip = page
+					.locator('[role="tooltip"], .tooltip, [class*="tooltip"], [class*="recharts-tooltip"]')
+					.first();
 				const hasTooltip = await tooltip.isVisible({ timeout: 2000 }).catch(() => false);
 
 				if (hasTooltip) {
@@ -491,7 +537,11 @@ test.describe('Analytics Data Export', () => {
 			}
 
 			// Look for export button
-			const exportBtn = page.locator('[data-testid="export-analytics"], button:has-text("Export"), button:has-text("Download"), [aria-label*="export" i]').first();
+			const exportBtn = page
+				.locator(
+					'[data-testid="export-analytics"], button:has-text("Export"), button:has-text("Download"), [aria-label*="export" i]'
+				)
+				.first();
 			const hasExport = await exportBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasExport) {

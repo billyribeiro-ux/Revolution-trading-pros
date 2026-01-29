@@ -1426,11 +1426,18 @@ export const submitForm = (slug: string, data: Record<string, any>) =>
 	formsService.submitForm(slug, data);
 
 export const previewForm = async (slug: string): Promise<Form> => {
-	const response = await fetch(`${API_BASE}/forms/preview/${slug}`);
-	if (!response.ok) {
-		throw new Error('Form not found');
+	try {
+		const response = await fetch(`${API_BASE}/forms/preview/${slug}`);
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Form not found' }));
+			throw new Error(errorData.message || `Failed to load form preview (HTTP ${response.status})`);
+		}
+		return response.json();
+	} catch (error) {
+		// Log error for debugging while preserving the error chain
+		console.error('[FormsAPI] previewForm error:', error);
+		throw error instanceof Error ? error : new Error('Failed to preview form');
 	}
-	return response.json();
 };
 
 /**
@@ -1438,14 +1445,19 @@ export const previewForm = async (slug: string): Promise<Form> => {
  * This fetches a published form by its database ID
  */
 export const getFormById = async (id: number): Promise<Form> => {
-	const response = await fetch(`${API_BASE}/forms/${id}/public`);
-	if (!response.ok) {
-		// Fallback: try preview endpoint if public endpoint doesn't exist
-		// This maintains backward compatibility
-		throw new Error('Form not found');
+	try {
+		const response = await fetch(`${API_BASE}/forms/${id}/public`);
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Form not found' }));
+			throw new Error(errorData.message || `Failed to load form (HTTP ${response.status})`);
+		}
+		const data = await response.json();
+		return data.data || data;
+	} catch (error) {
+		// Log error for debugging while preserving the error chain
+		console.error('[FormsAPI] getFormById error:', error);
+		throw error instanceof Error ? error : new Error('Failed to load form');
 	}
-	const data = await response.json();
-	return data.data || data;
 };
 
 export const getSubmissions = (formId: number, page?: number, perPage?: number, filters?: any) =>
@@ -1602,8 +1614,19 @@ export const formsApi = {
 	update: (_id: number, _data: Partial<Form>) => Promise.resolve({} as Form),
 	delete: (_id: number) => Promise.resolve(),
 	getEntries: (formId: number, page?: number) => formsService.getSubmissions(formId, page),
-	exportEntries: (formId: number, format: string = 'csv') =>
-		fetch(`/api/forms/${formId}/export?format=${format}`).then((r) => r.blob())
+	exportEntries: async (formId: number, format: string = 'csv'): Promise<Blob> => {
+		try {
+			const response = await fetch(`/api/forms/${formId}/export?format=${format}`);
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({ message: 'Export failed' }));
+				throw new Error(errorData.message || `Failed to export entries (HTTP ${response.status})`);
+			}
+			return response.blob();
+		} catch (error) {
+			console.error('[FormsAPI] exportEntries error:', error);
+			throw error instanceof Error ? error : new Error('Failed to export form entries');
+		}
+	}
 };
 
 export default formsService;

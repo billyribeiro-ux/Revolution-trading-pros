@@ -930,11 +930,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(
-			135deg,
-			var(--primary-500),
-			var(--warning-base)
-		);
+		background: linear-gradient(135deg, var(--primary-500), var(--warning-base));
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -1405,11 +1401,7 @@
 	}
 
 	.bar.opens {
-		background: linear-gradient(
-			180deg,
-			var(--primary-500),
-			var(--admin-warning, #bb8009)
-		);
+		background: linear-gradient(180deg, var(--primary-500), var(--admin-warning, #bb8009));
 	}
 
 	.bar.clicks {

@@ -41,8 +41,8 @@
 		if (!draggedWidget || draggedWidget === targetId) return;
 
 		const newWidgets = [...widgets];
-		const draggedIndex = newWidgets.findIndex(w => w.id === draggedWidget);
-		const targetIndex = newWidgets.findIndex(w => w.id === targetId);
+		const draggedIndex = newWidgets.findIndex((w) => w.id === draggedWidget);
+		const targetIndex = newWidgets.findIndex((w) => w.id === targetId);
 
 		const [removed] = newWidgets.splice(draggedIndex, 1);
 		newWidgets.splice(targetIndex, 0, removed);
@@ -52,13 +52,13 @@
 	}
 
 	function toggleWidget(widgetId: string) {
-		const widget = widgets.find(w => w.id === widgetId);
+		const widget = widgets.find((w) => w.id === widgetId);
 		if (widget) {
 			onToggleVisibility?.(widgetId, !widget.visible);
 		}
 	}
 
-	const visibleWidgets = $derived(widgets.filter(w => w.visible !== false));
+	const visibleWidgets = $derived(widgets.filter((w) => w.visible !== false));
 </script>
 
 <div class="widget-manager" style:--columns={columns} style:--gap="{gap}px">
@@ -114,7 +114,9 @@
 		border: 1px solid var(--color-border-default, #e5e7eb);
 		border-radius: var(--radius-lg, 0.5rem);
 		overflow: hidden;
-		transition: box-shadow 0.15s, transform 0.15s;
+		transition:
+			box-shadow 0.15s,
+			transform 0.15s;
 	}
 
 	.widget-container:hover {
@@ -158,7 +160,9 @@
 		border-radius: var(--radius-sm, 0.25rem);
 		color: var(--color-text-muted, #9ca3af);
 		cursor: pointer;
-		transition: background 0.15s, color 0.15s;
+		transition:
+			background 0.15s,
+			color 0.15s;
 	}
 
 	.widget-action:hover {

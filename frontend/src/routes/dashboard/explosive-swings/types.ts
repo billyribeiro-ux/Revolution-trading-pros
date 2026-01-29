@@ -484,7 +484,13 @@ export type TradeType = 'stock' | 'option' | 'spread';
  * Action being taken on a trade.
  * @description Indicates whether entering or exiting a position.
  */
-export type TradeAction = 'buy' | 'sell' | 'buy_to_open' | 'sell_to_close' | 'buy_to_close' | 'sell_to_open';
+export type TradeAction =
+	| 'buy'
+	| 'sell'
+	| 'buy_to_open'
+	| 'sell_to_close'
+	| 'buy_to_close'
+	| 'sell_to_open';
 
 /**
  * Type of option contract.

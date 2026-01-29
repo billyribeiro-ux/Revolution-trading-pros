@@ -204,7 +204,9 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		body: JSON.stringify({
 			room_slug: slug,
 			week_of: body.week_of || new Date().toISOString().split('T')[0],
-			week_title: body.week_title || `Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+			week_title:
+				body.week_title ||
+				`Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
 			video_title: body.video_title,
 			video_url: body.video_url,
 			video_platform: body.video_platform || 'bunny',
@@ -229,7 +231,9 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		room_id: 4,
 		room_slug: slug,
 		week_of: body.week_of || new Date().toISOString().split('T')[0],
-		week_title: body.week_title || `Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+		week_title:
+			body.week_title ||
+			`Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
 		video_title: body.video_title,
 		video_url: body.video_url,
 		video_platform: body.video_platform || 'bunny',

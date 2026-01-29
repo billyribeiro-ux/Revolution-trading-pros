@@ -131,64 +131,64 @@
 		<div class="footer-container">
 			<div class="footer-grid">
 				<div class="footer-brand">
-				<a href="/" class="footer-logo" aria-label="Revolution Trading Pros home">
-					<img
-						src="/revolution-trading-pros.png"
-						alt="Revolution Trading Pros"
-						width="160"
-						height="40"
-						loading="lazy"
-						decoding="async"
-					/>
-				</a>
+					<a href="/" class="footer-logo" aria-label="Revolution Trading Pros home">
+						<img
+							src="/revolution-trading-pros.png"
+							alt="Revolution Trading Pros"
+							width="160"
+							height="40"
+							loading="lazy"
+							decoding="async"
+						/>
+					</a>
 
-				<p class="footer-tagline">
-					Professional trading education and tools for disciplined traders.
-				</p>
+					<p class="footer-tagline">
+						Professional trading education and tools for disciplined traders.
+					</p>
 
-				<div class="social-links" aria-label="Social links">
-					{#each socialLinks as social}
-						{@const IconComponent = social.icon}
-						<a
-							href={social.href}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="social-link"
-							aria-label={social.label}
-							title={social.label}
-						>
-							<IconComponent size={20} />
-						</a>
-					{/each}
+					<div class="social-links" aria-label="Social links">
+						{#each socialLinks as social}
+							{@const IconComponent = social.icon}
+							<a
+								href={social.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="social-link"
+								aria-label={social.label}
+								title={social.label}
+							>
+								<IconComponent size={20} />
+							</a>
+						{/each}
+					</div>
 				</div>
-			</div>
 
-			<nav class="footer-column" aria-labelledby="footer-products">
-				<h2 class="footer-heading" id="footer-products">Products</h2>
-				<ul class="footer-list">
-					{#each footerLinks.products as link}
-						<li><a href={link.href}>{link.label}</a></li>
-					{/each}
-				</ul>
-			</nav>
+				<nav class="footer-column" aria-labelledby="footer-products">
+					<h2 class="footer-heading" id="footer-products">Products</h2>
+					<ul class="footer-list">
+						{#each footerLinks.products as link}
+							<li><a href={link.href}>{link.label}</a></li>
+						{/each}
+					</ul>
+				</nav>
 
-			<nav class="footer-column" aria-labelledby="footer-company">
-				<h2 class="footer-heading" id="footer-company">Company</h2>
-				<ul class="footer-list">
-					{#each footerLinks.company as link}
-						<li><a href={link.href}>{link.label}</a></li>
-					{/each}
-				</ul>
-			</nav>
+				<nav class="footer-column" aria-labelledby="footer-company">
+					<h2 class="footer-heading" id="footer-company">Company</h2>
+					<ul class="footer-list">
+						{#each footerLinks.company as link}
+							<li><a href={link.href}>{link.label}</a></li>
+						{/each}
+					</ul>
+				</nav>
 
-			<nav class="footer-column" aria-labelledby="footer-legal">
-				<h2 class="footer-heading" id="footer-legal">Legal</h2>
-				<ul class="footer-list">
-					{#each footerLinks.legal as link}
-						<li><a href={link.href}>{link.label}</a></li>
-					{/each}
-				</ul>
-			</nav>
+				<nav class="footer-column" aria-labelledby="footer-legal">
+					<h2 class="footer-heading" id="footer-legal">Legal</h2>
+					<ul class="footer-list">
+						{#each footerLinks.legal as link}
+							<li><a href={link.href}>{link.label}</a></li>
+						{/each}
+					</ul>
+				</nav>
 			</div>
 
 			<div class="risk-disclaimer">

@@ -175,10 +175,13 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Call backend to refresh stats
-	const backendData = await fetchFromBackend(`/api/admin/room-content/rooms/${slug}/stats/refresh`, {
-		method: 'POST',
-		headers
-	});
+	const backendData = await fetchFromBackend(
+		`/api/admin/room-content/rooms/${slug}/stats/refresh`,
+		{
+			method: 'POST',
+			headers
+		}
+	);
 
 	if (backendData) {
 		return json({

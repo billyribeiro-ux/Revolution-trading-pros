@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * Admin Layout - Dashboard shell for admin area
-	 * 
+	 *
 	 * @version 4.1.0 - Svelte 5 Runes
 	 * @author Revolution Trading Pros
 	 */
@@ -85,7 +85,7 @@
 		if (segments.length <= 1) return 'Dashboard';
 
 		const lastSegment = segments[segments.length - 1];
-		
+
 		const titleMap: Record<string, string> = {
 			blog: 'Blog Posts',
 			categories: 'Categories',
@@ -132,7 +132,12 @@
 	<div class="admin-main">
 		<!-- Header -->
 		<header class="admin-header">
-			<button type="button" class="mobile-menu-btn" onclick={toggleSidebar} aria-label="Toggle sidebar">
+			<button
+				type="button"
+				class="mobile-menu-btn"
+				onclick={toggleSidebar}
+				aria-label="Toggle sidebar"
+			>
 				<IconMenu2 size={24} />
 			</button>
 
@@ -249,7 +254,9 @@
 		position: sticky;
 		top: 0;
 		z-index: var(--z-sticky);
-		transition: var(--transition-colors), box-shadow var(--duration-normal) var(--ease-default);
+		transition:
+			var(--transition-colors),
+			box-shadow var(--duration-normal) var(--ease-default);
 	}
 
 	.mobile-menu-btn {

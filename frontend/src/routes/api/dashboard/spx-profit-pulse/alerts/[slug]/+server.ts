@@ -57,41 +57,41 @@ interface SPXAlert {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const TRADERS = [
-	{ 
-		id: 1, 
-		name: 'Billy Ribeiro', 
-		slug: 'billy-ribeiro', 
+	{
+		id: 1,
+		name: 'Billy Ribeiro',
+		slug: 'billy-ribeiro',
 		title: 'Lead SPX Strategist',
 		photo_url: 'https://cdn.simplertrading.com/traders/billy-ribeiro.jpg',
 		bio: 'Billy Ribeiro is the lead SPX strategist with over 15 years of experience in options trading. He specializes in 0DTE SPX strategies and has developed proprietary methods for consistent profits.'
 	},
-	{ 
-		id: 2, 
-		name: 'Freddie Ferber', 
+	{
+		id: 2,
+		name: 'Freddie Ferber',
 		slug: 'freddie-ferber',
 		title: 'Senior Options Trader',
 		photo_url: 'https://cdn.simplertrading.com/traders/freddie-ferber.jpg',
 		bio: 'Freddie brings 20+ years of market experience to SPX Profit Pulse. His methodical approach to risk management has helped thousands of traders improve their win rates.'
 	},
-	{ 
-		id: 3, 
-		name: 'Shao Wan', 
+	{
+		id: 3,
+		name: 'Shao Wan',
 		slug: 'shao-wan',
 		title: 'Technical Analysis Expert',
 		photo_url: 'https://cdn.simplertrading.com/traders/shao-wan.jpg',
 		bio: 'Shao specializes in technical analysis and chart patterns. Her insights on market structure help traders identify high-probability setups.'
 	},
-	{ 
-		id: 4, 
-		name: 'Melissa Beegle', 
+	{
+		id: 4,
+		name: 'Melissa Beegle',
 		slug: 'melissa-beegle',
 		title: 'Options Educator',
 		photo_url: 'https://cdn.simplertrading.com/traders/melissa-beegle.jpg',
 		bio: 'Melissa is passionate about educating traders on options strategies. Her clear explanations make complex concepts accessible to all skill levels.'
 	},
-	{ 
-		id: 5, 
-		name: 'Jonathan McKeever', 
+	{
+		id: 5,
+		name: 'Jonathan McKeever',
 		slug: 'jonathan-mckeever',
 		title: 'Market Strategist',
 		photo_url: 'https://cdn.simplertrading.com/traders/jonathan-mckeever.jpg',
@@ -103,18 +103,28 @@ function parseSlugToDate(slug: string): Date | null {
 	// Parse slug like "january-15-2026" back to date
 	const parts = slug.split('-');
 	if (parts.length < 3) return null;
-	
+
 	const months: Record<string, number> = {
-		january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
-		july: 6, august: 7, september: 8, october: 9, november: 10, december: 11
+		january: 0,
+		february: 1,
+		march: 2,
+		april: 3,
+		may: 4,
+		june: 5,
+		july: 6,
+		august: 7,
+		september: 8,
+		october: 9,
+		november: 10,
+		december: 11
 	};
-	
+
 	const month = months[parts[0].toLowerCase()];
 	const day = parseInt(parts[1]);
 	const year = parseInt(parts[2]);
-	
+
 	if (month === undefined || isNaN(day) || isNaN(year)) return null;
-	
+
 	return new Date(year, month, day);
 }
 
@@ -128,22 +138,22 @@ function generateRelatedAlerts(currentSlug: string): Array<{
 }> {
 	const related = [];
 	const currentDate = parseSlugToDate(currentSlug) || new Date();
-	
+
 	for (let i = 1; i <= 3; i++) {
 		const date = new Date(currentDate);
 		date.setDate(date.getDate() - i);
-		
+
 		// Skip weekends
 		if (date.getDay() === 0) date.setDate(date.getDate() - 2);
 		if (date.getDay() === 6) date.setDate(date.getDate() - 1);
-		
+
 		const dateStr = date.toLocaleDateString('en-US', {
 			month: 'long',
 			day: 'numeric',
 			year: 'numeric'
 		});
 		const slug = dateStr.toLowerCase().replace(/[,\s]+/g, '-');
-		
+
 		related.push({
 			id: i + 100,
 			slug,
@@ -153,7 +163,7 @@ function generateRelatedAlerts(currentSlug: string): Array<{
 			href: `/dashboard/spx-profit-pulse/alerts/${slug}`
 		});
 	}
-	
+
 	return related;
 }
 
@@ -164,13 +174,13 @@ function generateRelatedAlerts(currentSlug: string): Array<{
 export const GET: RequestHandler = async ({ params }) => {
 	try {
 		const { slug } = params;
-		
+
 		if (!slug) {
 			return json({ success: false, error: 'Slug is required' }, { status: 400 });
 		}
 
 		const date = parseSlugToDate(slug);
-		
+
 		if (!date) {
 			return json({ success: false, error: 'Invalid alert slug' }, { status: 404 });
 		}
@@ -182,7 +192,9 @@ export const GET: RequestHandler = async ({ params }) => {
 		});
 
 		// Determine trader based on date
-		const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000);
+		const dayOfYear = Math.floor(
+			(date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000
+		);
 		const trader = TRADERS[dayOfYear % TRADERS.length];
 
 		const alert: SPXAlert = {
@@ -215,19 +227,19 @@ export const GET: RequestHandler = async ({ params }) => {
 			updated_at: date.toISOString()
 		};
 
-		return json({
-			success: true,
-			data: alert
-		}, {
-			headers: {
-				'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
+		return json(
+			{
+				success: true,
+				data: alert
+			},
+			{
+				headers: {
+					'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
+				}
 			}
-		});
+		);
 	} catch (error) {
 		console.error('[SPX Alert API] Error:', error);
-		return json(
-			{ success: false, error: 'Failed to fetch alert' },
-			{ status: 500 }
-		);
+		return json({ success: false, error: 'Failed to fetch alert' }, { status: 500 });
 	}
 };

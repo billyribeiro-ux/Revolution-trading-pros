@@ -507,11 +507,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 								</button>
 							</div>
 						</div>
-						<textarea
-							class="json-editor"
-							bind:value={templateJson}
-							spellcheck="false"
-							rows="20"
+						<textarea class="json-editor" bind:value={templateJson} spellcheck="false" rows="20"
 						></textarea>
 					</div>
 				{:else}
@@ -617,9 +613,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 							{/each}
 						</div>
 
-						<button class="btn-add-path" onclick={addExcludedPath}>
-							+ Add Path
-						</button>
+						<button class="btn-add-path" onclick={addExcludedPath}> + Add Path </button>
 					</div>
 
 					<div class="settings-card full-width">
@@ -670,11 +664,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 						your site's visibility.
 					</p>
 
-					<textarea
-						class="robots-editor"
-						bind:value={robotsTxt}
-						spellcheck="false"
-						rows="20"
+					<textarea class="robots-editor" bind:value={robotsTxt} spellcheck="false" rows="20"
 					></textarea>
 
 					<div class="robots-tips">
@@ -787,22 +777,12 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 
 					<div class="field-group">
 						<label for="ga-id" class="field-label">Google Analytics ID</label>
-						<input
-							id="ga-id"
-							type="text"
-							class="field-input"
-							placeholder="G-XXXXXXXXXX"
-						/>
+						<input id="ga-id" type="text" class="field-input" placeholder="G-XXXXXXXXXX" />
 					</div>
 
 					<div class="field-group">
 						<label for="gtm-id" class="field-label">Google Tag Manager ID</label>
-						<input
-							id="gtm-id"
-							type="text"
-							class="field-input"
-							placeholder="GTM-XXXXXXX"
-						/>
+						<input id="gtm-id" type="text" class="field-input" placeholder="GTM-XXXXXXX" />
 					</div>
 
 					<div class="analytics-note">

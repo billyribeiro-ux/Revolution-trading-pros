@@ -20,12 +20,14 @@
 
 	let { block, readonly = false, onUpdate }: Props = $props();
 
-	let data = $derived(block.data as {
-		assetId?: string;
-		url?: string;
-		embedUrl?: string;
-		caption?: string;
-	});
+	let data = $derived(
+		block.data as {
+			assetId?: string;
+			url?: string;
+			embedUrl?: string;
+			caption?: string;
+		}
+	);
 
 	let videoUrl = $derived(data.embedUrl || data.url || '');
 	let hasVideo = $derived(!!videoUrl || !!data.assetId);

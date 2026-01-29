@@ -3,7 +3,8 @@
 	 * Social Share Component - Svelte 5
 	 * Share buttons with tracking for blog posts
 	 *
-	 * @version 1.0.0 - December 2024
+	 * @version 2.0.0 - January 2026
+	 * Updated: CSS layers, oklch colors, container queries, modern patterns
 	 */
 
 	interface Props {
@@ -230,119 +231,150 @@
 </div>
 
 <style>
-	.social-share {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
+	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries */
+	@layer components {
+		.social-share {
+			--share-text-muted: oklch(0.65 0.02 260);
+			--share-btn-bg: oklch(0.65 0.02 260 / 0.1);
+			--share-twitter: oklch(0.65 0.15 220);
+			--share-facebook: oklch(0.55 0.18 250);
+			--share-linkedin: oklch(0.5 0.15 240);
+			--share-reddit: oklch(0.6 0.22 30);
+			--share-email: oklch(0.7 0.15 240);
+			--share-copy: oklch(0.65 0.18 290);
+			--share-success: oklch(0.6 0.18 145);
 
-	.social-share.vertical {
-		flex-direction: column;
-		align-items: flex-start;
-	}
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			container-type: inline-size;
+		}
 
-	.share-label {
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: #94a3b8;
-	}
+		.social-share.vertical {
+			flex-direction: column;
+			align-items: flex-start;
+		}
 
-	.share-buttons {
-		display: flex;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
+		.share-label {
+			font-size: 0.875rem;
+			font-weight: 600;
+			color: var(--share-text-muted);
+		}
 
-	.vertical .share-buttons {
-		flex-direction: column;
-	}
+		.share-buttons {
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
 
-	.share-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.25rem;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-	}
+		.vertical .share-buttons {
+			flex-direction: column;
+		}
 
-	/* Size variants */
-	.size-small .share-btn {
-		width: 32px;
-		height: 32px;
-	}
+		.share-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.25rem;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			background: var(--share-btn-bg);
+			color: var(--share-text-muted);
+		}
 
-	.size-small .share-btn svg {
-		width: 14px;
-		height: 14px;
-	}
+		.share-btn:focus-visible {
+			outline: 2px solid var(--share-email);
+			outline-offset: 2px;
+		}
 
-	.size-medium .share-btn {
-		width: 40px;
-		height: 40px;
-	}
+		/* Size variants */
+		.size-small .share-btn {
+			width: 32px;
+			height: 32px;
+		}
 
-	.size-medium .share-btn svg {
-		width: 18px;
-		height: 18px;
-	}
+		.size-small .share-btn svg {
+			width: 14px;
+			height: 14px;
+		}
 
-	.size-large .share-btn {
-		width: 48px;
-		height: 48px;
-	}
+		.size-medium .share-btn {
+			width: 40px;
+			height: 40px;
+		}
 
-	.size-large .share-btn svg {
-		width: 22px;
-		height: 22px;
-	}
+		.size-medium .share-btn svg {
+			width: 18px;
+			height: 18px;
+		}
 
-	.share-btn:hover {
-		transform: translateY(-2px);
-	}
+		.size-large .share-btn {
+			width: 48px;
+			height: 48px;
+		}
 
-	/* Platform colors */
-	.share-btn.twitter:hover {
-		background: #1da1f2;
-		color: white;
-	}
+		.size-large .share-btn svg {
+			width: 22px;
+			height: 22px;
+		}
 
-	.share-btn.facebook:hover {
-		background: #1877f2;
-		color: white;
-	}
+		.share-btn:hover {
+			transform: translateY(-2px);
+		}
 
-	.share-btn.linkedin:hover {
-		background: #0a66c2;
-		color: white;
-	}
+		/* Platform colors using oklch */
+		.share-btn.twitter:hover {
+			background: var(--share-twitter);
+			color: white;
+		}
 
-	.share-btn.reddit:hover {
-		background: #ff4500;
-		color: white;
-	}
+		.share-btn.facebook:hover {
+			background: var(--share-facebook);
+			color: white;
+		}
 
-	.share-btn.email:hover {
-		background: #60a5fa;
-		color: white;
-	}
+		.share-btn.linkedin:hover {
+			background: var(--share-linkedin);
+			color: white;
+		}
 
-	.share-btn.copy:hover {
-		background: #8b5cf6;
-		color: white;
-	}
+		.share-btn.reddit:hover {
+			background: var(--share-reddit);
+			color: white;
+		}
 
-	.share-btn.copied {
-		background: #22c55e;
-		color: white;
-	}
+		.share-btn.email:hover {
+			background: var(--share-email);
+			color: white;
+		}
 
-	.count {
-		font-size: 0.75rem;
-		font-weight: 600;
+		.share-btn.copy:hover {
+			background: var(--share-copy);
+			color: white;
+		}
+
+		.share-btn.copied {
+			background: var(--share-success);
+			color: white;
+		}
+
+		.count {
+			font-size: 0.75rem;
+			font-weight: 600;
+		}
+
+		/* Container query responsive adjustments */
+		@container (max-width: 300px) {
+			.social-share {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.share-buttons {
+				justify-content: flex-start;
+			}
+		}
 	}
 </style>

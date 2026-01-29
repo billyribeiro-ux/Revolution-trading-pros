@@ -9,6 +9,8 @@
  * @version 5.0.0 - January 2026
  */
 
+import type { PageServerLoad } from './$types';
+
 const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 // Room slug to room ID mapping
@@ -45,8 +47,7 @@ export interface PageData {
 	error?: string;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ params, url, fetch, cookies }): Promise<PageData> {
+export const load: PageServerLoad = async ({ params, url, fetch, cookies }): Promise<PageData> => {
 	const { room_slug } = params;
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
@@ -58,7 +59,7 @@ export async function load({ params, url, fetch, cookies }): Promise<PageData> {
 	// TODO: Implement new video fetching approach
 	// Using mock data until new implementation is ready
 	return getMockData(room_slug as string, page, perPage, search);
-}
+};
 
 function formatDate(dateStr: string): string {
 	try {

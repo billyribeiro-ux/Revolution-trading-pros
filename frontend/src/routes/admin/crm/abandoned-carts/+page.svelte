@@ -247,7 +247,13 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" id="search-abandoned-carts" name="search" placeholder="Search by email or name..." bind:value={searchQuery} />
+			<input
+				type="text"
+				id="search-abandoned-carts"
+				name="search"
+				placeholder="Search by email or name..."
+				bind:value={searchQuery}
+			/>
 		</div>
 		<select bind:value={statusFilter} class="filter-select">
 			<option value="">All Statuses</option>

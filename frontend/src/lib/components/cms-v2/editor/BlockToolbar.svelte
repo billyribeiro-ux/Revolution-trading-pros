@@ -41,7 +41,7 @@
 	// ==========================================================================
 
 	let blocks = $derived(editorStore.contentBlocks);
-	let blockIndex = $derived(blocks.findIndex(b => b.id === blockId));
+	let blockIndex = $derived(blocks.findIndex((b) => b.id === blockId));
 	let block = $derived(blocks[blockIndex]);
 	let canMoveUp = $derived(blockIndex > 0);
 	let canMoveDown = $derived(blockIndex < blocks.length - 1);
@@ -152,10 +152,7 @@
 				</button>
 
 				{#if showMoreMenu}
-					<div
-						class="more-menu"
-						transition:scale={{ duration: 150, start: 0.95 }}
-					>
+					<div class="more-menu" transition:scale={{ duration: 150, start: 0.95 }}>
 						<button
 							type="button"
 							class="more-menu-item"

@@ -783,7 +783,13 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input type="text" id="search-resources" name="search" placeholder="Search resources..." bind:value={searchQuery} />
+				<input
+					type="text"
+					id="search-resources"
+					name="search"
+					placeholder="Search resources..."
+					bind:value={searchQuery}
+				/>
 			</div>
 			<div class="filter-group">
 				<select bind:value={selectedResourceType}>
@@ -1210,7 +1216,12 @@
 
 <style>
 	.admin-resources {
-		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--bg-base) 0%,
+			var(--bg-elevated) 50%,
+			var(--bg-base) 100%
+		);
 		position: relative;
 		overflow: hidden;
 	}

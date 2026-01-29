@@ -35,7 +35,7 @@ import {
 	RateLimitError,
 	ServerError,
 	UnknownError,
-	type ApiErrorCode,
+	type ApiErrorCode
 } from './errors';
 import { RequestCache, type CacheConfig } from './cache';
 
@@ -254,7 +254,7 @@ class CircuitBreaker {
 			failures: 0,
 			successes: 0,
 			lastFailureTime: 0,
-			lastStateChange: Date.now(),
+			lastStateChange: Date.now()
 		};
 	}
 
@@ -329,15 +329,15 @@ const DEFAULT_CONFIG = {
 	retryDelay: (attempt: number) => Math.min(1000 * Math.pow(2, attempt), 10_000),
 	defaultHeaders: {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json',
+		Accept: 'application/json'
 	},
 	credentials: 'include' as const,
 	circuitBreaker: {
 		failureThreshold: 5,
 		successThreshold: 2,
 		resetTimeout: 30_000,
-		volumeThreshold: 10,
-	},
+		volumeThreshold: 10
+	}
 } satisfies ApiClientConfig;
 
 export class ApiClient implements Disposable {
@@ -357,18 +357,18 @@ export class ApiClient implements Disposable {
 			...config,
 			defaultHeaders: Object.freeze({
 				...DEFAULT_CONFIG.defaultHeaders,
-				...config.defaultHeaders,
+				...config.defaultHeaders
 			}),
 			circuitBreaker: Object.freeze({
 				...DEFAULT_CONFIG.circuitBreaker,
-				...config.circuitBreaker,
-			}),
+				...config.circuitBreaker
+			})
 		});
 
 		this.cache = new RequestCache({
 			ttl: 300_000, // 5 minutes
 			maxSize: 100,
-			staleWhileRevalidate: true,
+			staleWhileRevalidate: true
 		});
 
 		this.circuitBreaker = new CircuitBreaker(this.config.circuitBreaker);
@@ -412,7 +412,7 @@ export class ApiClient implements Disposable {
 		const response = await this.request<T>(endpoint, {
 			...options,
 			method: 'POST',
-			body: data,
+			body: data
 		});
 		return response.data;
 	}
@@ -428,7 +428,7 @@ export class ApiClient implements Disposable {
 		const response = await this.request<T>(endpoint, {
 			...options,
 			method: 'PUT',
-			body: data,
+			body: data
 		});
 		return response.data;
 	}
@@ -444,7 +444,7 @@ export class ApiClient implements Disposable {
 		const response = await this.request<T>(endpoint, {
 			...options,
 			method: 'PATCH',
-			body: data,
+			body: data
 		});
 		return response.data;
 	}
@@ -460,10 +460,7 @@ export class ApiClient implements Disposable {
 	/**
 	 * Core request method with full response metadata
 	 */
-	async request<T>(
-		endpoint: string,
-		options: RequestOptions = {}
-	): Promise<ApiResponse<T>> {
+	async request<T>(endpoint: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
 		if (this.isDisposed) {
 			throw new Error('ApiClient has been disposed');
 		}
@@ -598,7 +595,7 @@ export class ApiClient implements Disposable {
 			priority: options.priority ?? 'normal',
 			isRetry: false,
 			retryAttempt: 0,
-			metadata: Object.freeze({}),
+			metadata: Object.freeze({})
 		});
 	}
 
@@ -611,26 +608,32 @@ export class ApiClient implements Disposable {
 		let lastError: ApiError | null = null;
 
 		for (let attempt = 0; attempt <= maxRetries; attempt++) {
-			const retryContext: RequestContext = attempt === 0
-				? context
-				: Object.freeze({
-						...context,
-						isRetry: true,
-						retryAttempt: attempt,
-					});
+			const retryContext: RequestContext =
+				attempt === 0
+					? context
+					: Object.freeze({
+							...context,
+							isRetry: true,
+							retryAttempt: attempt
+						});
 
 			try {
 				return await this.executeRequest<T>(endpoint, options, retryContext);
 			} catch (error) {
-				lastError = error instanceof ApiError
-					? error
-					: new NetworkError(
-							error instanceof Error ? error.message : 'Unknown error',
-							context.requestId
-						);
+				lastError =
+					error instanceof ApiError
+						? error
+						: new NetworkError(
+								error instanceof Error ? error.message : 'Unknown error',
+								context.requestId
+							);
 
 				// Don't retry on client errors (4xx) except 429
-				if (lastError.statusCode >= 400 && lastError.statusCode < 500 && lastError.statusCode !== 429) {
+				if (
+					lastError.statusCode >= 400 &&
+					lastError.statusCode < 500 &&
+					lastError.statusCode !== 429
+				) {
 					// Handle 401 with token refresh
 					if (lastError.statusCode === 401 && !options.skipTokenRefresh) {
 						const refreshed = await this.handleTokenRefresh();
@@ -688,7 +691,7 @@ export class ApiClient implements Disposable {
 				headers,
 				body,
 				credentials: this.config.credentials,
-				signal: controller.signal,
+				signal: controller.signal
 			});
 
 			clearTimeout(timeoutId);
@@ -712,12 +715,12 @@ export class ApiClient implements Disposable {
 				headers: Object.freeze(this.parseHeaders(response.headers)),
 				requestId: context.requestId,
 				cached: false,
-				duration,
+				duration
 			});
 
 			// Run response interceptors
 			for (const interceptor of this.responseInterceptors) {
-				apiResponse = await interceptor(apiResponse, context) as ApiResponse<T>;
+				apiResponse = (await interceptor(apiResponse, context)) as ApiResponse<T>;
 			}
 
 			return apiResponse;
@@ -734,10 +737,7 @@ export class ApiClient implements Disposable {
 			}
 
 			if (error instanceof Error && error.name === 'AbortError') {
-				throw new TimeoutError(
-					`Request timed out after ${timeout}ms`,
-					context.requestId
-				);
+				throw new TimeoutError(`Request timed out after ${timeout}ms`, context.requestId);
 			}
 
 			throw new NetworkError(
@@ -747,7 +747,10 @@ export class ApiClient implements Disposable {
 		}
 	}
 
-	private buildUrl(endpoint: string, params?: Record<string, string | number | boolean | null | undefined>): string {
+	private buildUrl(
+		endpoint: string,
+		params?: Record<string, string | number | boolean | null | undefined>
+	): string {
 		let url: string;
 
 		if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
@@ -776,7 +779,7 @@ export class ApiClient implements Disposable {
 	private buildHeaders(customHeaders?: Record<string, string>): Record<string, string> {
 		const headers: Record<string, string> = {
 			...this.config.defaultHeaders,
-			...customHeaders,
+			...customHeaders
 		};
 
 		// Add auth token
@@ -861,7 +864,7 @@ export class ApiClient implements Disposable {
 			try {
 				const response = await fetch('/api/auth/refresh', {
 					method: 'POST',
-					credentials: 'include',
+					credentials: 'include'
 				});
 				return response.ok;
 			} catch {
@@ -890,25 +893,14 @@ export class ApiClient implements Disposable {
 			case 401:
 				return new AuthenticationError(message, context.requestId);
 			case 429:
-				return new RateLimitError(
-					message,
-					context.requestId,
-					parsedRetryAfter ?? 60
-				);
+				return new RateLimitError(message, context.requestId, parsedRetryAfter ?? 60);
 			default:
 				if (response.status >= 500) {
-					return new ServerError(
-						message,
-						response.status,
-						context.requestId,
-						{ retryAfter: parsedRetryAfter }
-					);
+					return new ServerError(message, response.status, context.requestId, {
+						retryAfter: parsedRetryAfter
+					});
 				}
-				return new UnknownError(
-					message,
-					response.status,
-					context.requestId
-				);
+				return new UnknownError(message, response.status, context.requestId);
 		}
 	}
 
@@ -922,7 +914,7 @@ export class ApiClient implements Disposable {
 			500: 'SERVER_ERROR',
 			502: 'SERVER_ERROR',
 			503: 'SERVICE_UNAVAILABLE',
-			504: 'TIMEOUT_ERROR',
+			504: 'TIMEOUT_ERROR'
 		};
 		return statusMap[status] ?? 'UNKNOWN_ERROR';
 	}
@@ -964,8 +956,7 @@ export const apiClient = browser ? getApiClient() : null;
  * Convenience export for direct HTTP methods
  */
 export const api = {
-	get: <T>(endpoint: string, options?: GetOptions) =>
-		getApiClient().get<T>(endpoint, options),
+	get: <T>(endpoint: string, options?: GetOptions) => getApiClient().get<T>(endpoint, options),
 	post: <T, TBody = unknown>(endpoint: string, data?: TBody, options?: PostOptions<TBody>) =>
 		getApiClient().post<T, TBody>(endpoint, data, options),
 	put: <T, TBody = unknown>(endpoint: string, data?: TBody, options?: PutOptions<TBody>) =>
@@ -976,10 +967,8 @@ export const api = {
 		getApiClient().delete<T>(endpoint, options),
 	request: <T>(endpoint: string, options?: RequestOptions) =>
 		getApiClient().request<T>(endpoint, options),
-	invalidateCache: (pattern: string | RegExp) =>
-		getApiClient().invalidateCache(pattern),
-	clearCache: () =>
-		getApiClient().clearCache(),
+	invalidateCache: (pattern: string | RegExp) => getApiClient().invalidateCache(pattern),
+	clearCache: () => getApiClient().clearCache()
 } as const;
 
 export default api;

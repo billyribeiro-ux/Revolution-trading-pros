@@ -1,4 +1,5 @@
 # MarketingFooter CSS Audit Report
+
 **Date:** January 19, 2026  
 **Objective:** End-to-end investigation of all CSS controlling the MarketingFooter component
 
@@ -7,6 +8,7 @@
 ## 🎯 Executive Summary
 
 The MarketingFooter is controlled by **3 primary CSS sources**:
+
 1. **Component-scoped styles** in `MarketingFooter.svelte`
 2. **Tailwind utility classes** on the layout wrapper in `+layout.svelte`
 3. **Print-only styles** in `print.css` (hidden on screen)
@@ -23,25 +25,25 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
 
 ```css
 .marketing-footer {
-    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-    border-top: 1px solid rgba(99, 102, 241, 0.1);
-    padding: 4rem 0 2rem;
-    width: 100%;
-    min-width: 0;
-    flex-shrink: 0;
-    margin-top: auto;  /* ⚠️ CRITICAL: Pushes footer to bottom */
+	background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+	border-top: 1px solid rgba(99, 102, 241, 0.1);
+	padding: 4rem 0 2rem;
+	width: 100%;
+	min-width: 0;
+	flex-shrink: 0;
+	margin-top: auto; /* ⚠️ CRITICAL: Pushes footer to bottom */
 }
 ```
 
 ### Key CSS Features
 
-| Property | Value | Purpose |
-|----------|-------|---------|
-| `margin-top: auto` | auto | Pushes footer to bottom in flexbox layout |
-| `flex-shrink: 0` | 0 | Prevents footer from shrinking |
-| `width: 100%` | 100% | Full width |
-| `min-width: 0` | 0 | Prevents overflow issues |
-| ~~`overflow-x: hidden`~~ | **REMOVED** | Was causing layout break |
+| Property                 | Value       | Purpose                                   |
+| ------------------------ | ----------- | ----------------------------------------- |
+| `margin-top: auto`       | auto        | Pushes footer to bottom in flexbox layout |
+| `flex-shrink: 0`         | 0           | Prevents footer from shrinking            |
+| `width: 100%`            | 100%        | Full width                                |
+| `min-width: 0`           | 0           | Prevents overflow issues                  |
+| ~~`overflow-x: hidden`~~ | **REMOVED** | Was causing layout break                  |
 
 ### Responsive Breakpoints
 
@@ -60,25 +62,25 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
 ```css
 /* Focus states */
 .social-link:focus-visible {
-    outline: 2px solid rgba(129, 140, 248, 0.9);
-    outline-offset: 2px;
+	outline: 2px solid rgba(129, 140, 248, 0.9);
+	outline-offset: 2px;
 }
 
 .footer-list a:focus-visible {
-    outline: 2px solid rgba(129, 140, 248, 0.9);
-    outline-offset: 3px;
-    border-radius: 0.25rem;
+	outline: 2px solid rgba(129, 140, 248, 0.9);
+	outline-offset: 3px;
+	border-radius: 0.25rem;
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-    .social-link,
-    .footer-list a {
-        transition: none;
-    }
-    .social-link:hover {
-        transform: none;
-    }
+	.social-link,
+	.footer-list a {
+		transition: none;
+	}
+	.social-link:hover {
+		transform: none;
+	}
 }
 ```
 
@@ -91,25 +93,23 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
 ### Parent Container Classes
 
 ```html
-<div class="min-h-screen flex flex-col" class:has-admin-toolbar={isAdmin}>
-    <NavBar />
-    
-    <main id="main-content" class="flex-grow">
-        {@render children()}
-    </main>
-    
-    <MarketingFooter />
+<div class="min-h-screen flex flex-col" class:has-admin-toolbar="{isAdmin}">
+	<NavBar />
+
+	<main id="main-content" class="flex-grow">{@render children()}</main>
+
+	<MarketingFooter />
 </div>
 ```
 
 ### Tailwind Class Breakdown
 
-| Class | CSS Output | Purpose |
-|-------|------------|---------|
-| `min-h-screen` | `min-height: 100vh` | Ensures full viewport height |
-| `flex` | `display: flex` | Enables flexbox layout |
-| `flex-col` | `flex-direction: column` | Vertical stacking |
-| `flex-grow` (on main) | `flex-grow: 1` | Main expands to fill space |
+| Class                 | CSS Output               | Purpose                      |
+| --------------------- | ------------------------ | ---------------------------- |
+| `min-h-screen`        | `min-height: 100vh`      | Ensures full viewport height |
+| `flex`                | `display: flex`          | Enables flexbox layout       |
+| `flex-col`            | `flex-direction: column` | Vertical stacking            |
+| `flex-grow` (on main) | `flex-grow: 1`           | Main expands to fill space   |
 
 ### How Sticky Footer Works
 
@@ -136,6 +136,7 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
 ```
 
 **Formula:**
+
 1. Parent: `min-h-screen flex flex-col` (100vh minimum, column layout)
 2. Main: `flex-grow` (takes available space)
 3. Footer: `margin-top: auto` (pushes to bottom)
@@ -148,7 +149,7 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
 
 ```css
 @media print {
-    nav,
+	nav,
     footer,
     .navbar,
     .nav-bar,
@@ -156,10 +157,9 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
     .site-footer,
     .marketing-footer,  /* ← Footer hidden when printing */
     .admin-toolbar,
-    /* ... */
-    {
-        display: none !important;
-    }
+    /* ... */ {
+		display: none !important;
+	}
 }
 ```
 
@@ -174,6 +174,7 @@ The MarketingFooter is controlled by **3 primary CSS sources**:
 **Finding:** ✅ **No footer-specific styles in app.css**
 
 The file contains:
+
 - Tailwind imports
 - `@theme` tokens for RTP design system
 - `.reveal` animation classes
@@ -186,32 +187,36 @@ The file contains:
 ## 🔍 Historical Issues & Fixes
 
 ### Issue #1: `overflow-x: hidden` Causing Layout Break
+
 **Date:** January 19, 2026  
 **Location:** `MarketingFooter.svelte:154`  
 **Problem:** `overflow-x: hidden` on `.marketing-footer` was causing layout collapse  
-**Fix:** Removed the property  
+**Fix:** Removed the property
 
 **Before:**
+
 ```css
 .marketing-footer {
-    overflow-x: hidden;  /* ❌ Caused layout break */
-    margin-top: auto;
+	overflow-x: hidden; /* ❌ Caused layout break */
+	margin-top: auto;
 }
 ```
 
 **After:**
+
 ```css
 .marketing-footer {
-    /* overflow-x: hidden removed */
-    margin-top: auto;
+	/* overflow-x: hidden removed */
+	margin-top: auto;
 }
 ```
 
 ### Issue #2: Page Wrappers with `overflow-x-hidden`
+
 **Date:** Previous session  
 **Location:** Various page files  
 **Problem:** Individual pages had `overflow-x-hidden` on their wrapper divs  
-**Fix:** Removed from all marketing pages  
+**Fix:** Removed from all marketing pages
 
 ---
 
@@ -288,12 +293,12 @@ The footer CSS is production-ready. All previous layout break issues have been r
 
 ## 🔗 Related Files
 
-| File | Purpose |
-|------|---------|
-| `@/frontend/src/lib/components/layout/MarketingFooter.svelte` | Footer component with scoped styles |
-| `@/frontend/src/routes/+layout.svelte` | Root layout with flexbox wrapper |
-| `@/frontend/src/lib/styles/print.css` | Print-only styles |
-| `@/frontend/src/app.css` | Global Tailwind config (no footer styles) |
+| File                                                          | Purpose                                   |
+| ------------------------------------------------------------- | ----------------------------------------- |
+| `@/frontend/src/lib/components/layout/MarketingFooter.svelte` | Footer component with scoped styles       |
+| `@/frontend/src/routes/+layout.svelte`                        | Root layout with flexbox wrapper          |
+| `@/frontend/src/lib/styles/print.css`                         | Print-only styles                         |
+| `@/frontend/src/app.css`                                      | Global Tailwind config (no footer styles) |
 
 ---
 

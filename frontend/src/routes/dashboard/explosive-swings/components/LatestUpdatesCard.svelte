@@ -29,13 +29,13 @@
 	<div class="card-header">
 		<h3 id="updates-heading" class="card-title">
 			<svg viewBox="0 0 20 20" fill="currentColor" class="title-icon" aria-hidden="true">
-				<path d="M4.75 3A1.75 1.75 0 003 4.75v2.5c0 .966.784 1.75 1.75 1.75h2.5A1.75 1.75 0 009 7.25v-2.5A1.75 1.75 0 007.25 3h-2.5zM4.75 11A1.75 1.75 0 003 12.75v2.5c0 .966.784 1.75 1.75 1.75h2.5A1.75 1.75 0 009 15.25v-2.5A1.75 1.75 0 007.25 11h-2.5zM11 4.75c0-.966.784-1.75 1.75-1.75h2.5c.966 0 1.75.784 1.75 1.75v2.5A1.75 1.75 0 0115.25 9h-2.5A1.75 1.75 0 0111 7.25v-2.5zM12.75 11a1.75 1.75 0 00-1.75 1.75v2.5c0 .966.784 1.75 1.75 1.75h2.5A1.75 1.75 0 0017 15.25v-2.5A1.75 1.75 0 0015.25 11h-2.5z" />
+				<path
+					d="M4.75 3A1.75 1.75 0 003 4.75v2.5c0 .966.784 1.75 1.75 1.75h2.5A1.75 1.75 0 009 7.25v-2.5A1.75 1.75 0 007.25 3h-2.5zM4.75 11A1.75 1.75 0 003 12.75v2.5c0 .966.784 1.75 1.75 1.75h2.5A1.75 1.75 0 009 15.25v-2.5A1.75 1.75 0 007.25 11h-2.5zM11 4.75c0-.966.784-1.75 1.75-1.75h2.5c.966 0 1.75.784 1.75 1.75v2.5A1.75 1.75 0 0115.25 9h-2.5A1.75 1.75 0 0111 7.25v-2.5zM12.75 11a1.75 1.75 0 00-1.75 1.75v2.5c0 .966.784 1.75 1.75 1.75h2.5A1.75 1.75 0 0017 15.25v-2.5A1.75 1.75 0 0015.25 11h-2.5z"
+				/>
 			</svg>
 			Latest Updates
 		</h3>
-		<a href="/dashboard/explosive-swings/video-library" class="view-all-link">
-			View All
-		</a>
+		<a href="/dashboard/explosive-swings/video-library" class="view-all-link"> View All </a>
 	</div>
 
 	{#if isLoading}
@@ -54,15 +54,15 @@
 	{:else}
 		<div class="updates-grid">
 			{#each displayUpdates as update (update.id)}
-				<a 
-					href={update.videoUrl} 
-					class="update-item" 
-					target="_blank" 
+				<a
+					href={update.videoUrl}
+					class="update-item"
+					target="_blank"
 					rel="noopener noreferrer"
 					aria-label="{update.title} - {update.duration}"
 				>
-					<div 
-						class="update-thumb" 
+					<div
+						class="update-thumb"
 						class:no-thumb={!update.thumbnailUrl}
 						style={update.thumbnailUrl ? `background-image: url('${update.thumbnailUrl}')` : ''}
 					>
@@ -86,7 +86,9 @@
 		border: 1px solid var(--color-border-default);
 		border-radius: 14px;
 		padding: 18px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+		box-shadow:
+			0 1px 3px rgba(0, 0, 0, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.06);
 	}
 
 	.card-header {
@@ -167,7 +169,11 @@
 	}
 
 	.update-thumb.no-thumb {
-		background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-text-primary) 0%,
+			var(--color-text-secondary) 100%
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -254,7 +260,12 @@
 
 	.skeleton-thumb {
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, var(--color-border-default) 25%, var(--color-bg-muted) 50%, var(--color-border-default) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-border-default) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-border-default) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -262,15 +273,24 @@
 
 	.skeleton-title {
 		height: 12px;
-		background: linear-gradient(90deg, var(--color-border-default) 25%, var(--color-bg-muted) 50%, var(--color-border-default) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-border-default) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-border-default) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 4px;
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Responsive: Stack on smaller screens */

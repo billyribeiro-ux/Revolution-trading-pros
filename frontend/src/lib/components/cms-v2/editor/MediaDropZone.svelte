@@ -536,7 +536,9 @@
 
 			// Mark uploads as complete
 			uploads = uploads.map((u) =>
-				newUploads.find((nu) => nu.id === u.id) ? { ...u, status: 'complete' as const, progress: 100 } : u
+				newUploads.find((nu) => nu.id === u.id)
+					? { ...u, status: 'complete' as const, progress: 100 }
+					: u
 			);
 		} catch (error) {
 			// Mark uploads as errored
@@ -655,7 +657,10 @@
 	<!-- Full-Screen Drop Overlay -->
 	{#if showDropZone && isDragging}
 		<div class="drop-overlay" transition:fade={{ duration: 200 }}>
-			<div class="drop-overlay-content" transition:scale={{ duration: 200, start: 0.95, easing: cubicOut }}>
+			<div
+				class="drop-overlay-content"
+				transition:scale={{ duration: 200, start: 0.95, easing: cubicOut }}
+			>
 				<div class="drop-icon">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

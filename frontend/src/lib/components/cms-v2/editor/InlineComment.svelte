@@ -34,7 +34,13 @@
 		onCommentClicked?: (comment: CmsComment) => void;
 	}
 
-	let { blockId, contentId, blockElement = null, onCommentCreated, onCommentClicked }: Props = $props();
+	let {
+		blockId,
+		contentId,
+		blockElement = null,
+		onCommentCreated,
+		onCommentClicked
+	}: Props = $props();
 
 	// ==========================================================================
 	// Local State
@@ -552,7 +558,8 @@
 
 			<!-- Keyboard Shortcut Hint -->
 			<p class="mt-2 text-center text-xs text-gray-400">
-				Press <kbd class="rounded bg-gray-100 px-1 py-0.5 font-mono text-gray-500">Cmd+Enter</kbd> to submit
+				Press <kbd class="rounded bg-gray-100 px-1 py-0.5 font-mono text-gray-500">Cmd+Enter</kbd> to
+				submit
 			</p>
 		</div>
 	</div>
@@ -560,10 +567,7 @@
 
 <!-- Comment Count Indicator -->
 {#if inlineComments.length > 0}
-	<div
-		class="comment-indicator"
-		aria-label="{inlineComments.length} comments on this block"
-	>
+	<div class="comment-indicator" aria-label="{inlineComments.length} comments on this block">
 		<div
 			class="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800"
 		>
