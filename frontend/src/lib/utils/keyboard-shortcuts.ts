@@ -1,5 +1,5 @@
 /**
- * Keyboard Shortcuts System for CMS Editor
+ * Keyboard Shortcuts System for Content Editor
  *
  * A comprehensive keyboard shortcuts management system that provides:
  * - Cross-platform support (Mac vs Windows/Linux)

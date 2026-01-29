@@ -106,7 +106,7 @@ function formatRFC822Date(dateStr: string): string {
 
 /**
  * Convert content blocks to HTML string
- * Handles various block types from the CMS
+ * Handles various block types from the content system
  * @param blocks - Content blocks array
  * @returns HTML string
  */

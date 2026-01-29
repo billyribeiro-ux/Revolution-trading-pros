@@ -1,5 +1,5 @@
 <!--
-	Admin Schedule Management - Trading Room Schedules CMS
+	Admin Schedule Management - Trading Room Schedules
 	═══════════════════════════════════════════════════════════════════════════════════
 	Apple Principal Engineer ICT 11+ Grade - January 2026
 

@@ -791,25 +791,6 @@
 				{/each}
 			</div>
 		</section>
-
-		<!-- Quick Actions -->
-		<section class="cms-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
-			<h3 class="section-title">Quick Actions</h3>
-			<div class="cms-grid">
-				{#each [{ href: '/admin/blog', icon: IconNews, label: 'Blog Posts', desc: 'Create & manage articles', color: 'blog' }, { href: '/admin/blog/categories', icon: IconTag, label: 'Categories', desc: 'Organize content', color: 'categories' }, { href: '/admin/media', icon: IconPhoto, label: 'Media Library', desc: 'Upload & organize files', color: 'media' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', desc: 'Manage video content', color: 'videos' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', desc: 'Build & manage forms', color: 'forms' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Popups', desc: 'Create popup campaigns', color: 'popups' }, { href: '/admin/email/campaigns', icon: IconSend, label: 'Campaigns', desc: 'Email campaigns', color: 'campaigns' }, { href: '/admin/email/templates', icon: IconMail, label: 'Email Templates', desc: 'Design email templates', color: 'templates' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', desc: 'Search optimization', color: 'seo' }, { href: '/admin/analytics', icon: IconChartBar, label: 'Analytics', desc: 'View detailed analytics', color: 'analytics' }, { href: '/admin/settings', icon: IconSettings, label: 'Settings', desc: 'System configuration', color: 'settings' }] as item}
-					{@const CmsIcon = item.icon}
-					<a href={item.href} class="cms-card">
-						<div class="cms-icon {item.color}">
-							<CmsIcon size={24} />
-						</div>
-						<div class="cms-info">
-							<span class="cms-label">{item.label}</span>
-							<span class="cms-desc">{item.desc}</span>
-						</div>
-					</a>
-				{/each}
-			</div>
-		</section>
 	</div>
 	<!-- End admin-page-container -->
 </div>
@@ -1723,11 +1704,6 @@
 		color: var(--primary-400);
 	}
 
-	/* CMS Section - Email Templates Style */
-	.cms-section {
-		margin-bottom: 2rem;
-	}
-
 	.section-title {
 		font-size: 1.125rem;
 		font-weight: 600;
@@ -1735,103 +1711,6 @@
 		margin-bottom: 1rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid var(--border-muted);
-	}
-
-	.cms-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-		gap: 0.875rem;
-	}
-
-	.cms-card {
-		display: flex;
-		align-items: center;
-		gap: 0.875rem;
-		padding: 0.875rem 1rem;
-		background: rgba(22, 27, 34, 0.6);
-		border: 1px solid var(--border-muted);
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.2s;
-	}
-
-	.cms-card:hover {
-		background: rgba(22, 27, 34, 0.5);
-		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateX(2px);
-	}
-
-	.cms-icon {
-		width: 40px;
-		height: 40px;
-		border-radius: 8px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-	}
-
-	/* CMS Icons - RTP Color System */
-	.cms-icon.blog {
-		background: var(--info-soft);
-		color: var(--info-emphasis);
-	}
-	.cms-icon.categories {
-		background: rgba(61, 90, 153, 0.15);
-		color: var(--secondary-300);
-	}
-	.cms-icon.media {
-		background: rgba(61, 90, 153, 0.15);
-		color: var(--secondary-300);
-	}
-	.cms-icon.videos {
-		background: rgba(230, 184, 0, 0.15);
-		color: var(--primary-400);
-	}
-	.cms-icon.forms {
-		background: var(--success-soft);
-		color: var(--success-emphasis);
-	}
-	.cms-icon.popups {
-		background: rgba(230, 184, 0, 0.15);
-		color: var(--primary-500);
-	}
-	.cms-icon.campaigns {
-		background: var(--warning-soft);
-		color: var(--warning-emphasis);
-	}
-	.cms-icon.templates {
-		background: var(--info-soft);
-		color: var(--info-emphasis);
-	}
-	.cms-icon.seo {
-		background: var(--success-soft);
-		color: var(--success-emphasis);
-	}
-	.cms-icon.analytics {
-		background: rgba(61, 90, 153, 0.15);
-		color: var(--secondary-300);
-	}
-	.cms-icon.settings {
-		background: var(--bg-hover);
-		color: var(--text-secondary);
-	}
-
-	.cms-info {
-		display: flex;
-		flex-direction: column;
-		gap: 0.125rem;
-	}
-
-	.cms-label {
-		font-weight: 600;
-		font-size: 0.875rem;
-		color: var(--text-primary);
-	}
-
-	.cms-desc {
-		font-size: 0.75rem;
-		color: var(--text-tertiary);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1887,11 +1766,6 @@
 			font-size: 1.25rem;
 		}
 
-		/* CMS Grid */
-		.cms-grid {
-			grid-template-columns: 1fr;
-			gap: 0.75rem;
-		}
 
 		/* Panel Sections */
 		.glass-panel {
@@ -1958,9 +1832,6 @@
 			grid-template-columns: repeat(2, 1fr);
 		}
 
-		.cms-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
 	}
 
 	/* Tablet Landscape (769px - 1024px) */
@@ -1982,8 +1853,7 @@
 	@media (hover: none) and (pointer: coarse) {
 		.btn-secondary,
 		.period-selector button,
-		.business-card,
-		.cms-card {
+		.business-card {
 			min-height: 44px;
 		}
 
@@ -2008,7 +1878,6 @@
 		}
 
 		.business-card:hover,
-		.cms-card:hover,
 		.metric-card:hover {
 			transform: none;
 		}
@@ -2045,7 +1914,6 @@
 		}
 
 		.business-card,
-		.cms-card,
 		.metric-card,
 		.glass-panel {
 			break-inside: avoid;

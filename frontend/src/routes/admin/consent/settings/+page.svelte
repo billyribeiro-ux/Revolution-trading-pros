@@ -2,7 +2,7 @@
 	/**
 	 * Admin Consent Settings Page
 	 *
-	 * Complete CMS for consent management configuration.
+	 * Complete consent management configuration.
 	 * Mirrors all functionality from Consent Magic Pro WordPress plugin.
 	 *
 	 * Features:
