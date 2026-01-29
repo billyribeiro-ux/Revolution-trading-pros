@@ -1834,11 +1834,15 @@
 			</div>
 		</aside>
 
-		<!-- Main Form Content Area -->
+		<!-- Main Form Content Area - Layout Shift Free Pattern -->
 		<main class="main-content">
-			<!-- Basic Info Tab -->
-			{#if activeTab === 'basic'}
-				<div class="tab-content" transition:fade={{ duration: 200 }}>
+			<!-- Basic Info Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'basic'}
+				inert={activeTab !== 'basic' ? true : undefined}
+			>
+				<div class="tab-content">
 					<div class="form-card">
 						<h2>Course Information</h2>
 
@@ -2068,11 +2072,15 @@
 						</div>
 					</div>
 				</div>
-			{/if}
+			</div>
 
-			<!-- Curriculum Tab -->
-			{#if activeTab === 'curriculum'}
-				<div class="tab-content" transition:fade={{ duration: 200 }}>
+			<!-- Curriculum Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'curriculum'}
+				inert={activeTab !== 'curriculum' ? true : undefined}
+			>
+				<div class="tab-content">
 					<div class="curriculum-header">
 						<h2>Course Curriculum</h2>
 						<div class="curriculum-stats">
@@ -2257,11 +2265,15 @@
 						</div>
 					</div>
 				</div>
-			{/if}
+			</div>
 
-			<!-- Pricing Tab -->
-			{#if activeTab === 'pricing'}
-				<div class="tab-content" transition:fade={{ duration: 200 }}>
+			<!-- Pricing Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'pricing'}
+				inert={activeTab !== 'pricing' ? true : undefined}
+			>
+				<div class="tab-content">
 					<div class="form-card">
 						<h2>
 							Pricing Strategy
@@ -2495,11 +2507,15 @@
 						{/if}
 					</div>
 				</div>
-			{/if}
+			</div>
 
-			<!-- Media Tab -->
-			{#if activeTab === 'media'}
-				<div class="tab-content" transition:fade={{ duration: 200 }}>
+			<!-- Media Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'media'}
+				inert={activeTab !== 'media' ? true : undefined}
+			>
+				<div class="tab-content">
 					<div class="form-card">
 						<h2>Course Thumbnail *</h2>
 						<p class="help-text">
@@ -2623,11 +2639,15 @@
 						{/if}
 					</div>
 				</div>
-			{/if}
+			</div>
 
-			<!-- SEO & Marketing Tab -->
-			{#if activeTab === 'seo'}
-				<div class="tab-content" transition:fade={{ duration: 200 }}>
+			<!-- SEO & Marketing Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'seo'}
+				inert={activeTab !== 'seo' ? true : undefined}
+			>
+				<div class="tab-content">
 					<div class="form-card">
 						<h2>
 							SEO Optimization
@@ -2784,11 +2804,15 @@
 						{/if}
 					</div>
 				</div>
-			{/if}
+			</div>
 
-			<!-- Advanced Settings Tab -->
-			{#if activeTab === 'advanced'}
-				<div class="tab-content" transition:fade={{ duration: 200 }}>
+			<!-- Advanced Settings Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'advanced'}
+				inert={activeTab !== 'advanced' ? true : undefined}
+			>
+				<div class="tab-content">
 					<div class="form-card">
 						<h2>Access Settings</h2>
 
@@ -2931,7 +2955,7 @@
 						</div>
 					</div>
 				</div>
-			{/if}
+			</div>
 		</main>
 	</div>
 </div>
@@ -3334,9 +3358,48 @@
 		font-size: 0.75rem;
 	}
 
-	/* Main Content */
+	/* Main Content - Layout Shift Prevention */
 	.main-content {
 		min-width: 0;
+		position: relative;
+		contain: layout style;
+		isolation: isolate;
+	}
+
+	/* Tab Panels - CSS visibility toggling eliminates layout shift */
+	.tab-panel {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		contain: content;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(8px);
+		transition: 
+			opacity 0.2s ease,
+			visibility 0.2s ease,
+			transform 0.2s ease;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.tab-panel.active {
+		position: relative;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		z-index: 1;
+		pointer-events: auto;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tab-panel {
+			transition: none;
+			transform: none;
+		}
+		.tab-panel:not(.active) {
+			display: none;
+		}
 	}
 
 	.tab-content {

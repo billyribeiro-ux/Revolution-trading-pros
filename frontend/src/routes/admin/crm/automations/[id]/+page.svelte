@@ -387,10 +387,14 @@
 			</button>
 		</div>
 
-		<!-- Tab Content -->
+		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
-			<!-- Overview Tab -->
-			{#if activeTab === 'overview'}
+			<!-- Overview Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'overview'}
+				inert={activeTab !== 'overview' ? true : undefined}
+			>
 				<div class="overview-grid">
 					<div class="info-card">
 						<h3>Trigger</h3>
@@ -433,10 +437,14 @@
 						</div>
 					</div>
 				</div>
-			{/if}
+			</div>
 
-			<!-- Workflow Tab -->
-			{#if activeTab === 'workflow'}
+			<!-- Workflow Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'workflow'}
+				inert={activeTab !== 'workflow' ? true : undefined}
+			>
 				{#if actions.length === 0}
 					<div class="empty-state">
 						<IconBolt size={48} />
@@ -495,10 +503,14 @@
 						{/each}
 					</div>
 				{/if}
-			{/if}
+			</div>
 
-			<!-- Subscribers Tab -->
-			{#if activeTab === 'subscribers'}
+			<!-- Subscribers Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'subscribers'}
+				inert={activeTab !== 'subscribers' ? true : undefined}
+			>
 				{#if isLoadingSubscribers}
 					<div class="loading-state mini">
 						<IconLoader2 size={24} class="spinning" />
@@ -563,7 +575,7 @@
 						</table>
 					</div>
 				{/if}
-			{/if}
+			</div>
 		</div>
 	{/if}
 </div>
@@ -895,13 +907,52 @@
 		background: rgba(99, 102, 241, 0.2);
 	}
 
-	/* Tab Content */
+	/* Tab Content - Layout Shift Prevention */
 	.tab-content {
+		position: relative;
+		min-height: 400px;
+		contain: layout style;
+		isolation: isolate;
 		background: rgba(15, 23, 42, 0.6);
 		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 16px;
+	}
+
+	/* Tab Panels - CSS visibility toggling eliminates layout shift */
+	.tab-panel {
+		position: absolute;
+		inset: 0;
+		width: 100%;
 		padding: 1.5rem;
-		min-height: 400px;
+		contain: content;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(8px);
+		transition: 
+			opacity 0.2s ease,
+			visibility 0.2s ease,
+			transform 0.2s ease;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.tab-panel.active {
+		position: relative;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		z-index: 1;
+		pointer-events: auto;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tab-panel {
+			transition: none;
+			transform: none;
+		}
+		.tab-panel:not(.active) {
+			display: none;
+		}
 	}
 
 	/* Overview Grid */
