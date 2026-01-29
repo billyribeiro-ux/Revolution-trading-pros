@@ -28,12 +28,12 @@
 		}
 	});
 
-	async function requestPermission() {
+	const requestPermission = async () => {
 		if (browser && 'Notification' in window) {
 			const result = await Notification.requestPermission();
 			hasPermission = result === 'granted';
 		}
-	}
+	};
 
 	function showNotification(alert: any) {
 		if (!enabled || !hasPermission) return;

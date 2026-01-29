@@ -59,6 +59,20 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		return null;
 	};
 
+	// DEV MODE: Bypass auth for development (REMOVE IN PRODUCTION)
+	const isDev = process.env.NODE_ENV === 'development';
+	if (isDev && pathname.startsWith('/dashboard')) {
+		// Mock user for development
+		event.locals.user = {
+			id: 'dev-user',
+			email: 'dev@example.com',
+			name: 'Dev User',
+			role: 'admin'
+		};
+		event.locals.accessToken = 'dev-token';
+		return resolve(event);
+	}
+
 	// Check if this is a protected route
 	const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
