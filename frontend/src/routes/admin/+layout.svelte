@@ -613,4 +613,51 @@
 			padding: var(--space-3) var(--space-4);
 		}
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   GLOBAL TAB PANEL UTILITIES - Layout Shift Prevention
+	   ICT 7 Principal Engineer Grade - Svelte 5 Best Practices
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	:global(.admin-tab-container) {
+		position: relative;
+		min-height: 400px;
+		contain: layout style;
+		isolation: isolate;
+	}
+
+	:global(.admin-tab-panel) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		contain: content;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(8px);
+		transition: 
+			opacity 0.2s ease,
+			visibility 0.2s ease,
+			transform 0.2s ease;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	:global(.admin-tab-panel.active) {
+		position: relative;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		z-index: 1;
+		pointer-events: auto;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.admin-tab-panel) {
+			transition: none;
+			transform: none;
+		}
+		:global(.admin-tab-panel:not(.active)) {
+			display: none;
+		}
+	}
 </style>

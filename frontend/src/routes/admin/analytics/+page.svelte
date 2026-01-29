@@ -291,10 +291,14 @@
 					</button>
 				</div>
 			{:else if dashboardData}
-				<!-- Dashboard Content -->
+				<!-- Dashboard Content - Layout Shift Free Pattern -->
 				<div class="dashboard-grid" in:fade={{ duration: 400 }}>
-					<!-- Overview Tab -->
-					{#if activeTab === 'overview'}
+					<!-- Overview Panel -->
+					<div 
+						class="tab-panel" 
+						class:active={activeTab === 'overview'}
+						inert={activeTab !== 'overview' ? true : undefined}
+					>
 						<div class="tab-content">
 							<!-- Real-time Widget -->
 							<div class="grid-row">
@@ -393,10 +397,14 @@
 								</div>
 							</div>
 						</div>
-					{/if}
+					</div>
 
-					<!-- Funnels Tab -->
-					{#if activeTab === 'funnels'}
+					<!-- Funnels Panel -->
+					<div 
+						class="tab-panel" 
+						class:active={activeTab === 'funnels'}
+						inert={activeTab !== 'funnels' ? true : undefined}
+					>
 						<div class="tab-content">
 							<div class="tab-header">
 								<h2>Conversion Funnels</h2>
@@ -420,10 +428,14 @@
 								</div>
 							{/if}
 						</div>
-					{/if}
+					</div>
 
-					<!-- Cohorts Tab -->
-					{#if activeTab === 'cohorts'}
+					<!-- Cohorts Panel -->
+					<div 
+						class="tab-panel" 
+						class:active={activeTab === 'cohorts'}
+						inert={activeTab !== 'cohorts' ? true : undefined}
+					>
 						<div class="tab-content">
 							<div class="tab-header">
 								<h2>Cohort Analysis</h2>
@@ -452,10 +464,14 @@
 								</div>
 							{/if}
 						</div>
-					{/if}
+					</div>
 
-					<!-- Attribution Tab -->
-					{#if activeTab === 'attribution'}
+					<!-- Attribution Panel -->
+					<div 
+						class="tab-panel" 
+						class:active={activeTab === 'attribution'}
+						inert={activeTab !== 'attribution' ? true : undefined}
+					>
 						<div class="tab-content">
 							<div class="tab-header">
 								<h2>Channel Attribution</h2>
@@ -511,7 +527,7 @@
 								</div>
 							{/if}
 						</div>
-					{/if}
+					</div>
 				</div>
 			{/if}
 		</section>
@@ -840,7 +856,50 @@
 		background: rgba(239, 68, 68, 0.2);
 	}
 
-	/* Dashboard Grid */
+	/* Dashboard Grid - Layout Shift Prevention */
+	.dashboard-grid {
+		position: relative;
+		min-height: 500px;
+		contain: layout style;
+		isolation: isolate;
+	}
+
+	/* Tab Panels - CSS visibility toggling eliminates layout shift */
+	.tab-panel {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		contain: content;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(8px);
+		transition: 
+			opacity 0.2s ease,
+			visibility 0.2s ease,
+			transform 0.2s ease;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.tab-panel.active {
+		position: relative;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		z-index: 1;
+		pointer-events: auto;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tab-panel {
+			transition: none;
+			transform: none;
+		}
+		.tab-panel:not(.active) {
+			display: none;
+		}
+	}
+
 	.tab-content {
 		display: flex;
 		flex-direction: column;

@@ -510,9 +510,14 @@
 			</button>
 		</nav>
 
-		<!-- Tab Content -->
+		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
-			{#if activeTab === 'overview'}
+			<!-- Overview Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'overview'}
+				inert={activeTab !== 'overview' ? true : undefined}
+			>
 				<div class="overview-grid">
 					<!-- Deal Details Card -->
 					<div class="info-card">
@@ -638,7 +643,14 @@
 						</div>
 					{/if}
 				</div>
-			{:else if activeTab === 'timeline'}
+			</div>
+
+			<!-- Timeline Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'timeline'}
+				inert={activeTab !== 'timeline' ? true : undefined}
+			>
 				<div class="timeline-section">
 					{#if timeline.length === 0}
 						<div class="empty-state">
@@ -668,7 +680,14 @@
 						</div>
 					{/if}
 				</div>
-			{:else if activeTab === 'notes'}
+			</div>
+
+			<!-- Notes Panel -->
+			<div 
+				class="tab-panel" 
+				class:active={activeTab === 'notes'}
+				inert={activeTab !== 'notes' ? true : undefined}
+			>
 				<div class="notes-section">
 					<div class="notes-header">
 						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
@@ -696,7 +715,7 @@
 						</div>
 					{/if}
 				</div>
-			{/if}
+			</div>
 		</div>
 	{:else}
 		<div class="empty-state">
@@ -1394,9 +1413,48 @@
 		color: white;
 	}
 
-	/* Tab Content */
+	/* Tab Content - Layout Shift Prevention */
 	.tab-content {
-		min-height: 300px;
+		position: relative;
+		min-height: 400px;
+		contain: layout style;
+		isolation: isolate;
+	}
+
+	/* Tab Panels - CSS visibility toggling eliminates layout shift */
+	.tab-panel {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		contain: content;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(8px);
+		transition: 
+			opacity 0.2s ease,
+			visibility 0.2s ease,
+			transform 0.2s ease;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.tab-panel.active {
+		position: relative;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		z-index: 1;
+		pointer-events: auto;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tab-panel {
+			transition: none;
+			transform: none;
+		}
+		.tab-panel:not(.active) {
+			display: none;
+		}
 	}
 
 	/* Overview Grid */
