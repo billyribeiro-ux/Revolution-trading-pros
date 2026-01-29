@@ -3,12 +3,14 @@
 //! Apple Principal Engineer ICT 11+ Grade - January 2026
 //!
 //! REST API endpoints for trading room performance analytics:
-//! - GET /api/analytics/room/{slug} - Full room analytics
-//! - GET /api/analytics/room/{slug}/equity-curve - Equity curve data
-//! - GET /api/analytics/room/{slug}/ticker/{ticker} - Ticker-specific analytics
-//! - GET /api/analytics/room/{slug}/monthly - Monthly returns
-//! - GET /api/analytics/room/{slug}/tickers - All ticker performance
-//! - GET /api/analytics/room/{slug}/setups - Setup performance
+//!
+//!   - GET /api/analytics/room/{slug} - Full room analytics
+//!   - GET /api/analytics/room/{slug}/equity-curve - Equity curve data
+//!   - GET /api/analytics/room/{slug}/ticker/{ticker} - Ticker-specific analytics
+//!   - GET /api/analytics/room/{slug}/monthly - Monthly returns
+//!   - GET /api/analytics/room/{slug}/tickers - All ticker performance
+//!   - GET /api/analytics/room/{slug}/setups - Setup performance
+//!
 //! ═══════════════════════════════════════════════════════════════════════════════════
 
 use axum::{

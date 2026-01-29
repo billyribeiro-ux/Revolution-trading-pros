@@ -22,10 +22,12 @@ use sqlx::PgPool;
 use std::sync::{atomic::AtomicI64, Once};
 
 use revolution_api::{
+    cache::{CacheInvalidator, CacheService},
     config::Config,
     db::Database,
     routes,
     routes::realtime::EventBroadcaster,
+    routes::websocket::WsConnectionManager,
     services::Services,
     utils::{create_jwt, hash_password},
     AppState,
@@ -97,12 +99,18 @@ impl TestContext {
             .expect("Failed to initialize services");
 
         let event_broadcaster = EventBroadcaster::new();
+        let ws_manager = WsConnectionManager::new();
+        let cache = CacheService::new(None, None);
+        let cache_invalidator = CacheInvalidator::new(cache.clone());
 
         let state = AppState {
             db: db.clone(),
             services,
             config: config.clone(),
             event_broadcaster,
+            ws_manager,
+            cache,
+            cache_invalidator,
         };
 
         let app = Router::new()
@@ -869,6 +877,7 @@ pub struct TosFormatter;
 impl TosFormatter {
     /// Generate TOS format string for options
     /// Example: "BUY +1 SPY 100 (Weeklys) 20 JAN 26 500 CALL @MKT"
+    #[allow(clippy::too_many_arguments)]
     pub fn options(
         action: &str,
         quantity: i32,

@@ -2,12 +2,14 @@
 //! ICT 11+ Principal Engineer Grade
 
 use axum::response::Response;
-use axum::{body::Body, Router};
+use axum::Router;
 use http_body_util::BodyExt;
 use serde_json::Value;
 use std::sync::Once;
 
 use revolution_api::routes::realtime::EventBroadcaster;
+use revolution_api::routes::websocket::WsConnectionManager;
+use revolution_api::cache::{CacheInvalidator, CacheService};
 use revolution_api::{config::Config, db::Database, routes, services::Services, AppState};
 
 static INIT: Once = Once::new();
@@ -59,12 +61,22 @@ pub async fn setup_test_app() -> Router {
     // Create event broadcaster
     let event_broadcaster = EventBroadcaster::new();
 
+    // Create WebSocket connection manager
+    let ws_manager = WsConnectionManager::new();
+
+    // Create cache service and invalidator (no Redis for tests)
+    let cache = CacheService::new(None, None);
+    let cache_invalidator = CacheInvalidator::new(cache.clone());
+
     // Create app state
     let state = AppState {
         db,
         services,
         config,
         event_broadcaster,
+        ws_manager,
+        cache,
+        cache_invalidator,
     };
 
     // Build router with actual routes
@@ -113,6 +125,7 @@ pub async fn body_to_json(response: Response) -> Value {
 
 /// Test user struct
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct TestUser {
     pub id: i64,
     pub email: String,

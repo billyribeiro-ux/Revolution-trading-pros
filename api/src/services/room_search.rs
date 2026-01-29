@@ -3,23 +3,27 @@
 //! Apple Principal Engineer ICT 7+ Grade - January 2026
 //!
 //! PostgreSQL-native full-text search for trading room content:
-//! - Alerts (ticker, title, message, notes)
-//! - Trades (ticker, notes)
-//! - Trade Plans (ticker, notes)
+//!
+//!   - Alerts (ticker, title, message, notes)
+//!   - Trades (ticker, notes)
+//!   - Trade Plans (ticker, notes)
 //!
 //! Features:
-//! - GIN-indexed tsvector search for sub-millisecond queries
-//! - Relevance ranking with ts_rank_cd
-//! - Search result highlighting with ts_headline
-//! - Unified cross-content search with type discrimination
-//! - Date range filtering
-//! - Ticker filtering
-//! - Pagination with offset/limit
+//!
+//!   - GIN-indexed tsvector search for sub-millisecond queries
+//!   - Relevance ranking with ts_rank_cd
+//!   - Search result highlighting with ts_headline
+//!   - Unified cross-content search with type discrimination
+//!   - Date range filtering
+//!   - Ticker filtering
+//!   - Pagination with offset/limit
 //!
 //! Performance Characteristics:
-//! - O(log n) search via GIN index
-//! - Parallel-safe query execution
-//! - Connection pool friendly
+//!
+//!   - O(log n) search via GIN index
+//!   - Parallel-safe query execution
+//!   - Connection pool friendly
+//!
 //! ═══════════════════════════════════════════════════════════════════════════════════
 
 use chrono::{DateTime, NaiveDate, Utc};
@@ -602,9 +606,8 @@ impl RoomSearchService {
     ///
     /// Handles common query patterns and sanitizes input.
     fn prepare_tsquery(query: &str) -> String {
-        // Trim and normalize whitespace
+        // Normalize whitespace (split_whitespace already handles trimming)
         let cleaned = query
-            .trim()
             .split_whitespace()
             .collect::<Vec<_>>()
             .join(" ");

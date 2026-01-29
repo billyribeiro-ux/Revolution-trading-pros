@@ -25,6 +25,7 @@
 	import '$lib/styles/main.css';
 	import '$lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
 
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores'; // FIXED: Use $app/stores for consistency with Admin Layout
 	import { browser } from '$app/environment';

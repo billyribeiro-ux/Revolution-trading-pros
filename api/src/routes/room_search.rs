@@ -3,20 +3,23 @@
 //! Apple Principal Engineer ICT 7+ Grade - January 2026
 //!
 //! Full-text search endpoints for trading room content:
-//! - GET /api/room-search/:room_slug - Unified search across alerts, trades, trade plans
-//! - GET /api/room-search/:room_slug/alerts - Search alerts only
-//! - GET /api/room-search/:room_slug/trades - Search trades only
-//! - GET /api/room-search/:room_slug/trade-plans - Search trade plans only
-//! - GET /api/room-search/:room_slug/suggestions - Get autocomplete suggestions
+//!
+//!   - GET /api/room-search/:room_slug - Unified search across alerts, trades, trade plans
+//!   - GET /api/room-search/:room_slug/alerts - Search alerts only
+//!   - GET /api/room-search/:room_slug/trades - Search trades only
+//!   - GET /api/room-search/:room_slug/trade-plans - Search trade plans only
+//!   - GET /api/room-search/:room_slug/suggestions - Get autocomplete suggestions
 //!
 //! Features:
-//! - PostgreSQL native full-text search with GIN indexes
-//! - Relevance ranking with ts_rank_cd
-//! - Search result highlighting
-//! - Date range filtering
-//! - Ticker filtering
-//! - Content type filtering
-//! - Pagination
+//!
+//!   - PostgreSQL native full-text search with GIN indexes
+//!   - Relevance ranking with ts_rank_cd
+//!   - Search result highlighting
+//!   - Date range filtering
+//!   - Ticker filtering
+//!   - Content type filtering
+//!   - Pagination
+//!
 //! ═══════════════════════════════════════════════════════════════════════════════════
 
 use axum::{
@@ -174,7 +177,7 @@ async fn search_room(
     // Parse filters
     let filters = parse_filters(&params)?;
     let pagination = Pagination {
-        limit: params.limit.min(100).max(1),
+        limit: params.limit.clamp(1, 100),
         offset: params.offset.max(0),
     };
 
@@ -228,7 +231,7 @@ async fn search_alerts(
 
     let filters = parse_filters(&params)?;
     let pagination = Pagination {
-        limit: params.limit.min(100).max(1),
+        limit: params.limit.clamp(1, 100),
         offset: params.offset.max(0),
     };
 
@@ -283,7 +286,7 @@ async fn search_trades(
 
     let filters = parse_filters(&params)?;
     let pagination = Pagination {
-        limit: params.limit.min(100).max(1),
+        limit: params.limit.clamp(1, 100),
         offset: params.offset.max(0),
     };
 
@@ -338,7 +341,7 @@ async fn search_trade_plans(
 
     let filters = parse_filters(&params)?;
     let pagination = Pagination {
-        limit: params.limit.min(100).max(1),
+        limit: params.limit.clamp(1, 100),
         offset: params.offset.max(0),
     };
 
@@ -388,7 +391,7 @@ async fn get_suggestions(
         }));
     }
 
-    let limit = params.limit.min(20).max(1);
+    let limit = params.limit.clamp(1, 20);
 
     let search_service = RoomSearchService::new(state.db.pool.clone());
 

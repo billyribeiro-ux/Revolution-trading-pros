@@ -572,7 +572,7 @@ async fn test_create_trade_plan_default_week_of() {
     let body = assert_status_and_json(response, StatusCode::OK).await;
     assert!(body["week_of"].is_string());
     // The week_of should be today or this week
-    let today = Utc::now().date_naive().format("%Y-%m-%d").to_string();
+    let _today = Utc::now().date_naive().format("%Y-%m-%d").to_string();
     // Verify week_of is set (exact value depends on implementation)
     assert!(!body["week_of"].as_str().unwrap().is_empty());
 }
