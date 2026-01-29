@@ -24,6 +24,7 @@
 	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
 	import TradeEntryModal from './components/TradeEntryModal.svelte';
 	import VideoUploadModal from './components/VideoUploadModal.svelte';
+	import PublishWeeklyModal from './components/PublishWeeklyModal.svelte';
 	import ClosePositionModal from './components/ClosePositionModal.svelte';
 	import AddTradeModal from './components/AddTradeModal.svelte';
 	import UpdatePositionModal from './components/UpdatePositionModal.svelte';
@@ -151,7 +152,7 @@
 		roomSlug={ps.ROOM_SLUG}
 		onAddEntry={() => ps.openTradeEntryModal()}
 		onEditEntry={(entry: any) => ps.openTradeEntryModal(entry)}
-		onUploadVideo={ps.openVideoUploadModal}
+		onUploadVideo={ps.openPublishWeeklyModal}
 	/>
 
 	<!-- Main Grid -->
@@ -288,6 +289,16 @@
 	roomSlug={ps.ROOM_SLUG}
 	onClose={ps.closeVideoUploadModal}
 	onSuccess={ps.fetchWeeklyVideo}
+/>
+
+<PublishWeeklyModal
+	isOpen={ps.isPublishWeeklyModalOpen}
+	roomSlug={ps.ROOM_SLUG}
+	onClose={ps.closePublishWeeklyModal}
+	onSuccess={() => {
+		ps.fetchWeeklyVideo();
+		ps.fetchTradePlan();
+	}}
 />
 
 <ClosePositionModal

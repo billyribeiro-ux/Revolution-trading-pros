@@ -64,6 +64,7 @@ export function createPageState() {
 	let isTradeEntryModalOpen = $state(false);
 	let editingTradeEntry = $state<ApiTradePlanEntry | null>(null);
 	let isVideoUploadModalOpen = $state(false);
+	let isPublishWeeklyModalOpen = $state(false);
 	let isClosePositionModalOpen = $state(false);
 	let closingPosition = $state<ActivePosition | null>(null);
 	let isAddTradeModalOpen = $state(false);
@@ -514,6 +515,15 @@ export function createPageState() {
 		isVideoUploadModalOpen = false;
 	}
 
+	function openPublishWeeklyModal() {
+		trackModalOpened('publish_weekly');
+		isPublishWeeklyModalOpen = true;
+	}
+
+	function closePublishWeeklyModal() {
+		isPublishWeeklyModalOpen = false;
+	}
+
 	function openAddTradeModal() {
 		trackModalOpened('add_trade');
 		isAddTradeModalOpen = true;
@@ -692,6 +702,9 @@ export function createPageState() {
 		get isVideoUploadModalOpen() {
 			return isVideoUploadModalOpen;
 		},
+		get isPublishWeeklyModalOpen() {
+			return isPublishWeeklyModalOpen;
+		},
 		get isClosePositionModalOpen() {
 			return isClosePositionModalOpen;
 		},
@@ -741,6 +754,8 @@ export function createPageState() {
 		closeClosePositionModal,
 		openVideoUploadModal,
 		closeVideoUploadModal,
+		openPublishWeeklyModal,
+		closePublishWeeklyModal,
 		openAddTradeModal,
 		closeAddTradeModal,
 		openUpdatePositionModal,
