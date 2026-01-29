@@ -1030,7 +1030,7 @@
 					<span class="tags-label">Custom Tag</span>
 					<div class="custom-tag-input">
 						<input
-							type="text"
+							id="page-newtag" name="page-newtag" type="text"
 							bind:value={newTag}
 							placeholder="Enter custom tag..."
 							onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && addCustomTag()}

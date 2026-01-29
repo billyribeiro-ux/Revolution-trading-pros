@@ -295,7 +295,7 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								type="checkbox"
+								id="page-checkbox" name="page-checkbox" type="checkbox"
 								checked={selectedCarts.length === carts.length}
 								onchange={toggleAllSelection}
 							/>
@@ -313,7 +313,7 @@
 						<tr>
 							<td class="checkbox-col">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedCarts.includes(cart.id)}
 									onchange={() => toggleCartSelection(cart.id)}
 								/>

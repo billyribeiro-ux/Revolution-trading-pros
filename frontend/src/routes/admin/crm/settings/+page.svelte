@@ -190,7 +190,7 @@
 
 					<div class="form-group">
 						<label class="toggle-label">
-							<input type="checkbox" bind:checked={doubleOptIn.enabled} />
+							<input id="page-doubleoptin-enabled" name="page-doubleoptin-enabled" type="checkbox" bind:checked={doubleOptIn.enabled} />
 							<span class="toggle-switch"></span>
 							<span>Enable Double Opt-In</span>
 						</label>
@@ -264,7 +264,7 @@
 
 					<div class="form-group">
 						<label class="toggle-label">
-							<input type="checkbox" bind:checked={emailPreferences.enabled} />
+							<input id="page-emailpreferences-enabled" name="page-emailpreferences-enabled" type="checkbox" bind:checked={emailPreferences.enabled} />
 							<span class="toggle-switch"></span>
 							<span>Enable Email Preferences Page</span>
 						</label>
@@ -299,22 +299,22 @@
 								<legend class="form-label">Display Options</legend>
 								<div class="checkbox-group">
 									<label class="checkbox-label">
-										<input type="checkbox" bind:checked={emailPreferences.show_lists} />
+										<input id="page-emailpreferences-show-lists" name="page-emailpreferences-show-lists" type="checkbox" bind:checked={emailPreferences.show_lists} />
 										<span>Show Lists</span>
 									</label>
 									<label class="checkbox-label">
-										<input type="checkbox" bind:checked={emailPreferences.show_tags} />
+										<input id="page-emailpreferences-show-tags" name="page-emailpreferences-show-tags" type="checkbox" bind:checked={emailPreferences.show_tags} />
 										<span>Show Tags</span>
 									</label>
 									<label class="checkbox-label">
 										<input
-											type="checkbox"
+											id="page-emailpreferences-show-communication-types" name="page-emailpreferences-show-communication-types" type="checkbox"
 											bind:checked={emailPreferences.show_communication_types}
 										/>
 										<span>Show Communication Types</span>
 									</label>
 									<label class="checkbox-label">
-										<input type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
+										<input id="page-emailpreferences-show-unsubscribe-all" name="page-emailpreferences-show-unsubscribe-all" type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
 										<span>Show Unsubscribe All Option</span>
 									</label>
 								</div>

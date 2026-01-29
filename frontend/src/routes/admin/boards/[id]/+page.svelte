@@ -455,7 +455,7 @@
 					<div class="relative">
 						<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 						<input
-							type="text"
+							id="page-searchquery" name="page-searchquery" type="text"
 							placeholder="Search tasks..."
 							bind:value={searchQuery}
 							class="pl-9 pr-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-48 focus:w-64 transition-all focus:ring-2 focus:ring-[#E6B800]"
@@ -769,7 +769,7 @@
 					{#if showNewStageInput}
 						<div class="bg-gray-200/50 dark:bg-gray-800/50 rounded-xl p-3">
 							<input
-								type="text"
+								id="page-newstagetitle" name="page-newstagetitle" type="text"
 								bind:value={newStageTitle}
 								placeholder="Stage title..."
 								class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-2"
@@ -827,7 +827,7 @@
 					<div class="flex-1">
 						{#if editingTaskTitle}
 							<input
-								type="text"
+								id="page-text" name="page-text" type="text"
 								value={selectedTask.title}
 								onblur={(e: FocusEvent) => {
 									updateTask({ title: (e.currentTarget as HTMLInputElement).value });
@@ -952,7 +952,7 @@
 								{/each}
 								<div class="flex items-center gap-2">
 									<input
-										type="text"
+										id="page-newsubtasktitle" name="page-newsubtasktitle" type="text"
 										bind:value={newSubtaskTitle}
 										placeholder="Add subtask..."
 										class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -1091,7 +1091,7 @@
 								Due Date
 							</h4>
 							<input
-								type="date"
+								id="page-date" name="page-date" type="date"
 								value={selectedTask.due_date?.split('T')[0] || ''}
 								onchange={(e: Event) =>
 									updateTask({ due_date: (e.currentTarget as HTMLInputElement).value })}

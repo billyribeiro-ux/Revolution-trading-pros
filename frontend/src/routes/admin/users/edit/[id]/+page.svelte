@@ -251,7 +251,7 @@
 				<div class="roles-grid">
 					<label class="role-checkbox">
 						<input
-							type="checkbox"
+							id="page-checkbox" name="page-checkbox" type="checkbox"
 							checked={formData.roles.includes('admin')}
 							onchange={() => toggleRole('admin')}
 						/>
@@ -268,7 +268,7 @@
 
 					<label class="role-checkbox">
 						<input
-							type="checkbox"
+							id="page-checkbox" name="page-checkbox" type="checkbox"
 							checked={formData.roles.includes('super-admin')}
 							onchange={() => toggleRole('super-admin')}
 						/>

@@ -347,7 +347,7 @@
 					<!-- Search -->
 					<div class="search-wrapper">
 						<input
-							type="text"
+							id="page-searchquery" name="page-searchquery" type="text"
 							placeholder="Search..."
 							bind:value={searchQuery}
 							class="search-input"

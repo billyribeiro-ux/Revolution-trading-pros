@@ -347,7 +347,7 @@
 									</button>
 									<span class="divider">or</span>
 									<input
-										type="text"
+										id="page-lesson-bunny-video-guid" name="page-lesson-bunny-video-guid" type="text"
 										placeholder="Enter Bunny Video GUID"
 										bind:value={lesson.bunny_video_guid}
 									/>
@@ -371,15 +371,15 @@
 				<section class="panel-section">
 					<h3>Access Settings</h3>
 					<label class="toggle">
-						<input type="checkbox" bind:checked={lesson.is_published} />
+						<input id="page-lesson-is-published" name="page-lesson-is-published" type="checkbox" bind:checked={lesson.is_published} />
 						<span>Published</span>
 					</label>
 					<label class="toggle">
-						<input type="checkbox" bind:checked={lesson.is_free} />
+						<input id="page-lesson-is-free" name="page-lesson-is-free" type="checkbox" bind:checked={lesson.is_free} />
 						<span>Free Preview</span>
 					</label>
 					<label class="toggle">
-						<input type="checkbox" bind:checked={lesson.is_preview} />
+						<input id="page-lesson-is-preview" name="page-lesson-is-preview" type="checkbox" bind:checked={lesson.is_preview} />
 						<span>Show in Preview</span>
 					</label>
 				</section>
@@ -393,7 +393,7 @@
 							<div class="no-thumb">No thumbnail</div>
 						{/if}
 					</div>
-					<input type="text" placeholder="Thumbnail URL" bind:value={lesson.thumbnail_url} />
+					<input id="page-lesson-thumbnail-url" name="page-lesson-thumbnail-url" type="text" placeholder="Thumbnail URL" bind:value={lesson.thumbnail_url} />
 				</section>
 
 				<section class="panel-section">

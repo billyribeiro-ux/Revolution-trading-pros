@@ -521,7 +521,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 									</div>
 									<label class="toggle">
 										<input
-											type="checkbox"
+											id="page-checkbox" name="page-checkbox" type="checkbox"
 											checked={template.isActive}
 											onchange={() => toggleTemplate(template.id)}
 										/>
@@ -552,7 +552,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 
 						<div class="field-group">
 							<label class="toggle-field">
-								<input type="checkbox" bind:checked={settings.sitemapEnabled} />
+								<input id="page-settings-sitemapenabled" name="page-settings-sitemapenabled" type="checkbox" bind:checked={settings.sitemapEnabled} />
 								<span class="toggle-slider"></span>
 								<span class="toggle-label">Enable XML Sitemap</span>
 							</label>

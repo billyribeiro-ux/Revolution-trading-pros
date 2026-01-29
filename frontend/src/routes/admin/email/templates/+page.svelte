@@ -146,7 +146,7 @@
 		<div class="header-actions">
 			<div class="search-box">
 				<input
-					type="text"
+					id="page-searchquery" name="page-searchquery" type="text"
 					placeholder="Search templates..."
 					bind:value={searchQuery}
 					class="search-input"

@@ -1107,15 +1107,15 @@
 				<!-- Options -->
 				<div class="form-options">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.is_published} />
+						<input id="page-formdata-is-published" name="page-formdata-is-published" type="checkbox" bind:checked={formData.is_published} />
 						<span>Published</span>
 					</label>
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.is_featured} />
+						<input id="page-formdata-is-featured" name="page-formdata-is-featured" type="checkbox" bind:checked={formData.is_featured} />
 						<span>Featured (Main Resource)</span>
 					</label>
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.is_pinned} />
+						<input id="page-formdata-is-pinned" name="page-formdata-is-pinned" type="checkbox" bind:checked={formData.is_pinned} />
 						<span>Pinned (Always on top)</span>
 					</label>
 				</div>

@@ -900,7 +900,7 @@
 							{@html Icons.Target}
 						</div>
 						<input
-							type="text"
+							id="page-glossarysearch" name="page-glossarysearch" type="text"
 							bind:value={glossarySearch}
 							placeholder="Search terms..."
 							class="bg-[#0a0a0a] border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:border-rtp-primary outline-none w-64 transition-colors"

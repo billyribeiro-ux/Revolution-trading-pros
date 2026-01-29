@@ -264,7 +264,7 @@
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
 										<input
-											type="checkbox"
+											id="page-settings-webhooks-enabled" name="page-settings-webhooks-enabled" type="checkbox"
 											bind:checked={settings.webhooks_enabled}
 											class="sr-only peer"
 										/>
@@ -286,17 +286,17 @@
 								{#each settings.default_stages as stage, index}
 									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
 										<input
-											type="color"
+											id="page-stage-color" name="page-stage-color" type="color"
 											bind:value={stage.color}
 											class="w-8 h-8 rounded cursor-pointer"
 										/>
 										<input
-											type="text"
+											id="page-stage-title" name="page-stage-title" type="text"
 											bind:value={stage.title}
 											class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
 										/>
 										<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-											<input type="checkbox" bind:checked={stage.auto_complete} class="rounded" />
+											<input id="page-stage-auto-complete" name="page-stage-auto-complete" type="checkbox" bind:checked={stage.auto_complete} class="rounded" />
 											Auto-complete
 										</label>
 										<button
@@ -313,18 +313,18 @@
 								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
 							>
 								<input
-									type="color"
+									id="page-newstage-color" name="page-newstage-color" type="color"
 									bind:value={newStage.color}
 									class="w-8 h-8 rounded cursor-pointer"
 								/>
 								<input
-									type="text"
+									id="page-newstage-title" name="page-newstage-title" type="text"
 									bind:value={newStage.title}
 									placeholder="Stage name..."
 									class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
 								/>
 								<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-									<input type="checkbox" bind:checked={newStage.auto_complete} class="rounded" />
+									<input id="page-newstage-auto-complete" name="page-newstage-auto-complete" type="checkbox" bind:checked={newStage.auto_complete} class="rounded" />
 									Auto-complete
 								</label>
 								<button
@@ -347,12 +347,12 @@
 								{#each settings.default_labels as label, index}
 									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
 										<input
-											type="color"
+											id="page-label-color" name="page-label-color" type="color"
 											bind:value={label.color}
 											class="w-8 h-8 rounded cursor-pointer"
 										/>
 										<input
-											type="text"
+											id="page-label-title" name="page-label-title" type="text"
 											bind:value={label.title}
 											class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
 										/>
@@ -376,12 +376,12 @@
 								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
 							>
 								<input
-									type="color"
+									id="page-newlabel-color" name="page-newlabel-color" type="color"
 									bind:value={newLabel.color}
 									class="w-8 h-8 rounded cursor-pointer"
 								/>
 								<input
-									type="text"
+									id="page-newlabel-title" name="page-newlabel-title" type="text"
 									bind:value={newLabel.title}
 									placeholder="Label name..."
 									class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
@@ -411,7 +411,7 @@
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
 										<input
-											type="checkbox"
+											id="page-settings-time-tracking-enabled" name="page-settings-time-tracking-enabled" type="checkbox"
 											bind:checked={settings.time_tracking_enabled}
 											class="sr-only peer"
 										/>

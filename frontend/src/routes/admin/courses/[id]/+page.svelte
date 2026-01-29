@@ -423,7 +423,7 @@
 						</div>
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:checked={course.is_free} />
+								<input id="page-course-is-free" name="page-course-is-free" type="checkbox" bind:checked={course.is_free} />
 								Free Course
 							</label>
 						</div>
@@ -634,7 +634,7 @@
 					<div class="content-header">
 						<h2>Course Downloads</h2>
 						<input
-							type="file"
+							id="page-file" name="page-file" type="file"
 							bind:this={fileInput}
 							onchange={handleFileUpload}
 							style="display: none;"

@@ -887,7 +887,7 @@
 								{/each}
 							</select>
 
-							<input type="text" bind:value={condition.value} placeholder="Value" />
+							<input id="page-condition-value" name="page-condition-value" type="text" bind:value={condition.value} placeholder="Value" />
 
 							<button class="btn-icon danger" onclick={() => removeCondition(index)}>
 								<IconX size={16} />

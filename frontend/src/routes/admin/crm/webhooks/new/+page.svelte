@@ -317,7 +317,7 @@
 
 			<div class="form-group">
 				<label class="toggle-label">
-					<input type="checkbox" bind:checked={isActive} class="toggle-input" />
+					<input id="page-isactive" name="page-isactive" type="checkbox" bind:checked={isActive} class="toggle-input" />
 					<span class="toggle-switch"></span>
 					<span class="toggle-text">Active</span>
 				</label>
@@ -385,13 +385,13 @@
 					{#each customHeaders as header, index}
 						<div class="header-row">
 							<input
-								type="text"
+								id="page-header-name" name="page-header-name" type="text"
 								placeholder="Header Name"
 								value={header.key}
 								oninput={(e) => updateHeaderKey(index, e.currentTarget.value)}
 							/>
 							<input
-								type="text"
+								id="page-header-value" name="page-header-value" type="text"
 								placeholder="Header Value"
 								value={header.value}
 								oninput={(e) => updateHeaderValue(index, e.currentTarget.value)}

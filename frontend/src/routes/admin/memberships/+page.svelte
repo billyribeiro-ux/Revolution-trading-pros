@@ -519,7 +519,7 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					type="text"
+					id="page-searchquery" name="page-searchquery" type="text"
 					placeholder="Search plans..."
 					bind:value={searchQuery}
 					class="search-input"
@@ -753,7 +753,7 @@
 					</div>
 					<div class="form-group full-width">
 						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={formData.is_active} />
+							<input id="page-formdata-is-active" name="page-formdata-is-active" type="checkbox" bind:checked={formData.is_active} />
 							<span>Active (visible to customers)</span>
 						</label>
 					</div>
@@ -771,13 +771,13 @@
 							{#each formData.features as feature, index}
 								<div class="feature-row">
 									<input
-										type="text"
+										id="page-feature-feature-name" name="page-feature-feature-name" type="text"
 										bind:value={feature.feature_name}
 										placeholder="Feature name"
 										class="feature-input"
 									/>
 									<input
-										type="text"
+										id="page-feature-description" name="page-feature-description" type="text"
 										bind:value={feature.description}
 										placeholder="Description (optional)"
 										class="feature-desc"

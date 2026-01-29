@@ -1980,7 +1980,7 @@
 								<div class="list-item">
 									<IconCheck size={16} />
 									<input
-										type="text"
+										id="page-course-outcomes-i" name="page-course-outcomes-i" type="text"
 										bind:value={course.outcomes[i]}
 										placeholder="Students will be able to..."
 									/>
@@ -2014,7 +2014,7 @@
 								<div class="list-item">
 									<IconAlertCircle size={16} />
 									<input
-										type="text"
+										id="page-course-prerequisites-i" name="page-course-prerequisites-i" type="text"
 										bind:value={course.prerequisites[i]}
 										placeholder="Required knowledge or skills..."
 									/>
@@ -2044,7 +2044,7 @@
 								<div class="list-item">
 									<IconUsers size={16} />
 									<input
-										type="text"
+										id="page-course-target-audience-i" name="page-course-target-audience-i" type="text"
 										bind:value={course.target_audience[i]}
 										placeholder="Who is this course for?"
 									/>
@@ -2117,7 +2117,7 @@
 									<IconGripVertical size={20} class="drag-handle" />
 									<span class="module-number">Module {moduleIndex + 1}</span>
 									<input
-										type="text"
+										id="page-module-title" name="page-module-title" type="text"
 										bind:value={module.title}
 										placeholder="Enter module title..."
 										class="module-title"
@@ -2177,13 +2177,13 @@
 														<option value="download">{getLessonIcon('download')} Resource</option>
 													</select>
 													<input
-														type="text"
+														id="page-lesson-title" name="page-lesson-title" type="text"
 														bind:value={lesson.title}
 														placeholder="Lesson title..."
 														class="lesson-title"
 													/>
 													<input
-														type="number"
+														id="page-lesson-duration-minutes" name="page-lesson-duration-minutes" type="number"
 														bind:value={lesson.duration_minutes}
 														onchange={() => updateModuleDuration(module)}
 														placeholder="Min"
@@ -2191,7 +2191,7 @@
 														min="0"
 													/>
 													<label class="preview-toggle" title="Allow free preview">
-														<input type="checkbox" bind:checked={lesson.is_preview} />
+														<input id="page-lesson-is-preview" name="page-lesson-is-preview" type="checkbox" bind:checked={lesson.is_preview} />
 														<IconEye size={14} />
 													</label>
 													<button
@@ -2214,7 +2214,7 @@
 
 										<div class="module-footer">
 											<label class="preview-module">
-												<input type="checkbox" bind:checked={module.is_preview} />
+												<input id="page-module-is-preview" name="page-module-is-preview" type="checkbox" bind:checked={module.is_preview} />
 												<IconEye size={14} />
 												Allow module preview
 											</label>
@@ -2273,7 +2273,7 @@
 
 						<div class="pricing-models">
 							<label class="pricing-model" class:selected={course.pricing_model === 'one-time'}>
-								<input type="radio" bind:group={course.pricing_model} value="one-time" />
+								<input id="page-radio" name="page-radio" type="radio" bind:group={course.pricing_model} value="one-time" />
 								<div class="model-content">
 									<IconCurrencyDollar size={24} />
 									<span class="model-title">One-Time Payment</span>
@@ -2282,7 +2282,7 @@
 							</label>
 
 							<label class="pricing-model" class:selected={course.pricing_model === 'subscription'}>
-								<input type="radio" bind:group={course.pricing_model} value="subscription" />
+								<input id="page-radio" name="page-radio" type="radio" bind:group={course.pricing_model} value="subscription" />
 								<div class="model-content">
 									<IconRefresh size={24} />
 									<span class="model-title">Subscription</span>
@@ -2291,7 +2291,7 @@
 							</label>
 
 							<label class="pricing-model" class:selected={course.pricing_model === 'payment-plan'}>
-								<input type="radio" bind:group={course.pricing_model} value="payment-plan" />
+								<input id="page-radio" name="page-radio" type="radio" bind:group={course.pricing_model} value="payment-plan" />
 								<div class="model-content">
 									<IconCalendar size={24} />
 									<span class="model-title">Payment Plan</span>
@@ -2300,7 +2300,7 @@
 							</label>
 
 							<label class="pricing-model" class:selected={course.pricing_model === 'free'}>
-								<input type="radio" bind:group={course.pricing_model} value="free" />
+								<input id="page-radio" name="page-radio" type="radio" bind:group={course.pricing_model} value="free" />
 								<div class="model-content">
 									<IconGift size={24} />
 									<span class="model-title">Free</span>
@@ -2364,7 +2364,7 @@
 						<div class="early-bird-section">
 							<h3>Early Bird Discount</h3>
 							<label class="toggle-label">
-								<input type="checkbox" bind:checked={course.early_bird.enabled} />
+								<input id="page-course-early-bird-enabled" name="page-course-early-bird-enabled" type="checkbox" bind:checked={course.early_bird.enabled} />
 								<span>Enable limited-time discount</span>
 							</label>
 
@@ -2423,13 +2423,13 @@
 										<option value="consultation">Consultation</option>
 									</select>
 									<input
-										type="text"
+										id="page-bonus-title" name="page-bonus-title" type="text"
 										bind:value={bonus.title}
 										placeholder="Bonus title..."
 										class="bonus-title"
 									/>
 									<input
-										type="number"
+										id="page-bonus-value" name="page-bonus-value" type="number"
 										bind:value={bonus.value}
 										placeholder="Value"
 										min="0"
@@ -2470,7 +2470,7 @@
 						<h2>Affiliate Program</h2>
 
 						<label class="toggle-label">
-							<input type="checkbox" bind:checked={course.affiliate_enabled} />
+							<input id="page-course-affiliate-enabled" name="page-course-affiliate-enabled" type="checkbox" bind:checked={course.affiliate_enabled} />
 							<span>Enable affiliate program</span>
 						</label>
 
@@ -2528,7 +2528,7 @@
 								<span>{uploading ? 'Uploading...' : 'Click to upload thumbnail'}</span>
 								<small>JPG, PNG • Max 5MB • 16:9 aspect ratio</small>
 								<input
-									type="file"
+									id="page-file" name="page-file" type="file"
 									accept="image/*"
 									onchange={(e: Event) => handleImageUpload(e, 'thumbnail')}
 									disabled={uploading}
@@ -2569,7 +2569,7 @@
 										<span>Upload Video File</span>
 										<small>MP4, WebM • Max 100MB</small>
 										<input
-											type="file"
+											id="page-file" name="page-file" type="file"
 											accept="video/*"
 											onchange={handleVideoUpload}
 											disabled={uploading}
@@ -2580,7 +2580,7 @@
 
 									<div class="video-url">
 										<input
-											type="url"
+											id="page-paste-youtube-vimeo-or-wisti" name="page-paste-youtube-vimeo-or-wisti" type="url"
 											placeholder="Paste YouTube, Vimeo, or Wistia URL..."
 											onchange={(e: Event) => {
 												course.promo_video = (e.target as HTMLInputElement).value;
@@ -2611,7 +2611,7 @@
 								<IconPlus size={24} />
 								<span>Add Image</span>
 								<input
-									type="file"
+									id="page-file" name="page-file" type="file"
 									accept="image/*"
 									onchange={(e: Event) => handleImageUpload(e, 'gallery')}
 									disabled={uploading || course.gallery.length >= 10}
@@ -2702,7 +2702,7 @@
 								<IconPhoto size={16} />
 								Upload OG Image (1200x630px)
 								<input
-									type="file"
+									id="page-file" name="page-file" type="file"
 									accept="image/*"
 									onchange={(e: Event) => handleImageUpload(e, 'og')}
 									disabled={uploading}
@@ -2716,19 +2716,19 @@
 
 						<div class="tracking-toggles">
 							<label class="toggle-item">
-								<input type="checkbox" bind:checked={course.ga4_enabled} />
+								<input id="page-course-ga4-enabled" name="page-course-ga4-enabled" type="checkbox" bind:checked={course.ga4_enabled} />
 								<IconBrandGoogle size={20} />
 								<span>Google Analytics 4</span>
 							</label>
 
 							<label class="toggle-item">
-								<input type="checkbox" bind:checked={course.fb_pixel_enabled} />
+								<input id="page-course-fb-pixel-enabled" name="page-course-fb-pixel-enabled" type="checkbox" bind:checked={course.fb_pixel_enabled} />
 								<IconBrandFacebook size={20} />
 								<span>Facebook Pixel</span>
 							</label>
 
 							<label class="toggle-item">
-								<input type="checkbox" bind:checked={course.conversion_tracking} />
+								<input id="page-course-conversion-tracking" name="page-course-conversion-tracking" type="checkbox" bind:checked={course.conversion_tracking} />
 								<IconChartBar size={20} />
 								<span>Conversion Tracking</span>
 							</label>
@@ -2772,7 +2772,7 @@
 						<h2>Landing Page</h2>
 
 						<label class="toggle-label">
-							<input type="checkbox" bind:checked={course.landing_page_enabled} />
+							<input id="page-course-landing-page-enabled" name="page-course-landing-page-enabled" type="checkbox" bind:checked={course.landing_page_enabled} />
 							<span>Create dedicated landing page</span>
 						</label>
 
@@ -2794,7 +2794,7 @@
 
 						<div class="settings-grid">
 							<label class="setting-item">
-								<input type="checkbox" bind:checked={course.lifetime_access} />
+								<input id="page-course-lifetime-access" name="page-course-lifetime-access" type="checkbox" bind:checked={course.lifetime_access} />
 								<IconLock size={20} />
 								<div>
 									<span>Lifetime Access</span>
@@ -2803,7 +2803,7 @@
 							</label>
 
 							<label class="setting-item">
-								<input type="checkbox" bind:checked={course.certificate_enabled} />
+								<input id="page-course-certificate-enabled" name="page-course-certificate-enabled" type="checkbox" bind:checked={course.certificate_enabled} />
 								<IconCertificate size={20} />
 								<div>
 									<span>Completion Certificate</span>
@@ -2812,7 +2812,7 @@
 							</label>
 
 							<label class="setting-item">
-								<input type="checkbox" bind:checked={course.allow_comments} />
+								<input id="page-course-allow-comments" name="page-course-allow-comments" type="checkbox" bind:checked={course.allow_comments} />
 								<IconUsers size={20} />
 								<div>
 									<span>Allow Comments</span>
@@ -2821,7 +2821,7 @@
 							</label>
 
 							<label class="setting-item">
-								<input type="checkbox" bind:checked={course.allow_reviews} />
+								<input id="page-course-allow-reviews" name="page-course-allow-reviews" type="checkbox" bind:checked={course.allow_reviews} />
 								<IconStar size={20} />
 								<div>
 									<span>Allow Reviews</span>
@@ -2830,7 +2830,7 @@
 							</label>
 
 							<label class="setting-item">
-								<input type="checkbox" bind:checked={course.show_progress} />
+								<input id="page-course-show-progress" name="page-course-show-progress" type="checkbox" bind:checked={course.show_progress} />
 								<IconTrendingUp size={20} />
 								<div>
 									<span>Show Progress Bar</span>
@@ -2839,7 +2839,7 @@
 							</label>
 
 							<label class="setting-item">
-								<input type="checkbox" bind:checked={course.is_featured} />
+								<input id="page-course-is-featured" name="page-course-is-featured" type="checkbox" bind:checked={course.is_featured} />
 								<IconRocket size={20} />
 								<div>
 									<span>Featured Course</span>
@@ -2909,7 +2909,7 @@
 								<div class="list-item">
 									<IconSettings size={16} />
 									<input
-										type="text"
+										id="page-course-tools-required-i" name="page-course-tools-required-i" type="text"
 										bind:value={course.tools_required[i]}
 										placeholder="Software, tools, or resources needed"
 									/>

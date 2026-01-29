@@ -593,7 +593,7 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				type="text"
+				id="page-searchquery" name="page-searchquery" type="text"
 				placeholder="Search automations..."
 				bind:value={searchQuery}
 				aria-label="Search automations"

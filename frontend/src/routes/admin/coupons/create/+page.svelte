@@ -596,7 +596,7 @@
 								{#each availableProducts as product}
 									<label class="item-checkbox">
 										<input
-											type="checkbox"
+											id="page-checkbox" name="page-checkbox" type="checkbox"
 											checked={selectedProducts.has(product.id)}
 											onchange={() => toggleProduct(product.id)}
 										/>
@@ -629,7 +629,7 @@
 								{#each availablePlans as plan}
 									<label class="item-checkbox">
 										<input
-											type="checkbox"
+											id="page-checkbox" name="page-checkbox" type="checkbox"
 											checked={selectedPlans.has(plan.id)}
 											onchange={() => togglePlan(plan.id)}
 										/>

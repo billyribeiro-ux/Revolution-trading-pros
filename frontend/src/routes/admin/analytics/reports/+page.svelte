@@ -421,7 +421,7 @@
 				<div class="border-t border-gray-100 pt-6">
 					<label class="flex items-center gap-3 cursor-pointer">
 						<input
-							type="checkbox"
+							id="page-newreport-schedule" name="page-newreport-schedule" type="checkbox"
 							bind:checked={newReport.schedule}
 							class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
 						/>

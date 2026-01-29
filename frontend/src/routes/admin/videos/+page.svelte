@@ -1307,11 +1307,11 @@
 				<!-- Options -->
 				<div class="form-options">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.is_published} />
+						<input id="videos-formdata-is-published" name="videos-formdata-is-published" type="checkbox" bind:checked={formData.is_published} />
 						<span>Publish immediately</span>
 					</label>
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.is_featured} />
+						<input id="videos-formdata-is-featured" name="videos-formdata-is-featured" type="checkbox" bind:checked={formData.is_featured} />
 						<span>Feature this video</span>
 					</label>
 				</div>

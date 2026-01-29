@@ -287,7 +287,7 @@
 	{#if showQuickAdd}
 		<div class="quick-add-bar">
 			<input
-				type="text"
+				id="tradeentrymanager-quickform-ticker" name="tradeentrymanager-quickform-ticker" type="text"
 				placeholder="TICKER"
 				bind:value={quickForm.ticker}
 				class="quick-input ticker"
@@ -298,8 +298,8 @@
 				<option value="BEARISH">BEARISH</option>
 				<option value="NEUTRAL">NEUTRAL</option>
 			</select>
-			<input type="text" placeholder="Entry" bind:value={quickForm.entry} class="quick-input" />
-			<input type="text" placeholder="Stop" bind:value={quickForm.stop} class="quick-input" />
+			<input id="tradeentrymanager-quickform-entry" name="tradeentrymanager-quickform-entry" type="text" placeholder="Entry" bind:value={quickForm.entry} class="quick-input" />
+			<input id="tradeentrymanager-quickform-stop" name="tradeentrymanager-quickform-stop" type="text" placeholder="Stop" bind:value={quickForm.stop} class="quick-input" />
 			<button
 				class="btn-quick-submit"
 				onclick={quickAddEntry}

@@ -219,7 +219,7 @@
 				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform}
 					<label class="platform-checkbox" style="--platform-color: {getPlatformColor(platform)}">
 						<input
-							type="checkbox"
+							id="page-checkbox" name="page-checkbox" type="checkbox"
 							checked={settings.platforms.includes(platform)}
 							onchange={(e: Event) => {
 								const target = e.target as HTMLInputElement;
@@ -341,7 +341,7 @@
 			<h3>Add Video URL</h3>
 			<p>Enter a video URL from YouTube, Vimeo, or other supported platforms.</p>
 			<input
-				type="url"
+				id="page-newvideourl" name="page-newvideourl" type="url"
 				bind:value={newVideoUrl}
 				placeholder="https://youtube.com/watch?v=..."
 				class="url-input"

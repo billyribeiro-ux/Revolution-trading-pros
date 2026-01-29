@@ -603,7 +603,7 @@
 
 				<div class="field-group">
 					<label class="field-checkbox">
-						<input type="checkbox" bind:checked={formIsActive} />
+						<input id="page-formisactive" name="page-formisactive" type="checkbox" bind:checked={formIsActive} />
 						<span>Active</span>
 					</label>
 				</div>

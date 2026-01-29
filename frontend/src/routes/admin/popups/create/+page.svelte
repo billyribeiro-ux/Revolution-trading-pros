@@ -198,21 +198,21 @@
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:checked={popup.isActive} />
+								<input id="page-popup-isactive" name="page-popup-isactive" type="checkbox" bind:checked={popup.isActive} />
 								<span>Active (show on site)</span>
 							</label>
 						</div>
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:checked={popup.closeButton} />
+								<input id="page-popup-closebutton" name="page-popup-closebutton" type="checkbox" bind:checked={popup.closeButton} />
 								<span>Show close button</span>
 							</label>
 						</div>
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:checked={popup.closeOnOverlayClick} />
+								<input id="page-popup-closeonoverlayclick" name="page-popup-closeonoverlayclick" type="checkbox" bind:checked={popup.closeOnOverlayClick} />
 								<span>Close when clicking overlay</span>
 							</label>
 						</div>
@@ -375,7 +375,7 @@
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:checked={popup.displayRules.showOnScroll} />
+								<input id="page-popup-displayrules-showonscroll" name="page-popup-displayrules-showonscroll" type="checkbox" bind:checked={popup.displayRules.showOnScroll} />
 								<span>Trigger on scroll</span>
 							</label>
 						</div>
@@ -396,7 +396,7 @@
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:value={popup.displayRules.showOnExit} />
+								<input id="page-popup-displayrules-showonexit" name="page-popup-displayrules-showonexit" type="checkbox" bind:value={popup.displayRules.showOnExit} />
 								<span>Show on exit intent</span>
 							</label>
 						</div>
@@ -586,7 +586,7 @@
 
 									<div class="form-group">
 										<label class="checkbox-label">
-											<input type="checkbox" bind:checked={field.required} />
+											<input id="page-field-required" name="page-field-required" type="checkbox" bind:checked={field.required} />
 											<span>Required field</span>
 										</label>
 									</div>

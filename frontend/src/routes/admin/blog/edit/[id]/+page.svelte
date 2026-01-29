@@ -419,7 +419,7 @@
 			<!-- Main Content Area -->
 			<div class="editor-main">
 				<div class="form-group">
-					<input type="text" bind:value={post.title} placeholder="Post Title" class="title-input" />
+					<input id="page-post-title" name="page-post-title" type="text" bind:value={post.title} placeholder="Post Title" class="title-input" />
 				</div>
 
 				<div class="form-group">
@@ -513,7 +513,7 @@
 
 					<div class="form-group">
 						<label>
-							<input type="checkbox" bind:checked={post.allow_comments} />
+							<input id="page-post-allow-comments" name="page-post-allow-comments" type="checkbox" bind:checked={post.allow_comments} />
 							Allow Comments
 						</label>
 					</div>
@@ -661,7 +661,7 @@
 
 					<div class="tag-input-group">
 						<input
-							type="text"
+							id="page-newtag" name="page-newtag" type="text"
 							bind:value={newTag}
 							placeholder="Add new tag..."
 							onkeydown={(e: KeyboardEvent) =>
@@ -677,7 +677,7 @@
 							{#if !post.tags.includes(tag.id)}
 								<label class="checkbox-item">
 									<input
-										type="checkbox"
+										id="page-checkbox" name="page-checkbox" type="checkbox"
 										value={tag.id}
 										onchange={(e: Event) => {
 											if ((e.currentTarget as HTMLInputElement).checked) {

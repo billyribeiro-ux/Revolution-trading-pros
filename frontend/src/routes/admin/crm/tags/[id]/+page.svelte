@@ -215,7 +215,7 @@
 				<h2>Contacts with this Tag</h2>
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input type="text" placeholder="Search contacts..." bind:value={searchQuery} />
+					<input id="page-searchquery" name="page-searchquery" type="text" placeholder="Search contacts..." bind:value={searchQuery} />
 				</div>
 			</div>
 

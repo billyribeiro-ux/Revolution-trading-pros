@@ -795,7 +795,7 @@
 									>
 										<div class="event-checkbox">
 											<input
-												type="checkbox"
+												id="page-checkbox" name="page-checkbox" type="checkbox"
 												checked={selectedIds.has(event.id)}
 												onchange={() => toggleSelection(event.id)}
 												aria-label="Select schedule"
@@ -1043,7 +1043,7 @@
 
 				<div class="form-group form-checkbox">
 					<label>
-						<input type="checkbox" bind:checked={formData.is_active} />
+						<input id="page-formdata-is-active" name="page-formdata-is-active" type="checkbox" bind:checked={formData.is_active} />
 						<span>Active (visible to members)</span>
 					</label>
 				</div>

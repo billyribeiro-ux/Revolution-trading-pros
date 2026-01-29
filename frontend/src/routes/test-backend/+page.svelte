@@ -212,7 +212,7 @@
 				<form class="newsletter-form" onsubmit={handleNewsletterSubmit}>
 					<div class="form-group">
 						<input
-							type="email"
+							id="page-newsletteremail" name="page-newsletteremail" type="email"
 							bind:value={newsletterEmail}
 							placeholder="Enter your email"
 							required
@@ -394,7 +394,7 @@
 
 			<form class="popup-form" onsubmit={handlePopupSubmit}>
 				<input
-					type="email"
+					id="page-popupemail" name="page-popupemail" type="email"
 					bind:value={popupEmail}
 					placeholder="Enter your email"
 					required

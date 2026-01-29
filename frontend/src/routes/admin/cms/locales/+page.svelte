@@ -276,7 +276,7 @@
 						<div class="search-box">
 							<IconSearch size={16} />
 							<input
-								type="text"
+								id="page-searchquery" name="page-searchquery" type="text"
 								placeholder="Search translations..."
 								bind:value={searchQuery}
 								onkeyup={(e) => e.key === 'Enter' && fetchTranslations(selectedLocale.code)}

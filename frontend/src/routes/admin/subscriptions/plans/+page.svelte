@@ -616,7 +616,7 @@
 
 				<div class="form-group">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={editingPlan.is_active} />
+						<input id="page-editingplan-is-active" name="page-editingplan-is-active" type="checkbox" bind:checked={editingPlan.is_active} />
 						<span>Plan is Active</span>
 					</label>
 				</div>

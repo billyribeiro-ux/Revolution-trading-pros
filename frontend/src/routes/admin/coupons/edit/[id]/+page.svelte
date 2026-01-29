@@ -569,14 +569,14 @@
 
 				<div class="form-checkboxes">
 					<label class="toggle-label">
-						<input type="checkbox" bind:checked={formData.is_active} class="toggle-checkbox" />
+						<input id="page-formdata-is-active" name="page-formdata-is-active" type="checkbox" bind:checked={formData.is_active} class="toggle-checkbox" />
 						<span class="toggle-switch"></span>
 						<span class="toggle-text">Active</span>
 						<span class="toggle-hint">Coupon can be used by customers</span>
 					</label>
 
 					<label class="toggle-label">
-						<input type="checkbox" bind:checked={formData.stackable} class="toggle-checkbox" />
+						<input id="page-formdata-stackable" name="page-formdata-stackable" type="checkbox" bind:checked={formData.stackable} class="toggle-checkbox" />
 						<span class="toggle-switch"></span>
 						<span class="toggle-text">Stackable</span>
 						<span class="toggle-hint">Can be combined with other coupons</span>

@@ -356,7 +356,7 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								type="checkbox"
+								id="page-checkbox" name="page-checkbox" type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
 								onchange={selectAllMembers}
 								aria-label="Select all churned members"
@@ -376,7 +376,7 @@
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedMembers.has(member.id)}
 									onchange={() => toggleMemberSelection(member.id)}
 									aria-label="Select {member.name}"

@@ -474,7 +474,7 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					type="text"
+					id="page-searchquery" name="page-searchquery" type="text"
 					placeholder="Search by email..."
 					bind:value={searchQuery}
 					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
@@ -515,7 +515,7 @@
 						<tr>
 							<th class="checkbox-col">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedCarts.size === carts.length && carts.length > 0}
 									onchange={selectAllCarts}
 								/>
@@ -534,7 +534,7 @@
 							<tr class:selected={selectedCarts.has(cart.id)}>
 								<td class="checkbox-col">
 									<input
-										type="checkbox"
+										id="page-checkbox" name="page-checkbox" type="checkbox"
 										checked={selectedCarts.has(cart.id)}
 										onchange={() => toggleCartSelection(cart.id)}
 									/>

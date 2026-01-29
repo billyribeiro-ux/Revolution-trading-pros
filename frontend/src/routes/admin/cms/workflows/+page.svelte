@@ -148,7 +148,7 @@
 		<div class="search-input">
 			<IconSearch size={18} />
 			<input
-				type="text"
+				id="page-searchquery" name="page-searchquery" type="text"
 				placeholder="Search workflows..."
 				bind:value={searchQuery}
 				onkeyup={(e) => e.key === 'Enter' && fetchWorkflows()}

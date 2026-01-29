@@ -453,7 +453,7 @@
 						<div class="flex gap-4">
 							<label class="flex items-center gap-2">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									value="desktop"
 									bind:group={formData.display_rules.devices}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -462,7 +462,7 @@
 							</label>
 							<label class="flex items-center gap-2">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									value="tablet"
 									bind:group={formData.display_rules.devices}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -471,7 +471,7 @@
 							</label>
 							<label class="flex items-center gap-2">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									value="mobile"
 									bind:group={formData.display_rules.devices}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"

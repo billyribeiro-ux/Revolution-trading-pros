@@ -306,13 +306,13 @@
 						<div class="feature-form">
 							<div class="feature-inputs">
 								<input
-									type="text"
+									id="page-feature-feature-name" name="page-feature-feature-name" type="text"
 									bind:value={feature.feature_name}
 									placeholder="Feature name"
 									class="feature-name-input"
 								/>
 								<input
-									type="text"
+									id="page-feature-description" name="page-feature-description" type="text"
 									bind:value={feature.description}
 									placeholder="Description (optional)"
 									class="feature-desc-input"
@@ -333,7 +333,7 @@
 
 				<div class="form-group">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={membership.is_active} />
+						<input id="page-membership-is-active" name="page-membership-is-active" type="checkbox" bind:checked={membership.is_active} />
 						<span>Active (visible to customers)</span>
 					</label>
 				</div>

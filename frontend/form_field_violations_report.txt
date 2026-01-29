@@ -1,0 +1,1385 @@
+================================================================================
+FORM FIELD ACCESSIBILITY VIOLATIONS REPORT
+================================================================================
+
+Total Files with Violations: 69
+Total Input Fields Missing id/name: 223
+
+================================================================================
+
+
+📄 admin/analytics/events/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 166:
+   <input
+								type="text"
+								bind:value={searchQuery}
+								onkeydown={(e: KeyboardEvent) =>...
+
+
+📄 admin/analytics/funnels/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 454:
+   <input
+									type="text"
+									bind:value={step.name}
+									placeholder="Step name"
+							...
+
+   Line 460:
+   <input
+									type="text"
+									bind:value={step.event_name}
+									placeholder="Event name"
+...
+
+
+📄 admin/analytics/reports/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 423:
+   <input
+							type="checkbox"
+							bind:checked={newReport.schedule}
+							class="w-4 h-4 text-bl...
+
+
+📄 admin/analytics/segments/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 616:
+   <input
+									type="text"
+									bind:value={rule.value}
+									placeholder="Value"
+									c...
+
+
+📄 admin/blog/+page.svelte
+   Violations: 11
+--------------------------------------------------------------------------------
+   Line 763:
+   <input type="text" bind:value={searchQuery} placeholder="Search posts... (Ctrl+F)" />
+
+   Line 771:
+   <input type="date" bind:value={dateRange.start} class="date-input" />
+
+   Line 773:
+   <input type="date" bind:value={dateRange.end} class="date-input" />
+
+   Line 873:
+   <input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+
+   Line 886:
+   <input
+									type="checkbox"
+									checked={selectedPosts.has(post.id)}
+									onchange={() ...
+
+   Line 1085:
+   <input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+
+   Line 1101:
+   <input
+										type="checkbox"
+										checked={selectedPosts.has(post.id)}
+										onchange={...
+
+   Line 1246:
+   <input type="radio" bind:group={exportFormat} value="csv" />
+
+   Line 1250:
+   <input type="radio" bind:group={exportFormat} value="json" />
+
+   Line 1254:
+   <input type="radio" bind:group={exportFormat} value="wordpress" />
+
+   Line 1305:
+   <input
+									type="datetime-local"
+									class="schedule-input"
+									min={new Date().toISO...
+
+
+📄 admin/blog/categories/+page.svelte
+   Violations: 6
+--------------------------------------------------------------------------------
+   Line 400:
+   <input
+				type="text"
+				class="search-input"
+				placeholder="Search categories and tags..."
+				...
+
+   Line 408:
+   <input type="checkbox" bind:checked={showHidden} />
+
+   Line 453:
+   <input
+									type="checkbox"
+									checked={selectedCategories.has(category.id)}
+									onch...
+
+   Line 552:
+   <input
+									type="checkbox"
+									checked={selectedTags.has(tag.id)}
+									onchange={(e: E...
+
+   Line 682:
+   <input type="checkbox" bind:checked={categoryForm.is_visible} />
+
+   Line 771:
+   <input type="checkbox" bind:checked={tagForm.is_visible} />
+
+
+📄 admin/blog/edit/[id]/+page.svelte
+   Violations: 4
+--------------------------------------------------------------------------------
+   Line 422:
+   <input type="text" bind:value={post.title} placeholder="Post Title" class="title-input" />
+
+   Line 516:
+   <input type="checkbox" bind:checked={post.allow_comments} />
+
+   Line 663:
+   <input
+							type="text"
+							bind:value={newTag}
+							placeholder="Add new tag..."
+							onke...
+
+   Line 679:
+   <input
+										type="checkbox"
+										value={tag.id}
+										onchange={(e: Event) => {
+
+
+📄 admin/boards/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 463:
+   <input
+							type="text"
+							placeholder="Search boards..."
+							bind:value={searchQuery}
+				...
+
+   Line 489:
+   <input
+							type="checkbox"
+							bind:checked={showArchived}
+							class="rounded border-gray-3...
+
+
+📄 admin/boards/[id]/+page.svelte
+   Violations: 5
+--------------------------------------------------------------------------------
+   Line 457:
+   <input
+							type="text"
+							placeholder="Search tasks..."
+							bind:value={searchQuery}
+					...
+
+   Line 771:
+   <input
+								type="text"
+								bind:value={newStageTitle}
+								placeholder="Stage title..."
+	...
+
+   Line 829:
+   <input
+								type="text"
+								value={selectedTask.title}
+								onblur={(e: FocusEvent) => {
+
+   Line 954:
+   <input
+										type="text"
+										bind:value={newSubtaskTitle}
+										placeholder="Add subta...
+
+   Line 1093:
+   <input
+								type="date"
+								value={selectedTask.due_date?.split('T')[0] || ''}
+								onchan...
+
+
+📄 admin/boards/settings/+page.svelte
+   Violations: 12
+--------------------------------------------------------------------------------
+   Line 266:
+   <input
+											type="checkbox"
+											bind:checked={settings.webhooks_enabled}
+											cla...
+
+   Line 288:
+   <input
+											type="color"
+											bind:value={stage.color}
+											class="w-8 h-8 rounded...
+
+   Line 293:
+   <input
+											type="text"
+											bind:value={stage.title}
+											class="flex-1 px-3 py-1...
+
+   Line 299:
+   <input type="checkbox" bind:checked={stage.auto_complete} class="rounded" />
+
+   Line 315:
+   <input
+									type="color"
+									bind:value={newStage.color}
+									class="w-8 h-8 rounded cu...
+
+   Line 320:
+   <input
+									type="text"
+									bind:value={newStage.title}
+									placeholder="Stage name......
+
+   Line 327:
+   <input type="checkbox" bind:checked={newStage.auto_complete} class="rounded" />
+
+   Line 349:
+   <input
+											type="color"
+											bind:value={label.color}
+											class="w-8 h-8 rounded...
+
+   Line 354:
+   <input
+											type="text"
+											bind:value={label.title}
+											class="flex-1 px-3 py-1...
+
+   Line 378:
+   <input
+									type="color"
+									bind:value={newLabel.color}
+									class="w-8 h-8 rounded cu...
+
+   Line 383:
+   <input
+									type="text"
+									bind:value={newLabel.title}
+									placeholder="Label name......
+
+   Line 413:
+   <input
+											type="checkbox"
+											bind:checked={settings.time_tracking_enabled}
+									...
+
+
+📄 admin/boards/templates/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 290:
+   <input
+					type="text"
+					placeholder="Search templates..."
+					bind:value={searchQuery}
+					cl...
+
+
+📄 admin/boards/time-tracking/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 300:
+   <input
+						type="date"
+						bind:value={filterDateFrom}
+						onchange={() => {
+
+   Line 310:
+   <input
+						type="date"
+						bind:value={filterDateTo}
+						onchange={() => {
+
+
+📄 admin/cart/abandoned/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 476:
+   <input
+					type="text"
+					placeholder="Search by email..."
+					bind:value={searchQuery}
+					onk...
+
+   Line 517:
+   <input
+									type="checkbox"
+									checked={selectedCarts.size === carts.length && carts.lengt...
+
+   Line 536:
+   <input
+										type="checkbox"
+										checked={selectedCarts.has(cart.id)}
+										onchange={...
+
+
+📄 admin/cms-v2/assets/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 639:
+   <input
+									class="folder-rename-input"
+									type="text"
+									value={folder.name}
+						...
+
+   Line 717:
+   <input
+						type="text"
+						placeholder="Search assets..."
+						bind:value={searchQuery}
+						c...
+
+
+📄 admin/cms-v2/content/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 292:
+   <input
+				type="text"
+				placeholder="Search content..."
+				bind:value={searchQuery}
+				class="s...
+
+   Line 418:
+   <input
+						type="checkbox"
+						checked={selectedIds.size === content.length && content.length > ...
+
+   Line 453:
+   <input
+							type="checkbox"
+							checked={isSelected}
+							onclick={(e) => e.stopPropagation()...
+
+
+📄 admin/cms-v2/content/create/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 261:
+   <input type="checkbox" bind:checked={autoSlug} />
+
+
+📄 admin/cms-v2/seo/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 523:
+   <input
+											type="checkbox"
+											checked={template.isActive}
+											onchange={() => ...
+
+   Line 555:
+   <input type="checkbox" bind:checked={settings.sitemapEnabled} />
+
+
+📄 admin/cms-v2/webhooks/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 606:
+   <input type="checkbox" bind:checked={formIsActive} />
+
+
+📄 admin/cms/locales/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 278:
+   <input
+								type="text"
+								placeholder="Search translations..."
+								bind:value={searchQu...
+
+
+📄 admin/cms/versions/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 129:
+   <input
+				type="text"
+				placeholder="Search versions..."
+				bind:value={searchQuery}
+				onkeyup...
+
+
+📄 admin/cms/workflows/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 150:
+   <input
+				type="text"
+				placeholder="Search workflows..."
+				bind:value={searchQuery}
+				onkeyu...
+
+
+📄 admin/connections/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 349:
+   <input
+							type="text"
+							placeholder="Search..."
+							bind:value={searchQuery}
+							clas...
+
+
+📄 admin/consent/settings/+page.svelte
+   Violations: 21
+--------------------------------------------------------------------------------
+   Line 335:
+   <input type="checkbox" bind:checked={settings.consent_enabled} />
+
+   Line 348:
+   <input type="checkbox" bind:checked={settings.test_mode} />
+
+   Line 362:
+   <input
+								type="number"
+								class="input-number"
+								bind:value={settings.expire_days}
+...
+
+   Line 379:
+   <input
+									type="number"
+									class="input-number"
+									bind:value={settings.consent_ve...
+
+   Line 397:
+   <input
+								type="text"
+								class="input-text"
+								bind:value={settings.policy_version}
+	...
+
+   Line 420:
+   <input type="checkbox" bind:checked={settings.banner_enabled} />
+
+   Line 464:
+   <input type="checkbox" bind:checked={settings.show_reject_button} />
+
+   Line 475:
+   <input type="checkbox" bind:checked={settings.show_settings_button} />
+
+   Line 492:
+   <input type="checkbox" bind:checked={settings.close_on_scroll} />
+
+   Line 503:
+   <input
+									type="number"
+									class="input-number"
+									bind:value={settings.close_on_s...
+
+   Line 538:
+   <input type="checkbox" bind:checked={settings.script_blocking_enabled} />
+
+   Line 555:
+   <input type="checkbox" bind:checked={settings[script.key]} />
+
+   Line 571:
+   <input type="checkbox" bind:checked={settings[script.key]} />
+
+   Line 587:
+   <input type="checkbox" bind:checked={settings[script.key]} />
+
+   Line 615:
+   <input type="checkbox" bind:checked={settings.google_consent_mode_enabled} />
+
+   Line 640:
+   <input type="checkbox" bind:checked={settings.bing_consent_mode_enabled} />
+
+   Line 672:
+   <input type="checkbox" bind:checked={settings.geolocation_enabled} />
+
+   Line 684:
+   <input type="checkbox" bind:checked={settings.geo_default_strict} />
+
+   Line 760:
+   <input type="checkbox" bind:checked={settings.proof_consent_enabled} />
+
+   Line 773:
+   <input
+									type="number"
+									class="input-number"
+									bind:value={settings.proof_rete...
+
+   Line 790:
+   <input type="checkbox" bind:checked={settings.proof_auto_delete} />
+
+
+📄 admin/coupons/create/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 598:
+   <input
+											type="checkbox"
+											checked={selectedProducts.has(product.id)}
+											o...
+
+   Line 631:
+   <input
+											type="checkbox"
+											checked={selectedPlans.has(plan.id)}
+											onchang...
+
+
+📄 admin/coupons/edit/[id]/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 572:
+   <input type="checkbox" bind:checked={formData.is_active} class="toggle-checkbox" />
+
+   Line 579:
+   <input type="checkbox" bind:checked={formData.stackable} class="toggle-checkbox" />
+
+
+📄 admin/courses/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 290:
+   <input
+					type="text"
+					placeholder="Search courses..."
+					bind:value={searchQuery}
+					onke...
+
+
+📄 admin/courses/[id]/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 426:
+   <input type="checkbox" bind:checked={course.is_free} />
+
+   Line 636:
+   <input
+							type="file"
+							bind:this={fileInput}
+							onchange={handleFileUpload}
+							sty...
+
+
+📄 admin/courses/[id]/lessons/[lessonId]/+page.svelte
+   Violations: 5
+--------------------------------------------------------------------------------
+   Line 349:
+   <input
+										type="text"
+										placeholder="Enter Bunny Video GUID"
+										bind:value={le...
+
+   Line 374:
+   <input type="checkbox" bind:checked={lesson.is_published} />
+
+   Line 378:
+   <input type="checkbox" bind:checked={lesson.is_free} />
+
+   Line 382:
+   <input type="checkbox" bind:checked={lesson.is_preview} />
+
+   Line 396:
+   <input type="text" placeholder="Thumbnail URL" bind:value={lesson.thumbnail_url} />
+
+
+📄 admin/courses/create/+page.svelte
+   Violations: 32
+--------------------------------------------------------------------------------
+   Line 1982:
+   <input
+										type="text"
+										bind:value={course.outcomes[i]}
+										placeholder="Studen...
+
+   Line 2016:
+   <input
+										type="text"
+										bind:value={course.prerequisites[i]}
+										placeholder="R...
+
+   Line 2046:
+   <input
+										type="text"
+										bind:value={course.target_audience[i]}
+										placeholder=...
+
+   Line 2119:
+   <input
+										type="text"
+										bind:value={module.title}
+										placeholder="Enter module...
+
+   Line 2179:
+   <input
+														type="text"
+														bind:value={lesson.title}
+														placeholder="...
+
+   Line 2185:
+   <input
+														type="number"
+														bind:value={lesson.duration_minutes}
+														...
+
+   Line 2194:
+   <input type="checkbox" bind:checked={lesson.is_preview} />
+
+   Line 2217:
+   <input type="checkbox" bind:checked={module.is_preview} />
+
+   Line 2276:
+   <input type="radio" bind:group={course.pricing_model} value="one-time" />
+
+   Line 2285:
+   <input type="radio" bind:group={course.pricing_model} value="subscription" />
+
+   Line 2294:
+   <input type="radio" bind:group={course.pricing_model} value="payment-plan" />
+
+   Line 2303:
+   <input type="radio" bind:group={course.pricing_model} value="free" />
+
+   Line 2367:
+   <input type="checkbox" bind:checked={course.early_bird.enabled} />
+
+   Line 2425:
+   <input
+										type="text"
+										bind:value={bonus.title}
+										placeholder="Bonus title.....
+
+   Line 2431:
+   <input
+										type="number"
+										bind:value={bonus.value}
+										placeholder="Value"
+				...
+
+   Line 2473:
+   <input type="checkbox" bind:checked={course.affiliate_enabled} />
+
+   Line 2530:
+   <input
+									type="file"
+									accept="image/*"
+									onchange={(e: Event) => handleImageUp...
+
+   Line 2571:
+   <input
+											type="file"
+											accept="video/*"
+											onchange={handleVideoUpload}
+		...
+
+   Line 2582:
+   <input
+											type="url"
+											placeholder="Paste YouTube, Vimeo, or Wistia URL..."
+							...
+
+   Line 2613:
+   <input
+									type="file"
+									accept="image/*"
+									onchange={(e: Event) => handleImageUp...
+
+   Line 2704:
+   <input
+									type="file"
+									accept="image/*"
+									onchange={(e: Event) => handleImageUp...
+
+   Line 2719:
+   <input type="checkbox" bind:checked={course.ga4_enabled} />
+
+   Line 2725:
+   <input type="checkbox" bind:checked={course.fb_pixel_enabled} />
+
+   Line 2731:
+   <input type="checkbox" bind:checked={course.conversion_tracking} />
+
+   Line 2775:
+   <input type="checkbox" bind:checked={course.landing_page_enabled} />
+
+   Line 2797:
+   <input type="checkbox" bind:checked={course.lifetime_access} />
+
+   Line 2806:
+   <input type="checkbox" bind:checked={course.certificate_enabled} />
+
+   Line 2815:
+   <input type="checkbox" bind:checked={course.allow_comments} />
+
+   Line 2824:
+   <input type="checkbox" bind:checked={course.allow_reviews} />
+
+   Line 2833:
+   <input type="checkbox" bind:checked={course.show_progress} />
+
+   Line 2842:
+   <input type="checkbox" bind:checked={course.is_featured} />
+
+   Line 2911:
+   <input
+										type="text"
+										bind:value={course.tools_required[i]}
+										placeholder="...
+
+
+📄 admin/crm/abandoned-carts/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 297:
+   <input
+								type="checkbox"
+								checked={selectedCarts.length === carts.length}
+								oncha...
+
+   Line 315:
+   <input
+									type="checkbox"
+									checked={selectedCarts.includes(cart.id)}
+									onchange...
+
+
+📄 admin/crm/automations/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 595:
+   <input
+				type="text"
+				placeholder="Search automations..."
+				bind:value={searchQuery}
+				aria...
+
+
+📄 admin/crm/automations/new/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 521:
+   <input type="checkbox" bind:checked={formData.trigger_settings.run_once} />
+
+   Line 525:
+   <input type="checkbox" bind:checked={formData.trigger_settings.skip_if_active} />
+
+
+📄 admin/crm/logs/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 199:
+   <input
+				type="text"
+				placeholder="Search logs..."
+				bind:value={searchQuery}
+				onchange={l...
+
+
+📄 admin/crm/sequences/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 394:
+   <input
+					type="text"
+					placeholder="Search sequences..."
+					bind:value={searchQuery}
+					ar...
+
+
+📄 admin/crm/settings/+page.svelte
+   Violations: 6
+--------------------------------------------------------------------------------
+   Line 193:
+   <input type="checkbox" bind:checked={doubleOptIn.enabled} />
+
+   Line 267:
+   <input type="checkbox" bind:checked={emailPreferences.enabled} />
+
+   Line 302:
+   <input type="checkbox" bind:checked={emailPreferences.show_lists} />
+
+   Line 306:
+   <input type="checkbox" bind:checked={emailPreferences.show_tags} />
+
+   Line 310:
+   <input
+											type="checkbox"
+											bind:checked={emailPreferences.show_communication_types...
+
+   Line 317:
+   <input type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
+
+
+📄 admin/crm/tags/[id]/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 218:
+   <input type="text" placeholder="Search contacts..." bind:value={searchQuery} />
+
+
+📄 admin/crm/templates/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 439:
+   <input
+					type="text"
+					placeholder="Search templates..."
+					bind:value={searchQuery}
+					ar...
+
+
+📄 admin/crm/webhooks/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 269:
+   <input
+				type="text"
+				placeholder="Search webhooks..."
+				bind:value={searchQuery}
+				aria-la...
+
+
+📄 admin/crm/webhooks/[id]/edit/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 376:
+   <input type="checkbox" bind:checked={isActive} class="toggle-input" />
+
+   Line 443:
+   <input
+									type="text"
+									placeholder="Header Name"
+									value={header.key}
+									...
+
+   Line 449:
+   <input
+									type="text"
+									placeholder="Header Value"
+									value={header.value}
+						...
+
+
+📄 admin/crm/webhooks/new/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 320:
+   <input type="checkbox" bind:checked={isActive} class="toggle-input" />
+
+   Line 387:
+   <input
+								type="text"
+								placeholder="Header Name"
+								value={header.key}
+								onin...
+
+   Line 393:
+   <input
+								type="text"
+								placeholder="Header Value"
+								value={header.value}
+								o...
+
+
+📄 admin/email/subscribers/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 307:
+   <input
+				type="text"
+				placeholder="Search by email or name..."
+				bind:value={searchQuery}
+			...
+
+   Line 362:
+   <input
+								type="checkbox"
+								checked={selectedSubscribers.size === subscribers.length}
+			...
+
+   Line 381:
+   <input
+									type="checkbox"
+									checked={selectedSubscribers.has(subscriber.id)}
+									o...
+
+
+📄 admin/email/templates/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 148:
+   <input
+					type="text"
+					placeholder="Search templates..."
+					bind:value={searchQuery}
+					cl...
+
+
+📄 admin/indicators/create/+page.svelte
+   Violations: 11
+--------------------------------------------------------------------------------
+   Line 753:
+   <input
+									type="checkbox"
+									checked={indicator.platforms.includes(platform.id)}
+							...
+
+   Line 866:
+   <input
+												type="file"
+												class="file-input"
+												onchange={(e) => handlePla...
+
+   Line 879:
+   <input
+												type="text"
+												bind:value={pf.installation_notes}
+												placeholde...
+
+   Line 932:
+   <input
+										type="text"
+										bind:value={doc.title}
+										placeholder="Document title....
+
+   Line 962:
+   <input
+											type="file"
+											class="file-input"
+											accept=".pdf,.doc,.docx,.txt,...
+
+   Line 1006:
+   <input type="checkbox" bind:checked={indicator.is_free} />
+
+   Line 1050:
+   <input type="checkbox" bind:checked={indicator.has_tradingview_access} />
+
+   Line 1056:
+   <input type="checkbox" bind:checked={indicator.tradingview_invite_only} />
+
+   Line 1085:
+   <input type="checkbox" bind:checked={indicator.is_published} />
+
+   Line 1090:
+   <input type="checkbox" bind:checked={indicator.is_featured} />
+
+   Line 1178:
+   <input
+							type="file"
+							class="file-input"
+							accept="image/*"
+							onchange={handleT...
+
+
+📄 admin/media/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 685:
+   <input
+						type="text"
+						placeholder="Search media..."
+						bind:value={searchQuery}
+						cl...
+
+   Line 1070:
+   <input
+												type="checkbox"
+												checked={selectedIds.has(item.id)}
+												onclic...
+
+   Line 1093:
+   <input
+											type="checkbox"
+											checked={selectedIds.has(item.id)}
+											onclick={...
+
+
+📄 admin/members/[id]/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 1032:
+   <input
+							type="text"
+							bind:value={newTag}
+							placeholder="Enter custom tag..."
+						...
+
+
+📄 admin/members/churned/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 358:
+   <input
+								type="checkbox"
+								checked={selectedMembers.size === members.length && members.l...
+
+   Line 378:
+   <input
+									type="checkbox"
+									checked={selectedMembers.has(member.id)}
+									onchange=...
+
+
+📄 admin/members/past/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 539:
+   <input
+					type="text"
+					placeholder="Search by name or email..."
+					bind:value={searchQuery}
+...
+
+   Line 575:
+   <input
+									type="checkbox"
+									checked={allSelected}
+									onchange={selectAllMembers}
+...
+
+   Line 594:
+   <input
+										type="checkbox"
+										checked={selectedMembers.has(member.id)}
+										onchan...
+
+
+📄 admin/members/segments/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 890:
+   <input type="text" bind:value={condition.value} placeholder="Value" />
+
+
+📄 admin/members/service/[id]/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 205:
+   <input
+				type="text"
+				placeholder="Search members..."
+				bind:value={searchQuery}
+				onkeydow...
+
+   Line 243:
+   <input
+								type="checkbox"
+								checked={selectedMembers.size === members.length && members.l...
+
+   Line 261:
+   <input
+									type="checkbox"
+									checked={selectedMembers.has(member.id)}
+									onchange=...
+
+
+📄 admin/members/subscriptions/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 281:
+   <input
+				type="text"
+				placeholder="Search by name, email, or ID..."
+				bind:value={searchQuery...
+
+
+📄 admin/memberships/+page.svelte
+   Violations: 4
+--------------------------------------------------------------------------------
+   Line 521:
+   <input
+					type="text"
+					placeholder="Search plans..."
+					bind:value={searchQuery}
+					class=...
+
+   Line 756:
+   <input type="checkbox" bind:checked={formData.is_active} />
+
+   Line 773:
+   <input
+										type="text"
+										bind:value={feature.feature_name}
+										placeholder="Feat...
+
+   Line 779:
+   <input
+										type="text"
+										bind:value={feature.description}
+										placeholder="Descr...
+
+
+📄 admin/memberships/create/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 308:
+   <input
+									type="text"
+									bind:value={feature.feature_name}
+									placeholder="Feature...
+
+   Line 314:
+   <input
+									type="text"
+									bind:value={feature.description}
+									placeholder="Descript...
+
+   Line 336:
+   <input type="checkbox" bind:checked={membership.is_active} />
+
+
+📄 admin/popups/[id]/edit/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 521:
+   <input
+										type="checkbox"
+										value="desktop"
+										bind:group={formData.display_ru...
+
+   Line 530:
+   <input
+										type="checkbox"
+										value="tablet"
+										bind:group={formData.display_rul...
+
+   Line 539:
+   <input
+										type="checkbox"
+										value="mobile"
+										bind:group={formData.display_rul...
+
+
+📄 admin/popups/create/+page.svelte
+   Violations: 6
+--------------------------------------------------------------------------------
+   Line 201:
+   <input type="checkbox" bind:checked={popup.isActive} />
+
+   Line 208:
+   <input type="checkbox" bind:checked={popup.closeButton} />
+
+   Line 215:
+   <input type="checkbox" bind:checked={popup.closeOnOverlayClick} />
+
+   Line 378:
+   <input type="checkbox" bind:checked={popup.displayRules.showOnScroll} />
+
+   Line 399:
+   <input type="checkbox" bind:value={popup.displayRules.showOnExit} />
+
+   Line 589:
+   <input type="checkbox" bind:checked={field.required} />
+
+
+📄 admin/popups/new/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 455:
+   <input
+									type="checkbox"
+									value="desktop"
+									bind:group={formData.display_rules...
+
+   Line 464:
+   <input
+									type="checkbox"
+									value="tablet"
+									bind:group={formData.display_rules....
+
+   Line 473:
+   <input
+									type="checkbox"
+									value="mobile"
+									bind:group={formData.display_rules....
+
+
+📄 admin/resources/+page.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 1110:
+   <input type="checkbox" bind:checked={formData.is_published} />
+
+   Line 1114:
+   <input type="checkbox" bind:checked={formData.is_featured} />
+
+   Line 1118:
+   <input type="checkbox" bind:checked={formData.is_pinned} />
+
+
+📄 admin/schedules/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 797:
+   <input
+												type="checkbox"
+												checked={selectedIds.has(event.id)}
+												oncha...
+
+   Line 1046:
+   <input type="checkbox" bind:checked={formData.is_active} />
+
+
+📄 admin/seo/404-monitor/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 204:
+   <input
+									type="checkbox"
+									checked={selectedIds.includes(log.id)}
+									onchange={(...
+
+
+📄 admin/seo/redirects/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 231:
+   <input
+									type="checkbox"
+									checked={selectedIds.includes(redirect.id)}
+									onchan...
+
+
+📄 admin/seo/video-sitemap/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 221:
+   <input
+							type="checkbox"
+							checked={settings.platforms.includes(platform)}
+							onchange...
+
+   Line 343:
+   <input
+				type="url"
+				bind:value={newVideoUrl}
+				placeholder="https://youtube.com/watch?v=..."...
+
+
+📄 admin/subscriptions/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 784:
+   <input
+						type="checkbox"
+						bind:checked={cancelImmediate}
+						class="w-4 h-4 bg-slate-900 ...
+
+
+📄 admin/subscriptions/plans/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 619:
+   <input type="checkbox" bind:checked={editingPlan.is_active} />
+
+
+📄 admin/trading-rooms/[slug]/components/TradeEntryManager.svelte
+   Violations: 3
+--------------------------------------------------------------------------------
+   Line 289:
+   <input
+				type="text"
+				placeholder="TICKER"
+				bind:value={quickForm.ticker}
+				class="quick-i...
+
+   Line 301:
+   <input type="text" placeholder="Entry" bind:value={quickForm.entry} class="quick-input" />
+
+   Line 302:
+   <input type="text" placeholder="Stop" bind:value={quickForm.stop} class="quick-input" />
+
+
+📄 admin/users/edit/[id]/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 253:
+   <input
+							type="checkbox"
+							checked={formData.roles.includes('admin')}
+							onchange={() ...
+
+   Line 270:
+   <input
+							type="checkbox"
+							checked={formData.roles.includes('super-admin')}
+							onchang...
+
+
+📄 admin/videos/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 1310:
+   <input type="checkbox" bind:checked={formData.is_published} />
+
+   Line 1314:
+   <input type="checkbox" bind:checked={formData.is_featured} />
+
+
+📄 dashboard/spx-profit-pulse/alerts/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 193:
+   <input
+						type="text"
+						placeholder="Search alerts..."
+						bind:value={searchQuery}
+						c...
+
+
+📄 media/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 133:
+   <input
+							type="text"
+							bind:value={searchQuery}
+							oninput={(e: Event) =>
+
+   Line 265:
+   <input
+												type="checkbox"
+												checked={$mediaStore.selectedFiles.has(file.id)}
+				...
+
+
+📄 our-mission/+page.svelte
+   Violations: 1
+--------------------------------------------------------------------------------
+   Line 902:
+   <input
+							type="text"
+							bind:value={glossarySearch}
+							placeholder="Search terms..."
+		...
+
+
+📄 test-backend/+page.svelte
+   Violations: 2
+--------------------------------------------------------------------------------
+   Line 214:
+   <input
+							type="email"
+							bind:value={newsletterEmail}
+							placeholder="Enter your email"...
+
+   Line 396:
+   <input
+					type="email"
+					bind:value={popupEmail}
+					placeholder="Enter your email"
+					requi...

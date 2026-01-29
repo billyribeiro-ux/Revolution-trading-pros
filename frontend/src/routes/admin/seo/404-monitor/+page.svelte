@@ -202,7 +202,7 @@
 						<tr>
 							<td>
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedIds.includes(log.id)}
 									onchange={() => toggleSelection(log.id)}
 								/>

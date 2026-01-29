@@ -537,7 +537,7 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					type="text"
+					id="page-searchquery" name="page-searchquery" type="text"
 					placeholder="Search by name or email..."
 					bind:value={searchQuery}
 					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
@@ -573,7 +573,7 @@
 						<tr>
 							<th class="checkbox-col">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={allSelected}
 									onchange={selectAllMembers}
 									aria-label="Select all members"
@@ -592,7 +592,7 @@
 							<tr class:selected={selectedMembers.has(member.id)}>
 								<td class="checkbox-col">
 									<input
-										type="checkbox"
+										id="page-checkbox" name="page-checkbox" type="checkbox"
 										checked={selectedMembers.has(member.id)}
 										onchange={() => toggleMemberSelection(member.id)}
 										aria-label="Select {member.name}"

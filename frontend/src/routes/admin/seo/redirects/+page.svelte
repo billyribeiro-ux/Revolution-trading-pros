@@ -229,7 +229,7 @@
 						<tr>
 							<td>
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedIds.includes(redirect.id)}
 									onchange={() => toggleSelection(redirect.id)}
 								/>

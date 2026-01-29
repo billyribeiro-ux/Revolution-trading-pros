@@ -782,7 +782,7 @@
 			<div class="mb-6">
 				<label class="flex items-center gap-3 cursor-pointer">
 					<input
-						type="checkbox"
+						id="page-cancelimmediate" name="page-cancelimmediate" type="checkbox"
 						bind:checked={cancelImmediate}
 						class="w-4 h-4 bg-slate-900 border-slate-600 rounded text-red-500 focus:ring-red-500"
 					/>

@@ -290,7 +290,7 @@
 		<div class="search-box">
 			<IconSearch size={16} />
 			<input
-				type="text"
+				id="page-searchquery" name="page-searchquery" type="text"
 				placeholder="Search content..."
 				bind:value={searchQuery}
 				class="search-input"
@@ -416,7 +416,7 @@
 			<div class="table-header">
 				<div class="cell-checkbox">
 					<input
-						type="checkbox"
+						id="page-checkbox" name="page-checkbox" type="checkbox"
 						checked={selectedIds.size === content.length && content.length > 0}
 						onchange={selectAll}
 					/>
@@ -451,7 +451,7 @@
 				>
 					<div class="cell-checkbox">
 						<input
-							type="checkbox"
+							id="page-checkbox" name="page-checkbox" type="checkbox"
 							checked={isSelected}
 							onclick={(e) => e.stopPropagation()}
 							onchange={() => selectContent(item.id)}

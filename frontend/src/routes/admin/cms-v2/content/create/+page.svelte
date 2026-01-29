@@ -258,7 +258,7 @@
 						<div class="field-label-row">
 							<label for="slug" class="field-label required">Slug</label>
 							<label class="auto-slug-toggle">
-								<input type="checkbox" bind:checked={autoSlug} />
+								<input id="page-autoslug" name="page-autoslug" type="checkbox" bind:checked={autoSlug} />
 								Auto-generate
 							</label>
 						</div>

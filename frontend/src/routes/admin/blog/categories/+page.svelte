@@ -398,14 +398,14 @@
 		<div class="search-group">
 			<IconSearch size={18} />
 			<input
-				type="text"
+				id="page-categorysearch" name="page-categorysearch" type="text"
 				class="search-input"
 				placeholder="Search categories and tags..."
 				bind:value={categorySearch}
 			/>
 		</div>
 		<label class="checkbox-label">
-			<input type="checkbox" bind:checked={showHidden} />
+			<input id="page-showhidden" name="page-showhidden" type="checkbox" bind:checked={showHidden} />
 			<span>Show Hidden</span>
 		</label>
 	</div>
@@ -451,7 +451,7 @@
 						<div class="item-card" transition:fade>
 							<label class="checkbox-wrapper">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedCategories.has(category.id)}
 									onchange={(e: Event) => {
 										if ((e.currentTarget as HTMLInputElement).checked) {
@@ -550,7 +550,7 @@
 						<div class="item-card" transition:fade>
 							<label class="checkbox-wrapper">
 								<input
-									type="checkbox"
+									id="page-checkbox" name="page-checkbox" type="checkbox"
 									checked={selectedTags.has(tag.id)}
 									onchange={(e: Event) => {
 										if ((e.currentTarget as HTMLInputElement).checked) {
@@ -679,7 +679,7 @@
 
 					<div class="form-group">
 						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={categoryForm.is_visible} />
+							<input id="page-categoryform-is-visible" name="page-categoryform-is-visible" type="checkbox" bind:checked={categoryForm.is_visible} />
 							<span>Visible</span>
 						</label>
 						<p class="help-text">Hidden categories won't appear in public listings</p>
@@ -768,7 +768,7 @@
 
 					<div class="form-group">
 						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={tagForm.is_visible} />
+							<input id="page-tagform-is-visible" name="page-tagform-is-visible" type="checkbox" bind:checked={tagForm.is_visible} />
 							<span>Visible</span>
 						</label>
 						<p class="help-text">Hidden tags won't appear in public listings</p>

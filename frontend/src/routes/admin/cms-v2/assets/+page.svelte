@@ -637,7 +637,7 @@
 							<IconFolder size={20} />
 							{#if editingFolder?.id === folder.id}
 								<input
-									class="folder-rename-input"
+									id="page-text" name="page-text" class="folder-rename-input"
 									type="text"
 									value={folder.name}
 									onblur={(e) => renameFolder(folder, e.currentTarget.value)}
@@ -715,7 +715,7 @@
 				<div class="search-box">
 					<IconSearch size={16} />
 					<input
-						type="text"
+						id="page-searchquery" name="page-searchquery" type="text"
 						placeholder="Search assets..."
 						bind:value={searchQuery}
 						class="search-input"

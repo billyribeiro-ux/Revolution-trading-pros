@@ -760,7 +760,7 @@
 				{:else}
 					<div class="search-box">
 						<IconSearch size={20} />
-						<input type="text" bind:value={searchQuery} placeholder="Search posts... (Ctrl+F)" />
+						<input id="blog-search" name="blog-search" type="text" bind:value={searchQuery} placeholder="Search posts... (Ctrl+F)" />
 					</div>
 				{/if}
 			</div>
@@ -768,9 +768,9 @@
 			<div class="controls-right">
 				<!-- Date Range -->
 				<div class="date-range">
-					<input type="date" bind:value={dateRange.start} class="date-input" />
+					<input id="blog-date-start" name="blog-date-start" type="date" bind:value={dateRange.start} class="date-input" />
 					<span>to</span>
-					<input type="date" bind:value={dateRange.end} class="date-input" />
+					<input id="blog-date-end" name="blog-date-end" type="date" bind:value={dateRange.end} class="date-input" />
 				</div>
 
 				<!-- Filters -->
@@ -870,7 +870,7 @@
 					<!-- Select All Card -->
 					<div class="select-all-card">
 						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+							<input id="select-all-posts" name="select-all-posts" type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
 							<span>Select All ({posts.length})</span>
 						</label>
 					</div>
@@ -884,6 +884,8 @@
 							<!-- Selection Checkbox -->
 							<div class="post-select">
 								<input
+									id="post-select-{post.id}"
+									name="post-select-{post.id}"
 									type="checkbox"
 									checked={selectedPosts.has(post.id)}
 									onchange={() => togglePostSelection(post.id)}
@@ -1082,7 +1084,7 @@
 					<thead>
 						<tr>
 							<th>
-								<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+								<input id="select-all-posts-list" name="select-all-posts-list" type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
 							</th>
 							<th>Title</th>
 							<th>Author</th>
@@ -1099,6 +1101,8 @@
 							<tr class:selected={selectedPosts.has(post.id)}>
 								<td>
 									<input
+										id="post-select-list-{post.id}"
+										name="post-select-list-{post.id}"
 										type="checkbox"
 										checked={selectedPosts.has(post.id)}
 										onchange={() => togglePostSelection(post.id)}
@@ -1243,15 +1247,15 @@
 					<div class="modal-content">
 						<div class="export-options">
 							<label>
-								<input type="radio" bind:group={exportFormat} value="csv" />
+								<input id="export-csv" name="export-format" type="radio" bind:group={exportFormat} value="csv" />
 								CSV Format
 							</label>
 							<label>
-								<input type="radio" bind:group={exportFormat} value="json" />
+								<input id="export-json" name="export-format" type="radio" bind:group={exportFormat} value="json" />
 								JSON Format
 							</label>
 							<label>
-								<input type="radio" bind:group={exportFormat} value="wordpress" />
+								<input id="export-wordpress" name="export-format" type="radio" bind:group={exportFormat} value="wordpress" />
 								WordPress XML
 							</label>
 						</div>
@@ -1303,6 +1307,8 @@
 							<label>
 								<span>Publish Date & Time</span>
 								<input
+									id="schedule-datetime"
+									name="schedule-datetime"
 									type="datetime-local"
 									class="schedule-input"
 									min={new Date().toISOString().slice(0, 16)}

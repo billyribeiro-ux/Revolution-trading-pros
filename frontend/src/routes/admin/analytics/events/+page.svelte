@@ -164,7 +164,7 @@
 					<div class="flex-1 min-w-[200px]">
 						<div class="relative">
 							<input
-								type="text"
+								id="page-searchquery" name="page-searchquery" type="text"
 								bind:value={searchQuery}
 								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
 								placeholder="Search events..."

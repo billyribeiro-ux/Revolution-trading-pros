@@ -452,13 +452,13 @@
 									{index + 1}
 								</span>
 								<input
-									type="text"
+									id="page-step-name" name="page-step-name" type="text"
 									bind:value={step.name}
 									placeholder="Step name"
 									class="flex-1 px-3 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-violet-500/50 outline-none"
 								/>
 								<input
-									type="text"
+									id="page-step-event-name" name="page-step-event-name" type="text"
 									bind:value={step.event_name}
 									placeholder="Event name"
 									class="flex-1 px-3 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-violet-500/50 outline-none"

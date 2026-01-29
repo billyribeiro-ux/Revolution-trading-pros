@@ -518,11 +518,11 @@
 				<div class="advanced-options">
 					<h3>Advanced Options</h3>
 					<label class="checkbox-group">
-						<input type="checkbox" bind:checked={formData.trigger_settings.run_once} />
+						<input id="page-formdata-trigger-settings-run-once" name="page-formdata-trigger-settings-run-once" type="checkbox" bind:checked={formData.trigger_settings.run_once} />
 						<span>Run only once per contact</span>
 					</label>
 					<label class="checkbox-group">
-						<input type="checkbox" bind:checked={formData.trigger_settings.skip_if_active} />
+						<input id="page-formdata-trigger-settings-skip-if-active" name="page-formdata-trigger-settings-skip-if-active" type="checkbox" bind:checked={formData.trigger_settings.skip_if_active} />
 						<span>Skip if contact is already in this automation</span>
 					</label>
 				</div>

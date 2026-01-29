@@ -131,7 +131,7 @@
 					<div class="search-box">
 						<IconSearch size={20} class="search-icon" />
 						<input
-							type="text"
+							id="page-searchquery" name="page-searchquery" type="text"
 							bind:value={searchQuery}
 							oninput={(e: Event) =>
 								mediaStore.setSearchQuery((e.currentTarget as HTMLInputElement).value)}
@@ -263,7 +263,7 @@
 									>
 										<td>
 											<input
-												type="checkbox"
+												id="page-checkbox" name="page-checkbox" type="checkbox"
 												checked={$mediaStore.selectedFiles.has(file.id)}
 												onchange={() => mediaStore.toggleFileSelection(file.id)}
 											/>
