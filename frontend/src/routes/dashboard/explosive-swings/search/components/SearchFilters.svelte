@@ -159,6 +159,8 @@
 				{#if showDatePicker || dateRange.from || dateRange.to}
 					<div class="date-inputs">
 						<input
+							id="date-from"
+							name="date-from"
 							type="date"
 							class="date-input"
 							value={dateRange.from ?? ''}
@@ -167,6 +169,8 @@
 						/>
 						<span class="date-separator">to</span>
 						<input
+							id="date-to"
+							name="date-to"
 							type="date"
 							class="date-input"
 							value={dateRange.to ?? ''}
@@ -229,6 +233,8 @@
 		{:else}
 			<div class="ticker-input-wrapper">
 				<input
+					id="ticker-filter"
+					name="ticker-filter"
 					type="text"
 					class="ticker-input"
 					placeholder="e.g. NVDA"

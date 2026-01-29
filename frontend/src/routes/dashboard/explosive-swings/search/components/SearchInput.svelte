@@ -107,6 +107,8 @@
 		</div>
 
 		<input
+			id="explosive-swings-search"
+			name="explosive-swings-search"
 			bind:this={inputRef}
 			type="text"
 			class="search-input"
@@ -118,7 +120,6 @@
 			onblur={handleBlur}
 			aria-label="Search"
 			aria-autocomplete="list"
-			aria-expanded={hasDropdownContent}
 			aria-controls="search-dropdown"
 		/>
 
@@ -173,6 +174,7 @@
 							class="dropdown-item ticker-item"
 							onclick={() => onSuggestionSelect(suggestion)}
 							role="option"
+							aria-selected="false"
 						>
 							<span class="ticker-badge">{suggestion}</span>
 						</button>
@@ -189,6 +191,7 @@
 							class="dropdown-item history-item"
 							onclick={() => onHistorySelect(historyItem)}
 							role="option"
+							aria-selected="false"
 						>
 							<svg
 								width="14"
