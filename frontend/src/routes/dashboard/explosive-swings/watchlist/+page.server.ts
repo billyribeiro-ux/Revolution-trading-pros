@@ -60,7 +60,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	} catch (error) {
 		// ICT 7: Never throw 500 - graceful degradation
 		console.error(`${LOG_PREFIX} FATAL ERROR:`, error);
-		
+
 		return {
 			watchlist: null
 		};

@@ -22,7 +22,13 @@ import { autosaveStore } from './autosave.svelte';
 // Type Definitions
 // =============================================================================
 
-export type ContentStatus = 'draft' | 'in_review' | 'approved' | 'scheduled' | 'published' | 'archived';
+export type ContentStatus =
+	| 'draft'
+	| 'in_review'
+	| 'approved'
+	| 'scheduled'
+	| 'published'
+	| 'archived';
 
 export type ContentType =
 	| 'page'
@@ -290,7 +296,9 @@ class EditorStoreClass {
 		this._originalContent = structuredClone(newContent);
 		this._isDirty = false;
 		this._errors = [];
-		this._history = [{ content: structuredClone(newContent), timestamp: Date.now(), action: 'create' }];
+		this._history = [
+			{ content: structuredClone(newContent), timestamp: Date.now(), action: 'create' }
+		];
 		this._historyIndex = 0;
 		this.notifySubscribers();
 	}
@@ -547,7 +555,10 @@ class EditorStoreClass {
 
 		// SEO validation
 		if (this._content.meta.metaTitle && this._content.meta.metaTitle.length > 70) {
-			errors.push({ field: 'meta.metaTitle', message: 'Meta title should be less than 70 characters' });
+			errors.push({
+				field: 'meta.metaTitle',
+				message: 'Meta title should be less than 70 characters'
+			});
 		}
 
 		if (this._content.meta.metaDescription && this._content.meta.metaDescription.length > 160) {

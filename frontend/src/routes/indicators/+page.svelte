@@ -283,87 +283,86 @@
 
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 			gsapContext = gsap.context(() => {
+				// --- Cinematic GSAP Animations ---
 
-			// --- Cinematic GSAP Animations ---
+				// 1. Hero Parallax & Reveal
+				const tlHero = gsap.timeline();
+				tlHero.to('.hero-title span', {
+					backgroundPosition: '200% center',
+					duration: 2,
+					ease: 'none',
+					repeat: -1
+				});
 
-			// 1. Hero Parallax & Reveal
-			const tlHero = gsap.timeline();
-			tlHero.to('.hero-title span', {
-				backgroundPosition: '200% center',
-				duration: 2,
-				ease: 'none',
-				repeat: -1
-			});
+				// 2. Truth Section - Animated Chart Drawing
+				const chartPath = document.querySelector('.mockup-price-path');
+				const indicatorPath = document.querySelector('.mockup-indicator-path');
+				const annotation = document.querySelector('.mockup-annotation');
 
-			// 2. Truth Section - Animated Chart Drawing
-			const chartPath = document.querySelector('.mockup-price-path');
-			const indicatorPath = document.querySelector('.mockup-indicator-path');
-			const annotation = document.querySelector('.mockup-annotation');
+				if (chartPath && indicatorPath) {
+					const chartLength = (chartPath as SVGPathElement).getTotalLength();
+					const indLength = (indicatorPath as SVGPathElement).getTotalLength();
 
-			if (chartPath && indicatorPath) {
-				const chartLength = (chartPath as SVGPathElement).getTotalLength();
-				const indLength = (indicatorPath as SVGPathElement).getTotalLength();
+					gsap.set(chartPath, { strokeDasharray: chartLength, strokeDashoffset: chartLength });
+					gsap.set(indicatorPath, { strokeDasharray: indLength, strokeDashoffset: indLength });
+					gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
 
-				gsap.set(chartPath, { strokeDasharray: chartLength, strokeDashoffset: chartLength });
-				gsap.set(indicatorPath, { strokeDasharray: indLength, strokeDashoffset: indLength });
-				gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
+					ScrollTrigger.create({
+						trigger: '.truth-section',
+						start: 'top 60%',
+						onEnter: () => {
+							gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: 'power2.out' });
+							gsap.to(indicatorPath, {
+								strokeDashoffset: 0,
+								duration: 2,
+								delay: 0.2,
+								ease: 'power2.out'
+							});
+							gsap.to(annotation, {
+								opacity: 1,
+								scale: 1,
+								y: 0,
+								duration: 0.5,
+								delay: 1.8,
+								ease: 'back.out(1.7)'
+							});
+						}
+					});
+				}
 
-				ScrollTrigger.create({
-					trigger: '.truth-section',
-					start: 'top 60%',
-					onEnter: () => {
-						gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: 'power2.out' });
-						gsap.to(indicatorPath, {
-							strokeDashoffset: 0,
-							duration: 2,
-							delay: 0.2,
-							ease: 'power2.out'
-						});
-						gsap.to(annotation, {
-							opacity: 1,
-							scale: 1,
-							y: 0,
-							duration: 0.5,
-							delay: 1.8,
-							ease: 'back.out(1.7)'
-						});
+				// 3. Confluence Flow Animation
+				const connectors = document.querySelectorAll('.confluence-connector');
+				const steps = document.querySelectorAll('.confluence-step');
+
+				const tlConfluence = gsap.timeline({
+					scrollTrigger: {
+						trigger: '.confluence-section',
+						start: 'top 70%'
 					}
 				});
-			}
 
-			// 3. Confluence Flow Animation
-			const connectors = document.querySelectorAll('.confluence-connector');
-			const steps = document.querySelectorAll('.confluence-step');
-
-			const tlConfluence = gsap.timeline({
-				scrollTrigger: {
-					trigger: '.confluence-section',
-					start: 'top 70%'
+				if (steps.length > 0) {
+					tlConfluence
+						.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
+						.from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
+						.from(steps[1], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1')
+						.from(connectors[1], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
+						.from(steps[2], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1');
 				}
-			});
 
-			if (steps.length > 0) {
-				tlConfluence
-					.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
-					.from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
-					.from(steps[1], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1')
-					.from(connectors[1], { scale: 0, opacity: 0, duration: 0.3 }, '-=0.1')
-					.from(steps[2], { y: 30, opacity: 0, duration: 0.5 }, '-=0.1');
-			}
-
-			// 4. Setup Section Animation
-			const setupItems = document.querySelectorAll('.setup-item');
-			gsap.from(setupItems, {
-				scrollTrigger: {
-					trigger: '.setup-grid',
-					start: 'top 80%'
-				},
-				y: 20,
-				opacity: 0,
-				duration: 0.4,
-				stagger: 0.1,
-				ease: 'power2.out'
-			});
+				// 4. Setup Section Animation
+				const setupItems = document.querySelectorAll('.setup-item');
+				gsap.from(setupItems, {
+					scrollTrigger: {
+						trigger: '.setup-grid',
+						start: 'top 80%'
+					},
+					y: 20,
+					opacity: 0,
+					duration: 0.4,
+					stagger: 0.1,
+					ease: 'power2.out'
+				});
 			}); // Close gsap.context()
 		})();
 

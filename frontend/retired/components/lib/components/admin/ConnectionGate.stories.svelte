@@ -22,7 +22,7 @@
 </script>
 
 <!-- Disconnected State (Default) -->
-<Story 
+<Story
 	name="Disconnected - Shows Connection Prompt"
 	args={{
 		feature: 'payment',
@@ -32,7 +32,9 @@
 >
 	<ConnectionGate feature="payment" variant="card" showFeatures={true}>
 		{#snippet children()}
-			<div style="padding: 2rem; background: #1c2128; border: 1px solid #30363d; border-radius: 0.75rem;">
+			<div
+				style="padding: 2rem; background: #1c2128; border: 1px solid #30363d; border-radius: 0.75rem;"
+			>
 				<h2 style="color: #f0f6fc; margin: 0;">This content is hidden</h2>
 				<p style="color: #8b949e; margin-top: 0.5rem;">
 					You shouldn't see this because payment is not connected in Storybook
@@ -46,12 +48,14 @@
 <Story name="Connected - Shows Content">
 	<div style="padding: 2rem; background: #0d1117;">
 		<p style="color: #8b949e; margin-bottom: 1rem; font-size: 0.875rem;">
-			Note: In Storybook, connections are mocked as disconnected. 
-			In your app, when connected, the children content would display.
+			Note: In Storybook, connections are mocked as disconnected. In your app, when connected, the
+			children content would display.
 		</p>
-		
+
 		<!-- Simulated connected state -->
-		<div style="padding: 2rem; background: #1c2128; border: 1px solid #30363d; border-radius: 0.75rem;">
+		<div
+			style="padding: 2rem; background: #1c2128; border: 1px solid #30363d; border-radius: 0.75rem;"
+		>
 			<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
 				<span style="color: #3fb950; font-size: 1.5rem;">✓</span>
 				<h2 style="color: #f0f6fc; margin: 0;">Payment Connected</h2>
@@ -61,9 +65,9 @@
 			</p>
 			<div style="margin-top: 1.5rem; padding: 1rem; background: #0d1117; border-radius: 0.5rem;">
 				<p style="color: #f0f6fc; margin: 0; font-family: monospace; font-size: 0.875rem;">
-					// Your protected content here<br/>
-					// Subscription management UI<br/>
-					// Payment processing forms<br/>
+					// Your protected content here<br />
+					// Subscription management UI<br />
+					// Payment processing forms<br />
 					// etc.
 				</p>
 			</div>
@@ -72,7 +76,7 @@
 </Story>
 
 <!-- Different Variants -->
-<Story 
+<Story
 	name="Banner Variant - Disconnected"
 	args={{
 		feature: 'analytics',
@@ -89,7 +93,7 @@
 	</ConnectionGate>
 </Story>
 
-<Story 
+<Story
 	name="Inline Variant - Disconnected"
 	args={{
 		feature: 'email',
@@ -112,13 +116,17 @@
 <Story name="Custom Disconnected Message">
 	<ConnectionGate feature="crm">
 		{#snippet disconnected()}
-			<div style="padding: 2rem; background: #1c2128; border: 2px dashed #30363d; border-radius: 0.75rem; text-align: center;">
+			<div
+				style="padding: 2rem; background: #1c2128; border: 2px dashed #30363d; border-radius: 0.75rem; text-align: center;"
+			>
 				<span style="font-size: 3rem;">🔌</span>
 				<h3 style="color: #f0f6fc; margin-top: 1rem;">Custom CRM Connection Required</h3>
 				<p style="color: #8b949e; max-width: 500px; margin: 1rem auto;">
-					This is a custom disconnected message. You can provide your own UI instead of the default ServiceConnectionStatus component.
+					This is a custom disconnected message. You can provide your own UI instead of the default
+					ServiceConnectionStatus component.
 				</p>
-				<button style="
+				<button
+					style="
 					margin-top: 1rem;
 					padding: 0.75rem 1.5rem;
 					background: #635BFF;
@@ -127,7 +135,8 @@
 					border-radius: 0.5rem;
 					cursor: pointer;
 					font-weight: 600;
-				">
+				"
+				>
 					Connect CRM Now
 				</button>
 			</div>
@@ -142,7 +151,9 @@
 
 <!-- Multiple Features -->
 <Story name="Multiple Gates - Different Features">
-	<div style="padding: 2rem; background: #0d1117; display: flex; flex-direction: column; gap: 2rem;">
+	<div
+		style="padding: 2rem; background: #0d1117; display: flex; flex-direction: column; gap: 2rem;"
+	>
 		<ConnectionGate feature="payment" variant="inline">
 			{#snippet children()}
 				<div style="padding: 1rem; background: #1c2128; border-radius: 0.5rem;">
@@ -150,7 +161,7 @@
 				</div>
 			{/snippet}
 		</ConnectionGate>
-		
+
 		<ConnectionGate feature="analytics" variant="inline">
 			{#snippet children()}
 				<div style="padding: 1rem; background: #1c2128; border-radius: 0.5rem;">
@@ -158,7 +169,7 @@
 				</div>
 			{/snippet}
 		</ConnectionGate>
-		
+
 		<ConnectionGate feature="email" variant="inline">
 			{#snippet children()}
 				<div style="padding: 1rem; background: #1c2128; border-radius: 0.5rem;">

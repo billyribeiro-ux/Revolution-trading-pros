@@ -76,19 +76,19 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const sizeClasses = $derived(
-		({
+		{
 			sm: 'px-2.5 py-1.5 text-xs gap-1.5',
 			md: 'px-4 py-2 text-sm gap-2',
 			lg: 'px-5 py-2.5 text-base gap-2.5'
-		})[size]
+		}[size]
 	);
 
 	const iconSize = $derived(
-		({
+		{
 			sm: 14,
 			md: 16,
 			lg: 18
-		})[size]
+		}[size]
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -165,9 +165,7 @@
 				startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 				break;
 			case 'year':
-				startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
-					.toISOString()
-					.split('T')[0];
+				startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 				break;
 			case 'all':
 				startDate = undefined;
@@ -215,7 +213,9 @@
 				stroke="currentColor"
 				stroke-width="2"
 			>
-				<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+				<path
+					d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+				/>
 			</svg>
 		{:else}
 			<svg

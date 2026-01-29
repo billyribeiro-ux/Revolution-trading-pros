@@ -21,9 +21,13 @@
 
 	const isProfit = $derived(position.unrealizedPercent !== null && position.unrealizedPercent >= 0);
 	const statusClass = $derived(
-		position.status === 'WATCHING' ? 'watching' : 
-		position.status === 'ENTRY' ? 'entry' : 
-		isProfit ? 'profit' : 'loss'
+		position.status === 'WATCHING'
+			? 'watching'
+			: position.status === 'ENTRY'
+				? 'entry'
+				: isProfit
+					? 'profit'
+					: 'loss'
 	);
 
 	function toggleMenu(e: MouseEvent) {
@@ -76,7 +80,11 @@
 	<div class="row-main">
 		<span class="ticker">{position.ticker}</span>
 		<span class="status">{position.status}</span>
-		<span class="pnl" class:profit={isProfit} class:loss={!isProfit && position.unrealizedPercent !== null}>
+		<span
+			class="pnl"
+			class:profit={isProfit}
+			class:loss={!isProfit && position.unrealizedPercent !== null}
+		>
 			{position.unrealizedPercent !== null ? formatPercent(position.unrealizedPercent) : '—'}
 		</span>
 	</div>
@@ -100,7 +108,11 @@
 	{#if position.status !== 'WATCHING' && position.targets.length > 0}
 		<div class="row-progress">
 			<div class="bar">
-				<div class="fill" class:profit={isProfit} style="width:{Math.min(100, position.progressToTarget1)}%"></div>
+				<div
+					class="fill"
+					class:profit={isProfit}
+					style="width:{Math.min(100, position.progressToTarget1)}%"
+				></div>
 			</div>
 			<span class="pct">{position.progressToTarget1.toFixed(0)}%</span>
 		</div>
@@ -109,8 +121,8 @@
 	<!-- Admin Menu -->
 	{#if isAdmin && (onUpdate || onInvalidate || onClose || onDelete)}
 		<div class="menu-container">
-			<button 
-				type="button" 
+			<button
+				type="button"
 				class="menu-trigger"
 				onclick={toggleMenu}
 				aria-label="Position actions"
@@ -118,9 +130,9 @@
 				aria-haspopup="menu"
 			>
 				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-					<circle cx="12" cy="5" r="2"/>
-					<circle cx="12" cy="12" r="2"/>
-					<circle cx="12" cy="19" r="2"/>
+					<circle cx="12" cy="5" r="2" />
+					<circle cx="12" cy="12" r="2" />
+					<circle cx="12" cy="19" r="2" />
 				</svg>
 			</button>
 
@@ -128,15 +140,17 @@
 				<div class="menu-dropdown" role="menu">
 					<!-- Update Position -->
 					{#if onUpdate}
-						<button 
-							type="button" 
-							class="menu-item"
-							onclick={handleUpdate}
-							role="menuitem"
-						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-								<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+						<button type="button" class="menu-item" onclick={handleUpdate} role="menuitem">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="16"
+								height="16"
+							>
+								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+								<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
 							</svg>
 							Update Position
 						</button>
@@ -144,15 +158,22 @@
 
 					<!-- Invalidate (for trades that didn't trigger) -->
 					{#if onInvalidate}
-						<button 
-							type="button" 
+						<button
+							type="button"
 							class="menu-item warning"
 							onclick={handleInvalidate}
 							role="menuitem"
 						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<circle cx="12" cy="12" r="10"/>
-								<path d="M12 8v4M12 16h.01"/>
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="16"
+								height="16"
+							>
+								<circle cx="12" cy="12" r="10" />
+								<path d="M12 8v4M12 16h.01" />
 							</svg>
 							Invalidate
 						</button>
@@ -160,15 +181,17 @@
 
 					<!-- Close Trade -->
 					{#if onClose}
-						<button 
-							type="button" 
-							class="menu-item"
-							onclick={handleClose}
-							role="menuitem"
-						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<path d="M9 12l2 2 4-4"/>
-								<circle cx="12" cy="12" r="10"/>
+						<button type="button" class="menu-item" onclick={handleClose} role="menuitem">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="16"
+								height="16"
+							>
+								<path d="M9 12l2 2 4-4" />
+								<circle cx="12" cy="12" r="10" />
 							</svg>
 							Close Trade
 						</button>
@@ -181,15 +204,19 @@
 
 					<!-- Delete (for mistakes) -->
 					{#if onDelete}
-						<button 
-							type="button" 
-							class="menu-item danger"
-							onclick={handleDelete}
-							role="menuitem"
-						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>
-								<path d="M10 11v6M14 11v6"/>
+						<button type="button" class="menu-item danger" onclick={handleDelete} role="menuitem">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="16"
+								height="16"
+							>
+								<path
+									d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"
+								/>
+								<path d="M10 11v6M14 11v6" />
 							</svg>
 							Delete
 						</button>
@@ -210,10 +237,18 @@
 		padding: 12px 14px;
 		font-size: 13px;
 	}
-	.card.profit { border-left-color: var(--color-profit); }
-	.card.loss { border-left-color: var(--color-loss); }
-	.card.watching { border-left-color: var(--color-watching); }
-	.card.entry { border-left-color: var(--color-entry); }
+	.card.profit {
+		border-left-color: var(--color-profit);
+	}
+	.card.loss {
+		border-left-color: var(--color-loss);
+	}
+	.card.watching {
+		border-left-color: var(--color-watching);
+	}
+	.card.entry {
+		border-left-color: var(--color-entry);
+	}
 
 	/* Updated Badge */
 	.updated-badge {
@@ -259,8 +294,12 @@
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-muted);
 	}
-	.pnl.profit { color: var(--color-profit); }
-	.pnl.loss { color: var(--color-loss); }
+	.pnl.profit {
+		color: var(--color-profit);
+	}
+	.pnl.loss {
+		color: var(--color-loss);
+	}
 
 	/* Row 2 */
 	.row-prices {
@@ -272,9 +311,15 @@
 		font-variant-numeric: tabular-nums;
 		margin-bottom: 2px;
 	}
-	.sep { color: var(--color-border-strong); }
-	.stop { color: var(--color-loss); }
-	.target { color: var(--color-profit); }
+	.sep {
+		color: var(--color-border-strong);
+	}
+	.stop {
+		color: var(--color-loss);
+	}
+	.target {
+		color: var(--color-profit);
+	}
 
 	/* Row 3 */
 	.row-progress {
@@ -295,7 +340,9 @@
 		background: var(--color-loss);
 		border-radius: 2px;
 	}
-	.fill.profit { background: var(--color-profit); }
+	.fill.profit {
+		background: var(--color-profit);
+	}
 	.pct {
 		font-size: 11px;
 		font-weight: 600;
@@ -323,7 +370,9 @@
 		color: var(--color-text-muted);
 		cursor: pointer;
 		border-radius: 6px;
-		transition: background 0.15s, color 0.15s;
+		transition:
+			background 0.15s,
+			color 0.15s;
 	}
 	.menu-trigger:hover {
 		background: var(--color-bg-subtle);
@@ -373,7 +422,9 @@
 		text-align: left;
 		cursor: pointer;
 		border-radius: 6px;
-		transition: background 0.15s, color 0.15s;
+		transition:
+			background 0.15s,
+			color 0.15s;
 	}
 	.menu-item:hover {
 		background: var(--color-bg-subtle);

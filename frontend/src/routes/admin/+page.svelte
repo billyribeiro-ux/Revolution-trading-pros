@@ -165,13 +165,14 @@
 
 		try {
 			// ICT 7: Use correct backend endpoints
-			const [membersRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
-				localFetch('/api/admin/members/stats'),
-				localFetch('/api/admin/coupons'),
-				localFetch('/api/admin/posts/stats'),
-				localFetch('/api/admin/products/stats'),
-				localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
-			]);
+			const [membersRes, couponsRes, postsRes, productsRes, analyticsRes] =
+				await Promise.allSettled([
+					localFetch('/api/admin/members/stats'),
+					localFetch('/api/admin/coupons'),
+					localFetch('/api/admin/posts/stats'),
+					localFetch('/api/admin/products/stats'),
+					localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
+				]);
 
 			// Members stats
 			if (membersRes.status === 'fulfilled') {
@@ -821,7 +822,12 @@
 
 	/* Outer Container with Gradient Background */
 	.admin-dashboard {
-		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--bg-base) 0%,
+			var(--bg-elevated) 50%,
+			var(--bg-base) 100%
+		);
 		color: var(--text-primary);
 		position: relative;
 		overflow: hidden;
@@ -1483,7 +1489,12 @@
 
 	.seo-metric-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--error-base), var(--warning-emphasis), var(--success-emphasis));
+		background: linear-gradient(
+			90deg,
+			var(--error-base),
+			var(--warning-emphasis),
+			var(--success-emphasis)
+		);
 		border-radius: 2px;
 		transition: width 1s ease-out;
 	}

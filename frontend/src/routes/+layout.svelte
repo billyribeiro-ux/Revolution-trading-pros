@@ -103,6 +103,20 @@
 	<!-- ICT 11 Fix: Font loading handled in app.html - no duplicates -->
 	<!-- Viewport already in app.html, theme-color set per page preference -->
 	<meta name="theme-color" content="#FFFFFF" />
+
+	<!-- RSS/Atom Feed Discovery Links (SEO: Auto-discovery for feed readers) -->
+	<link
+		rel="alternate"
+		type="application/rss+xml"
+		title="Revolution Trading Pros RSS Feed"
+		href="/feed.xml"
+	/>
+	<link
+		rel="alternate"
+		type="application/atom+xml"
+		title="Revolution Trading Pros Atom Feed"
+		href="/atom.xml"
+	/>
 </svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════

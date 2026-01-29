@@ -736,14 +736,22 @@
 				<div class="tab-switcher">
 					<button
 						type="button"
-						onclick={(e) => { e.preventDefault(); e.stopPropagation(); activeTab = 'integrations'; }}
+						onclick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							activeTab = 'integrations';
+						}}
 						class="tab-btn {activeTab === 'integrations' ? 'active' : ''}"
 					>
 						API Integrations
 					</button>
 					<button
 						type="button"
-						onclick={(e) => { e.preventDefault(); e.stopPropagation(); activeTab = 'general'; }}
+						onclick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							activeTab = 'general';
+						}}
 						class="tab-btn {activeTab === 'general' ? 'active' : ''}"
 					>
 						General Settings
@@ -755,10 +763,7 @@
 		{#if activeTab === 'integrations'}
 			<!-- Connection Status Overview -->
 			{#if !isLoading}
-				<div
-					class="stats-grid"
-					in:fly={{ y: 20, duration: 600, delay: 100, easing: quintOut }}
-				>
+				<div class="stats-grid" in:fly={{ y: 20, duration: 600, delay: 100, easing: quintOut }}>
 					<!-- Total Available -->
 					<div class="stat-card">
 						<div class="stat-value">{summary.total_available}</div>
@@ -825,17 +830,11 @@
 							<p class="service-description">{service.description}</p>
 
 							{#if service.is_connected}
-								<button
-									onclick={() => openDisconnectConfirm(service)}
-									class="btn-disconnect"
-								>
+								<button onclick={() => openDisconnectConfirm(service)} class="btn-disconnect">
 									Disconnect
 								</button>
 							{:else}
-								<button
-									onclick={() => openConnectModal(service)}
-									class="btn-connect"
-								>
+								<button onclick={() => openConnectModal(service)} class="btn-connect">
 									Connect
 								</button>
 							{/if}
@@ -845,10 +844,7 @@
 			</div>
 
 			<!-- Search and Category Filter -->
-			<div
-				class="filter-section"
-				in:fly={{ y: 20, duration: 600, delay: 200, easing: quintOut }}
-			>
+			<div class="filter-section" in:fly={{ y: 20, duration: 600, delay: 200, easing: quintOut }}>
 				<!-- Search -->
 				<div class="search-wrapper">
 					<input
@@ -859,12 +855,7 @@
 						bind:value={searchQuery}
 						class="search-input"
 					/>
-					<svg
-						class="search-icon"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
+					<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -945,11 +936,14 @@
 								<div class="connection-info">
 									<div class="info-row">
 										<span>API Calls Today</span>
-										<span class="info-value">{service.connection.api_calls_today?.toLocaleString() || 0}</span>
+										<span class="info-value"
+											>{service.connection.api_calls_today?.toLocaleString() || 0}</span
+										>
 									</div>
 									<div class="info-row">
 										<span>Last Verified</span>
-										<span class="info-value">{formatDate(service.connection.last_verified_at)}</span>
+										<span class="info-value">{formatDate(service.connection.last_verified_at)}</span
+										>
 									</div>
 								</div>
 							{/if}
@@ -970,9 +964,20 @@
 								{/if}
 
 								{#if service.docs_url}
-									<a href={service.docs_url} target="_blank" rel="noopener noreferrer" class="btn-docs" title="View documentation">
+									<a
+										href={service.docs_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="btn-docs"
+										title="View documentation"
+									>
 										<svg class="docs-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+											/>
 										</svg>
 									</a>
 								{/if}
@@ -1015,7 +1020,12 @@
 								<h3>Maintenance Mode</h3>
 								<p>Temporarily disable public access</p>
 							</div>
-							<button type="button" aria-label="Toggle maintenance mode" title="Toggle maintenance mode" class="toggle-switch">
+							<button
+								type="button"
+								aria-label="Toggle maintenance mode"
+								title="Toggle maintenance mode"
+								class="toggle-switch"
+							>
 								<span class="toggle-slider"></span>
 							</button>
 						</div>
@@ -1025,15 +1035,18 @@
 								<h3>Debug Mode</h3>
 								<p>Enable detailed error logging</p>
 							</div>
-							<button type="button" aria-label="Toggle debug mode" title="Toggle debug mode" class="toggle-switch">
+							<button
+								type="button"
+								aria-label="Toggle debug mode"
+								title="Toggle debug mode"
+								class="toggle-switch"
+							>
 								<span class="toggle-slider"></span>
 							</button>
 						</div>
 
 						<div class="settings-actions">
-							<button class="btn-connect">
-								Save Settings
-							</button>
+							<button class="btn-connect"> Save Settings </button>
 						</div>
 					</div>
 				</div>
@@ -1482,9 +1495,15 @@
 		margin-top: 0.25rem;
 	}
 
-	.stat-success .stat-value { color: #34d399; }
-	.stat-error .stat-value { color: #f87171; }
-	.stat-warning .stat-value { color: #fbbf24; }
+	.stat-success .stat-value {
+		color: #34d399;
+	}
+	.stat-error .stat-value {
+		color: #f87171;
+	}
+	.stat-warning .stat-value {
+		color: #fbbf24;
+	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECTION BLOCK - Google Services, etc.
@@ -1616,35 +1635,50 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
 	}
 
 	.status-connected {
 		background: rgba(52, 211, 153, 0.15);
 		color: #34d399;
 	}
-	.status-connected .status-dot { background: #34d399; }
+	.status-connected .status-dot {
+		background: #34d399;
+	}
 
 	.status-disconnected {
 		background: rgba(148, 163, 184, 0.15);
 		color: #94a3b8;
 	}
-	.status-disconnected .status-dot { background: #94a3b8; }
+	.status-disconnected .status-dot {
+		background: #94a3b8;
+	}
 
 	.status-error {
 		background: rgba(248, 113, 113, 0.15);
 		color: #f87171;
 	}
-	.status-error .status-dot { background: #f87171; }
+	.status-error .status-dot {
+		background: #f87171;
+	}
 
-	.status-expired, .status-pending, .status-connecting {
+	.status-expired,
+	.status-pending,
+	.status-connecting {
 		background: rgba(251, 191, 36, 0.15);
 		color: #fbbf24;
 	}
 	.status-expired .status-dot,
 	.status-pending .status-dot,
-	.status-connecting .status-dot { background: #fbbf24; }
+	.status-connecting .status-dot {
+		background: #fbbf24;
+	}
 
 	.health-score {
 		font-size: 0.75rem;
@@ -1865,7 +1899,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading p {
@@ -2080,7 +2116,8 @@
 		.card-actions {
 			flex-direction: column;
 		}
-		.btn-connect, .btn-disconnect {
+		.btn-connect,
+		.btn-disconnect {
 			width: 100%;
 		}
 		.services-grid {
@@ -2101,10 +2138,16 @@
 
 	/* Touch Device Optimizations - 44pt minimum */
 	@media (hover: none) and (pointer: coarse) {
-		.btn-connect, .btn-disconnect, .btn-secondary, .btn-docs, .filter-btn, .tab-btn {
+		.btn-connect,
+		.btn-disconnect,
+		.btn-secondary,
+		.btn-docs,
+		.filter-btn,
+		.tab-btn {
 			min-height: 44px;
 		}
-		.search-input, .setting-input {
+		.search-input,
+		.setting-input {
 			min-height: 48px;
 			font-size: 16px;
 		}
@@ -2116,8 +2159,14 @@
 
 	/* Reduced Motion */
 	@media (prefers-reduced-motion: reduce) {
-		.bg-blob, .bg-blob-1, .bg-blob-2, .bg-blob-3,
-		.service-card, .stat-card, .btn-connect, .btn-disconnect {
+		.bg-blob,
+		.bg-blob-1,
+		.bg-blob-2,
+		.bg-blob-3,
+		.service-card,
+		.stat-card,
+		.btn-connect,
+		.btn-disconnect {
 			animation: none;
 			transition: none;
 		}
@@ -2125,7 +2174,9 @@
 
 	/* High Contrast Mode */
 	@media (prefers-contrast: high) {
-		.service-card, .stat-card, .settings-panel {
+		.service-card,
+		.stat-card,
+		.settings-panel {
 			border-width: 2px;
 		}
 	}

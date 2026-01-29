@@ -212,9 +212,7 @@
 	productAvailability="in stock"
 />
 
-<div
-	class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"
->
+<div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
@@ -257,20 +255,14 @@
 					> <br />Without The PDT Rule.
 				</h1>
 
-				<p
-					data-gsap
-					class="text-xl text-rtp-muted mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
-				>
+				<p data-gsap class="text-xl text-rtp-muted mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
 					Don't just get alerts—learn the execution. Join our live voice & screen-share room where
 					we hunt high-probability setups on SPX optimized for <strong
 						>accounts under $25,000.</strong
 					>
 				</p>
 
-				<div
-					data-gsap
-					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-				>
+				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
 					<a
 						href="#pricing"
 						class="bg-rtp-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg shadow-rtp-primary/25 hover:-translate-y-1 flex items-center justify-center gap-2"
@@ -986,7 +978,6 @@
 			<p class="mt-8 text-sm text-white/60">30-Day Money Back Guarantee • Cancel Anytime</p>
 		</div>
 	</section>
-
 </div>
 
 <MarketingFooter />

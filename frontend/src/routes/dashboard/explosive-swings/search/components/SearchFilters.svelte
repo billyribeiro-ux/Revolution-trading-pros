@@ -32,9 +32,9 @@
 	// Computed: has any active filter
 	const hasActiveFilters = $derived(
 		selectedTypes.length < 3 ||
-		dateRange.from !== null ||
-		dateRange.to !== null ||
-		tickerFilter !== null
+			dateRange.from !== null ||
+			dateRange.to !== null ||
+			tickerFilter !== null
 	);
 
 	// Content type labels
@@ -83,7 +83,7 @@
 	<div class="filter-group">
 		<span class="filter-label">Show:</span>
 		<div class="type-filters">
-			{#each (['alerts', 'trades', 'trade_plans'] as const) as type}
+			{#each ['alerts', 'trades', 'trade_plans'] as const as type}
 				<button
 					class="type-btn"
 					class:active={selectedTypes.includes(type)}
@@ -91,17 +91,38 @@
 					aria-pressed={selectedTypes.includes(type)}
 				>
 					{#if type === 'alerts'}
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
 							<path d="M13.73 21a2 2 0 0 1-3.46 0" />
 						</svg>
 					{:else if type === 'trades'}
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
 							<polyline points="16 7 22 7 22 13" />
 						</svg>
 					{:else}
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
 							<polyline points="14 2 14 8 20 8" />
 							<line x1="16" y1="13" x2="8" y2="13" />
@@ -117,8 +138,15 @@
 	<!-- Date Range Filter -->
 	<div class="filter-group">
 		{#if !showDatePicker && !dateRange.from && !dateRange.to}
-			<button class="filter-add-btn" onclick={() => showDatePicker = true}>
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<button class="filter-add-btn" onclick={() => (showDatePicker = true)}>
+				<svg
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
 					<line x1="16" y1="2" x2="16" y2="6" />
 					<line x1="8" y1="2" x2="8" y2="6" />
@@ -146,7 +174,14 @@
 							placeholder="To"
 						/>
 						<button class="filter-clear-btn" onclick={clearDates} aria-label="Clear date filter">
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<line x1="18" y1="6" x2="6" y2="18" />
 								<line x1="6" y1="6" x2="18" y2="18" />
 							</svg>
@@ -160,8 +195,15 @@
 	<!-- Ticker Filter -->
 	<div class="filter-group">
 		{#if !showTickerInput && !tickerFilter}
-			<button class="filter-add-btn" onclick={() => showTickerInput = true}>
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<button class="filter-add-btn" onclick={() => (showTickerInput = true)}>
+				<svg
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<line x1="12" y1="1" x2="12" y2="23" />
 					<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
 				</svg>
@@ -171,7 +213,14 @@
 			<div class="ticker-badge-wrapper">
 				<span class="ticker-badge">{tickerFilter}</span>
 				<button class="filter-clear-btn" onclick={clearTicker} aria-label="Clear ticker filter">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="18" y1="6" x2="6" y2="18" />
 						<line x1="6" y1="6" x2="18" y2="18" />
 					</svg>
@@ -187,15 +236,23 @@
 					onkeydown={(e) => e.key === 'Enter' && handleTickerSubmit()}
 					maxlength="5"
 				/>
-				<button class="ticker-submit-btn" onclick={handleTickerSubmit}>
-					Add
-				</button>
+				<button class="ticker-submit-btn" onclick={handleTickerSubmit}> Add </button>
 				<button
 					class="filter-clear-btn"
-					onclick={() => { showTickerInput = false; tickerInputValue = ''; }}
+					onclick={() => {
+						showTickerInput = false;
+						tickerInputValue = '';
+					}}
 					aria-label="Cancel"
 				>
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="18" y1="6" x2="6" y2="18" />
 						<line x1="6" y1="6" x2="18" y2="18" />
 					</svg>
@@ -206,9 +263,7 @@
 
 	<!-- Clear All Filters -->
 	{#if hasActiveFilters}
-		<button class="clear-all-btn" onclick={onClearFilters}>
-			Clear Filters
-		</button>
+		<button class="clear-all-btn" onclick={onClearFilters}> Clear Filters </button>
 	{/if}
 </div>
 

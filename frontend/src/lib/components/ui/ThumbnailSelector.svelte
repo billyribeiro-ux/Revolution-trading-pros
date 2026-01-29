@@ -35,7 +35,13 @@
 					<img src={thumb} alt="Thumbnail option {i + 1}" loading="lazy" />
 					{#if selected === i}
 						<div class="thumb-check">
-							<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+							<svg
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								width="16"
+								height="16"
+								aria-hidden="true"
+							>
 								<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
 							</svg>
 						</div>
@@ -88,7 +94,7 @@
 	}
 
 	.thumbnail-option.selected {
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 0 0 2px rgba(20, 62, 89, 0.2);
 	}
 
@@ -98,7 +104,7 @@
 		right: 4px;
 		width: 24px;
 		height: 24px;
-		background: #143E59;
+		background: #143e59;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;

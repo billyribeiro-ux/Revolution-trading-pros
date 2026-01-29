@@ -504,12 +504,14 @@ export const componentRegistry: ComponentRegistryEntry[] = [
 				{
 					id: 'faq-1',
 					question: 'What is included in the membership?',
-					answer: '<p>Your membership includes access to all trading rooms, educational content, and our community of traders.</p>'
+					answer:
+						'<p>Your membership includes access to all trading rooms, educational content, and our community of traders.</p>'
 				},
 				{
 					id: 'faq-2',
 					question: 'Can I cancel my subscription?',
-					answer: '<p>Yes, you can cancel your subscription at any time. No long-term contracts required.</p>'
+					answer:
+						'<p>Yes, you can cancel your subscription at any time. No long-term contracts required.</p>'
 				},
 				{
 					id: 'faq-3',
@@ -545,9 +547,7 @@ export function createDefaultConfig(type: ComponentType): Record<string, unknown
 }
 
 export function getComponentsByTags(tags: string[]): ComponentRegistryEntry[] {
-	return componentRegistry.filter((c) =>
-		tags.some((tag) => c.tags?.includes(tag))
-	);
+	return componentRegistry.filter((c) => tags.some((tag) => c.tags?.includes(tag)));
 }
 
 export function searchComponents(query: string): ComponentRegistryEntry[] {

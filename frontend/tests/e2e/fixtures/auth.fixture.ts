@@ -101,7 +101,9 @@ async function loginUser(
 		const hasEmailInput = await emailInput.isVisible().catch(() => false);
 
 		if (!hasEmailInput) {
-			console.log('Login form not found - may already be authenticated or page structure different');
+			console.log(
+				'Login form not found - may already be authenticated or page structure different'
+			);
 			return;
 		}
 
@@ -159,7 +161,9 @@ export async function isAuthenticated(page: Page): Promise<boolean> {
 		// User menu/avatar
 		page.locator('[data-testid="user-menu"], .user-avatar, [class*="user-menu"]').first(),
 		// Logout button
-		page.locator('button:has-text("Logout"), button:has-text("Sign out"), [href="/logout"]').first(),
+		page
+			.locator('button:has-text("Logout"), button:has-text("Sign out"), [href="/logout"]')
+			.first(),
 		// Dashboard access
 		page.locator('[href="/dashboard"], a:has-text("Dashboard")').first()
 	];

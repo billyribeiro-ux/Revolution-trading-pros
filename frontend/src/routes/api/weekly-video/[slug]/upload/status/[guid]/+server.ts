@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 	try {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json'
+			Accept: 'application/json'
 		};
 
 		if (accessToken) {
@@ -39,7 +39,9 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 		}
 
 		console.log(`[Weekly Video Status] Checking ${slug} video ${guid}`);
-		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, { headers });
+		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, {
+			headers
+		});
 
 		if (!response.ok) {
 			console.error(`[Weekly Video Status] Backend error: ${response.status}`);

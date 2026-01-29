@@ -24,17 +24,22 @@
 			date: alert.date,
 			excerpt: alert.excerpt,
 			href: alert.href,
-			image: alert.image || alert.video?.thumbnail || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			image:
+				alert.image ||
+				alert.video?.thumbnail ||
+				'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			isVideo: alert.is_video ?? true
 		}))
 	);
 
 	// Get featured video from SSR data
-	const featuredVideo = $derived(data.featuredVideo || {
-		url: 'https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4',
-		poster: 'https://cdn.simplertrading.com/2025/07/02134158/FTR-Jonathan.png',
-		title: 'SPX Profit Pulse Quickstart Guide'
-	});
+	const featuredVideo = $derived(
+		data.featuredVideo || {
+			url: 'https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4',
+			poster: 'https://cdn.simplertrading.com/2025/07/02134158/FTR-Jonathan.png',
+			title: 'SPX Profit Pulse Quickstart Guide'
+		}
+	);
 
 	// Get trading rooms for header dropdown
 	const tradingRooms = $derived(data.tradingRooms || []);
@@ -57,72 +62,73 @@
 		<main class="main-content">
 			<!-- MAIN CONTENT SECTION - Video + Featured Cards -->
 			<section class="dashboard__content-section-member">
-			<!-- Welcome Video -->
-			<div class="video-container">
-				<video
-					controls
-					poster="https://cdn.simplertrading.com/2025/07/02134158/FTR-Jonathan.png"
-					class="welcome-video"
-				>
-					<source
-						src="https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4"
-						type="video/mp4"
-					/>
-					Your browser doesn't support HTML5 video.
-				</video>
+				<!-- Welcome Video -->
+				<div class="video-container">
+					<video
+						controls
+						poster="https://cdn.simplertrading.com/2025/07/02134158/FTR-Jonathan.png"
+						class="welcome-video"
+					>
+						<source
+							src="https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4"
+							type="video/mp4"
+						/>
+						Your browser doesn't support HTML5 video.
+					</video>
+				</div>
+
+				<!-- Featured Cards - Exact WordPress Match -->
+				<div class="featured_cards">
+					<div class="card-col">
+						<div class="img_1">
+							<h2 class="card_title">Start Here</h2>
+							<p class="featured-desc">
+								Key steps for getting started with your SPX Profit Pulse membership
+							</p>
+							<div class="card-button-wrapper">
+								<a href="/dashboard/spx-profit-pulse/start-here">CHECK IT OUT</a>
+							</div>
+						</div>
+					</div>
+					<div class="card-col">
+						<div class="img_2">
+							<h2 class="card_title_2">Meet the Traders</h2>
+							<p>Here you'll find Strategies and more!</p>
+							<div class="card-button-wrapper">
+								<a class="aclass" href="/dashboard/spx-profit-pulse/billy-ribeiro/">Meet Billy</a>
+							</div>
+						</div>
+					</div>
+					<div class="card-col">
+						<div class="img_3">
+							<h2 class="card_title_3">Continued Education</h2>
+							<p class="featured-desc">
+								Grow your trading skills and learn to read the market better.
+							</p>
+							<div class="card-button-wrapper">
+								<a target="_blank" href="https://www.youtube.com/@Revolutiontradingpros"
+									>LEARN MORE</a
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Latest Updates Section - Exact WordPress Match -->
+			<section class="dashboard__content-section">
+				<LatestUpdates
+					items={latestUpdatesItems}
+					title="Latest Updates"
+					roomSlug="spx-profit-pulse"
+					buttonText="Watch Now"
+				/>
+			</section>
+
+			<!-- Weekly Watchlist Section -->
+			<div class="dashboard__content-section u--background-color-white">
+				<WeeklyWatchlist />
 			</div>
-
-			<!-- Featured Cards - Exact WordPress Match -->
-			<div class="featured_cards">
-				<div class="card-col">
-					<div class="img_1">
-						<h2 class="card_title">Start Here</h2>
-						<p class="featured-desc">
-							Key steps for getting started with your SPX Profit Pulse membership
-						</p>
-						<div class="card-button-wrapper">
-							<a href="/dashboard/spx-profit-pulse/start-here">CHECK IT OUT</a>
-						</div>
-					</div>
-				</div>
-				<div class="card-col">
-					<div class="img_2">
-						<h2 class="card_title_2">Meet the Traders</h2>
-						<p>Here you'll find Strategies and more!</p>
-						<div class="card-button-wrapper">
-							<a class="aclass" href="/dashboard/spx-profit-pulse/billy-ribeiro/">Meet Billy</a>
-						</div>
-					</div>
-				</div>
-				<div class="card-col">
-					<div class="img_3">
-						<h2 class="card_title_3">Continued Education</h2>
-						<p class="featured-desc">
-							Grow your trading skills and learn to read the market better.
-						</p>
-						<div class="card-button-wrapper">
-							<a target="_blank" href="https://www.youtube.com/@Revolutiontradingpros">LEARN MORE</a
-							>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- Latest Updates Section - Exact WordPress Match -->
-		<section class="dashboard__content-section">
-			<LatestUpdates
-				items={latestUpdatesItems}
-				title="Latest Updates"
-				roomSlug="spx-profit-pulse"
-				buttonText="Watch Now"
-			/>
-		</section>
-
-		<!-- Weekly Watchlist Section -->
-		<div class="dashboard__content-section u--background-color-white">
-			<WeeklyWatchlist />
-		</div>
 		</main>
 
 		<!-- SIDEBAR -->
@@ -165,7 +171,9 @@
 					<a href="/dashboard/spx-profit-pulse/video-library">🎬 Video Library</a>
 					<a href="/dashboard/spx-profit-pulse/trades">📊 Trade Tracker</a>
 					<a href="/dashboard/spx-profit-pulse/favorites">⭐ My Favorites</a>
-					<a href="/api/export/watchlist?room_slug=spx-profit-pulse&format=csv" download>📥 Export CSV</a>
+					<a href="/api/export/watchlist?room_slug=spx-profit-pulse&format=csv" download
+						>📥 Export CSV</a
+					>
 					<a href="/dashboard/account">⚙️ Alert Settings</a>
 				</div>
 			</div>
@@ -174,7 +182,12 @@
 			<div class="sidebar-card support-card">
 				<h3>Need Help?</h3>
 				<p>Questions about SPX 0DTE trading?</p>
-				<a href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener noreferrer" class="support-btn">
+				<a
+					href="https://intercom.help/simpler-trading/en/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="support-btn"
+				>
 					Contact Support
 				</a>
 			</div>

@@ -1,14 +1,16 @@
 /**
  * Dynamic robots.txt Generator for Revolution Trading Pros
- * Following Google November 2025 crawling guidelines
+ * Following Google January 2026 crawling guidelines
  *
- * Updates for November 2025:
- * - Comprehensive AI training bot blocking (GPTBot, Claude, Gemini, etc.)
+ * Updates for January 2026:
+ * - Comprehensive AI training bot blocking (all known 2025-2026 AI crawlers)
  * - Google Search Generative Experience (SGE) compatibility
  * - Enhanced crawl directives for modern search engines
  * - Sitemap index support
+ * - New AI agents and research crawlers blocked
+ * - Image/video AI training bots blocked
  *
- * @version 2.0.0 - November 2025 SEO Standards
+ * @version 3.0.0 - January 2026 SEO Standards
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
@@ -21,7 +23,7 @@ const robotsTxt = `# ═══════════════════�
 # Revolution Trading Pros - robots.txt
 # ${SITE_URL}
 # Last Updated: ${LAST_UPDATED}
-# Compliant with Google November 2025 Standards
+# Compliant with Google January 2026 Standards
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # =============================================================================
@@ -145,8 +147,9 @@ User-agent: TelegramBot
 Allow: /
 
 # =============================================================================
-# Block AI Training Bots (November 2025 Comprehensive List)
+# Block AI Training Bots (January 2026 Comprehensive List)
 # These bots scrape content for AI model training without permission
+# Updated with all known AI crawlers as of January 2026
 # =============================================================================
 
 # OpenAI Crawlers
@@ -173,6 +176,9 @@ Disallow: /
 User-agent: Google-Extended
 Disallow: /
 
+User-agent: Google-CloudVertexBot
+Disallow: /
+
 # Common Crawl (used for many AI training datasets)
 User-agent: CCBot
 Disallow: /
@@ -181,8 +187,14 @@ Disallow: /
 User-agent: cohere-ai
 Disallow: /
 
+User-agent: cohere-training
+Disallow: /
+
 # Perplexity AI
 User-agent: PerplexityBot
+Disallow: /
+
+User-agent: PerplexityLabs
 Disallow: /
 
 # Meta AI
@@ -195,12 +207,21 @@ Disallow: /
 User-agent: Meta-ExternalFetcher
 Disallow: /
 
+User-agent: MetaResearchBot
+Disallow: /
+
 # ByteDance/TikTok AI
 User-agent: Bytespider
 Disallow: /
 
+User-agent: ByteDance
+Disallow: /
+
 # Amazon/Alexa AI
 User-agent: Amazonbot
+Disallow: /
+
+User-agent: AmazonResearch
 Disallow: /
 
 # Apple AI (distinct from Applebot for Search)
@@ -209,6 +230,81 @@ Disallow: /
 
 # Microsoft AI Training
 User-agent: bingbot-ai
+Disallow: /
+
+User-agent: MicrosoftPreview
+Disallow: /
+
+# xAI (Grok)
+User-agent: xAI-Grok
+Disallow: /
+
+User-agent: GrokBot
+Disallow: /
+
+# Mistral AI
+User-agent: MistralBot
+Disallow: /
+
+User-agent: mistral-ai
+Disallow: /
+
+# Stability AI
+User-agent: StabilityAI
+Disallow: /
+
+User-agent: stable-diffusion
+Disallow: /
+
+# Midjourney (image training)
+User-agent: Midjourney
+Disallow: /
+
+# Runway AI (video training)
+User-agent: RunwayML
+Disallow: /
+
+# Hugging Face Crawlers
+User-agent: HuggingFaceBot
+Disallow: /
+
+User-agent: huggingface-datasets
+Disallow: /
+
+# AI21 Labs
+User-agent: AI21Bot
+Disallow: /
+
+# Inflection AI (Pi)
+User-agent: InflectionBot
+Disallow: /
+
+# Adept AI
+User-agent: AdeptAI
+Disallow: /
+
+# Character.AI
+User-agent: CharacterAI
+Disallow: /
+
+# Jasper AI
+User-agent: JasperBot
+Disallow: /
+
+# Writer.com
+User-agent: WriterBot
+Disallow: /
+
+# Replicate
+User-agent: ReplicateBot
+Disallow: /
+
+# Together AI
+User-agent: TogetherAI
+Disallow: /
+
+# Scale AI
+User-agent: ScaleAI
 Disallow: /
 
 # Other AI Scrapers
@@ -252,6 +348,66 @@ User-agent: iscibot
 Disallow: /
 
 User-agent: iaskspider
+Disallow: /
+
+# New 2025-2026 AI Research Bots
+User-agent: DeepMindBot
+Disallow: /
+
+User-agent: NVIDIAResearch
+Disallow: /
+
+User-agent: IntelAI
+Disallow: /
+
+User-agent: SalesforceAI
+Disallow: /
+
+User-agent: AdobeAI
+Disallow: /
+
+User-agent: SamsungAI
+Disallow: /
+
+User-agent: SonyAI
+Disallow: /
+
+User-agent: AlibabaAI
+Disallow: /
+
+User-agent: TencentAI
+Disallow: /
+
+User-agent: BaiduAI
+Disallow: /
+
+User-agent: NERSCResearch
+Disallow: /
+
+# Web Archive Scrapers (often used for AI training)
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: archive.org_bot
+Disallow: /
+
+# Generic AI Training Patterns
+User-agent: *-ai
+Disallow: /
+
+User-agent: *-training
+Disallow: /
+
+User-agent: *-research
+Disallow: /
+
+User-agent: *-dataset
+Disallow: /
+
+User-agent: *-llm
+Disallow: /
+
+User-agent: *-ml
 Disallow: /
 
 # =============================================================================
@@ -300,6 +456,14 @@ Disallow: /
 Sitemap: ${SITE_URL}/sitemap.xml
 Sitemap: ${SITE_URL}/news-sitemap.xml
 Sitemap: ${SITE_URL}/video-sitemap.xml
+
+# =============================================================================
+# RSS/Atom Feed Locations
+# =============================================================================
+# RSS 2.0 Feed
+# ${SITE_URL}/feed.xml
+# Atom 1.0 Feed
+# ${SITE_URL}/atom.xml
 
 # =============================================================================
 # Host Declaration (for search engines that support it)

@@ -13,6 +13,7 @@
 	 */
 
 	import type { FormField } from '$lib/api/forms';
+	import { safeMathEval, SafeMathError } from '$lib/utils/safe-math-parser';
 
 	interface Props {
 		field: FormField;
@@ -189,20 +190,21 @@
 		return parseFloat(condition) !== 0;
 	}
 
-	// Safe math expression evaluation (no eval)
+	// Safe math expression evaluation using recursive descent parser
+	// This replaces dangerous new Function() with a secure whitelist-based approach
 	function safeEval(expression: string): number {
-		// Remove any non-math characters for safety
-		const sanitized = expression.replace(/[^0-9+\-*\/().%\s]/g, '');
-
-		if (!sanitized.trim()) {
+		if (!expression.trim()) {
 			return 0;
 		}
 
-		// Use Function constructor as safer alternative to eval
-		// Only allows basic math operations
+		// Use the safe recursive descent parser (no code execution possible)
+		// Only allows: numbers, +, -, *, /, %, parentheses
 		try {
-			return new Function(`return (${sanitized})`)();
-		} catch {
+			return safeMathEval(expression);
+		} catch (err) {
+			if (err instanceof SafeMathError) {
+				throw new Error(`Invalid expression: ${err.message}`);
+			}
 			throw new Error('Invalid expression');
 		}
 	}

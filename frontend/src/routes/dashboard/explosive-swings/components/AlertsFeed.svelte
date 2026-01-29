@@ -70,7 +70,9 @@
 		{#if isAdmin && onNewAlert}
 			<button class="new-alert-btn" onclick={onNewAlert}>
 				<svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-					<path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+					<path
+						d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
+					/>
 				</svg>
 				New Alert
 			</button>
@@ -104,19 +106,18 @@
 		{:else if filteredAlerts.length === 0}
 			<div class="empty-state">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="empty-icon">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="1.5"
+						d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+					/>
 				</svg>
 				<p>No {activeFilter === 'all' ? '' : activeFilter.slice(0, -1)} alerts to display</p>
 			</div>
 		{:else}
 			{#each filteredAlerts as alert (alert.id)}
-				<AlertCard
-					{alert}
-					{isAdmin}
-					{onViewTradePlan}
-					{onEdit}
-					{onDelete}
-				/>
+				<AlertCard {alert} {isAdmin} {onViewTradePlan} {onEdit} {onDelete} />
 			{/each}
 		{/if}
 	</div>
@@ -211,7 +212,12 @@
 
 	.alert-skeleton {
 		height: 180px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-border-default) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 12px;

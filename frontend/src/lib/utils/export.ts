@@ -562,9 +562,7 @@ export async function downloadAlertsCsv(
 		if (error instanceof ExportError) {
 			throw error;
 		}
-		throw new ExportError(
-			error instanceof Error ? error.message : 'Failed to download alerts CSV'
-		);
+		throw new ExportError(error instanceof Error ? error.message : 'Failed to download alerts CSV');
 	}
 }
 
@@ -618,9 +616,7 @@ export async function downloadTradesCsv(
 		if (error instanceof ExportError) {
 			throw error;
 		}
-		throw new ExportError(
-			error instanceof Error ? error.message : 'Failed to download trades CSV'
-		);
+		throw new ExportError(error instanceof Error ? error.message : 'Failed to download trades CSV');
 	}
 }
 

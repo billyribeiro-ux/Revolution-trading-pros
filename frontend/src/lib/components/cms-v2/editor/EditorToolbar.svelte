@@ -137,8 +137,7 @@
 	let moreActionsButtonRef: HTMLButtonElement;
 
 	// Detect platform for shortcut display
-	const isMac =
-		typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+	const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 	const modKey = isMac ? 'Cmd' : 'Ctrl';
 
 	// ==========================================================================
@@ -326,7 +325,7 @@
 					class="block-type-button"
 					class:active={showBlockTypeDropdown}
 					onclick={() => (showBlockTypeDropdown = !showBlockTypeDropdown)}
-					disabled={disabled}
+					{disabled}
 					aria-haspopup="listbox"
 					aria-expanded={showBlockTypeDropdown}
 					aria-label="Select block type"
@@ -369,7 +368,7 @@
 				class="toolbar-button"
 				class:active={isFormatActive('bold')}
 				onclick={() => handleFormat('bold')}
-				disabled={disabled}
+				{disabled}
 				title="Bold ({getShortcutText('B')})"
 				aria-label="Bold"
 				aria-pressed={isFormatActive('bold')}
@@ -382,7 +381,7 @@
 				class="toolbar-button"
 				class:active={isFormatActive('italic')}
 				onclick={() => handleFormat('italic')}
-				disabled={disabled}
+				{disabled}
 				title="Italic ({getShortcutText('I')})"
 				aria-label="Italic"
 				aria-pressed={isFormatActive('italic')}
@@ -395,7 +394,7 @@
 				class="toolbar-button"
 				class:active={isFormatActive('underline')}
 				onclick={() => handleFormat('underline')}
-				disabled={disabled}
+				{disabled}
 				title="Underline ({getShortcutText('U')})"
 				aria-label="Underline"
 				aria-pressed={isFormatActive('underline')}
@@ -408,7 +407,7 @@
 				class="toolbar-button"
 				class:active={isFormatActive('strikethrough')}
 				onclick={() => handleFormat('strikethrough')}
-				disabled={disabled}
+				{disabled}
 				title="Strikethrough"
 				aria-label="Strikethrough"
 				aria-pressed={isFormatActive('strikethrough')}
@@ -421,7 +420,7 @@
 				class="toolbar-button"
 				class:active={isFormatActive('code')}
 				onclick={() => handleFormat('code')}
-				disabled={disabled}
+				{disabled}
 				title="Inline code ({getShortcutText('E')})"
 				aria-label="Inline code"
 				aria-pressed={isFormatActive('code')}
@@ -434,7 +433,7 @@
 				class="toolbar-button"
 				class:active={isFormatActive('link')}
 				onclick={() => handleFormat('link')}
-				disabled={disabled}
+				{disabled}
 				title="Insert link ({getShortcutText('K')})"
 				aria-label="Insert link"
 				aria-pressed={isFormatActive('link')}
@@ -452,7 +451,7 @@
 				class="toolbar-button"
 				class:active={currentAlign === 'left'}
 				onclick={() => handleAlignClick('left')}
-				disabled={disabled}
+				{disabled}
 				title="Align left"
 				aria-label="Align left"
 				aria-pressed={currentAlign === 'left'}
@@ -465,7 +464,7 @@
 				class="toolbar-button"
 				class:active={currentAlign === 'center'}
 				onclick={() => handleAlignClick('center')}
-				disabled={disabled}
+				{disabled}
 				title="Align center"
 				aria-label="Align center"
 				aria-pressed={currentAlign === 'center'}
@@ -478,7 +477,7 @@
 				class="toolbar-button"
 				class:active={currentAlign === 'right'}
 				onclick={() => handleAlignClick('right')}
-				disabled={disabled}
+				{disabled}
 				title="Align right"
 				aria-label="Align right"
 				aria-pressed={currentAlign === 'right'}
@@ -495,7 +494,7 @@
 				type="button"
 				class="toolbar-button"
 				onclick={() => handleListClick('bullet')}
-				disabled={disabled}
+				{disabled}
 				title="Bullet list"
 				aria-label="Bullet list"
 			>
@@ -506,7 +505,7 @@
 				type="button"
 				class="toolbar-button"
 				onclick={() => handleListClick('numbered')}
-				disabled={disabled}
+				{disabled}
 				title="Numbered list"
 				aria-label="Numbered list"
 			>
@@ -575,7 +574,7 @@
 			class="toolbar-button"
 			class:active={isFocusMode}
 			onclick={() => onFocusMode?.()}
-			disabled={disabled}
+			{disabled}
 			title="Focus mode"
 			aria-label="Toggle focus mode"
 			aria-pressed={isFocusMode}
@@ -588,7 +587,7 @@
 			type="button"
 			class="toolbar-button"
 			onclick={() => onPreview?.()}
-			disabled={disabled}
+			{disabled}
 			title="Preview ({getShortcutText('P')})"
 			aria-label="Preview"
 		>
@@ -638,7 +637,7 @@
 				class="toolbar-button more-actions-button"
 				class:active={showMoreActionsDropdown}
 				onclick={() => (showMoreActionsDropdown = !showMoreActionsDropdown)}
-				disabled={disabled}
+				{disabled}
 				aria-haspopup="menu"
 				aria-expanded={showMoreActionsDropdown}
 				aria-label="More actions"

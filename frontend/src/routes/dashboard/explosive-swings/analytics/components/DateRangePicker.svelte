@@ -85,7 +85,9 @@
 		cursor: pointer;
 		background: transparent;
 		color: var(--color-text-secondary);
-		transition: background 0.15s, color 0.15s;
+		transition:
+			background 0.15s,
+			color 0.15s;
 	}
 
 	.period-btn:hover {

@@ -61,7 +61,7 @@
 
 	let isSelected = $derived(editorContext?.selectedBlockId === block.id);
 	let blocks = $derived(editorStore.contentBlocks);
-	let blockIndex = $derived(blocks.findIndex(b => b.id === block.id));
+	let blockIndex = $derived(blocks.findIndex((b) => b.id === block.id));
 	let canMoveUp = $derived(blockIndex > 0);
 	let canMoveDown = $derived(blockIndex < blocks.length - 1);
 
@@ -69,20 +69,20 @@
 	let blockTypeName = $derived.by(() => {
 		const typeNames: Record<string, string> = {
 			'rich-text': 'Text',
-			'heading': 'Heading',
-			'image': 'Image',
-			'video': 'Video',
-			'divider': 'Divider',
-			'spacer': 'Spacer',
-			'quote': 'Quote',
-			'code': 'Code',
-			'list': 'List',
-			'callout': 'Callout',
+			heading: 'Heading',
+			image: 'Image',
+			video: 'Video',
+			divider: 'Divider',
+			spacer: 'Spacer',
+			quote: 'Quote',
+			code: 'Code',
+			list: 'List',
+			callout: 'Callout',
 			'trade-setup': 'Trade Setup',
 			'performance-stats': 'Stats',
 			'tradingview-chart': 'Chart',
-			'group': 'Group',
-			'columns': 'Columns'
+			group: 'Group',
+			columns: 'Columns'
 		};
 		return typeNames[block.blockType] || block.blockType;
 	});
@@ -124,10 +124,7 @@
 	function handleAddAfter() {
 		const rect = wrapperRef?.getBoundingClientRect();
 		if (rect) {
-			editorContext?.openSlashMenu(
-				{ x: rect.left + 40, y: rect.bottom + 10 },
-				block.id
-			);
+			editorContext?.openSlashMenu({ x: rect.left + 40, y: rect.bottom + 10 }, block.id);
 		}
 	}
 
@@ -154,7 +151,12 @@
 	aria-label="{blockTypeName} block"
 	aria-pressed={isSelected}
 	onclick={handleSelect}
-	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect(); }}}
+	onkeydown={(e) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			handleSelect();
+		}
+	}}
 	onmouseenter={() => !readonly && (isHovered = true)}
 	onmouseleave={() => {
 		isHovered = false;
@@ -186,10 +188,7 @@
 
 	<!-- Block Type Badge -->
 	{#if (isHovered || isSelected) && !readonly}
-		<div
-			class="block-type-badge"
-			transition:fade={{ duration: 100 }}
-		>
+		<div class="block-type-badge" transition:fade={{ duration: 100 }}>
 			{blockTypeName}
 		</div>
 	{/if}
@@ -201,10 +200,7 @@
 
 	<!-- Quick Actions -->
 	{#if (isHovered || isSelected) && !readonly}
-		<div
-			class="block-actions"
-			transition:scale={{ duration: 150, start: 0.9 }}
-		>
+		<div class="block-actions" transition:scale={{ duration: 150, start: 0.9 }}>
 			<button
 				type="button"
 				class="action-btn"

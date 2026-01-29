@@ -50,7 +50,7 @@
 		try {
 			const res = await fetch(`/api/favorites/${id}`, { method: 'DELETE' });
 			if (res.ok) {
-				favorites = favorites.filter(f => f.id !== id);
+				favorites = favorites.filter((f) => f.id !== id);
 			}
 		} catch (err) {
 			console.error('Failed to remove favorite:', err);
@@ -122,7 +122,10 @@
 			{#each favorites as item (item.id)}
 				<a href={item.href || '#'} class="favorite-card">
 					{#if item.thumbnail_url}
-						<div class="favorite-thumbnail" style="background-image: url('{item.thumbnail_url}')"></div>
+						<div
+							class="favorite-thumbnail"
+							style="background-image: url('{item.thumbnail_url}')"
+						></div>
 					{/if}
 					<div class="favorite-content">
 						<div class="favorite-type">{item.item_type.toUpperCase().replace('_', ' ')}</div>
@@ -149,8 +152,18 @@
 
 	<div class="back-link">
 		<a href="/dashboard/explosive-swings">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<path d="m15 18-6-6 6-6"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="m15 18-6-6 6-6" />
 			</svg>
 			Back to Dashboard
 		</a>
@@ -201,7 +214,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading-state p {

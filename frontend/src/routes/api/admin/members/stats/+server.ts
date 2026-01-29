@@ -8,7 +8,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
 export const GET: RequestHandler = async ({ request }) => {

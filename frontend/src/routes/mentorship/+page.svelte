@@ -141,9 +141,7 @@
 	]}
 />
 
-<div
-	class="bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black"
->
+<div class="bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black">
 	<div
 		class="fixed inset-0 z-0 pointer-events-none"
 		style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px;"

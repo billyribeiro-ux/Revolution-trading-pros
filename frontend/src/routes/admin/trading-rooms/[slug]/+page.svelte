@@ -266,9 +266,7 @@
 
 	/** Filtered trades based on status filter */
 	const filteredTrades = $derived(
-		tradeFilter === 'all'
-			? trades
-			: trades.filter((t) => t.status === tradeFilter)
+		tradeFilter === 'all' ? trades : trades.filter((t) => t.status === tradeFilter)
 	);
 
 	/** Trades count for tab badge */
@@ -289,8 +287,7 @@
 
 	/** Close trade form validation */
 	const isCloseTradeFormValid = $derived(
-		closeTradeForm.exit_price.trim() !== '' && 
-		!isNaN(parseFloat(closeTradeForm.exit_price))
+		closeTradeForm.exit_price.trim() !== '' && !isNaN(parseFloat(closeTradeForm.exit_price))
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -1244,10 +1241,7 @@
 									</td>
 									<td>
 										{#if trade.pnl !== null}
-											<span
-												class="pnl-value"
-												style="color: {getTradeResultColor(trade.result)}"
-											>
+											<span class="pnl-value" style="color: {getTradeResultColor(trade.result)}">
 												{formatCurrency(trade.pnl)}
 												<small>({formatPercent(trade.pnl_percent)})</small>
 											</span>
@@ -1357,9 +1351,7 @@
 					<IconPlayerPlay size={48} />
 					<h3>No Videos Found</h3>
 					<p>Videos will appear here when uploaded through the Resources page</p>
-					<a href="/admin/resources" class="btn-primary">
-						Go to Resources
-					</a>
+					<a href="/admin/resources" class="btn-primary"> Go to Resources </a>
 				</div>
 			{:else}
 				<div class="video-grid">
@@ -1744,11 +1736,21 @@
 
 				<div class="form-row checkboxes">
 					<label class="checkbox-label">
-						<input id="alert-is-new" name="alert-is-new" type="checkbox" bind:checked={alertForm.is_new} />
+						<input
+							id="alert-is-new"
+							name="alert-is-new"
+							type="checkbox"
+							bind:checked={alertForm.is_new}
+						/>
 						<span>Mark as NEW</span>
 					</label>
 					<label class="checkbox-label">
-						<input id="alert-is-published" name="alert-is-published" type="checkbox" bind:checked={alertForm.is_published} />
+						<input
+							id="alert-is-published"
+							name="alert-is-published"
+							type="checkbox"
+							bind:checked={alertForm.is_published}
+						/>
 						<span>Published</span>
 					</label>
 				</div>
@@ -1906,7 +1908,11 @@
 					</div>
 					<div class="trade-summary-row">
 						<span class="label">Direction:</span>
-						<span class="value direction-badge" class:long={closingTrade.direction === 'long'} class:short={closingTrade.direction === 'short'}>
+						<span
+							class="value direction-badge"
+							class:long={closingTrade.direction === 'long'}
+							class:short={closingTrade.direction === 'short'}
+						>
 							{closingTrade.direction.toUpperCase()}
 						</span>
 					</div>

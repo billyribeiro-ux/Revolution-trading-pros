@@ -22,7 +22,13 @@
 		onRowClick?: (row: Record<string, unknown>) => void;
 	}
 
-	const { columns, data, loading = false, emptyMessage = 'No data available', onRowClick }: Props = $props();
+	const {
+		columns,
+		data,
+		loading = false,
+		emptyMessage = 'No data available',
+		onRowClick
+	}: Props = $props();
 
 	let sortKey = $state<string | null>(null);
 	let sortDirection = $state<'asc' | 'desc'>('asc');
@@ -116,7 +122,8 @@
 		font-size: 0.875rem;
 	}
 
-	th, td {
+	th,
+	td {
 		padding: 0.75rem 1rem;
 		text-align: left;
 		border-bottom: 1px solid var(--color-border-default, #e5e7eb);
@@ -177,12 +184,15 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Mobile-first responsive */
 	@media (min-width: 640px) {
-		th, td {
+		th,
+		td {
 			padding: 1rem 1.25rem;
 		}
 	}

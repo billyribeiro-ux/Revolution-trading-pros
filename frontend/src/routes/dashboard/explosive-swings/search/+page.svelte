@@ -32,10 +32,7 @@
 
 <svelte:head>
 	<title>Search | Explosive Swings | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Search alerts, trades, and trade plans in Explosive Swings"
-	/>
+	<meta name="description" content="Search alerts, trades, and trade plans in Explosive Swings" />
 </svelte:head>
 
 <TradingRoomHeader
@@ -48,9 +45,7 @@
 		<!-- Search Header -->
 		<header class="search-header">
 			<h1 class="search-title">Search</h1>
-			<p class="search-subtitle">
-				Find alerts, trades, and trade plans across your entire history
-			</p>
+			<p class="search-subtitle">Find alerts, trades, and trade plans across your entire history</p>
 		</header>
 
 		<!-- Search Input -->
@@ -102,9 +97,7 @@
 					</div>
 					<h3>Search Error</h3>
 					<p>{search.error}</p>
-					<button class="retry-btn" onclick={() => search.performSearch()}>
-						Try Again
-					</button>
+					<button class="retry-btn" onclick={() => search.performSearch()}> Try Again </button>
 				</div>
 			{:else if search.query && !search.hasResults}
 				<SearchEmptyState query={search.query} onClearSearch={() => search.clearSearch()} />
@@ -152,8 +145,8 @@
 					</div>
 					<h3>Search Your Trading History</h3>
 					<p>
-						Search across alerts, trades, and trade plans. Try searching for a ticker
-						like "NVDA" or keywords like "breakout".
+						Search across alerts, trades, and trade plans. Try searching for a ticker like "NVDA" or
+						keywords like "breakout".
 					</p>
 					{#if search.searchHistory.length > 0}
 						<div class="recent-searches">

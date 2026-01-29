@@ -218,7 +218,7 @@
 			}
 
 			successMessage = isEditing ? 'Webhook updated' : 'Webhook created';
-			setTimeout(() => successMessage = null, 3000);
+			setTimeout(() => (successMessage = null), 3000);
 			showCreateModal = false;
 			await loadWebhooks();
 		} catch (e: any) {
@@ -240,7 +240,7 @@
 			if (!response.ok) throw new Error('Failed to delete webhook');
 
 			successMessage = 'Webhook deleted';
-			setTimeout(() => successMessage = null, 3000);
+			setTimeout(() => (successMessage = null), 3000);
 			await loadWebhooks();
 		} catch (e: any) {
 			error = e.message;
@@ -274,7 +274,7 @@
 			if (!response.ok) throw new Error('Test failed');
 
 			successMessage = 'Test webhook sent successfully';
-			setTimeout(() => successMessage = null, 3000);
+			setTimeout(() => (successMessage = null), 3000);
 		} catch (e: any) {
 			error = e.message;
 		}
@@ -290,7 +290,7 @@
 			if (!response.ok) throw new Error('Retry failed');
 
 			successMessage = 'Delivery queued for retry';
-			setTimeout(() => successMessage = null, 3000);
+			setTimeout(() => (successMessage = null), 3000);
 			await loadDeliveries(delivery.webhookId);
 		} catch (e: any) {
 			error = e.message;
@@ -326,17 +326,22 @@
 
 	function getStatusColor(status: string): string {
 		switch (status) {
-			case 'delivered': return 'green';
-			case 'pending': return 'blue';
-			case 'retrying': return 'yellow';
-			case 'failed': return 'red';
-			default: return 'gray';
+			case 'delivered':
+				return 'green';
+			case 'pending':
+				return 'blue';
+			case 'retrying':
+				return 'yellow';
+			case 'failed':
+				return 'red';
+			default:
+				return 'gray';
 		}
 	}
 
 	function toggleEvent(event: string) {
 		if (formEvents.includes(event)) {
-			formEvents = formEvents.filter(e => e !== event);
+			formEvents = formEvents.filter((e) => e !== event);
 		} else {
 			formEvents = [...formEvents, event];
 		}
@@ -345,7 +350,7 @@
 	function generateSecret() {
 		const array = new Uint8Array(32);
 		crypto.getRandomValues(array);
-		formSecret = Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+		formSecret = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
 	}
 </script>
 
@@ -376,7 +381,7 @@
 		<div class="error-banner" in:scale={{ duration: 200 }}>
 			<IconAlertTriangle size={18} />
 			<span>{error}</span>
-			<button onclick={() => error = null}>Dismiss</button>
+			<button onclick={() => (error = null)}>Dismiss</button>
 		</div>
 	{/if}
 
@@ -394,7 +399,7 @@
 			<span class="stat-label">Total Webhooks</span>
 		</div>
 		<div class="stat-card">
-			<span class="stat-value">{webhooks.filter(w => w.isActive).length}</span>
+			<span class="stat-value">{webhooks.filter((w) => w.isActive).length}</span>
 			<span class="stat-label">Active</span>
 		</div>
 		<div class="stat-card">
@@ -473,7 +478,11 @@
 					</div>
 
 					<div class="webhook-actions">
-						<button class="btn-icon" onclick={() => openDeliveriesModal(webhook)} title="View Deliveries">
+						<button
+							class="btn-icon"
+							onclick={() => openDeliveriesModal(webhook)}
+							title="View Deliveries"
+						>
 							<IconEye size={16} />
 						</button>
 						<button class="btn-icon" onclick={() => testWebhook(webhook)} title="Send Test">
@@ -497,7 +506,7 @@
 	<div
 		class="modal-backdrop"
 		role="presentation"
-		onclick={() => showCreateModal = false}
+		onclick={() => (showCreateModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateModal = false)}
 	>
 		<div
@@ -512,7 +521,7 @@
 		>
 			<div class="modal-header">
 				<h3 id="webhook-modal-title">{isEditing ? 'Edit Webhook' : 'Create Webhook'}</h3>
-				<button class="btn-close" onclick={() => showCreateModal = false}>×</button>
+				<button class="btn-close" onclick={() => (showCreateModal = false)}>×</button>
 			</div>
 			<div class="modal-body">
 				<div class="field-group">
@@ -563,9 +572,7 @@
 							placeholder="Leave empty for no signing"
 							class="field-input"
 						/>
-						<button type="button" class="btn-generate" onclick={generateSecret}>
-							Generate
-						</button>
+						<button type="button" class="btn-generate" onclick={generateSecret}> Generate </button>
 					</div>
 				</div>
 
@@ -602,9 +609,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showCreateModal = false}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showCreateModal = false)}> Cancel </button>
 				<button class="btn-primary" onclick={saveWebhook} disabled={isSaving}>
 					{isSaving ? 'Saving...' : isEditing ? 'Update' : 'Create'}
 				</button>
@@ -618,7 +623,7 @@
 	<div
 		class="modal-backdrop"
 		role="presentation"
-		onclick={() => showDeliveriesModal = false}
+		onclick={() => (showDeliveriesModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeliveriesModal = false)}
 	>
 		<div
@@ -633,7 +638,7 @@
 		>
 			<div class="modal-header">
 				<h3 id="deliveries-modal-title">Delivery History - {selectedWebhook.name}</h3>
-				<button class="btn-close" onclick={() => showDeliveriesModal = false}>×</button>
+				<button class="btn-close" onclick={() => (showDeliveriesModal = false)}>×</button>
 			</div>
 			<div class="modal-body">
 				{#if deliveries.length === 0}
@@ -752,7 +757,8 @@
 	}
 
 	/* Banners */
-	.error-banner, .success-banner {
+	.error-banner,
+	.success-banner {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
@@ -818,7 +824,8 @@
 		gap: 1rem;
 	}
 
-	.loading-state, .empty-state {
+	.loading-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -847,7 +854,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Webhook Card */

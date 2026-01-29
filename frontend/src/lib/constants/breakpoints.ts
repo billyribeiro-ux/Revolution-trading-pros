@@ -76,10 +76,7 @@ export type BreakpointKey = keyof typeof BREAKPOINTS;
  * @param type - 'min' for mobile-first, 'max' for desktop-first
  * @returns boolean indicating if viewport matches
  */
-export function matchesBreakpoint(
-	breakpoint: BreakpointKey,
-	type: 'min' | 'max' = 'min'
-): boolean {
+export function matchesBreakpoint(breakpoint: BreakpointKey, type: 'min' | 'max' = 'min'): boolean {
 	if (typeof window === 'undefined') return false;
 	const query = type === 'min' ? MEDIA_QUERIES[breakpoint] : MEDIA_QUERIES_MAX[breakpoint];
 	return window.matchMedia(query).matches;

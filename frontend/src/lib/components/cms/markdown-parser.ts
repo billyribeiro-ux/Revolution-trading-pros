@@ -37,10 +37,7 @@ export function markdownToHtml(markdown: string, options: ParseOptions = {}): st
 
 	// Escape HTML entities if sanitizing
 	if (opts.sanitize) {
-		html = html
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;');
+		html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	}
 
 	// Code blocks (fenced with ```)
@@ -120,9 +117,7 @@ export function markdownToHtml(markdown: string, options: ParseOptions = {}): st
 			const trimmed = block.trim();
 			if (!trimmed) return '';
 			// Don't wrap if already a block element
-			if (
-				/^<(h[1-6]|p|div|ul|ol|li|blockquote|pre|table|hr)/i.test(trimmed)
-			) {
+			if (/^<(h[1-6]|p|div|ul|ol|li|blockquote|pre|table|hr)/i.test(trimmed)) {
 				return trimmed;
 			}
 			return `<p>${trimmed}</p>`;
@@ -150,12 +145,15 @@ function parseTable(html: string): string {
 			.join('');
 
 		// Parse alignment from separator
-		const alignments = separatorRow.split('|').filter((c: string) => c.trim()).map((c: string) => {
-			const trimmed = c.trim();
-			if (trimmed.startsWith(':') && trimmed.endsWith(':')) return 'center';
-			if (trimmed.endsWith(':')) return 'right';
-			return 'left';
-		});
+		const alignments = separatorRow
+			.split('|')
+			.filter((c: string) => c.trim())
+			.map((c: string) => {
+				const trimmed = c.trim();
+				if (trimmed.startsWith(':') && trimmed.endsWith(':')) return 'center';
+				if (trimmed.endsWith(':')) return 'right';
+				return 'left';
+			});
 
 		// Parse body rows
 		const rows = bodyRows
@@ -189,10 +187,13 @@ export function htmlToMarkdown(html: string): string {
 	md = md.replace(/<\/?(?:html|head|body)[^>]*>/gi, '');
 
 	// Code blocks
-	md = md.replace(/<pre><code(?:\s+class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/gi, (_, lang, code) => {
-		const language = lang || '';
-		return `\`\`\`${language}\n${decodeHtmlEntities(code)}\n\`\`\``;
-	});
+	md = md.replace(
+		/<pre><code(?:\s+class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/gi,
+		(_, lang, code) => {
+			const language = lang || '';
+			return `\`\`\`${language}\n${decodeHtmlEntities(code)}\n\`\`\``;
+		}
+	);
 
 	// Inline code
 	md = md.replace(/<code>([^<]+)<\/code>/gi, '`$1`');
@@ -238,11 +239,13 @@ export function htmlToMarkdown(html: string): string {
 
 	// Blockquotes
 	md = md.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, content) => {
-		return content
-			.trim()
-			.split('\n')
-			.map((line: string) => `> ${line}`)
-			.join('\n') + '\n';
+		return (
+			content
+				.trim()
+				.split('\n')
+				.map((line: string) => `> ${line}`)
+				.join('\n') + '\n'
+		);
 	});
 
 	// Horizontal rules

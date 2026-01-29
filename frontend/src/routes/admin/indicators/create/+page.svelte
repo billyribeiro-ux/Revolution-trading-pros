@@ -69,9 +69,27 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const PLATFORMS: Platform[] = [
-		{ id: 'thinkorswim', name: 'thinkorswim', displayName: 'Thinkorswim', icon: '', extension: '.ts' },
-		{ id: 'tradingview', name: 'tradingview', displayName: 'TradingView', icon: '', extension: '.pine' },
-		{ id: 'trendspider', name: 'trendspider', displayName: 'TrendSpider', icon: '', extension: '.tsp' }
+		{
+			id: 'thinkorswim',
+			name: 'thinkorswim',
+			displayName: 'Thinkorswim',
+			icon: '',
+			extension: '.ts'
+		},
+		{
+			id: 'tradingview',
+			name: 'tradingview',
+			displayName: 'TradingView',
+			icon: '',
+			extension: '.pine'
+		},
+		{
+			id: 'trendspider',
+			name: 'trendspider',
+			displayName: 'TrendSpider',
+			icon: '',
+			extension: '.tsp'
+		}
 	];
 
 	const CATEGORIES = [
@@ -156,20 +174,23 @@
 		if (index === -1) {
 			indicator.platforms = [...indicator.platforms, platformId];
 			// Add platform file entry
-			platformFiles = [...platformFiles, {
-				platform_id: platformId,
-				file: null,
-				version: indicator.version,
-				installation_notes: ''
-			}];
+			platformFiles = [
+				...platformFiles,
+				{
+					platform_id: platformId,
+					file: null,
+					version: indicator.version,
+					installation_notes: ''
+				}
+			];
 		} else {
-			indicator.platforms = indicator.platforms.filter(p => p !== platformId);
-			platformFiles = platformFiles.filter(pf => pf.platform_id !== platformId);
+			indicator.platforms = indicator.platforms.filter((p) => p !== platformId);
+			platformFiles = platformFiles.filter((pf) => pf.platform_id !== platformId);
 		}
 	}
 
 	function getPlatformById(id: string): Platform | undefined {
-		return PLATFORMS.find(p => p.id === id);
+		return PLATFORMS.find((p) => p.id === id);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -185,7 +206,7 @@
 	}
 
 	function removeTag(tag: string) {
-		indicator.tags = indicator.tags.filter(t => t !== tag);
+		indicator.tags = indicator.tags.filter((t) => t !== tag);
 	}
 
 	function handleTagKeydown(e: KeyboardEvent) {
@@ -232,7 +253,12 @@
 		}
 	}
 
-	async function resizeImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<Blob> {
+	async function resizeImage(
+		file: File,
+		maxWidth = 1200,
+		maxHeight = 1200,
+		quality = 0.85
+	): Promise<Blob> {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
 			const canvas = document.createElement('canvas');
@@ -253,7 +279,7 @@
 					ctx.imageSmoothingQuality = 'high';
 					ctx.drawImage(img, 0, 0, width, height);
 					canvas.toBlob(
-						(blob) => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
+						(blob) => (blob ? resolve(blob) : reject(new Error('Failed to create blob'))),
 						'image/jpeg',
 						quality
 					);
@@ -284,7 +310,7 @@
 	async function handleThumbnailDrop(e: DragEvent) {
 		e.preventDefault();
 		thumbnailDragOver = false;
-		
+
 		const file = e.dataTransfer?.files[0];
 		if (file && file.type.startsWith('image/')) {
 			await uploadThumbnail(file);
@@ -348,7 +374,7 @@
 	async function handlePlatformFileDrop(e: DragEvent, platformId: string) {
 		e.preventDefault();
 		platformFileDragOver = { ...platformFileDragOver, [platformId]: false };
-		
+
 		const file = e.dataTransfer?.files[0];
 		if (file) {
 			await uploadPlatformFile(file, platformId);
@@ -369,15 +395,18 @@
 
 		try {
 			const uploaded = await uploadToBunny(file, `indicators/files/${platformId}`);
-			
-			platformFiles = platformFiles.map(pf => {
+
+			platformFiles = platformFiles.map((pf) => {
 				if (pf.platform_id === platformId) {
 					return { ...pf, file: uploaded };
 				}
 				return pf;
 			});
 		} catch (error: any) {
-			platformFileErrors = { ...platformFileErrors, [platformId]: error.message || 'Upload failed' };
+			platformFileErrors = {
+				...platformFileErrors,
+				[platformId]: error.message || 'Upload failed'
+			};
 		} finally {
 			platformFileUploading = { ...platformFileUploading, [platformId]: false };
 		}
@@ -392,11 +421,14 @@
 	let docDragOver = $state<Record<number, boolean>>({});
 
 	function addDocumentation() {
-		documentationFiles = [...documentationFiles, {
-			title: '',
-			file: null,
-			doc_type: 'pdf'
-		}];
+		documentationFiles = [
+			...documentationFiles,
+			{
+				title: '',
+				file: null,
+				doc_type: 'pdf'
+			}
+		];
 	}
 
 	function removeDocumentation(index: number) {
@@ -416,7 +448,7 @@
 	async function handleDocDrop(e: DragEvent, index: number) {
 		e.preventDefault();
 		docDragOver = { ...docDragOver, [index]: false };
-		
+
 		const file = e.dataTransfer?.files[0];
 		if (file) {
 			await uploadDocFile(file, index);
@@ -437,7 +469,7 @@
 
 		try {
 			const uploaded = await uploadToBunny(file, 'indicators/docs');
-			
+
 			documentationFiles = documentationFiles.map((doc, i) => {
 				if (i === index) {
 					return { ...doc, file: uploaded, title: doc.title || file.name.replace(/\.[^.]+$/, '') };
@@ -513,7 +545,7 @@
 							await adminFetch(`/api/admin/indicators/${indicatorId}/files`, {
 								method: 'POST',
 								body: JSON.stringify({
-									platform_id: PLATFORMS.findIndex(p => p.id === pf.platform_id) + 1,
+									platform_id: PLATFORMS.findIndex((p) => p.id === pf.platform_id) + 1,
 									file_url: pf.file.url,
 									file_name: pf.file.name,
 									file_size_bytes: pf.file.size,
@@ -521,7 +553,7 @@
 									installation_notes: pf.installation_notes || undefined,
 									is_latest: true
 								})
-							}).catch(e => console.warn('Failed to save platform file:', e));
+							}).catch((e) => console.warn('Failed to save platform file:', e));
 						}
 					}
 
@@ -537,7 +569,7 @@
 									file_name: doc.file.name,
 									is_published: true
 								})
-							}).catch(e => console.warn('Failed to save documentation:', e));
+							}).catch((e) => console.warn('Failed to save documentation:', e));
 						}
 					}
 				}
@@ -572,7 +604,17 @@
 		<!-- Header -->
 		<header class="page-header">
 			<div class="header-icon">
-				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="48"
+					height="48"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg
+				>
 			</div>
 			<h1>Create New Indicator</h1>
 			<p class="subtitle">Build a downloadable indicator product for your members</p>
@@ -585,7 +627,27 @@
 				<!-- Basic Information Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg></span>
+						<span class="title-icon"
+							><svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><path
+									d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+								/><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line
+									x1="16"
+									x2="8"
+									y1="17"
+									y2="17"
+								/><line x1="10" x2="8" y1="9" y2="9" /></svg
+							></span
+						>
 						Basic Information
 					</h2>
 
@@ -629,12 +691,7 @@
 
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input
-								id="version"
-								type="text"
-								bind:value={indicator.version}
-								placeholder="1.0.0"
-							/>
+							<input id="version" type="text" bind:value={indicator.version} placeholder="1.0.0" />
 						</div>
 					</div>
 
@@ -709,10 +766,27 @@
 				{#if platformFiles.length > 0}
 					<section class="form-card">
 						<h2 class="card-title">
-							<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+							<span class="title-icon"
+								><svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									><path
+										d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+									/><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg
+								></span
+							>
 							Platform Files
 						</h2>
-						<p class="card-description">Upload indicator files for each selected platform. Drag and drop or click to upload.</p>
+						<p class="card-description">
+							Upload indicator files for each selected platform. Drag and drop or click to upload.
+						</p>
 
 						<div class="platform-files-list">
 							{#each platformFiles as pf, index}
@@ -742,7 +816,20 @@
 												<span>Uploading...</span>
 											{:else if pf.file}
 												<div class="file-info">
-													<span class="file-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+													<span class="file-icon"
+														><svg
+															xmlns="http://www.w3.org/2000/svg"
+															width="16"
+															height="16"
+															viewBox="0 0 24 24"
+															fill="none"
+															stroke="currentColor"
+															stroke-width="2"
+															><path
+																d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+															/><polyline points="14 2 14 8 20 8" /></svg
+														></span
+													>
 													<div class="file-details">
 														<span class="file-name">{pf.file.name}</span>
 														<span class="file-size">{formatFileSize(pf.file.size)}</span>
@@ -751,15 +838,28 @@
 														type="button"
 														class="file-remove"
 														onclick={() => {
-															platformFiles = platformFiles.map((f, i) => 
+															platformFiles = platformFiles.map((f, i) =>
 																i === index ? { ...f, file: null } : f
 															);
-														}}
-													>×</button>
+														}}>×</button
+													>
 												</div>
 											{:else}
 												<div class="drop-content">
-													<span class="drop-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></span>
+													<span class="drop-icon"
+														><svg
+															xmlns="http://www.w3.org/2000/svg"
+															width="24"
+															height="24"
+															viewBox="0 0 24 24"
+															fill="none"
+															stroke="currentColor"
+															stroke-width="2"
+															><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
+																points="17 8 12 3 7 8"
+															/><line x1="12" x2="12" y1="3" y2="15" /></svg
+														></span
+													>
 													<span class="drop-text">Drop file here or click to browse</span>
 												</div>
 											{/if}
@@ -792,10 +892,25 @@
 				<!-- Documentation Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>
+						<span class="title-icon"
+							><svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
+							></span
+						>
 						Documentation
 					</h2>
-					<p class="card-description">Upload PDF guides, quick start docs, or link to video tutorials.</p>
+					<p class="card-description">
+						Upload PDF guides, quick start docs, or link to video tutorials.
+					</p>
 
 					{#if documentationFiles.length > 0}
 						<div class="documentation-list">
@@ -810,8 +925,8 @@
 										<button
 											type="button"
 											class="doc-remove"
-											onclick={() => removeDocumentation(index)}
-										>×</button>
+											onclick={() => removeDocumentation(index)}>×</button
+										>
 									</div>
 
 									<input
@@ -868,7 +983,22 @@
 				<!-- Pricing Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+						<span class="title-icon"
+							><svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><line x1="12" x2="12" y1="2" y2="22" /><path
+									d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+								/></svg
+							></span
+						>
 						Pricing
 					</h2>
 
@@ -900,7 +1030,19 @@
 				{#if indicator.platforms.includes('tradingview')}
 					<section class="form-card">
 						<h2 class="card-title">
-							<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+							<span class="title-icon"
+								><svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg
+								></span
+							>
 							TradingView Access
 						</h2>
 
@@ -921,7 +1063,20 @@
 				<!-- Publishing Options -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+						<span class="title-icon"
+							><svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg
+							></span
+						>
 						Publishing
 					</h2>
 
@@ -954,7 +1109,24 @@
 				<!-- Thumbnail Upload -->
 				<section class="form-card sticky">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></span>
+						<span class="title-icon"
+							><svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle
+									cx="9"
+									cy="9"
+									r="2"
+								/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg
+							></span
+						>
 						Thumbnail
 					</h2>
 
@@ -973,15 +1145,32 @@
 							<div class="upload-spinner large"></div>
 							<span class="upload-text">Uploading & Optimizing...</span>
 						{:else if indicator.thumbnail_url}
-							<img src={indicator.thumbnail_url} alt="Thumbnail preview" class="thumbnail-preview" />
+							<img
+								src={indicator.thumbnail_url}
+								alt="Thumbnail preview"
+								class="thumbnail-preview"
+							/>
 							<button
 								type="button"
 								class="thumbnail-remove"
-								onclick={() => indicator.thumbnail_url = ''}
-							>×</button>
+								onclick={() => (indicator.thumbnail_url = '')}>×</button
+							>
 						{:else}
 							<div class="drop-placeholder">
-								<span class="drop-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></span>
+								<span class="drop-icon-large"
+									><svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="32"
+										height="32"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+										><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
+											points="17 8 12 3 7 8"
+										/><line x1="12" x2="12" y1="3" y2="15" /></svg
+									></span
+								>
 								<span class="drop-title">Drop image here</span>
 								<span class="drop-subtitle">or click to browse</span>
 							</div>
@@ -1004,7 +1193,24 @@
 				<!-- Live Preview Card -->
 				<section class="form-card sticky-preview">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+						<span class="title-icon"
+							><svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
+									cx="12"
+									cy="12"
+									r="3"
+								/></svg
+							></span
+						>
 						Live Preview
 					</h2>
 
@@ -1014,11 +1220,32 @@
 								<img src={indicator.thumbnail_url} alt="Preview" />
 							{:else}
 								<div class="preview-placeholder">
-									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="32"
+										height="32"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg
+									>
 								</div>
 							{/if}
 							{#if indicator.is_featured}
-								<span class="featured-badge"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Featured</span>
+								<span class="featured-badge"
+									><svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="12"
+										height="12"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										stroke="currentColor"
+										stroke-width="2"
+										><polygon
+											points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+										/></svg
+									> Featured</span
+								>
 							{/if}
 						</div>
 						<div class="preview-content">
@@ -1058,14 +1285,40 @@
 		<!-- Error / Success Messages -->
 		{#if formError}
 			<div class="form-message error">
-				<span class="message-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+				<span class="message-icon"
+					><svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						><path
+							d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
+						/><path d="M12 9v4" /><path d="M12 17h.01" /></svg
+					></span
+				>
 				{formError}
 			</div>
 		{/if}
 
 		{#if successMessage}
 			<div class="form-message success">
-				<span class="message-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+				<span class="message-icon"
+					><svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline
+							points="22 4 12 14.01 9 11.01"
+						/></svg
+					></span
+				>
 				{successMessage}
 			</div>
 		{/if}
@@ -1075,12 +1328,7 @@
 			<button type="button" class="btn-secondary" onclick={() => goto('/admin/indicators')}>
 				Cancel
 			</button>
-			<button
-				type="button"
-				class="btn-primary"
-				onclick={saveIndicator}
-				disabled={saving}
-			>
+			<button type="button" class="btn-primary" onclick={saveIndicator} disabled={saving}>
 				{#if saving}
 					<span class="btn-spinner"></span>
 					Creating...
@@ -1137,7 +1385,7 @@
 	.bg-blob-2 {
 		width: 400px;
 		height: 400px;
-		background: #143E59;
+		background: #143e59;
 		bottom: -100px;
 		left: -100px;
 		animation-delay: -7s;
@@ -1153,9 +1401,16 @@
 	}
 
 	@keyframes float {
-		0%, 100% { transform: translate(0, 0) scale(1); }
-		33% { transform: translate(30px, -30px) scale(1.05); }
-		66% { transform: translate(-20px, 20px) scale(0.95); }
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		33% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		66% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
 	}
 
 	/* Header */
@@ -1460,7 +1715,7 @@
 		background: rgba(230, 184, 0, 0.05);
 	}
 
-	.platform-toggle input[type="checkbox"] {
+	.platform-toggle input[type='checkbox'] {
 		display: none;
 	}
 
@@ -1678,7 +1933,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Documentation */

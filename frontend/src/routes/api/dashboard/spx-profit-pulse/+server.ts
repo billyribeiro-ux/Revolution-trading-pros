@@ -61,11 +61,36 @@ interface SPXPerformanceMetrics {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const TRADERS = [
-	{ id: 1, name: 'Billy Ribeiro', slug: 'billy-ribeiro', photo_url: 'https://cdn.simplertrading.com/traders/billy-ribeiro.jpg' },
-	{ id: 2, name: 'Freddie Ferber', slug: 'freddie-ferber', photo_url: 'https://cdn.simplertrading.com/traders/freddie-ferber.jpg' },
-	{ id: 3, name: 'Shao Wan', slug: 'shao-wan', photo_url: 'https://cdn.simplertrading.com/traders/shao-wan.jpg' },
-	{ id: 4, name: 'Melissa Beegle', slug: 'melissa-beegle', photo_url: 'https://cdn.simplertrading.com/traders/melissa-beegle.jpg' },
-	{ id: 5, name: 'Jonathan McKeever', slug: 'jonathan-mckeever', photo_url: 'https://cdn.simplertrading.com/traders/jonathan-mckeever.jpg' }
+	{
+		id: 1,
+		name: 'Billy Ribeiro',
+		slug: 'billy-ribeiro',
+		photo_url: 'https://cdn.simplertrading.com/traders/billy-ribeiro.jpg'
+	},
+	{
+		id: 2,
+		name: 'Freddie Ferber',
+		slug: 'freddie-ferber',
+		photo_url: 'https://cdn.simplertrading.com/traders/freddie-ferber.jpg'
+	},
+	{
+		id: 3,
+		name: 'Shao Wan',
+		slug: 'shao-wan',
+		photo_url: 'https://cdn.simplertrading.com/traders/shao-wan.jpg'
+	},
+	{
+		id: 4,
+		name: 'Melissa Beegle',
+		slug: 'melissa-beegle',
+		photo_url: 'https://cdn.simplertrading.com/traders/melissa-beegle.jpg'
+	},
+	{
+		id: 5,
+		name: 'Jonathan McKeever',
+		slug: 'jonathan-mckeever',
+		photo_url: 'https://cdn.simplertrading.com/traders/jonathan-mckeever.jpg'
+	}
 ];
 
 function generateAlerts(count: number = 6): SPXAlert[] {
@@ -183,19 +208,19 @@ export const GET: RequestHandler = async ({ url }) => {
 			trading_rooms: getTradingRooms()
 		};
 
-		return json({
-			success: true,
-			data: dashboardData
-		}, {
-			headers: {
-				'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
+		return json(
+			{
+				success: true,
+				data: dashboardData
+			},
+			{
+				headers: {
+					'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
+				}
 			}
-		});
+		);
 	} catch (error) {
 		console.error('[SPX API] Error:', error);
-		return json(
-			{ success: false, error: 'Failed to fetch dashboard data' },
-			{ status: 500 }
-		);
+		return json({ success: false, error: 'Failed to fetch dashboard data' }, { status: 500 });
 	}
 };

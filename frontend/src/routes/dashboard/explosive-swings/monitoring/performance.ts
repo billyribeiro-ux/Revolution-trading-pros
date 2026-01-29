@@ -163,7 +163,9 @@ class PerformanceMonitor {
 			if (import.meta.env.DEV) {
 				const threshold = PERFORMANCE_THRESHOLDS[name];
 				if (threshold && duration > threshold.needsImprovement) {
-					console.warn(`[PerformanceMonitor] Slow operation: ${name} took ${duration.toFixed(2)}ms`);
+					console.warn(
+						`[PerformanceMonitor] Slow operation: ${name} took ${duration.toFixed(2)}ms`
+					);
 				}
 			}
 
@@ -210,7 +212,10 @@ class PerformanceMonitor {
 	 * Get the P95 time for a specific metric
 	 */
 	getP95Time(name: string): number {
-		const times = this.metrics.get(name)?.slice().sort((a, b) => a - b);
+		const times = this.metrics
+			.get(name)
+			?.slice()
+			.sort((a, b) => a - b);
 		if (!times || times.length === 0) return 0;
 		const index = Math.floor(times.length * 0.95);
 		return times[Math.min(index, times.length - 1)];
@@ -220,7 +225,10 @@ class PerformanceMonitor {
 	 * Get the P99 time for a specific metric
 	 */
 	getP99Time(name: string): number {
-		const times = this.metrics.get(name)?.slice().sort((a, b) => a - b);
+		const times = this.metrics
+			.get(name)
+			?.slice()
+			.sort((a, b) => a - b);
 		if (!times || times.length === 0) return 0;
 		const index = Math.floor(times.length * 0.99);
 		return times[Math.min(index, times.length - 1)];
@@ -367,7 +375,8 @@ export const startMark = (name: string) => performanceMonitor.startMark(name);
 export const endMark = (name: string) => performanceMonitor.endMark(name);
 export const measureAsync = <T>(name: string, fn: () => Promise<T>) =>
 	performanceMonitor.measureAsync(name, fn);
-export const measureSync = <T>(name: string, fn: () => T) => performanceMonitor.measureSync(name, fn);
+export const measureSync = <T>(name: string, fn: () => T) =>
+	performanceMonitor.measureSync(name, fn);
 export const reportMetrics = () => performanceMonitor.reportMetrics();
 export const getDetailedMetrics = (name: string) => performanceMonitor.getDetailedMetrics(name);
 export const getPerformanceRating = (name: string, value?: number) =>

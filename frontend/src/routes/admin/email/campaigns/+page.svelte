@@ -665,7 +665,12 @@
 
 					<div class="form-group full-width ab-toggle">
 						<label class="checkbox-label">
-							<input id="enable-ab-test" name="enable-ab-test" type="checkbox" bind:checked={newCampaign.useABTest} />
+							<input
+								id="enable-ab-test"
+								name="enable-ab-test"
+								type="checkbox"
+								bind:checked={newCampaign.useABTest}
+							/>
 							<span>Enable A/B Testing</span>
 						</label>
 					</div>

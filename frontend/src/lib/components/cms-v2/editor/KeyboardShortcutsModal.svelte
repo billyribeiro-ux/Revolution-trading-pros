@@ -281,8 +281,10 @@
 			style="animation: slideUp 0.25s ease-out"
 		>
 			<!-- Header -->
-			<div class="flex items-center justify-between border-b border-slate-200 px-6 py-4
-			            dark:border-slate-700">
+			<div
+				class="flex items-center justify-between border-b border-slate-200 px-6 py-4
+			            dark:border-slate-700"
+			>
 				<div>
 					<h2
 						id="shortcuts-modal-title"
@@ -311,7 +313,12 @@
 					aria-label="Close modal"
 				>
 					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M6 18L18 6M6 6l12 12"
+						/>
 					</svg>
 				</button>
 			</div>
@@ -320,9 +327,18 @@
 			<div class="border-b border-slate-200 px-6 py-3 dark:border-slate-700">
 				<div class="relative">
 					<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-						<svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-							      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<svg
+							class="h-5 w-5 text-slate-400"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
 						</svg>
 					</div>
 					<input
@@ -347,7 +363,12 @@
 							aria-label="Clear search"
 						>
 							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M6 18L18 6M6 6l12 12"
+								/>
 							</svg>
 						</button>
 					{/if}
@@ -365,12 +386,16 @@
 						<!-- Category Header -->
 						<div class="mb-3 flex items-center gap-2">
 							<span class="text-base" aria-hidden="true">{category.icon}</span>
-							<h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500
-							           dark:text-slate-400">
+							<h3
+								class="text-xs font-semibold uppercase tracking-wider text-slate-500
+							           dark:text-slate-400"
+							>
 								{category.name}
 							</h3>
-							<span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium
-							             text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+							<span
+								class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium
+							             text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+							>
 								{category.shortcuts.length}
 							</span>
 						</div>
@@ -412,14 +437,21 @@
 					<!-- No Results -->
 					<div class="flex flex-col items-center justify-center py-12 text-center">
 						<div class="mb-4 rounded-full bg-slate-100 p-4 dark:bg-slate-800">
-							<svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-								      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							<svg
+								class="h-8 w-8 text-slate-400"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.5"
+									d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
 							</svg>
 						</div>
-						<p class="text-sm font-medium text-slate-900 dark:text-white">
-							No shortcuts found
-						</p>
+						<p class="text-sm font-medium text-slate-900 dark:text-white">No shortcuts found</p>
 						<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
 							No results for "{searchQuery}"
 						</p>
@@ -436,26 +468,34 @@
 			</div>
 
 			<!-- Footer -->
-			<div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-3
-			            dark:border-slate-700 dark:bg-slate-800/50">
+			<div
+				class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-3
+			            dark:border-slate-700 dark:bg-slate-800/50"
+			>
 				<div class="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
 					<span class="flex items-center gap-1.5">
-						<kbd class="inline-flex items-center justify-center rounded border border-slate-300
+						<kbd
+							class="inline-flex items-center justify-center rounded border border-slate-300
 						           bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-600
-						           dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+						           dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300"
+						>
 							Esc
 						</kbd>
 						<span>Close</span>
 					</span>
 					<span class="flex items-center gap-1.5">
-						<kbd class="inline-flex items-center justify-center rounded border border-slate-300
+						<kbd
+							class="inline-flex items-center justify-center rounded border border-slate-300
 						           bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-600
-						           dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+						           dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300"
+						>
 							{modKey}
 						</kbd>
-						<kbd class="inline-flex items-center justify-center rounded border border-slate-300
+						<kbd
+							class="inline-flex items-center justify-center rounded border border-slate-300
 						           bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-600
-						           dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+						           dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300"
+						>
 							?
 						</kbd>
 						<span>Toggle</span>
@@ -502,37 +542,37 @@
 	}
 
 	/* Custom scrollbar for the shortcuts list */
-	:global(.dark) div[role="list"]::-webkit-scrollbar {
+	:global(.dark) div[role='list']::-webkit-scrollbar {
 		width: 8px;
 	}
 
-	:global(.dark) div[role="list"]::-webkit-scrollbar-track {
+	:global(.dark) div[role='list']::-webkit-scrollbar-track {
 		background: transparent;
 	}
 
-	:global(.dark) div[role="list"]::-webkit-scrollbar-thumb {
+	:global(.dark) div[role='list']::-webkit-scrollbar-thumb {
 		background: rgba(100, 116, 139, 0.5);
 		border-radius: 4px;
 	}
 
-	:global(.dark) div[role="list"]::-webkit-scrollbar-thumb:hover {
+	:global(.dark) div[role='list']::-webkit-scrollbar-thumb:hover {
 		background: rgba(100, 116, 139, 0.7);
 	}
 
-	div[role="list"]::-webkit-scrollbar {
+	div[role='list']::-webkit-scrollbar {
 		width: 8px;
 	}
 
-	div[role="list"]::-webkit-scrollbar-track {
+	div[role='list']::-webkit-scrollbar-track {
 		background: transparent;
 	}
 
-	div[role="list"]::-webkit-scrollbar-thumb {
+	div[role='list']::-webkit-scrollbar-thumb {
 		background: rgba(203, 213, 225, 0.8);
 		border-radius: 4px;
 	}
 
-	div[role="list"]::-webkit-scrollbar-thumb:hover {
+	div[role='list']::-webkit-scrollbar-thumb:hover {
 		background: rgba(148, 163, 184, 0.8);
 	}
 </style>

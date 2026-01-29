@@ -14,11 +14,8 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import {
-		weeklyVideoApi,
-		type WeeklyVideo
-	} from '$lib/api/room-content';
-	
+	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
+
 	// Icons
 	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
@@ -118,9 +115,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	const isFormValid = $derived(
-		form.video_url.trim() !== '' && 
-		form.video_title.trim() !== '' &&
-		form.week_of !== ''
+		form.video_url.trim() !== '' && form.video_title.trim() !== '' && form.week_of !== ''
 	);
 
 	const embedUrl = $derived(
@@ -139,7 +134,7 @@
 				weeklyVideoApi.list(roomSlug)
 			]);
 			currentVideo = currentRes.data ?? null;
-			archivedVideos = archived.data.filter(v => !v.is_current);
+			archivedVideos = archived.data.filter((v) => !v.is_current);
 		} catch (err) {
 			console.error('Failed to load videos:', err);
 		} finally {
@@ -325,9 +320,9 @@
 						<IconVideo size={48} />
 					</div>
 				{/if}
-				<a 
-					href={currentVideo.video_url} 
-					target="_blank" 
+				<a
+					href={currentVideo.video_url}
+					target="_blank"
 					rel="noopener noreferrer"
 					class="play-overlay"
 				>
@@ -389,7 +384,14 @@
 
 <!-- Upload Modal -->
 {#if showUploadModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.target === e.currentTarget && closeModal()} onkeydown={(e) => e.key === 'Escape' && closeModal()}>
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		onclick={(e) => e.target === e.currentTarget && closeModal()}
+		onkeydown={(e) => e.key === 'Escape' && closeModal()}
+	>
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3>Upload Weekly Breakdown Video</h3>
@@ -401,18 +403,18 @@
 			<div class="modal-body">
 				<!-- Upload Mode Tabs -->
 				<div class="mode-tabs">
-					<button 
-						class="mode-tab" 
+					<button
+						class="mode-tab"
 						class:active={uploadMode === 'url'}
-						onclick={() => uploadMode = 'url'}
+						onclick={() => (uploadMode = 'url')}
 					>
 						<IconLink size={18} />
 						Paste URL
 					</button>
-					<button 
+					<button
 						class="mode-tab"
 						class:active={uploadMode === 'file'}
-						onclick={() => uploadMode = 'file'}
+						onclick={() => (uploadMode = 'file')}
 					>
 						<IconCloudUpload size={18} />
 						Upload File
@@ -421,7 +423,7 @@
 
 				{#if uploadMode === 'file'}
 					<!-- Drag & Drop Zone -->
-					<div 
+					<div
 						class="drop-zone"
 						class:drag-over={isDragOver}
 						class:has-file={uploadFile}
@@ -437,7 +439,7 @@
 								<IconVideo size={32} />
 								<span class="file-name">{uploadFile.name}</span>
 								<span class="file-size">{(uploadFile.size / 1024 / 1024).toFixed(2)} MB</span>
-								<button class="btn-remove-file" onclick={() => uploadFile = null}>
+								<button class="btn-remove-file" onclick={() => (uploadFile = null)}>
 									<IconX size={16} />
 								</button>
 							</div>
@@ -446,12 +448,7 @@
 							<p class="drop-text">Drag & drop video here</p>
 							<p class="drop-subtext">or</p>
 							<label class="btn-browse">
-								<input 
-									type="file" 
-									accept="video/*" 
-									onchange={handleFileSelect}
-									hidden
-								/>
+								<input type="file" accept="video/*" onchange={handleFileSelect} hidden />
 								Browse Files
 							</label>
 						{/if}
@@ -573,10 +570,12 @@
 				</div>
 				<div class="footer-actions">
 					<button class="btn-cancel" onclick={closeModal}>Cancel</button>
-					<button 
-						class="btn-publish" 
-						onclick={uploadMode === 'file' && uploadFile && !form.video_url ? uploadToBunny : publishVideo}
-						disabled={!isFormValid && !uploadFile || isUploading}
+					<button
+						class="btn-publish"
+						onclick={uploadMode === 'file' && uploadFile && !form.video_url
+							? uploadToBunny
+							: publishVideo}
+						disabled={(!isFormValid && !uploadFile) || isUploading}
 					>
 						{#if isUploading}
 							<span class="spinner-small"></span>
@@ -639,7 +638,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 16px;
-		background: #143E59;
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		font-size: 13px;
@@ -753,13 +752,15 @@
 		width: 32px;
 		height: 32px;
 		border: 3px solid #e2e8f0;
-		border-top-color: #143E59;
+		border-top-color: #143e59;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-icon {
@@ -782,7 +783,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 20px;
-		background: #143E59;
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		font-size: 14px;
@@ -909,8 +910,8 @@
 
 	.mode-tab.active {
 		background: white;
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	/* Drop Zone */
@@ -928,7 +929,7 @@
 	}
 
 	.drop-zone.drag-over {
-		border-color: #143E59;
+		border-color: #143e59;
 		background: rgba(20, 62, 89, 0.05);
 	}
 
@@ -1001,7 +1002,7 @@
 
 	.progress-bar {
 		height: 8px;
-		background: #143E59;
+		background: #143e59;
 		border-radius: 4px;
 		transition: width 0.3s;
 	}
@@ -1101,7 +1102,7 @@
 	.form-input:focus,
 	.form-textarea:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
 	}
 
@@ -1149,7 +1150,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 24px;
-		background: #143E59;
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		font-size: 14px;
@@ -1170,7 +1171,7 @@
 	.spinner-small {
 		width: 16px;
 		height: 16px;
-		border: 2px solid rgba(255,255,255,0.3);
+		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-top-color: white;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

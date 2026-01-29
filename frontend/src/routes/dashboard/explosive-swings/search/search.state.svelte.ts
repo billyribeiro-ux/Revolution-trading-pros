@@ -134,9 +134,7 @@ export function createSearchState() {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let currentPage = $state(1);
-	let totalPages = $derived(
-		results ? Math.ceil(results.total_count / RESULTS_PER_PAGE) : 1
-	);
+	let totalPages = $derived(results ? Math.ceil(results.total_count / RESULTS_PER_PAGE) : 1);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// UI STATE
@@ -153,9 +151,7 @@ export function createSearchState() {
 
 	const hasResults = $derived(
 		results !== null &&
-			(results.alerts.length > 0 ||
-				results.trades.length > 0 ||
-				results.trade_plans.length > 0)
+			(results.alerts.length > 0 || results.trades.length > 0 || results.trade_plans.length > 0)
 	);
 
 	const totalResults = $derived(results?.total_count ?? 0);

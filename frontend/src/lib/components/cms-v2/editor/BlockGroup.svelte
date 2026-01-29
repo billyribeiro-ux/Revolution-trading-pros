@@ -20,49 +20,30 @@
 -->
 
 <script module lang="ts">
-	// ==========================================================================
-	// Module-level Type Exports (Svelte 5 requirement)
-	// ==========================================================================
-
-	export type LayoutType = 'stack' | 'columns';
-	export type PaddingSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
-	export type GapSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
-	export type BorderRadiusSize = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
-
-	export interface GroupBlockData {
-		layout: LayoutType;
-		columns: 1 | 2 | 3 | 4 | 'auto';
-		gap: GapSize;
-		backgroundColor?: string;
-		backgroundImage?: string;
-		backgroundOverlay?: string;
-		padding: PaddingSize;
-		borderRadius: BorderRadiusSize;
-		[key: string]: unknown;
-	}
-
-	export interface Block {
-		id: string;
-		blockType: string;
-		data: Record<string, unknown>;
-		children?: Block[];
-	}
-
-	export interface GroupBlock extends Block {
-		blockType: 'group';
-		data: GroupBlockData;
-		children: Block[];
-	}
-
-	export interface ChildRenderProps {
-		block: Block;
-		isNested: boolean;
-		nestingLevel: number;
-		onUpdate: (updated: Block) => void;
-	}
+	// Re-export types from the centralized types file
+	export type {
+		LayoutType,
+		PaddingSize,
+		GapSize,
+		BorderRadiusSize,
+		GroupBlockData,
+		Block,
+		GroupBlock,
+		ChildRenderProps
+	} from './types';
 </script>
 
 <script lang="ts">
+	import type {
+		LayoutType,
+		PaddingSize,
+		GapSize,
+		BorderRadiusSize,
+		GroupBlockData,
+		Block,
+		GroupBlock,
+		ChildRenderProps
+	} from './types';
 	import { flip } from 'svelte/animate';
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -248,13 +229,7 @@
 	});
 
 	const nestingBgColors = $derived.by(() => {
-		const colors = [
-			'bg-blue-50',
-			'bg-purple-50',
-			'bg-green-50',
-			'bg-orange-50',
-			'bg-pink-50'
-		];
+		const colors = ['bg-blue-50', 'bg-purple-50', 'bg-green-50', 'bg-orange-50', 'bg-pink-50'];
 		return colors[nestingLevel % colors.length];
 	});
 
@@ -410,7 +385,7 @@
 
 		if (!draggedChildId || !block.children) return;
 
-		const currentIndex = block.children.findIndex(child => child.id === draggedChildId);
+		const currentIndex = block.children.findIndex((child) => child.id === draggedChildId);
 		if (currentIndex === -1 || currentIndex === targetIndex) {
 			resetDragState();
 			return;
@@ -421,7 +396,7 @@
 		const adjustedIndex = targetIndex > currentIndex ? targetIndex - 1 : targetIndex;
 		newOrder.splice(adjustedIndex, 0, movedItem);
 
-		onChildReorder?.(newOrder.map(child => child.id));
+		onChildReorder?.(newOrder.map((child) => child.id));
 		resetDragState();
 	}
 
@@ -451,7 +426,7 @@
 					e.preventDefault();
 					const newOrder = [...children];
 					[newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-					onChildReorder?.(newOrder.map(child => child.id));
+					onChildReorder?.(newOrder.map((child) => child.id));
 				}
 				break;
 			case 'ArrowDown':
@@ -460,7 +435,7 @@
 					e.preventDefault();
 					const newOrder = [...children];
 					[newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-					onChildReorder?.(newOrder.map(child => child.id));
+					onChildReorder?.(newOrder.map((child) => child.id));
 				}
 				break;
 			case 'Delete':
@@ -526,7 +501,9 @@
 		>
 			<!-- Left: Group indicator -->
 			<div class="flex items-center gap-2">
-				<div class="flex items-center gap-1.5 px-2 py-1 bg-gray-100 rounded-md text-xs font-medium text-gray-600">
+				<div
+					class="flex items-center gap-1.5 px-2 py-1 bg-gray-100 rounded-md text-xs font-medium text-gray-600"
+				>
 					<IconStack2 size={14} />
 					<span>Group</span>
 					{#if nestingLevel > 0}
@@ -538,7 +515,11 @@
 			<!-- Center: Layout controls -->
 			<div class="flex items-center gap-1">
 				<!-- Layout Type -->
-				<div class="flex items-center gap-0.5 p-0.5 bg-gray-100 rounded-md" role="radiogroup" aria-label="Layout type">
+				<div
+					class="flex items-center gap-0.5 p-0.5 bg-gray-100 rounded-md"
+					role="radiogroup"
+					aria-label="Layout type"
+				>
 					{#each layoutOptions as option}
 						<button
 							type="button"
@@ -559,7 +540,11 @@
 
 				<!-- Column Count (only for columns layout) -->
 				{#if block.data.layout === 'columns'}
-					<div class="flex items-center gap-0.5 p-0.5 bg-gray-100 rounded-md ml-1" role="radiogroup" aria-label="Column count">
+					<div
+						class="flex items-center gap-0.5 p-0.5 bg-gray-100 rounded-md ml-1"
+						role="radiogroup"
+						aria-label="Column count"
+					>
 						{#each columnOptions as option}
 							<button
 								type="button"
@@ -581,7 +566,11 @@
 				<!-- Gap -->
 				<div class="flex items-center gap-1 ml-2">
 					<IconArrowsVertical size={14} class="text-gray-400" aria-hidden="true" />
-					<div class="flex items-center gap-0.5 p-0.5 bg-gray-100 rounded-md" role="radiogroup" aria-label="Gap size">
+					<div
+						class="flex items-center gap-0.5 p-0.5 bg-gray-100 rounded-md"
+						role="radiogroup"
+						aria-label="Gap size"
+					>
 						{#each gapOptions as option}
 							<button
 								type="button"
@@ -821,7 +810,9 @@
 		class:border-2={!isPreview}
 		class:border-dashed={!isPreview && !block.children?.length}
 		class:{nestingColors}={!isPreview}
-		class:{nestingBgColors}={!isPreview && !block.data.backgroundColor && !block.data.backgroundImage}
+		class:{nestingBgColors}={!isPreview &&
+			!block.data.backgroundColor &&
+			!block.data.backgroundImage}
 		style={containerStyles}
 	>
 		<!-- Background Overlay (for images) -->
@@ -834,11 +825,7 @@
 		{/if}
 
 		<!-- Children Container -->
-		<div
-			class="relative {layoutClasses}"
-			role="list"
-			aria-label="Group children"
-		>
+		<div class="relative {layoutClasses}" role="list" aria-label="Group children">
 			{#if block.children && block.children.length > 0}
 				{#each block.children as child, index (child.id)}
 					<div
@@ -956,9 +943,7 @@
 					>
 						<IconStack2 size={24} class="text-gray-400" />
 					</div>
-					<p class="text-sm text-gray-500 mb-3">
-						This group is empty
-					</p>
+					<p class="text-sm text-gray-500 mb-3">This group is empty</p>
 					{#if !isPreview && onAddChild}
 						<button
 							type="button"

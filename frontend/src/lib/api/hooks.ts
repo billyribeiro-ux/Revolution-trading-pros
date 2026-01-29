@@ -196,14 +196,10 @@ class QueryState<T> {
 	readonly isError = $derived(this.status === 'error');
 	readonly isSuccess = $derived(this.status === 'success');
 	readonly isStale = $derived(
-		this.dataUpdatedAt !== null &&
-		Date.now() - this.dataUpdatedAt > this._staleTime
+		this.dataUpdatedAt !== null && Date.now() - this.dataUpdatedAt > this._staleTime
 	);
 
-	constructor(
-		initialData?: T,
-		staleTime?: number
-	) {
+	constructor(initialData?: T, staleTime?: number) {
 		this._staleTime = staleTime ?? 0;
 		if (initialData !== undefined) {
 			this.data = initialData;
@@ -290,7 +286,7 @@ export function createQuery<T>(
 		select,
 		onSuccess,
 		onError,
-		onSettled,
+		onSettled
 	} = options;
 
 	// Initialize reactive state
@@ -443,18 +439,38 @@ export function createQuery<T>(
 
 	// Return reactive result object
 	return {
-		get data() { return state.data; },
-		get isLoading() { return state.isLoading; },
-		get isError() { return state.isError; },
-		get isSuccess() { return state.isSuccess; },
-		get status() { return state.status; },
-		get error() { return state.error; },
-		get isStale() { return state.isStale; },
-		get isFetching() { return state.isFetching; },
-		get dataUpdatedAt() { return state.dataUpdatedAt; },
-		get errorUpdatedAt() { return state.errorUpdatedAt; },
+		get data() {
+			return state.data;
+		},
+		get isLoading() {
+			return state.isLoading;
+		},
+		get isError() {
+			return state.isError;
+		},
+		get isSuccess() {
+			return state.isSuccess;
+		},
+		get status() {
+			return state.status;
+		},
+		get error() {
+			return state.error;
+		},
+		get isStale() {
+			return state.isStale;
+		},
+		get isFetching() {
+			return state.isFetching;
+		},
+		get dataUpdatedAt() {
+			return state.dataUpdatedAt;
+		},
+		get errorUpdatedAt() {
+			return state.errorUpdatedAt;
+		},
 		refetch,
-		invalidate,
+		invalidate
 	};
 }
 
@@ -489,14 +505,7 @@ export function createMutation<TData, TVariables = void>(
 	mutationFn: (variables: TVariables) => Promise<TData>,
 	options: MutationOptions<TData, TVariables> = {}
 ): MutationResult<TData, TVariables> {
-	const {
-		onMutate,
-		onSuccess,
-		onError,
-		onSettled,
-		retry = 0,
-		retryDelay = 1000,
-	} = options;
+	const { onMutate, onSuccess, onError, onSettled, retry = 0, retryDelay = 1000 } = options;
 
 	// Reactive state
 	let data = $state<TData | null>(null);
@@ -596,17 +605,33 @@ export function createMutation<TData, TVariables = void>(
 	}
 
 	return {
-		get data() { return data; },
-		get isLoading() { return isLoading; },
-		get isError() { return isError; },
-		get isSuccess() { return isSuccess; },
-		get isIdle() { return isIdle; },
-		get status() { return status; },
-		get error() { return error; },
-		get variables() { return variables; },
+		get data() {
+			return data;
+		},
+		get isLoading() {
+			return isLoading;
+		},
+		get isError() {
+			return isError;
+		},
+		get isSuccess() {
+			return isSuccess;
+		},
+		get isIdle() {
+			return isIdle;
+		},
+		get status() {
+			return status;
+		},
+		get error() {
+			return error;
+		},
+		get variables() {
+			return variables;
+		},
 		mutate,
 		mutateAsync,
-		reset,
+		reset
 	};
 }
 
@@ -617,9 +642,17 @@ export function createMutation<TData, TVariables = void>(
 /** Infinite query options */
 export interface InfiniteQueryOptions<T, TPageParam = number> extends QueryOptions<T[]> {
 	/** Get page parameter for next page */
-	getNextPageParam: (lastPage: T[], allPages: T[][], lastPageParam: TPageParam) => TPageParam | null;
+	getNextPageParam: (
+		lastPage: T[],
+		allPages: T[][],
+		lastPageParam: TPageParam
+	) => TPageParam | null;
 	/** Get page parameter for previous page */
-	getPreviousPageParam?: (firstPage: T[], allPages: T[][], firstPageParam: TPageParam) => TPageParam | null;
+	getPreviousPageParam?: (
+		firstPage: T[],
+		allPages: T[][],
+		firstPageParam: TPageParam
+	) => TPageParam | null;
 	/** Initial page parameter */
 	initialPageParam: TPageParam;
 }
@@ -666,7 +699,7 @@ export function createInfiniteQuery<T, TPageParam = number>(
 		getPreviousPageParam,
 		onSuccess,
 		onError,
-		onSettled,
+		onSettled
 	} = options;
 
 	// Reactive state
@@ -711,7 +744,10 @@ export function createInfiniteQuery<T, TPageParam = number>(
 	/**
 	 * Fetch a page
 	 */
-	async function fetchPage(pageParam: TPageParam, direction: 'next' | 'previous' | 'refresh'): Promise<void> {
+	async function fetchPage(
+		pageParam: TPageParam,
+		direction: 'next' | 'previous' | 'refresh'
+	): Promise<void> {
 		if (isDestroyed || !browser) return;
 
 		if (direction === 'next') {
@@ -853,25 +889,55 @@ export function createInfiniteQuery<T, TPageParam = number>(
 	});
 
 	return {
-		get data() { return pages; },
-		get flatData() { return flatData; },
-		get isLoading() { return isLoading; },
-		get isError() { return isError; },
-		get isSuccess() { return isSuccess; },
-		get status() { return status; },
-		get error() { return error; },
-		get isStale() { return isStale; },
-		get isFetching() { return isFetching; },
-		get hasNextPage() { return hasNextPage(); },
-		get hasPreviousPage() { return hasPreviousPage(); },
-		get isFetchingNextPage() { return isFetchingNextPage; },
-		get isFetchingPreviousPage() { return isFetchingPreviousPage; },
-		get dataUpdatedAt() { return dataUpdatedAt; },
-		get errorUpdatedAt() { return errorUpdatedAt; },
+		get data() {
+			return pages;
+		},
+		get flatData() {
+			return flatData;
+		},
+		get isLoading() {
+			return isLoading;
+		},
+		get isError() {
+			return isError;
+		},
+		get isSuccess() {
+			return isSuccess;
+		},
+		get status() {
+			return status;
+		},
+		get error() {
+			return error;
+		},
+		get isStale() {
+			return isStale;
+		},
+		get isFetching() {
+			return isFetching;
+		},
+		get hasNextPage() {
+			return hasNextPage();
+		},
+		get hasPreviousPage() {
+			return hasPreviousPage();
+		},
+		get isFetchingNextPage() {
+			return isFetchingNextPage;
+		},
+		get isFetchingPreviousPage() {
+			return isFetchingPreviousPage;
+		},
+		get dataUpdatedAt() {
+			return dataUpdatedAt;
+		},
+		get errorUpdatedAt() {
+			return errorUpdatedAt;
+		},
 		refetch,
 		invalidate,
 		fetchNextPage,
-		fetchPreviousPage,
+		fetchPreviousPage
 	};
 }
 
@@ -926,10 +992,7 @@ export function useApiQuery<T>(
 ): QueryResult<T> {
 	const client = getApiClient();
 
-	return createQuery(
-		() => client.get<T>(endpoint, options?.requestOptions),
-		options
-	);
+	return createQuery(() => client.get<T>(endpoint, options?.requestOptions), options);
 }
 
 /**
@@ -962,8 +1025,4 @@ export function useApiMutation<TData, TVariables = unknown>(
 // RE-EXPORT TYPES
 // =============================================================================
 
-export type {
-	ApiError,
-	RequestOptions,
-	CacheConfig,
-};
+export type { ApiError, RequestOptions, CacheConfig };

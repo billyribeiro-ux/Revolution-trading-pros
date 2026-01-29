@@ -33,10 +33,14 @@ export { default as MediaDropZone } from './MediaDropZone.svelte';
 export { default as CommentsSidebar } from './CommentsSidebar.svelte';
 export { default as InlineComment } from './InlineComment.svelte';
 
-// Types
-export type { SlashCommand, CommandCategory } from './SlashCommands.svelte';
-export type { Revision } from './RevisionDiffView.svelte';
+// Types - exported from dedicated types file for proper TypeScript support
 export type {
+	// SlashCommands types
+	SlashCommand,
+	CommandCategory,
+	// RevisionDiffView types
+	Revision,
+	// BlockGroup types
 	LayoutType,
 	PaddingSize,
 	GapSize,
@@ -44,6 +48,8 @@ export type {
 	GroupBlockData,
 	Block,
 	GroupBlock,
-	ChildRenderProps
-} from './BlockGroup.svelte';
-export type { ContentData, ResolutionType } from './ConflictResolutionModal.svelte';
+	ChildRenderProps,
+	// ConflictResolutionModal types
+	ContentData,
+	ResolutionType
+} from './types';

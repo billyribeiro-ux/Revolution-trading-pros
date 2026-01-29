@@ -9,7 +9,18 @@
 		argTypes: {
 			feature: {
 				control: 'select',
-				options: ['payment', 'analytics', 'email', 'crm', 'forms', 'seo', 'behavior', 'social', 'ai', 'monitoring'],
+				options: [
+					'payment',
+					'analytics',
+					'email',
+					'crm',
+					'forms',
+					'seo',
+					'behavior',
+					'social',
+					'ai',
+					'monitoring'
+				],
 				description: 'Feature category to check connection status for'
 			},
 			variant: {
@@ -26,7 +37,7 @@
 </script>
 
 <!-- Default: Payment Card with Features -->
-<Story 
+<Story
 	name="Default - Payment Card"
 	args={{
 		feature: 'payment',
@@ -36,7 +47,7 @@
 />
 
 <!-- All Variants for Payment -->
-<Story 
+<Story
 	name="Payment - Card Variant"
 	args={{
 		feature: 'payment',
@@ -45,7 +56,7 @@
 	}}
 />
 
-<Story 
+<Story
 	name="Payment - Banner Variant"
 	args={{
 		feature: 'payment',
@@ -53,7 +64,7 @@
 	}}
 />
 
-<Story 
+<Story
 	name="Payment - Inline Variant"
 	args={{
 		feature: 'payment',
@@ -61,7 +72,7 @@
 	}}
 />
 
-<Story 
+<Story
 	name="Payment - Badge Variant"
 	args={{
 		feature: 'payment',
@@ -69,7 +80,7 @@
 	}}
 />
 
-<Story 
+<Story
 	name="Payment - Minimal Variant"
 	args={{
 		feature: 'payment',
@@ -78,7 +89,7 @@
 />
 
 <!-- Different Features -->
-<Story 
+<Story
 	name="Analytics - Card"
 	args={{
 		feature: 'analytics',
@@ -87,7 +98,7 @@
 	}}
 />
 
-<Story 
+<Story
 	name="Email - Card"
 	args={{
 		feature: 'email',
@@ -96,7 +107,7 @@
 	}}
 />
 
-<Story 
+<Story
 	name="CRM - Card"
 	args={{
 		feature: 'crm',
@@ -110,18 +121,18 @@
 	<script>
 		let currentVariant = $state('card');
 		let currentFeature = $state('payment');
-		
+
 		const variants = ['card', 'banner', 'inline', 'badge', 'minimal'];
 		const features = ['payment', 'analytics', 'email', 'crm', 'forms'];
 	</script>
-	
+
 	<div style="padding: 2rem; background: #0d1117;">
 		<div style="margin-bottom: 1.5rem;">
 			<h3 style="color: #f0f6fc; margin-bottom: 1rem;">Feature</h3>
 			<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
 				{#each features as feature}
-					<button 
-						onclick={() => currentFeature = feature}
+					<button
+						onclick={() => (currentFeature = feature)}
 						style="
 							padding: 0.5rem 1rem; 
 							background: {currentFeature === feature ? '#635BFF' : '#1c2128'}; 
@@ -137,13 +148,13 @@
 				{/each}
 			</div>
 		</div>
-		
+
 		<div style="margin-bottom: 1.5rem;">
 			<h3 style="color: #f0f6fc; margin-bottom: 1rem;">Variant</h3>
 			<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
 				{#each variants as variant}
-					<button 
-						onclick={() => currentVariant = variant}
+					<button
+						onclick={() => (currentVariant = variant)}
 						style="
 							padding: 0.5rem 1rem; 
 							background: {currentVariant === variant ? '#e6b800' : '#1c2128'}; 
@@ -160,9 +171,9 @@
 				{/each}
 			</div>
 		</div>
-		
+
 		<div style="margin-top: 2rem;">
-			<ServiceConnectionStatus 
+			<ServiceConnectionStatus
 				feature={currentFeature}
 				variant={currentVariant}
 				showFeatures={currentVariant === 'card'}
@@ -173,7 +184,9 @@
 
 <!-- All Features Comparison -->
 <Story name="All Features - Card View">
-	<div style="padding: 2rem; background: #0d1117; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+	<div
+		style="padding: 2rem; background: #0d1117; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;"
+	>
 		<ServiceConnectionStatus feature="payment" variant="card" showFeatures={true} />
 		<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		<ServiceConnectionStatus feature="email" variant="card" showFeatures={true} />

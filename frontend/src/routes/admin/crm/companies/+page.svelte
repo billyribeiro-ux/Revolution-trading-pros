@@ -168,174 +168,180 @@
 		<!-- Page Header - CENTERED -->
 		<header class="page-header">
 			<h1>CRM Companies</h1>
-		<p class="subtitle">Manage B2B company accounts and their contacts</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => loadCompanies()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-				Refresh
-			</button>
-			<a href="/admin/crm/companies/new" class="btn-primary">
-				<IconPlus size={18} />
-				New Company
-			</a>
-		</div>
-	</header>
+			<p class="subtitle">Manage B2B company accounts and their contacts</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={() => loadCompanies()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					Refresh
+				</button>
+				<a href="/admin/crm/companies/new" class="btn-primary">
+					<IconPlus size={18} />
+					New Company
+				</a>
+			</div>
+		</header>
 
-	<!-- Stats Cards -->
-	<div class="stats-grid">
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconBuilding size={24} />
+		<!-- Stats Cards -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconBuilding size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.total)}</span>
+					<span class="stat-label">Total Companies</span>
+				</div>
 			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.total)}</span>
-				<span class="stat-label">Total Companies</span>
+			<div class="stat-card">
+				<div class="stat-icon green">
+					<IconUsers size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
+					<span class="stat-label">Total Contacts</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon purple">
+					<IconBriefcase size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatNumber(stats.totalDeals)}</span>
+					<span class="stat-label">Total Deals</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon amber">
+					<IconCurrencyDollar size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatCurrency(stats.totalDealValue)}</span>
+					<span class="stat-label">Total Deal Value</span>
+				</div>
 			</div>
 		</div>
-		<div class="stat-card">
-			<div class="stat-icon green">
-				<IconUsers size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
-				<span class="stat-label">Total Contacts</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon purple">
-				<IconBriefcase size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatNumber(stats.totalDeals)}</span>
-				<span class="stat-label">Total Deals</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon amber">
-				<IconCurrencyDollar size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatCurrency(stats.totalDealValue)}</span>
-				<span class="stat-label">Total Deal Value</span>
-			</div>
-		</div>
-	</div>
 
-	<!-- Search & Filters -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input type="text" id="search-companies" name="search" placeholder="Search companies..." bind:value={searchQuery} />
+		<!-- Search & Filters -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					type="text"
+					id="search-companies"
+					name="search"
+					placeholder="Search companies..."
+					bind:value={searchQuery}
+				/>
+			</div>
+			<select class="filter-select" bind:value={selectedIndustry}>
+				{#each industryOptions as option}
+					<option value={option.value}>{option.label}</option>
+				{/each}
+			</select>
+			<select class="filter-select" bind:value={selectedSize}>
+				{#each sizeOptions as option}
+					<option value={option.value}>{option.label}</option>
+				{/each}
+			</select>
 		</div>
-		<select class="filter-select" bind:value={selectedIndustry}>
-			{#each industryOptions as option}
-				<option value={option.value}>{option.label}</option>
-			{/each}
-		</select>
-		<select class="filter-select" bind:value={selectedSize}>
-			{#each sizeOptions as option}
-				<option value={option.value}>{option.label}</option>
-			{/each}
-		</select>
-	</div>
 
-	<!-- Companies Table -->
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading companies...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button onclick={() => loadCompanies()}>Try Again</button>
-		</div>
-	{:else if filteredCompanies.length === 0}
-		<div class="empty-state">
-			<IconBuilding size={48} />
-			<h3>No companies found</h3>
-			<p>Add your first company to start managing B2B accounts</p>
-			<a href="/admin/crm/companies/new" class="btn-primary">
-				<IconPlus size={18} />
-				Add Company
-			</a>
-		</div>
-	{:else}
-		<div class="table-container">
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th>Company</th>
-						<th>Industry</th>
-						<th>Size</th>
-						<th>Contacts</th>
-						<th>Deals</th>
-						<th>Deal Value</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredCompanies as company}
+		<!-- Companies Table -->
+		{#if isLoading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading companies...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<p>{error}</p>
+				<button onclick={() => loadCompanies()}>Try Again</button>
+			</div>
+		{:else if filteredCompanies.length === 0}
+			<div class="empty-state">
+				<IconBuilding size={48} />
+				<h3>No companies found</h3>
+				<p>Add your first company to start managing B2B accounts</p>
+				<a href="/admin/crm/companies/new" class="btn-primary">
+					<IconPlus size={18} />
+					Add Company
+				</a>
+			</div>
+		{:else}
+			<div class="table-container">
+				<table class="data-table">
+					<thead>
 						<tr>
-							<td>
-								<div class="company-cell">
-									<div class="company-icon">
-										{#if company.logo_url}
-											<img src={company.logo_url} alt={company.name} />
-										{:else}
-											<IconBuilding size={20} />
-										{/if}
-									</div>
-									<div class="company-info">
-										<span class="company-name">{company.name}</span>
-										{#if company.website}
-											<a href={company.website} target="_blank" class="company-website">
-												<IconWorld size={12} />
-												{company.website.replace(/^https?:\/\//, '')}
-											</a>
-										{/if}
-									</div>
-								</div>
-							</td>
-							<td>
-								<span class="industry-badge">
-									{company.industry || '-'}
-								</span>
-							</td>
-							<td>{company.size || '-'}</td>
-							<td>{formatNumber(company.contacts_count)}</td>
-							<td>{formatNumber(company.deals_count)}</td>
-							<td>{formatCurrency(company.total_deal_value)}</td>
-							<td>
-								<div class="action-buttons">
-									<a href="/admin/crm/companies/{company.id}" class="btn-icon" title="View">
-										<IconEye size={16} />
-									</a>
-									<a href="/admin/crm/companies/{company.id}/edit" class="btn-icon" title="Edit">
-										<IconEdit size={16} />
-									</a>
-									<button
-										class="btn-icon"
-										title="Duplicate"
-										onclick={() => duplicateCompany(company)}
-									>
-										<IconCopy size={16} />
-									</button>
-									<button
-										class="btn-icon danger"
-										title="Delete"
-										onclick={() => deleteCompany(company.id)}
-									>
-										<IconTrash size={16} />
-									</button>
-								</div>
-							</td>
+							<th>Company</th>
+							<th>Industry</th>
+							<th>Size</th>
+							<th>Contacts</th>
+							<th>Deals</th>
+							<th>Deal Value</th>
+							<th>Actions</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
+					</thead>
+					<tbody>
+						{#each filteredCompanies as company}
+							<tr>
+								<td>
+									<div class="company-cell">
+										<div class="company-icon">
+											{#if company.logo_url}
+												<img src={company.logo_url} alt={company.name} />
+											{:else}
+												<IconBuilding size={20} />
+											{/if}
+										</div>
+										<div class="company-info">
+											<span class="company-name">{company.name}</span>
+											{#if company.website}
+												<a href={company.website} target="_blank" class="company-website">
+													<IconWorld size={12} />
+													{company.website.replace(/^https?:\/\//, '')}
+												</a>
+											{/if}
+										</div>
+									</div>
+								</td>
+								<td>
+									<span class="industry-badge">
+										{company.industry || '-'}
+									</span>
+								</td>
+								<td>{company.size || '-'}</td>
+								<td>{formatNumber(company.contacts_count)}</td>
+								<td>{formatNumber(company.deals_count)}</td>
+								<td>{formatCurrency(company.total_deal_value)}</td>
+								<td>
+									<div class="action-buttons">
+										<a href="/admin/crm/companies/{company.id}" class="btn-icon" title="View">
+											<IconEye size={16} />
+										</a>
+										<a href="/admin/crm/companies/{company.id}/edit" class="btn-icon" title="Edit">
+											<IconEdit size={16} />
+										</a>
+										<button
+											class="btn-icon"
+											title="Duplicate"
+											onclick={() => duplicateCompany(company)}
+										>
+											<IconCopy size={16} />
+										</button>
+										<button
+											class="btn-icon danger"
+											title="Delete"
+											onclick={() => deleteCompany(company.id)}
+										>
+											<IconTrash size={16} />
+										</button>
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>

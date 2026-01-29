@@ -33,7 +33,7 @@
 		{ id: 'tip', label: 'Tip', icon: IconBulb, color: '#8b5cf6' }
 	];
 
-	let currentType = $derived(types.find(t => t.id === (data.type ?? 'info')) ?? types[0]);
+	let currentType = $derived(types.find((t) => t.id === (data.type ?? 'info')) ?? types[0]);
 	let CalloutIcon = $derived(currentType.icon);
 
 	function handleTypeChange(typeId: string) {
@@ -70,10 +70,7 @@
 		</div>
 	{/if}
 
-	<div
-		class="callout callout-{data.type ?? 'info'}"
-		style:--callout-color={currentType.color}
-	>
+	<div class="callout callout-{data.type ?? 'info'}" style:--callout-color={currentType.color}>
 		<div class="callout-icon">
 			<CalloutIcon size={20} />
 		</div>

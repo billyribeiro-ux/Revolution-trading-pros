@@ -21,7 +21,7 @@ import {
 	ApiError,
 	isApiError,
 	getUserFriendlyMessage,
-	createErrorFromStatus,
+	createErrorFromStatus
 } from '$lib/api/errors';
 import { getCache, type CacheConfig } from '$lib/api/cache';
 import type {
@@ -29,7 +29,7 @@ import type {
 	ApiWeeklyVideo,
 	PaginationState,
 	QuickStats,
-	TradePlanEntry,
+	TradePlanEntry
 } from './types';
 
 // =============================================================================
@@ -43,7 +43,7 @@ const CACHE_TAGS = {
 	STATS: 'explosive-swings:stats',
 	TRADE_PLAN: 'explosive-swings:trade-plan',
 	VIDEO: 'explosive-swings:video',
-	USER: 'explosive-swings:user',
+	USER: 'explosive-swings:user'
 } as const;
 
 /** Default cache configurations by data type */
@@ -52,38 +52,38 @@ const CACHE_CONFIGS = {
 	alerts: {
 		ttl: 30_000, // 30 seconds
 		staleWhileRevalidate: true,
-		tags: [CACHE_TAGS.ALERTS],
+		tags: [CACHE_TAGS.ALERTS]
 	},
 	/** Trades update less frequently */
 	trades: {
 		ttl: 60_000, // 1 minute
 		staleWhileRevalidate: true,
-		tags: [CACHE_TAGS.TRADES],
+		tags: [CACHE_TAGS.TRADES]
 	},
 	/** Stats can be cached longer */
 	stats: {
 		ttl: 120_000, // 2 minutes
 		staleWhileRevalidate: true,
-		tags: [CACHE_TAGS.STATS],
+		tags: [CACHE_TAGS.STATS]
 	},
 	/** Trade plan changes infrequently */
 	tradePlan: {
 		ttl: 300_000, // 5 minutes
 		staleWhileRevalidate: true,
-		tags: [CACHE_TAGS.TRADE_PLAN],
+		tags: [CACHE_TAGS.TRADE_PLAN]
 	},
 	/** Weekly video rarely changes */
 	video: {
 		ttl: 600_000, // 10 minutes
 		staleWhileRevalidate: true,
-		tags: [CACHE_TAGS.VIDEO],
+		tags: [CACHE_TAGS.VIDEO]
 	},
 	/** User status can be cached briefly */
 	user: {
 		ttl: 60_000, // 1 minute
 		staleWhileRevalidate: true,
-		tags: [CACHE_TAGS.USER],
-	},
+		tags: [CACHE_TAGS.USER]
+	}
 } as const satisfies Record<string, Partial<CacheConfig>>;
 
 // =============================================================================
@@ -120,7 +120,7 @@ function createRequestOptions(
 ): RequestOptions {
 	return {
 		signal,
-		cache: cacheConfig,
+		cache: cacheConfig
 		// Use default retry settings from client (3 retries, exponential backoff)
 	};
 }
@@ -152,7 +152,7 @@ export async function fetchAlerts(
 		total?: number;
 	}>(`/api/alerts/${roomSlug}`, {
 		params: { limit, offset },
-		...createRequestOptions(signal, CACHE_CONFIGS.alerts),
+		...createRequestOptions(signal, CACHE_CONFIGS.alerts)
 	});
 
 	// Handle the response structure
@@ -163,8 +163,8 @@ export async function fetchAlerts(
 		pagination: {
 			total: (data as { total?: number }).total ?? rawData.length,
 			limit,
-			offset,
-		},
+			offset
+		}
 	};
 }
 
@@ -179,14 +179,11 @@ export function createAlertsQuery(
 ) {
 	// Lazy import to avoid circular dependencies
 	return import('$lib/api/hooks').then(({ createQuery }) =>
-		createQuery(
-			() => fetchAlerts(roomSlug, page, limit),
-			{
-				enabled: options?.enabled ?? true,
-				refetchInterval: options?.refetchInterval ?? 30_000, // 30 second polling
-				cache: CACHE_CONFIGS.alerts,
-			}
-		)
+		createQuery(() => fetchAlerts(roomSlug, page, limit), {
+			enabled: options?.enabled ?? true,
+			refetchInterval: options?.refetchInterval ?? 30_000, // 30 second polling
+			cache: CACHE_CONFIGS.alerts
+		})
 	);
 }
 
@@ -226,10 +223,7 @@ export async function fetchTradePlan(
  * @returns Quick stats object
  * @throws {ApiError} On network, auth, or server errors
  */
-export async function fetchStats(
-	roomSlug: string,
-	signal?: AbortSignal
-): Promise<QuickStats> {
+export async function fetchStats(roomSlug: string, signal?: AbortSignal): Promise<QuickStats> {
 	const data = await api.get<{
 		win_rate: number;
 		weekly_profit: string;
@@ -241,7 +235,7 @@ export async function fetchStats(
 		winRate: data.win_rate,
 		weeklyProfit: data.weekly_profit,
 		activeTrades: data.active_trades,
-		closedThisWeek: data.closed_this_week,
+		closedThisWeek: data.closed_this_week
 	};
 }
 
@@ -257,17 +251,11 @@ export async function fetchStats(
  * @returns Array of trade objects
  * @throws {ApiError} On network, auth, or server errors
  */
-export async function fetchAllTrades(
-	roomSlug: string,
-	signal?: AbortSignal
-): Promise<ApiTrade[]> {
-	return api.get<ApiTrade[]>(
-		`/api/trades/${roomSlug}`,
-		{
-			params: { per_page: 100 },
-			...createRequestOptions(signal, CACHE_CONFIGS.trades),
-		}
-	);
+export async function fetchAllTrades(roomSlug: string, signal?: AbortSignal): Promise<ApiTrade[]> {
+	return api.get<ApiTrade[]>(`/api/trades/${roomSlug}`, {
+		params: { per_page: 100 },
+		...createRequestOptions(signal, CACHE_CONFIGS.trades)
+	});
 }
 
 // =============================================================================
@@ -316,9 +304,7 @@ export async function checkAdminStatus(): Promise<boolean> {
 			role?: string;
 		}>('/api/auth/me', createRequestOptions(undefined, CACHE_CONFIGS.user));
 
-		return data.is_admin === true ||
-			data.role === 'admin' ||
-			data.role === 'super_admin';
+		return data.is_admin === true || data.role === 'admin' || data.role === 'super_admin';
 	} catch {
 		// Not authenticated or error - not admin
 		return false;
@@ -341,7 +327,7 @@ export function invalidateAllCaches(): void {
 		CACHE_TAGS.ALERTS,
 		CACHE_TAGS.TRADES,
 		CACHE_TAGS.STATS,
-		CACHE_TAGS.TRADE_PLAN,
+		CACHE_TAGS.TRADE_PLAN
 	]);
 }
 
@@ -408,7 +394,7 @@ export async function fetchDashboardData(
 		fetchStats(roomSlug, signal),
 		fetchAllTrades(roomSlug, signal),
 		fetchWeeklyVideo(roomSlug, signal),
-		checkAdminStatus(),
+		checkAdminStatus()
 	]);
 
 	return {
@@ -417,7 +403,7 @@ export async function fetchDashboardData(
 		stats,
 		trades,
 		weeklyVideo,
-		isAdmin,
+		isAdmin
 	};
 }
 
@@ -435,7 +421,7 @@ function formatAlert(apiAlert: Record<string, unknown>): FormattedAlert {
 		message: apiAlert.message as string,
 		isNew: apiAlert.is_new as boolean,
 		notes: (apiAlert.notes as string) || '',
-		tosString: (apiAlert.tos_string as string) || undefined,
+		tosString: (apiAlert.tos_string as string) || undefined
 	};
 }
 
@@ -451,7 +437,7 @@ function formatTradePlanEntry(apiEntry: Record<string, unknown>): TradePlanEntry
 		stop: apiEntry.stop as string,
 		optionsStrike: (apiEntry.options_strike as string) || '-',
 		optionsExp: (apiEntry.options_exp as string) || '-',
-		notes: (apiEntry.notes as string) || '',
+		notes: (apiEntry.notes as string) || ''
 	};
 }
 

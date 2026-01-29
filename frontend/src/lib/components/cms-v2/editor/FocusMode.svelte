@@ -425,7 +425,13 @@
 								</svg>
 							</button>
 						</div>
-						<div class="progress-bar" role="progressbar" aria-valuenow={Math.round(goalProgress)} aria-valuemin={0} aria-valuemax={100}>
+						<div
+							class="progress-bar"
+							role="progressbar"
+							aria-valuenow={Math.round(goalProgress)}
+							aria-valuemin={0}
+							aria-valuemax={100}
+						>
 							<div
 								class="progress-fill"
 								class:goal-reached={goalReached}
@@ -519,12 +525,7 @@
 							</button>
 						</div>
 						{#if wordGoal !== null}
-							<button
-								type="button"
-								class="clear-goal-btn"
-								onclick={clearGoal}
-								role="menuitem"
-							>
+							<button type="button" class="clear-goal-btn" onclick={clearGoal} role="menuitem">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="14"
@@ -708,7 +709,11 @@
 		flex-direction: column;
 		gap: 0.75rem;
 		padding: 1rem;
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.95) 0%,
+			rgba(249, 250, 251, 0.95) 100%
+		);
 		border: 1px solid rgba(99, 102, 241, 0.15);
 		border-radius: 12px;
 		box-shadow:

@@ -17,7 +17,13 @@
 	const { data, isLoading = false }: Props = $props();
 
 	// Sorting state
-	type SortKey = 'ticker' | 'total_trades' | 'win_rate' | 'total_pnl_percent' | 'avg_pnl_percent' | 'avg_holding_days';
+	type SortKey =
+		| 'ticker'
+		| 'total_trades'
+		| 'win_rate'
+		| 'total_pnl_percent'
+		| 'avg_pnl_percent'
+		| 'avg_holding_days';
 	type SortDirection = 'asc' | 'desc';
 
 	let sortKey = $state<SortKey>('total_pnl_percent');
@@ -30,9 +36,7 @@
 			const bVal = b[sortKey];
 
 			if (typeof aVal === 'string' && typeof bVal === 'string') {
-				return sortDirection === 'asc'
-					? aVal.localeCompare(bVal)
-					: bVal.localeCompare(aVal);
+				return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
 			}
 
 			const aNum = Number(aVal) || 0;
@@ -118,13 +122,25 @@
 								<span class="ticker-symbol">{ticker.ticker}</span>
 							</td>
 							<td class="numeric-cell">{ticker.total_trades}</td>
-							<td class="numeric-cell" class:profit={ticker.win_rate >= 50} class:loss={ticker.win_rate < 50}>
+							<td
+								class="numeric-cell"
+								class:profit={ticker.win_rate >= 50}
+								class:loss={ticker.win_rate < 50}
+							>
 								{ticker.win_rate.toFixed(1)}%
 							</td>
-							<td class="numeric-cell pnl" class:profit={ticker.total_pnl_percent >= 0} class:loss={ticker.total_pnl_percent < 0}>
+							<td
+								class="numeric-cell pnl"
+								class:profit={ticker.total_pnl_percent >= 0}
+								class:loss={ticker.total_pnl_percent < 0}
+							>
 								{formatPercent(ticker.total_pnl_percent)}
 							</td>
-							<td class="numeric-cell" class:profit={ticker.avg_pnl_percent >= 0} class:loss={ticker.avg_pnl_percent < 0}>
+							<td
+								class="numeric-cell"
+								class:profit={ticker.avg_pnl_percent >= 0}
+								class:loss={ticker.avg_pnl_percent < 0}
+							>
 								{formatPercent(ticker.avg_pnl_percent)}
 							</td>
 							<td class="numeric-cell">
@@ -280,7 +296,12 @@
 
 	.skel-row {
 		height: 44px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 4px;
@@ -296,8 +317,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 768px) {

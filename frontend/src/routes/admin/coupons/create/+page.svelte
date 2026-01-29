@@ -19,7 +19,13 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
-	import { productsApi, subscriptionPlansApi, couponsApi, type Product, type SubscriptionPlan } from '$lib/api/admin';
+	import {
+		productsApi,
+		subscriptionPlansApi,
+		couponsApi,
+		type Product,
+		type SubscriptionPlan
+	} from '$lib/api/admin';
 	import {
 		IconCheck,
 		IconX,
@@ -322,349 +328,361 @@
 			</div>
 		</header>
 
-	<!-- Success Message -->
-	{#if successMessage}
-		<div class="alert alert-success" transition:slide={{ duration: 200 }}>
-			<IconCheck size={20} />
-			<span>{successMessage}</span>
-		</div>
-	{/if}
+		<!-- Success Message -->
+		{#if successMessage}
+			<div class="alert alert-success" transition:slide={{ duration: 200 }}>
+				<IconCheck size={20} />
+				<span>{successMessage}</span>
+			</div>
+		{/if}
 
-	<!-- Errors -->
-	{#if errors.length > 0}
-		<div class="alerts" transition:slide={{ duration: 200 }}>
-			{#each errors as error}
-				<div class="alert alert-error">
-					<IconAlertCircle size={20} />
-					<span>{error}</span>
+		<!-- Errors -->
+		{#if errors.length > 0}
+			<div class="alerts" transition:slide={{ duration: 200 }}>
+				{#each errors as error}
+					<div class="alert alert-error">
+						<IconAlertCircle size={20} />
+						<span>{error}</span>
+					</div>
+				{/each}
+			</div>
+		{/if}
+
+		<form onsubmit={handleSubmit} class="coupon-form">
+			<!-- SECTION: Basic Info -->
+			<div class="form-section">
+				<h2><IconTag size={20} /> Coupon Details</h2>
+
+				<!-- Coupon Code -->
+				<div class="form-group">
+					<label for="coupon-code">Coupon Code</label>
+					<div class="input-with-button">
+						<input
+							id="coupon-code"
+							name="code"
+							type="text"
+							class="input input-code"
+							bind:value={formData.code}
+							placeholder="SUMMER2024"
+							autocomplete="off"
+							required
+						/>
+						<button type="button" class="btn-generate" onclick={generateCode} disabled={generating}>
+							<IconSparkles size={18} />
+							{generating ? 'Generating...' : 'Generate'}
+						</button>
+					</div>
+					<span class="help-text">Letters, numbers, dashes, and underscores only</span>
 				</div>
-			{/each}
-		</div>
-	{/if}
 
-	<form onsubmit={handleSubmit} class="coupon-form">
-		<!-- SECTION: Basic Info -->
-		<div class="form-section">
-			<h2><IconTag size={20} /> Coupon Details</h2>
-
-			<!-- Coupon Code -->
-			<div class="form-group">
-				<label for="coupon-code">Coupon Code</label>
-				<div class="input-with-button">
+				<!-- Description -->
+				<div class="form-group">
+					<label for="coupon-description">Description (Optional)</label>
 					<input
-						id="coupon-code"
-						name="code"
+						id="coupon-description"
+						name="description"
 						type="text"
-						class="input input-code"
-						bind:value={formData.code}
-						placeholder="SUMMER2024"
-						autocomplete="off"
-						required
+						class="input"
+						bind:value={formData.description}
+						placeholder="e.g., Summer sale discount for all courses"
 					/>
-					<button type="button" class="btn-generate" onclick={generateCode} disabled={generating}>
-						<IconSparkles size={18} />
-						{generating ? 'Generating...' : 'Generate'}
-					</button>
 				</div>
-				<span class="help-text">Letters, numbers, dashes, and underscores only</span>
-			</div>
 
-			<!-- Description -->
-			<div class="form-group">
-				<label for="coupon-description">Description (Optional)</label>
-				<input
-					id="coupon-description"
-					name="description"
-					type="text"
-					class="input"
-					bind:value={formData.description}
-					placeholder="e.g., Summer sale discount for all courses"
-				/>
-			</div>
-
-			<!-- Discount Type Toggle -->
-			<div class="form-group">
-				<span class="form-label">Discount Type</span>
-				<div class="discount-type-toggle" role="group" aria-label="Discount Type">
-					<button
-						type="button"
-						class="type-btn"
-						class:active={formData.discount_type === 'percentage'}
-						onclick={() => (formData.discount_type = 'percentage')}
-					>
-						<IconPercentage size={20} />
-						Percentage
-					</button>
-					<button
-						type="button"
-						class="type-btn"
-						class:active={formData.discount_type === 'fixed'}
-						onclick={() => (formData.discount_type = 'fixed')}
-					>
-						<IconCurrencyDollar size={20} />
-						Fixed Amount
-					</button>
-				</div>
-			</div>
-
-			<!-- Discount Value -->
-			<div class="form-group">
-				<label for="discount-value">Discount Value</label>
-				<div class="value-input-wrapper">
-					{#if formData.discount_type === 'fixed'}
-						<span class="value-prefix">$</span>
-					{/if}
-					<input
-						id="discount-value"
-						name="discount_value"
-						type="number"
-						class="input input-value"
-						bind:value={formData.discount_value}
-						min="0"
-						max={formData.discount_type === 'percentage' ? 100 : undefined}
-						step="0.01"
-						required
-					/>
-					{#if formData.discount_type === 'percentage'}
-						<span class="value-suffix">%</span>
-					{/if}
-				</div>
-				{#if discountPreview}
-					<div class="discount-preview">
-						Customers will receive <strong>{discountPreview}</strong>
+				<!-- Discount Type Toggle -->
+				<div class="form-group">
+					<span class="form-label">Discount Type</span>
+					<div class="discount-type-toggle" role="group" aria-label="Discount Type">
+						<button
+							type="button"
+							class="type-btn"
+							class:active={formData.discount_type === 'percentage'}
+							onclick={() => (formData.discount_type = 'percentage')}
+						>
+							<IconPercentage size={20} />
+							Percentage
+						</button>
+						<button
+							type="button"
+							class="type-btn"
+							class:active={formData.discount_type === 'fixed'}
+							onclick={() => (formData.discount_type = 'fixed')}
+						>
+							<IconCurrencyDollar size={20} />
+							Fixed Amount
+						</button>
 					</div>
-				{/if}
-			</div>
-
-			<!-- Min Purchase & Max Discount -->
-			<div class="form-row">
-				<div class="form-group">
-					<label for="min-purchase">Minimum Purchase (Optional)</label>
-					<input
-						id="min-purchase"
-						name="min_purchase"
-						type="number"
-						class="input"
-						bind:value={formData.min_purchase}
-						min="0"
-						step="0.01"
-						placeholder="No minimum"
-					/>
 				</div>
+
+				<!-- Discount Value -->
 				<div class="form-group">
-					<label for="max-discount">Maximum Discount (Optional)</label>
-					<input
-						id="max-discount"
-						name="max_discount"
-						type="number"
-						class="input"
-						bind:value={formData.max_discount}
-						min="0"
-						step="0.01"
-						placeholder="Unlimited"
-					/>
-					<span class="help-text">Caps total discount for percentage coupons</span>
-				</div>
-			</div>
-
-			<!-- Usage Limits -->
-			<div class="form-row">
-				<div class="form-group">
-					<label for="usage-limit">Total Usage Limit (Optional)</label>
-					<input
-						id="usage-limit"
-						name="usage_limit"
-						type="number"
-						class="input"
-						bind:value={formData.usage_limit}
-						min="1"
-						placeholder="Unlimited"
-					/>
-				</div>
-				<div class="form-group">
-					<label for="usage-limit-per-user">Per User Limit</label>
-					<input
-						id="usage-limit-per-user"
-						name="usage_limit_per_user"
-						type="number"
-						class="input"
-						bind:value={formData.usage_limit_per_user}
-						min="1"
-						placeholder="1"
-					/>
-				</div>
-			</div>
-
-			<!-- Dates -->
-			<div class="form-row">
-				<div class="form-group">
-					<label for="starts-at">Start Date</label>
-					<input
-						id="starts-at"
-						name="starts_at"
-						type="datetime-local"
-						class="input"
-						bind:value={formData.starts_at}
-					/>
-				</div>
-				<div class="form-group">
-					<label for="expires-at">Expiration Date</label>
-					<input
-						id="expires-at"
-						name="expires_at"
-						type="datetime-local"
-						class="input"
-						bind:value={formData.expires_at}
-					/>
-				</div>
-			</div>
-
-			<!-- Active Toggle -->
-			<div class="form-group">
-				<label class="checkbox-label">
-					<input
-						id="is-active"
-						name="is_active"
-						type="checkbox"
-						bind:checked={formData.is_active}
-					/>
-					Coupon is active and can be used
-				</label>
-			</div>
-		</div>
-
-		<!-- SECTION: Product/Plan Restrictions -->
-		<div class="form-section">
-			<h2>Product & Membership Restrictions</h2>
-			<p class="section-description">
-				Choose which products and memberships this coupon applies to. Leave empty to apply to all.
-			</p>
-
-			<!-- Include/Exclude Tabs -->
-			<div class="restriction-tabs">
-				<button
-					type="button"
-					class="restriction-tab"
-					class:active={restrictionTab === 'include'}
-					onclick={() => (restrictionTab = 'include')}
-				>
-					Include Only
-				</button>
-				<button
-					type="button"
-					class="restriction-tab"
-					class:active={restrictionTab === 'exclude'}
-					onclick={() => (restrictionTab = 'exclude')}
-				>
-					Exclude
-				</button>
-			</div>
-
-			<div class="restriction-content">
-				{#if restrictionTab === 'include'}
-					<p class="tab-hint">Coupon will ONLY work for selected items below</p>
-				{:else}
-					<p class="tab-hint">Coupon will work for everything EXCEPT selected items below</p>
-				{/if}
-
-				<!-- Products -->
-				<div class="restriction-group">
-					<div class="restriction-header">
-						<h3>Products</h3>
-						<div class="restriction-actions">
-							<button type="button" class="btn-link" onclick={selectAllProducts}>Select All</button
-							>
-							<button type="button" class="btn-link" onclick={clearAllProducts}>Clear</button>
-						</div>
-					</div>
-					<div class="checkbox-grid">
-						{#if loadingData}
-							<div class="loading-items">
-								<div class="spinner-small"></div>
-								<p>Loading products...</p>
-							</div>
-						{:else if availableProducts.length === 0}
-							<p class="no-items">No products available</p>
-						{:else}
-							{#each availableProducts as product}
-								<label class="item-checkbox">
-									<input
-										type="checkbox"
-										checked={selectedProducts.has(product.id)}
-										onchange={() => toggleProduct(product.id)}
-									/>
-									<span class="item-name">{product.name}</span>
-									<span class="item-price">${product.sale_price || product.price}</span>
-								</label>
-							{/each}
+					<label for="discount-value">Discount Value</label>
+					<div class="value-input-wrapper">
+						{#if formData.discount_type === 'fixed'}
+							<span class="value-prefix">$</span>
+						{/if}
+						<input
+							id="discount-value"
+							name="discount_value"
+							type="number"
+							class="input input-value"
+							bind:value={formData.discount_value}
+							min="0"
+							max={formData.discount_type === 'percentage' ? 100 : undefined}
+							step="0.01"
+							required
+						/>
+						{#if formData.discount_type === 'percentage'}
+							<span class="value-suffix">%</span>
 						{/if}
 					</div>
+					{#if discountPreview}
+						<div class="discount-preview">
+							Customers will receive <strong>{discountPreview}</strong>
+						</div>
+					{/if}
 				</div>
 
-				<!-- Membership Plans -->
-				<div class="restriction-group">
-					<div class="restriction-header">
-						<h3>Membership Plans</h3>
-						<div class="restriction-actions">
-							<button type="button" class="btn-link" onclick={selectAllPlans}>Select All</button>
-							<button type="button" class="btn-link" onclick={clearAllPlans}>Clear</button>
+				<!-- Min Purchase & Max Discount -->
+				<div class="form-row">
+					<div class="form-group">
+						<label for="min-purchase">Minimum Purchase (Optional)</label>
+						<input
+							id="min-purchase"
+							name="min_purchase"
+							type="number"
+							class="input"
+							bind:value={formData.min_purchase}
+							min="0"
+							step="0.01"
+							placeholder="No minimum"
+						/>
+					</div>
+					<div class="form-group">
+						<label for="max-discount">Maximum Discount (Optional)</label>
+						<input
+							id="max-discount"
+							name="max_discount"
+							type="number"
+							class="input"
+							bind:value={formData.max_discount}
+							min="0"
+							step="0.01"
+							placeholder="Unlimited"
+						/>
+						<span class="help-text">Caps total discount for percentage coupons</span>
+					</div>
+				</div>
+
+				<!-- Usage Limits -->
+				<div class="form-row">
+					<div class="form-group">
+						<label for="usage-limit">Total Usage Limit (Optional)</label>
+						<input
+							id="usage-limit"
+							name="usage_limit"
+							type="number"
+							class="input"
+							bind:value={formData.usage_limit}
+							min="1"
+							placeholder="Unlimited"
+						/>
+					</div>
+					<div class="form-group">
+						<label for="usage-limit-per-user">Per User Limit</label>
+						<input
+							id="usage-limit-per-user"
+							name="usage_limit_per_user"
+							type="number"
+							class="input"
+							bind:value={formData.usage_limit_per_user}
+							min="1"
+							placeholder="1"
+						/>
+					</div>
+				</div>
+
+				<!-- Dates -->
+				<div class="form-row">
+					<div class="form-group">
+						<label for="starts-at">Start Date</label>
+						<input
+							id="starts-at"
+							name="starts_at"
+							type="datetime-local"
+							class="input"
+							bind:value={formData.starts_at}
+						/>
+					</div>
+					<div class="form-group">
+						<label for="expires-at">Expiration Date</label>
+						<input
+							id="expires-at"
+							name="expires_at"
+							type="datetime-local"
+							class="input"
+							bind:value={formData.expires_at}
+						/>
+					</div>
+				</div>
+
+				<!-- Active Toggle -->
+				<div class="form-group">
+					<label class="checkbox-label">
+						<input
+							id="is-active"
+							name="is_active"
+							type="checkbox"
+							bind:checked={formData.is_active}
+						/>
+						Coupon is active and can be used
+					</label>
+				</div>
+			</div>
+
+			<!-- SECTION: Product/Plan Restrictions -->
+			<div class="form-section">
+				<h2>Product & Membership Restrictions</h2>
+				<p class="section-description">
+					Choose which products and memberships this coupon applies to. Leave empty to apply to all.
+				</p>
+
+				<!-- Include/Exclude Tabs -->
+				<div class="restriction-tabs">
+					<button
+						type="button"
+						class="restriction-tab"
+						class:active={restrictionTab === 'include'}
+						onclick={() => (restrictionTab = 'include')}
+					>
+						Include Only
+					</button>
+					<button
+						type="button"
+						class="restriction-tab"
+						class:active={restrictionTab === 'exclude'}
+						onclick={() => (restrictionTab = 'exclude')}
+					>
+						Exclude
+					</button>
+				</div>
+
+				<div class="restriction-content">
+					{#if restrictionTab === 'include'}
+						<p class="tab-hint">Coupon will ONLY work for selected items below</p>
+					{:else}
+						<p class="tab-hint">Coupon will work for everything EXCEPT selected items below</p>
+					{/if}
+
+					<!-- Products -->
+					<div class="restriction-group">
+						<div class="restriction-header">
+							<h3>Products</h3>
+							<div class="restriction-actions">
+								<button type="button" class="btn-link" onclick={selectAllProducts}
+									>Select All</button
+								>
+								<button type="button" class="btn-link" onclick={clearAllProducts}>Clear</button>
+							</div>
+						</div>
+						<div class="checkbox-grid">
+							{#if loadingData}
+								<div class="loading-items">
+									<div class="spinner-small"></div>
+									<p>Loading products...</p>
+								</div>
+							{:else if availableProducts.length === 0}
+								<p class="no-items">No products available</p>
+							{:else}
+								{#each availableProducts as product}
+									<label class="item-checkbox">
+										<input
+											type="checkbox"
+											checked={selectedProducts.has(product.id)}
+											onchange={() => toggleProduct(product.id)}
+										/>
+										<span class="item-name">{product.name}</span>
+										<span class="item-price">${product.sale_price || product.price}</span>
+									</label>
+								{/each}
+							{/if}
 						</div>
 					</div>
-					<div class="checkbox-grid">
-						{#if loadingData}
-							<div class="loading-items">
-								<div class="spinner-small"></div>
-								<p>Loading membership plans...</p>
+
+					<!-- Membership Plans -->
+					<div class="restriction-group">
+						<div class="restriction-header">
+							<h3>Membership Plans</h3>
+							<div class="restriction-actions">
+								<button type="button" class="btn-link" onclick={selectAllPlans}>Select All</button>
+								<button type="button" class="btn-link" onclick={clearAllPlans}>Clear</button>
 							</div>
-						{:else if availablePlans.length === 0}
-							<p class="no-items">No membership plans available</p>
-						{:else}
-							{#each availablePlans as plan}
-								<label class="item-checkbox">
-									<input
-										type="checkbox"
-										checked={selectedPlans.has(plan.id)}
-										onchange={() => togglePlan(plan.id)}
-									/>
-									<span class="item-name">{plan.name}</span>
-									<span class="item-price">${plan.price}/{plan.interval === 'monthly' ? 'mo' : plan.interval === 'yearly' ? 'yr' : 'lifetime'}</span>
-								</label>
-							{/each}
-						{/if}
+						</div>
+						<div class="checkbox-grid">
+							{#if loadingData}
+								<div class="loading-items">
+									<div class="spinner-small"></div>
+									<p>Loading membership plans...</p>
+								</div>
+							{:else if availablePlans.length === 0}
+								<p class="no-items">No membership plans available</p>
+							{:else}
+								{#each availablePlans as plan}
+									<label class="item-checkbox">
+										<input
+											type="checkbox"
+											checked={selectedPlans.has(plan.id)}
+											onchange={() => togglePlan(plan.id)}
+										/>
+										<span class="item-name">{plan.name}</span>
+										<span class="item-price"
+											>${plan.price}/{plan.interval === 'monthly'
+												? 'mo'
+												: plan.interval === 'yearly'
+													? 'yr'
+													: 'lifetime'}</span
+										>
+									</label>
+								{/each}
+							{/if}
+						</div>
 					</div>
+
+					{#if !hasRestrictions}
+						<div class="no-restrictions-notice">
+							No items selected - coupon will apply to <strong>all products and plans</strong>
+						</div>
+					{/if}
 				</div>
-
-				{#if !hasRestrictions}
-					<div class="no-restrictions-notice">
-						No items selected - coupon will apply to <strong>all products and plans</strong>
-					</div>
-				{/if}
 			</div>
-		</div>
 
-		<!-- SAVE BUTTON - Always Visible -->
-		<div class="form-actions">
-			<button type="button" class="btn-cancel" onclick={() => goto('/admin/coupons')}>
-				Cancel
-			</button>
-			<button type="submit" class="btn-save" disabled={saving}>
-				{#if saving}
-					<IconRefresh size={20} class="spinning" />
-					Saving...
-				{:else}
-					<IconCheck size={20} />
-					Save Coupon
-				{/if}
-			</button>
-		</div>
-	</form>
+			<!-- SAVE BUTTON - Always Visible -->
+			<div class="form-actions">
+				<button type="button" class="btn-cancel" onclick={() => goto('/admin/coupons')}>
+					Cancel
+				</button>
+				<button type="submit" class="btn-save" disabled={saving}>
+					{#if saving}
+						<IconRefresh size={20} class="spinning" />
+						Saving...
+					{:else}
+						<IconCheck size={20} />
+						Save Coupon
+					{/if}
+				</button>
+			</div>
+		</form>
 	</div>
 	<!-- End admin-page-container -->
 </div>
 
 <style>
 	.admin-coupon-create {
-		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--bg-base) 0%,
+			var(--bg-elevated) 50%,
+			var(--bg-base) 100%
+		);
 		position: relative;
 		overflow: hidden;
 	}

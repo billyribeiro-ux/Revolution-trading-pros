@@ -288,7 +288,9 @@
 		border-radius: var(--radius-md);
 		color: var(--admin-text-primary);
 		font-size: var(--text-base);
-		transition: var(--transition-colors), box-shadow var(--duration-fast) var(--ease-default);
+		transition:
+			var(--transition-colors),
+			box-shadow var(--duration-fast) var(--ease-default);
 	}
 
 	.modal-input:focus {

@@ -65,16 +65,34 @@
 		<div class="alert-info">
 			<!-- Directional Arrow Icon -->
 			{#if alert.type === 'ENTRY'}
-				<svg class="direction-icon direction-up" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-					<path d="M7 14l5-5 5 5H7z"/>
+				<svg
+					class="direction-icon direction-up"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					width="20"
+					height="20"
+				>
+					<path d="M7 14l5-5 5 5H7z" />
 				</svg>
 			{:else if alert.type === 'EXIT'}
-				<svg class="direction-icon direction-down" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-					<path d="M7 10l5 5 5-5H7z"/>
+				<svg
+					class="direction-icon direction-down"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					width="20"
+					height="20"
+				>
+					<path d="M7 10l5 5 5-5H7z" />
 				</svg>
 			{:else}
-				<svg class="direction-icon direction-neutral" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-					<circle cx="12" cy="12" r="4"/>
+				<svg
+					class="direction-icon direction-neutral"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					width="20"
+					height="20"
+				>
+					<circle cx="12" cy="12" r="4" />
 				</svg>
 			{/if}
 			<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
@@ -101,14 +119,28 @@
 			aria-label="Copy trade details"
 		>
 			{#if isCopied}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
-					<path d="M20 6L9 17l-5-5"/>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					width="16"
+					height="16"
+				>
+					<path d="M20 6L9 17l-5-5" />
 				</svg>
 				<span>Copied!</span>
 			{:else}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-					<rect x="9" y="9" width="13" height="13" rx="2"/>
-					<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					width="16"
+					height="16"
+				>
+					<rect x="9" y="9" width="13" height="13" rx="2" />
+					<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
 				</svg>
 				<span>Copy</span>
 			{/if}
@@ -139,14 +171,21 @@
 	{#if alert.tosString}
 		<div class="tos-display">
 			<code>{alert.tosString}</code>
-			<button 
+			<button
 				class="tos-copy-btn"
 				onclick={() => navigator.clipboard.writeText(alert.tosString || '')}
 				aria-label="Copy TOS string"
 			>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-					<rect x="9" y="9" width="13" height="13" rx="2"/>
-					<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					width="14"
+					height="14"
+				>
+					<rect x="9" y="9" width="13" height="13" rx="2" />
+					<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
 				</svg>
 			</button>
 		</div>
@@ -168,18 +207,8 @@
 	<!-- Admin Actions -->
 	{#if isAdmin}
 		<div class="admin-actions">
-			<button
-				class="admin-action-btn edit"
-				onclick={() => onEdit?.(alert)}
-			>
-				Edit
-			</button>
-			<button 
-				class="admin-action-btn delete" 
-				onclick={() => onDelete?.(alert.id)}
-			>
-				Delete
-			</button>
+			<button class="admin-action-btn edit" onclick={() => onEdit?.(alert)}> Edit </button>
+			<button class="admin-action-btn delete" onclick={() => onDelete?.(alert.id)}> Delete </button>
 		</div>
 	{/if}
 </div>
@@ -242,8 +271,13 @@
 	}
 
 	@keyframes badgePulse {
-		0%, 100% { box-shadow: 0 0 0 0 rgba(246, 149, 50, 0.4); }
-		50% { box-shadow: 0 0 0 8px rgba(246, 149, 50, 0); }
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 rgba(246, 149, 50, 0.4);
+		}
+		50% {
+			box-shadow: 0 0 0 8px rgba(246, 149, 50, 0);
+		}
 	}
 
 	/* Directional Icons */

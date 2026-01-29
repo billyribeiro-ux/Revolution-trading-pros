@@ -191,7 +191,9 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
-	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trades/${id}`, { headers });
+	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trades/${id}`, {
+		headers
+	});
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -245,8 +247,8 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	// Determine if this is a close action
-	const isCloseRequest = body.status === 'closed' || 
-		(body.exit_price !== undefined && body.exit_price !== null);
+	const isCloseRequest =
+		body.status === 'closed' || (body.exit_price !== undefined && body.exit_price !== null);
 
 	// Try backend first - use /close endpoint for closing trades
 	if (isCloseRequest) {

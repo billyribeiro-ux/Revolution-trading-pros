@@ -20,7 +20,13 @@
 	import { browser } from '$app/environment';
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut, backOut } from 'svelte/easing';
-	import { cmsApi, type CmsAsset, type CmsAssetSummary, type CmsAssetFolder, type AssetListQuery } from '$lib/api/cms-v2';
+	import {
+		cmsApi,
+		type CmsAsset,
+		type CmsAssetSummary,
+		type CmsAssetFolder,
+		type AssetListQuery
+	} from '$lib/api/cms-v2';
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import {
 		IconFolder,
@@ -581,11 +587,7 @@
 	<aside class="folder-sidebar" in:fly={{ x: -20, duration: 400 }}>
 		<div class="sidebar-header">
 			<h2 class="sidebar-title">Folders</h2>
-			<button
-				class="btn-icon"
-				onclick={() => (showCreateFolderModal = true)}
-				title="Create folder"
-			>
+			<button class="btn-icon" onclick={() => (showCreateFolderModal = true)} title="Create folder">
 				<IconFolderPlus size={18} />
 			</button>
 		</div>
@@ -641,7 +643,7 @@
 									onblur={(e) => renameFolder(folder, e.currentTarget.value)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter') renameFolder(folder, e.currentTarget.value);
-										if (e.key === 'Escape') (editingFolder = null);
+										if (e.key === 'Escape') editingFolder = null;
 									}}
 									use:focusOnMount
 								/>
@@ -660,10 +662,7 @@
 
 							<div class="folder-item-wrapper child">
 								{#if childHasChildren}
-									<button
-										class="expand-btn"
-										onclick={() => toggleFolder(child.id)}
-									>
+									<button class="expand-btn" onclick={() => toggleFolder(child.id)}>
 										{#if childExpanded}
 											<IconChevronDown size={16} />
 										{:else}
@@ -752,11 +751,7 @@
 				{#if hasSelection}
 					<div class="bulk-actions" in:scale={{ duration: 200 }}>
 						<span class="selection-count">{selectedIds.size} selected</span>
-						<button
-							class="btn-action"
-							onclick={() => (showMoveFolderModal = true)}
-							title="Move"
-						>
+						<button class="btn-action" onclick={() => (showMoveFolderModal = true)} title="Move">
 							<IconArrowsLeftRight size={16} />
 						</button>
 						<button class="btn-action danger" onclick={deleteSelected} title="Delete">
@@ -766,10 +761,7 @@
 				{/if}
 
 				<!-- Upload Button -->
-				<button
-					class="btn-upload"
-					onclick={() => (showUploadPanel = true)}
-				>
+				<button class="btn-upload" onclick={() => (showUploadPanel = true)}>
 					<IconUpload size={18} />
 					<span>Upload</span>
 				</button>
@@ -777,7 +769,10 @@
 				<!-- Refresh -->
 				<button
 					class="btn-icon"
-					onclick={() => { loadFolders(); loadAssets(); }}
+					onclick={() => {
+						loadFolders();
+						loadAssets();
+					}}
 					title="Refresh"
 				>
 					<IconRefresh size={18} />
@@ -877,11 +872,7 @@
 							{#if viewMode === 'grid'}
 								<div class="asset-preview">
 									{#if asset.mime_type.startsWith('image/')}
-										<img
-											src={asset.url}
-											alt={asset.alt_text || asset.filename}
-											loading="lazy"
-										/>
+										<img src={asset.url} alt={asset.alt_text || asset.filename} loading="lazy" />
 									{:else}
 										<AssetIcon size={48} />
 									{/if}
@@ -893,11 +884,7 @@
 							{:else}
 								<div class="asset-icon">
 									{#if asset.mime_type.startsWith('image/')}
-										<img
-											src={asset.url}
-											alt={asset.alt_text || asset.filename}
-											loading="lazy"
-										/>
+										<img src={asset.url} alt={asset.alt_text || asset.filename} loading="lazy" />
 									{:else}
 										<AssetIcon size={24} />
 									{/if}
@@ -1009,9 +996,7 @@
 						placeholder="Asset title..."
 					/>
 				</div>
-				<button class="btn-save" onclick={updateAssetMetadata}>
-					Save Metadata
-				</button>
+				<button class="btn-save" onclick={updateAssetMetadata}> Save Metadata </button>
 			</div>
 
 			<div class="details-actions">
@@ -1203,7 +1188,10 @@
 			in:scale={{ duration: 200, start: 0.95 }}
 		>
 			<div class="modal-header">
-				<h3 id="move-folder-title">Move {selectedIds.size} {selectedIds.size === 1 ? 'Asset' : 'Assets'}</h3>
+				<h3 id="move-folder-title">
+					Move {selectedIds.size}
+					{selectedIds.size === 1 ? 'Asset' : 'Assets'}
+				</h3>
 				<button class="btn-close" onclick={() => (showMoveFolderModal = false)}>
 					<IconX size={18} />
 				</button>

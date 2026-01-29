@@ -81,12 +81,12 @@ async function fetchRoomResources(
 ): Promise<RoomResourcesResponse> {
 	try {
 		const response = await fetchFn(url);
-		
+
 		if (!response.ok) {
 			console.warn(`${LOG_PREFIX} ${resourceType} fetch returned:`, response.status);
 			return { data: [] };
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error(`${LOG_PREFIX} ${resourceType} fetch error:`, error);
@@ -109,15 +109,15 @@ function buildResourceUrl(
 		resource_type: params.resourceType,
 		per_page: String(params.perPage ?? 10)
 	});
-	
+
 	if (params.contentType) {
 		searchParams.set('content_type', params.contentType);
 	}
-	
+
 	if (params.isFeatured) {
 		searchParams.set('is_featured', 'true');
 	}
-	
+
 	return `${baseUrl}/api/room-resources?${searchParams}`;
 }
 
@@ -191,7 +191,7 @@ export const load = (async ({ fetch }) => {
 	} catch (error) {
 		// ICT 7: Never throw 500 - graceful degradation with fallback data
 		console.error(`${LOG_PREFIX} FATAL ERROR in load function:`, error);
-		
+
 		return {
 			watchlist: null,
 			tutorialVideo: null,

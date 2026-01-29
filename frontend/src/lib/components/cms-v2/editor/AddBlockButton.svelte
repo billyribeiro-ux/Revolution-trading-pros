@@ -28,7 +28,7 @@
 	<button
 		type="button"
 		class="add-block-btn"
-		onclick={onclick}
+		{onclick}
 		title="Add block (type / for commands)"
 		aria-label="Add new block"
 	>

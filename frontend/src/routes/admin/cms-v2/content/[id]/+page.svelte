@@ -316,20 +316,13 @@
 					</button>
 				{/if}
 
-				<button
-					class="btn-secondary"
-					onclick={save}
-					disabled={isSaving || !hasChanges}
-				>
+				<button class="btn-secondary" onclick={save} disabled={isSaving || !hasChanges}>
 					<IconDeviceFloppy size={18} />
 					{isSaving ? 'Saving...' : 'Save'}
 				</button>
 
 				{#if content.status === 'draft'}
-					<button
-						class="btn-primary"
-						onclick={() => changeStatus('published')}
-					>
+					<button class="btn-primary" onclick={() => changeStatus('published')}>
 						<IconSend size={18} />
 						Publish
 					</button>
@@ -630,11 +623,7 @@
 							<IconDeviceFloppy size={16} />
 							Save Changes
 						</button>
-						<a
-							href="/preview/{content.id}"
-							target="_blank"
-							class="btn-action-full secondary"
-						>
+						<a href="/preview/{content.id}" target="_blank" class="btn-action-full secondary">
 							<IconEye size={16} />
 							Preview
 						</a>
@@ -668,7 +657,9 @@
 				<button class="btn-close" onclick={() => (showStatusModal = false)}>×</button>
 			</div>
 			<div class="modal-body">
-				<p class="modal-text">Current status: <strong>{content.status.replace('_', ' ')}</strong></p>
+				<p class="modal-text">
+					Current status: <strong>{content.status.replace('_', ' ')}</strong>
+				</p>
 				<div class="status-options">
 					{#each statusOptions as option}
 						<button
@@ -713,7 +704,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Header */

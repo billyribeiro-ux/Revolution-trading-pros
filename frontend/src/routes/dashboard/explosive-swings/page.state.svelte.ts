@@ -118,9 +118,7 @@ export function createPageState() {
 	const showingFrom = $derived(pagination.total > 0 ? (currentPage - 1) * ALERTS_PER_PAGE + 1 : 0);
 	const showingTo = $derived(Math.min(currentPage * ALERTS_PER_PAGE, pagination.total));
 
-	const alerts = $derived<FormattedAlert[]>(
-		apiAlerts.length > 0 ? apiAlerts : fallbackData.alerts
-	);
+	const alerts = $derived<FormattedAlert[]>(apiAlerts.length > 0 ? apiAlerts : fallbackData.alerts);
 
 	const filteredAlerts = $derived(
 		selectedFilter === 'all'
@@ -211,15 +209,14 @@ export function createPageState() {
 		}
 
 		const publishedDate = new Date(apiWeeklyVideo.published_at);
-		
+
 		return {
 			title:
 				apiWeeklyVideo.week_title ||
 				`Week of ${publishedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
 			videoTitle: apiWeeklyVideo.video_title ?? '',
 			videoUrl: apiWeeklyVideo.video_url ?? '',
-			thumbnail:
-				apiWeeklyVideo.thumbnail_url ?? fallbackData.weeklyContent.thumbnail,
+			thumbnail: apiWeeklyVideo.thumbnail_url ?? fallbackData.weeklyContent.thumbnail,
 			duration: apiWeeklyVideo.duration ?? '',
 			publishedDate:
 				publishedDate.toLocaleDateString('en-US', {
@@ -404,7 +401,7 @@ export function createPageState() {
 	 */
 	function prependAlert(alert: FormattedAlert) {
 		// Check if alert already exists (avoid duplicates)
-		if (apiAlerts.some(a => a.id === alert.id)) {
+		if (apiAlerts.some((a) => a.id === alert.id)) {
 			return;
 		}
 		apiAlerts = [alert, ...apiAlerts];
@@ -421,13 +418,9 @@ export function createPageState() {
 	 * Called by WebSocket real-time updates
 	 */
 	function updateAlert(alert: FormattedAlert) {
-		const index = apiAlerts.findIndex(a => a.id === alert.id);
+		const index = apiAlerts.findIndex((a) => a.id === alert.id);
 		if (index !== -1) {
-			apiAlerts = [
-				...apiAlerts.slice(0, index),
-				alert,
-				...apiAlerts.slice(index + 1)
-			];
+			apiAlerts = [...apiAlerts.slice(0, index), alert, ...apiAlerts.slice(index + 1)];
 		}
 	}
 
@@ -436,12 +429,9 @@ export function createPageState() {
 	 * Called by WebSocket real-time updates
 	 */
 	function removeAlert(alertId: number) {
-		const index = apiAlerts.findIndex(a => a.id === alertId);
+		const index = apiAlerts.findIndex((a) => a.id === alertId);
 		if (index !== -1) {
-			apiAlerts = [
-				...apiAlerts.slice(0, index),
-				...apiAlerts.slice(index + 1)
-			];
+			apiAlerts = [...apiAlerts.slice(0, index), ...apiAlerts.slice(index + 1)];
 
 			// Update pagination total
 			pagination = { ...pagination, total: Math.max(0, pagination.total - 1) };
@@ -567,11 +557,11 @@ export function createPageState() {
 				method: 'DELETE',
 				credentials: 'include'
 			});
-			
+
 			if (!response.ok) {
 				throw new Error('Failed to delete position');
 			}
-			
+
 			// Refresh data
 			fetchAllTrades();
 			fetchStats();

@@ -87,7 +87,7 @@
 		try {
 			// Load Stripe.js using the official package
 			stripe = await loadStripeJS(publicKey);
-			
+
 			if (!stripe) {
 				throw new Error('Failed to load Stripe');
 			}

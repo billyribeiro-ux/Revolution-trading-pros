@@ -368,348 +368,351 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Email Templates</h1>
-		<p class="subtitle">Create and manage reusable email templates for campaigns and automations</p>
-		<div class="header-actions">
-			<button
-				class="btn-refresh"
-				onclick={() => loadTemplates()}
-				disabled={isLoading}
-				aria-label="Refresh templates"
-				title="Refresh"
-			>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<a href="/admin/crm/templates/prebuilt" class="btn-secondary">
-				<IconDownload size={18} />
-				<span>Pre-built Library</span>
-			</a>
-			<a href="/admin/crm/templates/new" class="btn-primary">
-				<IconPlus size={18} />
-				<span>New Template</span>
-			</a>
-		</div>
-	</header>
-
-	<!-- Stats Cards -->
-	<section class="stats-grid" aria-label="Template statistics">
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconTemplate size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.total}</span>
-				<span class="stat-label">Total Templates</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon gold">
-				<IconFolder size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{categories.length}</span>
-				<span class="stat-label">Categories</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon green">
-				<IconEye size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.visual}</span>
-				<span class="stat-label">Visual Templates</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon orange">
-				<IconEdit size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.raw}</span>
-				<span class="stat-label">Raw HTML</span>
-			</div>
-		</div>
-	</section>
-
-	<!-- Filters Bar -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search templates..."
-				bind:value={searchQuery}
-				aria-label="Search templates"
-			/>
-			{#if searchQuery}
-				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
-					<IconX size={16} />
-				</button>
-			{/if}
-		</div>
-		<select bind:value={selectedCategory} class="filter-select" aria-label="Filter by category">
-			<option value="">All Categories</option>
-			{#each categories as category}
-				<option value={category.slug}>{category.name} ({category.templates_count})</option>
-			{/each}
-		</select>
-		<select
-			value={perPage}
-			onchange={(e) => changePerPage(parseInt(e.currentTarget.value))}
-			class="filter-select per-page-select"
-			aria-label="Templates per page"
-		>
-			<option value={12}>12 per page</option>
-			<option value={24}>24 per page</option>
-			<option value={48}>48 per page</option>
-		</select>
-	</div>
-
-	<!-- Bulk Actions Bar -->
-	{#if selectedCount > 0}
-		<div class="bulk-actions-bar" role="toolbar" aria-label="Bulk actions">
-			<div class="selection-info">
-				<IconSquareCheck size={18} />
-				<span>{selectedCount} template{selectedCount > 1 ? 's' : ''} selected</span>
-			</div>
-			<div class="bulk-buttons">
-				<button
-					class="btn-bulk-action danger"
-					onclick={bulkDeleteTemplates}
-					disabled={isBulkDeleting}
-					aria-label="Delete selected templates"
-				>
-					{#if isBulkDeleting}
-						<span class="btn-spinner"></span>
-					{:else}
-						<IconTrash size={16} />
-					{/if}
-					<span>Delete Selected</span>
-				</button>
-				<button class="btn-bulk-action" aria-label="Export selected templates">
-					<IconFileExport size={16} />
-					<span>Export</span>
-				</button>
-				<button
-					class="btn-bulk-clear"
-					onclick={() => (selectedTemplates = new Set())}
-					aria-label="Clear selection"
-				>
-					<IconX size={16} />
-					<span>Clear</span>
-				</button>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Templates Grid -->
-	{#if isLoading && templates.length === 0}
-		<div class="loading-state" role="status" aria-live="polite">
-			<div class="spinner"></div>
-			<p>Loading templates...</p>
-		</div>
-	{:else if error && templates.length === 0}
-		<div class="error-state" role="alert">
-			<IconAlertCircle size={48} />
-			<h3>Failed to Load Templates</h3>
-			<p>{error}</p>
-			<button class="btn-primary" onclick={() => loadTemplates()}>
-				<IconRefresh size={18} />
-				Try Again
-			</button>
-		</div>
-	{:else if templates.length === 0}
-		<div class="empty-state">
-			<IconTemplate size={48} />
-			<h3>No templates found</h3>
-			<p>
-				{#if searchQuery || selectedCategory}
-					No templates match your current filters. Try adjusting your search criteria.
-				{:else}
-					Create your first template or import from the pre-built library.
-				{/if}
+			<p class="subtitle">
+				Create and manage reusable email templates for campaigns and automations
 			</p>
-			<div class="empty-actions">
-				{#if searchQuery || selectedCategory}
-					<button
-						class="btn-secondary"
-						onclick={() => {
-							searchQuery = '';
-							selectedCategory = '';
-						}}
-					>
-						<IconX size={18} />
-						Clear Filters
+			<div class="header-actions">
+				<button
+					class="btn-refresh"
+					onclick={() => loadTemplates()}
+					disabled={isLoading}
+					aria-label="Refresh templates"
+					title="Refresh"
+				>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<a href="/admin/crm/templates/prebuilt" class="btn-secondary">
+					<IconDownload size={18} />
+					<span>Pre-built Library</span>
+				</a>
+				<a href="/admin/crm/templates/new" class="btn-primary">
+					<IconPlus size={18} />
+					<span>New Template</span>
+				</a>
+			</div>
+		</header>
+
+		<!-- Stats Cards -->
+		<section class="stats-grid" aria-label="Template statistics">
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconTemplate size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.total}</span>
+					<span class="stat-label">Total Templates</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon gold">
+					<IconFolder size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{categories.length}</span>
+					<span class="stat-label">Categories</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon green">
+					<IconEye size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.visual}</span>
+					<span class="stat-label">Visual Templates</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon orange">
+					<IconEdit size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.raw}</span>
+					<span class="stat-label">Raw HTML</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Filters Bar -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					type="text"
+					placeholder="Search templates..."
+					bind:value={searchQuery}
+					aria-label="Search templates"
+				/>
+				{#if searchQuery}
+					<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
+						<IconX size={16} />
 					</button>
-				{:else}
-					<a href="/admin/crm/templates/new" class="btn-primary">
-						<IconPlus size={18} />
-						Create Template
-					</a>
-					<a href="/admin/crm/templates/prebuilt" class="btn-secondary">
-						<IconDownload size={18} />
-						Pre-built Templates
-					</a>
 				{/if}
 			</div>
-		</div>
-	{:else}
-		<!-- Select All Header -->
-		<div class="templates-header">
-			<button
-				class="select-all-btn"
-				onclick={toggleSelectAll}
-				aria-label={allSelected ? 'Deselect all templates' : 'Select all templates'}
+			<select bind:value={selectedCategory} class="filter-select" aria-label="Filter by category">
+				<option value="">All Categories</option>
+				{#each categories as category}
+					<option value={category.slug}>{category.name} ({category.templates_count})</option>
+				{/each}
+			</select>
+			<select
+				value={perPage}
+				onchange={(e) => changePerPage(parseInt(e.currentTarget.value))}
+				class="filter-select per-page-select"
+				aria-label="Templates per page"
 			>
-				{#if allSelected}
-					<IconSquareCheck size={20} />
-				{:else}
-					<IconSquare size={20} />
-				{/if}
-				<span>Select All</span>
-			</button>
-			<span class="results-count">
-				Showing {paginationInfo.start}-{paginationInfo.end} of {paginationInfo.total} templates
-			</span>
+				<option value={12}>12 per page</option>
+				<option value={24}>24 per page</option>
+				<option value={48}>48 per page</option>
+			</select>
 		</div>
 
-		<div class="templates-grid" role="list" aria-label="Templates list">
-			{#each templates as template (template.id)}
-				<article
-					class="template-card"
-					class:selected={selectedTemplates.has(template.id)}
-					role="listitem"
-					aria-label={template.title}
-				>
+		<!-- Bulk Actions Bar -->
+		{#if selectedCount > 0}
+			<div class="bulk-actions-bar" role="toolbar" aria-label="Bulk actions">
+				<div class="selection-info">
+					<IconSquareCheck size={18} />
+					<span>{selectedCount} template{selectedCount > 1 ? 's' : ''} selected</span>
+				</div>
+				<div class="bulk-buttons">
 					<button
-						class="template-checkbox"
-						onclick={(e) => {
-							e.stopPropagation();
-							toggleSelectTemplate(template.id);
-						}}
-						aria-label={selectedTemplates.has(template.id)
-							? `Deselect ${template.title}`
-							: `Select ${template.title}`}
+						class="btn-bulk-action danger"
+						onclick={bulkDeleteTemplates}
+						disabled={isBulkDeleting}
+						aria-label="Delete selected templates"
 					>
-						{#if selectedTemplates.has(template.id)}
-							<IconSquareCheck size={20} />
+						{#if isBulkDeleting}
+							<span class="btn-spinner"></span>
 						{:else}
-							<IconSquare size={20} />
+							<IconTrash size={16} />
 						{/if}
+						<span>Delete Selected</span>
+					</button>
+					<button class="btn-bulk-action" aria-label="Export selected templates">
+						<IconFileExport size={16} />
+						<span>Export</span>
+					</button>
+					<button
+						class="btn-bulk-clear"
+						onclick={() => (selectedTemplates = new Set())}
+						aria-label="Clear selection"
+					>
+						<IconX size={16} />
+						<span>Clear</span>
+					</button>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Templates Grid -->
+		{#if isLoading && templates.length === 0}
+			<div class="loading-state" role="status" aria-live="polite">
+				<div class="spinner"></div>
+				<p>Loading templates...</p>
+			</div>
+		{:else if error && templates.length === 0}
+			<div class="error-state" role="alert">
+				<IconAlertCircle size={48} />
+				<h3>Failed to Load Templates</h3>
+				<p>{error}</p>
+				<button class="btn-primary" onclick={() => loadTemplates()}>
+					<IconRefresh size={18} />
+					Try Again
+				</button>
+			</div>
+		{:else if templates.length === 0}
+			<div class="empty-state">
+				<IconTemplate size={48} />
+				<h3>No templates found</h3>
+				<p>
+					{#if searchQuery || selectedCategory}
+						No templates match your current filters. Try adjusting your search criteria.
+					{:else}
+						Create your first template or import from the pre-built library.
+					{/if}
+				</p>
+				<div class="empty-actions">
+					{#if searchQuery || selectedCategory}
+						<button
+							class="btn-secondary"
+							onclick={() => {
+								searchQuery = '';
+								selectedCategory = '';
+							}}
+						>
+							<IconX size={18} />
+							Clear Filters
+						</button>
+					{:else}
+						<a href="/admin/crm/templates/new" class="btn-primary">
+							<IconPlus size={18} />
+							Create Template
+						</a>
+						<a href="/admin/crm/templates/prebuilt" class="btn-secondary">
+							<IconDownload size={18} />
+							Pre-built Templates
+						</a>
+					{/if}
+				</div>
+			</div>
+		{:else}
+			<!-- Select All Header -->
+			<div class="templates-header">
+				<button
+					class="select-all-btn"
+					onclick={toggleSelectAll}
+					aria-label={allSelected ? 'Deselect all templates' : 'Select all templates'}
+				>
+					{#if allSelected}
+						<IconSquareCheck size={20} />
+					{:else}
+						<IconSquare size={20} />
+					{/if}
+					<span>Select All</span>
+				</button>
+				<span class="results-count">
+					Showing {paginationInfo.start}-{paginationInfo.end} of {paginationInfo.total} templates
+				</span>
+			</div>
+
+			<div class="templates-grid" role="list" aria-label="Templates list">
+				{#each templates as template (template.id)}
+					<article
+						class="template-card"
+						class:selected={selectedTemplates.has(template.id)}
+						role="listitem"
+						aria-label={template.title}
+					>
+						<button
+							class="template-checkbox"
+							onclick={(e) => {
+								e.stopPropagation();
+								toggleSelectTemplate(template.id);
+							}}
+							aria-label={selectedTemplates.has(template.id)
+								? `Deselect ${template.title}`
+								: `Select ${template.title}`}
+						>
+							{#if selectedTemplates.has(template.id)}
+								<IconSquareCheck size={20} />
+							{:else}
+								<IconSquare size={20} />
+							{/if}
+						</button>
+
+						<div class="template-thumbnail">
+							{#if template.thumbnail}
+								<img src={template.thumbnail} alt={`${template.title} preview`} loading="lazy" />
+							{:else}
+								<div class="thumbnail-placeholder">
+									<IconTemplate size={32} />
+								</div>
+							{/if}
+							<div class="template-overlay">
+								<button
+									class="btn-icon"
+									title="Preview"
+									onclick={() => openPreview(template)}
+									aria-label={`Preview ${template.title}`}
+								>
+									<IconEye size={18} />
+								</button>
+								<a
+									href="/admin/crm/templates/{template.id}/edit"
+									class="btn-icon"
+									title="Edit"
+									aria-label={`Edit ${template.title}`}
+								>
+									<IconEdit size={18} />
+								</a>
+							</div>
+						</div>
+
+						<div class="template-content">
+							<h3 class="template-title">{template.title}</h3>
+							{#if template.subject}
+								<p class="template-subject" title={template.subject}>{template.subject}</p>
+							{/if}
+							<div class="template-meta">
+								<span class="template-type" class:visual={template.design_template === 'visual'}>
+									{template.design_template === 'visual' ? 'Visual' : 'Raw HTML'}
+								</span>
+								{#if template.category}
+									<span class="template-category">{template.category}</span>
+								{/if}
+							</div>
+							<div class="template-footer">
+								<span class="template-date">
+									<time datetime={template.updated_at}
+										>Updated {formatDate(template.updated_at)}</time
+									>
+								</span>
+								<div class="template-actions">
+									<button
+										class="btn-icon-sm"
+										title="Duplicate"
+										onclick={() => duplicateTemplate(template.id)}
+										aria-label={`Duplicate ${template.title}`}
+									>
+										<IconCopy size={14} />
+									</button>
+									<button
+										class="btn-icon-sm danger"
+										title="Delete"
+										onclick={() => deleteTemplate(template.id)}
+										aria-label={`Delete ${template.title}`}
+									>
+										<IconTrash size={14} />
+									</button>
+								</div>
+							</div>
+						</div>
+					</article>
+				{/each}
+			</div>
+
+			<!-- Pagination -->
+			{#if totalPages > 1}
+				<nav class="pagination" aria-label="Template pages">
+					<button
+						class="pagination-btn"
+						onclick={() => goToPage(currentPage - 1)}
+						disabled={currentPage === 1}
+						aria-label="Previous page"
+					>
+						<IconChevronLeft size={18} />
+						<span>Previous</span>
 					</button>
 
-					<div class="template-thumbnail">
-						{#if template.thumbnail}
-							<img src={template.thumbnail} alt={`${template.title} preview`} loading="lazy" />
-						{:else}
-							<div class="thumbnail-placeholder">
-								<IconTemplate size={32} />
-							</div>
-						{/if}
-						<div class="template-overlay">
-							<button
-								class="btn-icon"
-								title="Preview"
-								onclick={() => openPreview(template)}
-								aria-label={`Preview ${template.title}`}
-							>
-								<IconEye size={18} />
-							</button>
-							<a
-								href="/admin/crm/templates/{template.id}/edit"
-								class="btn-icon"
-								title="Edit"
-								aria-label={`Edit ${template.title}`}
-							>
-								<IconEdit size={18} />
-							</a>
-						</div>
-					</div>
-
-					<div class="template-content">
-						<h3 class="template-title">{template.title}</h3>
-						{#if template.subject}
-							<p class="template-subject" title={template.subject}>{template.subject}</p>
-						{/if}
-						<div class="template-meta">
-							<span class="template-type" class:visual={template.design_template === 'visual'}>
-								{template.design_template === 'visual' ? 'Visual' : 'Raw HTML'}
-							</span>
-							{#if template.category}
-								<span class="template-category">{template.category}</span>
+					<div class="pagination-pages">
+						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
+							{#if page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)}
+								<button
+									class="pagination-page"
+									class:active={page === currentPage}
+									onclick={() => goToPage(page)}
+									aria-label={`Page ${page}`}
+									aria-current={page === currentPage ? 'page' : undefined}
+								>
+									{page}
+								</button>
+							{:else if page === currentPage - 2 || page === currentPage + 2}
+								<span class="pagination-ellipsis">...</span>
 							{/if}
-						</div>
-						<div class="template-footer">
-							<span class="template-date">
-								<time datetime={template.updated_at}>Updated {formatDate(template.updated_at)}</time
-								>
-							</span>
-							<div class="template-actions">
-								<button
-									class="btn-icon-sm"
-									title="Duplicate"
-									onclick={() => duplicateTemplate(template.id)}
-									aria-label={`Duplicate ${template.title}`}
-								>
-									<IconCopy size={14} />
-								</button>
-								<button
-									class="btn-icon-sm danger"
-									title="Delete"
-									onclick={() => deleteTemplate(template.id)}
-									aria-label={`Delete ${template.title}`}
-								>
-									<IconTrash size={14} />
-								</button>
-							</div>
-						</div>
+						{/each}
 					</div>
-				</article>
-			{/each}
-		</div>
 
-		<!-- Pagination -->
-		{#if totalPages > 1}
-			<nav class="pagination" aria-label="Template pages">
-				<button
-					class="pagination-btn"
-					onclick={() => goToPage(currentPage - 1)}
-					disabled={currentPage === 1}
-					aria-label="Previous page"
-				>
-					<IconChevronLeft size={18} />
-					<span>Previous</span>
-				</button>
-
-				<div class="pagination-pages">
-					{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
-						{#if page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)}
-							<button
-								class="pagination-page"
-								class:active={page === currentPage}
-								onclick={() => goToPage(page)}
-								aria-label={`Page ${page}`}
-								aria-current={page === currentPage ? 'page' : undefined}
-							>
-								{page}
-							</button>
-						{:else if page === currentPage - 2 || page === currentPage + 2}
-							<span class="pagination-ellipsis">...</span>
-						{/if}
-					{/each}
-				</div>
-
-				<button
-					class="pagination-btn"
-					onclick={() => goToPage(currentPage + 1)}
-					disabled={currentPage === totalPages}
-					aria-label="Next page"
-				>
-					<span>Next</span>
-					<IconChevronRight size={18} />
-				</button>
-			</nav>
+					<button
+						class="pagination-btn"
+						onclick={() => goToPage(currentPage + 1)}
+						disabled={currentPage === totalPages}
+						aria-label="Next page"
+					>
+						<span>Next</span>
+						<IconChevronRight size={18} />
+					</button>
+				</nav>
+			{/if}
 		{/if}
-	{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>

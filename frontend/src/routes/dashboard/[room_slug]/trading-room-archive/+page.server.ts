@@ -10,6 +10,7 @@
  */
 
 import { env } from '$env/dynamic/private';
+import type { PageServerLoad } from './$types';
 
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; startHereUrl: string }> = {
@@ -83,8 +84,11 @@ export interface DynamicArchivePageData {
 	error: string | null;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export const load = async ({ url, fetch, params }): Promise<DynamicArchivePageData> => {
+export const load: PageServerLoad = async ({
+	url,
+	fetch,
+	params
+}): Promise<DynamicArchivePageData> => {
 	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 	const roomSlug = params.room_slug;
 

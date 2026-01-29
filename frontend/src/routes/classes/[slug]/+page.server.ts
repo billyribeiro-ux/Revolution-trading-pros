@@ -13,6 +13,7 @@
  */
 
 import { env } from '$env/dynamic/private';
+import type { PageServerLoad } from './$types';
 
 const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -59,8 +60,7 @@ interface CourseData {
 	enrollment?: unknown;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export const load = async ({ params, cookies, fetch }) => {
+export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
 
 	// Get auth token for API request

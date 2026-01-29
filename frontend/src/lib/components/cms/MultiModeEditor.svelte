@@ -43,11 +43,7 @@
 		IconArrowLeft,
 		IconArrowRight
 	} from '$lib/icons';
-	import {
-		markdownToHtml,
-		htmlToMarkdown,
-		detectContentFormat
-	} from './markdown-parser';
+	import { markdownToHtml, htmlToMarkdown, detectContentFormat } from './markdown-parser';
 
 	// Types
 	type ContentMode = 'visual' | 'markdown' | 'html';
@@ -297,9 +293,7 @@
 		const lineStart = markdownContent.lastIndexOf('\n', start - 1) + 1;
 
 		const newText =
-			markdownContent.substring(0, lineStart) +
-			prefix +
-			markdownContent.substring(lineStart);
+			markdownContent.substring(0, lineStart) + prefix + markdownContent.substring(lineStart);
 
 		markdownContent = newText;
 		htmlContent = markdownToHtml(markdownContent);
@@ -779,10 +773,7 @@
 				{#if showPreview}
 					<div class="markdown-preview-wrapper">
 						<div class="preview-label">Preview</div>
-						<div
-							class="markdown-preview"
-							style="min-height: {minHeight}"
-						>
+						<div class="markdown-preview" style="min-height: {minHeight}">
 							{@html previewHtml || `<p class="preview-placeholder">${placeholder}</p>`}
 						</div>
 					</div>
@@ -800,9 +791,7 @@
 					<span>HTML Source Code</span>
 				</div>
 				<div class="toolbar-spacer"></div>
-				<div class="toolbar-hint">
-					Edit raw HTML. Be careful with syntax!
-				</div>
+				<div class="toolbar-hint">Edit raw HTML. Be careful with syntax!</div>
 			</div>
 
 			<textarea

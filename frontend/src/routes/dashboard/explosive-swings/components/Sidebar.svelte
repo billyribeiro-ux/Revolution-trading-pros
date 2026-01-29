@@ -29,12 +29,12 @@
 		onPlayVideo?: () => void;
 	}
 
-	const { 
-		thirtyDayPerformance, 
-		weeklyVideo, 
+	const {
+		thirtyDayPerformance,
+		weeklyVideo,
 		latestUpdates = [],
-		isLoading = false, 
-		onPlayVideo 
+		isLoading = false,
+		onPlayVideo
 	}: Props = $props();
 </script>
 
@@ -50,8 +50,17 @@
 
 	<!-- Archive Link -->
 	<a href="/dashboard/explosive-swings/archive" class="archive-link">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-			<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+		<svg
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			width="18"
+			height="18"
+		>
+			<path
+				d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+			/>
 		</svg>
 		Weekly Archive
 	</a>
@@ -98,7 +107,11 @@
 	}
 
 	.help-card {
-		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-brand-primary) 0%,
+			var(--color-brand-primary-light) 100%
+		);
 		border: 1px solid var(--color-border-default);
 		border-top: 3px solid var(--color-watching);
 		border-radius: 14px;

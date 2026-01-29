@@ -14,7 +14,14 @@
 
 <div class="empty-state">
 	<div class="empty-icon">
-		<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+		<svg
+			width="64"
+			height="64"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.5"
+		>
 			<circle cx="11" cy="11" r="8" />
 			<path d="M21 21l-4.35-4.35" />
 			<path d="M8 8l6 6" stroke-dasharray="2 2" />
@@ -39,9 +46,7 @@
 		</ul>
 	</div>
 
-	<button class="clear-btn" onclick={onClearSearch}>
-		Clear Search
-	</button>
+	<button class="clear-btn" onclick={onClearSearch}> Clear Search </button>
 </div>
 
 <style>

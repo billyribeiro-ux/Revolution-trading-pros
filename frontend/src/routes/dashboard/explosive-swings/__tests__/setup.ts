@@ -265,7 +265,9 @@ export interface MockTrade {
 /**
  * Create a mock trade plan entry
  */
-export function createMockTradePlanEntry(overrides: Partial<MockTradePlanEntry> = {}): MockTradePlanEntry {
+export function createMockTradePlanEntry(
+	overrides: Partial<MockTradePlanEntry> = {}
+): MockTradePlanEntry {
 	return {
 		ticker: 'NVDA',
 		bias: 'BULLISH',
@@ -345,7 +347,9 @@ export interface MockWeeklyVideo {
 /**
  * Create a mock active position
  */
-export function createMockActivePosition(overrides: Partial<MockActivePosition> = {}): MockActivePosition {
+export function createMockActivePosition(
+	overrides: Partial<MockActivePosition> = {}
+): MockActivePosition {
 	return {
 		id: '1',
 		ticker: 'NVDA',
@@ -413,7 +417,9 @@ export interface MockClosedTrade {
 /**
  * Create mock weekly performance
  */
-export function createMockWeeklyPerformance(overrides: Partial<MockWeeklyPerformance> = {}): MockWeeklyPerformance {
+export function createMockWeeklyPerformance(
+	overrides: Partial<MockWeeklyPerformance> = {}
+): MockWeeklyPerformance {
 	return {
 		winRate: 82,
 		totalTrades: 7,
@@ -475,7 +481,9 @@ export function createMockTradesResponse(trades: MockTrade[] = [createMockTrade(
 /**
  * Create a mock API response for trade plans
  */
-export function createMockTradePlansResponse(entries: MockTradePlanEntry[] = [createMockTradePlanEntry()]) {
+export function createMockTradePlansResponse(
+	entries: MockTradePlanEntry[] = [createMockTradePlanEntry()]
+) {
 	return {
 		success: true,
 		data: entries
@@ -585,7 +593,10 @@ export function createDeferred<T>() {
 /**
  * Assert that a value is defined (narrows type)
  */
-export function assertDefined<T>(value: T | undefined | null, message = 'Value is not defined'): asserts value is T {
+export function assertDefined<T>(
+	value: T | undefined | null,
+	message = 'Value is not defined'
+): asserts value is T {
 	if (value === undefined || value === null) {
 		throw new Error(message);
 	}

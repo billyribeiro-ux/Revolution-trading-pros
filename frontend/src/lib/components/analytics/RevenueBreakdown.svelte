@@ -29,19 +29,21 @@
 	let { data }: Props = $props();
 
 	// Default data to prevent undefined errors
-	const safeData = $derived(data ?? {
-		mrr: 0,
-		mrr_change: 0,
-		arr: 0,
-		new_mrr: 0,
-		expansion_mrr: 0,
-		contraction_mrr: 0,
-		churn_mrr: 0,
-		net_new_mrr: 0,
-		churn_rate: 0,
-		ltv: 0,
-		arpu: 0
-	});
+	const safeData = $derived(
+		data ?? {
+			mrr: 0,
+			mrr_change: 0,
+			arr: 0,
+			new_mrr: 0,
+			expansion_mrr: 0,
+			contraction_mrr: 0,
+			churn_mrr: 0,
+			net_new_mrr: 0,
+			churn_rate: 0,
+			ltv: 0,
+			arpu: 0
+		}
+	);
 
 	function formatCurrency(value: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -174,28 +176,40 @@
 
 			<div class="waterfall-bar positive">
 				<div class="bar-label">New</div>
-				<div class="bar" style="height: {safeData.mrr > 0 ? (safeData.new_mrr / safeData.mrr) * 100 : 0}%">
+				<div
+					class="bar"
+					style="height: {safeData.mrr > 0 ? (safeData.new_mrr / safeData.mrr) * 100 : 0}%"
+				>
 					<span class="bar-value">+{formatCurrency(safeData.new_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar positive">
 				<div class="bar-label">Expansion</div>
-				<div class="bar" style="height: {safeData.mrr > 0 ? (safeData.expansion_mrr / safeData.mrr) * 100 : 0}%">
+				<div
+					class="bar"
+					style="height: {safeData.mrr > 0 ? (safeData.expansion_mrr / safeData.mrr) * 100 : 0}%"
+				>
 					<span class="bar-value">+{formatCurrency(safeData.expansion_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar negative">
 				<div class="bar-label">Contraction</div>
-				<div class="bar" style="height: {safeData.mrr > 0 ? (safeData.contraction_mrr / safeData.mrr) * 100 : 0}%">
+				<div
+					class="bar"
+					style="height: {safeData.mrr > 0 ? (safeData.contraction_mrr / safeData.mrr) * 100 : 0}%"
+				>
 					<span class="bar-value">-{formatCurrency(safeData.contraction_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar negative">
 				<div class="bar-label">Churn</div>
-				<div class="bar" style="height: {safeData.mrr > 0 ? (safeData.churn_mrr / safeData.mrr) * 100 : 0}%">
+				<div
+					class="bar"
+					style="height: {safeData.mrr > 0 ? (safeData.churn_mrr / safeData.mrr) * 100 : 0}%"
+				>
 					<span class="bar-value">-{formatCurrency(safeData.churn_mrr)}</span>
 				</div>
 			</div>

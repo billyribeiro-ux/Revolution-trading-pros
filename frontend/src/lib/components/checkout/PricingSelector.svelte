@@ -25,8 +25,13 @@
 		compact?: boolean;
 	}
 
-	let { plans, selectedPlanId = $bindable(), onSelect, loading = false, compact = false }: Props =
-		$props();
+	let {
+		plans,
+		selectedPlanId = $bindable(),
+		onSelect,
+		loading = false,
+		compact = false
+	}: Props = $props();
 
 	// Derived
 	let sortedPlans = $derived(sortPlansByBillingCycle(plans));

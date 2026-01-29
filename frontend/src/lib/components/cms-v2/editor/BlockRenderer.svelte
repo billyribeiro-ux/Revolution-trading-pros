@@ -56,22 +56,22 @@
 	// Using 'any' for component map to avoid complex Svelte 5 component typing
 	const blockComponents: Record<string, SvelteComponent<BlockProps>> = {
 		'rich-text': RichTextBlock as unknown as SvelteComponent<BlockProps>,
-		'paragraph': RichTextBlock as unknown as SvelteComponent<BlockProps>,
-		'text': RichTextBlock as unknown as SvelteComponent<BlockProps>,
-		'heading': HeadingBlock as unknown as SvelteComponent<BlockProps>,
-		'image': ImageBlock as unknown as SvelteComponent<BlockProps>,
-		'video': VideoBlock as unknown as SvelteComponent<BlockProps>,
-		'divider': DividerBlock as unknown as SvelteComponent<BlockProps>,
-		'spacer': SpacerBlock as unknown as SvelteComponent<BlockProps>,
-		'quote': QuoteBlock as unknown as SvelteComponent<BlockProps>,
-		'blockquote': QuoteBlock as unknown as SvelteComponent<BlockProps>,
-		'code': CodeBlock as unknown as SvelteComponent<BlockProps>,
+		paragraph: RichTextBlock as unknown as SvelteComponent<BlockProps>,
+		text: RichTextBlock as unknown as SvelteComponent<BlockProps>,
+		heading: HeadingBlock as unknown as SvelteComponent<BlockProps>,
+		image: ImageBlock as unknown as SvelteComponent<BlockProps>,
+		video: VideoBlock as unknown as SvelteComponent<BlockProps>,
+		divider: DividerBlock as unknown as SvelteComponent<BlockProps>,
+		spacer: SpacerBlock as unknown as SvelteComponent<BlockProps>,
+		quote: QuoteBlock as unknown as SvelteComponent<BlockProps>,
+		blockquote: QuoteBlock as unknown as SvelteComponent<BlockProps>,
+		code: CodeBlock as unknown as SvelteComponent<BlockProps>,
 		'code-block': CodeBlock as unknown as SvelteComponent<BlockProps>,
-		'list': ListBlock as unknown as SvelteComponent<BlockProps>,
+		list: ListBlock as unknown as SvelteComponent<BlockProps>,
 		'bullet-list': ListBlock as unknown as SvelteComponent<BlockProps>,
 		'numbered-list': ListBlock as unknown as SvelteComponent<BlockProps>,
-		'callout': CalloutBlock as unknown as SvelteComponent<BlockProps>,
-		'alert': CalloutBlock as unknown as SvelteComponent<BlockProps>,
+		callout: CalloutBlock as unknown as SvelteComponent<BlockProps>,
+		alert: CalloutBlock as unknown as SvelteComponent<BlockProps>,
 		'trade-setup': TradeSetupBlock as unknown as SvelteComponent<BlockProps>
 	};
 </script>
@@ -83,10 +83,17 @@
 	<!-- Unknown Block Type -->
 	<div class="unknown-block">
 		<div class="unknown-icon">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="12" cy="12" r="10"/>
-				<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-				<line x1="12" y1="17" x2="12.01" y2="17"/>
+			<svg
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<circle cx="12" cy="12" r="10" />
+				<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+				<line x1="12" y1="17" x2="12.01" y2="17" />
 			</svg>
 		</div>
 		<div class="unknown-content">

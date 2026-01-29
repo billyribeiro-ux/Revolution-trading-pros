@@ -46,14 +46,10 @@
 
 			<div class="selection-actions">
 				{#if onSelectAll && totalCount && selectedCount < totalCount}
-					<button type="button" class="link-btn" onclick={onSelectAll}>
-						Select all
-					</button>
+					<button type="button" class="link-btn" onclick={onSelectAll}> Select all </button>
 				{/if}
 				{#if onClearSelection}
-					<button type="button" class="link-btn" onclick={onClearSelection}>
-						Clear
-					</button>
+					<button type="button" class="link-btn" onclick={onClearSelection}> Clear </button>
 				{/if}
 			</div>
 		</div>

@@ -44,10 +44,9 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 			headers['Cookie'] = `session=${session}`;
 		}
 
-		const response = await fetch(
-			`${BACKEND_URL}/api/room-content/rooms/${roomSlug}/trade-plan`,
-			{ headers }
-		);
+		const response = await fetch(`${BACKEND_URL}/api/room-content/rooms/${roomSlug}/trade-plan`, {
+			headers
+		});
 
 		let entries: TradePlanEntry[] = [];
 		let weekOf = new Date().toISOString().split('T')[0];
@@ -111,8 +110,9 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		}
 
 		// Generate CSV
-		const csvHeader = 'Ticker,Bias,Entry,Target 1,Target 2,Target 3,Runner,Stop,Options Strike,Options Exp,Notes';
-		const csvRows = entries.map(e => 
+		const csvHeader =
+			'Ticker,Bias,Entry,Target 1,Target 2,Target 3,Runner,Stop,Options Strike,Options Exp,Notes';
+		const csvRows = entries.map((e) =>
 			[
 				e.ticker,
 				e.bias,

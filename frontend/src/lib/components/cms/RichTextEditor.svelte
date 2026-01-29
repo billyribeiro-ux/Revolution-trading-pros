@@ -272,13 +272,7 @@
 
 		<!-- Insert -->
 		<div class="toolbar-group">
-			<button
-				type="button"
-				class="toolbar-btn"
-				onclick={insertLink}
-				title="Insert Link"
-				{disabled}
-			>
+			<button type="button" class="toolbar-btn" onclick={insertLink} title="Insert Link" {disabled}>
 				<IconLink size={16} />
 			</button>
 			<button
@@ -335,16 +329,10 @@
 				{disabled}
 			></textarea>
 			<div class="html-actions">
-				<button
-					type="button"
-					class="btn-secondary"
-					onclick={() => (showHtml = false)}
-				>
+				<button type="button" class="btn-secondary" onclick={() => (showHtml = false)}>
 					Cancel
 				</button>
-				<button type="button" class="btn-primary" onclick={applyHtml}>
-					Apply Changes
-				</button>
+				<button type="button" class="btn-primary" onclick={applyHtml}> Apply Changes </button>
 			</div>
 		</div>
 	{:else}

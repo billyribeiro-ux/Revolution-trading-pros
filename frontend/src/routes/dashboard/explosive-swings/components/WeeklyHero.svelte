@@ -143,7 +143,14 @@
 	<!-- Collapse Toggle Header -->
 	<button class="hero-collapse-toggle" onclick={toggleCollapse} type="button">
 		<div class="hero-header-compact">
-			<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon" aria-hidden="true">
+			<svg
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				width="20"
+				height="20"
+				class="video-icon"
+				aria-hidden="true"
+			>
 				<path d="M8 5v14l11-7z" />
 			</svg>
 			<h1>{weeklyContent.title} — Weekly Breakdown</h1>
@@ -188,7 +195,15 @@
 				type="button"
 				aria-pressed={heroTab === 'entries'}
 			>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					width="18"
+					height="18"
+					aria-hidden="true"
+				>
 					<rect x="3" y="3" width="18" height="18" rx="2" />
 					<path d="M3 9h18M9 21V9" />
 				</svg>
@@ -210,7 +225,11 @@
 
 					<div class="video-layout" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
 						<!-- Video Player Container -->
-						<div class="video-player-container" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
+						<div
+							class="video-player-container"
+							class:playing={isVideoPlaying}
+							class:expanded={isVideoExpanded}
+						>
 							{#if isVideoPlaying}
 								<!-- Active Video Player with iframe -->
 								<div class="video-frame">
@@ -236,7 +255,15 @@
 										type="button"
 										aria-label="Close video"
 									>
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+											width="20"
+											height="20"
+											aria-hidden="true"
+										>
 											<path d="M18 6L6 18M6 6l12 12" />
 										</svg>
 									</button>
@@ -248,12 +275,32 @@
 										aria-label={isVideoExpanded ? 'Exit fullscreen' : 'Enter fullscreen'}
 									>
 										{#if isVideoExpanded}
-											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
-												<path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" />
+											<svg
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												width="20"
+												height="20"
+												aria-hidden="true"
+											>
+												<path
+													d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"
+												/>
 											</svg>
 										{:else}
-											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
-												<path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
+											<svg
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												width="20"
+												height="20"
+												aria-hidden="true"
+											>
+												<path
+													d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"
+												/>
 											</svg>
 										{/if}
 									</button>
@@ -289,7 +336,15 @@
 								<div class="video-actions">
 									{#if isAdmin && onUploadVideo}
 										<button class="admin-upload-btn" onclick={onUploadVideo} type="button">
-											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+											<svg
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												width="18"
+												height="18"
+												aria-hidden="true"
+											>
 												<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
 											</svg>
 											Upload New Video
@@ -297,7 +352,15 @@
 									{/if}
 									<a href={watchFullUrl} class="watch-btn">
 										Watch Full Video
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+											width="18"
+											height="18"
+											aria-hidden="true"
+										>
 											<path d="M5 12h14M12 5l7 7-7 7" />
 										</svg>
 									</a>
@@ -317,7 +380,14 @@
 							</div>
 							{#if isAdmin && onAddEntry}
 								<button class="admin-add-btn" onclick={onAddEntry}>
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+									<svg
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										width="18"
+										height="18"
+									>
 										<path d="M12 5v14M5 12h14" />
 									</svg>
 									Add Entry
@@ -348,12 +418,19 @@
 										<td class="ticker-cell">
 											<strong>{trade.ticker}</strong>
 											{#if isAdmin && onEditEntry}
-												<button 
+												<button
 													class="edit-entry-btn"
 													onclick={() => onEditEntry(trade)}
 													aria-label="Edit {trade.ticker}"
 												>
-													<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+													<svg
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="2"
+														width="14"
+														height="14"
+													>
 														<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
 														<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
 													</svg>
@@ -409,7 +486,9 @@
 					<div class="sheet-footer">
 						<a href={sheetUrl} target="_blank" class="google-sheet-link">
 							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-								<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z" />
+								<path
+									d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
+								/>
 							</svg>
 							Open in Google Sheets
 						</a>
@@ -458,7 +537,11 @@
 	}
 
 	.hero-header-compact h1 {
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-family:
+			'Montserrat',
+			-apple-system,
+			BlinkMacSystemFont,
+			sans-serif;
 		font-size: 17px;
 		font-weight: 700;
 		color: var(--color-bg-card);
@@ -569,8 +652,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -615,7 +702,7 @@
 		width: 85%;
 		max-width: 1000px;
 		transform: translateY(-8px);
-		box-shadow: 
+		box-shadow:
 			0 32px 64px rgba(0, 0, 0, 0.5),
 			0 16px 32px rgba(0, 0, 0, 0.3);
 		border-radius: 16px;
@@ -649,20 +736,12 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			135deg,
-			rgba(20, 62, 89, 0.4) 0%,
-			rgba(0, 0, 0, 0.5) 100%
-		);
+		background: linear-gradient(135deg, rgba(20, 62, 89, 0.4) 0%, rgba(0, 0, 0, 0.5) 100%);
 		transition: background 0.3s ease;
 	}
 
 	.video-player-container:hover .video-thumbnail::before {
-		background: linear-gradient(
-			135deg,
-			rgba(20, 62, 89, 0.3) 0%,
-			rgba(0, 0, 0, 0.4) 100%
-		);
+		background: linear-gradient(135deg, rgba(20, 62, 89, 0.3) 0%, rgba(0, 0, 0, 0.4) 100%);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -675,25 +754,25 @@
 		height: 80px;
 		border-radius: 50%;
 		cursor: pointer;
-		
+
 		/* Frosted Glass Effect */
 		background: rgba(255, 255, 255, 0.25);
 		backdrop-filter: blur(20px);
 		-webkit-backdrop-filter: blur(20px);
-		
+
 		/* Border for definition */
 		border: 2px solid rgba(255, 255, 255, 0.3);
-		
+
 		/* Shadow for depth */
-		box-shadow: 
+		box-shadow:
 			0 8px 32px rgba(0, 0, 0, 0.3),
 			0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-		
+
 		/* Layout */
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		
+
 		/* Transition */
 		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
@@ -702,7 +781,7 @@
 		transform: scale(1.1);
 		background: rgba(255, 255, 255, 0.4);
 		border-color: rgba(255, 255, 255, 0.5);
-		box-shadow: 
+		box-shadow:
 			0 12px 48px rgba(0, 0, 0, 0.4),
 			0 0 80px rgba(255, 255, 255, 0.2),
 			0 0 0 1px rgba(255, 255, 255, 0.2) inset;
@@ -790,7 +869,12 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 16px 20px;
-		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+		background: linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0.8) 0%,
+			rgba(0, 0, 0, 0.4) 60%,
+			transparent 100%
+		);
 		z-index: 20;
 		opacity: 0;
 		transition: opacity 0.25s ease;
@@ -861,7 +945,11 @@
 	}
 
 	.video-info h2 {
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-family:
+			'Montserrat',
+			-apple-system,
+			BlinkMacSystemFont,
+			sans-serif;
 		font-size: 28px;
 		font-weight: 700;
 		line-height: 1.2;

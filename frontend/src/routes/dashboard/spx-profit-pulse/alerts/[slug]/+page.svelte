@@ -22,12 +22,14 @@
 		const secs = seconds % 60;
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
-
 </script>
 
 <svelte:head>
 	<title>{alert?.title || 'Alert'} | SPX Profit Pulse | Revolution Trading Pros</title>
-	<meta name="description" content={alert?.excerpt || 'SPX Profit Pulse daily video and trade alerts'} />
+	<meta
+		name="description"
+		content={alert?.excerpt || 'SPX Profit Pulse daily video and trade alerts'}
+	/>
 </svelte:head>
 
 <div class="alert-detail">
@@ -40,12 +42,7 @@
 		<section class="alert-detail__video-section">
 			<div class="video-container">
 				{#if alert?.video?.url}
-					<video
-						controls
-						poster={alert.video.thumbnail}
-						class="video-player"
-						preload="metadata"
-					>
+					<video controls poster={alert.video.thumbnail} class="video-player" preload="metadata">
 						<source src={alert.video.url} type="video/mp4" />
 						Your browser doesn't support HTML5 video.
 					</video>
@@ -344,7 +341,9 @@
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 		text-decoration: none;
-		transition: transform 0.2s, box-shadow 0.2s;
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
 	}
 
 	.related-card:hover {

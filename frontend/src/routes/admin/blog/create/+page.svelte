@@ -343,14 +343,29 @@
 		<!-- Main Content Area -->
 		<div class="editor-main">
 			<div class="form-group">
-				<input id="post-title" name="title" type="text" bind:value={post.title} placeholder="Post Title" class="title-input" autocomplete="off" />
+				<input
+					id="post-title"
+					name="title"
+					type="text"
+					bind:value={post.title}
+					placeholder="Post Title"
+					class="title-input"
+					autocomplete="off"
+				/>
 			</div>
 
 			<div class="form-group">
 				<label for="slug">URL Slug</label>
 				<div class="slug-input">
 					<span class="slug-prefix">your-site.com/blog/</span>
-					<input id="slug" name="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" autocomplete="off" />
+					<input
+						id="slug"
+						name="slug"
+						type="text"
+						bind:value={post.slug}
+						placeholder="post-url-slug"
+						autocomplete="off"
+					/>
 				</div>
 			</div>
 
@@ -432,12 +447,22 @@
 						<IconCalendar size={16} />
 						Publish Date
 					</label>
-					<input id="publish-date" name="published_at" type="datetime-local" bind:value={post.published_at} />
+					<input
+						id="publish-date"
+						name="published_at"
+						type="datetime-local"
+						bind:value={post.published_at}
+					/>
 				</div>
 
 				<div class="form-group">
 					<label>
-						<input id="allow-comments" name="allow_comments" type="checkbox" bind:checked={post.allow_comments} />
+						<input
+							id="allow-comments"
+							name="allow_comments"
+							type="checkbox"
+							bind:checked={post.allow_comments}
+						/>
 						Allow Comments
 					</label>
 				</div>

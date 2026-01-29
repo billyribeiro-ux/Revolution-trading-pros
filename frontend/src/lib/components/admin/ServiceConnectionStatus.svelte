@@ -318,11 +318,7 @@
 				{/if}
 
 				<!-- Connect Button -->
-				<button
-					class="connect-button"
-					onclick={handleConnect}
-					style="--btn-color: {config.color}"
-				>
+				<button class="connect-button" onclick={handleConnect} style="--btn-color: {config.color}">
 					<svg
 						class="btn-icon"
 						viewBox="0 0 24 24"

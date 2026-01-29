@@ -257,18 +257,12 @@
 					>
 				</h1>
 
-				<p
-					data-gsap
-					class="text-xl text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
-				>
+				<p data-gsap class="text-xl text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
 					Institutional-grade S&P 500 options alerts delivered instantly via SMS & Discord. Capture
 					rapid moves, enjoy Section 1256 tax benefits, and sleep well with zero overnight risk.
 				</p>
 
-				<div
-					data-gsap
-					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4"
-				>
+				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
 					<a
 						href="#pricing"
 						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 offset-slate-950 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
@@ -474,34 +468,65 @@
 				<!-- Main Content Area -->
 				<div class="space-y-8">
 					<div class="text-center lg:text-left">
-						<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm">Member Preview</span>
+						<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm"
+							>Member Preview</span
+						>
 						<h2 class="text-3xl md:text-4xl font-heading font-bold text-slate-200 mt-2 mb-4">
 							Your Trading Command Center
 						</h2>
 						<p class="text-slate-400 max-w-2xl">
-							Get instant access to weekly video breakdowns, real-time performance tracking, and all the resources you need to trade confidently.
+							Get instant access to weekly video breakdowns, real-time performance tracking, and all
+							the resources you need to trade confidently.
 						</p>
 					</div>
-					
+
 					<!-- Feature Cards Preview -->
 					<div class="grid sm:grid-cols-2 gap-6">
 						<div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
-							<div class="w-12 h-12 rounded-lg bg-indigo-600/10 flex items-center justify-center mb-4">
-								<svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+							<div
+								class="w-12 h-12 rounded-lg bg-indigo-600/10 flex items-center justify-center mb-4"
+							>
+								<svg
+									class="w-6 h-6 text-indigo-500"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+									/>
 								</svg>
 							</div>
 							<h3 class="text-lg font-bold text-white mb-2">Real-Time Alerts</h3>
-							<p class="text-slate-400 text-sm">Instant SMS & Discord notifications for every entry, update, and exit.</p>
+							<p class="text-slate-400 text-sm">
+								Instant SMS & Discord notifications for every entry, update, and exit.
+							</p>
 						</div>
 						<div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
-							<div class="w-12 h-12 rounded-lg bg-emerald-600/10 flex items-center justify-center mb-4">
-								<svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+							<div
+								class="w-12 h-12 rounded-lg bg-emerald-600/10 flex items-center justify-center mb-4"
+							>
+								<svg
+									class="w-6 h-6 text-emerald-500"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+									/>
 								</svg>
 							</div>
 							<h3 class="text-lg font-bold text-white mb-2">Performance Tracking</h3>
-							<p class="text-slate-400 text-sm">Transparent P&L tracking with detailed trade history.</p>
+							<p class="text-slate-400 text-sm">
+								Transparent P&L tracking with detailed trade history.
+							</p>
 						</div>
 					</div>
 				</div>
@@ -512,7 +537,9 @@
 					<div class="bg-white rounded-2xl shadow-xl overflow-hidden">
 						<div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
 							<h3 class="font-bold text-slate-900 text-lg">Weekly Breakdown</h3>
-							<button class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
+							<button
+								class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+							>
 								Watch Full Video
 							</button>
 						</div>
@@ -520,29 +547,87 @@
 							<div class="relative bg-slate-900 rounded-xl overflow-hidden aspect-video">
 								<div class="absolute inset-0 flex items-center justify-center">
 									<div class="text-center">
-										<div class="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center mx-auto mb-3 shadow-lg cursor-pointer hover:scale-110 transition-transform">
-											<svg class="w-6 h-6 text-indigo-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
-												<path d="M8 5v14l11-7z"/>
+										<div
+											class="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center mx-auto mb-3 shadow-lg cursor-pointer hover:scale-110 transition-transform"
+										>
+											<svg
+												class="w-6 h-6 text-indigo-600 ml-1"
+												fill="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path d="M8 5v14l11-7z" />
 											</svg>
 										</div>
 										<p class="text-white font-semibold text-sm">Weekly Swing Setup Video</p>
 									</div>
 								</div>
 								<div class="absolute bottom-3 left-3 flex items-center gap-2">
-									<button aria-label="Play video" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
-										<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+									<button
+										aria-label="Play video"
+										class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+									>
+										<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"
+											><path d="M8 5v14l11-7z" /></svg
+										>
 									</button>
-									<button aria-label="Volume" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
-										<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728"/></svg>
+									<button
+										aria-label="Volume"
+										class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+									>
+										<svg
+											class="w-4 h-4 text-white"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											><path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728"
+											/></svg
+										>
 									</button>
 									<span class="text-white text-xs font-mono">0:00 / 9:58</span>
 								</div>
 								<div class="absolute bottom-3 right-3 flex items-center gap-2">
-									<button aria-label="Settings" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
-										<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+									<button
+										aria-label="Settings"
+										class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+									>
+										<svg
+											class="w-4 h-4 text-white"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											><path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+											/><path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+											/></svg
+										>
 									</button>
-									<button aria-label="Fullscreen" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
-										<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+									<button
+										aria-label="Fullscreen"
+										class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+									>
+										<svg
+											class="w-4 h-4 text-white"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											><path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+											/></svg
+										>
 									</button>
 								</div>
 								<div class="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
@@ -557,7 +642,9 @@
 						<h3 class="font-bold text-slate-900 text-lg mb-4">30-Day Performance</h3>
 						<div class="relative h-32">
 							<!-- Tooltip -->
-							<div class="absolute top-0 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-xs z-10">
+							<div
+								class="absolute top-0 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-xs z-10"
+							>
 								<div class="text-slate-500">Mar 11, 2024</div>
 								<div class="flex items-center gap-1.5 font-bold text-slate-900">
 									<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
@@ -568,13 +655,21 @@
 							<svg class="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
 								<defs>
 									<linearGradient id="spxChartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-										<stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3"/>
-										<stop offset="100%" style="stop-color:#6366f1;stop-opacity:0"/>
+										<stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+										<stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
 									</linearGradient>
 								</defs>
-								<path d="M0,70 Q50,65 80,55 T150,45 T220,35 T300,50" fill="none" stroke="#6366f1" stroke-width="2"/>
-								<path d="M0,70 Q50,65 80,55 T150,45 T220,35 T300,50 L300,100 L0,100 Z" fill="url(#spxChartGrad)"/>
-								<circle cx="150" cy="45" r="5" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+								<path
+									d="M0,70 Q50,65 80,55 T150,45 T220,35 T300,50"
+									fill="none"
+									stroke="#6366f1"
+									stroke-width="2"
+								/>
+								<path
+									d="M0,70 Q50,65 80,55 T150,45 T220,35 T300,50 L300,100 L0,100 Z"
+									fill="url(#spxChartGrad)"
+								/>
+								<circle cx="150" cy="45" r="5" fill="#fff" stroke="#6366f1" stroke-width="2" />
 							</svg>
 						</div>
 					</div>
@@ -585,9 +680,21 @@
 						<div class="bg-white rounded-2xl shadow-xl p-5">
 							<h3 class="font-bold text-slate-900 mb-3">Resources</h3>
 							<div class="space-y-2">
-								<a href="/resources" class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline">Resources</a>
-								<a href="/format-links" class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline">Format Links</a>
-								<a href="/support" class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline">Need Help</a>
+								<a
+									href="/resources"
+									class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline"
+									>Resources</a
+								>
+								<a
+									href="/format-links"
+									class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline"
+									>Format Links</a
+								>
+								<a
+									href="/support"
+									class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline"
+									>Need Help</a
+								>
 							</div>
 						</div>
 						<!-- Need Help -->
@@ -603,27 +710,32 @@
 					<div class="bg-white rounded-2xl shadow-xl p-5">
 						<h3 class="font-bold text-slate-900 text-lg mb-4">Latest Updates</h3>
 						<div class="grid grid-cols-3 gap-3">
-							{#each [
-								{ title: 'NVDA Entry Alert...', duration: '0:58' },
-								{ title: 'MSFT Exit...', duration: '0:38' },
-								{ title: 'NVDA Entry Alert...', duration: '0:22' },
-								{ title: 'NVDA Entry Alert...', duration: '0:27' },
-								{ title: 'MSRT Entry Alert...', duration: '0:20' },
-								{ title: 'MSFT Exit...', duration: '0:55' }
-							] as update}
+							{#each [{ title: 'NVDA Entry Alert...', duration: '0:58' }, { title: 'MSFT Exit...', duration: '0:38' }, { title: 'NVDA Entry Alert...', duration: '0:22' }, { title: 'NVDA Entry Alert...', duration: '0:27' }, { title: 'MSRT Entry Alert...', duration: '0:20' }, { title: 'MSFT Exit...', duration: '0:55' }] as update}
 								<button class="group text-left w-full">
 									<div class="relative bg-slate-900 rounded-lg overflow-hidden aspect-video mb-1.5">
-										<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+										<div
+											class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+										></div>
 										<div class="absolute inset-0 flex items-center justify-center">
-											<div class="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-												<svg class="w-3 h-3 text-slate-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+											<div
+												class="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform"
+											>
+												<svg
+													class="w-3 h-3 text-slate-900 ml-0.5"
+													fill="currentColor"
+													viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg
+												>
 											</div>
 										</div>
-										<span class="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
+										<span
+											class="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono"
+										>
 											{update.duration}
 										</span>
 									</div>
-									<p class="text-xs font-medium text-slate-700 truncate group-hover:text-indigo-600 transition-colors">
+									<p
+										class="text-xs font-medium text-slate-700 truncate group-hover:text-indigo-600 transition-colors"
+									>
 										{update.title}
 									</p>
 								</button>
@@ -649,10 +761,7 @@
 			</div>
 
 			<div class="grid md:grid-cols-3 gap-8">
-				<div
-					data-gsap
-					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
-				>
+				<div data-gsap class="bg-slate-900 p-8 rounded-2xl border border-slate-800">
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
 						<span class="text-emerald-500">💰</span> Tax Efficient (60/40)
 					</h3>
@@ -662,10 +771,7 @@
 						if you day trade them.
 					</p>
 				</div>
-				<div
-					data-gsap
-					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
-				>
+				<div data-gsap class="bg-slate-900 p-8 rounded-2xl border border-slate-800">
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
 						<span class="text-blue-500">🛡️</span> No Assignment Risk
 					</h3>
@@ -675,10 +781,7 @@
 						for shares you can't afford.
 					</p>
 				</div>
-				<div
-					data-gsap
-					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
-				>
+				<div data-gsap class="bg-slate-900 p-8 rounded-2xl border border-slate-800">
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
 						<span class="text-indigo-500">💧</span> Massive Liquidity
 					</h3>
@@ -1292,7 +1395,8 @@
 				</div>
 
 				<div
-					class="order-3 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan === 'annual'
+					class="order-3 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan ===
+					'annual'
 						? 'border-emerald-500 opacity-100 scale-105'
 						: 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>

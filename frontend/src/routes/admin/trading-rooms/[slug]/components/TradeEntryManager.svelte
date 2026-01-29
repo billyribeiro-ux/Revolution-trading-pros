@@ -13,12 +13,8 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import {
-		tradePlanApi,
-		type TradePlanEntry,
-		type Bias
-	} from '$lib/api/room-content';
-	
+	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
+
 	// Icons
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconEdit from '@tabler/icons-svelte/icons/edit';
@@ -161,7 +157,7 @@
 				stop: quickForm.stop || undefined
 			});
 			onSuccess?.(`${quickForm.ticker.toUpperCase()} added to trade plan`);
-			
+
 			// Reset quick form
 			quickForm = { ticker: '', bias: 'BULLISH', entry: '', stop: '' };
 			await loadEntries();
@@ -273,10 +269,10 @@
 			<span class="entry-count">{entries.length} entries</span>
 		</div>
 		<div class="header-actions">
-			<button 
+			<button
 				class="btn-quick-add"
 				class:active={showQuickAdd}
-				onclick={() => showQuickAdd = !showQuickAdd}
+				onclick={() => (showQuickAdd = !showQuickAdd)}
 			>
 				Quick Add
 			</button>
@@ -302,19 +298,9 @@
 				<option value="BEARISH">BEARISH</option>
 				<option value="NEUTRAL">NEUTRAL</option>
 			</select>
-			<input
-				type="text"
-				placeholder="Entry"
-				bind:value={quickForm.entry}
-				class="quick-input"
-			/>
-			<input
-				type="text"
-				placeholder="Stop"
-				bind:value={quickForm.stop}
-				class="quick-input"
-			/>
-			<button 
+			<input type="text" placeholder="Entry" bind:value={quickForm.entry} class="quick-input" />
+			<input type="text" placeholder="Stop" bind:value={quickForm.stop} class="quick-input" />
+			<button
 				class="btn-quick-submit"
 				onclick={quickAddEntry}
 				disabled={!isQuickFormValid || isSaving}
@@ -389,7 +375,11 @@
 								<button class="action-btn" title="Duplicate" onclick={() => duplicateEntry(entry)}>
 									<IconCopy size={16} />
 								</button>
-								<button class="action-btn delete" title="Delete" onclick={() => deleteEntry(entry.id)}>
+								<button
+									class="action-btn delete"
+									title="Delete"
+									onclick={() => deleteEntry(entry.id)}
+								>
 									<IconTrash size={16} />
 								</button>
 							</td>
@@ -403,7 +393,14 @@
 
 <!-- Add/Edit Modal -->
 {#if showModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.target === e.currentTarget && closeModal()} onkeydown={(e) => e.key === 'Escape' && closeModal()}>
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		onclick={(e) => e.target === e.currentTarget && closeModal()}
+		onkeydown={(e) => e.key === 'Escape' && closeModal()}
+	>
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3>{editingEntry ? 'Edit Entry' : 'Add New Entry'}</h3>
@@ -411,8 +408,14 @@
 					<IconX size={20} />
 				</button>
 			</div>
-			
-			<form class="entry-form" onsubmit={(e) => { e.preventDefault(); saveEntry(); }}>
+
+			<form
+				class="entry-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					saveEntry();
+				}}
+			>
 				<div class="form-row">
 					<div class="form-group">
 						<label for="ticker">Ticker *</label>
@@ -438,41 +441,89 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="entry">Entry Price</label>
-						<input id="entry" type="text" bind:value={form.entry} placeholder="$142.50" class="form-input" />
+						<input
+							id="entry"
+							type="text"
+							bind:value={form.entry}
+							placeholder="$142.50"
+							class="form-input"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="stop">Stop Loss</label>
-						<input id="stop" type="text" bind:value={form.stop} placeholder="$136.00" class="form-input" />
+						<input
+							id="stop"
+							type="text"
+							bind:value={form.stop}
+							placeholder="$136.00"
+							class="form-input"
+						/>
 					</div>
 				</div>
 
 				<div class="form-row targets">
 					<div class="form-group">
 						<label for="target1">Target 1</label>
-						<input id="target1" type="text" bind:value={form.target1} placeholder="$148" class="form-input" />
+						<input
+							id="target1"
+							type="text"
+							bind:value={form.target1}
+							placeholder="$148"
+							class="form-input"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="target2">Target 2</label>
-						<input id="target2" type="text" bind:value={form.target2} placeholder="$155" class="form-input" />
+						<input
+							id="target2"
+							type="text"
+							bind:value={form.target2}
+							placeholder="$155"
+							class="form-input"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="target3">Target 3</label>
-						<input id="target3" type="text" bind:value={form.target3} placeholder="$162" class="form-input" />
+						<input
+							id="target3"
+							type="text"
+							bind:value={form.target3}
+							placeholder="$162"
+							class="form-input"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="runner">Runner</label>
-						<input id="runner" type="text" bind:value={form.runner} placeholder="$170+" class="form-input" />
+						<input
+							id="runner"
+							type="text"
+							bind:value={form.runner}
+							placeholder="$170+"
+							class="form-input"
+						/>
 					</div>
 				</div>
 
 				<div class="form-row">
 					<div class="form-group">
 						<label for="options_strike">Options Strike</label>
-						<input id="options_strike" type="text" bind:value={form.options_strike} placeholder="$145C" class="form-input" />
+						<input
+							id="options_strike"
+							type="text"
+							bind:value={form.options_strike}
+							placeholder="$145C"
+							class="form-input"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="options_exp">Expiration</label>
-						<input id="options_exp" type="text" bind:value={form.options_exp} placeholder="Feb 21" class="form-input" />
+						<input
+							id="options_exp"
+							type="text"
+							bind:value={form.options_exp}
+							placeholder="Feb 21"
+							class="form-input"
+						/>
 					</div>
 				</div>
 
@@ -562,8 +613,8 @@
 	.btn-quick-add:hover,
 	.btn-quick-add.active {
 		background: #f1f5f9;
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	.btn-add-entry {
@@ -571,7 +622,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 16px;
-		background: #143E59;
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		font-size: 13px;
@@ -680,7 +731,7 @@
 
 	.ticker-badge {
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		font-size: 14px;
 	}
 
@@ -725,7 +776,7 @@
 
 	.action-btn:hover {
 		background: #f1f5f9;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.action-btn.delete:hover {
@@ -748,13 +799,15 @@
 		width: 32px;
 		height: 32px;
 		border: 3px solid #e2e8f0;
-		border-top-color: #143E59;
+		border-top-color: #143e59;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-icon {
@@ -777,7 +830,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 20px;
-		background: #143E59;
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		font-size: 14px;
@@ -885,7 +938,7 @@
 	.form-select:focus,
 	.form-textarea:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
 	}
 
@@ -923,7 +976,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 24px;
-		background: #143E59;
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		font-size: 14px;
@@ -944,7 +997,7 @@
 	.spinner-small {
 		width: 16px;
 		height: 16px;
-		border: 2px solid rgba(255,255,255,0.3);
+		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-top-color: white;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

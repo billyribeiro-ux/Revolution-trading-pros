@@ -18,11 +18,7 @@
 	import { goto } from '$app/navigation';
 	import { fly, scale } from 'svelte/transition';
 	import { backOut } from 'svelte/easing';
-	import {
-		cmsApi,
-		type CmsContentSummary,
-		type ContentListParams
-	} from '$lib/api/cms-v2';
+	import { cmsApi, type CmsContentSummary, type ContentListParams } from '$lib/api/cms-v2';
 	import type { CmsContentType, CmsContentStatus } from '$lib/page-builder/types';
 	import {
 		IconPlus,

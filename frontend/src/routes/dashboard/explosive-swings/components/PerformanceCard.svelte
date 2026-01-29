@@ -42,8 +42,14 @@
 
 		<!-- Stats Row -->
 		<div class="row-stats">
-			<span>Avg Win: <strong class="profit">{formatPercent(performance.avgWinPercent)}</strong></span>
-			<span>Avg Loss: <strong class="loss">{formatPercent(-Math.abs(performance.avgLossPercent))}</strong></span>
+			<span
+				>Avg Win: <strong class="profit">{formatPercent(performance.avgWinPercent)}</strong></span
+			>
+			<span
+				>Avg Loss: <strong class="loss"
+					>{formatPercent(-Math.abs(performance.avgLossPercent))}</strong
+				></span
+			>
 			<span>R/R: <strong>{formatRiskReward(riskReward)}</strong></span>
 		</div>
 
@@ -160,7 +166,12 @@
 
 	.skel-line {
 		height: 12px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-sm);
@@ -172,8 +183,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Responsive */

@@ -128,7 +128,7 @@ function generateChecksum(content: EditorContent): string {
 	let hash = 0;
 	for (let i = 0; i < str.length; i++) {
 		const char = str.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
+		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32-bit integer
 	}
 	return hash.toString(16);
@@ -320,7 +320,7 @@ class AutosaveStoreClass {
 			this.notifySubscribers();
 
 			// Start sync if online and have pending items
-			if (this._isOnline && items.some(i => i.status === 'pending')) {
+			if (this._isOnline && items.some((i) => i.status === 'pending')) {
 				this.scheduleSyncRetry();
 			}
 		} catch (error) {
@@ -446,7 +446,7 @@ class AutosaveStoreClass {
 		return this._isSyncing;
 	}
 	get pendingSyncCount(): number {
-		return this._syncQueue.filter(i => i.status === 'pending' || i.status === 'syncing').length;
+		return this._syncQueue.filter((i) => i.status === 'pending' || i.status === 'syncing').length;
 	}
 
 	// ==========================================================================
@@ -562,7 +562,11 @@ class AutosaveStoreClass {
 			});
 
 			if (import.meta.env.DEV) {
-				console.debug('[Autosave] Draft saved:', content.id, this._isOnline ? '(online)' : '(offline, queued for sync)');
+				console.debug(
+					'[Autosave] Draft saved:',
+					content.id,
+					this._isOnline ? '(online)' : '(offline, queued for sync)'
+				);
 			}
 		} catch (error) {
 			console.error('[Autosave] Save failed:', error);
@@ -760,7 +764,7 @@ class AutosaveStoreClass {
 				request.onerror = () => reject(request.error);
 			});
 
-			this._syncQueue = [...this._syncQueue.filter(i => i.contentId !== content.id), queueItem];
+			this._syncQueue = [...this._syncQueue.filter((i) => i.contentId !== content.id), queueItem];
 			this.notifySubscribers();
 
 			if (import.meta.env.DEV) {
@@ -777,7 +781,7 @@ class AutosaveStoreClass {
 	private async removeFromSyncQueue(contentId: string): Promise<void> {
 		try {
 			const db = await getDB();
-			const itemsToRemove = this._syncQueue.filter(i => i.contentId === contentId);
+			const itemsToRemove = this._syncQueue.filter((i) => i.contentId === contentId);
 
 			if (itemsToRemove.length === 0) return;
 
@@ -798,7 +802,7 @@ class AutosaveStoreClass {
 				if (itemsToRemove.length === 0) resolve();
 			});
 
-			this._syncQueue = this._syncQueue.filter(i => i.contentId !== contentId);
+			this._syncQueue = this._syncQueue.filter((i) => i.contentId !== contentId);
 			this.notifySubscribers();
 		} catch (error) {
 			console.error('[Autosave] Failed to remove from sync queue:', error);
@@ -820,7 +824,7 @@ class AutosaveStoreClass {
 				request.onerror = () => reject(request.error);
 			});
 
-			this._syncQueue = this._syncQueue.map(i => i.id === item.id ? item : i);
+			this._syncQueue = this._syncQueue.map((i) => (i.id === item.id ? item : i));
 			this.notifySubscribers();
 		} catch (error) {
 			console.error('[Autosave] Failed to update sync queue item:', error);
@@ -873,7 +877,7 @@ class AutosaveStoreClass {
 		if (!browser || !this._isOnline || this._isSyncing) return;
 
 		const pendingItems = this._syncQueue.filter(
-			i => i.status === 'pending' && i.nextRetryAt <= Date.now()
+			(i) => i.status === 'pending' && i.nextRetryAt <= Date.now()
 		);
 
 		if (pendingItems.length === 0) return;
@@ -970,7 +974,7 @@ class AutosaveStoreClass {
 		let serverContent: EditorContent | null = null;
 		try {
 			const response = await fetch(`/api/cms/content/${item.contentId}`, {
-				headers: { 'Accept': 'application/json' }
+				headers: { Accept: 'application/json' }
 			});
 			if (response.ok) {
 				serverContent = await response.json();
@@ -1026,11 +1030,11 @@ class AutosaveStoreClass {
 			clearTimeout(this.syncTimer);
 		}
 
-		const pendingItems = this._syncQueue.filter(i => i.status === 'pending');
+		const pendingItems = this._syncQueue.filter((i) => i.status === 'pending');
 		if (pendingItems.length === 0) return;
 
 		// Find next retry time
-		const nextRetry = Math.min(...pendingItems.map(i => i.nextRetryAt));
+		const nextRetry = Math.min(...pendingItems.map((i) => i.nextRetryAt));
 		const delay = Math.max(0, nextRetry - Date.now());
 
 		this.syncTimer = setTimeout(() => {
@@ -1050,19 +1054,13 @@ class AutosaveStoreClass {
 	private async checkForConflicts(): Promise<void> {
 		if (!this._currentDraft || !this._isOnline) return;
 
-		await this.checkVersionConflict(
-			this._currentDraft.contentId,
-			this._currentDraft
-		);
+		await this.checkVersionConflict(this._currentDraft.contentId, this._currentDraft);
 	}
 
 	/**
 	 * Check if local draft conflicts with server version
 	 */
-	private async checkVersionConflict(
-		contentId: string,
-		draft: AutosaveDraft
-	): Promise<boolean> {
+	private async checkVersionConflict(contentId: string, draft: AutosaveDraft): Promise<boolean> {
 		if (!this._isOnline) return false;
 
 		try {
@@ -1074,12 +1072,12 @@ class AutosaveStoreClass {
 			if (serverVersion.version > (draft.serverVersion ?? draft.version)) {
 				// Fetch full server content for comparison
 				const response = await fetch(`/api/cms/content/${contentId}`, {
-					headers: { 'Accept': 'application/json' }
+					headers: { Accept: 'application/json' }
 				});
 
 				if (!response.ok) return false;
 
-				const serverContent = await response.json() as EditorContent;
+				const serverContent = (await response.json()) as EditorContent;
 
 				// Check if content actually differs (not just version number)
 				const serverChecksum = generateChecksum(serverContent);
@@ -1199,7 +1197,7 @@ class AutosaveStoreClass {
 			const timeoutId = setTimeout(() => controller.abort(), VERSION_CHECK_TIMEOUT_MS);
 
 			const response = await fetch(`/api/cms/content/${contentId}/version`, {
-				headers: { 'Accept': 'application/json' },
+				headers: { Accept: 'application/json' },
 				signal: controller.signal
 			});
 
@@ -1232,7 +1230,7 @@ class AutosaveStoreClass {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'Accept': 'application/json'
+					Accept: 'application/json'
 				},
 				body: JSON.stringify({
 					contentId: content.id,

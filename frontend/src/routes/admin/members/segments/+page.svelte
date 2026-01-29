@@ -559,260 +559,261 @@
 
 		<!-- Header -->
 		<header class="page-header">
-		<button class="back-btn" onclick={() => goto('/admin/members')}>
-			<IconArrowLeft size={20} />
-			Back to Members
-		</button>
+			<button class="back-btn" onclick={() => goto('/admin/members')}>
+				<IconArrowLeft size={20} />
+				Back to Members
+			</button>
 
-		<h1>Member Segments</h1>
-		<p class="subtitle">Organize members with segments, tags, and filters</p>
+			<h1>Member Segments</h1>
+			<p class="subtitle">Organize members with segments, tags, and filters</p>
 
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={loadData}>
-				<IconRefresh size={18} />
-				Refresh
-			</button>
-			<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
-				<IconDownload size={18} />
-				Save Filter
-			</button>
-		</div>
-	</header>
-
-	<!-- Tabs -->
-	<div class="tabs-container">
-		<div class="tabs">
-			<button class:active={activeTab === 'segments'} onclick={() => (activeTab = 'segments')}>
-				<IconFilter size={18} />
-				Smart Segments ({segments.length})
-			</button>
-			<button class:active={activeTab === 'tags'} onclick={() => (activeTab = 'tags')}>
-				<IconTag size={18} />
-				Tags ({tags.length})
-			</button>
-			<button class:active={activeTab === 'saved'} onclick={() => (activeTab = 'saved')}>
-				<IconSearch size={18} />
-				Saved Filters ({savedFilters.length})
-			</button>
-		</div>
-
-		<div class="tab-actions">
-			{#if activeTab === 'segments'}
-				<button class="btn-primary" onclick={() => (showCreateSegmentModal = true)}>
-					<IconPlus size={18} />
-					New Segment
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={loadData}>
+					<IconRefresh size={18} />
+					Refresh
 				</button>
-			{:else if activeTab === 'tags'}
-				<button class="btn-primary" onclick={() => (showCreateTagModal = true)}>
-					<IconPlus size={18} />
-					New Tag
+				<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
+					<IconDownload size={18} />
+					Save Filter
 				</button>
-			{/if}
-		</div>
-	</div>
-
-	{#if loading}
-		<div class="loading-grid">
-			{#each [1, 2, 3, 4] as _}
-				<div class="skeleton skeleton-card"></div>
-			{/each}
-		</div>
-	{:else}
-		<!-- Segments Tab -->
-		{#if activeTab === 'segments'}
-			<div class="segments-grid">
-				{#each segments as segment}
-					<div
-						class="segment-card"
-						class:system={segment.isSystem}
-						role="button"
-						tabindex="0"
-						onclick={() => openSegmentDrawer(segment)}
-						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openSegmentDrawer(segment)}
-					>
-						<div class="segment-header">
-							<div class="segment-info">
-								<h3>{segment.name}</h3>
-								{#if segment.isSystem}
-									<span class="system-badge">System</span>
-								{/if}
-							</div>
-							<div class="segment-count">
-								<IconUsers size={16} />
-								{formatNumber(segment.memberCount)}
-							</div>
-						</div>
-
-						<p class="segment-description">{segment.description}</p>
-
-						<div class="segment-conditions">
-							{#each segment.conditions as condition}
-								<span class="condition-tag">
-									{conditionFields.find((f) => f.value === condition.field)?.label ||
-										condition.field}
-									{conditionOperators[condition.field]?.find((o) => o.value === condition.operator)
-										?.label || condition.operator}
-									{condition.value}
-								</span>
-							{/each}
-						</div>
-
-						<div class="segment-footer">
-							<div class="footer-left">
-								<span class="updated">
-									<IconCalendar size={12} />
-									Updated {formatDate(segment.lastUpdated)}
-								</span>
-								{#if segment.memberCount > 1000}
-									<span class="growth-badge">
-										<IconTrendingUp size={12} />
-										High Volume
-									</span>
-								{/if}
-							</div>
-							<div class="segment-actions">
-								<button
-									class="btn-icon"
-									type="button"
-									onclick={() => viewSegmentMembers(segment)}
-									title="View members"
-								>
-									<IconUsers size={16} />
-								</button>
-								<button
-									class="btn-icon"
-									type="button"
-									onclick={() => openSegmentDrawer(segment)}
-									title="View analytics"
-								>
-									<IconChartBar size={16} />
-								</button>
-								<button
-									class="btn-icon"
-									type="button"
-									onclick={() => exportSegmentData(segment)}
-									title="Export data"
-								>
-									<IconDownload size={16} />
-								</button>
-								<button class="btn-icon" type="button" title="Send campaign">
-									<IconMail size={16} />
-								</button>
-								{#if !segment.isSystem}
-									<button class="btn-icon" type="button" title="Edit">
-										<IconEdit size={16} />
-									</button>
-									<button
-										class="btn-icon danger"
-										type="button"
-										onclick={() => confirmDeleteSegment(segment)}
-										title="Delete"
-									>
-										<IconTrash size={16} />
-									</button>
-								{/if}
-							</div>
-						</div>
-					</div>
-				{/each}
 			</div>
-		{/if}
+		</header>
 
-		<!-- Tags Tab -->
-		{#if activeTab === 'tags'}
-			<div class="tags-grid">
-				{#each tags as tag}
-					<div class="tag-card">
-						<div class="tag-header">
-							<div class="tag-name" style="--tag-color: {tag.color}">
-								<span class="tag-dot"></span>
-								{tag.name}
-							</div>
-							<div class="tag-count">
-								{formatNumber(tag.memberCount)} members
-							</div>
-						</div>
-
-						<div class="tag-actions">
-							<button
-								class="btn-secondary small"
-								type="button"
-								onclick={() => goto(`/admin/members?tag=${tag.id}`)}
-							>
-								<IconUsers size={14} />
-								View Members
-							</button>
-							<button class="btn-icon" type="button" title="Edit">
-								<IconEdit size={16} />
-							</button>
-							<button
-								class="btn-icon danger"
-								type="button"
-								onclick={() => confirmDeleteTag(tag)}
-								title="Delete"
-							>
-								<IconTrash size={16} />
-							</button>
-						</div>
-					</div>
-				{/each}
+		<!-- Tabs -->
+		<div class="tabs-container">
+			<div class="tabs">
+				<button class:active={activeTab === 'segments'} onclick={() => (activeTab = 'segments')}>
+					<IconFilter size={18} />
+					Smart Segments ({segments.length})
+				</button>
+				<button class:active={activeTab === 'tags'} onclick={() => (activeTab = 'tags')}>
+					<IconTag size={18} />
+					Tags ({tags.length})
+				</button>
+				<button class:active={activeTab === 'saved'} onclick={() => (activeTab = 'saved')}>
+					<IconSearch size={18} />
+					Saved Filters ({savedFilters.length})
+				</button>
 			</div>
-		{/if}
 
-		<!-- Saved Filters Tab -->
-		{#if activeTab === 'saved'}
-			<div class="filters-list">
-				{#each savedFilters as filter}
-					<div class="filter-card">
-						<div class="filter-info">
-							<h3>{filter.name}</h3>
-							<div class="filter-meta">
-								<span>Created {formatDate(filter.createdAt)}</span>
-								<span>Used {filter.usageCount} times</span>
-							</div>
-						</div>
-
-						<div class="filter-pills">
-							{#each Object.entries(filter.filters) as [key, value]}
-								<span class="filter-pill">
-									{key}: {value}
-								</span>
-							{/each}
-						</div>
-
-						<div class="filter-actions">
-							<button
-								class="btn-primary small"
-								type="button"
-								onclick={() => applySavedFilter(filter)}
-							>
-								Apply Filter
-							</button>
-							<button class="btn-icon" type="button" title="Duplicate">
-								<IconCopy size={16} />
-							</button>
-							<button
-								class="btn-icon danger"
-								type="button"
-								onclick={() => confirmDeleteFilter(filter)}
-								title="Delete"
-							>
-								<IconTrash size={16} />
-							</button>
-						</div>
-					</div>
-				{/each}
-
-				{#if savedFilters.length === 0}
-					<div class="empty-state">
-						<IconSearch size={48} stroke={1} />
-						<h3>No saved filters</h3>
-						<p>Save filters from the Members page to quickly apply them later</p>
-					</div>
+			<div class="tab-actions">
+				{#if activeTab === 'segments'}
+					<button class="btn-primary" onclick={() => (showCreateSegmentModal = true)}>
+						<IconPlus size={18} />
+						New Segment
+					</button>
+				{:else if activeTab === 'tags'}
+					<button class="btn-primary" onclick={() => (showCreateTagModal = true)}>
+						<IconPlus size={18} />
+						New Tag
+					</button>
 				{/if}
 			</div>
+		</div>
+
+		{#if loading}
+			<div class="loading-grid">
+				{#each [1, 2, 3, 4] as _}
+					<div class="skeleton skeleton-card"></div>
+				{/each}
+			</div>
+		{:else}
+			<!-- Segments Tab -->
+			{#if activeTab === 'segments'}
+				<div class="segments-grid">
+					{#each segments as segment}
+						<div
+							class="segment-card"
+							class:system={segment.isSystem}
+							role="button"
+							tabindex="0"
+							onclick={() => openSegmentDrawer(segment)}
+							onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openSegmentDrawer(segment)}
+						>
+							<div class="segment-header">
+								<div class="segment-info">
+									<h3>{segment.name}</h3>
+									{#if segment.isSystem}
+										<span class="system-badge">System</span>
+									{/if}
+								</div>
+								<div class="segment-count">
+									<IconUsers size={16} />
+									{formatNumber(segment.memberCount)}
+								</div>
+							</div>
+
+							<p class="segment-description">{segment.description}</p>
+
+							<div class="segment-conditions">
+								{#each segment.conditions as condition}
+									<span class="condition-tag">
+										{conditionFields.find((f) => f.value === condition.field)?.label ||
+											condition.field}
+										{conditionOperators[condition.field]?.find(
+											(o) => o.value === condition.operator
+										)?.label || condition.operator}
+										{condition.value}
+									</span>
+								{/each}
+							</div>
+
+							<div class="segment-footer">
+								<div class="footer-left">
+									<span class="updated">
+										<IconCalendar size={12} />
+										Updated {formatDate(segment.lastUpdated)}
+									</span>
+									{#if segment.memberCount > 1000}
+										<span class="growth-badge">
+											<IconTrendingUp size={12} />
+											High Volume
+										</span>
+									{/if}
+								</div>
+								<div class="segment-actions">
+									<button
+										class="btn-icon"
+										type="button"
+										onclick={() => viewSegmentMembers(segment)}
+										title="View members"
+									>
+										<IconUsers size={16} />
+									</button>
+									<button
+										class="btn-icon"
+										type="button"
+										onclick={() => openSegmentDrawer(segment)}
+										title="View analytics"
+									>
+										<IconChartBar size={16} />
+									</button>
+									<button
+										class="btn-icon"
+										type="button"
+										onclick={() => exportSegmentData(segment)}
+										title="Export data"
+									>
+										<IconDownload size={16} />
+									</button>
+									<button class="btn-icon" type="button" title="Send campaign">
+										<IconMail size={16} />
+									</button>
+									{#if !segment.isSystem}
+										<button class="btn-icon" type="button" title="Edit">
+											<IconEdit size={16} />
+										</button>
+										<button
+											class="btn-icon danger"
+											type="button"
+											onclick={() => confirmDeleteSegment(segment)}
+											title="Delete"
+										>
+											<IconTrash size={16} />
+										</button>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			<!-- Tags Tab -->
+			{#if activeTab === 'tags'}
+				<div class="tags-grid">
+					{#each tags as tag}
+						<div class="tag-card">
+							<div class="tag-header">
+								<div class="tag-name" style="--tag-color: {tag.color}">
+									<span class="tag-dot"></span>
+									{tag.name}
+								</div>
+								<div class="tag-count">
+									{formatNumber(tag.memberCount)} members
+								</div>
+							</div>
+
+							<div class="tag-actions">
+								<button
+									class="btn-secondary small"
+									type="button"
+									onclick={() => goto(`/admin/members?tag=${tag.id}`)}
+								>
+									<IconUsers size={14} />
+									View Members
+								</button>
+								<button class="btn-icon" type="button" title="Edit">
+									<IconEdit size={16} />
+								</button>
+								<button
+									class="btn-icon danger"
+									type="button"
+									onclick={() => confirmDeleteTag(tag)}
+									title="Delete"
+								>
+									<IconTrash size={16} />
+								</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			<!-- Saved Filters Tab -->
+			{#if activeTab === 'saved'}
+				<div class="filters-list">
+					{#each savedFilters as filter}
+						<div class="filter-card">
+							<div class="filter-info">
+								<h3>{filter.name}</h3>
+								<div class="filter-meta">
+									<span>Created {formatDate(filter.createdAt)}</span>
+									<span>Used {filter.usageCount} times</span>
+								</div>
+							</div>
+
+							<div class="filter-pills">
+								{#each Object.entries(filter.filters) as [key, value]}
+									<span class="filter-pill">
+										{key}: {value}
+									</span>
+								{/each}
+							</div>
+
+							<div class="filter-actions">
+								<button
+									class="btn-primary small"
+									type="button"
+									onclick={() => applySavedFilter(filter)}
+								>
+									Apply Filter
+								</button>
+								<button class="btn-icon" type="button" title="Duplicate">
+									<IconCopy size={16} />
+								</button>
+								<button
+									class="btn-icon danger"
+									type="button"
+									onclick={() => confirmDeleteFilter(filter)}
+									title="Delete"
+								>
+									<IconTrash size={16} />
+								</button>
+							</div>
+						</div>
+					{/each}
+
+					{#if savedFilters.length === 0}
+						<div class="empty-state">
+							<IconSearch size={48} stroke={1} />
+							<h3>No saved filters</h3>
+							<p>Save filters from the Members page to quickly apply them later</p>
+						</div>
+					{/if}
+				</div>
+			{/if}
 		{/if}
-	{/if}
 	</div>
 </div>
 
@@ -1641,7 +1642,9 @@
 		max-width: 500px;
 		max-height: 90vh;
 		overflow-y: auto;
-		box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(230, 184, 0, 0.1);
+		box-shadow:
+			0 25px 60px -15px rgba(0, 0, 0, 0.7),
+			0 0 40px -10px rgba(230, 184, 0, 0.1);
 	}
 
 	.modal-content.large {

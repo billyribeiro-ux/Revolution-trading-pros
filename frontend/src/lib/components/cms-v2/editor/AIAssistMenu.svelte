@@ -340,7 +340,8 @@
 			}
 		} catch (err) {
 			console.error('AI assist error:', err);
-			error = err instanceof Error ? err.message : 'An error occurred while processing your request.';
+			error =
+				err instanceof Error ? err.message : 'An error occurred while processing your request.';
 		} finally {
 			isLoading = false;
 		}
@@ -554,7 +555,14 @@
 					<IconAlertCircle size={24} />
 				</div>
 				<p class="error-message">{error}</p>
-				<button type="button" class="retry-btn" onclick={() => { error = null; selectedAction = null; }}>
+				<button
+					type="button"
+					class="retry-btn"
+					onclick={() => {
+						error = null;
+						selectedAction = null;
+					}}
+				>
 					Try Again
 				</button>
 			</div>
@@ -595,18 +603,8 @@
 					{displayText}
 				</div>
 				<div class="result-actions">
-					<button
-						type="button"
-						class="discard-btn"
-						onclick={resetState}
-					>
-						Discard
-					</button>
-					<button
-						type="button"
-						class="apply-btn"
-						onclick={handleApply}
-					>
+					<button type="button" class="discard-btn" onclick={resetState}> Discard </button>
+					<button type="button" class="apply-btn" onclick={handleApply}>
 						<IconArrowRight size={16} />
 						Apply
 					</button>
@@ -679,7 +677,9 @@
 				<!-- Selected Text Preview -->
 				<div class="selection-preview">
 					<span class="preview-label">Selected text:</span>
-					<p class="preview-text">{selectedText.slice(0, 150)}{selectedText.length > 150 ? '...' : ''}</p>
+					<p class="preview-text">
+						{selectedText.slice(0, 150)}{selectedText.length > 150 ? '...' : ''}
+					</p>
 					<span class="char-count">{selectedText.length} characters</span>
 				</div>
 			</div>
@@ -717,7 +717,10 @@
 			0 0 40px rgba(99, 102, 241, 0.1);
 		backdrop-filter: blur(20px);
 		overflow: hidden;
-		font-family: system-ui, -apple-system, sans-serif;
+		font-family:
+			system-ui,
+			-apple-system,
+			sans-serif;
 	}
 
 	.ai-assist-menu.has-result {
@@ -1219,11 +1222,7 @@
 	/* Dark mode support */
 	@media (prefers-color-scheme: dark) {
 		.ai-assist-menu {
-			background: linear-gradient(
-				135deg,
-				rgba(30, 41, 59, 0.98) 0%,
-				rgba(15, 23, 42, 0.98) 100%
-			);
+			background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%);
 			border-color: rgba(99, 102, 241, 0.3);
 		}
 

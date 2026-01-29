@@ -277,7 +277,12 @@
 				<h3>Alt Text Settings</h3>
 				<div class="setting-row">
 					<label class="checkbox-label">
-						<input id="alt-text-enabled" name="alt-text-enabled" type="checkbox" bind:checked={settings.altTextEnabled} />
+						<input
+							id="alt-text-enabled"
+							name="alt-text-enabled"
+							type="checkbox"
+							bind:checked={settings.altTextEnabled}
+						/>
 						Enable auto alt text generation
 					</label>
 				</div>
@@ -311,13 +316,23 @@
 				</div>
 				<div class="setting-row">
 					<label class="checkbox-label">
-						<input id="alt-strip-numbers" name="alt-strip-numbers" type="checkbox" bind:checked={settings.altTextStripNumbers} />
+						<input
+							id="alt-strip-numbers"
+							name="alt-strip-numbers"
+							type="checkbox"
+							bind:checked={settings.altTextStripNumbers}
+						/>
 						Remove numbers from filename
 					</label>
 				</div>
 				<div class="setting-row">
 					<label class="checkbox-label">
-						<input id="alt-strip-special" name="alt-strip-special" type="checkbox" bind:checked={settings.altTextStripSpecialChars} />
+						<input
+							id="alt-strip-special"
+							name="alt-strip-special"
+							type="checkbox"
+							bind:checked={settings.altTextStripSpecialChars}
+						/>
 						Remove special characters
 					</label>
 				</div>
@@ -327,7 +342,12 @@
 				<h3>Title Attribute Settings</h3>
 				<div class="setting-row">
 					<label class="checkbox-label">
-						<input id="title-enabled" name="title-enabled" type="checkbox" bind:checked={settings.titleEnabled} />
+						<input
+							id="title-enabled"
+							name="title-enabled"
+							type="checkbox"
+							bind:checked={settings.titleEnabled}
+						/>
 						Enable auto title generation
 					</label>
 				</div>
@@ -362,7 +382,12 @@
 				</div>
 				<div class="setting-row">
 					<label class="checkbox-label">
-						<input id="overwrite-existing" name="overwrite-existing" type="checkbox" bind:checked={settings.overwriteExisting} />
+						<input
+							id="overwrite-existing"
+							name="overwrite-existing"
+							type="checkbox"
+							bind:checked={settings.overwriteExisting}
+						/>
 						Overwrite existing alt/title attributes
 					</label>
 				</div>

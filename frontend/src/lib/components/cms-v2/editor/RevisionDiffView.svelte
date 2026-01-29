@@ -14,22 +14,18 @@
   @date January 2026
 -->
 
+<script module lang="ts">
+	// Re-export types from the centralized types file
+	export type { Revision } from './types';
+</script>
+
 <script lang="ts">
 	import type { PageBlock } from '$lib/page-builder/types';
+	import type { Revision } from './types';
 
 	// =========================================================================
-	// Types
+	// Types (Internal)
 	// =========================================================================
-
-	export interface Revision {
-		id: string;
-		revision_number: number;
-		created_at: string;
-		created_by: string | null;
-		change_summary: string | null;
-		changed_fields: string[] | null;
-		data?: RevisionData;
-	}
 
 	interface RevisionData {
 		title?: string;
@@ -183,7 +179,11 @@
 		let lcsIdx = 0;
 
 		while (oldIdx < oldWords.length || newIdx < newWords.length) {
-			if (lcsIdx < lcs.length && oldWords[oldIdx] === lcs[lcsIdx] && newWords[newIdx] === lcs[lcsIdx]) {
+			if (
+				lcsIdx < lcs.length &&
+				oldWords[oldIdx] === lcs[lcsIdx] &&
+				newWords[newIdx] === lcs[lcsIdx]
+			) {
 				// Equal
 				if (result.length > 0 && result[result.length - 1].type === 'equal') {
 					result[result.length - 1].text += oldWords[oldIdx];
@@ -193,7 +193,10 @@
 				oldIdx++;
 				newIdx++;
 				lcsIdx++;
-			} else if (oldIdx < oldWords.length && (lcsIdx >= lcs.length || oldWords[oldIdx] !== lcs[lcsIdx])) {
+			} else if (
+				oldIdx < oldWords.length &&
+				(lcsIdx >= lcs.length || oldWords[oldIdx] !== lcs[lcsIdx])
+			) {
 				// Delete
 				if (result.length > 0 && result[result.length - 1].type === 'delete') {
 					result[result.length - 1].text += oldWords[oldIdx];
@@ -421,10 +424,8 @@
 		const lower = summary.toLowerCase();
 		if (lower.includes('create') || lower.includes('initial'))
 			return { text: 'Created', class: 'bg-green-100 text-green-700' };
-		if (lower.includes('publish'))
-			return { text: 'Published', class: 'bg-blue-100 text-blue-700' };
-		if (lower.includes('auto'))
-			return { text: 'Autosave', class: 'bg-gray-100 text-gray-600' };
+		if (lower.includes('publish')) return { text: 'Published', class: 'bg-blue-100 text-blue-700' };
+		if (lower.includes('auto')) return { text: 'Autosave', class: 'bg-gray-100 text-gray-600' };
 		if (lower.includes('restore'))
 			return { text: 'Restored', class: 'bg-purple-100 text-purple-700' };
 		return { text: 'Updated', class: 'bg-amber-100 text-amber-700' };
@@ -482,7 +483,8 @@
 			const targetPane = source === 'left' ? rightPaneRef : leftPaneRef;
 
 			if (sourcePane && targetPane) {
-				const scrollRatio = sourcePane.scrollTop / (sourcePane.scrollHeight - sourcePane.clientHeight);
+				const scrollRatio =
+					sourcePane.scrollTop / (sourcePane.scrollHeight - sourcePane.clientHeight);
 				targetPane.scrollTop = scrollRatio * (targetPane.scrollHeight - targetPane.clientHeight);
 			}
 
@@ -517,7 +519,12 @@
 							v{fromRevision.revision_number}
 						</span>
 						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M17 8l4 4m0 0l-4 4m4-4H3"
+							/>
 						</svg>
 						<span class="rounded bg-green-50 px-2 py-0.5 font-medium text-green-700">
 							v{toRevision.revision_number}
@@ -529,7 +536,12 @@
 							aria-label="Swap from and to revisions"
 						>
 							<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+								/>
 							</svg>
 						</button>
 					</div>
@@ -539,7 +551,9 @@
 			<div class="flex items-center gap-3">
 				<!-- Diff Stats -->
 				{#if fromRevision && toRevision}
-					<div class="flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium">
+					<div
+						class="flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium"
+					>
 						<span class="flex items-center gap-1 text-green-600" title="Added fields">
 							<span class="text-base">+</span>{diffStats.added}
 						</span>
@@ -557,18 +571,35 @@
 					<button
 						class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 						onclick={handleRestore}
-						disabled={isRestoring || toRevision.revision_number === sortedRevisions[0]?.revision_number}
+						disabled={isRestoring ||
+							toRevision.revision_number === sortedRevisions[0]?.revision_number}
 						aria-busy={isRestoring}
 					>
 						{#if isRestoring}
 							<svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								<circle
+									class="opacity-25"
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="4"
+								></circle>
+								<path
+									class="opacity-75"
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								></path>
 							</svg>
 							Restoring...
 						{:else}
 							<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+								/>
 							</svg>
 							Restore v{toRevision.revision_number}
 						{/if}
@@ -582,7 +613,12 @@
 					aria-label="Close diff view"
 				>
 					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M6 18L18 6M6 6l12 12"
+						/>
 					</svg>
 				</button>
 			</div>
@@ -598,8 +634,18 @@
 				<!-- Sidebar Header -->
 				<div class="border-b border-gray-200 p-3">
 					<div class="relative">
-						<svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<svg
+							class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
 						</svg>
 						<input
 							type="text"
@@ -611,19 +657,28 @@
 
 					<div class="mt-2 flex gap-1">
 						<button
-							class="flex-1 rounded px-2 py-1 text-xs font-medium transition-colors {filterType === 'all' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-200'}"
+							class="flex-1 rounded px-2 py-1 text-xs font-medium transition-colors {filterType ===
+							'all'
+								? 'bg-blue-100 text-blue-700'
+								: 'text-gray-600 hover:bg-gray-200'}"
 							onclick={() => (filterType = 'all')}
 						>
 							All
 						</button>
 						<button
-							class="flex-1 rounded px-2 py-1 text-xs font-medium transition-colors {filterType === 'manual' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-200'}"
+							class="flex-1 rounded px-2 py-1 text-xs font-medium transition-colors {filterType ===
+							'manual'
+								? 'bg-blue-100 text-blue-700'
+								: 'text-gray-600 hover:bg-gray-200'}"
 							onclick={() => (filterType = 'manual')}
 						>
 							Manual
 						</button>
 						<button
-							class="flex-1 rounded px-2 py-1 text-xs font-medium transition-colors {filterType === 'auto' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-200'}"
+							class="flex-1 rounded px-2 py-1 text-xs font-medium transition-colors {filterType ===
+							'auto'
+								? 'bg-blue-100 text-blue-700'
+								: 'text-gray-600 hover:bg-gray-200'}"
 							onclick={() => (filterType = 'auto')}
 						>
 							Auto
@@ -658,9 +713,13 @@
 							<!-- Header Row -->
 							<div class="flex items-start justify-between gap-2">
 								<div class="flex items-center gap-2">
-									<span class="text-sm font-semibold text-gray-900">v{revision.revision_number}</span>
+									<span class="text-sm font-semibold text-gray-900"
+										>v{revision.revision_number}</span
+									>
 									{#if isCurrent}
-										<span class="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
+										<span
+											class="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-emerald-700"
+										>
 											Current
 										</span>
 									{/if}
@@ -671,9 +730,17 @@
 							</div>
 
 							<!-- Timestamp -->
-							<div class="mt-1 flex items-center gap-1 text-xs text-gray-500" title={formatFullDate(revision.created_at)}>
+							<div
+								class="mt-1 flex items-center gap-1 text-xs text-gray-500"
+								title={formatFullDate(revision.created_at)}
+							>
 								<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
 								</svg>
 								{formatRelativeTime(revision.created_at)}
 							</div>
@@ -708,7 +775,11 @@
 
 							<!-- Selection Indicator -->
 							{#if isFrom || isTo}
-								<div class="mt-2 flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide {isFrom ? 'text-red-600' : 'text-green-600'}">
+								<div
+									class="mt-2 flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide {isFrom
+										? 'text-red-600'
+										: 'text-green-600'}"
+								>
 									{isFrom ? 'From (Old)' : 'To (New)'}
 								</div>
 							{/if}
@@ -716,9 +787,7 @@
 					{/each}
 
 					{#if filteredRevisions().length === 0}
-						<div class="py-8 text-center text-sm text-gray-500">
-							No revisions found
-						</div>
+						<div class="py-8 text-center text-sm text-gray-500">No revisions found</div>
 					{/if}
 				</div>
 			</aside>
@@ -750,7 +819,9 @@
 									{formatRelativeTime(toRevision.created_at)}
 								</span>
 								{#if toRevision.revision_number === sortedRevisions[0]?.revision_number}
-									<span class="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
+									<span
+										class="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-emerald-700"
+									>
 										Current
 									</span>
 								{/if}
@@ -774,15 +845,21 @@
 									<div class="mb-2 flex items-center gap-2">
 										<span class="text-sm font-medium text-gray-700">{diff.label}</span>
 										{#if diff.type === 'removed'}
-											<span class="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-red-700">
+											<span
+												class="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-red-700"
+											>
 												Removed
 											</span>
 										{:else if diff.type === 'modified'}
-											<span class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-700">
+											<span
+												class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-700"
+											>
 												Modified
 											</span>
 										{:else if diff.type === 'added'}
-											<span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-gray-500">
+											<span
+												class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-gray-500"
+											>
 												N/A
 											</span>
 										{/if}
@@ -796,14 +873,20 @@
 										<div class="rounded bg-gray-50 p-2 font-mono text-sm">
 											{#each diff.textDiff as segment}
 												{#if segment.type === 'delete'}
-													<span class="rounded bg-red-200 text-red-900 line-through">{segment.text}</span>
+													<span class="rounded bg-red-200 text-red-900 line-through"
+														>{segment.text}</span
+													>
 												{:else if segment.type === 'equal'}
 													<span class="text-gray-700">{segment.text}</span>
 												{/if}
 											{/each}
 										</div>
 									{:else}
-										<div class="rounded bg-gray-50 p-2 text-sm text-gray-600 {diff.type === 'removed' ? 'bg-red-50' : ''}">
+										<div
+											class="rounded bg-gray-50 p-2 text-sm text-gray-600 {diff.type === 'removed'
+												? 'bg-red-50'
+												: ''}"
+										>
 											{truncateValue(diff.fromValue, 500)}
 										</div>
 									{/if}
@@ -823,7 +906,12 @@
 											stroke="currentColor"
 											viewBox="0 0 24 24"
 										>
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M9 5l7 7-7 7"
+											/>
 										</svg>
 										Content Blocks ({fromRevision.data?.content_blocks?.length ?? 0} blocks)
 									</button>
@@ -832,9 +920,17 @@
 										<div class="space-y-2">
 											{#each blockDiffs() ?? [] as blockDiff}
 												{#if blockDiff.type !== 'added' && blockDiff.fromBlock}
-													<div class="rounded border p-2 {blockDiff.type === 'removed' ? 'border-red-200 bg-red-50' : blockDiff.type === 'modified' ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-white'}">
+													<div
+														class="rounded border p-2 {blockDiff.type === 'removed'
+															? 'border-red-200 bg-red-50'
+															: blockDiff.type === 'modified'
+																? 'border-amber-200 bg-amber-50'
+																: 'border-gray-200 bg-white'}"
+													>
 														<div class="flex items-center gap-2 text-xs">
-															<span class="rounded bg-gray-200 px-1.5 py-0.5 font-medium uppercase">{blockDiff.fromBlock.type}</span>
+															<span class="rounded bg-gray-200 px-1.5 py-0.5 font-medium uppercase"
+																>{blockDiff.fromBlock.type}</span
+															>
 															{#if blockDiff.type === 'removed'}
 																<span class="text-red-600">Removed</span>
 															{:else if blockDiff.type === 'modified'}
@@ -843,7 +939,9 @@
 														</div>
 													</div>
 												{:else if blockDiff.type === 'added'}
-													<div class="rounded border border-gray-200 bg-gray-100 p-2 text-xs italic text-gray-400">
+													<div
+														class="rounded border border-gray-200 bg-gray-100 p-2 text-xs italic text-gray-400"
+													>
 														Block added in newer version
 													</div>
 												{/if}
@@ -865,15 +963,21 @@
 									<div class="mb-2 flex items-center gap-2">
 										<span class="text-sm font-medium text-gray-700">{diff.label}</span>
 										{#if diff.type === 'added'}
-											<span class="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-green-700">
+											<span
+												class="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-green-700"
+											>
 												Added
 											</span>
 										{:else if diff.type === 'modified'}
-											<span class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-700">
+											<span
+												class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-700"
+											>
 												Modified
 											</span>
 										{:else if diff.type === 'removed'}
-											<span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-gray-500">
+											<span
+												class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-gray-500"
+											>
 												N/A
 											</span>
 										{/if}
@@ -894,7 +998,11 @@
 											{/each}
 										</div>
 									{:else}
-										<div class="rounded bg-gray-50 p-2 text-sm text-gray-600 {diff.type === 'added' ? 'bg-green-50' : ''}">
+										<div
+											class="rounded bg-gray-50 p-2 text-sm text-gray-600 {diff.type === 'added'
+												? 'bg-green-50'
+												: ''}"
+										>
 											{truncateValue(diff.toValue, 500)}
 										</div>
 									{/if}
@@ -914,7 +1022,12 @@
 											stroke="currentColor"
 											viewBox="0 0 24 24"
 										>
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M9 5l7 7-7 7"
+											/>
 										</svg>
 										Content Blocks ({toRevision.data?.content_blocks?.length ?? 0} blocks)
 									</button>
@@ -923,9 +1036,17 @@
 										<div class="space-y-2">
 											{#each blockDiffs() ?? [] as blockDiff}
 												{#if blockDiff.type !== 'removed' && blockDiff.toBlock}
-													<div class="rounded border p-2 {blockDiff.type === 'added' ? 'border-green-200 bg-green-50' : blockDiff.type === 'modified' ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-white'}">
+													<div
+														class="rounded border p-2 {blockDiff.type === 'added'
+															? 'border-green-200 bg-green-50'
+															: blockDiff.type === 'modified'
+																? 'border-amber-200 bg-amber-50'
+																: 'border-gray-200 bg-white'}"
+													>
 														<div class="flex items-center gap-2 text-xs">
-															<span class="rounded bg-gray-200 px-1.5 py-0.5 font-medium uppercase">{blockDiff.toBlock.type}</span>
+															<span class="rounded bg-gray-200 px-1.5 py-0.5 font-medium uppercase"
+																>{blockDiff.toBlock.type}</span
+															>
 															{#if blockDiff.type === 'added'}
 																<span class="text-green-600">Added</span>
 															{:else if blockDiff.type === 'modified'}
@@ -934,7 +1055,9 @@
 														</div>
 													</div>
 												{:else if blockDiff.type === 'removed'}
-													<div class="rounded border border-gray-200 bg-gray-100 p-2 text-xs italic text-gray-400">
+													<div
+														class="rounded border border-gray-200 bg-gray-100 p-2 text-xs italic text-gray-400"
+													>
 														Block removed from this version
 													</div>
 												{/if}
@@ -949,8 +1072,18 @@
 					<!-- Empty State -->
 					<div class="flex flex-1 items-center justify-center">
 						<div class="text-center">
-							<svg class="mx-auto h-16 w-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+							<svg
+								class="mx-auto h-16 w-16 text-gray-300"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.5"
+									d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+								/>
 							</svg>
 							<h3 class="mt-4 text-lg font-medium text-gray-900">Select Revisions to Compare</h3>
 							<p class="mt-1 text-sm text-gray-500">
@@ -974,7 +1107,9 @@
 				</div>
 				<div class="flex items-center gap-2">
 					<span class="flex items-center gap-1 text-xs text-gray-500">
-						<kbd class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd>
+						<kbd class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+							>Esc</kbd
+						>
 						to close
 					</span>
 				</div>

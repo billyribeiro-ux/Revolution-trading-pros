@@ -70,10 +70,9 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
-	const backendData = await fetchFromBackend(
-		`/api/room-content/rooms/${slug}/trade-plan/${id}`,
-		{ headers }
-	);
+	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trade-plan/${id}`, {
+		headers
+	});
 
 	if (backendData) {
 		return json({

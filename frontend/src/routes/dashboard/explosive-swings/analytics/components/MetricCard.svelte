@@ -36,15 +36,12 @@
 
 	// Format change value for display
 	const formattedChange = $derived(
-		change !== undefined
-			? `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`
-			: null
+		change !== undefined ? `${change >= 0 ? '+' : ''}${change.toFixed(1)}%` : null
 	);
 
 	// Determine change color
 	const changeColor = $derived(
-		changeType === 'positive' ? 'positive' :
-		changeType === 'negative' ? 'negative' : 'neutral'
+		changeType === 'positive' ? 'positive' : changeType === 'negative' ? 'negative' : 'neutral'
 	);
 </script>
 
@@ -103,7 +100,11 @@
 	/* Variants */
 	.metric-card.variant-primary {
 		border-color: var(--color-brand-primary);
-		background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(var(--color-brand-primary-rgb), 0.05) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-bg-card) 0%,
+			rgba(var(--color-brand-primary-rgb), 0.05) 100%
+		);
 	}
 
 	.metric-card.variant-success {
@@ -225,7 +226,12 @@
 	.skeleton-title,
 	.skeleton-value,
 	.skeleton-subtitle {
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-sm);
@@ -249,7 +255,11 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 </style>

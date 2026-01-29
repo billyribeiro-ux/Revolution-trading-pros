@@ -317,13 +317,17 @@ export interface BlockComment {
 export interface EditorState {
 	blocks: Block[];
 	selectedBlockId: string | null;
+	selectedBlockIds: string[]; // Multi-selection support
 	hoveredBlockId: string | null;
 	focusedBlockId: string | null;
 	clipboard: Block | null;
+	clipboardMulti: Block[]; // Multi-block clipboard
 	history: HistoryState;
 	isDragging: boolean;
 	draggedBlockId: string | null;
+	draggedBlockIds: string[]; // Multi-block drag support
 	dropTargetIndex: number | null;
+	dropPosition: 'before' | 'after' | null; // Enhanced drop positioning
 	viewMode: 'edit' | 'preview';
 	devicePreview: 'desktop' | 'tablet' | 'mobile';
 	zoom: number;
@@ -334,6 +338,18 @@ export interface EditorState {
 	autosaveEnabled: boolean;
 	lastSaved: string | null;
 	hasUnsavedChanges: boolean;
+	// Enhanced drag-drop state
+	dragPreviewOffset: { x: number; y: number } | null;
+	lastDropAction: DropAction | null; // For undo after drop
+}
+
+// Enhanced drag-drop types
+export interface DropAction {
+	type: 'reorder' | 'multi-reorder';
+	fromIndices: number[];
+	toIndex: number;
+	blockIds: string[];
+	timestamp: number;
 }
 
 export interface HistoryState {

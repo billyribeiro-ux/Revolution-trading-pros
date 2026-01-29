@@ -14,7 +14,7 @@
 .dashboard__main header.dashboard__header,
 .dashboard__content .dashboard__header,
 .dashboard__content-main .dashboard__header,
-header[class*="dashboard__header"] {
+header[class*='dashboard__header'] {
 	margin: 0 !important;
 	width: 100% !important;
 	max-width: none !important;

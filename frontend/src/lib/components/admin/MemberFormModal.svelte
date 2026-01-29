@@ -375,7 +375,9 @@
 							</div>
 						</div>
 						<h3>Member Created Successfully</h3>
-						<p>A temporary password has been generated. Please share this securely with the member:</p>
+						<p>
+							A temporary password has been generated. Please share this securely with the member:
+						</p>
 						<div class="password-display">
 							<code>{temporaryPassword}</code>
 							<button
@@ -785,11 +787,7 @@
 											</div>
 										</div>
 										<label class="toggle-switch">
-											<input
-												type="checkbox"
-												bind:checked={enableTwoFactor}
-												disabled={isLoading}
-											/>
+											<input type="checkbox" bind:checked={enableTwoFactor} disabled={isLoading} />
 											<span class="toggle-slider"></span>
 										</label>
 									</div>
@@ -821,11 +819,7 @@
 											</div>
 										</div>
 										<label class="toggle-switch">
-											<input
-												type="checkbox"
-												bind:checked={smsNotifications}
-												disabled={isLoading}
-											/>
+											<input type="checkbox" bind:checked={smsNotifications} disabled={isLoading} />
 											<span class="toggle-slider"></span>
 										</label>
 									</div>
@@ -839,11 +833,7 @@
 											</div>
 										</div>
 										<label class="toggle-switch">
-											<input
-												type="checkbox"
-												bind:checked={marketingEmails}
-												disabled={isLoading}
-											/>
+											<input type="checkbox" bind:checked={marketingEmails} disabled={isLoading} />
 											<span class="toggle-slider"></span>
 										</label>
 									</div>
@@ -998,7 +988,11 @@
 		justify-content: space-between;
 		padding: var(--space-5) var(--space-6);
 		border-bottom: 1px solid var(--admin-border-subtle);
-		background: linear-gradient(180deg, var(--admin-surface-elevated) 0%, var(--admin-surface-primary) 100%);
+		background: linear-gradient(
+			180deg,
+			var(--admin-surface-elevated) 0%,
+			var(--admin-surface-primary) 100%
+		);
 		position: relative;
 		z-index: 1;
 	}
@@ -1710,7 +1704,8 @@
 	}
 
 	@keyframes ringPulse {
-		0%, 100% {
+		0%,
+		100% {
 			transform: scale(1);
 			opacity: 1;
 		}

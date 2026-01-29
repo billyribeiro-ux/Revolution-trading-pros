@@ -208,13 +208,14 @@
 
 		<!-- Code Block -->
 	{:else if block.type === 'code'}
-		<div class="code-block">
+		<div class="code-block" role="region" aria-label="Code block">
 			<div class="code-header">
 				<select
 					value={block.content.language || 'javascript'}
 					onchange={(e: Event) =>
 						updateContent({ language: (e.target as HTMLSelectElement).value })}
 					disabled={!isEditing}
+					aria-label="Select programming language"
 				>
 					<option value="javascript">JavaScript</option>
 					<option value="typescript">TypeScript</option>
@@ -270,8 +271,13 @@
 						{item}
 					</span>
 					{#if isEditing && (block.content.listItems?.length || 0) > 1}
-						<button type="button" class="remove-item" onclick={() => removeListItem(index)}>
-							<IconX size={14} />
+						<button
+							type="button"
+							class="remove-item"
+							onclick={() => removeListItem(index)}
+							aria-label="Remove list item"
+						>
+							<IconX size={14} aria-hidden="true" />
 						</button>
 					{/if}
 				</li>
@@ -282,15 +288,16 @@
 				type="button"
 				class="add-item-btn"
 				onclick={() => addListItem((block.content.listItems?.length || 1) - 1)}
+				aria-label="Add new list item"
 			>
-				<IconPlus size={14} />
+				<IconPlus size={14} aria-hidden="true" />
 				Add item
 			</button>
 		{/if}
 
 		<!-- Checklist Block -->
 	{:else if block.type === 'checklist'}
-		<div class="checklist-block">
+		<div class="checklist-block" role="group" aria-label="Checklist">
 			{#each block.content.items || [] as item}
 				<label class="check-item" class:checked={item.checked}>
 					<input
@@ -298,6 +305,7 @@
 						checked={item.checked}
 						onchange={() => toggleCheckItem(item.id)}
 						disabled={!isEditing}
+						aria-label={item.content || 'Checklist item'}
 					/>
 					<span class="check-icon">
 						{#if item.checked}
@@ -335,8 +343,9 @@
 						];
 						updateContent({ items });
 					}}
+					aria-label="Add new checklist item"
 				>
-					<IconPlus size={14} />
+					<IconPlus size={14} aria-hidden="true" />
 					Add item
 				</button>
 			{/if}
@@ -344,11 +353,11 @@
 
 		<!-- Image Block -->
 	{:else if block.type === 'image'}
-		<figure class="image-block">
+		<figure class="image-block" role="figure" aria-label={block.content.mediaCaption || 'Image'}>
 			{#if block.content.mediaUrl}
 				<img
 					src={block.content.mediaUrl}
-					alt={block.content.mediaAlt || ''}
+					alt={block.content.mediaAlt || 'Blog image'}
 					style:object-fit={block.settings.objectFit || 'cover'}
 				/>
 				{#if block.content.mediaCaption || isEditing}
@@ -364,12 +373,18 @@
 					</figcaption>
 				{/if}
 			{:else if isEditing}
-				<div class="image-placeholder">
-					<IconPhoto size={48} />
+				<div
+					class="image-placeholder"
+					role="button"
+					tabindex="0"
+					aria-label="Click to upload an image"
+				>
+					<IconPhoto size={48} aria-hidden="true" />
 					<span>Click to add an image</span>
 					<input
 						type="file"
 						accept="image/*"
+						aria-label="Upload image file"
 						onchange={(e: Event) => {
 							const file = (e.target as HTMLInputElement).files?.[0];
 							if (file) {
@@ -384,7 +399,7 @@
 
 		<!-- Video Block -->
 	{:else if block.type === 'video'}
-		<div class="video-block">
+		<div class="video-block" role="region" aria-label="Video content">
 			{#if block.content.embedUrl}
 				{@const isYouTube =
 					block.content.embedUrl.includes('youtube') || block.content.embedUrl.includes('youtu.be')}
@@ -396,7 +411,7 @@
 					<div class="video-embed">
 						<iframe
 							src="https://www.youtube.com/embed/{videoId}"
-							title="YouTube video"
+							title="Embedded YouTube video player"
 							frameborder="0"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 							allowfullscreen
@@ -407,25 +422,26 @@
 					<div class="video-embed">
 						<iframe
 							src="https://player.vimeo.com/video/{videoId}"
-							title="Vimeo video"
+							title="Embedded Vimeo video player"
 							frameborder="0"
 							allow="autoplay; fullscreen; picture-in-picture"
 							allowfullscreen
 						></iframe>
 					</div>
 				{:else}
-					<video src={block.content.embedUrl} controls>
+					<video src={block.content.embedUrl} controls aria-label="Video player">
 						<track kind="captions" src="" label="Captions" default />
 						Your browser does not support the video tag.
 					</video>
 				{/if}
 			{:else if isEditing}
-				<div class="video-placeholder">
-					<IconVideo size={48} />
+				<div class="video-placeholder" role="group" aria-label="Add video">
+					<IconVideo size={48} aria-hidden="true" />
 					<span>Paste a YouTube or Vimeo URL</span>
 					<input
 						type="url"
 						placeholder="https://youtube.com/watch?v=..."
+						aria-label="Video URL"
 						onchange={(e: Event) =>
 							updateContent({ embedUrl: (e.target as HTMLInputElement).value })}
 					/>
@@ -471,8 +487,8 @@
 
 		<!-- Callout Block -->
 	{:else if block.type === 'callout'}
-		<div class="callout-block">
-			<div class="callout-icon">
+		<div class="callout-block" role="note" aria-label="Important note">
+			<div class="callout-icon" aria-hidden="true">
 				<IconAlertTriangle size={24} />
 			</div>
 			<div
@@ -489,9 +505,13 @@
 
 		<!-- Trading Chart Block -->
 	{:else if block.type === 'chart'}
-		<div class="chart-block">
+		<div
+			class="chart-block"
+			role="figure"
+			aria-label="Trading chart for {block.content.ticker || 'SPY'}"
+		>
 			<div class="chart-header">
-				<IconChartCandle size={20} />
+				<IconChartCandle size={20} aria-hidden="true" />
 				<input
 					type="text"
 					value={block.content.ticker || 'SPY'}
@@ -499,6 +519,7 @@
 					onchange={(e: Event) => updateContent({ ticker: (e.target as HTMLInputElement).value })}
 					disabled={!isEditing}
 					class="ticker-input"
+					aria-label="Stock ticker symbol"
 				/>
 			</div>
 			<div class="chart-placeholder" style:height={block.settings.height || '400px'}>
@@ -509,8 +530,8 @@
 
 		<!-- Risk Disclaimer Block -->
 	{:else if block.type === 'riskDisclaimer'}
-		<div class="disclaimer-block">
-			<IconAlertTriangle size={24} />
+		<div class="disclaimer-block" role="alert" aria-label="Risk disclaimer">
+			<IconAlertTriangle size={24} aria-hidden="true" />
 			<p>
 				{block.content.text ||
 					'Trading involves substantial risk of loss and is not suitable for all investors.'}

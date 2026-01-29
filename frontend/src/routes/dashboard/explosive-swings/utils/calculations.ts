@@ -81,7 +81,10 @@ export function calculateRiskReward(entry: number, target: number, stop: number)
  * @param avgLossPercent - Average loss percentage (absolute value)
  * @returns Risk/reward ratio
  */
-export function calculateRiskRewardFromPercentages(avgWinPercent: number, avgLossPercent: number): number {
+export function calculateRiskRewardFromPercentages(
+	avgWinPercent: number,
+	avgLossPercent: number
+): number {
 	const absLoss = Math.abs(avgLossPercent);
 	if (absLoss === 0) return 0;
 	return Math.abs(avgWinPercent) / absLoss;
@@ -130,5 +133,5 @@ export function calculateAverage(values: number[]): number {
  * @returns Expected percentage gain per trade
  */
 export function calculateExpectancy(winRate: number, avgWin: number, avgLoss: number): number {
-	return (winRate * avgWin) - ((1 - winRate) * avgLoss);
+	return winRate * avgWin - (1 - winRate) * avgLoss;
 }

@@ -186,15 +186,30 @@
 		<h2>Detection Settings</h2>
 		<div class="settings-grid">
 			<label class="checkbox-label">
-				<input id="detect-videos" name="detect-videos" type="checkbox" bind:checked={settings.detectFromContent} />
+				<input
+					id="detect-videos"
+					name="detect-videos"
+					type="checkbox"
+					bind:checked={settings.detectFromContent}
+				/>
 				Auto-detect videos from content
 			</label>
 			<label class="checkbox-label">
-				<input id="include-thumbnails" name="include-thumbnails" type="checkbox" bind:checked={settings.includeThumbnails} />
+				<input
+					id="include-thumbnails"
+					name="include-thumbnails"
+					type="checkbox"
+					bind:checked={settings.includeThumbnails}
+				/>
 				Include video thumbnails
 			</label>
 			<label class="checkbox-label">
-				<input id="include-uploader" name="include-uploader" type="checkbox" bind:checked={settings.includeUploader} />
+				<input
+					id="include-uploader"
+					name="include-uploader"
+					type="checkbox"
+					bind:checked={settings.includeUploader}
+				/>
 				Include uploader info
 			</label>
 		</div>

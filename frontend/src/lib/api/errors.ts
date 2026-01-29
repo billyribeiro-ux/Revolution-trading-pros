@@ -87,7 +87,7 @@ const USER_FRIENDLY_MESSAGES: Readonly<Record<ApiErrorCode, string>> = Object.fr
 	CONFLICT_ERROR: 'A conflict occurred. The resource may have been modified.',
 	PAYLOAD_TOO_LARGE: 'The request is too large. Please reduce the size and try again.',
 	UNSUPPORTED_MEDIA_TYPE: 'The file type is not supported.',
-	UNKNOWN_ERROR: 'An unexpected error occurred. Please try again.',
+	UNKNOWN_ERROR: 'An unexpected error occurred. Please try again.'
 });
 
 // =============================================================================
@@ -245,7 +245,7 @@ export abstract class ApiError extends Error {
 			CONFLICT_ERROR: 'client',
 			PAYLOAD_TOO_LARGE: 'client',
 			UNSUPPORTED_MEDIA_TYPE: 'client',
-			UNKNOWN_ERROR: 'unknown',
+			UNKNOWN_ERROR: 'unknown'
 		};
 		return categoryMap[code];
 	}
@@ -265,7 +265,7 @@ export abstract class ApiError extends Error {
 			timestamp: this.timestamp.toISOString(),
 			requestId: this.requestId,
 			retryAfter: this.retryAfter,
-			hasFields: !!this.fields,
+			hasFields: !!this.fields
 		};
 	}
 
@@ -289,13 +289,12 @@ export class NetworkError extends ApiError {
 	readonly statusCode = 0;
 
 	constructor(message: string, requestId?: string, cause?: Error) {
-		super(
-			message || 'Network connection failed',
-			'NETWORK_ERROR',
-			0,
-			requestId,
-			{ cause, isRetryable: true, severity: 'critical', category: 'network' }
-		);
+		super(message || 'Network connection failed', 'NETWORK_ERROR', 0, requestId, {
+			cause,
+			isRetryable: true,
+			severity: 'critical',
+			category: 'network'
+		});
 	}
 }
 
@@ -307,13 +306,12 @@ export class TimeoutError extends ApiError {
 	readonly statusCode = 408;
 
 	constructor(message: string, requestId?: string, cause?: Error) {
-		super(
-			message || 'Request timed out',
-			'TIMEOUT_ERROR',
-			408,
-			requestId,
-			{ cause, isRetryable: true, severity: 'warning', category: 'timeout' }
-		);
+		super(message || 'Request timed out', 'TIMEOUT_ERROR', 408, requestId, {
+			cause,
+			isRetryable: true,
+			severity: 'warning',
+			category: 'timeout'
+		});
 	}
 }
 
@@ -325,13 +323,11 @@ export class AuthenticationError extends ApiError {
 	readonly statusCode = 401;
 
 	constructor(message: string, requestId?: string) {
-		super(
-			message || 'Authentication required',
-			'AUTH_ERROR',
-			401,
-			requestId,
-			{ isRetryable: false, severity: 'error', category: 'authentication' }
-		);
+		super(message || 'Authentication required', 'AUTH_ERROR', 401, requestId, {
+			isRetryable: false,
+			severity: 'error',
+			category: 'authentication'
+		});
 	}
 }
 
@@ -343,13 +339,11 @@ export class AuthorizationError extends ApiError {
 	readonly statusCode = 403;
 
 	constructor(message: string, requestId?: string) {
-		super(
-			message || 'Permission denied',
-			'FORBIDDEN_ERROR',
-			403,
-			requestId,
-			{ isRetryable: false, severity: 'error', category: 'authorization' }
-		);
+		super(message || 'Permission denied', 'FORBIDDEN_ERROR', 403, requestId, {
+			isRetryable: false,
+			severity: 'error',
+			category: 'authorization'
+		});
 	}
 }
 
@@ -360,18 +354,13 @@ export class ValidationError extends ApiError {
 	readonly code = 'VALIDATION_ERROR' as const;
 	readonly statusCode = 422;
 
-	constructor(
-		message: string,
-		requestId?: string,
-		fields?: Record<string, string[]>
-	) {
-		super(
-			message || 'Validation failed',
-			'VALIDATION_ERROR',
-			422,
-			requestId,
-			{ fields, isRetryable: false, severity: 'warning', category: 'validation' }
-		);
+	constructor(message: string, requestId?: string, fields?: Record<string, string[]>) {
+		super(message || 'Validation failed', 'VALIDATION_ERROR', 422, requestId, {
+			fields,
+			isRetryable: false,
+			severity: 'warning',
+			category: 'validation'
+		});
 	}
 
 	/**
@@ -404,13 +393,11 @@ export class NotFoundError extends ApiError {
 	readonly statusCode = 404;
 
 	constructor(message: string, requestId?: string) {
-		super(
-			message || 'Resource not found',
-			'NOT_FOUND_ERROR',
-			404,
-			requestId,
-			{ isRetryable: false, severity: 'info', category: 'notFound' }
-		);
+		super(message || 'Resource not found', 'NOT_FOUND_ERROR', 404, requestId, {
+			isRetryable: false,
+			severity: 'info',
+			category: 'notFound'
+		});
 	}
 }
 
@@ -422,13 +409,12 @@ export class RateLimitError extends ApiError {
 	readonly statusCode = 429;
 
 	constructor(message: string, requestId?: string, retryAfter: number = 60) {
-		super(
-			message || 'Rate limit exceeded',
-			'RATE_LIMIT_ERROR',
-			429,
-			requestId,
-			{ retryAfter, isRetryable: true, severity: 'warning', category: 'rateLimit' }
-		);
+		super(message || 'Rate limit exceeded', 'RATE_LIMIT_ERROR', 429, requestId, {
+			retryAfter,
+			isRetryable: true,
+			severity: 'warning',
+			category: 'rateLimit'
+		});
 	}
 
 	/**
@@ -452,18 +438,12 @@ export class ServerError extends ApiError {
 		requestId?: string,
 		options?: { retryAfter?: number }
 	) {
-		super(
-			message || 'Internal server error',
-			'SERVER_ERROR',
-			statusCode,
-			requestId,
-			{
-				retryAfter: options?.retryAfter,
-				isRetryable: statusCode !== 501, // 501 Not Implemented is not retryable
-				severity: 'critical',
-				category: 'server',
-			}
-		);
+		super(message || 'Internal server error', 'SERVER_ERROR', statusCode, requestId, {
+			retryAfter: options?.retryAfter,
+			isRetryable: statusCode !== 501, // 501 Not Implemented is not retryable
+			severity: 'critical',
+			category: 'server'
+		});
 		this.statusCode = statusCode;
 	}
 }
@@ -476,13 +456,12 @@ export class ServiceUnavailableError extends ApiError {
 	readonly statusCode = 503;
 
 	constructor(message: string, requestId?: string, retryAfter?: number) {
-		super(
-			message || 'Service temporarily unavailable',
-			'SERVICE_UNAVAILABLE',
-			503,
-			requestId,
-			{ retryAfter, isRetryable: true, severity: 'critical', category: 'server' }
-		);
+		super(message || 'Service temporarily unavailable', 'SERVICE_UNAVAILABLE', 503, requestId, {
+			retryAfter,
+			isRetryable: true,
+			severity: 'critical',
+			category: 'server'
+		});
 	}
 }
 
@@ -494,13 +473,11 @@ export class ConflictError extends ApiError {
 	readonly statusCode = 409;
 
 	constructor(message: string, requestId?: string) {
-		super(
-			message || 'Resource conflict',
-			'CONFLICT_ERROR',
-			409,
-			requestId,
-			{ isRetryable: false, severity: 'warning', category: 'client' }
-		);
+		super(message || 'Resource conflict', 'CONFLICT_ERROR', 409, requestId, {
+			isRetryable: false,
+			severity: 'warning',
+			category: 'client'
+		});
 	}
 }
 
@@ -512,13 +489,12 @@ export class UnknownError extends ApiError {
 	readonly statusCode: number;
 
 	constructor(message: string, statusCode: number = 0, requestId?: string, cause?: Error) {
-		super(
-			message || 'An unexpected error occurred',
-			'UNKNOWN_ERROR',
-			statusCode,
-			requestId,
-			{ cause, isRetryable: false, severity: 'error', category: 'unknown' }
-		);
+		super(message || 'An unexpected error occurred', 'UNKNOWN_ERROR', statusCode, requestId, {
+			cause,
+			isRetryable: false,
+			severity: 'error',
+			category: 'unknown'
+		});
 		this.statusCode = statusCode;
 	}
 }
@@ -682,7 +658,7 @@ export function serializeError(error: unknown): Record<string, unknown> {
 		return {
 			name: error.name,
 			message: error.message,
-			stack: error.stack,
+			stack: error.stack
 		};
 	}
 
@@ -746,6 +722,6 @@ export function createErrorBoundaryInfo(error: unknown): ErrorBoundaryInfo {
 		canRetry: apiError.isRetryable,
 		userMessage: apiError.userMessage,
 		technicalDetails: `${apiError.code} (${apiError.statusCode})${apiError.requestId ? ` - ${apiError.requestId}` : ''}`,
-		severity: apiError.severity,
+		severity: apiError.severity
 	});
 }

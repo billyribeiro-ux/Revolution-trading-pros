@@ -77,12 +77,5 @@
 		".svelte-kit/ambient.d.ts",
 		".svelte-kit/non-ambient.d.ts"
 	],
-	"exclude": [
-		"node_modules",
-		"build",
-		"dist",
-		"**/*.spec.ts",
-		"**/*.test.ts",
-		"Do's/**/*"
-	]
+	"exclude": ["node_modules", "build", "dist", "**/*.spec.ts", "**/*.test.ts", "Do's/**/*"]
 }

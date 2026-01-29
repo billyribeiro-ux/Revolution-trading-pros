@@ -97,37 +97,37 @@
 
 	<div class="admin-page-container">
 		{#if showTemplateSelector}
-		<FormTemplateSelector onSelect={handleTemplateSelect} onCancel={handleStartFromScratch} />
-	{:else}
-		<div class="page-header">
-			<h1>Create New Form</h1>
-			<p class="subtitle">
-				{#if selectedTemplate}
-					Using template: {selectedTemplate.name}
-				{:else}
-					Build a custom form with conditional logic and validation
-				{/if}
-			</p>
-			<div class="actions">
-				<button class="btn-secondary" onclick={handleCancel}>
-					Back {selectedTemplate ? 'to Templates' : ''}
-				</button>
-				{#if selectedTheme}
-					<button class="btn-secondary" onclick={toggleThemeCustomizer}>
-						{showThemeCustomizer ? 'Hide' : 'Customize'} Theme
+			<FormTemplateSelector onSelect={handleTemplateSelect} onCancel={handleStartFromScratch} />
+		{:else}
+			<div class="page-header">
+				<h1>Create New Form</h1>
+				<p class="subtitle">
+					{#if selectedTemplate}
+						Using template: {selectedTemplate.name}
+					{:else}
+						Build a custom form with conditional logic and validation
+					{/if}
+				</p>
+				<div class="actions">
+					<button class="btn-secondary" onclick={handleCancel}>
+						Back {selectedTemplate ? 'to Templates' : ''}
 					</button>
-				{/if}
+					{#if selectedTheme}
+						<button class="btn-secondary" onclick={toggleThemeCustomizer}>
+							{showThemeCustomizer ? 'Hide' : 'Customize'} Theme
+						</button>
+					{/if}
+				</div>
 			</div>
-		</div>
 
-		{#if showThemeCustomizer && selectedTheme}
-			<div class="theme-section">
-				<ThemeCustomizer {selectedTheme} onchange={handleThemeChange} />
-			</div>
+			{#if showThemeCustomizer && selectedTheme}
+				<div class="theme-section">
+					<ThemeCustomizer {selectedTheme} onchange={handleThemeChange} />
+				</div>
+			{/if}
+
+			<FormBuilder form={formData} onsave={handleSave} oncancel={handleCancel} />
 		{/if}
-
-		<FormBuilder form={formData} onsave={handleSave} oncancel={handleCancel} />
-	{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>

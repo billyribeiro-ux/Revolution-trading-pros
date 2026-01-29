@@ -37,7 +37,9 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Submit login form
-			const submitBtn = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")').first();
+			const submitBtn = page
+				.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")')
+				.first();
 			if (await submitBtn.isVisible().catch(() => false)) {
 				await submitBtn.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
@@ -85,7 +87,11 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Look for create alert button (admin-only)
-			const createAlertBtn = page.locator('[data-testid="create-alert-btn"], button:has-text("Create Alert"), button:has-text("New Alert"), [class*="create-alert"]').first();
+			const createAlertBtn = page
+				.locator(
+					'[data-testid="create-alert-btn"], button:has-text("Create Alert"), button:has-text("New Alert"), [class*="create-alert"]'
+				)
+				.first();
 			const hasCreateBtn = await createAlertBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasCreateBtn) {
@@ -122,7 +128,11 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Look for create alert button
-			const createAlertBtn = page.locator('[data-testid="create-alert-btn"], button:has-text("Create Alert"), button:has-text("New Alert")').first();
+			const createAlertBtn = page
+				.locator(
+					'[data-testid="create-alert-btn"], button:has-text("Create Alert"), button:has-text("New Alert")'
+				)
+				.first();
 			const hasCreateBtn = await createAlertBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasCreateBtn) {
@@ -135,7 +145,9 @@ test.describe('Explosive Swings Admin', () => {
 			await page.waitForTimeout(500);
 
 			// Look for alert form modal
-			const alertModal = page.locator('[data-testid="alert-modal"], .modal, [role="dialog"], [class*="modal"]').first();
+			const alertModal = page
+				.locator('[data-testid="alert-modal"], .modal, [role="dialog"], [class*="modal"]')
+				.first();
 			const hasModal = await alertModal.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasModal) {
@@ -144,18 +156,26 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Fill form fields
-			const tickerInput = page.locator('[data-testid="alert-ticker"], input[name="ticker"], input[placeholder*="ticker" i]').first();
+			const tickerInput = page
+				.locator(
+					'[data-testid="alert-ticker"], input[name="ticker"], input[placeholder*="ticker" i]'
+				)
+				.first();
 			if (await tickerInput.isVisible().catch(() => false)) {
 				await tickerInput.fill('NVDA');
 			}
 
-			const titleInput = page.locator('[data-testid="alert-title"], input[name="title"], input[placeholder*="title" i]').first();
+			const titleInput = page
+				.locator('[data-testid="alert-title"], input[name="title"], input[placeholder*="title" i]')
+				.first();
 			if (await titleInput.isVisible().catch(() => false)) {
 				await titleInput.fill('Test Alert');
 			}
 
 			// Select alert type
-			const typeSelect = page.locator('[data-testid="alert-type"], select[name="type"], select[name="alert_type"]').first();
+			const typeSelect = page
+				.locator('[data-testid="alert-type"], select[name="type"], select[name="alert_type"]')
+				.first();
 			if (await typeSelect.isVisible().catch(() => false)) {
 				await typeSelect.selectOption({ value: 'ENTRY' }).catch(() => {
 					// Try by label
@@ -164,13 +184,21 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Submit form
-			const submitBtn = page.locator('[data-testid="alert-submit"], button[type="submit"], button:has-text("Create"), button:has-text("Save")').first();
+			const submitBtn = page
+				.locator(
+					'[data-testid="alert-submit"], button[type="submit"], button:has-text("Create"), button:has-text("Save")'
+				)
+				.first();
 			if (await submitBtn.isVisible().catch(() => false)) {
 				await submitBtn.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
 
 				// Look for success toast/notification
-				const successToast = page.locator('[data-testid="toast-success"], .toast-success, [class*="success"], [role="alert"]:has-text("success")').first();
+				const successToast = page
+					.locator(
+						'[data-testid="toast-success"], .toast-success, [class*="success"], [role="alert"]:has-text("success")'
+					)
+					.first();
 				const hasSuccessToast = await successToast.isVisible({ timeout: 5000 }).catch(() => false);
 
 				if (hasSuccessToast) {
@@ -208,7 +236,11 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Find open trade close button
-			const closeTradeBtn = page.locator('[data-testid="trade-close-btn"], button:has-text("Close Trade"), button:has-text("Close"), [class*="close-trade"]').first();
+			const closeTradeBtn = page
+				.locator(
+					'[data-testid="trade-close-btn"], button:has-text("Close Trade"), button:has-text("Close"), [class*="close-trade"]'
+				)
+				.first();
 			const hasCloseBtn = await closeTradeBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasCloseBtn) {
@@ -221,7 +253,9 @@ test.describe('Explosive Swings Admin', () => {
 			await page.waitForTimeout(500);
 
 			// Look for close trade modal/form
-			const closeModal = page.locator('[data-testid="close-trade-modal"], .modal, [role="dialog"]').first();
+			const closeModal = page
+				.locator('[data-testid="close-trade-modal"], .modal, [role="dialog"]')
+				.first();
 			const hasModal = await closeModal.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasModal) {
@@ -230,19 +264,31 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Fill exit price
-			const exitPriceInput = page.locator('[data-testid="exit-price"], input[name="exit_price"], input[name="exitPrice"], input[placeholder*="price" i]').first();
+			const exitPriceInput = page
+				.locator(
+					'[data-testid="exit-price"], input[name="exit_price"], input[name="exitPrice"], input[placeholder*="price" i]'
+				)
+				.first();
 			if (await exitPriceInput.isVisible().catch(() => false)) {
 				await exitPriceInput.fill('150.00');
 			}
 
 			// Submit close trade
-			const submitBtn = page.locator('[data-testid="close-trade-submit"], button[type="submit"], button:has-text("Close"), button:has-text("Confirm")').first();
+			const submitBtn = page
+				.locator(
+					'[data-testid="close-trade-submit"], button[type="submit"], button:has-text("Close"), button:has-text("Confirm")'
+				)
+				.first();
 			if (await submitBtn.isVisible().catch(() => false)) {
 				await submitBtn.click();
 				await page.waitForLoadState('networkidle').catch(() => {});
 
 				// Look for success toast with P&L
-				const successToast = page.locator('[data-testid="toast-success"], .toast-success, [class*="success"], [role="alert"]').first();
+				const successToast = page
+					.locator(
+						'[data-testid="toast-success"], .toast-success, [class*="success"], [role="alert"]'
+					)
+					.first();
 				const hasSuccessToast = await successToast.isVisible({ timeout: 5000 }).catch(() => false);
 
 				if (hasSuccessToast) {
@@ -283,7 +329,11 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Find edit button on an alert card
-			const editBtn = page.locator('[data-testid="alert-edit-btn"], button:has-text("Edit"), [aria-label="Edit alert"], [class*="edit"]').first();
+			const editBtn = page
+				.locator(
+					'[data-testid="alert-edit-btn"], button:has-text("Edit"), [aria-label="Edit alert"], [class*="edit"]'
+				)
+				.first();
 			const hasEditBtn = await editBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasEditBtn) {
@@ -296,7 +346,9 @@ test.describe('Explosive Swings Admin', () => {
 			await page.waitForTimeout(500);
 
 			// Look for edit modal
-			const editModal = page.locator('[data-testid="alert-modal"], .modal, [role="dialog"]').first();
+			const editModal = page
+				.locator('[data-testid="alert-modal"], .modal, [role="dialog"]')
+				.first();
 			const hasModal = await editModal.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasModal) {
@@ -309,7 +361,9 @@ test.describe('Explosive Swings Admin', () => {
 				}
 
 				// Save changes
-				const saveBtn = page.locator('button[type="submit"], button:has-text("Save"), button:has-text("Update")').first();
+				const saveBtn = page
+					.locator('button[type="submit"], button:has-text("Save"), button:has-text("Update")')
+					.first();
 				if (await saveBtn.isVisible().catch(() => false)) {
 					await saveBtn.click();
 					await page.waitForLoadState('networkidle').catch(() => {});
@@ -343,7 +397,11 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Find delete button
-			const deleteBtn = page.locator('[data-testid="alert-delete-btn"], button:has-text("Delete"), [aria-label="Delete alert"], button[class*="delete"]').first();
+			const deleteBtn = page
+				.locator(
+					'[data-testid="alert-delete-btn"], button:has-text("Delete"), [aria-label="Delete alert"], button[class*="delete"]'
+				)
+				.first();
 			const hasDeleteBtn = await deleteBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (!hasDeleteBtn) {
@@ -356,7 +414,11 @@ test.describe('Explosive Swings Admin', () => {
 			await page.waitForTimeout(500);
 
 			// Look for confirmation dialog
-			const confirmDialog = page.locator('[data-testid="confirm-dialog"], .confirm-dialog, [role="alertdialog"], [role="dialog"]:has-text("confirm")').first();
+			const confirmDialog = page
+				.locator(
+					'[data-testid="confirm-dialog"], .confirm-dialog, [role="alertdialog"], [role="dialog"]:has-text("confirm")'
+				)
+				.first();
 			const hasConfirmDialog = await confirmDialog.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasConfirmDialog) {
@@ -397,7 +459,11 @@ test.describe('Explosive Swings Admin', () => {
 			}
 
 			// Look for upload/manage weekly content button
-			const uploadBtn = page.locator('[data-testid="upload-weekly-video"], button:has-text("Upload Video"), button:has-text("Weekly Content"), [class*="upload"]').first();
+			const uploadBtn = page
+				.locator(
+					'[data-testid="upload-weekly-video"], button:has-text("Upload Video"), button:has-text("Weekly Content"), [class*="upload"]'
+				)
+				.first();
 			const hasUploadBtn = await uploadBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
 			if (hasUploadBtn) {

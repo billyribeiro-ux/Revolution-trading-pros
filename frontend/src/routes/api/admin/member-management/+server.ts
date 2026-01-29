@@ -55,10 +55,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json(
-				{ error: 'Empty response from server' },
-				{ status: response.status || 500 }
-			);
+			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
 		}
 
 		try {

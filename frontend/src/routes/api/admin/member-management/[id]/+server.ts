@@ -35,10 +35,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json(
-				{ error: 'Empty response from server' },
-				{ status: response.status || 500 }
-			);
+			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
 		}
 
 		try {
@@ -77,10 +74,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json(
-				{ error: 'Empty response from server' },
-				{ status: response.status || 500 }
-			);
+			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
 		}
 
 		try {
@@ -121,10 +115,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json(
-				{ error: 'Empty response from server' },
-				{ status: response.status || 500 }
-			);
+			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
 		}
 
 		try {

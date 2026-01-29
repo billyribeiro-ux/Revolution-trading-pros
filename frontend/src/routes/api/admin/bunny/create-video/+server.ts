@@ -73,8 +73,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${accessToken}`
+				Accept: 'application/json',
+				Authorization: `Bearer ${accessToken}`
 			},
 			body: JSON.stringify({
 				title: body.title,

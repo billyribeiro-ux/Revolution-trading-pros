@@ -12,6 +12,7 @@
 
 import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; archiveUrl: string }> = {
@@ -110,8 +111,7 @@ function dateToSlug(date: Date): string {
 	return `${month}${day}${year}`;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export const load = async ({ params, fetch }): Promise<ArchiveDetailPageData> => {
+export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDetailPageData> => {
 	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 	const roomSlug = params.room_slug as string;
 	const dateSlug = params.date_slug as string;

@@ -27,22 +27,24 @@ export function createMockComponent(name: string) {
 	const capturedProps: unknown[] = [];
 	const capturedEvents: Array<{ event: string; detail: unknown }> = [];
 
-	const MockComponent = vi.fn().mockImplementation((options: { props?: Record<string, unknown> }) => {
-		if (options?.props) {
-			capturedProps.push(options.props);
-		}
+	const MockComponent = vi
+		.fn()
+		.mockImplementation((options: { props?: Record<string, unknown> }) => {
+			if (options?.props) {
+				capturedProps.push(options.props);
+			}
 
-		return {
-			$set: vi.fn((newProps: Record<string, unknown>) => {
-				capturedProps.push(newProps);
-			}),
-			$destroy: vi.fn(),
-			$on: vi.fn((event: string, callback: (e: CustomEvent) => void) => {
-				// Store event listener reference
-				return () => {};
-			})
-		};
-	});
+			return {
+				$set: vi.fn((newProps: Record<string, unknown>) => {
+					capturedProps.push(newProps);
+				}),
+				$destroy: vi.fn(),
+				$on: vi.fn((event: string, callback: (e: CustomEvent) => void) => {
+					// Store event listener reference
+					return () => {};
+				})
+			};
+		});
 
 	return {
 		MockComponent,

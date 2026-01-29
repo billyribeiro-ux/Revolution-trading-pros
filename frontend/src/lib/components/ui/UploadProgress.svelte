@@ -27,18 +27,31 @@
 
 	function getDefaultStatusText(s: UploadStatus, p: number): string {
 		switch (s) {
-			case 'preparing': return 'Preparing upload...';
-			case 'uploading': return `Uploading... ${p}%`;
-			case 'processing': return 'Processing...';
-			case 'complete': return 'Complete!';
-			default: return '';
+			case 'preparing':
+				return 'Preparing upload...';
+			case 'uploading':
+				return `Uploading... ${p}%`;
+			case 'processing':
+				return 'Processing...';
+			case 'complete':
+				return 'Complete!';
+			default:
+				return '';
 		}
 	}
 </script>
 
 {#if status !== 'idle'}
-	<div class="upload-progress">
-		<div class="progress-bar">
+	<div class="upload-progress" role="status" aria-live="polite">
+		<div
+			class="progress-bar"
+			role="progressbar"
+			aria-valuenow={isIndeterminate ? undefined : displayProgress}
+			aria-valuemin={0}
+			aria-valuemax={100}
+			aria-valuetext={finalStatusText}
+			aria-label="Upload progress"
+		>
 			<div
 				class="progress-fill"
 				class:indeterminate={isIndeterminate}
@@ -46,7 +59,7 @@
 			></div>
 		</div>
 		{#if finalStatusText}
-			<span class="progress-text">{finalStatusText}</span>
+			<span class="progress-text" aria-hidden="true">{finalStatusText}</span>
 		{/if}
 	</div>
 {/if}
@@ -65,7 +78,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #143E59, #1a5a7e);
+		background: linear-gradient(90deg, #143e59, #1a5a7e);
 		transition: width 0.3s;
 		border-radius: 4px;
 	}
@@ -76,15 +89,19 @@
 		background: linear-gradient(
 			90deg,
 			rgba(20, 62, 89, 0.3) 0%,
-			#143E59 50%,
+			#143e59 50%,
 			rgba(20, 62, 89, 0.3) 100%
 		);
 		background-size: 200% 100%;
 	}
 
 	@keyframes indeterminate {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	.progress-text {

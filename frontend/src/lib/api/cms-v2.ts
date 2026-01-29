@@ -493,10 +493,7 @@ export interface CreateRedirectRequest {
 // API CLIENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
-async function fetchApi<T>(
-	endpoint: string,
-	options: RequestInit = {}
-): Promise<T> {
+async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
 	const response = await fetch(endpoint, {
 		...options,
 		headers: {
@@ -567,10 +564,7 @@ export async function updateAssetFolder(
 	});
 }
 
-export async function deleteAssetFolder(
-	id: string,
-	moveToId?: string
-): Promise<void> {
+export async function deleteAssetFolder(id: string, moveToId?: string): Promise<void> {
 	const query = moveToId ? `?move_to=${moveToId}` : '';
 	await fetchApi<{ message: string }>(`${API_BASE}/folders/${id}${query}`, {
 		method: 'DELETE'
@@ -601,10 +595,7 @@ export async function createAsset(request: CreateAssetRequest): Promise<CmsAsset
 	});
 }
 
-export async function updateAsset(
-	id: string,
-	request: UpdateAssetRequest
-): Promise<CmsAsset> {
+export async function updateAsset(id: string, request: UpdateAssetRequest): Promise<CmsAsset> {
 	return fetchApi<CmsAsset>(`${API_BASE}/assets/${id}`, {
 		method: 'PUT',
 		body: JSON.stringify(request)
@@ -640,9 +631,7 @@ export async function getContentBySlug(
 	locale?: string
 ): Promise<CmsContent> {
 	const query = locale ? `?locale=${locale}` : '';
-	return fetchApi<CmsContent>(
-		`${PUBLIC_API_BASE}/content/${contentType}/${slug}${query}`
-	);
+	return fetchApi<CmsContent>(`${PUBLIC_API_BASE}/content/${contentType}/${slug}${query}`);
 }
 
 export async function createContent(request: CreateContentRequest): Promise<CmsContent> {
@@ -682,13 +671,8 @@ export async function deleteContent(id: string): Promise<void> {
 // REVISIONS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export async function getContentRevisions(
-	contentId: string,
-	limit = 25
-): Promise<CmsRevision[]> {
-	return fetchApi<CmsRevision[]>(
-		`${API_BASE}/content/${contentId}/revisions?limit=${limit}`
-	);
+export async function getContentRevisions(contentId: string, limit = 25): Promise<CmsRevision[]> {
+	return fetchApi<CmsRevision[]>(`${API_BASE}/content/${contentId}/revisions?limit=${limit}`);
 }
 
 export async function restoreRevision(
@@ -720,24 +704,16 @@ export async function getContentTags(contentId: string): Promise<CmsTag[]> {
 	return fetchApi<CmsTag[]>(`${API_BASE}/content/${contentId}/tags`);
 }
 
-export async function addTagToContent(
-	contentId: string,
-	tagId: string
-): Promise<void> {
-	await fetchApi<{ message: string }>(
-		`${API_BASE}/content/${contentId}/tags/${tagId}`,
-		{ method: 'POST' }
-	);
+export async function addTagToContent(contentId: string, tagId: string): Promise<void> {
+	await fetchApi<{ message: string }>(`${API_BASE}/content/${contentId}/tags/${tagId}`, {
+		method: 'POST'
+	});
 }
 
-export async function removeTagFromContent(
-	contentId: string,
-	tagId: string
-): Promise<void> {
-	await fetchApi<{ message: string }>(
-		`${API_BASE}/content/${contentId}/tags/${tagId}`,
-		{ method: 'DELETE' }
-	);
+export async function removeTagFromContent(contentId: string, tagId: string): Promise<void> {
+	await fetchApi<{ message: string }>(`${API_BASE}/content/${contentId}/tags/${tagId}`, {
+		method: 'DELETE'
+	});
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -759,10 +735,9 @@ export async function createComment(
 }
 
 export async function resolveComment(commentId: string): Promise<void> {
-	await fetchApi<{ message: string }>(
-		`${API_BASE}/comments/${commentId}/resolve`,
-		{ method: 'POST' }
-	);
+	await fetchApi<{ message: string }>(`${API_BASE}/comments/${commentId}/resolve`, {
+		method: 'POST'
+	});
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -833,9 +808,7 @@ export async function listRedirects(): Promise<CmsRedirect[]> {
 	return fetchApi<CmsRedirect[]>(`${API_BASE}/redirects`);
 }
 
-export async function createRedirect(
-	request: CreateRedirectRequest
-): Promise<CmsRedirect> {
+export async function createRedirect(request: CreateRedirectRequest): Promise<CmsRedirect> {
 	return fetchApi<CmsRedirect>(`${API_BASE}/redirects`, {
 		method: 'POST',
 		body: JSON.stringify(request)

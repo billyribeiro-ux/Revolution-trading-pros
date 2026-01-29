@@ -362,11 +362,18 @@
 	<div class="flex-1 overflow-y-auto" role="list" aria-label="Comments list">
 		{#if isLoading}
 			<div class="flex items-center justify-center py-8">
-				<div class="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+				<div
+					class="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"
+				></div>
 			</div>
 		{:else if comments.length === 0}
 			<div class="py-8 text-center text-gray-500">
-				<svg class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<svg
+					class="mx-auto h-12 w-12 text-gray-300"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -407,7 +414,9 @@
 
 						<!-- Status Badge -->
 						{#if comment.is_resolved}
-							<span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+							<span
+								class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+							>
 								Resolved
 							</span>
 						{/if}
@@ -441,10 +450,7 @@
 							</div>
 						</div>
 					{:else}
-						<div
-							class="mt-2 text-sm text-gray-700"
-							role="article"
-						>
+						<div class="mt-2 text-sm text-gray-700" role="article">
 							{@html renderCommentBody(comment.body)}
 						</div>
 

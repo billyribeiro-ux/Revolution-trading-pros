@@ -3,7 +3,8 @@
 	 * Reading Progress Indicator - Svelte 5 Component
 	 * Shows reading progress as a bar at the top of the page
 	 *
-	 * @version 1.0.0 - December 2024
+	 * @version 2.0.0 - January 2026
+	 * Updated: CSS layers, oklch colors, modern patterns
 	 */
 
 	interface Props {
@@ -108,40 +109,49 @@
 {/if}
 
 <style>
-	.reading-progress {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: var(--height);
-		background: var(--bg-color);
-		z-index: var(--z-index);
-		transition: opacity 0.3s ease;
-	}
+	/* 2026 CSS Standards: CSS Layers, oklch colors */
+	@layer components {
+		.reading-progress {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: var(--height);
+			background: var(--bg-color);
+			z-index: var(--z-index);
+			transition: opacity 0.3s ease;
+		}
 
-	.reading-progress.bottom {
-		top: auto;
-		bottom: 0;
-	}
+		.reading-progress.bottom {
+			top: auto;
+			bottom: 0;
+		}
 
-	.progress-bar {
-		height: 100%;
-		width: var(--progress);
-		background: var(--color);
-		transition: width 0.1s ease-out;
-		border-radius: 0 2px 2px 0;
-	}
+		.progress-bar {
+			height: 100%;
+			width: var(--progress);
+			background: var(--color);
+			transition: width 0.1s ease-out;
+			border-radius: 0 2px 2px 0;
+			/* Modern gradient effect using color-mix */
+			background-image: linear-gradient(
+				90deg,
+				var(--color),
+				color-mix(in oklch, var(--color) 80%, oklch(0.8 0.15 290))
+			);
+		}
 
-	.progress-text {
-		position: absolute;
-		right: 8px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 10px;
-		font-weight: 600;
-		color: var(--color);
-		background: rgba(15, 23, 42, 0.9);
-		padding: 2px 6px;
-		border-radius: 4px;
+		.progress-text {
+			position: absolute;
+			right: 8px;
+			top: 50%;
+			transform: translateY(-50%);
+			font-size: 10px;
+			font-weight: 600;
+			color: var(--color);
+			background: oklch(0.1 0.02 260 / 0.9);
+			padding: 2px 6px;
+			border-radius: 4px;
+		}
 	}
 </style>

@@ -272,10 +272,7 @@ class WebSocketService {
 	/**
 	 * Subscribe to explosive swings room alerts
 	 */
-	subscribeToRoomAlerts(
-		roomSlug: string,
-		callback: (alert: RoomAlertPayload) => void
-	): () => void {
+	subscribeToRoomAlerts(roomSlug: string, callback: (alert: RoomAlertPayload) => void): () => void {
 		const channel = `room:${roomSlug}:alerts`;
 		const wsChannel = `room.${roomSlug}.alerts`;
 

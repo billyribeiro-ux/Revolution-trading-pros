@@ -21,8 +21,19 @@
 	let data = $derived(block.data as { code?: string; language?: string; filename?: string });
 
 	const languages = [
-		'javascript', 'typescript', 'python', 'rust', 'go', 'java',
-		'html', 'css', 'json', 'sql', 'bash', 'markdown', 'text'
+		'javascript',
+		'typescript',
+		'python',
+		'rust',
+		'go',
+		'java',
+		'html',
+		'css',
+		'json',
+		'sql',
+		'bash',
+		'markdown',
+		'text'
 	];
 
 	function handleCodeChange(e: Event) {
@@ -118,7 +129,8 @@
 		font-family: 'Fira Code', monospace;
 	}
 
-	.filename, .language {
+	.filename,
+	.language {
 		font-size: 0.75rem;
 		color: #64748b;
 		font-family: 'Fira Code', monospace;

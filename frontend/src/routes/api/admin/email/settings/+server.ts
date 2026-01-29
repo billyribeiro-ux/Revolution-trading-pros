@@ -8,7 +8,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-
 // Default SMTP settings (in production, these would come from database)
 let emailSettings = {
 	provider: 'smtp',

@@ -28,22 +28,22 @@
 	}
 
 	const { video, isOpen, onClose }: Props = $props();
-	
+
 	// Modal ref for focus management
 	let modalRef = $state<HTMLDivElement | null>(null);
-	
+
 	// Body scroll lock
 	$effect(() => {
 		if (!isOpen) return;
-		
+
 		const previousOverflow = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
-		
+
 		return () => {
 			document.body.style.overflow = previousOverflow;
 		};
 	});
-	
+
 	// Focus modal when opened
 	$effect(() => {
 		if (isOpen && modalRef) {
@@ -73,9 +73,9 @@
 
 {#if isOpen && video}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div 
+	<div
 		bind:this={modalRef}
-		class="modal-backdrop" 
+		class="modal-backdrop"
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}
 		role="dialog"
@@ -124,17 +124,21 @@
 				<div class="video-details">
 					<span class="duration">
 						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+							<path
+								fill-rule="evenodd"
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z"
+								clip-rule="evenodd"
+							/>
 						</svg>
 						{video.duration}
 					</span>
 					<span class="date">
-						{video.publishedAt instanceof Date 
-							? video.publishedAt.toLocaleDateString('en-US', { 
-								month: 'short', 
-								day: 'numeric', 
-								year: 'numeric' 
-							})
+						{video.publishedAt instanceof Date
+							? video.publishedAt.toLocaleDateString('en-US', {
+									month: 'short',
+									day: 'numeric',
+									year: 'numeric'
+								})
 							: ''}
 					</span>
 				</div>
@@ -162,8 +166,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -181,11 +189,11 @@
 	}
 
 	@keyframes scaleIn {
-		from { 
+		from {
 			opacity: 0;
 			transform: scale(0.95);
 		}
-		to { 
+		to {
 			opacity: 1;
 			transform: scale(1);
 		}
@@ -291,10 +299,18 @@
 		letter-spacing: 0.5px;
 	}
 
-	.type-badge.type-entry { background: #0d9488; }
-	.type-badge.type-exit { background: var(--color-profit); }
-	.type-badge.type-update { background: var(--color-watching-hover); }
-	.type-badge.type-breakdown { background: var(--color-text-tertiary); }
+	.type-badge.type-entry {
+		background: #0d9488;
+	}
+	.type-badge.type-exit {
+		background: var(--color-profit);
+	}
+	.type-badge.type-update {
+		background: var(--color-watching-hover);
+	}
+	.type-badge.type-breakdown {
+		background: var(--color-text-tertiary);
+	}
 
 	.video-title {
 		font-size: 18px;

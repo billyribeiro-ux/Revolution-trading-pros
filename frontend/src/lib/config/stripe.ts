@@ -21,12 +21,12 @@ import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
  */
 export function getStripePublishableKey(): string {
 	const key = PUBLIC_STRIPE_PUBLISHABLE_KEY;
-	
+
 	if (!key) {
 		console.error('[Stripe] PUBLIC_STRIPE_PUBLISHABLE_KEY not configured in environment');
 		throw new Error('Stripe publishable key not configured');
 	}
-	
+
 	return key;
 }
 

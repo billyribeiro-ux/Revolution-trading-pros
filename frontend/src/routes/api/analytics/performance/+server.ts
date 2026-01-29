@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * Pattern: Fire-and-forget with immediate 204 response
- * 
+ *
  * Architecture:
  * 1. Return 204 IMMEDIATELY to caller (non-blocking)
  * 2. Fire-and-forget backend call (don't await response)
@@ -43,13 +43,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			if (token) headers.Authorization = `Bearer ${token}`;
 
 			// Fire-and-forget: don't await, don't care about result
-			globalThis.fetch(`${API_URL}/analytics/performance`, {
-				method: 'POST',
-				headers,
-				body: rawBody
-			}).catch(() => {
-				// Silently ignore - analytics failures are acceptable
-			});
+			globalThis
+				.fetch(`${API_URL}/analytics/performance`, {
+					method: 'POST',
+					headers,
+					body: rawBody
+				})
+				.catch(() => {
+					// Silently ignore - analytics failures are acceptable
+				});
 		}
 	} catch {
 		// Silently ignore any parsing errors

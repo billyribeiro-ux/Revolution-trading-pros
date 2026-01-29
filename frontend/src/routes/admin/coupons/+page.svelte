@@ -188,7 +188,13 @@
 			<div class="filters-bar">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input type="text" id="search-coupons" name="search" placeholder="Search by code or type..." bind:value={searchQuery} />
+					<input
+						type="text"
+						id="search-coupons"
+						name="search"
+						placeholder="Search by code or type..."
+						bind:value={searchQuery}
+					/>
 				</div>
 				<div class="filter-tabs">
 					<button
@@ -327,7 +333,12 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-coupons {
-		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--bg-base) 0%,
+			var(--bg-elevated) 50%,
+			var(--bg-base) 100%
+		);
 		position: relative;
 		overflow: hidden;
 	}

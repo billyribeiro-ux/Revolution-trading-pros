@@ -270,10 +270,7 @@
 					>
 				</h1>
 
-				<p
-					data-gsap
-					class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
-				>
+				<p data-gsap class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
 					Stop staring at the 1-minute chart. Get high-precision <strong
 						>multi-day swing alerts</strong
 					> backed by Dark Pool data. Designed for traders who want financial freedom, not another 9-to-5
@@ -363,7 +360,10 @@
 				</div>
 			</div>
 
-			<div class="hidden lg:block relative [perspective:1000px]" style="contain: layout style paint;">
+			<div
+				class="hidden lg:block relative [perspective:1000px]"
+				style="contain: layout style paint;"
+			>
 				<div
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
 				></div>
@@ -1157,4 +1157,3 @@
 </div>
 
 <MarketingFooter />
-

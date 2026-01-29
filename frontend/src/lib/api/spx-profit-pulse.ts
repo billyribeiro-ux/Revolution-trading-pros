@@ -141,11 +141,9 @@ export const spxProfitPulseApi = {
 	 * Get full dashboard data (SSR-optimized)
 	 * Fetches all data in parallel for maximum performance
 	 */
-	getDashboard: async (
-		customFetch?: typeof fetch
-	): Promise<ApiResponse<SPXDashboardData>> => {
+	getDashboard: async (customFetch?: typeof fetch): Promise<ApiResponse<SPXDashboardData>> => {
 		const fetchFn = customFetch || (browser ? fetch : undefined);
-		
+
 		if (!fetchFn) {
 			return {
 				success: false,
@@ -194,7 +192,7 @@ export const spxProfitPulseApi = {
 		customFetch?: typeof fetch
 	): Promise<PaginatedResponse<SPXAlert>> => {
 		const fetchFn = customFetch || (browser ? fetch : undefined);
-		
+
 		if (!fetchFn) {
 			return {
 				success: false,
@@ -248,7 +246,7 @@ export const spxProfitPulseApi = {
 		customFetch?: typeof fetch
 	): Promise<ApiResponse<SPXAlert | null>> => {
 		const fetchFn = customFetch || (browser ? fetch : undefined);
-		
+
 		if (!fetchFn) {
 			return { success: false, data: null };
 		}
@@ -282,7 +280,7 @@ export const spxProfitPulseApi = {
 		customFetch?: typeof fetch
 	): Promise<ApiResponse<SPXPerformanceMetrics>> => {
 		const fetchFn = customFetch || (browser ? fetch : undefined);
-		
+
 		if (!fetchFn) {
 			return { success: false, data: getDefaultPerformance() };
 		}
@@ -313,7 +311,7 @@ export const spxProfitPulseApi = {
 		customFetch?: typeof fetch
 	): Promise<ApiResponse<Array<{ name: string; slug: string; href: string; icon: string }>>> => {
 		const fetchFn = customFetch || (browser ? fetch : undefined);
-		
+
 		if (!fetchFn) {
 			return { success: false, data: getDefaultTradingRooms() };
 		}
@@ -362,7 +360,12 @@ function getDefaultPerformance(): SPXPerformanceMetrics {
 	};
 }
 
-function getDefaultTradingRooms(): Array<{ name: string; slug: string; href: string; icon: string }> {
+function getDefaultTradingRooms(): Array<{
+	name: string;
+	slug: string;
+	href: string;
+	icon: string;
+}> {
 	return [
 		{
 			name: 'Day Trading Room',
@@ -388,7 +391,7 @@ function getDefaultTradingRooms(): Array<{ name: string; slug: string; href: str
 function getDefaultAlerts(): SPXAlert[] {
 	const baseDate = new Date();
 	const alerts: SPXAlert[] = [];
-	
+
 	const traders = [
 		{ id: 1, name: 'Billy Ribeiro', slug: 'billy-ribeiro' },
 		{ id: 2, name: 'Freddie Ferber', slug: 'freddie-ferber' },
@@ -400,7 +403,7 @@ function getDefaultAlerts(): SPXAlert[] {
 	for (let i = 0; i < 6; i++) {
 		const date = new Date(baseDate);
 		date.setDate(date.getDate() - i);
-		
+
 		// Skip weekends
 		const dayOfWeek = date.getDay();
 		if (dayOfWeek === 0) date.setDate(date.getDate() - 2);

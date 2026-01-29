@@ -266,7 +266,14 @@
 
 {#if isOpen}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-backdrop" onclick={handleBackdropClick} onkeydown={handleKeydown} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-backdrop"
+		onclick={handleBackdropClick}
+		onkeydown={handleKeydown}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<div class="modal-content">
 			<div class="modal-header">
 				<h2>{isEdit ? 'Edit Alert' : 'Create New Alert'}</h2>

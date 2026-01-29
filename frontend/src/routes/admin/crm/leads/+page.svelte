@@ -589,196 +589,123 @@
 	<div class="admin-page-container">
 		<!-- Header - CENTERED -->
 		<header class="page-header">
-		<h1>
-			<IconUsers size={28} />
-			Lead Management
-		</h1>
-		<p class="subtitle">Track, qualify, and convert leads through your sales pipeline</p>
-	</header>
+			<h1>
+				<IconUsers size={28} />
+				Lead Management
+			</h1>
+			<p class="subtitle">Track, qualify, and convert leads through your sales pipeline</p>
+		</header>
 
-	{#if connectionLoading}
-		<SkeletonLoader variant="dashboard" />
-	{:else if !$isCrmConnected}
-		<ApiNotConnected
-			serviceName="CRM"
-			description="Connect to manage leads, track opportunities, and grow your sales pipeline."
-			serviceKey="hubspot"
-			icon="target"
-			color="#f97316"
-			features={[
-				'Lead scoring and qualification',
-				'Pipeline stage management',
-				'Lead source tracking',
-				'Conversion analytics',
-				'Bulk operations'
-			]}
-		/>
-	{:else}
-		<!-- Stats Overview -->
-		<section class="stats-grid">
-			<div class="stat-card highlight">
-				<div class="stat-icon blue">
-					<IconUsers size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.total.toLocaleString()}</span>
-					<span class="stat-label">Total Leads</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon cyan">
-					<IconFlame size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.hot_leads}</span>
-					<span class="stat-label">Hot Leads</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon purple">
-					<IconTarget size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.qualified}</span>
-					<span class="stat-label">Qualified</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon emerald">
-					<IconCheck size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.won}</span>
-					<span class="stat-label">Won</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon amber">
-					<IconChartBar size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{formatCurrency(stats.total_value)}</span>
-					<span class="stat-label">Pipeline Value</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon green">
-					<IconTrendingUp size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.conversion_rate.toFixed(1)}%</span>
-					<span class="stat-label">Conversion Rate</span>
-				</div>
-			</div>
-		</section>
-
-		<!-- Actions Bar -->
-		<div class="actions-bar">
-			<div class="search-section">
-				<div class="search-box">
-					<IconSearch size={18} />
-					<input id="search-leads" name="search-leads" type="text" placeholder="Search leads..." bind:value={searchQuery} />
-				</div>
-				<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
-					<IconFilter size={18} />
-					Filters
-					<IconChevronDown size={16} class={showFilters ? 'rotate' : ''} />
-				</button>
-			</div>
-
-			<div class="action-buttons">
-				{#if selectedLeads.size > 0}
-					<div class="bulk-actions">
-						<span class="selected-count">{selectedLeads.size} selected</span>
-						<button class="btn-bulk" onclick={() => bulkUpdateStatus('qualified')}>
-							Mark Qualified
-						</button>
-						<button class="btn-bulk danger" onclick={bulkDelete}> Delete </button>
+		{#if connectionLoading}
+			<SkeletonLoader variant="dashboard" />
+		{:else if !$isCrmConnected}
+			<ApiNotConnected
+				serviceName="CRM"
+				description="Connect to manage leads, track opportunities, and grow your sales pipeline."
+				serviceKey="hubspot"
+				icon="target"
+				color="#f97316"
+				features={[
+					'Lead scoring and qualification',
+					'Pipeline stage management',
+					'Lead source tracking',
+					'Conversion analytics',
+					'Bulk operations'
+				]}
+			/>
+		{:else}
+			<!-- Stats Overview -->
+			<section class="stats-grid">
+				<div class="stat-card highlight">
+					<div class="stat-icon blue">
+						<IconUsers size={24} />
 					</div>
-				{/if}
+					<div class="stat-content">
+						<span class="stat-value">{stats.total.toLocaleString()}</span>
+						<span class="stat-label">Total Leads</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon cyan">
+						<IconFlame size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.hot_leads}</span>
+						<span class="stat-label">Hot Leads</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon purple">
+						<IconTarget size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.qualified}</span>
+						<span class="stat-label">Qualified</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon emerald">
+						<IconCheck size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.won}</span>
+						<span class="stat-label">Won</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon amber">
+						<IconChartBar size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{formatCurrency(stats.total_value)}</span>
+						<span class="stat-label">Pipeline Value</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon green">
+						<IconTrendingUp size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.conversion_rate.toFixed(1)}%</span>
+						<span class="stat-label">Conversion Rate</span>
+					</div>
+				</div>
+			</section>
 
-				<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-				</button>
-				<button
-					class="btn-primary"
-					onclick={() => {
-						resetForm();
-						showAddModal = true;
-					}}
-				>
-					<IconUserPlus size={18} />
-					Add Lead
-				</button>
-			</div>
-		</div>
+			<!-- Actions Bar -->
+			<div class="actions-bar">
+				<div class="search-section">
+					<div class="search-box">
+						<IconSearch size={18} />
+						<input
+							id="search-leads"
+							name="search-leads"
+							type="text"
+							placeholder="Search leads..."
+							bind:value={searchQuery}
+						/>
+					</div>
+					<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
+						<IconFilter size={18} />
+						Filters
+						<IconChevronDown size={16} class={showFilters ? 'rotate' : ''} />
+					</button>
+				</div>
 
-		<!-- Filters Panel -->
-		{#if showFilters}
-			<div class="filters-panel">
-				<div class="filter-group">
-					<label for="filter-status">Status</label>
-					<select id="filter-status" bind:value={selectedStatus}>
-						{#each statusOptions as option}
-							<option value={option.value}>{option.label}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="filter-group">
-					<label for="filter-source">Source</label>
-					<select id="filter-source" bind:value={selectedSource}>
-						{#each sourceOptions as option}
-							<option value={option.value}>{option.label}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="filter-group">
-					<label for="filter-sort">Sort By</label>
-					<select id="filter-sort" bind:value={sortBy}>
-						{#each sortOptions as option}
-							<option value={option.value}>{option.label}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="filter-group">
-					<label for="filter-order">Order</label>
-					<select id="filter-order" bind:value={sortOrder}>
-						<option value="desc">Newest First</option>
-						<option value="asc">Oldest First</option>
-					</select>
-				</div>
-				<button
-					class="btn-clear-filters"
-					onclick={() => {
-						selectedStatus = 'all';
-						selectedSource = 'all';
-						sortBy = 'created_at';
-						sortOrder = 'desc';
-						searchQuery = '';
-					}}
-				>
-					Clear Filters
-				</button>
-			</div>
-		{/if}
+				<div class="action-buttons">
+					{#if selectedLeads.size > 0}
+						<div class="bulk-actions">
+							<span class="selected-count">{selectedLeads.size} selected</span>
+							<button class="btn-bulk" onclick={() => bulkUpdateStatus('qualified')}>
+								Mark Qualified
+							</button>
+							<button class="btn-bulk danger" onclick={bulkDelete}> Delete </button>
+						</div>
+					{/if}
 
-		<!-- Leads Table -->
-		<div class="table-container">
-			{#if isLoading}
-				<div class="loading-state">
-					<div class="spinner"></div>
-					<p>Loading leads...</p>
-				</div>
-			{:else if error}
-				<div class="error-state">
-					<p>{error}</p>
-					<button onclick={loadData}>Try Again</button>
-				</div>
-			{:else if filteredLeads.length === 0}
-				<div class="empty-state">
-					<IconUsers size={48} />
-					<h3>No leads found</h3>
-					<p>Create your first lead to start building your pipeline</p>
+					<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
+						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					</button>
 					<button
 						class="btn-primary"
 						onclick={() => {
@@ -790,163 +717,248 @@
 						Add Lead
 					</button>
 				</div>
-			{:else}
-				<table class="data-table">
-					<thead>
-						<tr>
-							<th class="checkbox-col">
-								<input id="select-all-leads" name="select-all-leads" type="checkbox" checked={isAllSelected} onchange={toggleSelectAll} />
-							</th>
-							<th></th>
-							<th>Lead</th>
-							<th>Status</th>
-							<th>Score</th>
-							<th>Source</th>
-							<th>Est. Value</th>
-							<th>Last Contact</th>
-							<th>Created</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each paginatedLeads as lead (lead.id)}
-							<tr class:selected={selectedLeads.has(lead.id)}>
-								<td class="checkbox-col">
-									<input
-										id="select-lead-{lead.id}"
-										name="select-lead-{lead.id}"
-										type="checkbox"
-										checked={selectedLeads.has(lead.id)}
-										onchange={() => toggleSelectLead(lead.id)}
-									/>
-								</td>
-								<td class="star-col">
-									<button
-										class="btn-star"
-										class:starred={lead.is_starred}
-										onclick={() => toggleStarred(lead)}
-									>
-										{#if lead.is_starred}
-											<IconStarFilled size={16} />
-										{:else}
-											<IconStar size={16} />
-										{/if}
-									</button>
-								</td>
-								<td>
-									<div class="lead-cell">
-										<div class="lead-avatar" class:hot={lead.is_hot}>
-											{lead.full_name?.charAt(0).toUpperCase() || '?'}
-											{#if lead.is_hot}
-												<span class="hot-indicator"><IconFlame size={10} /></span>
-											{/if}
-										</div>
-										<div class="lead-info">
-											<span class="lead-name">{lead.full_name || 'Unknown'}</span>
-											<span class="lead-email">{lead.email || 'No email'}</span>
-											{#if lead.company_name}
-												<span class="lead-company">
-													<IconBuilding size={12} />
-													{lead.company_name}
-												</span>
-											{/if}
-										</div>
-									</div>
-								</td>
-								<td>
-									<select
-										class="status-select {getStatusColor(lead.status)}"
-										value={lead.status}
-										onchange={(e) =>
-											updateLeadStatus(lead.id, (e.target as HTMLSelectElement).value)}
-									>
-										{#each statusOptions.filter((o) => o.value !== 'all') as option}
-											<option value={option.value}>{option.label}</option>
-										{/each}
-									</select>
-								</td>
-								<td>
-									<div class="score-cell">
-										<span class="score-value {getScoreColor(lead.lead_score)}">
-											{lead.lead_score}
-										</span>
-										<div class="score-bar">
-											<div class="score-fill" style="width: {lead.lead_score}%"></div>
-										</div>
-									</div>
-								</td>
-								<td>
-									<span class="source-badge">{lead.source || 'Unknown'}</span>
-								</td>
-								<td class="value-col">
-									{lead.estimated_value ? formatCurrency(lead.estimated_value) : '-'}
-								</td>
-								<td class="date-col">
-									{formatDate(lead.last_contacted_at)}
-								</td>
-								<td class="date-col">
-									{formatDate(lead.created_at)}
-								</td>
-								<td>
-									<div class="action-buttons-cell">
-										<a href="/admin/crm/leads/{lead.id}" class="btn-icon" title="View">
-											<IconEye size={16} />
-										</a>
-										<button class="btn-icon" title="Edit" onclick={() => openEditModal(lead)}>
-											<IconEdit size={16} />
-										</button>
-										<button
-											class="btn-icon convert"
-											title="Convert to Contact"
-											onclick={() => openConvertModal(lead)}
-										>
-											<IconArrowRight size={16} />
-										</button>
-										<button
-											class="btn-icon danger"
-											title="Delete"
-											onclick={() => openDeleteModal(lead)}
-										>
-											<IconTrash size={16} />
-										</button>
-									</div>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+			</div>
 
-				<!-- Pagination -->
-				<div class="table-footer">
-					<span class="results-count">
-						Showing {(currentPage - 1) * perPage + 1} - {Math.min(
-							currentPage * perPage,
-							filteredLeads.length
-						)} of {filteredLeads.length} leads
-					</span>
-					<div class="pagination">
-						<button
-							class="pagination-btn"
-							disabled={currentPage === 1}
-							onclick={() => (currentPage = currentPage - 1)}
-						>
-							Previous
-						</button>
-						<span class="pagination-info">
-							Page {currentPage} of {totalPages}
-						</span>
-						<button
-							class="pagination-btn"
-							disabled={currentPage === totalPages}
-							onclick={() => (currentPage = currentPage + 1)}
-						>
-							Next
-						</button>
+			<!-- Filters Panel -->
+			{#if showFilters}
+				<div class="filters-panel">
+					<div class="filter-group">
+						<label for="filter-status">Status</label>
+						<select id="filter-status" bind:value={selectedStatus}>
+							{#each statusOptions as option}
+								<option value={option.value}>{option.label}</option>
+							{/each}
+						</select>
 					</div>
+					<div class="filter-group">
+						<label for="filter-source">Source</label>
+						<select id="filter-source" bind:value={selectedSource}>
+							{#each sourceOptions as option}
+								<option value={option.value}>{option.label}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="filter-group">
+						<label for="filter-sort">Sort By</label>
+						<select id="filter-sort" bind:value={sortBy}>
+							{#each sortOptions as option}
+								<option value={option.value}>{option.label}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="filter-group">
+						<label for="filter-order">Order</label>
+						<select id="filter-order" bind:value={sortOrder}>
+							<option value="desc">Newest First</option>
+							<option value="asc">Oldest First</option>
+						</select>
+					</div>
+					<button
+						class="btn-clear-filters"
+						onclick={() => {
+							selectedStatus = 'all';
+							selectedSource = 'all';
+							sortBy = 'created_at';
+							sortOrder = 'desc';
+							searchQuery = '';
+						}}
+					>
+						Clear Filters
+					</button>
 				</div>
 			{/if}
-		</div>
-	{/if}
+
+			<!-- Leads Table -->
+			<div class="table-container">
+				{#if isLoading}
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<p>Loading leads...</p>
+					</div>
+				{:else if error}
+					<div class="error-state">
+						<p>{error}</p>
+						<button onclick={loadData}>Try Again</button>
+					</div>
+				{:else if filteredLeads.length === 0}
+					<div class="empty-state">
+						<IconUsers size={48} />
+						<h3>No leads found</h3>
+						<p>Create your first lead to start building your pipeline</p>
+						<button
+							class="btn-primary"
+							onclick={() => {
+								resetForm();
+								showAddModal = true;
+							}}
+						>
+							<IconUserPlus size={18} />
+							Add Lead
+						</button>
+					</div>
+				{:else}
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th class="checkbox-col">
+									<input
+										id="select-all-leads"
+										name="select-all-leads"
+										type="checkbox"
+										checked={isAllSelected}
+										onchange={toggleSelectAll}
+									/>
+								</th>
+								<th></th>
+								<th>Lead</th>
+								<th>Status</th>
+								<th>Score</th>
+								<th>Source</th>
+								<th>Est. Value</th>
+								<th>Last Contact</th>
+								<th>Created</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each paginatedLeads as lead (lead.id)}
+								<tr class:selected={selectedLeads.has(lead.id)}>
+									<td class="checkbox-col">
+										<input
+											id="select-lead-{lead.id}"
+											name="select-lead-{lead.id}"
+											type="checkbox"
+											checked={selectedLeads.has(lead.id)}
+											onchange={() => toggleSelectLead(lead.id)}
+										/>
+									</td>
+									<td class="star-col">
+										<button
+											class="btn-star"
+											class:starred={lead.is_starred}
+											onclick={() => toggleStarred(lead)}
+										>
+											{#if lead.is_starred}
+												<IconStarFilled size={16} />
+											{:else}
+												<IconStar size={16} />
+											{/if}
+										</button>
+									</td>
+									<td>
+										<div class="lead-cell">
+											<div class="lead-avatar" class:hot={lead.is_hot}>
+												{lead.full_name?.charAt(0).toUpperCase() || '?'}
+												{#if lead.is_hot}
+													<span class="hot-indicator"><IconFlame size={10} /></span>
+												{/if}
+											</div>
+											<div class="lead-info">
+												<span class="lead-name">{lead.full_name || 'Unknown'}</span>
+												<span class="lead-email">{lead.email || 'No email'}</span>
+												{#if lead.company_name}
+													<span class="lead-company">
+														<IconBuilding size={12} />
+														{lead.company_name}
+													</span>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td>
+										<select
+											class="status-select {getStatusColor(lead.status)}"
+											value={lead.status}
+											onchange={(e) =>
+												updateLeadStatus(lead.id, (e.target as HTMLSelectElement).value)}
+										>
+											{#each statusOptions.filter((o) => o.value !== 'all') as option}
+												<option value={option.value}>{option.label}</option>
+											{/each}
+										</select>
+									</td>
+									<td>
+										<div class="score-cell">
+											<span class="score-value {getScoreColor(lead.lead_score)}">
+												{lead.lead_score}
+											</span>
+											<div class="score-bar">
+												<div class="score-fill" style="width: {lead.lead_score}%"></div>
+											</div>
+										</div>
+									</td>
+									<td>
+										<span class="source-badge">{lead.source || 'Unknown'}</span>
+									</td>
+									<td class="value-col">
+										{lead.estimated_value ? formatCurrency(lead.estimated_value) : '-'}
+									</td>
+									<td class="date-col">
+										{formatDate(lead.last_contacted_at)}
+									</td>
+									<td class="date-col">
+										{formatDate(lead.created_at)}
+									</td>
+									<td>
+										<div class="action-buttons-cell">
+											<a href="/admin/crm/leads/{lead.id}" class="btn-icon" title="View">
+												<IconEye size={16} />
+											</a>
+											<button class="btn-icon" title="Edit" onclick={() => openEditModal(lead)}>
+												<IconEdit size={16} />
+											</button>
+											<button
+												class="btn-icon convert"
+												title="Convert to Contact"
+												onclick={() => openConvertModal(lead)}
+											>
+												<IconArrowRight size={16} />
+											</button>
+											<button
+												class="btn-icon danger"
+												title="Delete"
+												onclick={() => openDeleteModal(lead)}
+											>
+												<IconTrash size={16} />
+											</button>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+
+					<!-- Pagination -->
+					<div class="table-footer">
+						<span class="results-count">
+							Showing {(currentPage - 1) * perPage + 1} - {Math.min(
+								currentPage * perPage,
+								filteredLeads.length
+							)} of {filteredLeads.length} leads
+						</span>
+						<div class="pagination">
+							<button
+								class="pagination-btn"
+								disabled={currentPage === 1}
+								onclick={() => (currentPage = currentPage - 1)}
+							>
+								Previous
+							</button>
+							<span class="pagination-info">
+								Page {currentPage} of {totalPages}
+							</span>
+							<button
+								class="pagination-btn"
+								disabled={currentPage === totalPages}
+								onclick={() => (currentPage = currentPage + 1)}
+							>
+								Next
+							</button>
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>

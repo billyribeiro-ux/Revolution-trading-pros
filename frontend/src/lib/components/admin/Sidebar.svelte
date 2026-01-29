@@ -79,11 +79,7 @@
 
 <!-- Backdrop for mobile -->
 {#if isOpen}
-	<button
-		class="sidebar-backdrop"
-		onclick={onclose}
-		aria-label="Close sidebar"
-	></button>
+	<button class="sidebar-backdrop" onclick={onclose} aria-label="Close sidebar"></button>
 {/if}
 
 <aside class="admin-sidebar" class:open={isOpen}>

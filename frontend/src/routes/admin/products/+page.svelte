@@ -175,7 +175,13 @@
 			<div class="header-actions">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input id="search-products" name="search-products" type="text" placeholder="Search products..." bind:value={searchQuery} />
+					<input
+						id="search-products"
+						name="search-products"
+						type="text"
+						placeholder="Search products..."
+						bind:value={searchQuery}
+					/>
 				</div>
 				<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
 					<IconRefresh size={18} class={loading ? 'spinning' : ''} />
@@ -362,7 +368,10 @@
 	}
 
 	.type-btn.active {
-		background: var(--admin-btn-primary-bg, linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%));
+		background: var(
+			--admin-btn-primary-bg,
+			linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%)
+		);
 		border-color: transparent;
 		color: var(--admin-btn-primary-text, var(--bg-base));
 	}

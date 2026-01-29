@@ -358,7 +358,12 @@
 				<!-- Active Status -->
 				<div class="form-group">
 					<label class="checkbox-label">
-						<input id="is-active" name="is-active" type="checkbox" bind:checked={formData.is_active} />
+						<input
+							id="is-active"
+							name="is-active"
+							type="checkbox"
+							bind:checked={formData.is_active}
+						/>
 						<span>Active (visible to customers)</span>
 					</label>
 				</div>
@@ -396,7 +401,12 @@
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input id="indexable" name="indexable" type="checkbox" bind:checked={formData.indexable} />
+								<input
+									id="indexable"
+									name="indexable"
+									type="checkbox"
+									bind:checked={formData.indexable}
+								/>
 								<span>Allow search engine indexing</span>
 							</label>
 						</div>

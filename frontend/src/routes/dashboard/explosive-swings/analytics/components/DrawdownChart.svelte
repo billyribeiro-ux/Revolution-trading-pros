@@ -59,16 +59,16 @@
 						return i === 0 ? `M ${x} ${padding.top}` : `L ${x} ${padding.top}`;
 					})
 					.join(' ') +
-				' ' +
-				data
-					.map((d, i) => {
-						const x = scaleX(i);
-						const y = scaleY(d.drawdown_percent);
-						return `L ${x} ${y}`;
-					})
-					.reverse()
-					.join(' ') +
-				' Z'
+					' ' +
+					data
+						.map((d, i) => {
+							const x = scaleX(i);
+							const y = scaleY(d.drawdown_percent);
+							return `L ${x} ${y}`;
+						})
+						.reverse()
+						.join(' ') +
+					' Z'
 			: ''
 	);
 
@@ -253,10 +253,7 @@
 			<!-- Tooltip -->
 			{#if hoveredIndex !== null}
 				{@const point = data[hoveredIndex]}
-				<div
-					class="tooltip"
-					style="left: {tooltipX}px; top: {tooltipY + 15}px"
-				>
+				<div class="tooltip" style="left: {tooltipX}px; top: {tooltipY + 15}px">
 					<div class="tooltip-value">{formatPercent(point.drawdown_percent)}</div>
 					<div class="tooltip-date">{formatDate(point.date)}</div>
 				</div>
@@ -398,7 +395,12 @@
 	.skel-area {
 		width: 100%;
 		height: 140px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -414,8 +416,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 640px) {

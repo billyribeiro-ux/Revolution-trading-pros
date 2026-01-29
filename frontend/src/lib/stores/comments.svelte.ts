@@ -249,8 +249,7 @@ class CommentsStoreClass {
 		if (!this._mentionQuery) return this._users;
 		const query = this._mentionQuery.toLowerCase();
 		return this._users.filter(
-			(u) =>
-				u.display_name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
+			(u) => u.display_name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
 		);
 	}
 
@@ -427,10 +426,7 @@ class CommentsStoreClass {
 			let finalRequest = { ...request };
 			if (request.body) {
 				const mentionedUsers = this.parseMentions(request.body);
-				finalRequest.mentioned_users = [
-					...(request.mentioned_users || []),
-					...mentionedUsers
-				];
+				finalRequest.mentioned_users = [...(request.mentioned_users || []), ...mentionedUsers];
 			}
 
 			const response = await fetch(`/api/cms/comments/${commentId}`, {
@@ -604,9 +600,7 @@ class CommentsStoreClass {
 
 			// Update local state
 			this._notifications = this._notifications.map((n) =>
-				n.id === notificationId
-					? { ...n, is_read: true, read_at: new Date().toISOString() }
-					: n
+				n.id === notificationId ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
 			);
 			this.notifySubscribers();
 		} catch (error) {

@@ -46,9 +46,7 @@
 	}
 
 	// Sort data for heatmap display
-	const sortedData = $derived(
-		[...data].sort((a, b) => b.total_pnl_percent - a.total_pnl_percent)
-	);
+	const sortedData = $derived([...data].sort((a, b) => b.total_pnl_percent - a.total_pnl_percent));
 
 	// Tab state
 	let activeTab: 'all' | 'top' | 'worst' = $state('all');
@@ -61,7 +59,7 @@
 			<button
 				class="tab-btn"
 				class:active={activeTab === 'all'}
-				onclick={() => activeTab = 'all'}
+				onclick={() => (activeTab = 'all')}
 				role="tab"
 				aria-selected={activeTab === 'all'}
 			>
@@ -70,7 +68,7 @@
 			<button
 				class="tab-btn"
 				class:active={activeTab === 'top'}
-				onclick={() => activeTab = 'top'}
+				onclick={() => (activeTab = 'top')}
 				role="tab"
 				aria-selected={activeTab === 'top'}
 			>
@@ -79,7 +77,7 @@
 			<button
 				class="tab-btn"
 				class:active={activeTab === 'worst'}
-				onclick={() => activeTab = 'worst'}
+				onclick={() => (activeTab = 'worst')}
 				role="tab"
 				aria-selected={activeTab === 'worst'}
 			>
@@ -108,10 +106,7 @@
 						style="background-color: {getBackgroundColor(ticker.total_pnl_percent)}"
 					>
 						<div class="cell-ticker">{ticker.ticker}</div>
-						<div
-							class="cell-pnl"
-							style="color: {getHeatmapColor(ticker.total_pnl_percent)}"
-						>
+						<div class="cell-pnl" style="color: {getHeatmapColor(ticker.total_pnl_percent)}">
 							{formatPercent(ticker.total_pnl_percent)}
 						</div>
 						<div class="cell-stats">
@@ -234,7 +229,9 @@
 		cursor: pointer;
 		background: transparent;
 		color: var(--color-text-secondary);
-		transition: background 0.15s, color 0.15s;
+		transition:
+			background 0.15s,
+			color 0.15s;
 	}
 
 	.tab-btn:hover {
@@ -407,7 +404,12 @@
 
 	.skel-cell {
 		height: 80px;
-		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
+		background: linear-gradient(
+			90deg,
+			var(--color-bg-subtle) 25%,
+			var(--color-bg-muted) 50%,
+			var(--color-bg-subtle) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -423,8 +425,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	@media (max-width: 640px) {

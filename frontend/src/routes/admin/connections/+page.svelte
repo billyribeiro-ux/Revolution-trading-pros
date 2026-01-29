@@ -514,7 +514,10 @@
 			{/if}
 
 			<!-- Available Integrations -->
-			<section class="section-available" in:fly={{ y: 20, duration: 500, delay: 300, easing: cubicOut }}>
+			<section
+				class="section-available"
+				in:fly={{ y: 20, duration: 500, delay: 300, easing: cubicOut }}
+			>
 				<div class="available-header">
 					<div class="section-header-row">
 						<div class="section-icon-wrapper available">
@@ -579,10 +582,7 @@
 									{service.description}
 								</p>
 
-								<button
-									onclick={() => openConnectModal(service)}
-									class="btn-connect"
-								>
+								<button onclick={() => openConnectModal(service)} class="btn-connect">
 									Connect
 								</button>
 							</div>
@@ -611,10 +611,7 @@
 									<p class="service-description-truncate">{service.description}</p>
 								</div>
 
-								<button
-									onclick={() => openConnectModal(service)}
-									class="btn-connect-small"
-								>
+								<button onclick={() => openConnectModal(service)} class="btn-connect-small">
 									Connect
 								</button>
 							</div>
@@ -626,12 +623,7 @@
 				{#if filteredConnections.length === 0}
 					<div class="empty-state">
 						<div class="empty-state-icon">
-							<svg
-								class="empty-icon-svg"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
+							<svg class="empty-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"

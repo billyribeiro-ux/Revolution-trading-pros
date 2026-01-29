@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { FormField } from '$lib/api/forms';
+	import { tryMathEval } from '$lib/utils/safe-math-parser';
 
 	interface CalculationVariable {
 		name: string;
@@ -42,16 +43,9 @@
 				return '0';
 			});
 
-			// Safe evaluation using Function constructor (only math operations)
-			// Only allow numbers, operators, parentheses, and Math functions
-			const sanitized = expression.replace(/[^0-9+\-*/().,%\s]/g, '');
-			if (sanitized !== expression) {
-				console.warn('Calculator: Unsafe characters removed from formula');
-			}
-
-			// Evaluate the expression
-			const result = new Function(`return ${sanitized}`)();
-			const numericResult = Number(result);
+			// Safe evaluation using recursive descent parser (no code execution)
+			// Only allows: numbers, +, -, *, /, %, parentheses
+			const numericResult = tryMathEval(expression);
 
 			if (isNaN(numericResult) || !isFinite(numericResult)) {
 				return 0;
