@@ -4,13 +4,14 @@ import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
-// import { renderScan } from 'svelte-render-scan/vite'; // Temporarily disabled for npm compatibility
+import { svelteTesting } from '@testing-library/svelte/vite';
+// import { renderScan } from 'svelte-render-scan/vite'; // Disabled: package missing "./vite" export in package.json (Vite 7 compatibility)
 
 export default defineConfig({
 	// Vitest configuration
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}', 'tests/unit/**/*.{test,spec}.{js,ts}'],
-		environment: 'node',
+		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['src/lib/observability/__tests__/setup.ts'],
 		// Mock SvelteKit modules
@@ -23,9 +24,10 @@ export default defineConfig({
 	},
 	plugins: [
 		devtoolsJson(), // Chrome DevTools workspace integration - serves /.well-known/appspecific/com.chrome.devtools.json
-		// renderScan(), // Visual debugging tool - temporarily disabled for npm compatibility
+		// renderScan(), // Disabled: svelte-render-scan@1.1.0 missing "./vite" export (esbuild externalize-deps error)
 		tailwindcss(),
 		sveltekit(),
+		svelteTesting(),
 		// Brotli compression for production
 		viteCompression({
 			algorithm: 'brotliCompress',
