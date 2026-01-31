@@ -6,6 +6,7 @@
 	 * @author Revolution Trading Pros
 	 */
 	import '$lib/styles/main.css';
+	import '$lib/styles/admin-responsive.css';
 
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';

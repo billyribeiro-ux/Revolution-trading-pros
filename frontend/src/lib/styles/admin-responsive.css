@@ -1,0 +1,401 @@
+/**
+ * Admin Responsive Design System
+ * Apple ICT 7 Principal Engineer Grade - January 2026
+ * 
+ * Mobile-first responsive utilities for all admin pages
+ * Svelte 5 + SvelteKit 2.x compatible
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE CONTAINER UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.admin-page-container {
+	position: relative;
+	z-index: 10;
+	width: 100%;
+	max-width: min(1400px, calc(100vw - var(--space-8)));
+	margin: 0 auto;
+	padding: var(--space-4);
+}
+
+@media (min-width: 640px) {
+	.admin-page-container {
+		padding: var(--space-6);
+	}
+}
+
+@media (min-width: 1024px) {
+	.admin-page-container {
+		padding: var(--space-8);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE GRID UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.metrics-grid,
+.stats-grid,
+.business-grid {
+	display: grid;
+	gap: var(--space-4);
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+	.metrics-grid,
+	.stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.metrics-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	
+	.stats-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	
+	.business-grid {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE PANEL UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.glass-panel,
+.analytics-panel {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-default);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	backdrop-filter: blur(10px);
+}
+
+@media (min-width: 640px) {
+	.glass-panel,
+	.analytics-panel {
+		padding: var(--space-6);
+	}
+}
+
+@media (min-width: 1024px) {
+	.glass-panel,
+	.analytics-panel {
+		padding: var(--space-8);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DUAL PANEL ROW
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dual-panel-row {
+	display: grid;
+	gap: var(--space-4);
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+	.dual-panel-row {
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-6);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE TABLE UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.admin-table-container {
+	width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--border-default);
+}
+
+.admin-table {
+	width: 100%;
+	min-width: 600px;
+	border-collapse: collapse;
+}
+
+@media (min-width: 1024px) {
+	.admin-table {
+		min-width: 100%;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE SEARCH & FILTERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.search-filter-bar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	margin-bottom: var(--space-4);
+}
+
+@media (min-width: 768px) {
+	.search-filter-bar {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.search-input {
+	width: 100%;
+	max-width: none;
+	padding: var(--space-3) var(--space-4);
+	background: var(--bg-surface);
+	border: 1px solid var(--border-default);
+	border-radius: var(--radius-md);
+	color: var(--text-primary);
+	font-size: var(--text-sm);
+}
+
+@media (min-width: 640px) {
+	.search-input {
+		max-width: 320px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.search-input {
+		max-width: 400px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE MODAL UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.modal-content {
+	width: calc(100vw - var(--space-8));
+	max-width: 500px;
+	max-height: calc(100vh - var(--space-8));
+	overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+	.modal-content {
+		width: 90vw;
+		max-width: 600px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.modal-content {
+		width: auto;
+		max-width: 800px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOUCH TARGET UTILITIES (44x44px minimum)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (hover: none) and (pointer: coarse) {
+	.btn,
+	.header-btn,
+	.icon-btn,
+	button:not(.no-touch-target) {
+		min-height: 44px;
+		min-width: 44px;
+		padding: var(--space-3);
+	}
+	
+	.admin-table td,
+	.admin-table th {
+		padding: var(--space-3) var(--space-4);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.page-title {
+	font-size: clamp(1.5rem, 4vw, 2rem);
+	font-weight: var(--font-bold);
+	color: var(--text-primary);
+	margin: 0 0 var(--space-2) 0;
+}
+
+.page-subtitle {
+	font-size: clamp(0.875rem, 2vw, 1rem);
+	color: var(--text-secondary);
+	margin: 0 0 var(--space-4) 0;
+}
+
+.section-title {
+	font-size: clamp(1.25rem, 3vw, 1.5rem);
+	font-weight: var(--font-semibold);
+	color: var(--text-primary);
+	margin: 0 0 var(--space-3) 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE CARD UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.metric-card,
+.stat-card,
+.info-card {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-default);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	transition: var(--transition-all);
+}
+
+@media (min-width: 640px) {
+	.metric-card,
+	.stat-card,
+	.info-card {
+		padding: var(--space-5);
+	}
+}
+
+@media (min-width: 1024px) {
+	.metric-card,
+	.stat-card,
+	.info-card {
+		padding: var(--space-6);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE SPACING UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.section-spacing {
+	margin-bottom: var(--space-6);
+}
+
+@media (min-width: 768px) {
+	.section-spacing {
+		margin-bottom: var(--space-8);
+	}
+}
+
+@media (min-width: 1024px) {
+	.section-spacing {
+		margin-bottom: var(--space-10);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE VISIBILITY UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mobile-only {
+	display: block;
+}
+
+.tablet-up {
+	display: none;
+}
+
+.desktop-only {
+	display: none;
+}
+
+@media (min-width: 768px) {
+	.mobile-only {
+		display: none;
+	}
+	
+	.tablet-up {
+		display: block;
+	}
+}
+
+@media (min-width: 1024px) {
+	.desktop-only {
+		display: block;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE FLEX UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.flex-stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+	.flex-stack-md {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - HIGH CONTRAST
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-contrast: high) {
+	.glass-panel,
+	.analytics-panel,
+	.metric-card,
+	.stat-card {
+		border-width: 2px;
+	}
+	
+	.btn,
+	button {
+		border-width: 2px;
+		font-weight: var(--font-bold);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+	.admin-page-container {
+		max-width: 100%;
+		padding: 0;
+	}
+	
+	.glass-panel,
+	.analytics-panel {
+		border: 1px solid #000;
+		background: #fff;
+		page-break-inside: avoid;
+	}
+	
+	.btn,
+	button,
+	.header-actions {
+		display: none !important;
+	}
+}
