@@ -1,11 +1,18 @@
 {
-  "dependencies": {
-    "formsnap": "^2.0.1",
-    "sveltekit-superforms": "^2.29.1",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "svelte-meta-tags": "^4.5.0",
-    "vite-plugin-devtools-json": "^1.0.0"
+  "name": "revolution-trading-pros-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "preview": "npm run preview --workspace=frontend",
+    "check": "npm run check --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend",
+    "format": "npm run format --workspace=frontend",
+    "test": "npm run test --workspace=frontend"
   }
 }

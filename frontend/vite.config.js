@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
-import { renderScan } from 'svelte-render-scan/vite';
+// import { renderScan } from 'svelte-render-scan/vite'; // Temporarily disabled for npm compatibility
 
 export default defineConfig({
 	// Vitest configuration
@@ -23,7 +23,7 @@ export default defineConfig({
 	},
 	plugins: [
 		devtoolsJson(), // Chrome DevTools workspace integration - serves /.well-known/appspecific/com.chrome.devtools.json
-		renderScan(), // Visual debugging tool - highlights component re-renders
+		// renderScan(), // Visual debugging tool - temporarily disabled for npm compatibility
 		tailwindcss(),
 		sveltekit(),
 		// Brotli compression for production

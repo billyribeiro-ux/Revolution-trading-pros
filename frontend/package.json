@@ -4,6 +4,7 @@
 	"description": "A SvelteKit project for Revolution.",
 	"private": true,
 	"type": "module",
+	"packageManager": "npm@10.9.2",
 	"engines": {
 		"node": ">=20.0.0"
 	},
