@@ -3,54 +3,74 @@
  * Revolution Trading Pros - Sitemap Generator
  * ═══════════════════════════════════════════════════════════════════════════════
  *
- * @description Automatic sitemap generation using super-sitemap
- * @version 3.0.0 - Migrated to super-sitemap for automatic route discovery
+ * @description Static sitemap generation for public routes
+ * @version 4.0.0 - ICT 7 Fix: Manual static sitemap (build-time compatible)
  * @standards Apple Principal Engineer ICT 7+ Standards
  *
  * Features:
- * - Automatic route discovery from /src/routes
- * - Excludes dashboard, admin, and auth routes
- * - 1h CDN cache, no browser cache (default)
- * - Alphabetically sorted URLs
+ * - Static route list (no runtime discovery needed)
  * - Prerendered for optimal performance
+ * - 1h CDN cache, no browser cache
+ * - Alphabetically sorted URLs
+ * - Google 2025 compliant (no priority/changefreq)
  *
- * Note: Google ignores priority and changefreq (per 2025 guidelines), so they
- * are excluded by default to minimize KB size and enable faster crawling.
+ * Why manual vs super-sitemap:
+ * - super-sitemap requires runtime route discovery
+ * - Fails during SvelteKit prerendering phase
+ * - Manual approach is more reliable and faster
+ * - Public routes rarely change, manual maintenance is acceptable
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import * as sitemap from 'super-sitemap';
 
-export const prerender = false;
+export const prerender = true;
+
+const SITE_URL = 'https://revolution-trading-pros.pages.dev';
+
+// Public routes to include in sitemap
+// Alphabetically sorted for consistency
+const PUBLIC_ROUTES = [
+	'/',
+	'/about',
+	'/alerts/explosive-swings',
+	'/alerts/spx-profit-pulse',
+	'/blog',
+	'/contact',
+	'/indicators/volume-max-i',
+	'/live-trading-rooms/day-trading-room',
+	'/live-trading-rooms/explosive-swings',
+	'/live-trading-rooms/small-account-mentorship',
+	'/live-trading-rooms/spx-profit-pulse',
+	'/live-trading-rooms/swing-trading-room',
+	'/login',
+	'/pricing',
+	'/privacy',
+	'/register',
+	'/terms'
+].sort();
+
+function generateSitemap(routes: string[]): string {
+	const urls = routes
+		.map(
+			(route) => `  <url>
+    <loc>${SITE_URL}${route}</loc>
+  </url>`
+		)
+		.join('\n');
+
+	return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
 
 export const GET: RequestHandler = async () => {
-	return await sitemap.response({
-		origin: 'https://revolution-trading-pros.pages.dev',
-		excludeRoutePatterns: [
-			// Exclude authenticated routes
-			'^/dashboard.*', // All dashboard routes
-			'^/admin.*', // All admin routes
-			
-			// Exclude auth flows
-			'^/auth.*', // Auth callbacks, verification, etc.
-			'^/logout$', // Logout endpoint
-			'^/reset-password.*', // Password reset flows
-			'^/verify-email.*', // Email verification
-			
-			// Exclude API routes
-			'^/api.*',
-			
-			// Exclude utility routes
-			'^/sitemap\\.xml$', // Don't include sitemap in sitemap
-			'^/robots\\.txt$',
-			
-			// Exclude route groups (internal organization)
-			'.*\\(authenticated\\).*', // Routes within authenticated group
-			'.*\\(public\\).*' // Routes within public group (if they exist)
-		],
-		sort: 'alpha', // Alphabetically sort all URLs
+	const sitemap = generateSitemap(PUBLIC_ROUTES);
+
+	return new Response(sitemap, {
 		headers: {
-			'Cache-Control': 'public, max-age=0, s-maxage=3600' // 1h CDN cache, no browser cache
+			'Content-Type': 'application/xml',
+			'Cache-Control': 'public, max-age=0, s-maxage=3600'
 		}
 	});
 };
