@@ -3,18 +3,357 @@
 
 ---
 
-## 🎯 PRIME DIRECTIVE
+# 🚨 ABSOLUTE PRIME DIRECTIVE: ZERO ERRORS TOLERANCE
+
+## ⛔ STOP - READ THIS FIRST BEFORE ANY ACTION
+
+**Every single change MUST result in ZERO errors, ZERO warnings, and ZERO regressions.**
+
+This is not a suggestion. This is an absolute requirement. If you cannot guarantee a change is 100% error-free with evidence, DO NOT make the change.
+
+---
+
+## 🔒 MANDATORY VERIFICATION PROTOCOL
+
+### BEFORE Making ANY Change:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  PRE-CHANGE VERIFICATION CHECKLIST (ALL REQUIRED)              │
+├─────────────────────────────────────────────────────────────────┤
+│  □ 1. READ the ENTIRE file being modified (not just the area)  │
+│  □ 2. TRACE every import - where does it come from?            │
+│  □ 3. TRACE every export - what files depend on this?          │
+│  □ 4. IDENTIFY all type definitions involved                   │
+│  □ 5. MAP the component/function hierarchy                     │
+│  □ 6. CHECK for existing tests that might break                │
+│  □ 7. VERIFY current state: `pnpm run check` passes            │
+│  □ 8. DOCUMENT what you're changing and WHY                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### DURING Every Change:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  CHANGE EXECUTION RULES (MANDATORY)                            │
+├─────────────────────────────────────────────────────────────────┤
+│  □ Change ONE thing at a time - never batch unrelated changes  │
+│  □ Keep all existing imports unless explicitly removing        │
+│  □ Preserve all type annotations - never weaken types          │
+│  □ Maintain backward compatibility of exports                  │
+│  □ Update ALL files that import/use the changed code           │
+│  □ Update ALL related type definitions                         │
+│  □ Update ALL related tests                                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### AFTER Every Change:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  POST-CHANGE VERIFICATION (ALL MUST PASS)                      │
+├─────────────────────────────────────────────────────────────────┤
+│  □ Run: pnpm run check        → MUST show 0 errors             │
+│  □ Run: pnpm run lint         → MUST show 0 errors, 0 warnings │
+│  □ Run: pnpm run build        → MUST complete successfully     │
+│  □ Run: pnpm run test         → ALL tests MUST pass            │
+│  □ Verify: No new TypeScript errors in ANY file                │
+│  □ Verify: No new ESLint warnings in ANY file                  │
+│  □ Verify: No console errors in browser                        │
+│  □ Verify: No hydration mismatches                             │
+│  □ Verify: No runtime errors                                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔴 CRITICAL: DEPENDENCY TRACING PROTOCOL
+
+**Before modifying ANY file, you MUST create a dependency map:**
+
+```typescript
+// EXAMPLE: Before modifying Button.svelte
+
+/* 
+ * ═══════════════════════════════════════════════════════════════
+ * DEPENDENCY MAP FOR: src/lib/components/ui/Button.svelte
+ * ═══════════════════════════════════════════════════════════════
+ * 
+ * THIS FILE IMPORTS FROM:
+ * ├── svelte (Snippet type)
+ * ├── $lib/types/components.ts (ButtonVariant, ButtonSize)
+ * └── $lib/utils/cn.ts (cn function)
+ * 
+ * THIS FILE IS IMPORTED BY:
+ * ├── src/lib/components/ui/index.ts (re-export)
+ * ├── src/routes/+page.svelte
+ * ├── src/routes/dashboard/+page.svelte
+ * ├── src/routes/auth/login/+page.svelte
+ * ├── src/lib/components/forms/LoginForm.svelte
+ * ├── src/lib/components/forms/SignupForm.svelte
+ * └── 14 other files...
+ * 
+ * TYPES AFFECTED:
+ * ├── ButtonProps (this file)
+ * └── ComponentProps (src/lib/types/components.ts)
+ * 
+ * TESTS THAT COVER THIS:
+ * ├── src/lib/components/ui/Button.test.ts
+ * └── src/tests/e2e/auth.spec.ts
+ * 
+ * ═══════════════════════════════════════════════════════════════
+ */
+```
+
+**If you cannot produce this map, you don't understand the file well enough to modify it.**
+
+---
+
+## 🔴 CRITICAL: RIPPLE EFFECT PREVENTION
+
+When you change a file, you MUST update ALL affected files:
+
+### Scenario: Changing a Component's Props
+
+```
+CHANGE: Adding required prop `variant` to Button.svelte
+
+RIPPLE EFFECT - ALL THESE MUST BE UPDATED:
+├── Button.svelte          ← Add the prop
+├── Button.test.ts         ← Update test fixtures
+├── index.ts               ← Verify re-export still works
+├── +page.svelte (x14)     ← Add variant prop to all usages
+├── LoginForm.svelte       ← Add variant prop
+├── SignupForm.svelte      ← Add variant prop
+├── types/components.ts    ← Update ButtonProps type
+└── stories/Button.stories.svelte ← Update Storybook
+```
+
+### Scenario: Changing a Type Definition
+
+```
+CHANGE: Modifying User type in types/auth.ts
+
+RIPPLE EFFECT - ALL THESE MUST BE UPDATED:
+├── types/auth.ts          ← Modify the type
+├── stores/user.svelte.ts  ← Update store usage
+├── hooks.server.ts        ← Update locals.user
+├── +layout.server.ts      ← Update load function
+├── api/auth/+server.ts    ← Update response types
+├── UserAvatar.svelte      ← Update prop types
+├── UserMenu.svelte        ← Update prop types
+└── ALL tests using User   ← Update test fixtures
+```
+
+### Scenario: Changing a Utility Function
+
+```
+CHANGE: Modifying formatCurrency() in utils/format.ts
+
+RIPPLE EFFECT - ALL THESE MUST BE UPDATED:
+├── utils/format.ts        ← Modify function
+├── utils/format.test.ts   ← Update tests
+├── PriceDisplay.svelte    ← Verify usage
+├── TradeCard.svelte       ← Verify usage
+├── Portfolio.svelte       ← Verify usage
+└── ALL files importing formatCurrency
+```
+
+---
+
+## 🔴 CRITICAL: TYPE SAFETY ENFORCEMENT
+
+### NEVER DO THIS:
+
+```typescript
+// ❌ BANNED - Using 'any'
+let data: any = fetchData();
+
+// ❌ BANNED - Using 'as' to force types
+const user = data as User;
+
+// ❌ BANNED - Non-null assertion without proof
+const name = user!.name;
+
+// ❌ BANNED - Ignoring TypeScript errors
+// @ts-ignore
+// @ts-expect-error
+
+// ❌ BANNED - Optional chaining without handling undefined
+const value = obj?.prop?.nested; // What if it's undefined?
+```
+
+### ALWAYS DO THIS:
+
+```typescript
+// ✅ CORRECT - Explicit types
+let data: ApiResponse<User> = await fetchData();
+
+// ✅ CORRECT - Type guards
+function isUser(data: unknown): data is User {
+  return typeof data === 'object' && data !== null && 'id' in data;
+}
+
+if (isUser(data)) {
+  const user = data; // TypeScript knows this is User
+}
+
+// ✅ CORRECT - Exhaustive checks
+function handleStatus(status: 'pending' | 'success' | 'error'): string {
+  switch (status) {
+    case 'pending': return 'Loading...';
+    case 'success': return 'Done!';
+    case 'error': return 'Failed';
+    default: {
+      const _exhaustive: never = status;
+      throw new Error(`Unhandled status: ${_exhaustive}`);
+    }
+  }
+}
+
+// ✅ CORRECT - Proper null handling
+const value = obj?.prop?.nested ?? defaultValue;
+if (value === undefined) {
+  throw new Error('Expected value to be defined');
+}
+```
+
+---
+
+## 🔴 CRITICAL: IMPORT/EXPORT INTEGRITY
+
+### Before Removing ANY Import:
+
+1. Search the ENTIRE file for usage
+2. Check if it's re-exported
+3. Check if it's used in types
+4. Check if it's used in comments/docs
+
+### Before Changing ANY Export:
+
+1. Find ALL files that import it
+2. Check for dynamic imports
+3. Check for re-exports in index files
+4. Update ALL consumers
+
+### Import Statement Rules:
+
+```typescript
+// ✅ CORRECT - Explicit named imports
+import { Button, Card, Modal } from '$lib/components/ui';
+import type { User, Session } from '$lib/types';
+
+// ✅ CORRECT - Type-only imports
+import type { PageData } from './$types';
+
+// ❌ BANNED - Wildcard imports (hides dependencies)
+import * as Components from '$lib/components';
+
+// ❌ BANNED - Unnamed default imports
+import something from './module';
+```
+
+---
+
+## 🔴 CRITICAL: FILE CREATION RULES
+
+### Before Creating a NEW File:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  NEW FILE CHECKLIST                                            │
+├─────────────────────────────────────────────────────────────────┤
+│  □ Does this file need to exist? Can existing file be used?    │
+│  □ Is the file in the correct directory?                       │
+│  □ Does the filename follow project conventions?               │
+│  □ Have you added it to the appropriate index.ts?              │
+│  □ Have you created the corresponding test file?               │
+│  □ Have you created the corresponding types?                   │
+│  □ Have you updated any barrel exports?                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### After Creating a NEW File:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  POST-CREATION VERIFICATION                                    │
+├─────────────────────────────────────────────────────────────────┤
+│  □ File compiles without errors                                │
+│  □ File is properly exported from index                        │
+│  □ Types are properly exported                                 │
+│  □ Tests are created and passing                               │
+│  □ No circular dependencies introduced                         │
+│  □ pnpm run check still passes                                 │
+│  □ pnpm run build still passes                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔴 CRITICAL: ERROR RECOVERY PROTOCOL
+
+### If You Introduce an Error:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ERROR RECOVERY STEPS                                          │
+├─────────────────────────────────────────────────────────────────┤
+│  1. STOP immediately - do not make more changes                │
+│  2. READ the full error message carefully                      │
+│  3. TRACE the error to its source                              │
+│  4. UNDERSTAND why the error occurred                          │
+│  5. FIX the root cause, not the symptom                        │
+│  6. VERIFY the fix doesn't introduce new errors                │
+│  7. RUN full verification suite again                          │
+│  8. DOCUMENT what caused the error for future reference        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Common Error Patterns to AVOID:
+
+```typescript
+// ❌ ERROR: Fixing type error by weakening types
+// Before: Property 'x' does not exist on type 'Y'
+// BAD FIX: (obj as any).x
+
+// ✅ CORRECT: Add proper type definition or type guard
+
+// ❌ ERROR: Fixing import error by removing usage
+// Before: Cannot find module 'X'
+// BAD FIX: Just delete the import and usage
+
+// ✅ CORRECT: Install package, fix path, or create module
+
+// ❌ ERROR: Fixing undefined error with optional chaining everywhere
+// Before: Cannot read property 'x' of undefined
+// BAD FIX: obj?.x?.y?.z?.whatever
+
+// ✅ CORRECT: Ensure data is loaded before accessing, add proper guards
+```
+
+---
+
+## 🎯 PRIME DIRECTIVE (EXPANDED)
 
 **Before ANY code modification, you MUST:**
 
-1. **READ and UNDERSTAND** the entire file being modified
-2. **TRACE all imports, exports, and dependencies** to understand the full context
-3. **IDENTIFY the function's purpose** within the page/component hierarchy
-4. **MAP state flow** - where does data come from? Where does it go?
-5. **CHECK for related files** - tests, types, stores, utilities
-6. **UNDERSTAND the business logic** - what is this feature trying to accomplish?
+1. **READ and UNDERSTAND** the entire file being modified - not just the function, the WHOLE file
+2. **TRACE all imports** - open each imported file and understand what it provides
+3. **TRACE all exports** - find every file that imports from this file
+4. **IDENTIFY all type definitions** - follow the type chain to its source
+5. **MAP the component/function hierarchy** - understand the call stack
+6. **MAP state flow** - where does data come from? Where does it go? What transforms it?
+7. **CHECK for related files** - tests, types, stores, utilities, stories
+8. **CHECK for side effects** - does this code trigger other code?
+9. **UNDERSTAND the business logic** - what is this feature trying to accomplish?
+10. **VERIFY current state** - run `pnpm run check` BEFORE making changes
+11. **CREATE a rollback plan** - know how to undo your changes
 
 **NEVER make changes without full context. Ask if unclear.**
+
+**NEVER proceed if `pnpm run check` shows errors BEFORE your changes - fix those first.**
 
 ---
 
@@ -955,23 +1294,123 @@ export default [
 
 ---
 
-## 📋 PRE-COMMIT CHECKLIST
+## 🔴 MANDATORY VERIFICATION COMMANDS
 
-Before submitting ANY code change:
+### Run These Commands After EVERY Change:
 
-- [ ] **Full file context understood** - Read the entire file
-- [ ] **Dependencies traced** - Know what imports/exports affect
-- [ ] **Types are correct** - No `any`, all interfaces defined
-- [ ] **Svelte 5 syntax** - Runes, snippets, callback props only
-- [ ] **Tailwind v4 syntax** - @theme, @utility, modern classes
-- [ ] **Tests written/updated** - Unit + E2E coverage
-- [ ] **Animations smooth** - 60fps, GPU-accelerated
-- [ ] **Accessibility checked** - ARIA labels, keyboard navigation
-- [ ] **Error states handled** - Loading, error, empty states
-- [ ] **Mobile responsive** - Tested on all breakpoints
-- [ ] **No TypeScript errors** - `svelte-check` passes
-- [ ] **No ESLint errors** - All rules satisfied
-- [ ] **Related files updated** - Types, tests, stories
+```bash
+# Frontend verification sequence (run ALL of these)
+cd frontend
+
+# 1. TypeScript/Svelte type checking
+pnpm run check
+# MUST OUTPUT: "0 errors"
+
+# 2. Linting
+pnpm run lint
+# MUST OUTPUT: No errors, no warnings
+
+# 3. Build verification
+pnpm run build
+# MUST OUTPUT: Build successful, no errors
+
+# 4. Unit tests
+pnpm run test
+# MUST OUTPUT: All tests passed
+
+# 5. E2E tests (for significant changes)
+pnpm run test:e2e
+# MUST OUTPUT: All tests passed
+```
+
+```bash
+# Backend verification sequence (run ALL of these)
+cd backend
+
+# 1. Compilation check
+cargo check
+# MUST OUTPUT: No errors, no warnings (with --deny warnings)
+
+# 2. Linting
+cargo clippy -- -D warnings
+# MUST OUTPUT: No errors, no warnings
+
+# 3. Build
+cargo build --release
+# MUST OUTPUT: Build successful
+
+# 4. Tests
+cargo test
+# MUST OUTPUT: All tests passed
+
+# 5. Format check
+cargo fmt --check
+# MUST OUTPUT: No formatting issues
+```
+
+### What Each Command Catches:
+
+| Command | Catches |
+|---------|---------|
+| `pnpm run check` | TypeScript errors, Svelte compilation errors, missing imports |
+| `pnpm run lint` | Code style issues, unused variables, potential bugs |
+| `pnpm run build` | Build-time errors, bundling issues, missing dependencies |
+| `pnpm run test` | Logic errors, regressions, broken functionality |
+| `cargo check` | Rust compilation errors, borrow checker issues |
+| `cargo clippy` | Rust idiom violations, potential bugs, performance issues |
+
+---
+
+## 📋 PRE-COMMIT CHECKLIST (Evidence-Based)
+
+Before submitting ANY code change, provide EVIDENCE for each item:
+
+### Verification Evidence Required:
+
+- [ ] **Full file context understood** 
+  - Evidence: "Read [filename] lines 1-XXX, understood [purpose]"
+  
+- [ ] **Dependencies traced** 
+  - Evidence: "This file imports from: [list]. Imported by: [list]"
+  
+- [ ] **Types are correct** 
+  - Evidence: "`pnpm run check` output: 0 errors"
+  
+- [ ] **Svelte 5 syntax** 
+  - Evidence: "Verified: using $state, $derived, $props - no legacy syntax"
+  
+- [ ] **Tailwind v4 syntax** 
+  - Evidence: "Using @theme variables, no deprecated classes"
+  
+- [ ] **Tests written/updated** 
+  - Evidence: "`pnpm run test` output: X tests passed, 0 failed"
+  
+- [ ] **Animations smooth** 
+  - Evidence: "Tested in browser, 60fps confirmed via DevTools"
+  
+- [ ] **Accessibility checked** 
+  - Evidence: "ARIA labels present, keyboard nav tested"
+  
+- [ ] **Error states handled** 
+  - Evidence: "Loading, error, empty states all implemented"
+  
+- [ ] **Mobile responsive** 
+  - Evidence: "Tested at 375px, 768px, 1024px, 1440px"
+  
+- [ ] **No TypeScript errors** 
+  - Evidence: "`pnpm run check` shows 0 errors"
+  
+- [ ] **No ESLint errors** 
+  - Evidence: "`pnpm run lint` shows 0 errors, 0 warnings"
+  
+- [ ] **Build succeeds**
+  - Evidence: "`pnpm run build` completed successfully"
+  
+- [ ] **Related files updated** 
+  - Evidence: "Updated: [list of files], verified imports in: [list]"
+  
+- [ ] **No regressions introduced**
+  - Evidence: "Ran full test suite, all X tests pass"
 
 ---
 
@@ -1545,3 +1984,43 @@ export function formatCurrency(
 
 *Last Updated: January 2026*
 *Stack: SvelteKit 2.50.1 | Svelte 5.48.2 | Tailwind v4.1.18 | Rust/Axum 0.7*
+
+---
+
+## 🚨 FINAL CRITICAL REMINDERS
+
+### The Golden Rules:
+
+1. **ZERO ERRORS TOLERANCE** - Every change must result in 0 errors, 0 warnings
+2. **EVIDENCE REQUIRED** - Show proof that verification commands passed
+3. **TRACE EVERYTHING** - Know every file your change affects
+4. **UPDATE EVERYTHING** - If you change A and B imports A, update B
+5. **TEST EVERYTHING** - Run the full verification suite every time
+6. **ONE THING AT A TIME** - Never batch unrelated changes
+7. **ASK IF UNSURE** - Better to ask than to break something
+8. **ROLLBACK READY** - Always know how to undo your changes
+
+### Before You Start ANY Task:
+
+```
+1. Run `pnpm run check` - Does it pass? If NO, fix existing errors first
+2. Run `pnpm run lint` - Any warnings? Fix them first
+3. Run `pnpm run build` - Does it build? If NO, fix first
+4. Run `pnpm run test` - All passing? If NO, fix first
+```
+
+### After EVERY Change:
+
+```
+1. Run `pnpm run check` - Still 0 errors?
+2. Run `pnpm run lint` - Still 0 warnings?
+3. Run `pnpm run build` - Still builds?
+4. Run `pnpm run test` - All still passing?
+
+If ANY of these fail, your change introduced a bug. FIX IT IMMEDIATELY.
+Do not proceed to the next change until all checks pass.
+```
+
+### The Mantra:
+
+**"I will not introduce errors. I will not introduce warnings. I will trace all dependencies. I will update all affected files. I will verify with evidence. I will maintain zero-error state at all times."**
