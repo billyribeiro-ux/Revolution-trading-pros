@@ -1129,38 +1129,185 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 ---
 
-## 📱 RESPONSIVE DESIGN
+## 📱 RESPONSIVE DESIGN - January 2026 Device Data
 
-### Breakpoint Strategy
+### Apple Device Viewport Reference (CSS/Logical Pixels)
+
+#### iPhones (2024-2025)
+| Device | Width | Height | Screen |
+|--------|-------|--------|--------|
+| iPhone 17 Pro Max | 440px | 956px | 6.9" |
+| iPhone 17 Pro | 402px | 874px | 6.3" |
+| iPhone 17 | 402px | 874px | 6.3" |
+| iPhone Air | 420px | 912px | 6.5" |
+| iPhone 16e | 390px | 844px | 6.1" |
+| iPhone 16 Pro Max | 440px | 956px | 6.9" |
+| iPhone 16 Pro | 402px | 874px | 6.3" |
+| iPhone 16 Plus | 430px | 932px | 6.7" |
+| iPhone 16 | 393px | 852px | 6.1" |
+| iPhone 15 Pro Max | 430px | 932px | 6.7" |
+| iPhone 15 Pro | 393px | 852px | 6.1" |
+| iPhone SE (3rd) | 375px | 667px | 4.7" |
+
+#### iPads (2024-2025)
+| Device | Width | Height | Screen |
+|--------|-------|--------|--------|
+| iPad Pro 13" (7th) | 1032px | 1376px | 13" |
+| iPad Pro 11" (7th) | 834px | 1210px | 11" |
+| iPad Air 13" (6th) | 1024px | 1366px | 13" |
+| iPad Air 11" (6th) | 820px | 1180px | 11" |
+| iPad Mini (7th) | 744px | 1133px | 8.3" |
+| iPad 10th gen | 820px | 1180px | 10.9" |
+
+### Tailwind v4 Breakpoint Configuration
 
 ```css
-/* Tailwind v4 breakpoints */
+/* app.css - Tailwind v4 January 2026 Breakpoints */
+@import "tailwindcss";
+
 @theme {
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1536px;
+  /* Reset defaults and set custom breakpoints */
+  --breakpoint-*: initial;
+  
+  /* 
+   * Mobile-first breakpoints based on January 2026 device data
+   * Covers: iPhones 14-17, iPads, laptops, desktops
+   */
+  --breakpoint-xs: 20rem;      /* 320px - Legacy small phones */
+  --breakpoint-sm: 24.5rem;    /* 392px - iPhone 16/17 standard */
+  --breakpoint-md: 48rem;      /* 768px - iPad Mini portrait, tablets */
+  --breakpoint-lg: 64rem;      /* 1024px - iPad landscape, small laptops */
+  --breakpoint-xl: 80rem;      /* 1280px - Laptops, small desktops */
+  --breakpoint-2xl: 96rem;     /* 1536px - Large desktops */
+  --breakpoint-3xl: 120rem;    /* 1920px - Ultra-wide, 4K monitors */
 }
 ```
 
-### Mobile-First Components
+### Breakpoint Summary Table
+
+| Breakpoint | Min-Width | Rem | Target Devices |
+|------------|-----------|-----|----------------|
+| **default** | 0px | 0 | All phones (base mobile styles) |
+| **xs** | 320px | 20rem | Legacy phones, small screens |
+| **sm** | 392px | 24.5rem | iPhone 16/17 series, modern phones |
+| **md** | 768px | 48rem | iPad Mini, tablets portrait |
+| **lg** | 1024px | 64rem | iPad landscape, laptops |
+| **xl** | 1280px | 80rem | Desktops, external monitors |
+| **2xl** | 1536px | 96rem | Large desktops |
+| **3xl** | 1920px | 120rem | Ultra-wide, 4K displays |
+
+### Key Viewport Clusters (2026 Market Data)
+
+**Mobile (~70% of traffic):**
+- 360-393px → Android phones, iPhone 14-16 standard
+- 402-440px → iPhone 17 series, Pro Max models
+
+**Tablet (~15% of traffic):**
+- 744-834px → iPad Mini to iPad Air portrait
+- 1024-1032px → iPad landscape
+
+**Desktop (~15% of traffic):**
+- 1366px → Common laptop resolution
+- 1440px → Standard desktop
+- 1920px → Full HD monitors
+- 2560px+ → 4K and ultra-wide
+
+### Mobile-First Component Pattern
 
 ```svelte
 <div class="
-  /* Mobile (default) */
-  flex flex-col gap-4 p-4
+  /* ═══ BASE - Mobile (0-391px) ═══ */
+  flex flex-col gap-4 p-4 text-sm
   
-  /* Tablet */
+  /* ═══ SM - Modern phones (392px+) ═══ */
+  /* iPhone 16/17 standard, larger Android */
+  sm:gap-5 sm:text-base
+  
+  /* ═══ MD - Tablets portrait (768px+) ═══ */
+  /* iPad Mini, iPad Air portrait */
   md:flex-row md:gap-6 md:p-6
   
-  /* Desktop */
-  lg:gap-8 lg:p-8
+  /* ═══ LG - Tablets landscape / Laptops (1024px+) ═══ */
+  /* iPad landscape, MacBook Air */
+  lg:gap-8 lg:p-8 lg:max-w-5xl lg:mx-auto
   
-  /* Large Desktop */
-  xl:max-w-7xl xl:mx-auto
+  /* ═══ XL - Desktops (1280px+) ═══ */
+  /* External monitors, large laptops */
+  xl:max-w-6xl xl:gap-10
+  
+  /* ═══ 2XL - Large desktops (1536px+) ═══ */
+  /* iMac, large external monitors */
+  2xl:max-w-7xl 2xl:p-10
+  
+  /* ═══ 3XL - Ultra-wide / 4K (1920px+) ═══ */
+  /* Studio Display, Pro Display XDR */
+  3xl:max-w-[1800px]
 ">
   <!-- Content -->
+</div>
+```
+
+### Container Queries for Component-Level Responsiveness
+
+```svelte
+<!-- Parent container -->
+<div class="@container">
+  <div class="
+    /* Component responds to container, not viewport */
+    flex flex-col gap-2
+    
+    @sm:flex-row @sm:gap-4
+    @md:gap-6
+    @lg:gap-8
+  ">
+    <!-- Content adapts to available space -->
+  </div>
+</div>
+```
+
+### Touch Target Requirements (WCAG 2.2 / Apple HIG)
+
+```svelte
+<!-- Minimum touch targets for mobile -->
+<button class="
+  /* Minimum 44x44px touch target (Apple HIG) */
+  min-h-[44px] min-w-[44px]
+  
+  /* Or use padding to achieve target size */
+  px-4 py-3
+  
+  /* Adequate spacing between targets */
+  /* Minimum 8px gap recommended */
+">
+  Click Me
+</button>
+```
+
+### Netflix-Style Responsive Grid
+
+```svelte
+<div class="
+  grid gap-4
+  
+  /* Mobile: 2 columns */
+  grid-cols-2
+  
+  /* Tablet: 3-4 columns */
+  md:grid-cols-3
+  lg:grid-cols-4
+  
+  /* Desktop: 5-6 columns */
+  xl:grid-cols-5
+  2xl:grid-cols-6
+  
+  /* Ultra-wide: 7+ columns */
+  3xl:grid-cols-7
+">
+  {#each items as item}
+    <div class="aspect-video rounded-lg overflow-hidden">
+      <!-- Card content -->
+    </div>
+  {/each}
 </div>
 ```
 
