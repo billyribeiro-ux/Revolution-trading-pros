@@ -92,7 +92,7 @@ const config = {
 			handleUnseenRoutes: 'ignore',
 			concurrency: 8,
 			crawl: true,
-			entries: ['*', '/sitemap.xml', '/robots.txt']
+			entries: ['*', '/robots.txt']
 		},
 		// Disable CSS inlining to allow proper Svelte scoped CSS
 		// The aggressive inlining was breaking scoped CSS in production builds
