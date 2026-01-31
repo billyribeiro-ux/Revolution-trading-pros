@@ -166,3 +166,36 @@ export function formatDuration(seconds: number): string {
 	}
 	return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
+
+/**
+ * Format a date string as relative time ago (centralized implementation)
+ * @description ICT 7 Single Source of Truth - used by page.api.ts and realtime.svelte.ts
+ * @param dateString - ISO date string or Date object
+ * @returns Formatted relative time string like "5 min ago", "2h ago", "Yesterday at 3:45 PM"
+ */
+export function formatTimeAgo(dateString: string | Date): string {
+	const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+	
+	if (isNaN(date.getTime())) {
+		return 'Unknown';
+	}
+	
+	const now = new Date();
+	const diffMs = now.getTime() - date.getTime();
+	const diffMins = Math.floor(diffMs / 60000);
+	const diffHours = Math.floor(diffMs / 3600000);
+	const diffDays = Math.floor(diffMs / 86400000);
+
+	if (diffMins < 1) return 'Just now';
+	if (diffMins < 60) return `${diffMins} min ago`;
+	if (diffHours < 24) return `${diffHours}h ago`;
+	
+	if (diffDays === 0) {
+		return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+	}
+	if (diffDays === 1) {
+		return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+	}
+
+	return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+}

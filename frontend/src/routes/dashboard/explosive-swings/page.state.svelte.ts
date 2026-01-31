@@ -108,7 +108,7 @@ export function createPageState() {
 	// UI STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let expandedNotes = $state<Set<number>>(new Set());
+	// ICT 7 Fix: Removed duplicate expandedNotes - managed in +page.svelte for local UI state
 	let copiedAlertId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -356,15 +356,7 @@ export function createPageState() {
 		await fetchAlerts();
 	}
 
-	function toggleNotes(alertId: number) {
-		const newExpanded = new Set(expandedNotes);
-		if (newExpanded.has(alertId)) {
-			newExpanded.delete(alertId);
-		} else {
-			newExpanded.add(alertId);
-		}
-		expandedNotes = newExpanded;
-	}
+	// ICT 7 Fix: Removed toggleNotes - managed locally in +page.svelte for UI state
 
 	async function copyTradeDetails(alert: FormattedAlert) {
 		const details = `${alert.ticker} ${alert.type}\n${alert.title}\n${alert.message}${alert.tosString ? '\nTOS: ' + alert.tosString : ''}`;
@@ -379,17 +371,34 @@ export function createPageState() {
 		}
 	}
 
-	function initializeData() {
+	/**
+	 * Initialize all dashboard data with proper async coordination
+	 * @description ICT 7 Fix: Uses Promise.all for parallel fetching with proper error handling
+	 */
+	async function initializeData(): Promise<void> {
 		// Start page load performance tracking
 		performanceMonitor.startMark('page-load');
 		analyticsTracker.trackPageView();
 
-		checkAdminStatus();
-		fetchAlerts();
-		fetchTradePlan();
-		fetchStats();
-		fetchAllTrades();
-		fetchWeeklyVideo();
+		// ICT 7 Fix: Check admin status first as it affects UI rendering
+		try {
+			await checkAdminStatus();
+		} catch (err) {
+			console.error('Failed to check admin status:', err);
+		}
+
+		// ICT 7 Fix: Fetch all data in parallel for optimal performance
+		// Each function has its own error handling, so failures are isolated
+		await Promise.allSettled([
+			fetchAlerts(),
+			fetchTradePlan(),
+			fetchStats(),
+			fetchAllTrades(),
+			fetchWeeklyVideo()
+		]);
+		
+		// End page load tracking
+		performanceMonitor.endMark('page-load');
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -561,7 +570,16 @@ export function createPageState() {
 		invalidatingPosition = null;
 	}
 
-	async function deletePosition(position: ActivePosition) {
+	/**
+	 * Delete a position with user confirmation
+	 * @description ICT 7 Fix: Added confirmation dialog to prevent accidental deletions
+	 */
+	async function deletePosition(position: ActivePosition): Promise<void> {
+		// ICT 7 Fix: Add confirmation dialog like handleDeleteAlert
+		if (!confirm(`Are you sure you want to delete the ${position.ticker} position? This action cannot be undone.`)) {
+			return;
+		}
+		
 		try {
 			const response = await fetch(`/api/admin/trades/${position.id}`, {
 				method: 'DELETE',
@@ -569,14 +587,20 @@ export function createPageState() {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to delete position');
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || 'Failed to delete position');
 			}
 
-			// Refresh data
-			fetchAllTrades();
-			fetchStats();
+			// Refresh data after successful deletion
+			await Promise.all([fetchAllTrades(), fetchStats()]);
+			
+			// Track successful deletion
+			analyticsTracker.trackEvent('trade', 'position_deleted', position.ticker);
 		} catch (err) {
 			console.error('Failed to delete position:', err);
+			analyticsTracker.trackError('delete_position', err instanceof Error ? err.message : 'Unknown error');
+			// Re-throw to allow UI to show error if needed
+			throw err;
 		}
 	}
 
@@ -598,9 +622,7 @@ export function createPageState() {
 		get isAdmin() {
 			return isAdmin;
 		},
-		get expandedNotes() {
-			return expandedNotes;
-		},
+		// ICT 7 Fix: Removed expandedNotes getter - managed locally in +page.svelte
 		get copiedAlertId() {
 			return copiedAlertId;
 		},
@@ -731,7 +753,7 @@ export function createPageState() {
 		initializeData,
 		setFilter,
 		goToPage,
-		toggleNotes,
+		// ICT 7 Fix: toggleNotes removed - managed locally in +page.svelte
 		copyTradeDetails,
 		fetchAlerts,
 		fetchTradePlan,

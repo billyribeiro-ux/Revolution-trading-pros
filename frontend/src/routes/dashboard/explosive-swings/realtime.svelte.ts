@@ -26,6 +26,7 @@ import {
 	type WsMessage,
 	type WebSocketService
 } from '$lib/services/websocket.svelte';
+import { formatTimeAgo } from './utils/formatters';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -165,27 +166,7 @@ function formatAlertFromPayload(payload: AlertPayload): FormattedAlert {
 	};
 }
 
-/**
- * Format relative time ago string
- */
-function formatTimeAgo(dateString: string): string {
-	const date = new Date(dateString);
-	const now = new Date();
-	const diffMs = now.getTime() - date.getTime();
-	const diffMins = Math.floor(diffMs / 60000);
-	const diffHours = Math.floor(diffMs / 3600000);
-
-	if (diffMins < 1) return 'Just now';
-	if (diffMins < 60) return `${diffMins} min ago`;
-	if (diffHours < 24) return `${diffHours}h ago`;
-
-	return date.toLocaleDateString('en-US', {
-		month: 'short',
-		day: 'numeric',
-		hour: 'numeric',
-		minute: '2-digit'
-	});
-}
+// formatTimeAgo imported from './utils/formatters' - ICT 7 Single Source of Truth
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // PAGE STATE INTERFACE (for type safety)
@@ -253,6 +234,9 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	// WebSocket service instance
 	let ws: WebSocketService | null = null;
 	let unsubscribe: (() => void) | null = null;
+	
+	// ICT 7 Fix: Track sync interval to prevent memory leaks
+	let syncIntervalId: ReturnType<typeof setInterval> | null = null;
 
 	// Timer for clearing "new" indicators
 	const newAlertTimers = new Map<number, ReturnType<typeof setTimeout>>();
@@ -571,9 +555,16 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 	/**
 	 * Connect to WebSocket server and start receiving updates
+	 * @description ICT 7 Fix: Prevents memory leaks by clearing existing intervals before creating new ones
 	 */
 	function connect(): void {
 		if (!browser) return;
+		
+		// ICT 7 Fix: Prevent duplicate connections and memory leaks
+		if (state.isConnected || state.isReconnecting) {
+			console.warn('[realtime] Already connected or reconnecting, skipping connect()');
+			return;
+		}
 
 		// Create WebSocket service if not exists
 		if (!ws) {
@@ -586,15 +577,23 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 		// Subscribe to messages
 		unsubscribe = ws.subscribe(handleMessage);
 
-		// Set up connection state sync effect
-		// Note: This runs immediately and on state changes
-		const syncInterval = setInterval(syncConnectionState, 1000);
+		// ICT 7 Fix: Clear existing interval before creating new one to prevent memory leaks
+		if (syncIntervalId) {
+			clearInterval(syncIntervalId);
+			syncIntervalId = null;
+		}
+		
+		// Set up connection state sync
+		syncIntervalId = setInterval(syncConnectionState, 1000);
 
 		// Store cleanup for disconnect
 		const originalUnsubscribe = unsubscribe;
 		unsubscribe = () => {
 			originalUnsubscribe();
-			clearInterval(syncInterval);
+			if (syncIntervalId) {
+				clearInterval(syncIntervalId);
+				syncIntervalId = null;
+			}
 		};
 
 		// Request notification permission
@@ -605,12 +604,19 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 	/**
 	 * Disconnect from WebSocket server
+	 * @description ICT 7 Fix: Ensures all intervals and timers are properly cleaned up
 	 */
 	function disconnect(): void {
 		// Unsubscribe from messages
 		if (unsubscribe) {
 			unsubscribe();
 			unsubscribe = null;
+		}
+		
+		// ICT 7 Fix: Explicitly clear sync interval
+		if (syncIntervalId) {
+			clearInterval(syncIntervalId);
+			syncIntervalId = null;
 		}
 
 		// Disconnect WebSocket

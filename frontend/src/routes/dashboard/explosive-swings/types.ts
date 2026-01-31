@@ -127,6 +127,7 @@ export interface Alert {
 	videoUrl?: string;
 }
 
+/** @deprecated Use AlertFilter instead - kept for backward compatibility */
 export type AlertFilterType = 'all' | 'entries' | 'updates' | 'exits';
 
 // ═══════════════════════════════════════════════════════════════════════════

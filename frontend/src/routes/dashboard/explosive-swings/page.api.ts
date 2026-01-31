@@ -31,6 +31,7 @@ import type {
 	QuickStats,
 	TradePlanEntry
 } from './types';
+import { formatTimeAgo } from './utils/formatters';
 
 // =============================================================================
 // CACHE CONFIGURATION - Optimized for trading data
@@ -441,25 +442,7 @@ function formatTradePlanEntry(apiEntry: Record<string, unknown>): TradePlanEntry
 	};
 }
 
-function formatTimeAgo(dateString: string): string {
-	const date = new Date(dateString);
-	const now = new Date();
-	const diffMs = now.getTime() - date.getTime();
-	const diffMins = Math.floor(diffMs / 60000);
-	const diffHours = Math.floor(diffMs / 3600000);
-	const diffDays = Math.floor(diffMs / 86400000);
-
-	if (diffMins < 60) return `${diffMins} min ago`;
-	if (diffHours < 24) return `${diffHours}h ago`;
-	if (diffDays === 0) {
-		return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-	}
-	if (diffDays === 1) {
-		return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-	}
-
-	return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-}
+// formatTimeAgo imported from './utils/formatters' - ICT 7 Single Source of Truth
 
 // =============================================================================
 // ERROR UTILITIES

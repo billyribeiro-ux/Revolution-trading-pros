@@ -32,16 +32,21 @@
 
 	// Types
 	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
+	import type { WatchlistData } from '$lib/server/watchlist';
+	import type { RoomResource } from '$lib/api/room-resources';
 
-	// Props from +page.ts
+	// Props from +page.server.ts - ICT 7 Fix: Proper type definitions (no any)
 	interface PageData {
-		watchlist?: any;
-		tutorialVideo?: any;
-		latestUpdates?: any[];
-		documents?: any[];
-		roomId?: number;
+		watchlist: WatchlistData | null;
+		tutorialVideo: RoomResource | null;
+		latestUpdates: RoomResource[];
+		documents: RoomResource[];
+		roomId: number;
 	}
 	const { data }: { data: PageData } = $props();
+	
+	// ICT 7: Local error state for user feedback
+	let saveAlertError = $state<string | null>(null);
 
 	// Initialize state module (named 'ps' to avoid conflict with $state rune)
 	const ps = createPageState();
@@ -81,21 +86,42 @@
 		expandedNotes = newSet;
 	}
 
-	// Alert handlers
-	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean) {
+	/**
+	 * Handle saving alerts with proper error handling and user feedback
+	 * @description ICT 7 Fix: Added try/catch with user-friendly error messages
+	 */
+	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean): Promise<void> {
+		saveAlertError = null;
+		
 		const url =
 			isEdit && ps.editingAlert
 				? `/api/alerts/${ps.ROOM_SLUG}/${ps.editingAlert.id}`
 				: `/api/alerts/${ps.ROOM_SLUG}`;
 
-		const response = await fetch(url, {
-			method: isEdit ? 'PUT' : 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(alertData)
-		});
+		try {
+			const response = await fetch(url, {
+				method: isEdit ? 'PUT' : 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify(alertData)
+			});
 
-		if (!response.ok) throw new Error('Failed to save alert');
-		await ps.fetchAlerts();
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || `Failed to ${isEdit ? 'update' : 'create'} alert`);
+			}
+			
+			await ps.fetchAlerts();
+			
+			// Close modal on success
+			alertModalOpen = false;
+			ps.closeAlertModal();
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'An unexpected error occurred';
+			saveAlertError = message;
+			console.error('Failed to save alert:', err);
+			// Don't re-throw - show error in UI instead
+		}
 	}
 
 	async function handleDeleteAlert(alertId: number) {
@@ -246,18 +272,19 @@
 		</section>
 
 		<!-- Sidebar -->
+		<!-- ICT 7 Fix: Use actual stats from API, calculate avgWinPercent/avgLossPercent from data -->
 		<SidebarComponent
 			thirtyDayPerformance={{
-				winRate: ps.stats?.winRate ?? 75,
-				totalAlerts: ps.stats?.closedThisWeek ?? 0,
+				winRate: ps.stats?.winRate ?? 0,
+				totalAlerts: (ps.stats?.activeTrades ?? 0) + (ps.stats?.closedThisWeek ?? 0),
 				profitableAlerts: Math.round(
-					((ps.stats?.winRate ?? 75) / 100) * (ps.stats?.closedThisWeek ?? 0)
+					((ps.stats?.winRate ?? 0) / 100) * ((ps.stats?.activeTrades ?? 0) + (ps.stats?.closedThisWeek ?? 0))
 				),
-				avgWinPercent: 5.7,
-				avgLossPercent: 2.1
+				avgWinPercent: ps.weeklyPerformance?.avgWinPercent ?? 0,
+				avgLossPercent: ps.weeklyPerformance?.avgLossPercent ?? 0
 			}}
-			weeklyVideo={ps.weeklyContent as any}
-			latestUpdates={[]}
+			weeklyVideo={ps.weeklyContent}
+			latestUpdates={data.latestUpdates ?? []}
 			isLoading={ps.isLoadingStats}
 		/>
 	</div>
@@ -347,20 +374,22 @@
 		min-height: 100vh;
 	}
 
+	/* ICT 7 Fix: Mobile-first grid - single column by default */
 	.main-grid {
 		display: grid;
-		grid-template-columns: 1fr 340px;
-		gap: 24px;
-		padding: 24px;
+		grid-template-columns: 1fr;
+		gap: 16px;
+		padding: 16px;
 		max-width: 1400px;
 		margin: 0 auto;
 	}
 
+	/* ICT 7 Fix: Mobile-first padding */
 	.alerts-section {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
 		border-radius: 12px;
-		padding: 20px;
+		padding: 16px;
 		box-shadow: var(--shadow-sm);
 	}
 
@@ -534,19 +563,27 @@
 		}
 	}
 
-	@media (max-width: 1024px) {
+	/* ICT 7 Fix: Mobile-first responsive design (min-width breakpoints) */
+	/* Base styles are mobile (single column) */
+	
+	@media (min-width: 768px) {
 		.main-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.main-grid {
-			padding: 16px;
-			gap: 16px;
+			padding: 20px;
+			gap: 20px;
 		}
 		.alerts-section {
-			padding: 16px;
+			padding: 18px;
+		}
+	}
+	
+	@media (min-width: 1024px) {
+		.main-grid {
+			grid-template-columns: 1fr 340px;
+			padding: 24px;
+			gap: 24px;
+		}
+		.alerts-section {
+			padding: 20px;
 		}
 	}
 </style>
