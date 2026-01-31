@@ -47,6 +47,7 @@ pub mod admin_videos;
 pub mod bunny_upload; // ICT 7: Bunny.net video upload API
 pub mod cms_ai_assist; // ICT 7+: AI-powered content assistance
 pub mod cms_reusable_blocks;
+pub mod cms_seo; // ICT 11+: Server-side SEO validation
 pub mod connections;
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
 pub mod email_templates;
@@ -189,6 +190,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/export", export::router())
         // CMS AI Assist - ICT 7+ AI-powered content assistance
         .nest("/cms/ai", cms_ai_assist::router())
+        // CMS SEO Validation - ICT 11+ Server-side SEO analysis
+        .nest("/cms/seo", cms_seo::router())
         // CMS Reusable Blocks - ICT 7+ Block library management
         .nest("/cms/reusable-blocks", cms_reusable_blocks::admin_router())
         .nest(
