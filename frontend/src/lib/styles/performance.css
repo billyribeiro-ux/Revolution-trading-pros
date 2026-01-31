@@ -307,27 +307,9 @@ img {
 }
 
 /* ============================================================================
-   FONT LOADING - Critical fonts
+   FONT LOADING - Handled by Google Fonts CDN in app.html
+   Local @font-face declarations removed (Jan 2026) - files were never present
    ============================================================================ */
-@font-face {
-	font-family: 'Inter';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src:
-		url('/fonts/inter-regular.woff2') format('woff2'),
-		url('/fonts/inter-regular.woff') format('woff');
-}
-
-@font-face {
-	font-family: 'Inter';
-	font-style: normal;
-	font-weight: 800;
-	font-display: swap;
-	src:
-		url('/fonts/inter-bold.woff2') format('woff2'),
-		url('/fonts/inter-bold.woff') format('woff');
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * USED BY:
