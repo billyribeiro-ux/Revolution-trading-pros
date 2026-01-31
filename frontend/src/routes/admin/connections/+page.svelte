@@ -738,7 +738,7 @@
 			</div>
 
 			<!-- Form -->
-			<div class="p-6 space-y-4">
+			<form class="p-6 space-y-4" onsubmit={(e) => { e.preventDefault(); connectService(); }}>
 				{#if selectedService.environments && selectedService.environments.length > 1}
 					<fieldset>
 						<legend class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"
@@ -747,6 +747,7 @@
 						<div class="grid grid-cols-2 gap-2" role="group">
 							{#each selectedService.environments as env}
 								<button
+									type="button"
 									onclick={() => (selectedEnvironment = env)}
 									class="px-4 py-2.5 rounded-lg text-sm transition-all {selectedEnvironment === env
 										? 'bg-white text-black font-medium'
@@ -773,6 +774,7 @@
 							type={field.type === 'password' ? 'password' : 'text'}
 							placeholder={field.placeholder}
 							bind:value={credentialValues[field.key]}
+							autocomplete={field.type === 'password' ? 'current-password' : 'off'}
 							class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-white/25 transition-colors"
 						/>
 						{#if field.help}
@@ -825,7 +827,7 @@
 						</div>
 					</div>
 				{/if}
-			</div>
+			</form>
 
 			<!-- Footer -->
 			<div class="p-6 pt-0 flex gap-3">

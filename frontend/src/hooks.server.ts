@@ -64,7 +64,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	if (isDev && pathname.startsWith('/dashboard')) {
 		// Mock user for development
 		event.locals.user = {
-			id: 'dev-user',
+			id: 999,
 			email: 'dev@example.com',
 			name: 'Dev User',
 			role: 'admin'
