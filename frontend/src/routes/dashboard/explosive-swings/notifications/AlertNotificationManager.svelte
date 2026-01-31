@@ -77,9 +77,6 @@
 		oscillator.start(audioContext.currentTime);
 		oscillator.stop(audioContext.currentTime + 0.3);
 	}
-
-	// Expose for external use
-	export { showNotification, requestPermission };
 </script>
 
 {#if !hasPermission && browser}
