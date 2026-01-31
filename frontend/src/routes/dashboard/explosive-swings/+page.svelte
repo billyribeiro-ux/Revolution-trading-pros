@@ -50,6 +50,31 @@
 
 	// Initialize state module (named 'ps' to avoid conflict with $state rune)
 	const ps = createPageState();
+	
+	// ICT 7: Transform WeeklyContent to WeeklyVideo for Sidebar component
+	// Must be defined after ps initialization
+	const weeklyVideoForSidebar = $derived.by(() => {
+		const wc = ps.weeklyContent;
+		return {
+			title: wc.videoTitle || wc.title,
+			thumbnailUrl: wc.thumbnail,
+			videoUrl: wc.videoUrl,
+			duration: wc.duration,
+			publishedAt: new Date() // WeeklyContent has formatted string, Sidebar expects Date
+		};
+	});
+	
+	// ICT 7: Transform RoomResource[] to Video[] for Sidebar component
+	const latestUpdatesForSidebar = $derived.by(() => {
+		return (data.latestUpdates ?? []).map((resource) => ({
+			id: String(resource.id),
+			title: resource.title,
+			thumbnailUrl: resource.thumbnail_url ?? '',
+			videoUrl: resource.embed_url || resource.file_url,
+			duration: resource.formatted_duration ?? '',
+			publishedAt: new Date(resource.created_at)
+		}));
+	});
 
 	// Initialize real-time state for WebSocket updates (ICT 7+ Phase 3)
 	const realtime = createRealtimeState('explosive-swings');
@@ -272,7 +297,7 @@
 		</section>
 
 		<!-- Sidebar -->
-		<!-- ICT 7 Fix: Use actual stats from API, calculate avgWinPercent/avgLossPercent from data -->
+		<!-- ICT 7 Fix: Use actual stats from API, transform types for Sidebar component -->
 		<SidebarComponent
 			thirtyDayPerformance={{
 				winRate: ps.stats?.winRate ?? 0,
@@ -283,8 +308,8 @@
 				avgWinPercent: ps.weeklyPerformance?.avgWinPercent ?? 0,
 				avgLossPercent: ps.weeklyPerformance?.avgLossPercent ?? 0
 			}}
-			weeklyVideo={ps.weeklyContent}
-			latestUpdates={data.latestUpdates ?? []}
+			weeklyVideo={weeklyVideoForSidebar}
+			latestUpdates={latestUpdatesForSidebar}
 			isLoading={ps.isLoadingStats}
 		/>
 	</div>
