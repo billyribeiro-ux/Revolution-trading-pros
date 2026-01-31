@@ -86,6 +86,10 @@ const config = {
 				if (status === 500 && path.startsWith('/dashboard')) {
 					return;
 				}
+				// Ignore 500 errors for sitemap.xml - it needs runtime environment
+				if (status === 500 && path === '/sitemap.xml') {
+					return;
+				}
 				throw new Error(`${status} ${path}`);
 			},
 			handleMissingId: 'ignore',
