@@ -19,7 +19,11 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) => {
 	try {
-		const { accessToken, refreshToken, expiresIn } = await request.json();
+		const body = await request.json();
+		// Support both camelCase and snake_case for OAuth callback compatibility
+		const accessToken = body.access_token || body.accessToken;
+		const refreshToken = body.refresh_token || body.refreshToken;
+		const expiresIn = body.expires_in || body.expiresIn;
 
 		if (!accessToken) {
 			return json({ error: 'Access token required' }, { status: 400 });

@@ -55,6 +55,14 @@ pub struct Config {
     pub developer_bootstrap_email: Option<String>,
     pub developer_bootstrap_password_hash: Option<String>,
     pub developer_bootstrap_name: Option<String>,
+
+    // OAuth Configuration (ICT Level 7 - Google & Apple Sign-In)
+    pub google_client_id: Option<String>,
+    pub google_client_secret: Option<String>,
+    pub apple_client_id: Option<String>,
+    pub apple_team_id: Option<String>,
+    pub apple_key_id: Option<String>,
+    pub apple_private_key: Option<String>,
 }
 
 impl Config {
@@ -144,6 +152,14 @@ impl Config {
             developer_bootstrap_password_hash: std::env::var("DEVELOPER_BOOTSTRAP_PASSWORD_HASH")
                 .ok(),
             developer_bootstrap_name: std::env::var("DEVELOPER_BOOTSTRAP_NAME").ok(),
+
+            // ICT Level 7: OAuth Configuration for Google & Apple Sign-In
+            google_client_id: std::env::var("GOOGLE_CLIENT_ID").ok(),
+            google_client_secret: std::env::var("GOOGLE_CLIENT_SECRET").ok(),
+            apple_client_id: std::env::var("APPLE_CLIENT_ID").ok(),
+            apple_team_id: std::env::var("APPLE_TEAM_ID").ok(),
+            apple_key_id: std::env::var("APPLE_KEY_ID").ok(),
+            apple_private_key: std::env::var("APPLE_PRIVATE_KEY").ok(),
         })
     }
 
