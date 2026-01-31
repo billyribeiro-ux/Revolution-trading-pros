@@ -20,10 +20,9 @@ export default defineConfig({
 		}
 	},
 	plugins: [
+		devtoolsJson(), // Chrome DevTools workspace integration - serves /.well-known/appspecific/com.chrome.devtools.json
 		tailwindcss(),
 		sveltekit(),
-		// Chrome DevTools workspace support
-		devtoolsJson(),
 		// Brotli compression for production
 		viteCompression({
 			algorithm: 'brotliCompress',
