@@ -353,7 +353,7 @@
 
 		<!-- Image Block -->
 	{:else if block.type === 'image'}
-		<figure class="image-block" role="figure" aria-label={block.content.mediaCaption || 'Image'}>
+		<figure class="image-block" aria-label={block.content.mediaCaption || 'Image'}>
 			{#if block.content.mediaUrl}
 				<img
 					src={block.content.mediaUrl}

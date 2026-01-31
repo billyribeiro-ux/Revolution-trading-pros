@@ -2,18 +2,85 @@
 	/**
 	 * SEO Analyzer - Enterprise-Grade SEO Analysis
 	 * ==============================================
-	 * Real-time SEO scoring with comprehensive analysis
-	 * for title, meta, content, readability, and more.
+	 * Real-time SEO scoring with server-side validation
+	 * and client-side fallback for optimal performance.
 	 *
-	 * @version 1.0.0
+	 * Features:
+	 * - Server-side SEO validation via Rust backend
+	 * - Client-side fallback if API fails
+	 * - 5-second result caching
+	 * - 500ms debounced validation on content changes
+	 * - Comprehensive analysis (title, meta, content, readability, structure)
+	 *
+	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
 
-	import type { SEOAnalysis } from './types';
+	import { API_BASE_URL } from '$lib/api/config';
+	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import type { SEOAnalysis, HeadingNode } from './types';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPES
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface SeoValidationRequest {
+		title: string;
+		meta_description: string | null;
+		content_blocks: unknown[];
+		slug: string;
+		focus_keyword: string | null;
+	}
+
+	interface SeoValidationResponse {
+		score: number;
+		grade: string;
+		issues: SeoIssue[];
+		suggestions: string[];
+		keyword_density: number;
+		readability_score: number;
+		word_count: number;
+		reading_time_minutes: number;
+		heading_structure: HeadingNode[];
+		links: LinksAnalysis;
+		images_without_alt: number;
+		category_scores: CategoryScores;
+	}
+
+	interface SeoIssue {
+		type: 'error' | 'warning' | 'info' | 'success';
+		category: string;
+		message: string;
+		impact?: string;
+	}
+
+	interface LinksAnalysis {
+		internal_count: number;
+		external_count: number;
+		ratio: number;
+		nofollow_count: number;
+		broken_count: number;
+	}
+
+	interface CategoryScores {
+		title_score: number;
+		meta_score: number;
+		content_score: number;
+		readability_score: number;
+		keyword_score: number;
+		structure_score: number;
+	}
+
+	interface CachedResult {
+		analysis: SEOAnalysis;
+		timestamp: number;
+		hash: string;
+	}
 
 	interface Props {
 		title: string;
 		content: string;
+		contentBlocks?: unknown[];
 		metaDescription?: string;
 		focusKeyword?: string;
 		slug?: string;
@@ -23,31 +90,253 @@
 	let {
 		title,
 		content,
+		contentBlocks = [],
 		metaDescription = '',
 		focusKeyword = '',
 		slug = '',
 		onAnalysisComplete
 	}: Props = $props();
 
-	// Analysis state
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/** Analysis state */
 	let isAnalyzing = $state(false);
 	let analysis = $state<SEOAnalysis | null>(null);
 	let expandedCategories = $state<Set<string>>(new Set(['overall', 'title', 'content']));
+	let apiError = $state<string | null>(null);
+	let usedFallback = $state(false);
 
-	// Analyze content when inputs change
+	/** Caching - 5 second TTL */
+	const CACHE_TTL_MS = 5000;
+	let cachedResult = $state<CachedResult | null>(null);
+
+	/** Debouncing - 500ms delay */
+	const DEBOUNCE_MS = 500;
+	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CACHE HELPERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/** Generate hash for cache key */
+	function generateCacheHash(): string {
+		const data = `${title}|${metaDescription}|${content}|${slug}|${focusKeyword}`;
+		let hash = 0;
+		for (let i = 0; i < data.length; i++) {
+			const char = data.charCodeAt(i);
+			hash = (hash << 5) - hash + char;
+			hash = hash & hash;
+		}
+		return hash.toString(16);
+	}
+
+	/** Check if cache is valid */
+	function isCacheValid(): boolean {
+		if (!cachedResult) return false;
+		const now = Date.now();
+		const isExpired = now - cachedResult.timestamp > CACHE_TTL_MS;
+		const hashMatch = cachedResult.hash === generateCacheHash();
+		return !isExpired && hashMatch;
+	}
+
+	/** Set cache */
+	function setCache(analysisResult: SEOAnalysis): void {
+		cachedResult = {
+			analysis: analysisResult,
+			timestamp: Date.now(),
+			hash: generateCacheHash()
+		};
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// API INTEGRATION
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/** Call backend SEO validation API */
+	async function callSeoApi(): Promise<SeoValidationResponse | null> {
+		const token = getAuthToken();
+
+		const requestBody: SeoValidationRequest = {
+			title,
+			meta_description: metaDescription || null,
+			content_blocks: contentBlocks.length > 0 ? contentBlocks : extractBlocksFromContent(content),
+			slug,
+			focus_keyword: focusKeyword || null
+		};
+
+		try {
+			const response = await fetch(`${API_BASE_URL}/api/cms/seo/validate`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
+					...(token ? { Authorization: `Bearer ${token}` } : {})
+				},
+				credentials: 'include',
+				body: JSON.stringify(requestBody)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.error || `API error: ${response.status}`);
+			}
+
+			return await response.json();
+		} catch (err) {
+			console.warn('[SEOAnalyzer] API call failed, using fallback:', err);
+			throw err;
+		}
+	}
+
+	/** Extract pseudo-blocks from HTML content for API */
+	function extractBlocksFromContent(htmlContent: string): unknown[] {
+		const blocks: unknown[] = [];
+
+		// Extract paragraphs
+		const paragraphs = htmlContent.match(/<p[^>]*>(.*?)<\/p>/gi) || [];
+		paragraphs.forEach((p, i) => {
+			blocks.push({
+				id: `p-${i}`,
+				type: 'paragraph',
+				content: { html: p, text: stripHtml(p) }
+			});
+		});
+
+		// Extract headings
+		const headings = htmlContent.match(/<h([1-6])[^>]*>(.*?)<\/h[1-6]>/gi) || [];
+		headings.forEach((h, i) => {
+			const levelMatch = h.match(/<h([1-6])/i);
+			const level = levelMatch ? parseInt(levelMatch[1], 10) : 2;
+			blocks.push({
+				id: `h-${i}`,
+				type: 'heading',
+				content: { text: stripHtml(h) },
+				settings: { level }
+			});
+		});
+
+		// Extract images
+		const images = htmlContent.match(/<img[^>]*>/gi) || [];
+		images.forEach((img, i) => {
+			const srcMatch = img.match(/src="([^"]*)"/i);
+			const altMatch = img.match(/alt="([^"]*)"/i);
+			blocks.push({
+				id: `img-${i}`,
+				type: 'image',
+				content: {
+					mediaUrl: srcMatch ? srcMatch[1] : '',
+					mediaAlt: altMatch ? altMatch[1] : ''
+				}
+			});
+		});
+
+		// If no structured content found, treat as single text block
+		if (blocks.length === 0 && htmlContent.trim()) {
+			blocks.push({
+				id: 'text-0',
+				type: 'paragraph',
+				content: { html: htmlContent, text: stripHtml(htmlContent) }
+			});
+		}
+
+		return blocks;
+	}
+
+	/** Convert API response to SEOAnalysis format */
+	function convertApiResponse(response: SeoValidationResponse): SEOAnalysis {
+		return {
+			score: response.score,
+			grade: response.grade as 'A' | 'B' | 'C' | 'D' | 'F',
+			issues: response.issues.map((issue) => ({
+				type: issue.type,
+				category: issue.category as SEOAnalysis['issues'][0]['category'],
+				message: issue.message,
+				impact: issue.impact as 'high' | 'medium' | 'low' | undefined
+			})),
+			suggestions: response.suggestions,
+			keywordDensity: response.keyword_density,
+			readabilityScore: getReadabilityGrade(response.readability_score),
+			readabilityGrade: Math.round(response.readability_score),
+			wordCount: response.word_count,
+			readingTime: response.reading_time_minutes,
+			titleScore: response.category_scores.title_score,
+			metaScore: response.category_scores.meta_score,
+			contentScore: response.category_scores.content_score,
+			headingStructure: response.heading_structure,
+			linksCount: {
+				internal: response.links.internal_count,
+				external: response.links.external_count
+			},
+			imagesWithoutAlt: response.images_without_alt
+		};
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// ANALYSIS WITH DEBOUNCE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/** Debounced effect for analysis */
 	$effect(() => {
-		const timeout = setTimeout(() => {
+		// Dependencies - these trigger re-analysis
+		const _deps = [title, content, metaDescription, focusKeyword, slug, contentBlocks];
+
+		// Clear existing timer
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+
+		// Set new debounced analysis
+		debounceTimer = setTimeout(() => {
 			runAnalysis();
-		}, 500);
-		return () => clearTimeout(timeout);
+		}, DEBOUNCE_MS);
+
+		return () => {
+			if (debounceTimer) {
+				clearTimeout(debounceTimer);
+			}
+		};
 	});
 
-	// Run SEO analysis
+	/** Run SEO analysis with API + fallback */
 	async function runAnalysis(): Promise<void> {
-		isAnalyzing = true;
+		// Check cache first
+		if (isCacheValid() && cachedResult) {
+			analysis = cachedResult.analysis;
+			onAnalysisComplete?.(cachedResult.analysis);
+			return;
+		}
 
-		// Simulate analysis delay for realistic UX
-		await new Promise((resolve) => setTimeout(resolve, 300));
+		isAnalyzing = true;
+		apiError = null;
+		usedFallback = false;
+
+		try {
+			// Try API first
+			const apiResponse = await callSeoApi();
+			if (apiResponse) {
+				const convertedAnalysis = convertApiResponse(apiResponse);
+				analysis = convertedAnalysis;
+				setCache(convertedAnalysis);
+				onAnalysisComplete?.(convertedAnalysis);
+				isAnalyzing = false;
+				return;
+			}
+		} catch (err) {
+			apiError = err instanceof Error ? err.message : 'API error';
+			console.warn('[SEOAnalyzer] Falling back to client-side analysis');
+		}
+
+		// Fallback to client-side analysis
+		usedFallback = true;
+		await runClientSideAnalysis();
+	}
+
+	/** Client-side analysis fallback */
+	async function runClientSideAnalysis(): Promise<void> {
+		// Small delay for UX
+		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		const issues: SEOAnalysis['issues'] = [];
 		const suggestions: string[] = [];
@@ -58,35 +347,19 @@
 		const wordCount = countWords(plainText);
 		const sentences = countSentences(plainText);
 
-		// ===================
 		// Title Analysis
-		// ===================
 		const titleScore = analyzeTitleSEO(title, focusKeyword, issues, suggestions);
 
-		// ===================
 		// Meta Description Analysis
-		// ===================
 		const metaScore = analyzeMetaSEO(metaDescription, focusKeyword, issues, suggestions);
 
-		// ===================
 		// Content Analysis
-		// ===================
 		const contentScore = analyzeContentSEO(plainText, wordCount, focusKeyword, issues, suggestions);
 
-		// ===================
 		// Readability Analysis
-		// ===================
-		const readabilityScore = analyzeReadability(
-			plainText,
-			sentences,
-			wordCount,
-			issues,
-			suggestions
-		);
+		const readabilityScore = analyzeReadability(plainText, sentences, wordCount, issues, suggestions);
 
-		// ===================
 		// Keyword Analysis
-		// ===================
 		const keywordScore = analyzeKeywords(
 			plainText,
 			title,
@@ -96,14 +369,10 @@
 			suggestions
 		);
 
-		// ===================
 		// Slug Analysis
-		// ===================
 		analyzeSlug(slug, focusKeyword, issues, suggestions);
 
-		// ===================
 		// Structure Analysis
-		// ===================
 		analyzeStructure(content, issues, suggestions);
 
 		// Calculate overall score
@@ -118,8 +387,11 @@
 		// Ensure score is within bounds
 		overallScore = Math.max(0, Math.min(100, overallScore));
 
-		analysis = {
+		const grade = getGradeFromScore(overallScore);
+
+		const result: SEOAnalysis = {
 			score: overallScore,
+			grade,
 			issues,
 			suggestions,
 			wordCount,
@@ -132,11 +404,17 @@
 			readabilityGrade: readabilityScore
 		};
 
+		analysis = result;
+		setCache(result);
 		isAnalyzing = false;
-		onAnalysisComplete?.(analysis);
+		onAnalysisComplete?.(result);
 	}
 
-	// Strip HTML tags
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CLIENT-SIDE ANALYSIS HELPERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/** Strip HTML tags */
 	function stripHtml(html: string): string {
 		return html
 			.replace(/<[^>]*>/g, ' ')
@@ -144,17 +422,17 @@
 			.trim();
 	}
 
-	// Count words
+	/** Count words */
 	function countWords(text: string): number {
 		return text.split(/\s+/).filter((word) => word.length > 0).length;
 	}
 
-	// Count sentences
+	/** Count sentences */
 	function countSentences(text: string): number {
 		return (text.match(/[.!?]+/g) || []).length || 1;
 	}
 
-	// Calculate keyword density
+	/** Calculate keyword density */
 	function calculateKeywordDensity(text: string, keyword: string): number {
 		if (!keyword) return 0;
 		const words = countWords(text);
@@ -163,17 +441,25 @@
 		return words > 0 ? (matches / words) * 100 : 0;
 	}
 
-	// Analyze title SEO
+	/** Get grade from score */
+	function getGradeFromScore(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
+		if (score >= 90) return 'A';
+		if (score >= 80) return 'B';
+		if (score >= 70) return 'C';
+		if (score >= 60) return 'D';
+		return 'F';
+	}
+
+	/** Analyze title SEO */
 	function analyzeTitleSEO(
-		title: string,
+		titleText: string,
 		keyword: string,
 		issues: SEOAnalysis['issues'],
 		suggestions: string[]
 	): number {
 		let score = 100;
-		const titleLength = title.length;
+		const titleLength = titleText.length;
 
-		// Title length check
 		if (titleLength === 0) {
 			issues.push({ type: 'error', message: 'Page title is missing', category: 'title' });
 			score -= 40;
@@ -199,8 +485,7 @@
 			});
 		}
 
-		// Keyword in title
-		if (keyword && title.toLowerCase().includes(keyword.toLowerCase())) {
+		if (keyword && titleText.toLowerCase().includes(keyword.toLowerCase())) {
 			issues.push({ type: 'success', message: 'Focus keyword found in title', category: 'title' });
 		} else if (keyword) {
 			issues.push({
@@ -212,16 +497,6 @@
 			score -= 15;
 		}
 
-		// Title starts with keyword
-		if (keyword && title.toLowerCase().startsWith(keyword.toLowerCase())) {
-			issues.push({
-				type: 'success',
-				message: 'Title starts with focus keyword',
-				category: 'title'
-			});
-		}
-
-		// Power words in title
 		const powerWords = [
 			'ultimate',
 			'complete',
@@ -234,7 +509,7 @@
 			'secrets',
 			'tips'
 		];
-		const hasPowerWord = powerWords.some((word) => title.toLowerCase().includes(word));
+		const hasPowerWord = powerWords.some((word) => titleText.toLowerCase().includes(word));
 		if (hasPowerWord) {
 			issues.push({ type: 'success', message: 'Title contains power words', category: 'title' });
 		} else {
@@ -244,7 +519,7 @@
 		return Math.max(0, score);
 	}
 
-	// Analyze meta description SEO
+	/** Analyze meta description SEO */
 	function analyzeMetaSEO(
 		meta: string,
 		keyword: string,
@@ -279,7 +554,6 @@
 			});
 		}
 
-		// Keyword in meta
 		if (keyword && meta.toLowerCase().includes(keyword.toLowerCase())) {
 			issues.push({
 				type: 'success',
@@ -296,7 +570,6 @@
 			score -= 15;
 		}
 
-		// Call to action
 		const ctaWords = ['learn', 'discover', 'find out', 'get', 'start', 'try', 'read', 'click'];
 		const hasCTA = ctaWords.some((word) => meta.toLowerCase().includes(word));
 		if (hasCTA) {
@@ -312,7 +585,7 @@
 		return Math.max(0, score);
 	}
 
-	// Analyze content SEO
+	/** Analyze content SEO */
 	function analyzeContentSEO(
 		text: string,
 		wordCount: number,
@@ -322,11 +595,10 @@
 	): number {
 		let score = 100;
 
-		// Word count check
 		if (wordCount < 300) {
 			issues.push({
 				type: 'error',
-				message: `Content is too short (${wordCount} words). Aim for at least 1000 words for better rankings.`,
+				message: `Content is too short (${wordCount} words). Aim for at least 1000 words.`,
 				category: 'content'
 			});
 			score -= 30;
@@ -351,7 +623,6 @@
 			});
 		}
 
-		// Keyword density
 		if (keyword) {
 			const density = calculateKeywordDensity(text, keyword);
 			if (density === 0) {
@@ -384,7 +655,6 @@
 			}
 		}
 
-		// First 100 words
 		const first100Words = text.split(/\s+/).slice(0, 100).join(' ').toLowerCase();
 		if (keyword && first100Words.includes(keyword.toLowerCase())) {
 			issues.push({
@@ -405,7 +675,7 @@
 		return Math.max(0, score);
 	}
 
-	// Analyze readability
+	/** Analyze readability */
 	function analyzeReadability(
 		text: string,
 		sentences: number,
@@ -414,14 +684,12 @@
 		suggestions: string[]
 	): number {
 		let score = 100;
-
-		// Average sentence length
 		const avgSentenceLength = sentences > 0 ? wordCount / sentences : 0;
 
 		if (avgSentenceLength > 25) {
 			issues.push({
 				type: 'warning',
-				message: `Sentences are too long on average (${avgSentenceLength.toFixed(0)} words). Aim for under 20 words.`,
+				message: `Sentences are too long on average (${avgSentenceLength.toFixed(0)} words). Aim for under 20.`,
 				category: 'readability'
 			});
 			suggestions.push('Break up long sentences for better readability');
@@ -441,7 +709,6 @@
 			});
 		}
 
-		// Passive voice (simplified check)
 		const passivePatterns = /\b(was|were|is|are|been|being)\s+\w+ed\b/gi;
 		const passiveCount = (text.match(passivePatterns) || []).length;
 		const passivePercentage = sentences > 0 ? (passiveCount / sentences) * 100 : 0;
@@ -468,7 +735,6 @@
 			});
 		}
 
-		// Transition words (simplified)
 		const transitionWords = [
 			'however',
 			'therefore',
@@ -509,7 +775,7 @@
 		return Math.max(0, score);
 	}
 
-	// Analyze keywords
+	/** Analyze keywords */
 	function analyzeKeywords(
 		text: string,
 		_title: string,
@@ -526,7 +792,6 @@
 			return 50;
 		}
 
-		// Check keyword variations
 		const keywordWords = keyword.toLowerCase().split(/\s+/);
 		let variationsFound = 0;
 
@@ -550,10 +815,8 @@
 			});
 		}
 
-		// Related keywords (LSI)
 		suggestions.push('Consider adding related keywords and synonyms (LSI keywords)');
 
-		// Keyword in subheadings check (would need HTML parsing)
 		const hasKeywordInH2 = text.toLowerCase().includes(keyword.toLowerCase());
 		if (!hasKeywordInH2) {
 			suggestions.push('Add your focus keyword to at least one subheading (H2)');
@@ -563,20 +826,19 @@
 		return Math.max(0, score);
 	}
 
-	// Analyze URL slug
+	/** Analyze URL slug */
 	function analyzeSlug(
-		slug: string,
+		slugText: string,
 		keyword: string,
 		issues: SEOAnalysis['issues'],
 		suggestions: string[]
 	): void {
-		if (!slug) {
+		if (!slugText) {
 			issues.push({ type: 'info', message: 'URL slug not yet set', category: 'slug' });
 			return;
 		}
 
-		// Slug length
-		if (slug.length > 75) {
+		if (slugText.length > 75) {
 			issues.push({
 				type: 'warning',
 				message: 'URL slug is too long. Keep under 75 characters.',
@@ -586,8 +848,7 @@
 			issues.push({ type: 'success', message: 'URL slug length is good', category: 'slug' });
 		}
 
-		// Keyword in slug
-		if (keyword && slug.toLowerCase().includes(keyword.toLowerCase().replace(/\s+/g, '-'))) {
+		if (keyword && slugText.toLowerCase().includes(keyword.toLowerCase().replace(/\s+/g, '-'))) {
 			issues.push({
 				type: 'success',
 				message: 'Focus keyword found in URL slug',
@@ -602,21 +863,19 @@
 			suggestions.push('Include your focus keyword in the URL slug');
 		}
 
-		// Stop words in slug
 		const stopWords = ['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for'];
-		const hasStopWords = stopWords.some((word) => slug.split('-').includes(word));
+		const hasStopWords = stopWords.some((word) => slugText.split('-').includes(word));
 		if (hasStopWords) {
 			suggestions.push('Consider removing stop words from your URL slug');
 		}
 	}
 
-	// Analyze content structure
+	/** Analyze content structure */
 	function analyzeStructure(
 		html: string,
 		issues: SEOAnalysis['issues'],
 		suggestions: string[]
 	): void {
-		// Headings hierarchy
 		const h2Count = (html.match(/<h2[^>]*>/gi) || []).length;
 
 		if (h2Count === 0) {
@@ -636,7 +895,6 @@
 			});
 		}
 
-		// Images check
 		const imgCount = (html.match(/<img[^>]*>/gi) || []).length;
 		const altCount = (html.match(/<img[^>]*alt="[^"]+"/gi) || []).length;
 
@@ -658,7 +916,6 @@
 			issues.push({ type: 'success', message: 'All images have alt text', category: 'structure' });
 		}
 
-		// Links check
 		const internalLinks = (html.match(/<a[^>]*href="\/[^"]*"/gi) || []).length;
 		const externalLinks = (html.match(/<a[^>]*href="https?:\/\/[^"]*"/gi) || []).length;
 
@@ -683,7 +940,7 @@
 		}
 	}
 
-	// Get readability grade label
+	/** Get readability grade label */
 	function getReadabilityGrade(score: number): string {
 		if (score >= 90) return 'Very Easy';
 		if (score >= 80) return 'Easy';
@@ -694,14 +951,14 @@
 		return 'Very Difficult';
 	}
 
-	// Get score color
+	/** Get score color */
 	function getScoreColor(score: number): string {
 		if (score >= 80) return '#10b981';
 		if (score >= 60) return '#f59e0b';
 		return '#ef4444';
 	}
 
-	// Toggle category expansion
+	/** Toggle category expansion */
 	function toggleCategory(category: string): void {
 		if (expandedCategories.has(category)) {
 			expandedCategories.delete(category);
@@ -711,24 +968,24 @@
 		expandedCategories = new Set(expandedCategories);
 	}
 
-	// Get issues by category
+	/** Get issues by category */
 	function getIssuesByCategory(category: string): SEOAnalysis['issues'] {
 		return analysis?.issues.filter((i) => i.category === category) || [];
 	}
 
-	// Get icon for issue type
+	/** Get icon for issue type */
 	function getIssueIcon(type: string): string {
 		switch (type) {
 			case 'error':
-				return '✗';
+				return 'X';
 			case 'warning':
-				return '⚠';
+				return '!';
 			case 'success':
-				return '✓';
+				return 'OK';
 			case 'info':
-				return 'ℹ';
+				return 'i';
 			default:
-				return '•';
+				return '-';
 		}
 	}
 </script>
@@ -737,9 +994,17 @@
 	{#if isAnalyzing}
 		<div class="analyzing">
 			<div class="spinner"></div>
-			<span>Analyzing...</span>
+			<span>Analyzing{usedFallback ? ' (client-side)' : ''}...</span>
 		</div>
 	{:else if analysis}
+		<!-- API Error Banner (non-blocking) -->
+		{#if apiError && usedFallback}
+			<div class="api-fallback-notice">
+				<span class="notice-icon">i</span>
+				<span>Using client-side analysis</span>
+			</div>
+		{/if}
+
 		<!-- Overall Score -->
 		<div class="score-section">
 			<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
@@ -757,6 +1022,11 @@
 				<div class="score-value">
 					<span class="score-number">{analysis.score}</span>
 					<span class="score-label">SEO Score</span>
+					{#if analysis.grade}
+						<span class="score-grade" style="color: {getScoreColor(analysis.score)}"
+							>{analysis.grade}</span
+						>
+					{/if}
 				</div>
 			</div>
 			<div class="score-summary">
@@ -792,7 +1062,7 @@
 							{analysis.titleScore || 0}%
 						</span>
 					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('title')}>▼</span>
+					<span class="chevron" class:expanded={expandedCategories.has('title')}>v</span>
 				</button>
 				{#if expandedCategories.has('title')}
 					<div class="category-content">
@@ -815,7 +1085,7 @@
 							{analysis.metaScore || 0}%
 						</span>
 					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('meta')}>▼</span>
+					<span class="chevron" class:expanded={expandedCategories.has('meta')}>v</span>
 				</button>
 				{#if expandedCategories.has('meta')}
 					<div class="category-content">
@@ -838,7 +1108,7 @@
 							{analysis.contentScore || 0}%
 						</span>
 					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('content')}>▼</span>
+					<span class="chevron" class:expanded={expandedCategories.has('content')}>v</span>
 				</button>
 				{#if expandedCategories.has('content')}
 					<div class="category-content">
@@ -864,7 +1134,7 @@
 							{analysis.readabilityGrade || 0}%
 						</span>
 					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('readability')}>▼</span>
+					<span class="chevron" class:expanded={expandedCategories.has('readability')}>v</span>
 				</button>
 				{#if expandedCategories.has('readability')}
 					<div class="category-content">
@@ -884,7 +1154,7 @@
 					<div class="category-info">
 						<span class="category-name">Keywords</span>
 					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('keyword')}>▼</span>
+					<span class="chevron" class:expanded={expandedCategories.has('keyword')}>v</span>
 				</button>
 				{#if expandedCategories.has('keyword')}
 					<div class="category-content">
@@ -904,7 +1174,7 @@
 					<div class="category-info">
 						<span class="category-name">Structure</span>
 					</div>
-					<span class="chevron" class:expanded={expandedCategories.has('structure')}>▼</span>
+					<span class="chevron" class:expanded={expandedCategories.has('structure')}>v</span>
 				</button>
 				{#if expandedCategories.has('structure')}
 					<div class="category-content">
@@ -925,7 +1195,7 @@
 						<div class="category-info">
 							<span class="category-name">URL Slug</span>
 						</div>
-						<span class="chevron" class:expanded={expandedCategories.has('slug')}>▼</span>
+						<span class="chevron" class:expanded={expandedCategories.has('slug')}>v</span>
 					</button>
 					{#if expandedCategories.has('slug')}
 						<div class="category-content">
@@ -988,6 +1258,31 @@
 		}
 	}
 
+	.api-fallback-notice {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		margin-bottom: 1rem;
+		background: #fef3c7;
+		border-radius: 0.375rem;
+		font-size: 0.75rem;
+		color: #92400e;
+	}
+
+	.notice-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 16px;
+		height: 16px;
+		background: #f59e0b;
+		color: white;
+		border-radius: 50%;
+		font-size: 0.625rem;
+		font-weight: bold;
+	}
+
 	.score-section {
 		display: flex;
 		gap: 1.5rem;
@@ -1041,6 +1336,13 @@
 		color: var(--text-secondary, #6b7280);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
+	}
+
+	.score-grade {
+		display: block;
+		font-size: 0.75rem;
+		font-weight: 700;
+		margin-top: 0.125rem;
 	}
 
 	.score-summary {
@@ -1148,7 +1450,7 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 50%;
-		font-size: 0.625rem;
+		font-size: 0.5rem;
 		font-weight: 700;
 	}
 

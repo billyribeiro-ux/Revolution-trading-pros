@@ -1571,7 +1571,7 @@
 	<div class="editor-body">
 		<!-- Sidebar -->
 		<aside class="editor-sidebar" aria-label="Editor sidebar">
-			<nav class="sidebar-tabs" role="tablist" aria-label="Editor panels">
+			<div class="sidebar-tabs" role="tablist" aria-label="Editor panels">
 				<button
 					type="button"
 					class="tab-btn"
@@ -1637,7 +1637,7 @@
 				>
 					<IconSeo size={20} aria-hidden="true" />
 				</button>
-			</nav>
+			</div>
 
 			<div class="sidebar-content">
 				{#if editorState.sidebarTab === 'blocks'}
@@ -1748,12 +1748,14 @@
 					</div>
 				{:else}
 					<!-- Block List -->
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 					<div
 						class="blocks-container"
 						class:drag-active={editorState.isDragging}
-						role="list"
+						role="listbox"
 						aria-label="Content blocks"
 						aria-describedby="drag-instructions"
+						aria-multiselectable="true"
 					>
 						<!-- Hidden instructions for screen readers -->
 						<div id="drag-instructions" class="sr-only">
@@ -1767,6 +1769,7 @@
 								index === editorState.dropTargetIndex && editorState.dropPosition === 'before'}
 							{@const isDropAfter =
 								index === editorState.dropTargetIndex && editorState.dropPosition === 'after'}
+							<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 							<div
 								class="block-wrapper"
 								class:selected={block.id === editorState.selectedBlockId}
@@ -1805,7 +1808,7 @@
 								ontouchend={handleTouchEnd}
 								ontouchcancel={cancelTouchDrag}
 								tabindex="0"
-								role="listitem"
+								role="option"
 								aria-grabbed={isDragTarget}
 								aria-dropeffect={editorState.isDragging && !isDragTarget ? 'move' : 'none'}
 								aria-selected={block.id === editorState.selectedBlockId || isMultiSelected}

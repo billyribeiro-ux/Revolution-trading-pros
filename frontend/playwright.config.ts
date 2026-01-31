@@ -1,8 +1,9 @@
 /// <reference types="node" />
 /**
  * Revolution Trading Pros - Playwright E2E Test Configuration
+ * ============================================================
  *
- * Netflix L11+ Principal Engineer Grade Configuration
+ * Comprehensive test configuration for Playwright 1.50+ (January 2026)
  * Designed for enterprise-scale testing with:
  * - Multi-browser support (Chromium, Firefox, WebKit)
  * - Parallel execution with smart sharding
@@ -10,26 +11,50 @@
  * - Environment-based configuration for local/staging/production
  * - Performance timing thresholds
  * - Accessibility testing integration hooks
+ * - Visual regression testing with screenshot comparisons
  *
+ * @version 3.0.0
  * @see https://playwright.dev/docs/test-configuration
  */
 
 import { defineConfig, devices } from '@playwright/test';
 
-// Environment configuration with sensible defaults
+// =============================================================================
+// Environment Configuration
+// =============================================================================
+
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
 const API_URL = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 const CI = !!process.env.CI;
 const DEBUG = process.env.E2E_DEBUG === 'true';
+const SLOW_MO = DEBUG ? 100 : 0;
 
-// Timeout configuration (ms)
+// =============================================================================
+// Timeout Configuration (ms)
+// =============================================================================
+
 const TIMEOUTS = {
-	test: CI ? 60_000 : 30_000,
-	expect: CI ? 10_000 : 5_000,
-	action: CI ? 30_000 : 15_000,
-	navigation: CI ? 30_000 : 15_000,
-	webServer: 180_000
+  test: CI ? 60_000 : 30_000,
+  expect: CI ? 10_000 : 5_000,
+  action: CI ? 30_000 : 15_000,
+  navigation: CI ? 30_000 : 15_000,
+  webServer: 180_000
 };
+
+// =============================================================================
+// Performance Thresholds
+// =============================================================================
+
+const PERFORMANCE_THRESHOLDS = {
+  editorRender: 100, // ms - Editor should render under 100ms
+  blockCreation: 50, // ms - Block creation under 50ms
+  pageLoad: 3000,    // ms - Page load under 3 seconds
+  interaction: 100   // ms - UI interactions under 100ms
+};
+
+// =============================================================================
+// Main Configuration
+// =============================================================================
 
 export default defineConfig({
 	// ========================================
@@ -223,3 +248,8 @@ export default defineConfig({
 		apiUrl: API_URL
 	}
 });
+
+// =============================================================================
+// Export Performance Thresholds for Tests
+// =============================================================================
+export { PERFORMANCE_THRESHOLDS };

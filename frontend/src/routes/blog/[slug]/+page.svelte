@@ -361,7 +361,7 @@
 							{:else if block.type === 'code'}
 								<pre><code>{block.data?.code || ''}</code></pre>
 							{:else if block.type === 'image'}
-								<figure role="figure" aria-label={block.data?.caption || 'Blog image'}>
+								<figure aria-label={block.data?.caption || 'Blog image'}>
 									<img
 										src={block.data?.url || ''}
 										alt={block.data?.caption || 'Blog post image'}
