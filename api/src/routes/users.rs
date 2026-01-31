@@ -1,5 +1,6 @@
-//! User routes
-//! ICT 11+ Fix: Changed Path parameter from Uuid to i64 to match database schema
+//! User routes - ICT Level 7 Security Fix
+//! CRITICAL: All routes now require AdminUser authentication
+//! Previously these endpoints were PUBLIC - exposing all user data
 
 use axum::{
     extract::{Path, State},
@@ -9,12 +10,13 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::{models::UserResponse, AppState};
+use crate::{middleware::admin::AdminUser, models::UserResponse, AppState};
 
-/// Get user by ID
-/// ICT 11+ Fix: User ID is i64 (BIGINT) in database, not UUID
+/// Get user by ID - REQUIRES ADMIN AUTH
+/// ICT Level 7 Security: Protected endpoint
 async fn get_user(
     State(state): State<AppState>,
+    _admin: AdminUser, // ICT 7 FIX: Require admin authentication
     Path(id): Path<i64>,
 ) -> Result<Json<UserResponse>, (StatusCode, Json<serde_json::Value>)> {
     let user: crate::models::User = sqlx::query_as(
@@ -34,9 +36,11 @@ async fn get_user(
     Ok(Json(user.into()))
 }
 
-/// List all users (admin only)
+/// List all users - REQUIRES ADMIN AUTH
+/// ICT Level 7 Security: Protected endpoint
 async fn list_users(
     State(state): State<AppState>,
+    _admin: AdminUser, // ICT 7 FIX: Require admin authentication
 ) -> Result<Json<Vec<UserResponse>>, (StatusCode, Json<serde_json::Value>)> {
     let users: Vec<crate::models::User> =
         sqlx::query_as("SELECT * FROM users ORDER BY created_at DESC LIMIT 100")
