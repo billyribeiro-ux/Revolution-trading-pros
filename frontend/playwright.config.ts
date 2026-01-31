@@ -193,16 +193,19 @@ export default defineConfig({
 
 	// ========================================
 	// WEB SERVER CONFIGURATION
-	// ICT11+ Fix: Use preview in CI (faster, more reliable), dev locally
+	// ICT 7 Fix: In CI, tests run against preview server started manually in workflow
+	// Locally, start dev server automatically
 	// ========================================
-	webServer: {
-		command: CI ? 'npm run preview' : 'npm run dev',
-		url: BASE_URL,
-		reuseExistingServer: !CI,
-		timeout: TIMEOUTS.webServer,
-		stdout: DEBUG ? 'pipe' : 'ignore',
-		stderr: 'pipe'
-	},
+	webServer: CI
+		? undefined
+		: {
+				command: 'npm run dev',
+				url: BASE_URL,
+				reuseExistingServer: true,
+				timeout: TIMEOUTS.webServer,
+				stdout: DEBUG ? 'pipe' : 'ignore',
+				stderr: 'pipe'
+			},
 
 	// ========================================
 	// GLOBAL SETUP/TEARDOWN
