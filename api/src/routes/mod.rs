@@ -3,6 +3,7 @@
 
 pub mod auth;
 pub mod categories;
+pub mod oauth; // ICT 7: Google & Apple OAuth authentication
 pub mod health;
 pub mod media;
 pub mod members;
@@ -73,6 +74,7 @@ use axum::Router;
 pub fn api_router() -> Router<AppState> {
     Router::new()
         .nest("/auth", auth::router())
+        .nest("/auth", oauth::router()) // ICT 7: Google & Apple OAuth routes
         .nest("/users", users::router())
         .nest("/user", user::router()) // Singular /user routes for frontend
         // Legacy courses route - replaced by member_courses
