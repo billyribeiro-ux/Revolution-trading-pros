@@ -148,22 +148,17 @@ img {
 	object-fit: cover;
 }
 
-/* Modern image formats with fallbacks */
+/* Modern image formats with fallbacks
+ * NOTE: <picture> element support cannot be detected via CSS @supports
+ * The <picture> element handles its own fallback via <source> and <img> children
+ * No CSS fallback needed - browsers without <picture> support will use the <img> fallback
+ */
 .hero-image-webp {
 	display: block;
 }
 
 .hero-image-jpeg {
 	display: none;
-}
-
-@supports not (picture) {
-	.hero-image-webp {
-		display: none;
-	}
-	.hero-image-jpeg {
-		display: block;
-	}
 }
 
 /* ============================================================================
