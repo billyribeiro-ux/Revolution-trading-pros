@@ -105,18 +105,18 @@
 
 	// Update container rect when container changes
 	$effect(() => {
-		if (containerRef) {
-			containerRect = containerRef.getBoundingClientRect();
+		if (!containerRef) return;
 
-			// Update on resize
-			const resizeObserver = new ResizeObserver(() => {
-				containerRect = containerRef?.getBoundingClientRect() ?? null;
-			});
+		containerRect = containerRef.getBoundingClientRect();
 
-			resizeObserver.observe(containerRef);
+		// Update on resize
+		const resizeObserver = new ResizeObserver(() => {
+			containerRect = containerRef?.getBoundingClientRect() ?? null;
+		});
 
-			return () => resizeObserver.disconnect();
-		}
+		resizeObserver.observe(containerRef);
+
+		return () => resizeObserver.disconnect();
 	});
 
 	// Track cursor position changes for animations

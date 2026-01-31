@@ -19,7 +19,7 @@
 		NEUTRAL: { bg: 'bg-neutral', text: 'text-neutral' }
 	};
 
-	const biasStyle = biasStyles[plan.bias.toUpperCase()] || biasStyles.NEUTRAL;
+	const biasStyle = $derived(biasStyles[plan.bias.toUpperCase()] || biasStyles.NEUTRAL);
 
 	// Format date
 	function formatDate(dateStr: string): string {

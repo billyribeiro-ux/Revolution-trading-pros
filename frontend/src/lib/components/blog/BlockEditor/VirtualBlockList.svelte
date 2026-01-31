@@ -719,6 +719,7 @@
 	});
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 <div
 	bind:this={containerRef}
 	class="virtual-block-list"
@@ -730,14 +731,16 @@
 	ondragover={(e) => e.preventDefault()}
 	ontouchmove={handleTouchMove}
 	ontouchend={handleTouchEnd}
-	role="list"
+	role="listbox"
 	aria-label="Block list with {blocks.length} blocks"
+	aria-multiselectable="false"
 	tabindex="0"
 >
 	<!-- Spacer for total content height -->
 	<div class="virtual-spacer" style:height="{totalHeight}px">
 		<!-- Render only visible blocks -->
 		{#each visibleBlocks as { block, index, position } (block.id)}
+			<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 			<div
 				class="virtual-block-wrapper"
 				class:is-selected={selectedBlockId === block.id}
@@ -747,8 +750,9 @@
 				style:transform="translateY({position.top}px)"
 				data-block-id={block.id}
 				data-block-index={index}
-				role="listitem"
+				role="option"
 				aria-selected={selectedBlockId === block.id}
+				tabindex={selectedBlockId === block.id ? 0 : -1}
 				onclick={() => handleBlockClick(block.id)}
 				ondragstart={(e) => handleDragStart(e, block.id, index)}
 				ondragover={(e) => handleDragOver(e, index)}

@@ -197,6 +197,8 @@
 		style="left: {position.x}px; top: {position.y}px;"
 		role="dialog"
 		aria-label="Performance Monitor"
+		aria-modal="false"
+		tabindex="-1"
 		onmousedown={handleMouseDown}
 	>
 		<!-- Header -->

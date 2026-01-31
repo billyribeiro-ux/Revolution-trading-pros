@@ -19,7 +19,7 @@
 		UPDATE: { bg: 'bg-amber', text: 'text-amber', border: 'border-amber' }
 	};
 
-	const style = typeStyles[alert.alert_type] || typeStyles.UPDATE;
+	const style = $derived(typeStyles[alert.alert_type] || typeStyles.UPDATE);
 
 	// Format date
 	function formatDate(dateStr: string): string {
@@ -183,6 +183,7 @@
 		text-overflow: ellipsis;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 	}
 
