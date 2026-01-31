@@ -8,14 +8,14 @@
 		"node": ">=20.0.0"
 	},
 	"scripts": {
-		"dev": "svelte-kit sync && vite dev",
+		"dev": "vite dev",
 		"dev:fast": "vite dev",
-		"build": "svelte-kit sync && vite build",
+		"build": "vite build",
 		"build:cloudflare": "DEPLOY_TARGET=cloudflare vite build",
 		"build:static": "DEPLOY_TARGET=static vite build",
 		"preview": "vite preview",
-		"check": "NODE_OPTIONS='--max-old-space-size=4096' svelte-kit sync && svelte-check --threshold error",
-		"check:all": "NODE_OPTIONS='--max-old-space-size=4096' svelte-kit sync && svelte-check",
+		"check": "NODE_OPTIONS='--max-old-space-size=4096' svelte-check --threshold error",
+		"check:all": "NODE_OPTIONS='--max-old-space-size=4096' svelte-check",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test": "playwright test",
