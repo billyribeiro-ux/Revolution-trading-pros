@@ -175,6 +175,14 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Generate SvelteKit types
+        working-directory: frontend
+        run: npm run build
+        env:
+          # Build to generate .svelte-kit/tsconfig.json for type checking
+          VITE_API_URL: ${{ needs.setup.outputs.api-url }}
+          VITE_CDN_URL: ${{ env.DEFAULT_CDN_URL }}
+
       - name: Type check
         working-directory: frontend
         run: npm run check
