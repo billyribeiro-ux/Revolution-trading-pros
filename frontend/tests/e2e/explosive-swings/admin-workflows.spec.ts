@@ -27,10 +27,7 @@ import {
 	mockStatsResponse,
 	mockWeeklyVideoResponse,
 	mockAdminUserResponse,
-	mockRegularUserResponse,
-	createAlertFixture,
-	createTradeFixture,
-	createTradePlanFixture
+	mockRegularUserResponse
 } from '../fixtures/explosive-swings.fixtures';
 
 // ===============================================================================
@@ -417,7 +414,7 @@ test.describe('Create Alert Flow', () => {
 					await submitButton.click();
 
 					// Should show validation errors
-					const errorMessage = page.locator('[class*="error"], [role="alert"], .validation-error');
+					const _errorMessage = page.locator('[class*="error"], [role="alert"], .validation-error');
 					// Form should prevent submission or show errors
 				}
 			}
@@ -523,7 +520,6 @@ test.describe('Delete Alert Flow', () => {
 
 				// Should show confirmation dialog
 				const confirmDialog = page.locator('[role="alertdialog"], [role="dialog"], .confirm-modal');
-				const confirmButton = page.getByRole('button', { name: /confirm|yes|delete/i });
 
 				// Either a confirmation dialog appears or the delete happens
 				const hasConfirm = await confirmDialog.isVisible({ timeout: 2000 }).catch(() => false);
@@ -545,7 +541,7 @@ test.describe('Delete Alert Flow', () => {
 
 			// Count alerts before deletion
 			const alertCards = page.locator('article').filter({ hasText: /ENTRY|UPDATE|EXIT/ });
-			const initialCount = await alertCards.count();
+			const _initialCount = await alertCards.count();
 
 			const deleteButton = page
 				.locator('button')
