@@ -14,7 +14,9 @@ pub mod cms_workflow;
 pub mod email;
 pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
 pub mod export; // ICT 7+ Phase 4: Export Functionality
+pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
 pub mod order_service;
+pub mod rate_limit; // ICT 7: Multi-tier rate limiting with fallback
 pub mod redis;
 pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics Service
 pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content
