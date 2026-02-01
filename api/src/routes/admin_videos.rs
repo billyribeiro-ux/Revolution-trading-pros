@@ -605,29 +605,33 @@ async fn get_options(
 }
 
 /// Bulk publish/unpublish videos
+/// ICT 7 SECURITY FIX: Use parameterized query with ANY() instead of string interpolation
 async fn bulk_publish(
     _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkPublishRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let ids: Vec<String> = input.video_ids.iter().map(|id| id.to_string()).collect();
-    let ids_str = ids.join(",");
+    if input.video_ids.is_empty() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No video IDs provided"})),
+        ));
+    }
 
-    let sql = format!(
-        "UPDATE unified_videos SET is_published = $1, updated_at = NOW() WHERE id IN ({}) AND deleted_at IS NULL",
-        ids_str
-    );
-
-    sqlx::query(&sql)
-        .bind(input.publish)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to bulk publish: {}", e)})),
-            )
-        })?;
+    // ICT 7: Use parameterized query with ANY() array to prevent SQL injection
+    sqlx::query(
+        "UPDATE unified_videos SET is_published = $1, updated_at = NOW() WHERE id = ANY($2) AND deleted_at IS NULL"
+    )
+    .bind(input.publish)
+    .bind(&input.video_ids)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to bulk publish: {}", e)})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -636,32 +640,37 @@ async fn bulk_publish(
 }
 
 /// Bulk delete videos
+/// ICT 7 SECURITY FIX: Use parameterized query with ANY() instead of string interpolation
 async fn bulk_delete(
     _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkDeleteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let ids: Vec<String> = input.video_ids.iter().map(|id| id.to_string()).collect();
-    let ids_str = ids.join(",");
+    if input.video_ids.is_empty() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No video IDs provided"})),
+        ));
+    }
 
-    let sql = if input.force.unwrap_or(false) {
-        format!("DELETE FROM unified_videos WHERE id IN ({})", ids_str)
+    // ICT 7: Use parameterized query with ANY() array to prevent SQL injection
+    if input.force.unwrap_or(false) {
+        sqlx::query("DELETE FROM unified_videos WHERE id = ANY($1)")
+            .bind(&input.video_ids)
+            .execute(&state.db.pool)
+            .await
     } else {
-        format!(
-            "UPDATE unified_videos SET deleted_at = NOW() WHERE id IN ({})",
-            ids_str
+        sqlx::query("UPDATE unified_videos SET deleted_at = NOW() WHERE id = ANY($1)")
+            .bind(&input.video_ids)
+            .execute(&state.db.pool)
+            .await
+    }
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to bulk delete: {}", e)})),
         )
-    };
-
-    sqlx::query(&sql)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to bulk delete: {}", e)})),
-            )
-        })?;
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -670,25 +679,24 @@ async fn bulk_delete(
 }
 
 /// Bulk assign videos to rooms
+/// ICT 7 SECURITY FIX: Use parameterized query with ANY() instead of string interpolation
 async fn bulk_assign(
     _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkAssignRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.clear_existing.unwrap_or(false) {
-        let ids: Vec<String> = input.video_ids.iter().map(|id| id.to_string()).collect();
-        let ids_str = ids.join(",");
-        let sql = format!(
-            "DELETE FROM video_room_assignments WHERE video_id IN ({})",
-            ids_str
-        );
-        let _ = sqlx::query(&sql).execute(&state.db.pool).await;
+        // ICT 7: Use parameterized query with ANY() array
+        let _ = sqlx::query("DELETE FROM video_room_assignments WHERE video_id = ANY($1)")
+            .bind(&input.video_ids)
+            .execute(&state.db.pool)
+            .await;
     }
 
     for video_id in &input.video_ids {
         for room_id in &input.room_ids {
             let _ = sqlx::query(
-                "INSERT INTO video_room_assignments (video_id, trading_room_id) 
+                "INSERT INTO video_room_assignments (video_id, trading_room_id)
                  VALUES ($1, $2) ON CONFLICT (video_id, trading_room_id) DO NOTHING",
             )
             .bind(video_id)

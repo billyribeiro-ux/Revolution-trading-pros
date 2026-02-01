@@ -12,7 +12,8 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+// ICT 7 SECURITY FIX: Use AdminUser for all contact management (admin-only)
+use crate::{middleware::admin::AdminUser, AppState};
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct ContactRow {
@@ -69,53 +70,79 @@ pub struct UpdateContactRequest {
 }
 
 /// List contacts (admin)
+/// ICT 7 SECURITY FIX: Use parameterized queries to prevent SQL injection
 async fn list_contacts(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(query): Query<ContactListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut conditions = vec!["1=1".to_string()];
+    // ICT 7: Validate status against allowlist
+    let valid_statuses = ["lead", "prospect", "customer", "inactive", "churned"];
+    let status = query.status.as_ref().and_then(|s| {
+        if valid_statuses.contains(&s.to_lowercase().as_str()) {
+            Some(s.to_lowercase())
+        } else {
+            None
+        }
+    });
 
-    if let Some(ref status) = query.status {
-        conditions.push(format!("status = '{}'", status));
-    }
-    if let Some(ref search) = query.search {
-        conditions.push(format!(
-            "(email ILIKE '%{}%' OR first_name ILIKE '%{}%' OR last_name ILIKE '%{}%' OR company ILIKE '%{}%')",
-            search, search, search, search
-        ));
-    }
+    // ICT 7: Prepare search pattern for ILIKE
+    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
 
-    let where_clause = conditions.join(" AND ");
-    let sql = format!(
-        "SELECT * FROM contacts WHERE {} ORDER BY created_at DESC LIMIT {} OFFSET {}",
-        where_clause, per_page, offset
-    );
-    let count_sql = format!("SELECT COUNT(*) FROM contacts WHERE {}", where_clause);
+    // ICT 7: Use fully parameterized queries
+    let contacts: Vec<ContactRow> = sqlx::query_as(
+        r#"
+        SELECT * FROM contacts
+        WHERE ($1::TEXT IS NULL OR status = $1)
+        AND ($2::TEXT IS NULL OR (
+            email ILIKE $2 OR
+            first_name ILIKE $2 OR
+            last_name ILIKE $2 OR
+            company ILIKE $2
+        ))
+        ORDER BY created_at DESC
+        LIMIT $3 OFFSET $4
+        "#,
+    )
+    .bind(&status)
+    .bind(&search_pattern)
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
-    let contacts: Vec<ContactRow> = sqlx::query_as(&sql)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
-
-    let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let total: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*) FROM contacts
+        WHERE ($1::TEXT IS NULL OR status = $1)
+        AND ($2::TEXT IS NULL OR (
+            email ILIKE $2 OR
+            first_name ILIKE $2 OR
+            last_name ILIKE $2 OR
+            company ILIKE $2
+        ))
+        "#,
+    )
+    .bind(&status)
+    .bind(&search_pattern)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": contacts,
@@ -131,7 +158,7 @@ async fn list_contacts(
 /// Get contact by ID (admin)
 async fn get_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<ContactRow>, (StatusCode, Json<serde_json::Value>)> {
     let contact: ContactRow = sqlx::query_as("SELECT * FROM contacts WHERE id = $1")
@@ -157,7 +184,7 @@ async fn get_contact(
 /// Create contact (admin)
 async fn create_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateContactRequest>,
 ) -> Result<Json<ContactRow>, (StatusCode, Json<serde_json::Value>)> {
     let tags = input.tags.map(|t| serde_json::to_value(t).ok()).flatten();
@@ -194,50 +221,53 @@ async fn create_contact(
 }
 
 /// Update contact (admin)
+/// ICT 7 SECURITY FIX: Use parameterized queries to prevent SQL injection
 async fn update_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateContactRequest>,
 ) -> Result<Json<ContactRow>, (StatusCode, Json<serde_json::Value>)> {
-    let mut set_clauses = Vec::new();
+    // ICT 7: Validate status against allowlist
+    let valid_statuses = ["lead", "prospect", "customer", "inactive", "churned"];
+    let status = input.status.as_ref().and_then(|s| {
+        if valid_statuses.contains(&s.to_lowercase().as_str()) {
+            Some(s.to_lowercase())
+        } else {
+            None
+        }
+    });
 
-    if let Some(ref email) = input.email {
-        set_clauses.push(format!("email = '{}'", email.replace("'", "''")));
-    }
-    if let Some(ref first_name) = input.first_name {
-        set_clauses.push(format!("first_name = '{}'", first_name.replace("'", "''")));
-    }
-    if let Some(ref last_name) = input.last_name {
-        set_clauses.push(format!("last_name = '{}'", last_name.replace("'", "''")));
-    }
-    if let Some(ref phone) = input.phone {
-        set_clauses.push(format!("phone = '{}'", phone.replace("'", "''")));
-    }
-    if let Some(ref company) = input.company {
-        set_clauses.push(format!("company = '{}'", company.replace("'", "''")));
-    }
-    if let Some(ref status) = input.status {
-        set_clauses.push(format!("status = '{}'", status));
-    }
-
-    set_clauses.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE contacts SET {} WHERE id = $1 RETURNING *",
-        set_clauses.join(", ")
-    );
-
-    let contact: ContactRow = sqlx::query_as(&sql)
-        .bind(id)
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    // ICT 7: Use fully parameterized query with COALESCE for optional updates
+    let contact: ContactRow = sqlx::query_as(
+        r#"
+        UPDATE contacts SET
+            email = COALESCE($2, email),
+            first_name = COALESCE($3, first_name),
+            last_name = COALESCE($4, last_name),
+            phone = COALESCE($5, phone),
+            company = COALESCE($6, company),
+            status = COALESCE($7, status),
+            updated_at = NOW()
+        WHERE id = $1
+        RETURNING *
+        "#,
+    )
+    .bind(id)
+    .bind(&input.email)
+    .bind(&input.first_name)
+    .bind(&input.last_name)
+    .bind(&input.phone)
+    .bind(&input.company)
+    .bind(&status)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(contact))
 }
@@ -245,7 +275,7 @@ async fn update_contact(
 /// Delete contact (admin)
 async fn delete_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM contacts WHERE id = $1")
@@ -265,7 +295,7 @@ async fn delete_contact(
 /// Contact stats (admin)
 async fn contact_stats(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts")
         .fetch_one(&state.db.pool)
