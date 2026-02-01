@@ -52,6 +52,7 @@ impl Default for PasswordValidation {
 
 /// Validate password meets security requirements
 /// Returns Ok(()) if valid, Err with specific message if invalid
+/// ICT Level 7: OWASP-compliant password policy for financial applications
 pub fn validate_password(password: &str) -> Result<(), &'static str> {
     let rules = PasswordValidation::default();
 
@@ -62,13 +63,37 @@ pub fn validate_password(password: &str) -> Result<(), &'static str> {
         return Err("Password must be no more than 128 characters");
     }
 
-    // Check for at least one uppercase, lowercase, digit
+    // Check for at least one uppercase, lowercase, digit, and special character
     let has_upper = password.chars().any(|c| c.is_ascii_uppercase());
     let has_lower = password.chars().any(|c| c.is_ascii_lowercase());
     let has_digit = password.chars().any(|c| c.is_ascii_digit());
+    let has_special = password.chars().any(|c| {
+        // OWASP recommended special characters
+        matches!(c, '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' | '(' | ')'
+            | '-' | '_' | '+' | '=' | '[' | ']' | '{' | '}' | '|' | '\\'
+            | ':' | ';' | '"' | '\'' | '<' | '>' | ',' | '.' | '?' | '/' | '`' | '~')
+    });
 
-    if !has_upper || !has_lower || !has_digit {
-        return Err("Password must contain uppercase, lowercase, and a number");
+    if !has_upper {
+        return Err("Password must contain at least one uppercase letter");
+    }
+    if !has_lower {
+        return Err("Password must contain at least one lowercase letter");
+    }
+    if !has_digit {
+        return Err("Password must contain at least one number");
+    }
+    if !has_special {
+        return Err("Password must contain at least one special character (!@#$%^&*()_+-=[]{}|:;<>?,./~`)");
+    }
+
+    // ICT 7: Check for common weak patterns
+    let lower_password = password.to_lowercase();
+    let weak_patterns = ["password", "123456", "qwerty", "letmein", "admin", "welcome"];
+    for pattern in weak_patterns {
+        if lower_password.contains(pattern) {
+            return Err("Password contains a common weak pattern");
+        }
     }
 
     Ok(())

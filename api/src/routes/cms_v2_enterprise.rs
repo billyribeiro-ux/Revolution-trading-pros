@@ -181,11 +181,13 @@ async fn assign_for_review(
     Ok(Json(status))
 }
 
-/// Get user's assignments
+/// Get user's assignments (requires editor access)
 async fn get_my_assignments(
     State(state): State<AppState>,
     user: User,
 ) -> ApiResult<Vec<cms_workflow::WorkflowStatus>> {
+    require_editor(&user)?;
+
     let assignments = cms_workflow::get_user_assignments(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;

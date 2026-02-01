@@ -113,11 +113,13 @@ pub struct UpdateUserRequest {
 
 /// List all users (admin)
 /// ICT 11+ SECURITY FIX: Refactored to use safe parameterized queries with optional filters
+/// ICT 7 SECURITY FIX: Added require_admin check - was missing!
 async fn list_users(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Query(query): Query<UserListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -183,12 +185,15 @@ async fn list_users(
 }
 
 /// Get user by ID (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn get_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-    let user: AdminUserRow = sqlx::query_as(
+    require_admin(&user)?;
+
+    let target_user: AdminUserRow = sqlx::query_as(
         "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE id = $1"
     )
     .bind(id)
@@ -197,15 +202,18 @@ async fn get_user(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "User not found"}))))?;
 
-    Ok(Json(user))
+    Ok(Json(target_user))
 }
 
 /// Create user (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn create_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Json(input): Json<CreateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let password_hash = crate::utils::hash_password(&input.password).map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -241,12 +249,14 @@ async fn create_user(
 
 /// Update user (admin)
 /// SECURITY: Uses parameterized queries to prevent SQL injection
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn update_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
     Json(input): Json<UpdateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
     // Build UPDATE query with parameterized values
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -311,11 +321,14 @@ async fn update_user(
 }
 
 /// Delete user (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn delete_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     sqlx::query("DELETE FROM users WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -331,11 +344,14 @@ async fn delete_user(
 }
 
 /// Ban user (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn ban_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -351,11 +367,14 @@ async fn ban_user(
 }
 
 /// Unban user (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn unban_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     sqlx::query("UPDATE users SET is_active = true, updated_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -371,10 +390,13 @@ async fn unban_user(
 }
 
 /// User stats (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn user_stats(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
@@ -638,10 +660,13 @@ pub struct SettingRow {
 }
 
 /// Get all settings (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn get_settings(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
 ) -> Result<Json<Vec<SettingRow>>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let settings: Vec<SettingRow> =
         sqlx::query_as("SELECT * FROM application_settings ORDER BY group_name, key")
             .fetch_all(&state.db.pool)
@@ -657,11 +682,14 @@ async fn get_settings(
 }
 
 /// Get setting by key (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn get_setting(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(key): Path<String>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let setting: SettingRow = sqlx::query_as("SELECT * FROM application_settings WHERE key = $1")
         .bind(&key)
         .fetch_optional(&state.db.pool)
@@ -688,12 +716,15 @@ pub struct UpdateSettingRequest {
 }
 
 /// Update setting (admin)
+/// ICT 7 SECURITY FIX: Added require_admin check
 async fn update_setting(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(key): Path<String>,
     Json(input): Json<UpdateSettingRequest>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let setting: SettingRow = sqlx::query_as(
         "UPDATE application_settings SET value = $1, updated_at = NOW() WHERE key = $2 RETURNING *",
     )

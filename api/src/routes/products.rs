@@ -247,7 +247,8 @@ async fn create_product(
 }
 
 /// Update product (admin only)
-/// ICT 11+ Security: Admin authorization enforced via AdminUser extractor
+/// ICT 7+ Security: Admin authorization enforced via AdminUser extractor
+/// ICT 7 FIX: Complete rewrite with proper parameterized query binding
 async fn update_product(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
@@ -262,76 +263,68 @@ async fn update_product(
         "Admin updating product"
     );
 
-    // Build dynamic update query
-    let mut updates = Vec::new();
-    let mut param_idx = 1;
+    // ICT 7 FIX: Use COALESCE pattern with proper binding for all optional fields
+    // This ensures values are only updated when provided, and all bindings are correct
+    let slug = input.name.as_ref().map(|n| slug::slugify(n));
 
-    if input.name.is_some() {
-        updates.push(format!("name = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-    if input.name.is_some() {
-        updates.push(format!("slug = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-    if input.product_type.is_some() {
-        updates.push(format!("type = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-    if input.description.is_some() {
-        updates.push(format!("description = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-    if input.long_description.is_some() {
-        updates.push(format!("long_description = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-    if input.price.is_some() {
-        updates.push(format!("price = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-    if input.is_active.is_some() {
-        updates.push(format!("is_active = ${}", {
-            param_idx += 1;
-            param_idx - 1
-        }));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    if updates.len() <= 1 {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": "No fields to update"})),
-        ));
-    }
-
-    // For simplicity, fetch and update the whole record
-    let product: ProductRow = sqlx::query_as(&format!(
-        "UPDATE products SET {} WHERE id = $1 RETURNING *",
-        updates.join(", ")
-    ))
+    let product: ProductRow = sqlx::query_as(
+        r#"
+        UPDATE products SET
+            name = COALESCE($2, name),
+            slug = COALESCE($3, slug),
+            type = COALESCE($4, type),
+            description = COALESCE($5, description),
+            long_description = COALESCE($6, long_description),
+            price = COALESCE($7, price),
+            is_active = COALESCE($8, is_active),
+            metadata = COALESCE($9, metadata),
+            thumbnail = COALESCE($10, thumbnail),
+            meta_title = COALESCE($11, meta_title),
+            meta_description = COALESCE($12, meta_description),
+            indexable = COALESCE($13, indexable),
+            canonical_url = COALESCE($14, canonical_url),
+            updated_at = NOW()
+        WHERE id = $1
+        RETURNING *
+        "#,
+    )
     .bind(id)
-    .fetch_one(&state.db.pool)
+    .bind(&input.name)
+    .bind(&slug)
+    .bind(&input.product_type)
+    .bind(&input.description)
+    .bind(&input.long_description)
+    .bind(input.price)
+    .bind(input.is_active)
+    .bind(&input.metadata)
+    .bind(&input.thumbnail)
+    .bind(&input.meta_title)
+    .bind(&input.meta_description)
+    .bind(input.indexable)
+    .bind(&input.canonical_url)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
+        tracing::error!(target: "products", error = %e, product_id = %id, "Failed to update product");
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
+            Json(json!({"error": "Failed to update product"})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Product not found"})),
         )
     })?;
+
+    tracing::info!(
+        target: "products",
+        event = "product_updated",
+        product_id = %product.id,
+        admin_id = %user.id,
+        "Product updated successfully"
+    );
 
     Ok(Json(product))
 }
@@ -414,6 +407,103 @@ pub fn admin_router() -> Router<AppState> {
                 .put(update_product)
                 .delete(delete_product),
         )
+        // ICT 7 FIX: Archive/restore endpoints for soft delete functionality
+        .route("/:id/archive", post(archive_product))
+        .route("/:id/restore", post(restore_product))
+}
+
+/// Archive product (soft delete) - admin only
+/// ICT 7 FIX: Added archive functionality instead of hard delete
+async fn archive_product(
+    State(state): State<AppState>,
+    AdminUser(user): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security",
+        event = "product_archive",
+        user_id = %user.id,
+        product_id = %id,
+        "Admin archiving product"
+    );
+
+    let result = sqlx::query(
+        "UPDATE products SET is_active = false, updated_at = NOW() WHERE id = $1",
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "products", error = %e, product_id = %id, "Failed to archive product");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to archive product"})),
+        )
+    })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Product not found"})),
+        ));
+    }
+
+    tracing::info!(
+        target: "products",
+        event = "product_archived",
+        product_id = %id,
+        admin_id = %user.id,
+        "Product archived successfully"
+    );
+
+    Ok(Json(json!({"message": "Product archived successfully", "id": id})))
+}
+
+/// Restore archived product - admin only
+/// ICT 7 FIX: Added restore functionality to reactivate archived products
+async fn restore_product(
+    State(state): State<AppState>,
+    AdminUser(user): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security",
+        event = "product_restore",
+        user_id = %user.id,
+        product_id = %id,
+        "Admin restoring product"
+    );
+
+    let result = sqlx::query(
+        "UPDATE products SET is_active = true, updated_at = NOW() WHERE id = $1",
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "products", error = %e, product_id = %id, "Failed to restore product");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to restore product"})),
+        )
+    })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Product not found"})),
+        ));
+    }
+
+    tracing::info!(
+        target: "products",
+        event = "product_restored",
+        product_id = %id,
+        admin_id = %user.id,
+        "Product restored successfully"
+    );
+
+    Ok(Json(json!({"message": "Product restored successfully", "id": id})))
 }
 
 /// List products for admin (includes inactive products)

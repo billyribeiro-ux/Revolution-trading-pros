@@ -458,8 +458,10 @@ async fn restore_revision(
 // TAGS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-/// List all tags
-async fn list_tags(State(state): State<AppState>) -> ApiResult<Vec<CmsTag>> {
+/// List all tags (requires editor access)
+async fn list_tags(State(state): State<AppState>, user: User) -> ApiResult<Vec<CmsTag>> {
+    require_cms_editor(&user)?;
+
     let tags = cms_content::list_tags(&state.db.pool)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;

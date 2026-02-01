@@ -276,13 +276,31 @@ async fn delete_template(
     Ok(Json(json!({"message": "Template deleted successfully"})))
 }
 
+/// HTML escape function to prevent XSS in template previews
+fn html_escape(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&#39;")
+}
+
 /// Preview email template with data (admin)
+/// SECURITY: All user-provided values are HTML escaped to prevent XSS
 async fn preview_template(
     State(state): State<AppState>,
-    AdminUser(_user): AdminUser,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<PreviewRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security",
+        event = "template_preview",
+        user_id = %user.id,
+        template_id = %id,
+        "Admin previewing email template"
+    );
+
     let template: EmailTemplateRow = sqlx::query_as(
         "SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1"
     )
@@ -292,7 +310,7 @@ async fn preview_template(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Template not found"}))))?;
 
-    // Simple variable replacement
+    // Variable replacement with XSS protection
     let mut html = template.body.clone();
     let mut subject = template.subject.clone();
 
@@ -300,18 +318,42 @@ async fn preview_template(
         for (key, value) in data_obj {
             let placeholder = format!("{{{{{}}}}}", key);
             let value_string = value.to_string();
-            let replacement = value.as_str().unwrap_or(&value_string);
-            html = html.replace(&placeholder, replacement);
-            subject = subject.replace(&placeholder, replacement);
+            let raw_value = value.as_str().unwrap_or(&value_string);
+
+            // SECURITY: HTML escape user-provided values to prevent XSS
+            let escaped_value = html_escape(raw_value);
+
+            html = html.replace(&placeholder, &escaped_value);
+            // Subject line also needs escaping (though less critical as it's not HTML)
+            subject = subject.replace(&placeholder, &escaped_value);
         }
     }
 
     Ok(Json(json!({
         "data": {
             "html": html,
-            "subject": subject
+            "subject": subject,
+            "xss_protected": true
         }
     })))
+}
+
+/// Validate email address format
+fn is_valid_email(email: &str) -> bool {
+    if email.len() > 254 || email.len() < 5 {
+        return false;
+    }
+    let parts: Vec<&str> = email.split('@').collect();
+    if parts.len() != 2 {
+        return false;
+    }
+    let (local, domain) = (parts[0], parts[1]);
+    if local.is_empty() || local.len() > 64 || domain.is_empty() || !domain.contains('.') {
+        return false;
+    }
+    let valid_local = |c: char| c.is_alphanumeric() || "!#$%&'*+/=?^_`{|}~.-".contains(c);
+    let valid_domain = |c: char| c.is_alphanumeric() || c == '.' || c == '-';
+    local.chars().all(valid_local) && domain.chars().all(valid_domain)
 }
 
 /// Send test email (admin)
@@ -321,12 +363,21 @@ async fn send_test_email(
     Path(id): Path<i64>,
     Json(input): Json<SendTestRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Validate email format
+    let email = input.email.trim().to_lowercase();
+    if !is_valid_email(&email) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid email address format"})),
+        ));
+    }
+
     tracing::info!(
         target: "security",
         event = "template_test_send",
         user_id = %user.id,
         template_id = %id,
-        recipient = %input.email,
+        recipient = %email,
         "Admin sending test email"
     );
 
@@ -334,8 +385,9 @@ async fn send_test_email(
     // For now, return success as placeholder
 
     Ok(Json(json!({
-        "message": format!("Test email would be sent to {}", input.email),
-        "note": "Email service integration pending"
+        "message": format!("Test email would be sent to {}", email),
+        "note": "Email service integration pending",
+        "template_id": id
     })))
 }
 

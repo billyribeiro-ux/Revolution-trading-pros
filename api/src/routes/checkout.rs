@@ -144,47 +144,92 @@ async fn create_checkout(
         }
     }
 
-    // Apply coupon if provided
+    // Apply coupon if provided - ICT 7 FIX: Complete coupon validation
     let mut discount = 0.0_f64;
     let mut coupon_info = None;
+    let mut applied_coupon_id: Option<i64> = None;
 
     if let Some(ref code) = input.coupon_code {
         #[derive(sqlx::FromRow)]
         struct CouponInfo {
             id: i64,
             code: String,
-            discount_type: String,
-            discount_value: f64,
-            max_discount: Option<f64>,
+            #[sqlx(rename = "type")]
+            coupon_type: String,
+            value: f64,
+            max_uses: i32,
+            current_uses: i32,
+            expiry_date: Option<chrono::NaiveDateTime>,
+            min_purchase_amount: f64,
         }
 
+        // ICT 7 FIX: Use Laravel production schema column names
         let coupon: Option<CouponInfo> = sqlx::query_as(
-            "SELECT id, code, discount_type, discount_value, max_discount FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"
+            r#"SELECT id, code, type, value::FLOAT8 as value, max_uses, current_uses,
+                      expiry_date, min_purchase_amount::FLOAT8 as min_purchase_amount
+               FROM coupons
+               WHERE UPPER(code) = UPPER($1) AND is_active = true"#
         )
         .bind(code)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            tracing::error!(target: "checkout", error = %e, "Failed to fetch coupon");
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to validate coupon"})))
+        })?;
 
         if let Some(c) = coupon {
-            discount = if c.discount_type == "percent" {
-                subtotal * (c.discount_value / 100.0)
-            } else {
-                c.discount_value
-            };
-
-            // Apply max discount if set
-            if let Some(max) = c.max_discount {
-                if discount > max {
-                    discount = max;
+            // Validate expiry
+            if let Some(expiry) = c.expiry_date {
+                if expiry < chrono::Utc::now().naive_utc() {
+                    return Err((
+                        StatusCode::BAD_REQUEST,
+                        Json(json!({"error": "Coupon has expired"})),
+                    ));
                 }
             }
 
+            // Validate usage limits
+            if c.max_uses > 0 && c.current_uses >= c.max_uses {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Coupon has reached its usage limit"})),
+                ));
+            }
+
+            // Validate minimum purchase
+            if c.min_purchase_amount > 0.0 && subtotal < c.min_purchase_amount {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": format!("Minimum purchase of ${:.2} required for this coupon", c.min_purchase_amount)})),
+                ));
+            }
+
+            // Calculate discount
+            discount = if c.coupon_type == "percentage" {
+                subtotal * (c.value / 100.0)
+            } else {
+                c.value
+            };
+
+            // Ensure discount doesn't exceed subtotal
+            if discount > subtotal {
+                discount = subtotal;
+            }
+
+            applied_coupon_id = Some(c.id);
             coupon_info = Some(json!({
                 "id": c.id,
                 "code": c.code,
+                "type": c.coupon_type,
+                "value": c.value,
                 "discount": discount
             }));
+        } else {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Invalid coupon code"})),
+            ));
         }
     }
 
@@ -199,7 +244,7 @@ async fn create_checkout(
         uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
     );
 
-    // Create order in database
+    // Create order in database - ICT 7 FIX: Include coupon_id and coupon_code
     #[derive(sqlx::FromRow)]
     struct OrderId {
         id: i64,
@@ -207,8 +252,9 @@ async fn create_checkout(
 
     let order: OrderId = sqlx::query_as(
         r#"
-        INSERT INTO orders (user_id, order_number, status, subtotal, discount, tax, total, currency, billing_name, billing_email, billing_address, created_at, updated_at)
-        VALUES ($1, $2, 'pending', $3, $4, $5, $6, 'USD', $7, $8, $9, NOW(), NOW())
+        INSERT INTO orders (user_id, order_number, status, subtotal, discount, tax, total, currency,
+                           billing_name, billing_email, billing_address, coupon_id, coupon_code, created_at, updated_at)
+        VALUES ($1, $2, 'pending', $3, $4, $5, $6, 'USD', $7, $8, $9, $10, $11, NOW(), NOW())
         RETURNING id
         "#
     )
@@ -221,9 +267,23 @@ async fn create_checkout(
     .bind(&input.billing_name)
     .bind(&input.billing_email)
     .bind(&input.billing_address)
+    .bind(applied_coupon_id)
+    .bind(&input.coupon_code)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        tracing::error!(target: "checkout", error = %e, "Failed to create order");
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to create order"})))
+    })?;
+
+    // ICT 7 FIX: Increment coupon usage if applied
+    if let Some(coupon_id) = applied_coupon_id {
+        sqlx::query("UPDATE coupons SET current_uses = current_uses + 1, updated_at = NOW() WHERE id = $1")
+            .bind(coupon_id)
+            .execute(&state.db.pool)
+            .await
+            .ok(); // Log but don't fail order creation
+    }
 
     // Insert order items
     for item in &line_items {
@@ -282,7 +342,7 @@ async fn create_checkout(
         customer_name: input.billing_name.clone(),
         line_items: stripe_line_items,
         success_url: format!("{}?order={}", success_url, order_number),
-        cancel_url,
+        cancel_url: cancel_url.clone(),
         metadata,
         allow_promotion_codes: input.coupon_code.is_none(),
         billing_address_collection: true,

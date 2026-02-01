@@ -17,6 +17,10 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use axum_extra::{
+    headers::{authorization::Bearer, Authorization},
+    TypedHeader,
+};
 use serde::Deserialize;
 use serde_json::json;
 
@@ -784,16 +788,27 @@ async fn me(user: User) -> Json<UserResponse> {
     Json(user.into())
 }
 
-/// Logout request with session ID
+/// Logout request with session ID and optional token
 #[derive(Debug, Deserialize)]
 struct LogoutRequest {
     session_id: Option<String>,
+    #[serde(default)]
+    token: Option<String>,
 }
 
-/// Logout user - ICT L11+ Security: Proper session invalidation
+/// Hash a JWT token for blacklist storage
+fn hash_token_for_blacklist(token: &str) -> String {
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(token.as_bytes());
+    hex::encode(hasher.finalize())
+}
+
+/// Logout user - ICT L11+ Security: Proper session and token invalidation
 /// POST /api/auth/logout
 async fn logout(
     State(state): State<AppState>,
+    TypedHeader(auth_header): TypedHeader<Authorization<Bearer>>,
     user: User,
     Json(input): Json<LogoutRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
@@ -803,6 +818,32 @@ async fn logout(
             if let Err(e) = redis.invalidate_session(&session_id).await {
                 tracing::warn!("Failed to invalidate session: {}", e);
             }
+        }
+    }
+
+    // ICT 7 SECURITY: Blacklist the current JWT token to prevent reuse
+    if let Some(redis) = &state.services.redis {
+        let token = auth_header.token();
+        let token_hash = hash_token_for_blacklist(token);
+
+        // Blacklist for the remaining token lifetime (max 24 hours for safety)
+        let blacklist_duration = (state.config.jwt_expires_in * 3600).min(86400) as u64;
+
+        if let Err(e) = redis.blacklist_token(&token_hash, blacklist_duration).await {
+            tracing::warn!(
+                target: "security",
+                event = "token_blacklist_failed",
+                user_id = %user.id,
+                error = %e,
+                "Failed to blacklist token on logout"
+            );
+        } else {
+            tracing::info!(
+                target: "security_audit",
+                event = "token_blacklisted",
+                user_id = %user.id,
+                "JWT token blacklisted on logout"
+            );
         }
     }
 

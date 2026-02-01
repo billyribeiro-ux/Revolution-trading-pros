@@ -1,43 +1,65 @@
 //! Newsletter & Email models - Revolution Trading Pros
-//! Apple ICT 11+ Principal Engineer Grade - December 2025
+//! Apple ICT 7+ Principal Engineer Grade - January 2026
+//!
+//! GDPR Compliant data structures with consent tracking
 
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use validator::Validate;
 
-/// Newsletter subscriber
+/// Newsletter subscriber with GDPR compliance fields
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct NewsletterSubscriber {
     pub id: i64,
     pub email: String,
     pub name: Option<String>,
     pub status: String, // pending, confirmed, unsubscribed
+
+    // Tracking fields
     pub source: Option<String>,
     pub ip_address: Option<String>,
     pub user_agent: Option<String>,
     pub tags: Option<serde_json::Value>,
     pub metadata: Option<serde_json::Value>,
+
+    // GDPR Compliance fields
+    pub gdpr_consent: bool,
+    pub consent_ip: Option<String>,
+    pub consent_source: Option<String>,
+    pub consent_timestamp: Option<NaiveDateTime>,
+
+    // Status timestamps
     pub confirmed_at: Option<NaiveDateTime>,
     pub unsubscribed_at: Option<NaiveDateTime>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
 
-/// Subscribe to newsletter request
+/// Subscribe to newsletter request with GDPR consent
 #[derive(Debug, Deserialize, Validate)]
 pub struct SubscribeRequest {
     #[validate(email(message = "Invalid email address"))]
+    #[validate(length(max = 254, message = "Email too long"))]
     pub email: String,
+
+    #[validate(length(max = 255, message = "Name too long"))]
     pub name: Option<String>,
+
+    #[validate(length(max = 100, message = "Source identifier too long"))]
     pub source: Option<String>,
+
     pub tags: Option<Vec<String>>,
+
+    /// GDPR: Explicit consent is REQUIRED
+    pub gdpr_consent: bool,
 }
 
-/// Unsubscribe request
+/// Unsubscribe request with reason tracking
 #[derive(Debug, Deserialize)]
 pub struct UnsubscribeRequest {
     pub token: String,
+    #[serde(default)]
     pub reason: Option<String>,
 }
 

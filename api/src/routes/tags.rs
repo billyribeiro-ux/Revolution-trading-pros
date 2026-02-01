@@ -44,68 +44,84 @@ pub struct UpdateTag {
     pub slug: Option<String>,
 }
 
-/// GET /admin/tags - List all tags
+/// GET /admin/tags - List all tags (ICT 7: SQL injection safe)
 #[tracing::instrument(skip(state, _admin))]
 pub async fn index(
     _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<TagQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let mut query = String::from("SELECT id, name, slug FROM tags WHERE 1=1");
-    let mut conditions = Vec::new();
+    // ICT Level 7: Parameterized query to prevent SQL injection
+    let search_pattern = params
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
 
-    // Search
-    if let Some(search) = &params.search {
-        conditions.push(format!(
-            "(name ILIKE '%{}%' OR slug ILIKE '%{}%')",
-            search.replace('\'', "''"),
-            search.replace('\'', "''")
-        ));
-    }
-
-    if !conditions.is_empty() {
-        query.push_str(&format!(" AND {}", conditions.join(" AND ")));
-    }
-
-    // Sort - only use columns that exist in production
+    // Sort with whitelist validation (ICT 7: prevent injection via sort columns)
     let allowed_columns = ["name", "slug", "id"];
     let sort_by = params.sort_by.as_deref().unwrap_or("id");
-    let sort_dir = params.sort_dir.as_deref().unwrap_or("asc");
-
     let sort_column = if allowed_columns.contains(&sort_by) {
         sort_by
     } else {
         "id"
     };
-
-    let sort_direction = if sort_dir.eq_ignore_ascii_case("desc") {
+    let sort_direction = if params.sort_dir.as_deref().unwrap_or("asc").eq_ignore_ascii_case("desc") {
         "DESC"
     } else {
         "ASC"
     };
 
-    query.push_str(&format!(" ORDER BY {} {}", sort_column, sort_direction));
-
     // Pagination
-    if params.all.unwrap_or(false) {
-        let tags: Vec<Tag> = sqlx::query_as(&query)
-            .fetch_all(state.db.pool())
-            .await
-            .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-        return Ok(Json(serde_json::json!({ "data": tags })));
-    }
-
-    let per_page = params.per_page.unwrap_or(100);
-    let page = params.page.unwrap_or(1);
+    let per_page = params.per_page.unwrap_or(100).min(500);
+    let page = params.page.unwrap_or(1).max(1);
     let offset = (page - 1) * per_page;
+    let fetch_all = params.all.unwrap_or(false);
 
-    query.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
-
-    let tags: Vec<Tag> = sqlx::query_as(&query)
-        .fetch_all(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    // Execute with proper parameter binding
+    let tags: Vec<Tag> = match (&search_pattern, fetch_all) {
+        (Some(pattern), false) => {
+            let query = format!(
+                "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {} {} LIMIT $2 OFFSET $3",
+                sort_column, sort_direction
+            );
+            sqlx::query_as(&query)
+                .bind(pattern)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
+        }
+        (Some(pattern), true) => {
+            let query = format!(
+                "SELECT id, name, slug FROM tags WHERE (name ILIKE $1 OR slug ILIKE $1) ORDER BY {} {}",
+                sort_column, sort_direction
+            );
+            sqlx::query_as(&query)
+                .bind(pattern)
+                .fetch_all(state.db.pool())
+                .await
+        }
+        (None, false) => {
+            let query = format!(
+                "SELECT id, name, slug FROM tags ORDER BY {} {} LIMIT $1 OFFSET $2",
+                sort_column, sort_direction
+            );
+            sqlx::query_as(&query)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
+        }
+        (None, true) => {
+            let query = format!(
+                "SELECT id, name, slug FROM tags ORDER BY {} {}",
+                sort_column, sort_direction
+            );
+            sqlx::query_as(&query)
+                .fetch_all(state.db.pool())
+                .await
+        }
+    }.map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     Ok(Json(serde_json::json!({ "data": tags })))
 }
@@ -276,9 +292,149 @@ pub async fn destroy(
     ))
 }
 
+/// Merge tag request (ICT 7: tag merge/rename functionality)
+#[derive(Debug, Deserialize)]
+pub struct MergeTagRequest {
+    /// The tag ID to merge into (target - will be kept)
+    pub target_id: i64,
+    /// The tag ID to merge from (source - will be deleted)
+    pub source_id: i64,
+}
+
+/// POST /admin/tags/merge - Merge two tags (ICT 7: merge functionality)
+/// Moves all posts from source tag to target tag, then deletes source tag
+#[tracing::instrument(skip(state, _admin))]
+pub async fn merge_tags(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Json(payload): Json<MergeTagRequest>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    if payload.target_id == payload.source_id {
+        return Err(ApiError::validation_error("Cannot merge a tag with itself"));
+    }
+
+    // Verify both tags exist
+    let target_exists: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
+            .bind(payload.target_id)
+            .fetch_one(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    if !target_exists {
+        return Err(ApiError::not_found("Target tag not found"));
+    }
+
+    let source_exists: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
+            .bind(payload.source_id)
+            .fetch_one(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    if !source_exists {
+        return Err(ApiError::not_found("Source tag not found"));
+    }
+
+    // Move all post_tags from source to target (ignoring duplicates)
+    let moved_count = sqlx::query(
+        "UPDATE post_tags SET tag_id = $1
+         WHERE tag_id = $2
+         AND post_id NOT IN (SELECT post_id FROM post_tags WHERE tag_id = $1)"
+    )
+    .bind(payload.target_id)
+    .bind(payload.source_id)
+    .execute(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?
+    .rows_affected();
+
+    // Delete remaining post_tags for source (duplicates that couldn't be moved)
+    sqlx::query("DELETE FROM post_tags WHERE tag_id = $1")
+        .bind(payload.source_id)
+        .execute(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    // Delete the source tag
+    sqlx::query("DELETE FROM tags WHERE id = $1")
+        .bind(payload.source_id)
+        .execute(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    // Return the target tag
+    let tag: Tag = sqlx::query_as("SELECT id, name, slug FROM tags WHERE id = $1")
+        .bind(payload.target_id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    Ok(Json(serde_json::json!({
+        "data": tag,
+        "merged_posts": moved_count,
+        "message": "Tags merged successfully"
+    })))
+}
+
+/// Tag with usage count
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct TagWithCount {
+    pub id: i64,
+    pub name: String,
+    pub slug: String,
+    pub post_count: i64,
+}
+
+/// GET /admin/tags/:id/usage - Get tag usage count (ICT 7: analytics)
+#[tracing::instrument(skip(state, _admin))]
+pub async fn get_usage(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let tag: TagWithCount = sqlx::query_as(
+        "SELECT t.id, t.name, t.slug, COALESCE(COUNT(pt.post_id), 0) as post_count
+         FROM tags t
+         LEFT JOIN post_tags pt ON t.id = pt.tag_id
+         WHERE t.id = $1
+         GROUP BY t.id, t.name, t.slug"
+    )
+    .bind(id)
+    .fetch_optional(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?
+    .ok_or_else(|| ApiError::not_found("Tag not found"))?;
+
+    Ok(Json(serde_json::json!({ "data": tag })))
+}
+
+/// GET /admin/tags/with-counts - List all tags with usage counts (ICT 7: analytics)
+#[tracing::instrument(skip(state, _admin))]
+pub async fn list_with_counts(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let tags: Vec<TagWithCount> = sqlx::query_as(
+        "SELECT t.id, t.name, t.slug, COALESCE(COUNT(pt.post_id), 0) as post_count
+         FROM tags t
+         LEFT JOIN post_tags pt ON t.id = pt.tag_id
+         GROUP BY t.id, t.name, t.slug
+         ORDER BY post_count DESC, t.name ASC"
+    )
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    Ok(Json(serde_json::json!({ "data": tags })))
+}
+
 /// Build the tags router
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/admin/tags", get(index).post(store))
+        .route("/admin/tags/merge", post(merge_tags))
+        .route("/admin/tags/with-counts", get(list_with_counts))
         .route("/admin/tags/:id", get(show).put(update).delete(destroy))
+        .route("/admin/tags/:id/usage", get(get_usage))
 }

@@ -327,11 +327,18 @@ impl Default for PopupDesign {
                 "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)".to_string(),
             ),
             button_padding: Some("0.875rem 1.5rem".to_string()),
+            secondary_button_color: None,
+            secondary_button_text_color: None,
             overlay_color: default_overlay_color(),
             overlay_opacity: default_overlay_opacity(),
+            overlay_blur: None,
             custom_css: None,
             background_image: None,
+            header_image: None,
+            video_url: None,
+            video_autoplay: false,
             border_radius: default_border_radius(),
+            template_id: None,
         }
     }
 }

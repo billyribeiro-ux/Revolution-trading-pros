@@ -1440,7 +1440,7 @@ async fn send_cancellation_email(
         )
     })?;
 
-    let user_name = user.name.unwrap_or_else(|| user.email.clone());
+    let user_name = if user.name.is_empty() { user.email.clone() } else { user.name.clone() };
 
     // Determine if cancelled immediately or at period end
     let cancel_immediately = sub.status == "cancelled" && !sub.cancel_at_period_end.unwrap_or(false);

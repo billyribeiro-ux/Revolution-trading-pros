@@ -1147,7 +1147,7 @@ async fn get_or_create_stripe_customer(
     let customer = state
         .services
         .stripe
-        .get_or_create_customer(&user.email, user.name.as_deref(), None)
+        .get_or_create_customer(&user.email, Some(user.name.as_str()), None)
         .await
         .map_err(|e| {
             tracing::error!("Failed to create Stripe customer: {}", e);

@@ -1156,7 +1156,8 @@ async fn submit_quiz(
 
     // Calculate score
     let mut total_score = 0i32;
-    let answers = input["answers"].as_array().unwrap_or(&Vec::new());
+    let empty_vec = Vec::new();
+    let answers = input["answers"].as_array().unwrap_or(&empty_vec);
     let mut results = Vec::new();
 
     for answer in answers {

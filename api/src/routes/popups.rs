@@ -118,7 +118,7 @@ async fn get_active_popups(
         "#,
     )
     .bind(now)
-    .fetch_all(&state.db)
+    .fetch_all(&state.db.pool)
     .await;
 
     let popups = match popups_result {
@@ -303,7 +303,7 @@ async fn track_impression(
     .bind(&body.session_id)
     .bind(&body.page_url)
     .bind(&body.device_type)
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     // Update popup total views
@@ -320,7 +320,7 @@ async fn track_impression(
         "#,
     )
     .bind(id)
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     Ok(Json(json!({ "success": true })))
@@ -344,7 +344,7 @@ async fn track_conversion(
     .bind(&body.page_url)
     .bind(&body.device_type)
     .bind(sqlx::types::Json(&body.metadata))
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     // Update popup totals
@@ -361,7 +361,7 @@ async fn track_conversion(
         "#,
     )
     .bind(id)
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     Ok(Json(json!({ "success": true })))
@@ -396,7 +396,7 @@ async fn submit_popup_form(
     let popup: Option<(bool, Option<i32>)> =
         sqlx::query_as("SELECT has_form, form_id FROM popups WHERE id = $1")
             .bind(id)
-            .fetch_optional(&state.db)
+            .fetch_optional(&state.db.pool)
             .await
             .map_err(|e| {
                 (
@@ -431,7 +431,7 @@ async fn submit_popup_form(
     .bind(sqlx::types::Json(&body.form_data))
     .bind(&body.session_id)
     .bind(sqlx::types::Json(&body.metadata))
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     // Track as conversion
@@ -444,7 +444,7 @@ async fn submit_popup_form(
     .bind(id)
     .bind(&body.session_id)
     .bind(sqlx::types::Json(json!({ "type": "form_submit" })))
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     // Update conversion count
@@ -461,7 +461,7 @@ async fn submit_popup_form(
         "#,
     )
     .bind(id)
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     Ok(Json(json!({
@@ -483,6 +483,7 @@ async fn track_events_batch(
     State(state): State<AppState>,
     Json(body): Json<BatchEventsBody>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let event_count = body.events.len();
     for event in body.events {
         let _ = sqlx::query(
             r#"
@@ -496,11 +497,11 @@ async fn track_events_batch(
         .bind(&event.page_url)
         .bind(&event.device_type)
         .bind(sqlx::types::Json(&event.data))
-        .execute(&state.db)
+        .execute(&state.db.pool)
         .await;
     }
 
-    Ok(Json(json!({ "success": true, "processed": body.events.len() })))
+    Ok(Json(json!({ "success": true, "processed": event_count })))
 }
 
 #[derive(Debug, Deserialize)]
