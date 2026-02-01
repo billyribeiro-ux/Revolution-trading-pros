@@ -290,6 +290,467 @@ impl EmailService {
         self.send(to, subject, &html, Some(&text)).await
     }
 
+    /// Send payment failed email
+    /// ICT 7 Fix: Added missing payment failed notification
+    pub async fn send_payment_failed_email(
+        &self,
+        to: &str,
+        name: &str,
+        subscription_name: &str,
+        retry_url: &str,
+    ) -> Result<()> {
+        let subject = "Payment Failed - Action Required";
+        let billing_url = format!("{}/dashboard/account/billing", self.app_url);
+
+        let html = Self::email_template(
+            "Payment Failed",
+            &format!(
+                r#"
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="font-size: 64px; color: #ef4444;">&#9888;</div>
+                </div>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    We were unable to process the payment for your <strong>{}</strong> subscription.
+                </p>
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px;
+                            padding: 20px; margin: 24px 0;">
+                    <p style="color: #991b1b; margin: 0; font-size: 14px;">
+                        <strong>What this means:</strong> Your subscription access may be limited
+                        until we can successfully process your payment.
+                    </p>
+                </div>
+                <div style="background: #f3f4f6; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                    <p style="color: #374151; margin: 0 0 12px 0; font-size: 14px;">
+                        <strong>Common reasons for payment failure:</strong>
+                    </p>
+                    <ul style="color: #6b7280; margin: 0; padding-left: 20px; font-size: 14px;">
+                        <li>Insufficient funds</li>
+                        <li>Card expired or cancelled</li>
+                        <li>Incorrect billing information</li>
+                        <li>Card issuer declined the transaction</li>
+                    </ul>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #ef4444, #dc2626);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;
+                              box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);">
+                        Update Payment Method
+                    </a>
+                </div>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 24px; text-align: center;">
+                    Need help? Contact our support team at support@revolutiontradingpros.com
+                </p>
+                "#,
+                html_escape(name),
+                html_escape(subscription_name),
+                billing_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\n\
+            We were unable to process the payment for your {} subscription.\n\n\
+            What this means: Your subscription access may be limited until we can successfully process your payment.\n\n\
+            Common reasons for payment failure:\n\
+            - Insufficient funds\n\
+            - Card expired or cancelled\n\
+            - Incorrect billing information\n\
+            - Card issuer declined the transaction\n\n\
+            Please update your payment method: {}\n\n\
+            Need help? Contact support@revolutiontradingpros.com\n\n\
+            - The Revolution Trading Pros Team",
+            name, subscription_name, billing_url
+        );
+
+        self.send(to, subject, &html, Some(&text)).await
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SUBSCRIPTION EMAIL NOTIFICATIONS - ICT 7+ Enterprise
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// Send subscription confirmation email
+    pub async fn send_subscription_confirmation(
+        &self,
+        to: &str,
+        name: &str,
+        plan_name: &str,
+        price: f64,
+        billing_cycle: &str,
+        has_trial: bool,
+        trial_days: i32,
+    ) -> Result<()> {
+        let subject = format!("Subscription Confirmed - {}", plan_name);
+        let dashboard_url = format!("{}/my/subscriptions", self.app_url);
+
+        let trial_notice = if has_trial {
+            format!(
+                r#"<div style="background: #dbeafe; border-left: 4px solid #3b82f6;
+                            padding: 16px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                    <p style="color: #1e40af; margin: 0; font-size: 14px;">
+                        <strong>Trial Period:</strong> You have a {}-day free trial.
+                        Your card won't be charged until the trial ends.
+                    </p>
+                </div>"#,
+                trial_days
+            )
+        } else {
+            String::new()
+        };
+
+        let html = Self::email_template(
+            "Subscription Confirmed!",
+            &format!(
+                r#"
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="font-size: 64px;">🎉</div>
+                </div>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Welcome! Your subscription to <strong>{}</strong> has been confirmed.
+                </p>
+                {}
+                <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px;
+                            padding: 20px; margin: 24px 0;">
+                    <h3 style="color: #166534; margin: 0 0 12px 0; font-size: 16px;">Subscription Details</h3>
+                    <table style="width: 100%; font-size: 14px; color: #374151;">
+                        <tr>
+                            <td style="padding: 8px 0;">Plan:</td>
+                            <td style="padding: 8px 0; text-align: right; font-weight: 600;">{}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;">Price:</td>
+                            <td style="padding: 8px 0; text-align: right; font-weight: 600;">${:.2}/{}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;
+                              box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                        Manage Subscription
+                    </a>
+                </div>
+                "#,
+                html_escape(name),
+                html_escape(plan_name),
+                trial_notice,
+                html_escape(plan_name),
+                price,
+                billing_cycle,
+                dashboard_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\nYour subscription to {} has been confirmed!\n\nPlan: {}\nPrice: ${:.2}/{}\n\n{}\nManage: {}\n\n- The Revolution Trading Pros Team",
+            name, plan_name, plan_name, price, billing_cycle,
+            if has_trial { format!("You have a {}-day free trial.", trial_days) } else { String::new() },
+            dashboard_url
+        );
+
+        self.send(to, &subject, &html, Some(&text)).await
+    }
+
+    /// Send subscription cancellation email
+    pub async fn send_subscription_cancelled(
+        &self,
+        to: &str,
+        name: &str,
+        plan_name: &str,
+        end_date: &str,
+        cancel_immediately: bool,
+    ) -> Result<()> {
+        let subject = "Subscription Cancelled - Revolution Trading Pros";
+        let resubscribe_url = format!("{}/pricing", self.app_url);
+
+        let message = if cancel_immediately {
+            "Your subscription has been cancelled immediately."
+        } else {
+            "Your subscription will remain active until the end of your billing period."
+        };
+
+        let html = Self::email_template(
+            "Subscription Cancelled",
+            &format!(
+                r#"
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Your <strong>{}</strong> subscription has been cancelled.
+                </p>
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b;
+                            padding: 16px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                    <p style="color: #92400e; margin: 0; font-size: 14px;">
+                        {} {}
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;">
+                        Resubscribe
+                    </a>
+                </div>
+                "#,
+                html_escape(name),
+                html_escape(plan_name),
+                message,
+                if !cancel_immediately { format!("<br><strong>Access until:</strong> {}", end_date) } else { String::new() },
+                resubscribe_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\nYour {} subscription has been cancelled.\n\n{}\n\n- The Revolution Trading Pros Team",
+            name, plan_name, message
+        );
+
+        self.send(to, subject, &html, Some(&text)).await
+    }
+
+    /// Send payment failed with grace period email
+    pub async fn send_payment_failed_with_grace(
+        &self,
+        to: &str,
+        name: &str,
+        plan_name: &str,
+        amount: f64,
+        grace_period_end: &str,
+        retry_count: i32,
+    ) -> Result<()> {
+        let subject = "Action Required: Payment Failed";
+        let update_url = format!("{}/my/subscriptions", self.app_url);
+
+        let urgency = if retry_count >= 3 {
+            "FINAL NOTICE: Your subscription will be cancelled if payment is not received."
+        } else {
+            "Please update your payment method to avoid losing access."
+        };
+
+        let html = Self::email_template(
+            "Payment Failed",
+            &format!(
+                r#"
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="font-size: 64px;">⚠️</div>
+                </div>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    We were unable to process your payment of <strong>${:.2}</strong> for <strong>{}</strong>.
+                </p>
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px;
+                            padding: 20px; margin: 24px 0;">
+                    <p style="color: #991b1b; margin: 0; font-size: 14px;">
+                        <strong>{}</strong><br><br>
+                        Grace period ends: <strong>{}</strong>
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #ef4444, #dc2626);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;">
+                        Update Payment Method
+                    </a>
+                </div>
+                "#,
+                html_escape(name),
+                amount,
+                html_escape(plan_name),
+                urgency,
+                grace_period_end,
+                update_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\nPayment of ${:.2} for {} failed.\n\n{}\nGrace period ends: {}\n\nUpdate payment: {}\n\n- The Revolution Trading Pros Team",
+            name, amount, plan_name, urgency, grace_period_end, update_url
+        );
+
+        self.send(to, subject, &html, Some(&text)).await
+    }
+
+    /// Send renewal reminder email
+    pub async fn send_renewal_reminder(
+        &self,
+        to: &str,
+        name: &str,
+        plan_name: &str,
+        amount: f64,
+        renewal_date: &str,
+    ) -> Result<()> {
+        let subject = format!("Subscription Renewal Reminder - {}", plan_name);
+        let manage_url = format!("{}/my/subscriptions", self.app_url);
+
+        let html = Self::email_template(
+            "Renewal Reminder",
+            &format!(
+                r#"
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Your <strong>{}</strong> subscription will renew on <strong>{}</strong> for <strong>${:.2}</strong>.
+                </p>
+                <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px;
+                            padding: 20px; margin: 24px 0;">
+                    <p style="color: #0369a1; margin: 0; font-size: 14px;">
+                        No action is required. Your subscription will automatically renew.
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;">
+                        Manage Subscription
+                    </a>
+                </div>
+                "#,
+                html_escape(name),
+                html_escape(plan_name),
+                renewal_date,
+                amount,
+                manage_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\nYour {} subscription will renew on {} for ${:.2}.\n\nManage: {}\n\n- The Revolution Trading Pros Team",
+            name, plan_name, renewal_date, amount, manage_url
+        );
+
+        self.send(to, &subject, &html, Some(&text)).await
+    }
+
+    /// Send trial ending soon notification
+    pub async fn send_trial_ending_soon(
+        &self,
+        to: &str,
+        name: &str,
+        plan_name: &str,
+        trial_end_date: &str,
+        price: f64,
+        billing_cycle: &str,
+    ) -> Result<()> {
+        let subject = "Your Trial Ends Soon - Revolution Trading Pros";
+        let manage_url = format!("{}/my/subscriptions", self.app_url);
+
+        let html = Self::email_template(
+            "Trial Ending Soon",
+            &format!(
+                r#"
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Your free trial for <strong>{}</strong> ends on <strong>{}</strong>.
+                </p>
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b;
+                            padding: 16px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                    <p style="color: #92400e; margin: 0; font-size: 14px;">
+                        After your trial ends, you'll be charged <strong>${:.2}/{}</strong>.
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;">
+                        Manage Subscription
+                    </a>
+                </div>
+                "#,
+                html_escape(name),
+                html_escape(plan_name),
+                trial_end_date,
+                price,
+                billing_cycle,
+                manage_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\nYour trial for {} ends on {}. You'll be charged ${:.2}/{}.\n\nManage: {}\n\n- The Revolution Trading Pros Team",
+            name, plan_name, trial_end_date, price, billing_cycle, manage_url
+        );
+
+        self.send(to, subject, &html, Some(&text)).await
+    }
+
+    /// Send subscription upgraded email
+    pub async fn send_subscription_upgraded(
+        &self,
+        to: &str,
+        name: &str,
+        old_plan: &str,
+        new_plan: &str,
+        new_price: f64,
+        billing_cycle: &str,
+    ) -> Result<()> {
+        let subject = format!("Subscription Upgraded to {}", new_plan);
+        let manage_url = format!("{}/my/subscriptions", self.app_url);
+
+        let html = Self::email_template(
+            "Subscription Upgraded!",
+            &format!(
+                r#"
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="font-size: 64px;">🚀</div>
+                </div>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi <strong>{}</strong>,
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Your subscription has been upgraded from <strong>{}</strong> to <strong>{}</strong>.
+                </p>
+                <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px;
+                            padding: 20px; margin: 24px 0;">
+                    <p style="color: #166534; margin: 0; font-size: 14px;">
+                        New price: <strong>${:.2}/{}</strong>
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;">
+                        View Subscription
+                    </a>
+                </div>
+                "#,
+                html_escape(name),
+                html_escape(old_plan),
+                html_escape(new_plan),
+                new_price,
+                billing_cycle,
+                manage_url
+            ),
+        );
+
+        let text = format!(
+            "Hi {},\n\nUpgraded from {} to {}. New price: ${:.2}/{}\n\nView: {}\n\n- The Revolution Trading Pros Team",
+            name, old_plan, new_plan, new_price, billing_cycle, manage_url
+        );
+
+        self.send(to, &subject, &html, Some(&text)).await
+    }
+
     /// Send order confirmation email
     pub async fn send_order_confirmation(&self, to: &str, order_number: &str) -> Result<()> {
         let subject = format!("Order Confirmed - #{}", order_number);

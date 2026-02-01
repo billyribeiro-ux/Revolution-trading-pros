@@ -55,11 +55,45 @@
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPES - Apple ICT 7 Standard: No 'any' types
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface CrmContact {
+		id: string | number;
+		email: string;
+		first_name?: string;
+		last_name?: string;
+		full_name?: string;
+		phone?: string;
+		company?: string;
+		job_title?: string;
+		status: string;
+		source?: string;
+		score?: number;
+		tags?: string[] | { id: string; name: string }[];
+		custom_fields?: Record<string, unknown>;
+		last_contacted_at?: string;
+		created_at: string;
+		updated_at: string;
+	}
+
+	interface CrmDeal {
+		id: string | number;
+		name: string;
+		value: number;
+		stage?: string;
+		status: string;
+		contact_id?: string | number;
+		created_at: string;
+		updated_at: string;
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let contacts = $state<any[]>([]);
-	let deals = $state<any[]>([]);
+	let contacts = $state<CrmContact[]>([]);
+	let deals = $state<CrmDeal[]>([]);
 	let isLoading = $state(true);
 	let connectionLoading = $state(true);
 	let error = $state('');

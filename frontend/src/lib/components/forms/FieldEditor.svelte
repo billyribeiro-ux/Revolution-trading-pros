@@ -10,6 +10,16 @@
 
 	let { field = null, availableFields = [], onsave, oncancel }: Props = $props();
 
+	// Default validation object to prevent null reference errors (ICT 7 Fix)
+	const createDefaultValidation = () => ({
+		min_length: undefined as number | undefined,
+		max_length: undefined as number | undefined,
+		min: undefined as number | undefined,
+		max: undefined as number | undefined,
+		accept: undefined as string | undefined,
+		max_size: undefined as number | undefined
+	});
+
 	let fieldData: FormField = $state({
 		field_type: 'text',
 		label: '',
@@ -18,7 +28,7 @@
 		help_text: '',
 		default_value: '',
 		options: null,
-		validation: null,
+		validation: createDefaultValidation(),
 		conditional_logic: null,
 		attributes: null,
 		required: false,
@@ -29,7 +39,7 @@
 	let showConditionalLogic = $state(false);
 	let optionsText = $state('');
 
-	// Sync with prop changes
+	// Sync with prop changes - ICT 7 Fix: Always ensure validation is an object
 	$effect(() => {
 		if (field) {
 			fieldData = {
@@ -41,7 +51,7 @@
 				help_text: field.help_text ?? '',
 				default_value: field.default_value ?? '',
 				options: field.options ?? null,
-				validation: field.validation ?? null,
+				validation: field.validation ? { ...createDefaultValidation(), ...field.validation } : createDefaultValidation(),
 				conditional_logic: field.conditional_logic ?? null,
 				attributes: field.attributes ?? null,
 				required: field.required ?? false,

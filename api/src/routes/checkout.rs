@@ -245,14 +245,81 @@ async fn create_checkout(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
     }
 
-    // TODO: Create Stripe checkout session for payment
-    // For now, return order details
+    // ICT 7 Fix: Create Stripe checkout session for payment
     let success_url = input
         .success_url
-        .unwrap_or_else(|| "/checkout/success".to_string());
+        .unwrap_or_else(|| format!("{}/checkout/success", state.config.app_url));
     let cancel_url = input
         .cancel_url
-        .unwrap_or_else(|| "/checkout/cancel".to_string());
+        .unwrap_or_else(|| format!("{}/checkout/cancel", state.config.app_url));
+
+    // Build Stripe line items from our cart items
+    let mut stripe_line_items: Vec<crate::services::stripe::LineItem> = Vec::new();
+
+    for item in &line_items {
+        let is_subscription = item.get("type").and_then(|t| t.as_str()) == Some("subscription");
+        stripe_line_items.push(crate::services::stripe::LineItem {
+            price_id: None, // Ad-hoc pricing
+            name: item.get("name").and_then(|n| n.as_str()).unwrap_or("Item").to_string(),
+            description: None,
+            amount: (item.get("price").and_then(|p| p.as_f64()).unwrap_or(0.0) * 100.0) as i64,
+            currency: "usd".to_string(),
+            quantity: item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1),
+            is_subscription,
+            interval: if is_subscription { Some("month".to_string()) } else { None },
+            interval_count: if is_subscription { Some(1) } else { None },
+        });
+    }
+
+    // Create Stripe checkout session with order metadata
+    let mut metadata = std::collections::HashMap::new();
+    metadata.insert("order_id".to_string(), order.id.to_string());
+    metadata.insert("order_number".to_string(), order_number.clone());
+    metadata.insert("user_id".to_string(), user.id.to_string());
+
+    let config = crate::services::stripe::CheckoutConfig {
+        customer_email: input.billing_email.clone().unwrap_or_else(|| user.email.clone()),
+        customer_name: input.billing_name.clone(),
+        line_items: stripe_line_items,
+        success_url: format!("{}?order={}", success_url, order_number),
+        cancel_url,
+        metadata,
+        allow_promotion_codes: input.coupon_code.is_none(),
+        billing_address_collection: true,
+    };
+
+    // Create Stripe session
+    let stripe_session = state
+        .services
+        .stripe
+        .create_checkout_session(config)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "checkout", error = %e, "Failed to create Stripe session");
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Payment service error: {}", e)})),
+            )
+        })?;
+
+    // Update order with Stripe session ID
+    sqlx::query("UPDATE orders SET stripe_session_id = $1, updated_at = NOW() WHERE id = $2")
+        .bind(&stripe_session.id)
+        .bind(order.id)
+        .execute(&state.db.pool)
+        .await
+        .ok();
+
+    tracing::info!(
+        target: "checkout",
+        event = "checkout_session_created",
+        order_id = %order.id,
+        order_number = %order_number,
+        user_id = %user.id,
+        stripe_session_id = %stripe_session.id,
+        total = %total,
+        "Stripe checkout session created"
+    );
 
     Ok(Json(json!({
         "order_id": order.id,
@@ -264,8 +331,9 @@ async fn create_checkout(
         "tax": tax,
         "total": total,
         "currency": "USD",
-        "checkout_url": format!("/checkout/pay/{}", order_number),
-        "success_url": success_url,
+        "stripe_session_id": stripe_session.id,
+        "checkout_url": stripe_session.url,
+        "success_url": format!("{}?order={}", success_url, order_number),
         "cancel_url": cancel_url
     })))
 }

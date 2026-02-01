@@ -49,8 +49,15 @@
 		type ResourceType,
 		type ContentType,
 		type VideoPlatform,
-		type CreateResourceRequest
+		type CreateResourceRequest,
+		type AccessLevel,
+		type BulkUpdateFields,
+		bulkUpdateResources,
+		bulkDeleteResources,
+		getUploadLimits
 	} from '$lib/api/room-resources';
+	import { ResourceAnalytics } from '$lib/components/resources';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -146,6 +153,14 @@
 		{ id: 'earnings', name: 'Earnings', color: '#f97316' }
 	];
 
+	// ICT 7: Access level options for free/premium control
+	const ACCESS_LEVELS: { id: AccessLevel; name: string; color: string }[] = [
+		{ id: 'free', name: 'Free (Public)', color: '#22c55e' },
+		{ id: 'member', name: 'Member', color: '#3b82f6' },
+		{ id: 'premium', name: 'Premium', color: '#f59e0b' },
+		{ id: 'vip', name: 'VIP', color: '#a855f7' }
+	];
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -177,10 +192,17 @@
 	let showCreateModal = $state(false);
 	let showEditModal = $state(false);
 	let showReplaceModal = $state(false);
+	let showBulkModal = $state(false);
 	let editingResource = $state<RoomResource | null>(null);
 	let replacingResource = $state<RoomResource | null>(null);
 	let isSaving = $state(false);
 	let newFileUrl = $state('');
+
+	// ICT 7: Bulk operations state
+	let selectedResources = $state<Set<number>>(new Set());
+	let selectAllChecked = $state(false);
+	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>('publish');
+	let bulkAccessLevel = $state<AccessLevel>('premium');
 
 	// Form state
 	let formData = $state<CreateResourceRequest>({
@@ -199,7 +221,8 @@
 		is_published: true,
 		is_featured: false,
 		is_pinned: false,
-		tags: []
+		tags: [],
+		access_level: 'premium' // ICT 7: Default to premium access
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -483,7 +506,8 @@
 			is_published: true,
 			is_featured: false,
 			is_pinned: false,
-			tags: []
+			tags: [],
+			access_level: 'premium' // ICT 7: Default to premium
 		};
 		showCreateModal = true;
 	}
@@ -506,9 +530,96 @@
 			is_published: resource.is_published,
 			is_featured: resource.is_featured,
 			is_pinned: resource.is_pinned,
-			tags: resource.tags || []
+			tags: resource.tags || [],
+			access_level: resource.access_level || 'premium' // ICT 7: Include access level
 		};
 		showEditModal = true;
+	}
+
+	// ICT 7: Bulk selection functions
+	function toggleResourceSelection(id: number) {
+		if (selectedResources.has(id)) {
+			selectedResources.delete(id);
+		} else {
+			selectedResources.add(id);
+		}
+		selectedResources = new Set(selectedResources); // Trigger reactivity
+		selectAllChecked = selectedResources.size === filteredResources.length;
+	}
+
+	function toggleSelectAll() {
+		if (selectAllChecked) {
+			selectedResources.clear();
+		} else {
+			filteredResources.forEach(r => selectedResources.add(r.id));
+		}
+		selectedResources = new Set(selectedResources);
+		selectAllChecked = !selectAllChecked;
+	}
+
+	function openBulkModal() {
+		if (selectedResources.size === 0) {
+			error = 'Please select at least one resource';
+			return;
+		}
+		showBulkModal = true;
+	}
+
+	async function executeBulkAction() {
+		if (selectedResources.size === 0) return;
+
+		isSaving = true;
+		error = '';
+
+		const ids = Array.from(selectedResources);
+
+		try {
+			let updates: BulkUpdateFields = {};
+
+			switch (bulkAction) {
+				case 'publish':
+					updates = { is_published: true };
+					break;
+				case 'unpublish':
+					updates = { is_published: false };
+					break;
+				case 'feature':
+					updates = { is_featured: true };
+					break;
+				case 'unfeature':
+					updates = { is_featured: false };
+					break;
+				case 'access':
+					updates = { access_level: bulkAccessLevel };
+					break;
+				case 'delete':
+					const deleteResult = await bulkDeleteResources(ids);
+					if (deleteResult.success) {
+						showSuccess(`Deleted ${deleteResult.deleted_count} resources`);
+						selectedResources.clear();
+						selectedResources = new Set(selectedResources);
+						selectAllChecked = false;
+						await loadResources();
+					}
+					showBulkModal = false;
+					isSaving = false;
+					return;
+			}
+
+			const result = await bulkUpdateResources(ids, updates);
+			if (result.success) {
+				showSuccess(`Updated ${result.updated_count} resources`);
+				selectedResources.clear();
+				selectedResources = new Set(selectedResources);
+				selectAllChecked = false;
+				await loadResources();
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Bulk operation failed';
+		} finally {
+			isSaving = false;
+			showBulkModal = false;
+		}
 	}
 
 	function openReplaceModal(resource: RoomResource) {
@@ -714,6 +825,11 @@
 			<h1>Room Resources</h1>
 			<p class="subtitle">Manage videos, PDFs, documents, and images for each trading room</p>
 			<div class="header-actions">
+				{#if selectedResources.size > 0}
+					<button class="btn-warning" onclick={openBulkModal}>
+						Bulk Actions ({selectedResources.size})
+					</button>
+				{/if}
 				<button class="btn-secondary" onclick={() => loadResources()} disabled={isLoading}>
 					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
@@ -1015,14 +1131,26 @@
 				</div>
 
 				<!-- ICT 7: Section Selection -->
-				<div class="form-group">
-					<label for="section">Dashboard Section</label>
-					<select id="section" bind:value={formData.section}>
-						{#each availableSections as section}
-							<option value={section.id}>{section.name}</option>
-						{/each}
-					</select>
-					<small class="form-hint">Where this resource appears in the trading room dashboard</small>
+				<div class="form-row">
+					<div class="form-group">
+						<label for="section">Dashboard Section</label>
+						<select id="section" bind:value={formData.section}>
+							{#each availableSections as section}
+								<option value={section.id}>{section.name}</option>
+							{/each}
+						</select>
+						<small class="form-hint">Where this resource appears</small>
+					</div>
+					<!-- ICT 7: Access Level -->
+					<div class="form-group">
+						<label for="access-level">Access Level</label>
+						<select id="access-level" bind:value={formData.access_level}>
+							{#each ACCESS_LEVELS as level}
+								<option value={level.id}>{level.name}</option>
+							{/each}
+						</select>
+						<small class="form-hint">Who can access this resource</small>
+					</div>
 				</div>
 
 				<!-- File URL -->
@@ -1214,6 +1342,77 @@
 	</div>
 {/if}
 
+<!-- ICT 7: Bulk Operations Modal -->
+{#if showBulkModal}
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
+	<div
+		class="modal-overlay"
+		onclick={() => showBulkModal = false}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
+		<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
+			<div class="modal-header">
+				<h2>Bulk Operations</h2>
+				<button class="modal-close" onclick={() => showBulkModal = false}>&times;</button>
+			</div>
+			<div class="modal-body">
+				<p class="bulk-info">Apply action to <strong>{selectedResources.size}</strong> selected resources:</p>
+
+				<div class="form-group">
+					<label for="bulk-action">Action</label>
+					<select id="bulk-action" bind:value={bulkAction}>
+						<option value="publish">Publish All</option>
+						<option value="unpublish">Unpublish All</option>
+						<option value="feature">Mark as Featured</option>
+						<option value="unfeature">Remove Featured</option>
+						<option value="access">Set Access Level</option>
+						<option value="delete">Delete All</option>
+					</select>
+				</div>
+
+				{#if bulkAction === 'access'}
+					<div class="form-group">
+						<label for="bulk-access">Access Level</label>
+						<select id="bulk-access" bind:value={bulkAccessLevel}>
+							{#each ACCESS_LEVELS as level}
+								<option value={level.id}>{level.name}</option>
+							{/each}
+						</select>
+					</div>
+				{/if}
+
+				{#if bulkAction === 'delete'}
+					<div class="alert alert-error">
+						<IconAlertCircle size={18} />
+						This will permanently delete {selectedResources.size} resources. This cannot be undone.
+					</div>
+				{/if}
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => showBulkModal = false}>Cancel</button>
+				<button
+					class="btn-primary"
+					class:btn-danger={bulkAction === 'delete'}
+					onclick={executeBulkAction}
+					disabled={isSaving}
+				>
+					{#if isSaving}
+						<span class="spinner-small"></span>
+						Processing...
+					{:else if bulkAction === 'delete'}
+						Delete {selectedResources.size} Resources
+					{:else}
+						Apply to {selectedResources.size} Resources
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
 	.admin-resources {
 		background: linear-gradient(
@@ -1293,6 +1492,46 @@
 	.btn-secondary:hover {
 		background: rgba(230, 184, 0, 0.2);
 		color: #e2e8f0;
+	}
+
+	/* ICT 7: Warning and danger buttons */
+	.btn-warning {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+		color: #fff;
+		border: none;
+		border-radius: 10px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-warning:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+	}
+
+	.btn-danger,
+	.btn-primary.btn-danger {
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+	}
+
+	.btn-danger:hover,
+	.btn-primary.btn-danger:hover {
+		box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+	}
+
+	/* Bulk info */
+	.bulk-info {
+		color: #cbd5e1;
+		margin-bottom: 1.5rem;
+	}
+
+	.bulk-info strong {
+		color: #f1f5f9;
 	}
 
 	/* Unused - keeping for future use */

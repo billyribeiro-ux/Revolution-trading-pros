@@ -181,10 +181,11 @@ async fn list_videos(
     }
 
     // Filter by tags
+    // ICT 7 FIX: Corrected JSONB containment syntax (was '[\"{}\"]]' - double bracket bug)
     if let Some(ref tags) = query.tags {
         let tag_list: Vec<&str> = tags.split(',').collect();
         for tag in tag_list {
-            let filter = format!(" AND v.tags @> '[\"{}\"]]'", tag.trim().replace('\'', "''"));
+            let filter = format!(" AND v.tags @> '[\"{}\"]'", tag.trim().replace('\'', "''"));
             sql.push_str(&filter);
             count_sql.push_str(&filter);
         }
@@ -299,9 +300,150 @@ async fn track_event(
     Ok(Json(json!({"success": true, "status": "ok"})))
 }
 
+/// Get related videos based on tags and content type
+/// ICT 7 ADDITION: Provides related video suggestions
+async fn get_related_videos(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Get the current video's tags and content_type
+    let video: Option<(serde_json::Value, String)> = sqlx::query_as(
+        "SELECT COALESCE(tags, '[]'::jsonb), content_type FROM unified_videos WHERE id = $1 AND deleted_at IS NULL"
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .unwrap_or(None);
+
+    let (tags, content_type) = match video {
+        Some((t, c)) => (t, c),
+        None => return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Video not found"}))))
+    };
+
+    // Find related videos with same content_type or overlapping tags
+    let related: Vec<UnifiedVideoRow> = sqlx::query_as(
+        r#"SELECT * FROM unified_videos
+           WHERE id != $1
+             AND is_published = true
+             AND deleted_at IS NULL
+             AND (content_type = $2 OR tags ?| (SELECT array_agg(value::text) FROM jsonb_array_elements_text($3)))
+           ORDER BY
+             CASE WHEN content_type = $2 THEN 1 ELSE 2 END,
+             video_date DESC
+           LIMIT 6"#
+    )
+    .bind(id)
+    .bind(&content_type)
+    .bind(&tags)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    let responses: Vec<VideoResponse> = related.into_iter().map(video_to_response).collect();
+
+    Ok(Json(json!({
+        "success": true,
+        "data": responses
+    })))
+}
+
+/// Get weekly watchlist videos (current week)
+/// ICT 7 ADDITION: Dedicated weekly videos endpoint
+async fn get_weekly_videos(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Get current week's start and end dates
+    let videos: Vec<UnifiedVideoRow> = sqlx::query_as(
+        r#"SELECT * FROM unified_videos
+           WHERE content_type = 'weekly_watchlist'
+             AND is_published = true
+             AND deleted_at IS NULL
+             AND video_date >= date_trunc('week', CURRENT_DATE)
+             AND video_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
+           ORDER BY video_date DESC, created_at DESC"#
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    // If no videos for current week, get most recent weekly videos
+    let videos = if videos.is_empty() {
+        sqlx::query_as(
+            r#"SELECT * FROM unified_videos
+               WHERE content_type = 'weekly_watchlist'
+                 AND is_published = true
+                 AND deleted_at IS NULL
+               ORDER BY video_date DESC
+               LIMIT 10"#
+        )
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default()
+    } else {
+        videos
+    };
+
+    let responses: Vec<VideoResponse> = videos.into_iter().map(video_to_response).collect();
+
+    Ok(Json(json!({
+        "success": true,
+        "data": responses
+    })))
+}
+
+/// Get user's watch history with progress
+/// ICT 7 ADDITION: Watch history for resume functionality
+async fn get_watch_history(
+    State(state): State<AppState>,
+    Query(params): Query<WatchHistoryQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let user_id = params.user_id.unwrap_or(0);
+    let limit = params.limit.unwrap_or(20).min(50);
+
+    let history: Vec<(i64, i32, i32, bool, chrono::NaiveDateTime, String, Option<String>, Option<i32>)> = sqlx::query_as(
+        r#"SELECT wp.video_id, wp.current_time_seconds, wp.completion_percent, wp.completed,
+                  wp.last_watched_at, v.title, v.thumbnail_url, v.duration
+           FROM video_watch_progress wp
+           JOIN unified_videos v ON v.id = wp.video_id
+           WHERE wp.user_id = $1 AND v.deleted_at IS NULL
+           ORDER BY wp.last_watched_at DESC
+           LIMIT $2"#
+    )
+    .bind(user_id)
+    .bind(limit as i32)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(Json(json!({
+        "success": true,
+        "data": history.iter().map(|(video_id, current_time, completion, completed, last_watched, title, thumb, duration)| {
+            json!({
+                "video_id": video_id,
+                "title": title,
+                "thumbnail_url": thumb,
+                "current_time_seconds": current_time,
+                "duration": duration,
+                "completion_percent": completion,
+                "completed": completed,
+                "last_watched_at": last_watched.format("%Y-%m-%dT%H:%M:%S").to_string()
+            })
+        }).collect::<Vec<_>>()
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct WatchHistoryQuery {
+    pub user_id: Option<i64>,
+    pub limit: Option<i64>,
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_videos))
+        .route("/weekly", get(get_weekly_videos))
+        .route("/history", get(get_watch_history))
         .route("/:id_or_slug", get(get_video))
+        .route("/:id/related", get(get_related_videos))
         .route("/:id/track", post(track_event))
 }

@@ -37,6 +37,7 @@
 		IconReload
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -104,9 +105,12 @@
 	async function duplicateSegment(id: string) {
 		try {
 			await api.post(`/api/admin/crm/segments/${id}/duplicate`);
+			toastStore.success('Segment duplicated successfully');
 			await loadSegments();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to duplicate segment';
+			const message = err instanceof Error ? err.message : 'Failed to duplicate segment';
+			error = message;
+			toastStore.error(message);
 		}
 	}
 
@@ -115,18 +119,24 @@
 
 		try {
 			await api.delete(`/api/admin/crm/segments/${id}`);
+			toastStore.success('Segment deleted successfully');
 			await loadSegments();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete segment';
+			const message = err instanceof Error ? err.message : 'Failed to delete segment';
+			error = message;
+			toastStore.error(message);
 		}
 	}
 
 	async function syncSegment(id: string) {
 		try {
 			await api.post(`/api/admin/crm/segments/${id}/sync`);
+			toastStore.success('Segment synced successfully');
 			await loadSegments();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to sync segment';
+			const message = err instanceof Error ? err.message : 'Failed to sync segment';
+			error = message;
+			toastStore.error(message);
 		}
 	}
 

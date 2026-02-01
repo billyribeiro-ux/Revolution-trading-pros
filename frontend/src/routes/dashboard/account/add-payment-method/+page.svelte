@@ -32,12 +32,12 @@
 	});
 
 	function initializeStripe() {
-		// Get Stripe publishable key from environment or config
-		// For now, we'll need to fetch it from the backend
-		fetch('/api/stripe/config')
+		// Get Stripe publishable key from the payments config API
+		fetch('/api/payments/config')
 			.then((res) => res.json())
 			.then((config) => {
-				stripe = (window as any).Stripe(config.publishableKey);
+				// Support both snake_case and camelCase for compatibility
+				stripe = (window as any).Stripe(config.publishableKey || config.publishable_key);
 				elements = stripe.elements();
 
 				// Create card element

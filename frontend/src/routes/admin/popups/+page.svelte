@@ -101,7 +101,7 @@
 			<h1>Popup Manager</h1>
 			<p class="subtitle">Create and manage custom popups for your site</p>
 			<div class="header-actions">
-				<a href="/admin/popups/create" class="btn-primary">
+				<a href="/admin/popups/new" class="btn-primary">
 					<IconPlus size={18} />
 					<span>Create Popup</span>
 				</a>
@@ -150,7 +150,7 @@
 				<IconSettings size={48} />
 				<h3>No popups found</h3>
 				<p>Create your first popup to get started</p>
-				<a href="/admin/popups/create" class="btn-primary">
+				<a href="/admin/popups/new" class="btn-primary">
 					<IconPlus size={18} />
 					<span>Create Popup</span>
 				</a>

@@ -19,7 +19,9 @@
 			success_message: 'Thank you for your submission!',
 			submit_text: 'Submit',
 			send_email: false,
-			email_to: ''
+			email_to: '',
+			webhook_url: '',
+			redirect_url: ''
 		},
 		styles: {},
 		status: 'draft',
@@ -277,6 +279,35 @@
 					</div>
 				{/if}
 			</div>
+
+			<!-- ICT 7 Fix: Advanced Integration Settings -->
+			<div class="settings-section">
+				<h3>Integrations</h3>
+
+				<div class="form-group">
+					<label for="redirect-url">Redirect URL (After Submission)</label>
+					<input
+						id="redirect-url"
+						type="url"
+						bind:value={formData.settings!.redirect_url}
+						placeholder="https://example.com/thank-you"
+						class="form-input"
+					/>
+					<small class="help-text">Leave empty to show success message on the same page</small>
+				</div>
+
+				<div class="form-group">
+					<label for="webhook-url">Webhook URL</label>
+					<input
+						id="webhook-url"
+						type="url"
+						bind:value={formData.settings!.webhook_url}
+						placeholder="https://example.com/webhook"
+						class="form-input"
+					/>
+					<small class="help-text">Receive form submissions via HTTP POST to an external URL</small>
+				</div>
+			</div>
 		</div>
 
 		<div class="fields-section">
@@ -458,6 +489,12 @@
 		width: 20px;
 		height: 20px;
 		min-width: 20px;
+	}
+
+	.help-text {
+		font-size: 0.75rem;
+		color: #64748b;
+		margin-top: 0.25rem;
 	}
 
 	.fields-section {

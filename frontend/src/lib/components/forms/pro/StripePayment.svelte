@@ -9,11 +9,13 @@
 	 * - 3D Secure (SCA) authentication
 	 * - Subscription payments
 	 *
-	 * @version 2.1.0 - Svelte 5 + @stripe/stripe-js + Responsive Design
+	 * ICT 7 Fix: Added explicit 3D Secure/SCA handling with confirmPaymentIntent
+	 *
+	 * @version 2.2.0 - Svelte 5 + @stripe/stripe-js + 3D Secure + Responsive Design
 	 */
 
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
-	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
+	import type { Stripe, StripeElements, StripeCardElement, PaymentIntentResult } from '@stripe/stripe-js';
 
 	interface Props {
 		publicKey: string;
@@ -28,8 +30,10 @@
 		label?: string;
 		disabled?: boolean;
 		error?: string;
+		clientSecret?: string; // ICT 7: For 3D Secure confirmation
 		onpayment?: (result: StripePaymentResult) => void;
 		onerror?: (error: string) => void;
+		onrequiresaction?: (clientSecret: string) => void; // ICT 7: For 3D Secure callback
 	}
 
 	interface StripePaymentResult {
@@ -39,6 +43,13 @@
 		cardBrand: string;
 		expiryMonth: number;
 		expiryYear: number;
+		status?: string; // ICT 7: Payment status for 3D Secure flow
+	}
+
+	// ICT 7: Export confirmation function type for parent components
+	export interface StripePaymentHandle {
+		confirmPaymentIntent: (clientSecret: string) => Promise<StripePaymentResult | null>;
+		getStripeInstance: () => Stripe | null;
 	}
 
 	let {
@@ -54,8 +65,10 @@
 		label = 'Pay with Card',
 		disabled = false,
 		error = '',
+		clientSecret = '', // ICT 7: For 3D Secure confirmation
 		onpayment,
-		onerror
+		onerror,
+		onrequiresaction // ICT 7: For 3D Secure callback
 	}: Props = $props();
 
 	let stripe: Stripe | null = null;
@@ -234,6 +247,124 @@
 			currency: currency
 		}).format(amount);
 	}
+
+	/**
+	 * ICT 7 Fix: Confirm a PaymentIntent that requires 3D Secure authentication
+	 * Called by parent component when server returns requires_action status
+	 *
+	 * @param secret - The client_secret from the PaymentIntent
+	 * @returns Payment result with status, or null if failed
+	 */
+	export async function confirmPaymentIntent(secret: string): Promise<StripePaymentResult | null> {
+		if (!stripe || !cardElement) {
+			if (onerror) onerror('Payment system not initialized');
+			return null;
+		}
+
+		processing = true;
+		cardError = '';
+
+		try {
+			// Confirm the PaymentIntent with 3D Secure authentication
+			const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+				secret,
+				{
+					payment_method: {
+						card: cardElement,
+						billing_details: {
+							email: customerEmail || undefined
+						}
+					}
+				}
+			);
+
+			if (confirmError) {
+				const errorMsg = confirmError.message || 'Payment confirmation failed';
+				cardError = errorMsg;
+				if (onerror) onerror(errorMsg);
+				return null;
+			}
+
+			if (!paymentIntent) {
+				const errorMsg = 'No payment intent returned';
+				cardError = errorMsg;
+				if (onerror) onerror(errorMsg);
+				return null;
+			}
+
+			// Check payment status
+			if (paymentIntent.status === 'succeeded') {
+				// Get payment method details
+				const paymentMethod = paymentIntent.payment_method;
+				let last4 = '****';
+				let cardBrand = 'unknown';
+				let expiryMonth = 0;
+				let expiryYear = 0;
+
+				// Payment method might be a string ID or expanded object
+				if (typeof paymentMethod === 'object' && paymentMethod?.card) {
+					last4 = paymentMethod.card.last4 || '****';
+					cardBrand = paymentMethod.card.brand || 'unknown';
+					expiryMonth = paymentMethod.card.exp_month || 0;
+					expiryYear = paymentMethod.card.exp_year || 0;
+				}
+
+				const result: StripePaymentResult = {
+					paymentMethodId: typeof paymentMethod === 'string' ? paymentMethod : paymentMethod?.id || '',
+					paymentIntentId: paymentIntent.id,
+					last4,
+					cardBrand,
+					expiryMonth,
+					expiryYear,
+					status: paymentIntent.status
+				};
+
+				if (onpayment) onpayment(result);
+				return result;
+
+			} else if (paymentIntent.status === 'requires_action') {
+				// Still requires action (e.g., redirects)
+				if (onrequiresaction) onrequiresaction(secret);
+				return null;
+
+			} else if (paymentIntent.status === 'requires_payment_method') {
+				const errorMsg = 'Your card was declined. Please try a different payment method.';
+				cardError = errorMsg;
+				if (onerror) onerror(errorMsg);
+				return null;
+
+			} else {
+				const errorMsg = `Payment status: ${paymentIntent.status}`;
+				cardError = errorMsg;
+				if (onerror) onerror(errorMsg);
+				return null;
+			}
+		} catch (err) {
+			cardError = err instanceof Error ? err.message : 'Payment confirmation failed';
+			if (onerror) onerror(cardError);
+			return null;
+		} finally {
+			processing = false;
+		}
+	}
+
+	/**
+	 * ICT 7: Get the Stripe instance for advanced operations
+	 */
+	export function getStripeInstance(): Stripe | null {
+		return stripe;
+	}
+
+	/**
+	 * ICT 7: Handle payment with 3D Secure flow
+	 * If clientSecret is provided, confirms the payment intent
+	 * Otherwise, creates a payment method for checkout
+	 */
+	$effect(() => {
+		if (clientSecret && stripe && cardElement && !processing) {
+			confirmPaymentIntent(clientSecret);
+		}
+	});
 </script>
 
 <!-- Responsive Stripe Payment Component - Mobile-first design -->

@@ -68,3 +68,13 @@ export {
 // Dashboard Components
 // ═══════════════════════════════════════════════════════════════════════════
 export { DashboardSidebar } from './dashboard';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Resource Components (ICT 7)
+// ═══════════════════════════════════════════════════════════════════════════
+export { ResourceCard, ResourceGrid, ResourceViewer } from './resources';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Trading Room Components (ICT 7)
+// ═══════════════════════════════════════════════════════════════════════════
+export { RoomNotification, LiveStreamBadge, RoomChat } from './trading-room';

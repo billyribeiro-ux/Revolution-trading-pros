@@ -12,6 +12,7 @@ pub mod newsletter;
 pub mod order;
 pub mod order_service_types;
 pub mod page_layout;
+pub mod popup;
 pub mod post;
 pub mod product;
 pub mod subscription;
@@ -25,6 +26,7 @@ pub use course::*;
 pub use job::*;
 #[allow(unused_imports)]
 pub use membership::*;
+pub use popup::*;
 pub use order::{
     CheckoutSession, CreateOrder, CreateOrderItem, Order, OrderItem, OrderStatus,
     OrderWithItems as LegacyOrderWithItems,

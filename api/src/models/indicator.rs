@@ -95,15 +95,16 @@ pub struct IndicatorFile {
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // INDICATOR VIDEOS (Bunny Stream)
+// ICT 7 FIX: indicator_id changed from Uuid to i64 to match database schema
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct IndicatorVideo {
     pub id: i32,
-    pub indicator_id: Uuid,
+    pub indicator_id: i64, // ICT 7 FIX: Database uses BIGINT, not UUID
     pub title: String,
     pub description: Option<String>,
-    pub bunny_video_guid: String,
+    pub bunny_video_guid: Option<String>, // Made optional for flexibility
     pub bunny_library_id: Option<String>,
     pub embed_url: Option<String>,
     pub play_url: Option<String>,
@@ -121,13 +122,14 @@ pub struct IndicatorVideo {
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // USER OWNERSHIP
+// ICT 7 FIX: indicator_id changed from Uuid to i64 to match database schema
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct UserIndicatorOwnership {
     pub id: i32,
-    pub user_id: i32,
-    pub indicator_id: Uuid,
+    pub user_id: i64, // ICT 7 FIX: Changed to i64 to match database BIGINT
+    pub indicator_id: i64, // ICT 7 FIX: Database uses BIGINT, not UUID
     pub order_id: Option<i32>,
     pub order_item_id: Option<i32>,
     pub price_paid_cents: Option<i32>,
@@ -147,13 +149,14 @@ pub struct UserIndicatorOwnership {
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // DOWNLOADS (Secure token-based)
+// ICT 7 FIX: indicator_id changed from Uuid to i64 to match database schema
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct IndicatorDownload {
     pub id: i32,
-    pub user_id: Option<i32>,
-    pub indicator_id: Uuid,
+    pub user_id: Option<i64>, // ICT 7 FIX: Changed to i64 to match database BIGINT
+    pub indicator_id: i64, // ICT 7 FIX: Database uses BIGINT, not UUID
     pub file_id: i32,
     pub ownership_id: Option<i32>,
     pub download_token: String,
@@ -282,9 +285,10 @@ pub struct CreateIndicatorVideoRequest {
     pub is_preview: Option<bool>,
 }
 
+/// ICT 7 FIX: user_id changed to i64 to match database schema
 #[derive(Debug, Deserialize)]
 pub struct GrantOwnershipRequest {
-    pub user_id: i32,
+    pub user_id: i64, // ICT 7 FIX: Database uses BIGINT for user_id
     pub source: Option<String>,
     pub is_lifetime_access: Option<bool>,
     pub access_expires_at: Option<DateTime<Utc>>,
@@ -329,9 +333,10 @@ pub struct SecureDownloadUrl {
     pub file_size_bytes: Option<i64>,
 }
 
+/// ICT 7 FIX: indicator_id changed from Uuid to i64 to match database schema
 #[derive(Debug, Serialize)]
 pub struct DownloadAnalytics {
-    pub indicator_id: Uuid,
+    pub indicator_id: i64, // ICT 7 FIX: Database uses BIGINT, not UUID
     pub total_downloads: i64,
     pub unique_users: i64,
     pub by_platform: serde_json::Value,

@@ -19,7 +19,11 @@
 	let submitMessage = $state('');
 	let visibleFields: Set<number> = $state(new Set());
 
-	// Initialize form data with default values
+	// ICT 7 Fix: Honeypot fields for spam protection (hidden from users, visible to bots)
+	let honeypotWebsite = $state('');
+	let honeypotEmail = $state('');
+
+	// Initialize form data with default values and track form view
 	onMount(() => {
 		if (form.fields) {
 			form.fields.forEach((field) => {
@@ -29,7 +33,19 @@
 			});
 			updateVisibleFields();
 		}
+
+		// ICT 7 Fix: Track form view for analytics
+		trackFormView();
 	});
+
+	// Track form view for conversion analytics
+	async function trackFormView() {
+		try {
+			await fetch(`/api/forms/${form.slug}/view`, { method: 'POST' });
+		} catch {
+			// Silent fail - analytics shouldn't break the form
+		}
+	}
 
 	// Evaluate if a field should be displayed based on conditional logic
 	function shouldDisplayField(field: FormField): boolean {
@@ -111,7 +127,14 @@
 		submitMessage = '';
 
 		try {
-			const result = await submitForm(form.slug, formData);
+			// ICT 7 Fix: Include honeypot fields in submission for server-side spam detection
+			const submissionData = {
+				...formData,
+				_hp_website: honeypotWebsite,
+				_hp_email: honeypotEmail
+			};
+
+			const result = await submitForm(form.slug, submissionData);
 
 			if (result.success) {
 				submitSuccess = true;
@@ -205,11 +228,34 @@
 	{/if}
 
 	<form onsubmit={handleSubmit} class="form-fields">
+		<!-- ICT 7 Fix: Honeypot fields for spam protection (hidden from users via CSS) -->
+		<div class="honeypot" aria-hidden="true" tabindex="-1">
+			<label for="hp_website">Website</label>
+			<input
+				type="text"
+				id="hp_website"
+				name="_hp_website"
+				bind:value={honeypotWebsite}
+				autocomplete="off"
+				tabindex="-1"
+			/>
+			<label for="hp_email">Email confirm</label>
+			<input
+				type="email"
+				id="hp_email"
+				name="_hp_email"
+				bind:value={honeypotEmail}
+				autocomplete="off"
+				tabindex="-1"
+			/>
+		</div>
+
 		<div class="fields-container">
 			{#if form.fields}
 				{#each form.fields.sort((a, b) => a.order - b.order) as field (field.id)}
 					{#if field.id && visibleFields.has(field.id)}
-						<div class="field-wrapper" style="width: {field.width}%">
+						<!-- ICT 7 Fix: Use CSS custom property for proper width inheritance -->
+						<div class="field-wrapper" style="--field-width: {field.width ?? 100}%">
 							<FormFieldRenderer
 								{field}
 								value={formData[field.name]}
@@ -231,11 +277,25 @@
 </div>
 
 <style>
+	/* ICT 7 Fix: Honeypot fields - hidden from users but visible to bots */
+	.honeypot {
+		position: absolute;
+		left: -9999px;
+		top: -9999px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		opacity: 0;
+		pointer-events: none;
+		z-index: -1;
+	}
+
 	/* 2026 Mobile-First Form Container */
 	.revolution-form {
 		max-width: 800px;
 		margin: 0 auto;
 		padding: 1rem;
+		position: relative;
 	}
 
 	@media (min-width: 640px) {
@@ -294,6 +354,7 @@
 		}
 	}
 
+	/* ICT 7 Fix: Field width properly respects the --field-width custom property on desktop */
 	.field-wrapper {
 		min-width: 0;
 		flex-shrink: 0;
@@ -302,7 +363,16 @@
 
 	@media (min-width: 640px) {
 		.field-wrapper {
-			width: auto;
+			/* Calculate proper width accounting for gap */
+			width: calc(var(--field-width, 100%) - 0.75rem);
+			flex-basis: calc(var(--field-width, 100%) - 0.75rem);
+			flex-grow: 0;
+		}
+
+		/* Full width fields don't need gap adjustment */
+		.field-wrapper[style*="--field-width: 100%"] {
+			width: 100%;
+			flex-basis: 100%;
 		}
 	}
 
@@ -310,6 +380,7 @@
 	@media (max-width: 639px) {
 		.field-wrapper {
 			width: 100% !important;
+			flex-basis: 100% !important;
 		}
 	}
 
