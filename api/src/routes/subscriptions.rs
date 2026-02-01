@@ -10,7 +10,8 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+// ICT 7 SECURITY FIX: Added AdminUser for admin-only endpoints
+use crate::{middleware::admin::AdminUser, models::User, AppState};
 
 /// Membership plan row
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
@@ -385,11 +386,11 @@ async fn cancel_subscription(
 }
 
 /// Subscription metrics (admin)
+/// ICT 7 SECURITY FIX: Now properly requires AdminUser authentication
 async fn get_metrics(
     State(state): State<AppState>,
-    user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let _ = &user; // TODO: Admin check
 
     let active: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
@@ -432,9 +433,10 @@ async fn get_metrics(
 }
 
 /// GET /subscriptions/export - Export subscriptions as CSV
-/// ICT 7 FIX: Added missing endpoint that frontend expects
+/// ICT 7 SECURITY FIX: Added AdminUser authentication - export is admin-only
 async fn export_subscriptions(
     State(state): State<AppState>,
+    _admin: AdminUser,
     axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
 ) -> Result<axum::response::Response, (StatusCode, Json<serde_json::Value>)> {
     use axum::http::header;

@@ -69,6 +69,7 @@ pub struct CreateIndicatorRequest {
 }
 
 /// List all indicators (public)
+/// ICT 7 SECURITY FIX: Use parameterized queries to prevent SQL injection
 async fn list_indicators(
     State(state): State<AppState>,
     Query(query): Query<IndicatorListQuery>,
@@ -77,33 +78,48 @@ async fn list_indicators(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut conditions = vec!["1=1".to_string()];
+    let is_active = query.is_active.unwrap_or(true);
 
-    if query.is_active.unwrap_or(true) {
-        conditions.push("is_active = true".to_string());
-    }
+    // ICT 7: Validate platform against allowlist
+    let valid_platforms = ["tradingview", "thinkorswim", "metatrader", "ninjatrader", "all"];
+    let platform = query.platform.as_ref().and_then(|p| {
+        if valid_platforms.contains(&p.to_lowercase().as_str()) && p.to_lowercase() != "all" {
+            Some(p.to_lowercase())
+        } else {
+            None
+        }
+    });
 
-    if let Some(ref platform) = query.platform {
-        conditions.push(format!("platform = '{}'", platform));
-    }
+    // ICT 7: Use fully parameterized queries
+    let indicators: Vec<IndicatorRow> = sqlx::query_as(
+        r#"
+        SELECT * FROM indicators
+        WHERE ($1::BOOLEAN IS FALSE OR is_active = true)
+        AND ($2::TEXT IS NULL OR platform = $2)
+        ORDER BY created_at DESC
+        LIMIT $3 OFFSET $4
+        "#,
+    )
+    .bind(is_active)
+    .bind(&platform)
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    let where_clause = conditions.join(" AND ");
-
-    let sql = format!(
-        "SELECT * FROM indicators WHERE {} ORDER BY created_at DESC LIMIT {} OFFSET {}",
-        where_clause, per_page, offset
-    );
-    let count_sql = format!("SELECT COUNT(*) FROM indicators WHERE {}", where_clause);
-
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(&sql)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
-
-    let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let total: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*) FROM indicators
+        WHERE ($1::BOOLEAN IS FALSE OR is_active = true)
+        AND ($2::TEXT IS NULL OR platform = $2)
+        "#,
+    )
+    .bind(is_active)
+    .bind(&platform)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     Ok(Json(json!({
         "data": indicators,

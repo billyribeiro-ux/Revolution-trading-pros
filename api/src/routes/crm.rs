@@ -19,7 +19,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{models::User, AppState};
+// ICT 7 SECURITY FIX: Changed from User to AdminUser for all CRM endpoints
+use crate::{middleware::admin::AdminUser, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES - Contacts
@@ -275,7 +276,7 @@ pub struct AbandonedCart {
 
 async fn list_contacts(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ContactFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = filters.page.unwrap_or(1).max(1);
@@ -336,7 +337,7 @@ async fn list_contacts(
 
 async fn get_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
     let contact: CrmContact = sqlx::query_as(
@@ -366,7 +367,7 @@ async fn get_contact(
 
 async fn create_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateContactInput>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
@@ -406,7 +407,7 @@ async fn create_contact(
 
 async fn update_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateContactInput>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
@@ -449,7 +450,7 @@ async fn update_contact(
 
 async fn delete_contact(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM contacts WHERE id = $1")
@@ -468,7 +469,7 @@ async fn delete_contact(
 
 async fn get_contact_timeline(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Return mock timeline for now - can be expanded with activity tracking
@@ -479,7 +480,7 @@ async fn get_contact_timeline(
 
 async fn recalculate_contact_score(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
     // Simple scoring algorithm - can be expanded
@@ -512,7 +513,7 @@ pub struct ListFilters {
 
 async fn list_contact_lists(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -551,7 +552,7 @@ pub struct CreateListInput {
 
 async fn create_contact_list(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateListInput>,
 ) -> Result<Json<ContactList>, (StatusCode, Json<serde_json::Value>)> {
     let slug = input.title.to_lowercase().replace(' ', "-");
@@ -576,7 +577,7 @@ async fn create_contact_list(
 
 async fn get_contact_list(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let list: ContactList = sqlx::query_as(
@@ -596,7 +597,7 @@ async fn get_contact_list(
 
 async fn delete_contact_list(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_lists WHERE id = $1")
@@ -619,7 +620,7 @@ async fn delete_contact_list(
 
 async fn list_contact_tags(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -656,7 +657,7 @@ pub struct CreateTagInput {
 
 async fn create_contact_tag(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateTagInput>,
 ) -> Result<Json<ContactTag>, (StatusCode, Json<serde_json::Value>)> {
     let slug = input.title.to_lowercase().replace(' ', "-");
@@ -681,7 +682,7 @@ async fn create_contact_tag(
 
 async fn delete_contact_tag(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_tags WHERE id = $1")
@@ -704,7 +705,7 @@ async fn delete_contact_tag(
 
 async fn list_segments(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -743,7 +744,7 @@ pub struct CreateSegmentInput {
 
 async fn create_segment(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateSegmentInput>,
 ) -> Result<Json<ContactSegment>, (StatusCode, Json<serde_json::Value>)> {
     let slug = input.title.to_lowercase().replace(' ', "-");
@@ -770,7 +771,7 @@ async fn create_segment(
 
 async fn get_segment(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<ContactSegment>, (StatusCode, Json<serde_json::Value>)> {
     let segment: ContactSegment = sqlx::query_as(
@@ -787,7 +788,7 @@ async fn get_segment(
 
 async fn delete_segment(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_segments WHERE id = $1")
@@ -806,7 +807,7 @@ async fn delete_segment(
 
 async fn sync_segment(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<ContactSegment>, (StatusCode, Json<serde_json::Value>)> {
     let segment: ContactSegment = sqlx::query_as(
@@ -830,7 +831,7 @@ async fn sync_segment(
 
 async fn list_sequences(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -867,7 +868,7 @@ pub struct CreateSequenceInput {
 
 async fn create_sequence(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateSequenceInput>,
 ) -> Result<Json<EmailSequence>, (StatusCode, Json<serde_json::Value>)> {
     let status = input.status.unwrap_or_else(|| "draft".to_string());
@@ -891,7 +892,7 @@ async fn create_sequence(
 
 async fn get_sequence(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<EmailSequence>, (StatusCode, Json<serde_json::Value>)> {
     let sequence: EmailSequence = sqlx::query_as(
@@ -908,7 +909,7 @@ async fn get_sequence(
 
 async fn delete_sequence(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_sequences WHERE id = $1")
@@ -931,7 +932,7 @@ async fn delete_sequence(
 
 async fn list_campaigns(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -969,7 +970,7 @@ pub struct CreateCampaignInput {
 
 async fn create_campaign(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateCampaignInput>,
 ) -> Result<Json<Campaign>, (StatusCode, Json<serde_json::Value>)> {
     let campaign: Campaign = sqlx::query_as(
@@ -991,7 +992,7 @@ async fn create_campaign(
 
 async fn get_campaign(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Campaign>, (StatusCode, Json<serde_json::Value>)> {
     let campaign: Campaign = sqlx::query_as(
@@ -1008,7 +1009,7 @@ async fn get_campaign(
 
 async fn delete_campaign(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_campaigns WHERE id = $1")
@@ -1027,7 +1028,7 @@ async fn delete_campaign(
 
 async fn list_recurring_campaigns(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -1061,7 +1062,7 @@ async fn list_recurring_campaigns(
 
 async fn list_automations(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -1098,7 +1099,7 @@ pub struct CreateAutomationInput {
 
 async fn create_automation(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateAutomationInput>,
 ) -> Result<Json<AutomationFunnel>, (StatusCode, Json<serde_json::Value>)> {
     let automation: AutomationFunnel = sqlx::query_as(
@@ -1120,7 +1121,7 @@ async fn create_automation(
 
 async fn get_automation(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<AutomationFunnel>, (StatusCode, Json<serde_json::Value>)> {
     let automation: AutomationFunnel = sqlx::query_as(
@@ -1137,7 +1138,7 @@ async fn get_automation(
 
 async fn delete_automation(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_automations WHERE id = $1")
@@ -1160,7 +1161,7 @@ async fn delete_automation(
 
 async fn list_smart_links(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -1197,7 +1198,7 @@ pub struct CreateSmartLinkInput {
 
 async fn create_smart_link(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateSmartLinkInput>,
 ) -> Result<Json<SmartLink>, (StatusCode, Json<serde_json::Value>)> {
     let short = uuid::Uuid::new_v4().to_string()[..8].to_string();
@@ -1222,7 +1223,7 @@ async fn create_smart_link(
 
 async fn delete_smart_link(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_smart_links WHERE id = $1")
@@ -1245,7 +1246,7 @@ async fn delete_smart_link(
 
 async fn list_templates(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -1282,7 +1283,7 @@ pub struct CreateTemplateInput {
 
 async fn create_template(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateTemplateInput>,
 ) -> Result<Json<EmailTemplate>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplate = sqlx::query_as(
@@ -1305,7 +1306,7 @@ async fn create_template(
 
 async fn get_template(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<EmailTemplate>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplate = sqlx::query_as(
@@ -1322,7 +1323,7 @@ async fn get_template(
 
 async fn delete_template(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_templates WHERE id = $1")
@@ -1345,7 +1346,7 @@ async fn delete_template(
 
 async fn list_webhooks(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -1382,7 +1383,7 @@ pub struct CreateWebhookInput {
 
 async fn create_webhook(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateWebhookInput>,
 ) -> Result<Json<Webhook>, (StatusCode, Json<serde_json::Value>)> {
     let webhook: Webhook = sqlx::query_as(
@@ -1404,7 +1405,7 @@ async fn create_webhook(
 
 async fn delete_webhook(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_webhooks WHERE id = $1")
@@ -1423,7 +1424,7 @@ async fn delete_webhook(
 
 async fn test_webhook(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Mock test - actual implementation would send test payload
@@ -1438,7 +1439,7 @@ async fn test_webhook(
 
 async fn list_companies(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50).min(100);
@@ -1476,7 +1477,7 @@ pub struct CreateCompanyInput {
 
 async fn create_company(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<CreateCompanyInput>,
 ) -> Result<Json<CrmCompany>, (StatusCode, Json<serde_json::Value>)> {
     let company: CrmCompany = sqlx::query_as(
@@ -1499,7 +1500,7 @@ async fn create_company(
 
 async fn get_company(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<CrmCompany>, (StatusCode, Json<serde_json::Value>)> {
     let company: CrmCompany = sqlx::query_as(
@@ -1516,7 +1517,7 @@ async fn get_company(
 
 async fn delete_company(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM crm_companies WHERE id = $1")
@@ -1546,7 +1547,7 @@ pub struct ImportInput {
 
 async fn import_contacts(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<ImportInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Mock import - actual implementation would process CSV/JSON
@@ -1560,7 +1561,7 @@ async fn import_contacts(
 
 async fn export_contacts(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Mock export - actual implementation would generate CSV/JSON
     Ok(Json(json!({
@@ -1572,7 +1573,7 @@ async fn export_contacts(
 
 async fn get_import_history(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
         "data": [],
@@ -1586,7 +1587,7 @@ async fn get_import_history(
 
 async fn get_crm_settings(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
         "email_settings": {
@@ -1612,7 +1613,7 @@ pub struct UpdateSettingsInput {
 
 async fn update_crm_settings(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Json(input): Json<UpdateSettingsInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
@@ -1624,7 +1625,7 @@ async fn update_crm_settings(
 
 async fn list_managers(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
         "data": [],
@@ -1634,7 +1635,7 @@ async fn list_managers(
 
 async fn get_system_logs(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let per_page = filters.per_page.unwrap_or(50);
@@ -1651,7 +1652,7 @@ async fn get_system_logs(
 /// GET /admin/crm/stats - CRM dashboard statistics
 async fn get_crm_stats(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
         "total_contacts": 0,
@@ -1671,7 +1672,7 @@ async fn get_crm_stats(
 /// GET /admin/crm/deals - List all deals
 async fn list_deals(
     State(_state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
         "deals": [],
