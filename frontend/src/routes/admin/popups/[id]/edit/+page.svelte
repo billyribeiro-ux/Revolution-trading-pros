@@ -697,7 +697,7 @@
 								id="popup-start-date"
 								label="Start Date"
 								type="datetime-local"
-								bind:value={formData.start_date}
+								bind:value={(formData as any).start_date}
 							/>
 							<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
 						</div>
@@ -707,24 +707,24 @@
 								id="popup-end-date"
 								label="End Date"
 								type="datetime-local"
-								bind:value={formData.end_date}
+								bind:value={(formData as any).end_date}
 							/>
 							<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
 						</div>
 					</div>
 
-					{#if formData.start_date || formData.end_date}
+					{#if (formData as any).start_date || (formData as any).end_date}
 						<div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
 							<h4 class="text-sm font-semibold text-blue-800 mb-1">Schedule Preview</h4>
 							<p class="text-sm text-blue-700">
-								{#if formData.start_date && formData.end_date}
-									Active from <strong>{new Date(formData.start_date).toLocaleString()}</strong>
-									to <strong>{new Date(formData.end_date).toLocaleString()}</strong>
-								{:else if formData.start_date}
-									Starts <strong>{new Date(formData.start_date).toLocaleString()}</strong>
+								{#if (formData as any).start_date && (formData as any).end_date}
+									Active from <strong>{new Date((formData as any).start_date).toLocaleString()}</strong>
+									to <strong>{new Date((formData as any).end_date).toLocaleString()}</strong>
+								{:else if (formData as any).start_date}
+									Starts <strong>{new Date((formData as any).start_date).toLocaleString()}</strong>
 									(no end date)
-								{:else if formData.end_date}
-									Ends <strong>{new Date(formData.end_date).toLocaleString()}</strong>
+								{:else if (formData as any).end_date}
+									Ends <strong>{new Date((formData as any).end_date).toLocaleString()}</strong>
 									(already started)
 								{/if}
 							</p>
@@ -739,17 +739,17 @@
 						Create variants of this popup to test different content, designs, or CTAs.
 					</p>
 
-					{#if formData.ab_test_id}
+					{#if formData.abTestId}
 						<div class="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
 							<div class="flex items-center gap-2 mb-2">
 								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
 									A/B Test Active
 								</span>
-								<span class="text-sm text-green-700">Test ID: {formData.ab_test_id}</span>
+								<span class="text-sm text-green-700">Test ID: {formData.abTestId}</span>
 							</div>
-							{#if formData.variant_name}
+							{#if formData.variantTitle}
 								<p class="text-sm text-green-800">
-									This is variant: <strong>{formData.variant_name}</strong>
+									This is variant: <strong>{formData.variantTitle}</strong>
 								</p>
 							{/if}
 						</div>

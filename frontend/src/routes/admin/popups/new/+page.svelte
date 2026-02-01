@@ -1124,7 +1124,7 @@
 							id="popup-start-date"
 							label="Start Date"
 							type="datetime-local"
-							bind:value={formData.start_date}
+							bind:value={(formData as any).start_date}
 						/>
 						<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
 					</div>
@@ -1134,7 +1134,7 @@
 							id="popup-end-date"
 							label="End Date"
 							type="datetime-local"
-							bind:value={formData.end_date}
+							bind:value={(formData as any).end_date}
 						/>
 						<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
 					</div>
@@ -1183,11 +1183,11 @@
 					<div class="flex items-center gap-2">
 						<input
 							type="checkbox"
-							id="close_on_escape" name="close_on_escape"
-							bind:checked={formData.close_on_escape}
+							id="closeOnEscape" name="closeOnEscape"
+							bind:checked={formData.closeOnEscape}
 							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 						/>
-						<label for="close_on_escape" class="text-sm text-gray-700">
+						<label for="closeOnEscape" class="text-sm text-gray-700">
 							Close popup when pressing Escape key
 						</label>
 					</div>

@@ -25,6 +25,17 @@
 	// Get user ID for progress tracking
 	const userId = $derived(authStore.user?.id);
 
+	// Extract Bunny.net video details from URL
+	const extractBunnyDetails = (url: string) => {
+		const match = url.match(/\/embed\/(\d+)\/([a-f0-9-]+)/);
+		if (match) {
+			return { libraryId: match[1], videoGuid: match[2] };
+		}
+		return { libraryId: '', videoGuid: '' };
+	};
+
+	const bunnyDetails = $derived(extractBunnyDetails(video.videoUrl));
+
 	// Related videos (could also be fetched from server in the future)
 	const relatedVideos = [
 		{
@@ -102,8 +113,9 @@
 				<div class="video-container current">
 					<!-- ICT 7 FIX: Use BunnyVideoPlayer with progress tracking -->
 					<BunnyVideoPlayer
-						videoId={video.id}
-						videoUrl={video.videoUrl}
+						videoId={typeof video.id === 'string' ? parseInt(video.id, 10) : video.id}
+						videoGuid={bunnyDetails.videoGuid}
+						libraryId={bunnyDetails.libraryId}
 						thumbnailUrl={video.thumbnailUrl}
 						title={video.title}
 						{userId}
