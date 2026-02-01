@@ -5,6 +5,7 @@
 
 import { browser } from '$app/environment';
 import { track, Events } from '$lib/observability';
+import { logger } from '$lib/utils/logger';
 import { performanceMonitor } from './performance';
 
 // ============================================================================
@@ -98,11 +99,9 @@ class AnalyticsTracker {
 	private filtersAppliedCount = 0;
 	private modalOpensCount = 0;
 	private featureUsage: FeatureUsage[] = [];
-	private isDebugMode: boolean;
 
 	private constructor() {
 		this.sessionStartTime = Date.now();
-		this.isDebugMode = import.meta.env.DEV;
 	}
 
 	static getInstance(): AnalyticsTracker {
@@ -136,9 +135,7 @@ class AnalyticsTracker {
 
 		track(interaction.action, payload);
 
-		if (this.isDebugMode) {
-			console.debug('[AnalyticsTracker] Interaction:', interaction);
-		}
+		logger.debug('[AnalyticsTracker] Interaction:', interaction);
 	}
 
 	/**
@@ -185,9 +182,7 @@ class AnalyticsTracker {
 			...metadata
 		});
 
-		if (this.isDebugMode) {
-			console.debug('[AnalyticsTracker] Feature usage:', usage);
-		}
+		logger.debug('[AnalyticsTracker] Feature usage:', usage);
 	}
 
 	// =========================================================================

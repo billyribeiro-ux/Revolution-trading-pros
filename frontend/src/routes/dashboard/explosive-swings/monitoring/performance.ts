@@ -4,6 +4,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 export interface PerformanceMetrics {
 	// Page load metrics
@@ -119,7 +120,9 @@ class PerformanceMonitor {
 			paintObserver.observe({ entryTypes: ['paint'] });
 			this.observers.push(paintObserver);
 		} catch (error) {
-			console.debug('[PerformanceMonitor] Some observers not supported:', error);
+			// Graceful degradation: Log observer initialization failures
+			// This is expected in older browsers or environments without PerformanceObserver support
+			logger.debug('[PerformanceMonitor] Some observers not supported:', error);
 		}
 	}
 

@@ -29,6 +29,16 @@ export interface UseStatsOptions {
 	refreshInterval?: number;
 	/** Fallback stats when API fails */
 	fallbackStats?: QuickStats;
+	/** Closed trades for calculating avg win/loss percentages */
+	closedTrades?: ClosedTradeData[];
+}
+
+/** Minimal trade data needed for performance calculations */
+export interface ClosedTradeData {
+	/** Percentage gain/loss */
+	pnlPercent: number;
+	/** Whether the trade was a winner */
+	isWinner: boolean;
 }
 
 export interface UseStatsReturn {
@@ -72,6 +82,41 @@ const defaultWeeklyPerformance: WeeklyPerformance = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Calculate performance metrics from closed trades data
+ */
+function calculatePerformanceMetrics(closedTrades: ClosedTradeData[]): {
+	avgWinPercent: number;
+	avgLossPercent: number;
+	riskRewardRatio: number;
+} {
+	if (closedTrades.length === 0) {
+		return { avgWinPercent: 0, avgLossPercent: 0, riskRewardRatio: 0 };
+	}
+
+	const winners = closedTrades.filter((t) => t.isWinner);
+	const losers = closedTrades.filter((t) => !t.isWinner);
+
+	const avgWinPercent =
+		winners.length > 0
+			? winners.reduce((sum, t) => sum + t.pnlPercent, 0) / winners.length
+			: 0;
+
+	const avgLossPercent =
+		losers.length > 0
+			? Math.abs(losers.reduce((sum, t) => sum + t.pnlPercent, 0) / losers.length)
+			: 0;
+
+	const riskRewardRatio =
+		avgLossPercent > 0 ? Number((avgWinPercent / avgLossPercent).toFixed(2)) : 0;
+
+	return { avgWinPercent, avgLossPercent, riskRewardRatio };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // HOOK IMPLEMENTATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -108,20 +153,25 @@ export function useStats(options: UseStatsOptions = {}): UseStatsReturn {
 	const weeklyProfit = $derived(stats?.weeklyProfit ?? '$0');
 	const totalTradesThisWeek = $derived(activeTrades + closedThisWeek);
 
-	// Weekly performance derived from stats
+	// Weekly performance derived from stats and closed trades
 	const weeklyPerformance = $derived.by<WeeklyPerformance | null>(() => {
 		if (!stats) return defaultWeeklyPerformance;
 
 		const totalTrades = stats.activeTrades + stats.closedThisWeek;
 		const winningTrades = Math.round((stats.winRate / 100) * totalTrades);
 
+		// Calculate avg win/loss percentages from actual closed trades data
+		const { avgWinPercent, avgLossPercent, riskRewardRatio } = calculatePerformanceMetrics(
+			options.closedTrades ?? []
+		);
+
 		return {
 			winRate: stats.winRate,
 			totalTrades,
 			winningTrades,
-			avgWinPercent: 5.7, // TODO: Calculate from actual data
-			avgLossPercent: 2.1, // TODO: Calculate from actual data
-			riskRewardRatio: 2.7 // TODO: Calculate from actual data
+			avgWinPercent,
+			avgLossPercent,
+			riskRewardRatio
 		};
 	});
 

@@ -15,8 +15,19 @@
  */
 
 import { getEnterpriseClient } from '$lib/api/enterprise/client';
+import { getPriceFeed } from '$lib/services/price-feed';
 import { ROOM_SLUG, TRADES_PER_PAGE } from '../constants';
 import type { ApiTrade, ActivePosition, ClosedTrade } from '../types';
+
+/** Price data from the price feed service */
+interface PriceData {
+	ticker: string;
+	price: number;
+	change: number;
+	changePercent: number;
+	timestamp: number;
+	marketOpen: boolean;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -29,6 +40,8 @@ export interface UseTradesOptions {
 	refreshInterval?: number;
 	/** Maximum closed trades to display (default: 10) */
 	maxClosedTrades?: number;
+	/** Enable real-time price updates for active positions (default: true) */
+	enableRealTimePrices?: boolean;
 }
 
 export interface UseTradesReturn {
@@ -80,6 +93,66 @@ export interface NewTradeData {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// EXTENDED TYPES FOR INTERNAL USE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Extended ApiTrade with optional fields that may come from backend */
+interface ApiTradeExtended extends ApiTrade {
+	stop_loss?: number;
+	target1?: number;
+	target2?: number;
+	target3?: number;
+	was_updated?: boolean;
+	updated_at?: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Builds an array of position targets from trade data.
+ * Calculates percentage from entry for each target.
+ */
+function buildTargetsArray(
+	trade: ApiTradeExtended,
+	entryPrice: number
+): { price: number; percentFromEntry: number; label: string }[] {
+	const targets: { price: number; percentFromEntry: number; label: string }[] = [];
+
+	if (entryPrice <= 0) return targets;
+
+	if (trade.target1 && trade.target1 > 0) {
+		const percent = ((trade.target1 - entryPrice) / entryPrice) * 100;
+		targets.push({
+			price: trade.target1,
+			percentFromEntry: Math.round(percent * 100) / 100,
+			label: 'Target 1'
+		});
+	}
+
+	if (trade.target2 && trade.target2 > 0) {
+		const percent = ((trade.target2 - entryPrice) / entryPrice) * 100;
+		targets.push({
+			price: trade.target2,
+			percentFromEntry: Math.round(percent * 100) / 100,
+			label: 'Target 2'
+		});
+	}
+
+	if (trade.target3 && trade.target3 > 0) {
+		const percent = ((trade.target3 - entryPrice) / entryPrice) * 100;
+		targets.push({
+			price: trade.target3,
+			percentFromEntry: Math.round(percent * 100) / 100,
+			label: 'Target 3'
+		});
+	}
+
+	return targets;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // HOOK IMPLEMENTATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -88,7 +161,16 @@ export interface NewTradeData {
  * Uses Svelte 5 runes for reactive state management.
  */
 export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
-	const { autoRefresh = false, refreshInterval = 60000, maxClosedTrades = 10 } = options;
+	const {
+		autoRefresh = false,
+		refreshInterval = 60000,
+		maxClosedTrades = 10,
+		enableRealTimePrices = true
+	} = options;
+
+	// Price feed service for real-time price updates
+	const priceFeed = enableRealTimePrices ? getPriceFeed() : null;
+	let realTimePrices = $state<Map<string, PriceData>>(new Map());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE
@@ -109,23 +191,52 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 	const openCount = $derived(openTrades.length);
 	const closedCount = $derived(closedTrades.length);
 
-	// Transform open trades to ActivePosition format
+	// Transform open trades to ActivePosition format with real-time prices
 	const activePositions = $derived<ActivePosition[]>(
-		openTrades.map((t) => ({
-			id: String(t.id),
-			ticker: t.ticker,
-			status: 'ACTIVE' as const,
-			entryPrice: t.entry_price,
-			currentPrice: t.entry_price * 1.01, // TODO: integrate real-time prices
-			unrealizedPercent: 1.0,
-			targets: [],
-			stopLoss: { price: t.entry_price * 0.95, percentFromEntry: -5 },
-			progressToTarget1: 0,
-			triggeredAt: new Date(t.entry_date),
-			notes: t.notes,
-			wasUpdated: (t as any).was_updated ?? false,
-			updatedAt: (t as any).updated_at ? new Date((t as any).updated_at) : undefined
-		}))
+		openTrades.map((t) => {
+			const tickerUpper = t.ticker.toUpperCase();
+			const priceData = realTimePrices.get(tickerUpper);
+
+			// Use real-time price if available, otherwise estimate from entry
+			const currentPrice = priceData?.price ?? t.entry_price;
+			const entryPrice = t.entry_price;
+
+			// Calculate unrealized P&L percentage
+			const unrealizedPercent =
+				entryPrice > 0 ? ((currentPrice - entryPrice) / entryPrice) * 100 : 0;
+
+			// Calculate stop loss (use trade data if available, else default -5%)
+			const stopPrice = (t as ApiTradeExtended).stop_loss ?? entryPrice * 0.95;
+			const stopPercent = entryPrice > 0 ? ((stopPrice - entryPrice) / entryPrice) * 100 : -5;
+
+			// Calculate progress to first target
+			const target1 = (t as ApiTradeExtended).target1 ?? entryPrice * 1.05;
+			const progressToTarget1 =
+				target1 > entryPrice
+					? Math.min(100, Math.max(0, ((currentPrice - entryPrice) / (target1 - entryPrice)) * 100))
+					: 0;
+
+			return {
+				id: String(t.id),
+				ticker: t.ticker,
+				status: 'ACTIVE' as const,
+				entryPrice,
+				currentPrice,
+				unrealizedPercent: Math.round(unrealizedPercent * 100) / 100,
+				targets: buildTargetsArray(t as ApiTradeExtended, entryPrice),
+				stopLoss: {
+					price: stopPrice,
+					percentFromEntry: Math.round(stopPercent * 100) / 100
+				},
+				progressToTarget1: Math.round(progressToTarget1),
+				triggeredAt: new Date(t.entry_date),
+				notes: t.notes,
+				wasUpdated: (t as ApiTradeExtended).was_updated ?? false,
+				updatedAt: (t as ApiTradeExtended).updated_at
+					? new Date((t as ApiTradeExtended).updated_at!)
+					: undefined
+			};
+		})
 	);
 
 	// Transform closed trades to ClosedTrade format
@@ -341,6 +452,26 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 	// Initial fetch effect
 	$effect(() => {
 		fetchTrades();
+	});
+
+	// Real-time price subscription effect
+	$effect(() => {
+		if (!priceFeed || openTrades.length === 0) return;
+
+		// Subscribe to price updates for all open position tickers
+		const tickers = openTrades.map((t) => t.ticker.toUpperCase());
+		priceFeed.subscribe(tickers);
+
+		// Register callback for price updates
+		const unsubscribe = priceFeed.onUpdate((prices) => {
+			realTimePrices = prices;
+		});
+
+		// Cleanup: unsubscribe when positions change or component unmounts
+		return () => {
+			unsubscribe();
+			priceFeed.unsubscribe(tickers);
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
