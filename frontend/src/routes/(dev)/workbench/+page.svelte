@@ -44,7 +44,6 @@
 	let padding = $state(16);
 
 	// Panel state
-	let showSource = $state(false);
 	let rightPanelTab = $state<'props' | 'source'>('props');
 
 	// ═══════════════════════════════════════════════════════════════════════════

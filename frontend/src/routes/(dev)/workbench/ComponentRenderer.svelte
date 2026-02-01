@@ -8,7 +8,6 @@
 	 * @version 1.0.0 - January 2026
 	 * @standards Apple Principal Engineer ICT Level 7+
 	 */
-	import { onMount } from 'svelte';
 	import type { ComponentInfo } from './+page.server';
 	import type { Component } from 'svelte';
 
@@ -26,7 +25,7 @@
 	let {
 		component,
 		propValues,
-		snippetContent,
+		snippetContent: _snippetContent,
 		viewport,
 		background,
 		showBorder,
@@ -97,7 +96,7 @@
 	// ERROR BOUNDARY
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function handleRenderError(error: Error) {
+	function _handleRenderError(error: Error) {
 		renderError = error.message;
 		console.error('[Workbench] Render error:', error);
 	}
