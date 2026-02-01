@@ -13,9 +13,8 @@
 
 import { error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async () => {
+export const load = async () => {
 	// Block access in production - return 404 as if route doesn't exist
 	if (!dev) {
 		error(404, 'Not found');
