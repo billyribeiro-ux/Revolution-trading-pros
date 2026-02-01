@@ -11,8 +11,7 @@
  * Falls back to simulated prices when external API unavailable.
  */
 
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import { json, type RequestEvent } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -179,7 +178,7 @@ async function fetchExternalPrices(tickers: string[]): Promise<PriceData[]> {
 // REQUEST HANDLER
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET = async ({ url }: RequestEvent): Promise<Response> => {
 	const tickersParam = url.searchParams.get('tickers');
 
 	if (!tickersParam) {
@@ -188,7 +187,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	const tickers = tickersParam
 		.split(',')
-		.map((t) => t.trim().toUpperCase())
+		.map((t: string) => t.trim().toUpperCase())
 		.filter(Boolean)
 		.slice(0, 50); // Limit to 50 tickers per request
 
