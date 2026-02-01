@@ -58,6 +58,7 @@ pub mod member_courses;
 pub mod member_indicators;
 pub mod migrate;
 pub mod organization;
+pub mod admin_popups;
 pub mod popups;
 pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics API
 pub mod room_content;
@@ -120,6 +121,7 @@ pub fn api_router() -> Router<AppState> {
         // Real-time updates - WebSocket (January 2026)
         .nest("/ws", websocket::router())
         .nest("/popups", popups::router())
+        .nest("/admin/popups", admin_popups::router())
         .nest("/trading-rooms", trading_rooms::router())
         .nest("/admin/trading-rooms", trading_rooms::admin_router())
         .nest("/admin/courses", admin_courses::router())

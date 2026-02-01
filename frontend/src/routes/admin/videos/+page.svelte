@@ -52,9 +52,17 @@
 		bulkUploadApi,
 		analyticsApi,
 		videoOpsApi,
+		bulkOpsApi,
+		embedApi,
+		transcodingApi,
 		type AnalyticsDashboard,
 		type BatchStatus
 	} from '$lib/api/video-advanced';
+	import IconCode from '@tabler/icons-svelte/icons/code';
+	import IconCheckbox from '@tabler/icons-svelte/icons/checkbox';
+	import IconSquare from '@tabler/icons-svelte/icons/square';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconStarOff from '@tabler/icons-svelte/icons/star-off';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -165,6 +173,15 @@
 	let analyticsData = $state<AnalyticsDashboard | null>(null);
 	let isLoadingAnalytics = $state(false);
 	let analyticsPeriod = $state<'7d' | '30d' | '90d'>('30d');
+
+	// ICT 7 ADDITION: Bulk Operations State
+	let selectedVideoIds = $state<Set<number>>(new Set());
+	let isBulkActionLoading = $state(false);
+	let showBulkTagsModal = $state(false);
+	let bulkTagsToAdd = $state<string[]>([]);
+	let bulkTagsToRemove = $state<string[]>([]);
+	let showEmbedModal = $state(false);
+	let embedCodeData = $state<{ video_id: number; title: string; embed_html: string } | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// CATEGORY SELECTION
@@ -629,6 +646,203 @@
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// ICT 7 ADDITION: BULK OPERATIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function toggleVideoSelection(videoId: number) {
+		const newSet = new Set(selectedVideoIds);
+		if (newSet.has(videoId)) {
+			newSet.delete(videoId);
+		} else {
+			newSet.add(videoId);
+		}
+		selectedVideoIds = newSet;
+	}
+
+	function toggleSelectAll() {
+		if (selectedVideoIds.size === filteredVideos.length) {
+			selectedVideoIds = new Set();
+		} else {
+			selectedVideoIds = new Set(filteredVideos.map((v) => v.id));
+		}
+	}
+
+	function clearSelection() {
+		selectedVideoIds = new Set();
+	}
+
+	async function bulkPublish(publish: boolean) {
+		if (selectedVideoIds.size === 0) return;
+		isBulkActionLoading = true;
+		error = '';
+
+		try {
+			const response = await bulkOpsApi.bulkPublish(Array.from(selectedVideoIds), publish);
+			if (response.success) {
+				showSuccess(response.message || `${selectedVideoIds.size} videos ${publish ? 'published' : 'unpublished'}`);
+				clearSelection();
+				await loadVideos();
+			} else {
+				error = response.error || 'Failed to update videos';
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Bulk operation failed';
+		} finally {
+			isBulkActionLoading = false;
+		}
+	}
+
+	async function bulkFeature(feature: boolean) {
+		if (selectedVideoIds.size === 0) return;
+		isBulkActionLoading = true;
+		error = '';
+
+		try {
+			const response = await bulkOpsApi.bulkFeature(Array.from(selectedVideoIds), feature);
+			if (response.success) {
+				showSuccess(response.message || `${selectedVideoIds.size} videos ${feature ? 'featured' : 'unfeatured'}`);
+				clearSelection();
+				await loadVideos();
+			} else {
+				error = response.error || 'Failed to update videos';
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Bulk operation failed';
+		} finally {
+			isBulkActionLoading = false;
+		}
+	}
+
+	async function bulkDelete() {
+		if (selectedVideoIds.size === 0) return;
+		if (!confirm(`Are you sure you want to delete ${selectedVideoIds.size} video(s)? This cannot be undone.`)) return;
+
+		isBulkActionLoading = true;
+		error = '';
+
+		try {
+			const response = await bulkOpsApi.bulkDelete(Array.from(selectedVideoIds), false);
+			if (response.success) {
+				showSuccess(response.message || `${selectedVideoIds.size} videos deleted`);
+				clearSelection();
+				await loadVideos();
+			} else {
+				error = response.error || 'Failed to delete videos';
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Bulk delete failed';
+		} finally {
+			isBulkActionLoading = false;
+		}
+	}
+
+	async function bulkUpdateTags() {
+		if (selectedVideoIds.size === 0) return;
+		if (bulkTagsToAdd.length === 0 && bulkTagsToRemove.length === 0) {
+			error = 'Please select tags to add or remove';
+			return;
+		}
+
+		isBulkActionLoading = true;
+		error = '';
+
+		try {
+			const response = await bulkOpsApi.bulkUpdateTags({
+				video_ids: Array.from(selectedVideoIds),
+				add_tags: bulkTagsToAdd.length > 0 ? bulkTagsToAdd : undefined,
+				remove_tags: bulkTagsToRemove.length > 0 ? bulkTagsToRemove : undefined
+			});
+
+			if (response.success) {
+				showSuccess(response.message || `Tags updated for ${response.updated_count} videos`);
+				closeBulkTagsModal();
+				clearSelection();
+				await loadVideos();
+			} else {
+				error = response.error || 'Failed to update tags';
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Bulk tag update failed';
+		} finally {
+			isBulkActionLoading = false;
+		}
+	}
+
+	function openBulkTagsModal() {
+		bulkTagsToAdd = [];
+		bulkTagsToRemove = [];
+		showBulkTagsModal = true;
+	}
+
+	function closeBulkTagsModal() {
+		showBulkTagsModal = false;
+		bulkTagsToAdd = [];
+		bulkTagsToRemove = [];
+	}
+
+	function toggleBulkTagToAdd(tagId: string) {
+		if (bulkTagsToAdd.includes(tagId)) {
+			bulkTagsToAdd = bulkTagsToAdd.filter((t) => t !== tagId);
+		} else {
+			bulkTagsToAdd = [...bulkTagsToAdd, tagId];
+			// Remove from remove list if present
+			bulkTagsToRemove = bulkTagsToRemove.filter((t) => t !== tagId);
+		}
+	}
+
+	function toggleBulkTagToRemove(tagId: string) {
+		if (bulkTagsToRemove.includes(tagId)) {
+			bulkTagsToRemove = bulkTagsToRemove.filter((t) => t !== tagId);
+		} else {
+			bulkTagsToRemove = [...bulkTagsToRemove, tagId];
+			// Remove from add list if present
+			bulkTagsToAdd = bulkTagsToAdd.filter((t) => t !== tagId);
+		}
+	}
+
+	async function showEmbedCode(video: Video) {
+		try {
+			const response = await embedApi.getEmbedCode(video.id, { responsive: true });
+			if (response.success && response.data) {
+				embedCodeData = {
+					video_id: video.id,
+					title: response.data.title,
+					embed_html: response.data.embed_html
+				};
+				showEmbedModal = true;
+			} else {
+				error = response.error || 'Failed to get embed code';
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to get embed code';
+		}
+	}
+
+	function copyEmbedCode() {
+		if (embedCodeData?.embed_html) {
+			navigator.clipboard.writeText(embedCodeData.embed_html);
+			showSuccess('Embed code copied to clipboard');
+		}
+	}
+
+	// Clear selection when videos change
+	$effect(() => {
+		if (videos.length) {
+			// Keep only valid selections
+			const validIds = new Set(videos.map((v) => v.id));
+			const newSelection = new Set<number>();
+			for (const id of selectedVideoIds) {
+				if (validIds.has(id)) {
+					newSelection.add(id);
+				}
+			}
+			if (newSelection.size !== selectedVideoIds.size) {
+				selectedVideoIds = newSelection;
+			}
+		}
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -1025,10 +1239,96 @@
 				</button>
 			</div>
 		{:else}
+			<!-- ICT 7 ADDITION: Bulk Action Bar -->
+			{#if selectedVideoIds.size > 0}
+				<div class="bulk-action-bar">
+					<div class="bulk-selection-info">
+						<button class="btn-icon" onclick={clearSelection} title="Clear selection">
+							<IconX size={16} />
+						</button>
+						<span>{selectedVideoIds.size} video(s) selected</span>
+					</div>
+					<div class="bulk-actions">
+						<button
+							class="btn-bulk"
+							onclick={() => bulkPublish(true)}
+							disabled={isBulkActionLoading}
+							title="Publish selected"
+						>
+							<IconCheck size={16} />
+							Publish
+						</button>
+						<button
+							class="btn-bulk"
+							onclick={() => bulkPublish(false)}
+							disabled={isBulkActionLoading}
+							title="Unpublish selected"
+						>
+							<IconX size={16} />
+							Unpublish
+						</button>
+						<button
+							class="btn-bulk"
+							onclick={() => bulkFeature(true)}
+							disabled={isBulkActionLoading}
+							title="Feature selected"
+						>
+							<IconStar size={16} />
+							Feature
+						</button>
+						<button
+							class="btn-bulk"
+							onclick={() => bulkFeature(false)}
+							disabled={isBulkActionLoading}
+							title="Unfeature selected"
+						>
+							<IconStarOff size={16} />
+							Unfeature
+						</button>
+						<button
+							class="btn-bulk"
+							onclick={openBulkTagsModal}
+							disabled={isBulkActionLoading}
+							title="Manage tags"
+						>
+							<IconTags size={16} />
+							Tags
+						</button>
+						<button
+							class="btn-bulk danger"
+							onclick={bulkDelete}
+							disabled={isBulkActionLoading}
+							title="Delete selected"
+						>
+							<IconTrash size={16} />
+							Delete
+						</button>
+						{#if isBulkActionLoading}
+							<span class="bulk-spinner"></span>
+						{/if}
+					</div>
+				</div>
+			{/if}
+
 			<div class="videos-table-wrapper">
 				<table class="videos-table">
 					<thead>
 						<tr>
+							<th class="checkbox-col">
+								<button
+									class="select-all-btn"
+									onclick={toggleSelectAll}
+									title={selectedVideoIds.size === filteredVideos.length ? 'Deselect all' : 'Select all'}
+								>
+									{#if selectedVideoIds.size === filteredVideos.length && filteredVideos.length > 0}
+										<IconCheckbox size={18} />
+									{:else if selectedVideoIds.size > 0}
+										<IconSquare size={18} class="partial" />
+									{:else}
+										<IconSquare size={18} />
+									{/if}
+								</button>
+							</th>
 							<th>Video</th>
 							<th>Categories</th>
 							<th>Trader</th>
@@ -1040,7 +1340,20 @@
 					</thead>
 					<tbody>
 						{#each filteredVideos as video}
-							<tr>
+							<tr class:selected={selectedVideoIds.has(video.id)}>
+								<td class="checkbox-col">
+									<button
+										class="select-row-btn"
+										onclick={() => toggleVideoSelection(video.id)}
+										title={selectedVideoIds.has(video.id) ? 'Deselect' : 'Select'}
+									>
+										{#if selectedVideoIds.has(video.id)}
+											<IconCheckbox size={18} />
+										{:else}
+											<IconSquare size={18} />
+										{/if}
+									</button>
+								</td>
 								<td class="video-cell">
 									<div class="video-thumbnail-small">
 										{#if video.thumbnail_url}
@@ -1105,6 +1418,13 @@
 								</td>
 								<td>
 									<div class="action-buttons">
+										<button
+											class="btn-icon"
+											title="Embed Code"
+											onclick={() => showEmbedCode(video)}
+										>
+											<IconCode size={16} />
+										</button>
 										<button
 											class="btn-icon"
 											title="Replace Video"
@@ -1573,6 +1893,164 @@
 						<IconCloudUpload size={16} />
 						Upload to Bunny.net
 					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- ICT 7 ADDITION: Bulk Tags Modal -->
+{#if showBulkTagsModal}
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		onclick={closeBulkTagsModal}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeBulkTagsModal()}
+	>
+		<div
+			class="modal modal-large"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
+			<div class="modal-header">
+				<h2>
+					<IconTags size={24} />
+					Bulk Update Tags
+				</h2>
+				<button
+					class="modal-close"
+					onclick={closeBulkTagsModal}
+					type="button"
+					aria-label="Close"
+				>&times;</button>
+			</div>
+			<div class="modal-body">
+				<p class="bulk-info">Update tags for <strong>{selectedVideoIds.size}</strong> selected video(s)</p>
+
+				<!-- Tags to Add -->
+				<div class="form-group">
+					<label>
+						<IconPlus size={16} style="display:inline;vertical-align:middle;color:#22c55e;margin-right:4px;" />
+						Tags to Add
+					</label>
+					<div class="bulk-tags-grid">
+						{#each availableCategories as category}
+							<button
+								type="button"
+								class="bulk-tag-btn add"
+								class:selected={bulkTagsToAdd.includes(category.id)}
+								style:--tag-color={category.color}
+								onclick={() => toggleBulkTagToAdd(category.id)}
+							>
+								{#if bulkTagsToAdd.includes(category.id)}
+									<IconCheck size={14} />
+								{/if}
+								{category.name}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<!-- Tags to Remove -->
+				<div class="form-group">
+					<label>
+						<IconX size={16} style="display:inline;vertical-align:middle;color:#ef4444;margin-right:4px;" />
+						Tags to Remove
+					</label>
+					<div class="bulk-tags-grid">
+						{#each availableCategories as category}
+							<button
+								type="button"
+								class="bulk-tag-btn remove"
+								class:selected={bulkTagsToRemove.includes(category.id)}
+								style:--tag-color={category.color}
+								onclick={() => toggleBulkTagToRemove(category.id)}
+							>
+								{#if bulkTagsToRemove.includes(category.id)}
+									<IconTrash size={14} />
+								{/if}
+								{category.name}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				{#if bulkTagsToAdd.length > 0 || bulkTagsToRemove.length > 0}
+					<div class="bulk-tags-summary">
+						{#if bulkTagsToAdd.length > 0}
+							<p><strong>Adding:</strong> {bulkTagsToAdd.map(id => getCategoryById(id)?.name).join(', ')}</p>
+						{/if}
+						{#if bulkTagsToRemove.length > 0}
+							<p><strong>Removing:</strong> {bulkTagsToRemove.map(id => getCategoryById(id)?.name).join(', ')}</p>
+						{/if}
+					</div>
+				{/if}
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={closeBulkTagsModal} type="button">Cancel</button>
+				<button
+					class="btn-primary"
+					onclick={bulkUpdateTags}
+					disabled={isBulkActionLoading || (bulkTagsToAdd.length === 0 && bulkTagsToRemove.length === 0)}
+				>
+					{#if isBulkActionLoading}
+						<span class="btn-spinner"></span>
+						Updating...
+					{:else}
+						<IconTags size={16} />
+						Update Tags
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- ICT 7 ADDITION: Embed Code Modal -->
+{#if showEmbedModal && embedCodeData}
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		onclick={() => { showEmbedModal = false; embedCodeData = null; }}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmbedModal = false, embedCodeData = null)}
+	>
+		<div
+			class="modal"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
+			<div class="modal-header">
+				<h2>
+					<IconCode size={24} />
+					Embed Code
+				</h2>
+				<button
+					class="modal-close"
+					onclick={() => { showEmbedModal = false; embedCodeData = null; }}
+					type="button"
+					aria-label="Close"
+				>&times;</button>
+			</div>
+			<div class="modal-body">
+				<p class="embed-title"><strong>{embedCodeData.title}</strong></p>
+				<div class="embed-code-box">
+					<pre><code>{embedCodeData.embed_html}</code></pre>
+				</div>
+				<p class="embed-hint">Copy this code and paste it into your website to embed this video.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => { showEmbedModal = false; embedCodeData = null; }} type="button">Close</button>
+				<button class="btn-primary" onclick={copyEmbedCode}>
+					<IconCode size={16} />
+					Copy to Clipboard
 				</button>
 			</div>
 		</div>
@@ -2770,6 +3248,218 @@
 	}
 	.status-item.failed {
 		color: var(--error-emphasis);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ICT 7 ADDITION: BULK OPERATIONS STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.bulk-action-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1rem;
+		background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(230, 184, 0, 0.1));
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 10px;
+		margin-bottom: 1rem;
+	}
+
+	.bulk-selection-info {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: var(--text-primary);
+		font-weight: 500;
+	}
+
+	.bulk-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.btn-bulk {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(22, 27, 34, 0.8);
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 6px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-bulk:hover:not(:disabled) {
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.4);
+		color: var(--primary-500);
+	}
+
+	.btn-bulk:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.btn-bulk.danger:hover:not(:disabled) {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: rgba(239, 68, 68, 0.4);
+		color: var(--error-emphasis);
+	}
+
+	.bulk-spinner {
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(230, 184, 0, 0.3);
+		border-top-color: var(--primary-500);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	/* Checkbox column */
+	.checkbox-col {
+		width: 48px;
+		text-align: center;
+	}
+
+	.select-all-btn,
+	.select-row-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.25rem;
+		background: transparent;
+		border: none;
+		color: var(--text-tertiary);
+		cursor: pointer;
+		transition: color 0.15s;
+	}
+
+	.select-all-btn:hover,
+	.select-row-btn:hover {
+		color: var(--primary-500);
+	}
+
+	.select-all-btn :global(.partial) {
+		opacity: 0.6;
+	}
+
+	tr.selected {
+		background: rgba(99, 102, 241, 0.1) !important;
+	}
+
+	tr.selected td {
+		border-color: rgba(99, 102, 241, 0.2);
+	}
+
+	/* Bulk Tags Modal */
+	.bulk-info {
+		margin-bottom: 1.5rem;
+		padding: 0.75rem 1rem;
+		background: rgba(99, 102, 241, 0.1);
+		border-radius: 8px;
+		color: var(--text-primary);
+	}
+
+	.bulk-tags-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: 0.75rem;
+		background: rgba(13, 17, 23, 0.6);
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 10px;
+		max-height: 200px;
+		overflow-y: auto;
+	}
+
+	.bulk-tag-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(100, 116, 139, 0.1);
+		border: 1px solid rgba(100, 116, 139, 0.2);
+		border-radius: 6px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.bulk-tag-btn.add:hover {
+		background: rgba(34, 197, 94, 0.15);
+		border-color: rgba(34, 197, 94, 0.3);
+		color: #22c55e;
+	}
+
+	.bulk-tag-btn.add.selected {
+		background: rgba(34, 197, 94, 0.2);
+		border-color: #22c55e;
+		color: #22c55e;
+	}
+
+	.bulk-tag-btn.remove:hover {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #ef4444;
+	}
+
+	.bulk-tag-btn.remove.selected {
+		background: rgba(239, 68, 68, 0.2);
+		border-color: #ef4444;
+		color: #ef4444;
+	}
+
+	.bulk-tags-summary {
+		margin-top: 1rem;
+		padding: 0.75rem;
+		background: rgba(230, 184, 0, 0.05);
+		border-radius: 8px;
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+	}
+
+	.bulk-tags-summary p {
+		margin: 0.25rem 0;
+	}
+
+	/* Embed Code Modal */
+	.embed-title {
+		margin-bottom: 1rem;
+		color: var(--text-primary);
+	}
+
+	.embed-code-box {
+		background: rgba(13, 17, 23, 0.8);
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 8px;
+		padding: 1rem;
+		overflow-x: auto;
+	}
+
+	.embed-code-box pre {
+		margin: 0;
+		white-space: pre-wrap;
+		word-break: break-all;
+	}
+
+	.embed-code-box code {
+		font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+		font-size: 0.8rem;
+		color: var(--primary-500);
+	}
+
+	.embed-hint {
+		margin-top: 1rem;
+		font-size: 0.85rem;
+		color: var(--text-tertiary);
 	}
 
 	@media (max-width: 768px) {

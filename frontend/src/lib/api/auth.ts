@@ -1300,13 +1300,14 @@ class AuthenticationService {
 
 	/**
 	 * Validate password strength
+	 * ICT 7 SECURITY: Matches backend requirements exactly (12 chars, uppercase, lowercase, number)
+	 * Special characters are NOT required by backend - don't enforce here
 	 */
 	private validatePasswordStrength(password: string): void {
-		const minLength = 8;
+		const minLength = 12;
 		const hasUpperCase = /[A-Z]/.test(password);
 		const hasLowerCase = /[a-z]/.test(password);
 		const hasNumbers = /\d/.test(password);
-		const hasSpecialChar = /[!@#$%^&*]/.test(password);
 
 		const errors: string[] = [];
 
@@ -1321,9 +1322,6 @@ class AuthenticationService {
 		}
 		if (!hasNumbers) {
 			errors.push('Password must contain at least one number');
-		}
-		if (!hasSpecialChar) {
-			errors.push('Password must contain at least one special character');
 		}
 
 		if (errors.length > 0) {

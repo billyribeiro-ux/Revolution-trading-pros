@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { FormField } from '$lib/api/forms';
 	import { sanitizeFormContent } from '$lib/utils/sanitize';
 
@@ -10,6 +11,123 @@
 	}
 
 	let { field, value = '', error, onchange }: Props = $props();
+
+	// ICT 7 Fix: Signature canvas state
+	let signatureCanvas: HTMLCanvasElement | null = null;
+	let signatureCtx: CanvasRenderingContext2D | null = null;
+	let isDrawing = false;
+	let lastX = 0;
+	let lastY = 0;
+
+	// Initialize signature canvas when field type is signature
+	onMount(() => {
+		if (field.field_type === 'signature') {
+			initSignatureCanvas();
+		}
+	});
+
+	function initSignatureCanvas() {
+		signatureCanvas = document.getElementById(`field-${field.name}`) as HTMLCanvasElement;
+		if (!signatureCanvas) return;
+
+		signatureCtx = signatureCanvas.getContext('2d');
+		if (!signatureCtx) return;
+
+		// Set canvas styles
+		signatureCtx.strokeStyle = '#1f2937';
+		signatureCtx.lineWidth = 2;
+		signatureCtx.lineCap = 'round';
+		signatureCtx.lineJoin = 'round';
+
+		// Mouse events
+		signatureCanvas.addEventListener('mousedown', startDrawing);
+		signatureCanvas.addEventListener('mousemove', draw);
+		signatureCanvas.addEventListener('mouseup', stopDrawing);
+		signatureCanvas.addEventListener('mouseout', stopDrawing);
+
+		// Touch events for mobile
+		signatureCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+		signatureCanvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+		signatureCanvas.addEventListener('touchend', stopDrawing);
+
+		// Load existing value if any
+		if (value && typeof value === 'string' && value.startsWith('data:image')) {
+			const img = new Image();
+			img.onload = () => {
+				signatureCtx?.drawImage(img, 0, 0);
+			};
+			img.src = value;
+		}
+	}
+
+	function startDrawing(e: MouseEvent) {
+		isDrawing = true;
+		const rect = signatureCanvas?.getBoundingClientRect();
+		if (rect) {
+			lastX = e.clientX - rect.left;
+			lastY = e.clientY - rect.top;
+		}
+	}
+
+	function draw(e: MouseEvent) {
+		if (!isDrawing || !signatureCtx || !signatureCanvas) return;
+
+		const rect = signatureCanvas.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+
+		signatureCtx.beginPath();
+		signatureCtx.moveTo(lastX, lastY);
+		signatureCtx.lineTo(x, y);
+		signatureCtx.stroke();
+
+		lastX = x;
+		lastY = y;
+	}
+
+	function handleTouchStart(e: TouchEvent) {
+		e.preventDefault();
+		if (!signatureCanvas) return;
+
+		const touch = e.touches[0];
+		const rect = signatureCanvas.getBoundingClientRect();
+		isDrawing = true;
+		lastX = touch.clientX - rect.left;
+		lastY = touch.clientY - rect.top;
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		e.preventDefault();
+		if (!isDrawing || !signatureCtx || !signatureCanvas) return;
+
+		const touch = e.touches[0];
+		const rect = signatureCanvas.getBoundingClientRect();
+		const x = touch.clientX - rect.left;
+		const y = touch.clientY - rect.top;
+
+		signatureCtx.beginPath();
+		signatureCtx.moveTo(lastX, lastY);
+		signatureCtx.lineTo(x, y);
+		signatureCtx.stroke();
+
+		lastX = x;
+		lastY = y;
+	}
+
+	function stopDrawing() {
+		if (isDrawing && signatureCanvas) {
+			isDrawing = false;
+			// Save signature as base64 data URL
+			const dataUrl = signatureCanvas.toDataURL('image/png');
+			onchange?.(dataUrl);
+		}
+	}
+
+	function clearSignature() {
+		if (!signatureCtx || !signatureCanvas) return;
+		signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+		onchange?.('');
+	}
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -360,12 +478,167 @@
 				{/each}
 			</div>
 
-			<!-- Signature Pad -->
+			<!-- Signature Pad - ICT 7 Fix: Full canvas drawing support -->
 		{:else if field.field_type === 'signature'}
 			<div class="signature-wrapper">
-				<canvas id={`field-${field.name}`} class="signature-canvas" width="400" height="150"
+				<canvas
+					id={`field-${field.name}`}
+					class="signature-canvas"
+					width="400"
+					height="150"
+					aria-label="Signature pad - draw your signature"
 				></canvas>
-				<button type="button" class="btn-clear-signature">Clear</button>
+				<div class="signature-actions">
+					<button type="button" class="btn-clear-signature" onclick={clearSignature}>
+						Clear Signature
+					</button>
+					{#if value}
+						<span class="signature-status">Signature captured</span>
+					{/if}
+				</div>
+			</div>
+
+			<!-- ICT 7 Fix: Address Field - Complete multi-part address input -->
+		{:else if field.field_type === 'address'}
+			{@const addressValue = (typeof value === 'object' && value !== null) ? value : {}}
+			<div class="address-wrapper">
+				<div class="address-fields">
+					<div class="address-row full-width">
+						<label class="address-sub-label" for={`${field.name}-address1`}>Address Line 1</label>
+						<input
+							type="text"
+							id={`${field.name}-address1`}
+							name={`${field.name}[address_line_1]`}
+							placeholder="Street address"
+							value={addressValue.address_line_1 || ''}
+							class={getInputClasses()}
+							required={field.required}
+							oninput={(e: Event) => {
+								const newVal = { ...addressValue, address_line_1: (e.target as HTMLInputElement).value };
+								onchange?.(newVal);
+							}}
+						/>
+					</div>
+					{#if field.attributes?.show_address_2 !== false}
+						<div class="address-row full-width">
+							<label class="address-sub-label" for={`${field.name}-address2`}>Address Line 2</label>
+							<input
+								type="text"
+								id={`${field.name}-address2`}
+								name={`${field.name}[address_line_2]`}
+								placeholder="Apartment, suite, unit, etc. (optional)"
+								value={addressValue.address_line_2 || ''}
+								class={getInputClasses()}
+								oninput={(e: Event) => {
+									const newVal = { ...addressValue, address_line_2: (e.target as HTMLInputElement).value };
+									onchange?.(newVal);
+								}}
+							/>
+						</div>
+					{/if}
+					<div class="address-row-group">
+						<div class="address-row city">
+							<label class="address-sub-label" for={`${field.name}-city`}>City</label>
+							<input
+								type="text"
+								id={`${field.name}-city`}
+								name={`${field.name}[city]`}
+								placeholder="City"
+								value={addressValue.city || ''}
+								class={getInputClasses()}
+								required={field.required}
+								oninput={(e: Event) => {
+									const newVal = { ...addressValue, city: (e.target as HTMLInputElement).value };
+									onchange?.(newVal);
+								}}
+							/>
+						</div>
+						<div class="address-row state">
+							<label class="address-sub-label" for={`${field.name}-state`}>State/Province</label>
+							<input
+								type="text"
+								id={`${field.name}-state`}
+								name={`${field.name}[state]`}
+								placeholder="State"
+								value={addressValue.state || ''}
+								class={getInputClasses()}
+								required={field.required}
+								oninput={(e: Event) => {
+									const newVal = { ...addressValue, state: (e.target as HTMLInputElement).value };
+									onchange?.(newVal);
+								}}
+							/>
+						</div>
+						<div class="address-row zip">
+							<label class="address-sub-label" for={`${field.name}-zip`}>ZIP/Postal Code</label>
+							<input
+								type="text"
+								id={`${field.name}-zip`}
+								name={`${field.name}[zip]`}
+								placeholder="ZIP Code"
+								value={addressValue.zip || ''}
+								class={getInputClasses()}
+								required={field.required}
+								oninput={(e: Event) => {
+									const newVal = { ...addressValue, zip: (e.target as HTMLInputElement).value };
+									onchange?.(newVal);
+								}}
+							/>
+						</div>
+					</div>
+					{#if field.attributes?.show_country !== false}
+						<div class="address-row full-width">
+							<label class="address-sub-label" for={`${field.name}-country`}>Country</label>
+							<select
+								id={`${field.name}-country`}
+								name={`${field.name}[country]`}
+								value={addressValue.country || 'US'}
+								class={getInputClasses()}
+								onchange={(e: Event) => {
+									const newVal = { ...addressValue, country: (e.target as HTMLSelectElement).value };
+									onchange?.(newVal);
+								}}
+							>
+								<option value="US">United States</option>
+								<option value="CA">Canada</option>
+								<option value="GB">United Kingdom</option>
+								<option value="AU">Australia</option>
+								<option value="DE">Germany</option>
+								<option value="FR">France</option>
+								<option value="ES">Spain</option>
+								<option value="IT">Italy</option>
+								<option value="NL">Netherlands</option>
+								<option value="MX">Mexico</option>
+								<option value="BR">Brazil</option>
+								<option value="JP">Japan</option>
+								<option value="KR">South Korea</option>
+								<option value="IN">India</option>
+								<option value="SG">Singapore</option>
+								<option value="NZ">New Zealand</option>
+							</select>
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			<!-- ICT 7 Fix: Phone Field with International Support -->
+		{:else if field.field_type === 'phone'}
+			<div class="phone-wrapper">
+				<input
+					type="tel"
+					id={`field-${field.name}`}
+					name={field.name}
+					placeholder={field.placeholder || '+1 (555) 123-4567'}
+					{value}
+					required={field.required}
+					class={getInputClasses()}
+					pattern={field.validation?.pattern || '[0-9+\\-\\s\\(\\)]+'}
+					oninput={handleChange}
+					{...(field.attributes as Record<string, any>) || {}}
+				/>
+				{#if field.help_text}
+					<small class="phone-help">{field.help_text}</small>
+				{/if}
 			</div>
 
 			<!-- Newsletter Subscribe Checkbox -->
@@ -637,10 +910,20 @@
 		border-radius: 0.375rem;
 		background-color: white;
 		touch-action: none;
+		cursor: crosshair;
+		max-width: 100%;
+		height: auto;
+	}
+
+	.signature-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
 	.btn-clear-signature {
-		align-self: flex-end;
 		padding: 0.75rem 1.25rem;
 		background-color: #6b7280;
 		color: white;
@@ -650,10 +933,81 @@
 		min-height: 44px; /* Touch target */
 		cursor: pointer;
 		touch-action: manipulation;
+		transition: background-color 0.2s;
 	}
 
 	.btn-clear-signature:hover {
 		background-color: #4b5563;
+	}
+
+	.signature-status {
+		font-size: 0.875rem;
+		color: #059669;
+		font-weight: 500;
+	}
+
+	/* ICT 7 Fix: Address Field Styles - 2026 Mobile-First */
+	.address-wrapper {
+		width: 100%;
+	}
+
+	.address-fields {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.address-row {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.address-row.full-width {
+		width: 100%;
+	}
+
+	.address-row-group {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.address-row-group {
+			flex-direction: row;
+			gap: 1rem;
+		}
+
+		.address-row.city {
+			flex: 2;
+		}
+
+		.address-row.state {
+			flex: 1;
+		}
+
+		.address-row.zip {
+			flex: 1;
+		}
+	}
+
+	.address-sub-label {
+		font-size: 0.75rem;
+		color: #6b7280;
+		font-weight: 500;
+	}
+
+	/* ICT 7 Fix: Phone Field Styles */
+	.phone-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.phone-help {
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.field-error {

@@ -110,51 +110,75 @@ fn slugify(s: &str) -> String {
 // HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// ICT 7 SECURITY FIX: Fully parameterized queries to prevent SQL injection
 async fn list_indicators(
     _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<IndicatorQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = params.page.unwrap_or(1);
-    let per_page = params.per_page.unwrap_or(20).min(100);
+    let page = params.page.unwrap_or(1).max(1);
+    let per_page = params.per_page.unwrap_or(20).min(100).max(1);
     let offset = (page - 1) * per_page;
 
-    let mut query = String::from("SELECT * FROM indicators WHERE 1=1");
+    // ICT 7: Validate platform against allowlist to prevent injection
+    let valid_platforms = ["tradingview", "thinkorswim", "metatrader", "ninjatrader", "tradestation", "sierrachart", "ctrader"];
+    let platform = params.platform.as_ref().and_then(|p| {
+        let lower = p.to_lowercase();
+        if valid_platforms.contains(&lower.as_str()) {
+            Some(lower)
+        } else {
+            None
+        }
+    });
 
-    if let Some(is_active) = params.is_active {
-        query.push_str(&format!(" AND is_active = {}", is_active));
-    }
+    // ICT 7: Sanitize search to alphanumeric and spaces only
+    let search = params.search.as_ref().map(|s| {
+        s.chars()
+            .filter(|c| c.is_alphanumeric() || c.is_whitespace() || *c == '-' || *c == '_')
+            .take(100)
+            .collect::<String>()
+    });
 
-    if let Some(ref platform) = params.platform {
-        let platform = platform.replace('\'', "''");
-        query.push_str(&format!(" AND platform = '{}'", platform));
-    }
+    // ICT 7: Use fully parameterized query - NO string concatenation
+    let indicators: Vec<IndicatorRow> = sqlx::query_as(
+        r#"
+        SELECT * FROM indicators
+        WHERE ($1::BOOLEAN IS NULL OR is_active = $1)
+        AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
+        AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
+        ORDER BY created_at DESC
+        LIMIT $4 OFFSET $5
+        "#,
+    )
+    .bind(params.is_active)
+    .bind(&platform)
+    .bind(&search)
+    .bind(per_page as i64)
+    .bind(offset as i64)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
-    if let Some(ref search) = params.search {
-        let search = search.replace('\'', "''");
-        query.push_str(&format!(
-            " AND (name ILIKE '%{}%' OR description ILIKE '%{}%')",
-            search, search
-        ));
-    }
-
-    query.push_str(" ORDER BY created_at DESC");
-    query.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
-
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(&query)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Database error: {}", e)})),
-            )
-        })?;
-
-    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM indicators")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    // ICT 7: Parameterized count query
+    let total: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*) FROM indicators
+        WHERE ($1::BOOLEAN IS NULL OR is_active = $1)
+        AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
+        AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
+        "#,
+    )
+    .bind(params.is_active)
+    .bind(&platform)
+    .bind(&search)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let total_pages = ((total.0 as f64) / (per_page as f64)).ceil() as i32;
 
@@ -385,11 +409,476 @@ async fn toggle_indicator(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
+// FILE MANAGEMENT ENDPOINTS (ICT 7 Grade - February 2026)
+// Multi-platform file downloads with version management
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct IndicatorFileRow {
+    pub id: i32,
+    pub indicator_id: i64,
+    pub file_name: String,
+    pub original_name: Option<String>,
+    pub file_path: String,
+    pub file_size_bytes: Option<i64>,
+    pub file_type: Option<String>,
+    pub mime_type: Option<String>,
+    pub checksum_sha256: Option<String>,
+    pub platform: String,
+    pub platform_version: Option<String>,
+    pub storage_provider: Option<String>,
+    pub storage_bucket: Option<String>,
+    pub storage_key: Option<String>,
+    pub cdn_url: Option<String>,
+    pub version: Option<String>,
+    pub is_current_version: Option<bool>,
+    pub changelog: Option<String>,
+    pub display_name: Option<String>,
+    pub display_order: Option<i32>,
+    pub is_active: Option<bool>,
+    pub download_count: Option<i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateFileRequest {
+    pub file_name: String,
+    pub original_name: Option<String>,
+    pub file_path: String,
+    pub file_size_bytes: Option<i64>,
+    pub file_type: Option<String>,
+    pub mime_type: Option<String>,
+    pub platform: String,
+    pub platform_version: Option<String>,
+    pub storage_key: Option<String>,
+    pub cdn_url: Option<String>,
+    pub version: Option<String>,
+    pub changelog: Option<String>,
+    pub display_name: Option<String>,
+    pub display_order: Option<i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateFileRequest {
+    pub display_name: Option<String>,
+    pub display_order: Option<i32>,
+    pub platform_version: Option<String>,
+    pub version: Option<String>,
+    pub changelog: Option<String>,
+    pub is_current_version: Option<bool>,
+    pub is_active: Option<bool>,
+}
+
+/// ICT 7: List all files for an indicator
+async fn list_indicator_files(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(indicator_id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let files: Vec<IndicatorFileRow> = sqlx::query_as(
+        r#"
+        SELECT * FROM indicator_files
+        WHERE indicator_id = $1
+        ORDER BY platform, display_order, created_at DESC
+        "#,
+    )
+    .bind(indicator_id)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
+    Ok(Json(json!({
+        "success": true,
+        "data": files
+    })))
+}
+
+/// ICT 7: Add a new file to an indicator
+async fn create_indicator_file(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(indicator_id): Path<i64>,
+    Json(input): Json<CreateFileRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Verify indicator exists
+    let indicator: Option<(i64,)> = sqlx::query_as("SELECT id FROM indicators WHERE id = $1")
+        .bind(indicator_id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?;
+
+    if indicator.is_none() {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Indicator not found"})),
+        ));
+    }
+
+    // If this is marked as current version, unmark other files for same platform
+    if input.version.is_some() {
+        let _ = sqlx::query(
+            r#"
+            UPDATE indicator_files
+            SET is_current_version = false
+            WHERE indicator_id = $1 AND platform = $2
+            "#,
+        )
+        .bind(indicator_id)
+        .bind(&input.platform)
+        .execute(&state.db.pool)
+        .await;
+    }
+
+    let file: IndicatorFileRow = sqlx::query_as(
+        r#"
+        INSERT INTO indicator_files (
+            indicator_id, file_name, original_name, file_path, file_size_bytes,
+            file_type, mime_type, platform, platform_version, storage_key, cdn_url,
+            version, changelog, display_name, display_order, is_current_version, is_active
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, true, true)
+        RETURNING *
+        "#,
+    )
+    .bind(indicator_id)
+    .bind(&input.file_name)
+    .bind(&input.original_name)
+    .bind(&input.file_path)
+    .bind(input.file_size_bytes)
+    .bind(&input.file_type)
+    .bind(&input.mime_type)
+    .bind(&input.platform)
+    .bind(&input.platform_version)
+    .bind(&input.storage_key)
+    .bind(&input.cdn_url)
+    .bind(&input.version)
+    .bind(&input.changelog)
+    .bind(&input.display_name)
+    .bind(input.display_order.unwrap_or(0))
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to create file: {}", e)})),
+        )
+    })?;
+
+    Ok(Json(json!({
+        "success": true,
+        "message": "File added successfully",
+        "data": file
+    })))
+}
+
+/// ICT 7: Update an indicator file
+async fn update_indicator_file(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path((indicator_id, file_id)): Path<(i64, i32)>,
+    Json(input): Json<UpdateFileRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // If marking as current version, unmark others first
+    if input.is_current_version == Some(true) {
+        let file: Option<(String,)> = sqlx::query_as(
+            "SELECT platform FROM indicator_files WHERE id = $1 AND indicator_id = $2",
+        )
+        .bind(file_id)
+        .bind(indicator_id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .ok()
+        .flatten();
+
+        if let Some((platform,)) = file {
+            let _ = sqlx::query(
+                r#"
+                UPDATE indicator_files
+                SET is_current_version = false
+                WHERE indicator_id = $1 AND platform = $2 AND id != $3
+                "#,
+            )
+            .bind(indicator_id)
+            .bind(&platform)
+            .bind(file_id)
+            .execute(&state.db.pool)
+            .await;
+        }
+    }
+
+    let file: IndicatorFileRow = sqlx::query_as(
+        r#"
+        UPDATE indicator_files SET
+            display_name = COALESCE($1, display_name),
+            display_order = COALESCE($2, display_order),
+            platform_version = COALESCE($3, platform_version),
+            version = COALESCE($4, version),
+            changelog = COALESCE($5, changelog),
+            is_current_version = COALESCE($6, is_current_version),
+            is_active = COALESCE($7, is_active),
+            updated_at = NOW()
+        WHERE id = $8 AND indicator_id = $9
+        RETURNING *
+        "#,
+    )
+    .bind(&input.display_name)
+    .bind(input.display_order)
+    .bind(&input.platform_version)
+    .bind(&input.version)
+    .bind(&input.changelog)
+    .bind(input.is_current_version)
+    .bind(input.is_active)
+    .bind(file_id)
+    .bind(indicator_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to update file: {}", e)})),
+        )
+    })?;
+
+    Ok(Json(json!({
+        "success": true,
+        "message": "File updated successfully",
+        "data": file
+    })))
+}
+
+/// ICT 7: Delete an indicator file
+async fn delete_indicator_file(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path((indicator_id, file_id)): Path<(i64, i32)>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let result = sqlx::query("DELETE FROM indicator_files WHERE id = $1 AND indicator_id = $2")
+        .bind(file_id)
+        .bind(indicator_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete file: {}", e)})),
+            )
+        })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "File not found"})),
+        ));
+    }
+
+    Ok(Json(json!({
+        "success": true,
+        "message": "File deleted successfully"
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// VIDEO MANAGEMENT ENDPOINTS (ICT 7 Grade)
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct IndicatorVideoRow {
+    pub id: i32,
+    pub indicator_id: i64,
+    pub title: String,
+    pub description: Option<String>,
+    pub bunny_video_guid: Option<String>,
+    pub bunny_library_id: Option<String>,
+    pub embed_url: Option<String>,
+    pub play_url: Option<String>,
+    pub thumbnail_url: Option<String>,
+    pub duration_seconds: Option<i32>,
+    pub display_order: Option<i32>,
+    pub is_featured: Option<bool>,
+    pub is_preview: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateVideoRequest {
+    pub title: String,
+    pub description: Option<String>,
+    pub bunny_video_guid: Option<String>,
+    pub bunny_library_id: Option<String>,
+    pub embed_url: Option<String>,
+    pub play_url: Option<String>,
+    pub thumbnail_url: Option<String>,
+    pub duration_seconds: Option<i32>,
+    pub display_order: Option<i32>,
+    pub is_featured: Option<bool>,
+    pub is_preview: Option<bool>,
+}
+
+/// ICT 7: List all videos for an indicator
+async fn list_indicator_videos(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(indicator_id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let videos: Vec<IndicatorVideoRow> = sqlx::query_as(
+        r#"
+        SELECT * FROM indicator_videos
+        WHERE indicator_id = $1
+        ORDER BY display_order, id
+        "#,
+    )
+    .bind(indicator_id)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
+    Ok(Json(json!({
+        "success": true,
+        "data": videos
+    })))
+}
+
+/// ICT 7: Add a new video to an indicator
+async fn create_indicator_video(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(indicator_id): Path<i64>,
+    Json(input): Json<CreateVideoRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let video: IndicatorVideoRow = sqlx::query_as(
+        r#"
+        INSERT INTO indicator_videos (
+            indicator_id, title, description, bunny_video_guid, bunny_library_id,
+            embed_url, play_url, thumbnail_url, duration_seconds, display_order,
+            is_featured, is_preview
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING *
+        "#,
+    )
+    .bind(indicator_id)
+    .bind(&input.title)
+    .bind(&input.description)
+    .bind(&input.bunny_video_guid)
+    .bind(&input.bunny_library_id)
+    .bind(&input.embed_url)
+    .bind(&input.play_url)
+    .bind(&input.thumbnail_url)
+    .bind(input.duration_seconds)
+    .bind(input.display_order.unwrap_or(0))
+    .bind(input.is_featured.unwrap_or(false))
+    .bind(input.is_preview.unwrap_or(false))
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to create video: {}", e)})),
+        )
+    })?;
+
+    Ok(Json(json!({
+        "success": true,
+        "message": "Video added successfully",
+        "data": video
+    })))
+}
+
+/// ICT 7: Delete an indicator video
+async fn delete_indicator_video(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path((indicator_id, video_id)): Path<(i64, i32)>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let result = sqlx::query("DELETE FROM indicator_videos WHERE id = $1 AND indicator_id = $2")
+        .bind(video_id)
+        .bind(indicator_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete video: {}", e)})),
+            )
+        })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Video not found"})),
+        ));
+    }
+
+    Ok(Json(json!({
+        "success": true,
+        "message": "Video deleted successfully"
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// DOWNLOAD ANALYTICS ENDPOINT (ICT 7 Grade)
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+/// ICT 7: Get download analytics for an indicator
+async fn get_download_analytics(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(indicator_id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Total downloads
+    let total_downloads: (i64,) = sqlx::query_as(
+        "SELECT COALESCE(SUM(COALESCE(download_count, 0)), 0) FROM indicator_files WHERE indicator_id = $1",
+    )
+    .bind(indicator_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+
+    // Downloads by platform
+    let by_platform: Vec<(String, i64)> = sqlx::query_as(
+        r#"
+        SELECT platform, COALESCE(SUM(COALESCE(download_count, 0)), 0) as count
+        FROM indicator_files
+        WHERE indicator_id = $1
+        GROUP BY platform
+        ORDER BY count DESC
+        "#,
+    )
+    .bind(indicator_id)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(Json(json!({
+        "success": true,
+        "data": {
+            "indicator_id": indicator_id,
+            "total_downloads": total_downloads.0,
+            "by_platform": by_platform.into_iter().map(|(p, c)| json!({"platform": p, "downloads": c})).collect::<Vec<_>>()
+        }
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 pub fn router() -> Router<AppState> {
     Router::new()
+        // Indicator CRUD
         .route("/", get(list_indicators).post(create_indicator))
         .route(
             "/:id",
@@ -398,4 +887,12 @@ pub fn router() -> Router<AppState> {
                 .delete(delete_indicator),
         )
         .route("/:id/toggle", post(toggle_indicator))
+        // ICT 7: File management
+        .route("/:id/files", get(list_indicator_files).post(create_indicator_file))
+        .route("/:id/files/:file_id", put(update_indicator_file).delete(delete_indicator_file))
+        // ICT 7: Video management
+        .route("/:id/videos", get(list_indicator_videos).post(create_indicator_video))
+        .route("/:id/videos/:video_id", delete(delete_indicator_video))
+        // ICT 7: Analytics
+        .route("/:id/analytics", get(get_download_analytics))
 }

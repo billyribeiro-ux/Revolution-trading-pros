@@ -1,109 +1,102 @@
 <!--
 	My Classes List Page
-	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Grade - January 2026
-	Svelte 5 Best Practices - Latest Nov/Dec 2025 Syntax
-	
+	Apple ICT 7 Principal Engineer Grade - February 2026
+
 	Features:
-	- Grid layout of available classes
-	- Semantic BEM class naming
+	- Fetches enrolled courses from API
+	- Shows progress tracking for each course
+	- Resume functionality
+	- Certificate status
 	- Svelte 5 $state and $derived runes
-	- Pagination with smooth scroll
-	
-	@version 1.1.0 - January 2026
+
+	@version 2.0.0 - February 2026
 -->
 <script lang="ts">
-	interface ClassItem {
+	import { onMount } from 'svelte';
+	import CourseCard from '$lib/components/courses/CourseCard.svelte';
+
+	interface EnrolledCourse {
 		id: number;
-		title: string;
-		slug: string;
-		description?: string;
-		thumbnail?: string;
-		duration?: string;
-		instructor?: string;
-		date?: string;
+		course_id: string;
+		progress_percent: number;
+		status: string;
+		enrolled_at: string;
+		last_accessed_at?: string;
+		current_lesson_id?: string;
+		certificate_issued?: boolean;
+		course: {
+			id: string;
+			title: string;
+			slug: string;
+			card_image_url?: string;
+			card_description?: string;
+			instructor_name?: string;
+			level?: string;
+			lesson_count?: number;
+			total_duration_minutes?: number;
+			price_cents: number;
+			is_free?: boolean;
+		};
 	}
 
-	// Pagination configuration - ICT 7 Enterprise Standard
+	// State
+	let enrolledCourses = $state<EnrolledCourse[]>([]);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
 	let currentPage = $state(1);
 	const itemsPerPage = 12;
 
-	// Mock data - replace with actual API call
-	// Set to empty array to show empty state, or populate with classes
-	const classes: ClassItem[] = [
-		{
-			id: 1,
-			title: 'Tax Loss Harvest',
-			slug: 'tax-loss-harvest-c',
-			date: 'December 2025',
-			instructor: 'John Carter'
-		},
-		{
-			id: 2,
-			title: 'Mastering the Trade University',
-			slug: 'mtt-university-c',
-			date: 'December 2025',
-			instructor: 'John Carter'
-		},
-		{
-			id: 3,
-			title: 'Quickstart to Precision Trading E-Learning Module',
-			slug: 'quickstart-precision-trading-elearning-c',
-			date: 'February 2022',
-			instructor: 'TG Watkins'
-		},
-		{
-			id: 4,
-			title: 'Quickstart To Precision Trading',
-			slug: 'quickstart-precision-trading-c',
-			date: 'April 2020',
-			instructor: 'TG Watkins'
-		},
-		{
-			id: 5,
-			title: 'Advanced Options Strategies',
-			slug: 'advanced-options-strategies-c',
-			date: 'November 2024',
-			instructor: 'John Carter'
-		},
-		{
-			id: 6,
-			title: 'Technical Analysis Masterclass',
-			slug: 'technical-analysis-masterclass-c',
-			date: 'October 2024',
-			instructor: 'TG Watkins'
-		},
-		{
-			id: 7,
-			title: 'Risk Management Essentials',
-			slug: 'risk-management-essentials-c',
-			date: 'September 2024',
-			instructor: 'John Carter'
-		},
-		{
-			id: 8,
-			title: 'Market Psychology & Trading',
-			slug: 'market-psychology-trading-c',
-			date: 'August 2024',
-			instructor: 'TG Watkins'
-		},
-		{
-			id: 9,
-			title: 'Swing Trading Fundamentals',
-			slug: 'swing-trading-fundamentals-c',
-			date: 'July 2024',
-			instructor: 'John Carter'
-		}
-	];
+	// Fetch enrolled courses on mount
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/my/courses');
+			const data = await response.json();
 
-	// Computed pagination values - Svelte 5
-	let totalPages = $derived(Math.ceil(classes.length / itemsPerPage));
+			if (data.success) {
+				enrolledCourses = data.data || [];
+			} else {
+				error = data.error || 'Failed to load courses';
+			}
+		} catch (e) {
+			console.error('Failed to fetch enrolled courses:', e);
+			error = 'Failed to load your courses. Please try again.';
+		} finally {
+			loading = false;
+		}
+	});
+
+	// Resume course function
+	async function resumeCourse(slug: string) {
+		try {
+			const response = await fetch(`/api/my/courses/${slug}/resume`);
+			const data = await response.json();
+
+			if (data.success && data.data.resume_url) {
+				window.location.href = data.data.resume_url;
+			} else {
+				window.location.href = `/classes/${slug}`;
+			}
+		} catch {
+			window.location.href = `/classes/${slug}`;
+		}
+	}
+
+	// Computed pagination values
+	let totalPages = $derived(Math.ceil(enrolledCourses.length / itemsPerPage));
 	let startIndex = $derived((currentPage - 1) * itemsPerPage);
 	let endIndex = $derived(startIndex + itemsPerPage);
-	let paginatedClasses = $derived(classes.slice(startIndex, endIndex));
+	let paginatedCourses = $derived(enrolledCourses.slice(startIndex, endIndex));
 	let pageNumbers = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
 
-	// Pagination navigation functions
+	// Separate in-progress and completed courses
+	let inProgressCourses = $derived(
+		paginatedCourses.filter((c) => c.progress_percent < 100)
+	);
+	let completedCourses = $derived(
+		paginatedCourses.filter((c) => c.progress_percent >= 100)
+	);
+
+	// Pagination navigation
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
 			currentPage = page;
@@ -112,129 +105,213 @@
 	}
 
 	function nextPage() {
-		if (currentPage < totalPages) {
-			goToPage(currentPage + 1);
-		}
+		if (currentPage < totalPages) goToPage(currentPage + 1);
 	}
 
 	function previousPage() {
-		if (currentPage > 1) {
-			goToPage(currentPage - 1);
-		}
+		if (currentPage > 1) goToPage(currentPage - 1);
+	}
+
+	// Format date helper
+	function formatDate(dateStr: string): string {
+		return new Date(dateStr).toLocaleDateString('en-US', {
+			month: 'short',
+			year: 'numeric'
+		});
 	}
 </script>
 
 <svelte:head>
-	<title>My Classes - Simpler Trading</title>
-	<meta name="description" content="Access your trading classes and educational content" />
+	<title>My Classes - Revolution Trading Pros</title>
+	<meta name="description" content="Access your enrolled trading classes and track your progress" />
 </svelte:head>
 
-<!-- Main Content -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
 		<aside class="dashboard__sidebar">
 			<!-- Sidebar content if needed -->
 		</aside>
 
-		<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
 		<div class="dashboard__main">
-			<!-- Page Header with dashboard__header wrapper (matches WordPress) -->
+			<!-- Page Header -->
 			<header class="dashboard__header">
 				<div class="dashboard__header-left">
 					<h1 class="dashboard__page-title">My Classes</h1>
+					{#if !loading && enrolledCourses.length > 0}
+						<p class="dashboard__subtitle">
+							{enrolledCourses.length} course{enrolledCourses.length !== 1 ? 's' : ''} enrolled
+						</p>
+					{/if}
+				</div>
+				<div class="dashboard__header-right">
+					<a href="/courses" class="btn btn-primary">Browse All Courses</a>
 				</div>
 			</header>
 
-			<!-- Classes Grid or Empty State -->
-			{#if classes.length === 0}
-				<!-- Empty State -->
+			<!-- Loading State -->
+			{#if loading}
+				<div class="dashboard__content">
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<p>Loading your classes...</p>
+					</div>
+				</div>
+
+			<!-- Error State -->
+			{:else if error}
+				<div class="dashboard__content">
+					<div class="error-state">
+						<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+						</svg>
+						<p>{error}</p>
+						<button class="btn btn-primary" onclick={() => window.location.reload()}>Try Again</button>
+					</div>
+				</div>
+
+			<!-- Empty State -->
+			{:else if enrolledCourses.length === 0}
 				<div class="dashboard__content">
 					<div class="dashboard__content-main">
 						<section class="dashboard__content-section">
 							<div class="empty-state">
-								<p class="empty-state__message">You don't have any Classes.</p>
-								<a href="/courses" class="btn btn-orange">See All Courses</a>
+								<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+								</svg>
+								<h3>No Classes Yet</h3>
+								<p class="empty-state__message">You haven't enrolled in any classes yet. Browse our course catalog to get started!</p>
+								<a href="/courses" class="btn btn-orange">Explore Courses</a>
 							</div>
 						</section>
 					</div>
 				</div>
+
+			<!-- Enrolled Courses -->
 			{:else}
-				<!-- Classes Grid -->
 				<div class="dashboard__content">
 					<div class="dashboard__content-main">
-						<section class="dashboard__content-section">
-							<div class="class-grid">
-								{#each paginatedClasses as { id, title, slug, date, instructor } (id)}
-									<article class="class-grid__item">
-										<div class="class-card">
-											<section class="class-card__body">
-												<h4 class="class-card__title">
-													<a href="/classes/{slug}">{title}</a>
-												</h4>
-												{#if date && instructor}
-													<p class="class-card__meta">
-														<small>{date} with {instructor}</small>
-													</p>
+						<!-- In Progress Section -->
+						{#if inProgressCourses.length > 0}
+							<section class="dashboard__content-section">
+								<h2 class="section-title">Continue Learning</h2>
+								<div class="class-grid">
+									{#each inProgressCourses as enrollment (enrollment.id)}
+										<article class="class-grid__item">
+											<div class="class-card">
+												{#if enrollment.course.card_image_url}
+													<div class="class-card__image">
+														<img src={enrollment.course.card_image_url} alt={enrollment.course.title} loading="lazy" />
+														<div class="progress-overlay">
+															<div class="progress-bar">
+																<div class="progress-fill" style="width: {enrollment.progress_percent}%"></div>
+															</div>
+															<span class="progress-text">{enrollment.progress_percent}% complete</span>
+														</div>
+													</div>
 												{/if}
-											</section>
-											<footer class="class-card__footer">
-												<a class="btn btn-tiny btn-default" href="/classes/{slug}">Watch Now</a>
-											</footer>
-										</div>
-									</article>
-								{/each}
-							</div>
-
-							<!-- Pagination Controls -->
-							{#if totalPages > 1}
-								<div class="pagination-wrapper">
-									<nav class="pagination" aria-label="Pagination">
-										<ul class="page-numbers">
-											<!-- Previous Button -->
-											<li>
-												<button
-													class="page-numbers prev"
-													onclick={previousPage}
-													disabled={currentPage === 1}
-													aria-label="Previous page"
-												>
-													← Previous
-												</button>
-											</li>
-
-											<!-- Page Numbers -->
-											{#each pageNumbers as pageNum}
-												<li>
-													{#if pageNum === currentPage}
-														<span class="page-numbers current" aria-current="page">{pageNum}</span>
-													{:else}
-														<button
-															class="page-numbers"
-															onclick={() => goToPage(pageNum)}
-															aria-label="Go to page {pageNum}"
-														>
-															{pageNum}
-														</button>
+												<section class="class-card__body">
+													<h4 class="class-card__title">
+														<a href="/classes/{enrollment.course.slug}">{enrollment.course.title}</a>
+													</h4>
+													{#if enrollment.course.instructor_name}
+														<p class="class-card__instructor">by {enrollment.course.instructor_name}</p>
 													{/if}
-												</li>
-											{/each}
-
-											<!-- Next Button -->
-											<li>
-												<button
-													class="page-numbers next"
-													onclick={nextPage}
-													disabled={currentPage === totalPages}
-													aria-label="Next page"
-												>
-													Next →
-												</button>
-											</li>
-										</ul>
-									</nav>
+													<p class="class-card__meta">
+														{#if enrollment.course.lesson_count}
+															<span>{enrollment.course.lesson_count} lessons</span>
+														{/if}
+														{#if enrollment.last_accessed_at}
+															<span>Last viewed {formatDate(enrollment.last_accessed_at)}</span>
+														{/if}
+													</p>
+												</section>
+												<footer class="class-card__footer">
+													<button class="btn btn-primary btn-small" onclick={() => resumeCourse(enrollment.course.slug)}>
+														Continue
+													</button>
+												</footer>
+											</div>
+										</article>
+									{/each}
 								</div>
-							{/if}
-						</section>
+							</section>
+						{/if}
+
+						<!-- Completed Section -->
+						{#if completedCourses.length > 0}
+							<section class="dashboard__content-section">
+								<h2 class="section-title">Completed</h2>
+								<div class="class-grid">
+									{#each completedCourses as enrollment (enrollment.id)}
+										<article class="class-grid__item">
+											<div class="class-card completed">
+												{#if enrollment.course.card_image_url}
+													<div class="class-card__image">
+														<img src={enrollment.course.card_image_url} alt={enrollment.course.title} loading="lazy" />
+														<div class="completed-badge">
+															<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+																<polyline points="20 6 9 17 4 12"/>
+															</svg>
+															Completed
+														</div>
+													</div>
+												{/if}
+												<section class="class-card__body">
+													<h4 class="class-card__title">
+														<a href="/classes/{enrollment.course.slug}">{enrollment.course.title}</a>
+													</h4>
+													{#if enrollment.course.instructor_name}
+														<p class="class-card__instructor">by {enrollment.course.instructor_name}</p>
+													{/if}
+												</section>
+												<footer class="class-card__footer">
+													<a class="btn btn-secondary btn-small" href="/classes/{enrollment.course.slug}">Review</a>
+													{#if enrollment.certificate_issued}
+														<a class="btn btn-outline btn-small" href="/api/my/courses/{enrollment.course.slug}/certificate">
+															<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+																<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+															</svg>
+															Certificate
+														</a>
+													{/if}
+												</footer>
+											</div>
+										</article>
+									{/each}
+								</div>
+							</section>
+						{/if}
+
+						<!-- Pagination -->
+						{#if totalPages > 1}
+							<div class="pagination-wrapper">
+								<nav class="pagination" aria-label="Pagination">
+									<ul class="page-numbers">
+										<li>
+											<button class="page-numbers prev" onclick={previousPage} disabled={currentPage === 1} aria-label="Previous page">
+												Previous
+											</button>
+										</li>
+										{#each pageNumbers as pageNum}
+											<li>
+												{#if pageNum === currentPage}
+													<span class="page-numbers current" aria-current="page">{pageNum}</span>
+												{:else}
+													<button class="page-numbers" onclick={() => goToPage(pageNum)} aria-label="Go to page {pageNum}">
+														{pageNum}
+													</button>
+												{/if}
+											</li>
+										{/each}
+										<li>
+											<button class="page-numbers next" onclick={nextPage} disabled={currentPage === totalPages} aria-label="Next page">
+												Next
+											</button>
+										</li>
+									</ul>
+								</nav>
+							</div>
+						{/if}
 					</div>
 				</div>
 			{/if}
@@ -244,8 +321,8 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * My Classes Page Styles
-	 * Matches WordPress implementation exactly
+	 * My Classes Dashboard - ICT 7 Principal Engineer Grade
+	 * February 2026
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__header {
@@ -253,21 +330,15 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
+		gap: 16px;
 		background: #fff;
 		border-bottom: 1px solid #dbdbdb;
-		border-right: 1px solid #dbdbdb;
 		padding: 20px;
 	}
 
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
-		}
-	}
-
-	@media (min-width: 1440px) {
-		.dashboard__header {
-			padding: 30px 40px;
 		}
 	}
 
@@ -283,251 +354,323 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
-	/* Empty State - Matches screenshot */
+	.dashboard__subtitle {
+		font-size: 14px;
+		color: #666;
+		margin: 4px 0 0;
+	}
+
+	.dashboard__header-right {
+		display: flex;
+		gap: 12px;
+	}
+
+	/* Section Title */
+	.section-title {
+		font-size: 20px;
+		font-weight: 600;
+		color: #333;
+		margin: 0 0 20px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 80px 20px;
+		text-align: center;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e7eb;
+		border-top-color: #143e59;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-state p {
+		color: #6b7280;
+		font-size: 16px;
+	}
+
+	/* Error State */
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 80px 20px;
+		text-align: center;
+	}
+
+	.error-state svg {
+		color: #dc2626;
+		margin-bottom: 16px;
+	}
+
+	.error-state p {
+		color: #6b7280;
+		font-size: 16px;
+		margin: 0 0 20px;
+	}
+
+	/* Empty State */
 	.empty-state {
-		background: #f5f5f5;
-		padding: 40px 20px;
-		text-align: left;
-		min-height: 200px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		text-align: center;
+		background: #f9fafb;
+		border-radius: 12px;
+	}
+
+	.empty-state svg {
+		color: #9ca3af;
+		margin-bottom: 20px;
+	}
+
+	.empty-state h3 {
+		font-size: 20px;
+		font-weight: 600;
+		color: #333;
+		margin: 0 0 8px;
 	}
 
 	.empty-state__message {
 		font-size: 16px;
-		color: #333;
-		margin: 0 0 20px;
-		font-family: 'Open Sans', sans-serif;
+		color: #6b7280;
+		margin: 0 0 24px;
+		max-width: 400px;
 	}
 
-	.btn-orange {
-		background-color: #ff8c00;
-		color: #fff;
-		padding: 12px 24px;
-		border-radius: 4px;
-		text-decoration: none;
-		display: inline-block;
-		font-weight: 700;
-		font-size: 14px;
-		border: none;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
-	}
-
-	.btn-orange:hover {
-		background-color: #e67e00;
-		text-decoration: none;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Class Grid - Semantic BEM naming
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Class Grid */
 	.class-grid {
-		display: flex;
-		flex-wrap: wrap;
-		margin-left: -15px;
-		margin-right: -15px;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 20px;
 		margin-bottom: 30px;
 	}
 
+	@media (min-width: 640px) {
+		.class-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.class-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
 	.class-grid__item {
-		padding-left: 15px;
-		padding-right: 15px;
-		margin-top: 30px;
-		box-sizing: border-box;
 		display: flex;
-		flex-direction: column;
-		width: 100%;
 	}
 
-	@media (min-width: 576px) {
-		.class-grid__item {
-			width: 50%;
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	@media (min-width: 992px) {
-		.class-grid__item {
-			width: 33.333333%;
-			flex: 0 0 33.333333%;
-			max-width: 33.333333%;
-		}
-	}
-
+	/* Class Card */
 	.class-card {
-		position: relative;
-		background: #fff;
-		border-radius: 5px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		height: 100%;
-		transition: all 0.15s ease-in-out;
-		padding-bottom: 60px;
+		background: #fff;
+		border-radius: 12px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+		transition: all 0.2s;
 	}
 
 	.class-card:hover {
-		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
+	}
+
+	.class-card.completed {
+		border: 2px solid #10b981;
+	}
+
+	.class-card__image {
+		position: relative;
+		aspect-ratio: 16/9;
+		overflow: hidden;
+	}
+
+	.class-card__image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	/* Progress Overlay */
+	.progress-overlay {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 12px;
+		background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+	}
+
+	.progress-bar {
+		height: 4px;
+		background: rgba(255, 255, 255, 0.3);
+		border-radius: 2px;
+		overflow: hidden;
+		margin-bottom: 6px;
+	}
+
+	.progress-fill {
+		height: 100%;
+		background: #10b981;
+		border-radius: 2px;
+		transition: width 0.3s;
+	}
+
+	.progress-text {
+		font-size: 12px;
+		color: #fff;
+		font-weight: 500;
+	}
+
+	/* Completed Badge */
+	.completed-badge {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 6px 10px;
+		background: #10b981;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 600;
+		border-radius: 4px;
 	}
 
 	.class-card__body {
-		padding: 20px;
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-		text-align: center;
-		align-items: center;
-		padding-bottom: 10px;
+		padding: 16px;
+		flex: 1;
 	}
 
 	.class-card__title {
-		font-size: 18px;
-		font-weight: 700;
+		font-size: 16px;
+		font-weight: 600;
 		color: #333;
-		margin: 0;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		line-height: 1.4;
-		text-align: center;
-		padding-bottom: 0.5rem;
+		margin: 0 0 8px;
+		line-height: 1.3;
 	}
 
 	.class-card__title a {
-		color: #333;
+		color: inherit;
 		text-decoration: none;
-		transition: color 0.2s;
-		display: block;
-		text-align: center;
 	}
 
 	.class-card__title a:hover {
 		color: #143e59;
 	}
 
-	.class-card__meta {
-		color: #999;
-		font-size: 13px;
-		margin: 8px 0 0;
-		line-height: 1.5;
-		text-align: center;
+	.class-card__instructor {
+		font-size: 14px;
+		color: #6b7280;
+		margin: 0 0 8px;
 	}
 
-	.class-card__meta small {
-		font-size: 13px;
+	.class-card__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		font-size: 12px;
+		color: #9ca3af;
+	}
+
+	.class-card__meta span {
+		display: flex;
+		align-items: center;
+		gap: 4px;
 	}
 
 	.class-card__footer {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		padding: 0 20px 20px;
-		text-align: center;
 		display: flex;
-		justify-content: center;
+		gap: 8px;
+		padding: 12px 16px;
+		border-top: 1px solid #f3f4f6;
 	}
 
+	/* Buttons */
 	.btn {
-		display: inline-block;
-		text-decoration: none;
-		border-radius: 5px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		transition: all 0.2s ease-in-out;
-		text-align: center;
-		cursor: pointer;
-		border: none;
-		line-height: 1.5;
-	}
-
-	.btn-tiny {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		padding: 10px 20px;
+		border-radius: 6px;
 		font-size: 14px;
-		line-height: 16px;
-		padding: 6px 8px;
 		font-weight: 600;
-	}
-
-	.btn-default {
-		background: #f4f4f4;
-		color: #0984ae;
-		border-color: transparent;
-		box-shadow: none;
-		transition: all 0.15s ease-in-out;
-	}
-
-	.btn-default:visited {
-		color: #0984ae;
-	}
-
-	.btn-default:hover {
-		color: #0984ae;
-		background: #e7e7e7;
-		border-color: transparent;
-		box-shadow: none;
 		text-decoration: none;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: none;
 	}
 
-	.btn-default:focus,
-	.btn-default:active {
-		color: #0984ae;
-		background: #e7e7e7;
-		border-color: transparent;
-		outline: 0;
-		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-		text-decoration: none;
+	.btn-small {
+		padding: 8px 14px;
+		font-size: 13px;
 	}
 
-	/* Responsive Adjustments */
-	@media (max-width: 991px) {
-		.class-grid__item {
-			margin-bottom: 25px;
-		}
+	.btn-primary {
+		background: #143e59;
+		color: #fff;
 	}
 
-	@media (max-width: 767px) {
-		.dashboard__page-title {
-			font-size: 24px;
-		}
-
-		.class-grid__item {
-			margin-bottom: 20px;
-		}
-
-		.class-card__title {
-			font-size: 16px;
-		}
-
-		.class-card__body {
-			padding: 16px;
-		}
-
-		.class-card__footer {
-			padding: 0 16px 16px;
-		}
+	.btn-primary:hover {
+		background: #0f2d42;
 	}
 
-	@media (max-width: 575px) {
-		.class-grid {
-			margin-left: -10px;
-			margin-right: -10px;
-		}
-
-		.class-grid__item {
-			padding-left: 10px;
-			padding-right: 10px;
-			margin-bottom: 15px;
-		}
-
-		.dashboard__page-title {
-			font-size: 22px;
-		}
+	.btn-secondary {
+		background: #f3f4f6;
+		color: #374151;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Pagination - Enterprise ICT 7 Standard
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	.btn-secondary:hover {
+		background: #e5e7eb;
+	}
 
+	.btn-outline {
+		background: transparent;
+		border: 1px solid #d1d5db;
+		color: #374151;
+	}
+
+	.btn-outline:hover {
+		background: #f9fafb;
+		border-color: #9ca3af;
+	}
+
+	.btn-orange {
+		background-color: #ff8c00;
+		color: #fff;
+	}
+
+	.btn-orange:hover {
+		background-color: #e67e00;
+	}
+
+	/* Pagination */
 	.pagination-wrapper {
 		padding: 40px 0;
 		text-align: center;
@@ -562,29 +705,25 @@
 		min-width: 40px;
 		height: 40px;
 		padding: 8px 12px;
-		border: 1px solid #e6e6e6;
+		border: 1px solid #e5e7eb;
 		background: #fff;
 		color: #333;
 		font-size: 14px;
 		font-weight: 600;
-		font-family: 'Open Sans', sans-serif;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: all 0.2s ease;
+		border-radius: 6px;
+		transition: all 0.2s;
 		cursor: pointer;
 	}
 
 	.page-numbers button:hover:not(:disabled) {
-		background: #f5f5f5;
+		background: #f3f4f6;
 		border-color: #143e59;
 		color: #143e59;
-		text-decoration: none;
 	}
 
 	.page-numbers button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		background: #f9f9f9;
 	}
 
 	.page-numbers .current {
@@ -598,29 +737,30 @@
 	.page-numbers .next {
 		min-width: auto;
 		padding: 8px 16px;
-		font-weight: 700;
 	}
 
-	@media (max-width: 576px) {
-		.pagination-wrapper {
-			padding: 30px 0;
+	/* Responsive */
+	@media (max-width: 767px) {
+		.dashboard__header {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 
-		.page-numbers {
-			gap: 4px;
+		.dashboard__page-title {
+			font-size: 24px;
 		}
 
-		.page-numbers button,
-		.page-numbers span {
-			min-width: 36px;
-			height: 36px;
-			padding: 6px 10px;
-			font-size: 13px;
+		.section-title {
+			font-size: 18px;
 		}
+	}
 
-		.page-numbers .prev,
-		.page-numbers .next {
-			padding: 6px 12px;
-		}
+	/* Dashboard Content Sections */
+	.dashboard__content-section {
+		margin-bottom: 40px;
+	}
+
+	.dashboard__content-section:last-child {
+		margin-bottom: 0;
 	}
 </style>

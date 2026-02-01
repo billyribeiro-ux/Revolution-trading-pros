@@ -507,3 +507,296 @@ pub struct PaginatedCourses {
     pub per_page: i32,
     pub total_pages: i32,
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// QUIZ/ASSESSMENT MODELS - ICT 7 Grade
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Quiz {
+    pub id: i64,
+    pub course_id: Uuid,
+    pub lesson_id: Option<Uuid>,
+    pub module_id: Option<i64>,
+    pub title: String,
+    pub description: Option<String>,
+    pub quiz_type: String, // "graded", "practice", "survey"
+    pub passing_score: Option<i32>,
+    pub time_limit_minutes: Option<i32>,
+    pub max_attempts: Option<i32>,
+    pub shuffle_questions: Option<bool>,
+    pub shuffle_answers: Option<bool>,
+    pub show_correct_answers: Option<bool>,
+    pub is_required: Option<bool>,
+    pub is_published: bool,
+    pub sort_order: i32,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct QuizQuestion {
+    pub id: i64,
+    pub quiz_id: i64,
+    pub question_type: String, // "multiple_choice", "true_false", "short_answer", "essay"
+    pub question_text: String,
+    pub question_html: Option<String>,
+    pub explanation: Option<String>,
+    pub points: i32,
+    pub sort_order: i32,
+    pub is_required: Option<bool>,
+    pub media_url: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct QuizAnswer {
+    pub id: i64,
+    pub question_id: i64,
+    pub answer_text: String,
+    pub is_correct: bool,
+    pub sort_order: i32,
+    pub feedback: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct UserQuizAttempt {
+    pub id: i64,
+    pub user_id: i64,
+    pub quiz_id: i64,
+    pub enrollment_id: i64,
+    pub score: Option<i32>,
+    pub max_score: i32,
+    pub score_percent: Option<f64>,
+    pub passed: Option<bool>,
+    pub started_at: NaiveDateTime,
+    pub completed_at: Option<NaiveDateTime>,
+    pub time_spent_seconds: Option<i32>,
+    pub attempt_number: i32,
+    pub answers: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuizWithQuestions {
+    #[serde(flatten)]
+    pub quiz: Quiz,
+    pub questions: Vec<QuestionWithAnswers>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuestionWithAnswers {
+    #[serde(flatten)]
+    pub question: QuizQuestion,
+    pub answers: Vec<QuizAnswer>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateQuizRequest {
+    pub title: String,
+    pub description: Option<String>,
+    pub lesson_id: Option<Uuid>,
+    pub module_id: Option<i64>,
+    pub quiz_type: Option<String>,
+    pub passing_score: Option<i32>,
+    pub time_limit_minutes: Option<i32>,
+    pub max_attempts: Option<i32>,
+    pub shuffle_questions: Option<bool>,
+    pub shuffle_answers: Option<bool>,
+    pub show_correct_answers: Option<bool>,
+    pub is_required: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateQuizRequest {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub lesson_id: Option<Uuid>,
+    pub module_id: Option<i64>,
+    pub quiz_type: Option<String>,
+    pub passing_score: Option<i32>,
+    pub time_limit_minutes: Option<i32>,
+    pub max_attempts: Option<i32>,
+    pub shuffle_questions: Option<bool>,
+    pub shuffle_answers: Option<bool>,
+    pub show_correct_answers: Option<bool>,
+    pub is_required: Option<bool>,
+    pub is_published: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateQuestionRequest {
+    pub question_type: String,
+    pub question_text: String,
+    pub question_html: Option<String>,
+    pub explanation: Option<String>,
+    pub points: Option<i32>,
+    pub media_url: Option<String>,
+    pub answers: Option<Vec<CreateAnswerRequest>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateAnswerRequest {
+    pub answer_text: String,
+    pub is_correct: bool,
+    pub feedback: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SubmitQuizRequest {
+    pub answers: Vec<SubmitAnswerRequest>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SubmitAnswerRequest {
+    pub question_id: i64,
+    pub answer_id: Option<i64>,
+    pub answer_text: Option<String>,
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// COURSE CATEGORY/TAG MODELS - ICT 7 Grade
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct CourseCategory {
+    pub id: i64,
+    pub name: String,
+    pub slug: String,
+    pub description: Option<String>,
+    pub icon: Option<String>,
+    pub color: Option<String>,
+    pub parent_id: Option<i64>,
+    pub sort_order: i32,
+    pub is_featured: Option<bool>,
+    pub course_count: Option<i32>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct CourseTag {
+    pub id: i64,
+    pub name: String,
+    pub slug: String,
+    pub color: Option<String>,
+    pub course_count: Option<i32>,
+    pub created_at: NaiveDateTime,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct CourseCategoryMapping {
+    pub course_id: Uuid,
+    pub category_id: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct CourseTagMapping {
+    pub course_id: Uuid,
+    pub tag_id: i64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateCategoryRequest {
+    pub name: String,
+    pub slug: Option<String>,
+    pub description: Option<String>,
+    pub icon: Option<String>,
+    pub color: Option<String>,
+    pub parent_id: Option<i64>,
+    pub is_featured: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateTagRequest {
+    pub name: String,
+    pub slug: Option<String>,
+    pub color: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateCategoriesRequest {
+    pub category_ids: Vec<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateTagsRequest {
+    pub tag_ids: Vec<i64>,
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// PREREQUISITES REQUEST DTOs - ICT 7 Grade
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Deserialize)]
+pub struct UpdatePrerequisitesRequest {
+    pub prerequisite_lesson_ids: Vec<Uuid>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CheckPrerequisitesRequest {
+    pub lesson_id: Uuid,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PrerequisitesStatus {
+    pub lesson_id: Uuid,
+    pub can_access: bool,
+    pub missing_prerequisites: Vec<PrerequisiteInfo>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PrerequisiteInfo {
+    pub lesson_id: Uuid,
+    pub lesson_title: String,
+    pub is_completed: bool,
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// REVIEW REQUEST DTOs - ICT 7 Grade
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateReviewRequest {
+    pub rating: Option<i16>,
+    pub title: Option<String>,
+    pub content: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ReviewHelpfulRequest {
+    pub helpful: bool,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CourseReviewSummary {
+    pub course_id: Uuid,
+    pub avg_rating: f64,
+    pub total_reviews: i32,
+    pub rating_distribution: RatingDistribution,
+    pub recent_reviews: Vec<ReviewWithUser>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct RatingDistribution {
+    pub five_star: i32,
+    pub four_star: i32,
+    pub three_star: i32,
+    pub two_star: i32,
+    pub one_star: i32,
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// ENROLLMENT STATS - ICT 7 Grade
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Serialize)]
+pub struct CourseEnrollmentStats {
+    pub course_id: Uuid,
+    pub total_enrollments: i64,
+    pub active_enrollments: i64,
+    pub completed_enrollments: i64,
+    pub avg_progress: f64,
+    pub avg_completion_time_days: Option<f64>,
+    pub certificates_issued: i64,
+}

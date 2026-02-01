@@ -394,6 +394,8 @@
 						</div>
 						{#if errors.password}
 							<p class="field-error">{errors.password[0]}</p>
+						{:else}
+							<p class="password-hint">Min 12 chars with uppercase, lowercase & number</p>
 						{/if}
 					</div>
 
@@ -921,6 +923,13 @@
 		color: #f87171;
 		font-size: 0.875rem;
 		font-weight: 600;
+	}
+
+	.password-hint {
+		color: #94a3b8;
+		font-size: 0.75rem;
+		font-weight: 500;
+		margin-top: 0.25rem;
 	}
 
 	/* Submit button */

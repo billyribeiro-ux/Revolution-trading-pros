@@ -168,7 +168,8 @@
 							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							required
-							minlength="8"
+							minlength="12"
+							autocomplete="new-password"
 							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
 							class:border-red-500={errors.password}
 							placeholder="••••••••"
@@ -190,7 +191,7 @@
 					{#if errors.password}
 						<p class="mt-2 text-sm text-red-400">{errors.password[0]}</p>
 					{:else}
-						<p class="mt-2 text-xs text-slate-500">Minimum 8 characters</p>
+						<p class="mt-2 text-xs text-slate-500">Minimum 12 characters with uppercase, lowercase, and number</p>
 					{/if}
 				</div>
 
@@ -211,6 +212,7 @@
 							type={showConfirmPassword ? 'text' : 'password'}
 							bind:value={password_confirmation}
 							required
+							autocomplete="new-password"
 							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
 							placeholder="••••••••"
 						/>

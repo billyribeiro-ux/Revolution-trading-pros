@@ -38,6 +38,7 @@
 		IconX
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -120,9 +121,12 @@
 	async function duplicateCampaign(id: string) {
 		try {
 			await api.post(`/api/admin/crm/campaigns/${id}/duplicate`);
+			toastStore.success('Campaign duplicated successfully');
 			await loadCampaigns();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to duplicate campaign';
+			const message = err instanceof Error ? err.message : 'Failed to duplicate campaign';
+			error = message;
+			toastStore.error(message);
 		}
 	}
 
@@ -131,9 +135,12 @@
 
 		try {
 			await api.delete(`/api/admin/crm/campaigns/${id}`);
+			toastStore.success('Campaign deleted successfully');
 			await loadCampaigns();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete campaign';
+			const message = err instanceof Error ? err.message : 'Failed to delete campaign';
+			error = message;
+			toastStore.error(message);
 		}
 	}
 

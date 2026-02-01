@@ -719,6 +719,159 @@ export const cdnApi = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
+// ICT 7 ADDITIONS: TRANSCODING, THUMBNAILS, EMBED CODE, BULK OPS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface TranscodingStatus {
+	video_id: number;
+	encoding_status: string;
+	is_ready: boolean;
+	thumbnail_url?: string;
+	duration?: number;
+	metadata?: Record<string, any>;
+}
+
+export interface EmbedCode {
+	video_id: number;
+	title: string;
+	platform: string;
+	iframe_url: string;
+	embed_html: string;
+	settings: {
+		width: number;
+		height: number;
+		autoplay: boolean;
+		responsive: boolean;
+	};
+}
+
+export interface BulkTagsRequest {
+	video_ids: number[];
+	add_tags?: string[];
+	remove_tags?: string[];
+}
+
+export interface BulkFeatureRequest {
+	video_ids: number[];
+	feature: boolean;
+}
+
+export const transcodingApi = {
+	/**
+	 * Get transcoding status for a video
+	 */
+	async getStatus(
+		videoId: number
+	): Promise<{ success: boolean; data?: TranscodingStatus; error?: string }> {
+		return apiRequest(`/videos/${videoId}/transcoding-status`);
+	},
+
+	/**
+	 * Generate thumbnail at specific timestamp
+	 */
+	async generateThumbnail(
+		videoId: number,
+		timestampSeconds: number
+	): Promise<{ success: boolean; data?: { thumbnail_url: string }; error?: string }> {
+		return apiRequest(`/videos/${videoId}/generate-thumbnail`, {
+			method: 'POST',
+			body: JSON.stringify({ timestamp_seconds: timestampSeconds })
+		});
+	}
+};
+
+export const embedApi = {
+	/**
+	 * Get embed code for a video
+	 */
+	async getEmbedCode(
+		videoId: number,
+		options?: {
+			width?: number;
+			height?: number;
+			autoplay?: boolean;
+			responsive?: boolean;
+		}
+	): Promise<{ success: boolean; data?: EmbedCode; error?: string }> {
+		const params = new URLSearchParams();
+		if (options?.width) params.set('width', options.width.toString());
+		if (options?.height) params.set('height', options.height.toString());
+		if (options?.autoplay !== undefined) params.set('autoplay', options.autoplay.toString());
+		if (options?.responsive !== undefined) params.set('responsive', options.responsive.toString());
+
+		const query = params.toString();
+		return apiRequest(`/videos/${videoId}/embed-code${query ? `?${query}` : ''}`);
+	}
+};
+
+export const bulkOpsApi = {
+	/**
+	 * Bulk publish/unpublish videos
+	 */
+	async bulkPublish(
+		videoIds: number[],
+		publish: boolean
+	): Promise<{ success: boolean; message?: string; error?: string }> {
+		return apiRequest('/bulk/publish', {
+			method: 'POST',
+			body: JSON.stringify({ video_ids: videoIds, publish })
+		});
+	},
+
+	/**
+	 * Bulk delete videos
+	 */
+	async bulkDelete(
+		videoIds: number[],
+		force?: boolean
+	): Promise<{ success: boolean; message?: string; error?: string }> {
+		return apiRequest('/bulk/delete', {
+			method: 'POST',
+			body: JSON.stringify({ video_ids: videoIds, force })
+		});
+	},
+
+	/**
+	 * Bulk feature/unfeature videos
+	 */
+	async bulkFeature(
+		videoIds: number[],
+		feature: boolean
+	): Promise<{ success: boolean; message?: string; error?: string }> {
+		return apiRequest('/bulk/feature', {
+			method: 'POST',
+			body: JSON.stringify({ video_ids: videoIds, feature })
+		});
+	},
+
+	/**
+	 * Bulk add/remove tags
+	 */
+	async bulkUpdateTags(
+		data: BulkTagsRequest
+	): Promise<{ success: boolean; message?: string; updated_count?: number; error?: string }> {
+		return apiRequest('/bulk/tags', {
+			method: 'POST',
+			body: JSON.stringify(data)
+		});
+	},
+
+	/**
+	 * Bulk assign videos to rooms
+	 */
+	async bulkAssign(
+		videoIds: number[],
+		roomIds: number[],
+		clearExisting?: boolean
+	): Promise<{ success: boolean; message?: string; error?: string }> {
+		return apiRequest('/bulk/assign', {
+			method: 'POST',
+			body: JSON.stringify({ video_ids: videoIds, room_ids: roomIds, clear_existing: clearExisting })
+		});
+	}
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 

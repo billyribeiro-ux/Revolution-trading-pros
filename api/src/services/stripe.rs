@@ -65,11 +65,68 @@ pub struct StripeRefund {
     pub reason: Option<String>,
 }
 
+/// Stripe payment method response - ICT 7 Fix: Payment Methods Management
+#[derive(Debug, Serialize, Deserialize)]
+pub struct StripePaymentMethod {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub method_type: String,
+    pub card: Option<StripeCardDetails>,
+    pub billing_details: Option<StripeBillingDetails>,
+    pub created: i64,
+    pub customer: Option<String>,
+}
+
+/// Card details from payment method
+#[derive(Debug, Serialize, Deserialize)]
+pub struct StripeCardDetails {
+    pub brand: String,
+    pub last4: String,
+    pub exp_month: u32,
+    pub exp_year: u32,
+    pub funding: Option<String>,
+    pub country: Option<String>,
+}
+
+/// Billing details from payment method
+#[derive(Debug, Serialize, Deserialize)]
+pub struct StripeBillingDetails {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub phone: Option<String>,
+    pub address: Option<StripeAddress>,
+}
+
+/// Address from billing details
+#[derive(Debug, Serialize, Deserialize)]
+pub struct StripeAddress {
+    pub city: Option<String>,
+    pub country: Option<String>,
+    pub line1: Option<String>,
+    pub line2: Option<String>,
+    pub postal_code: Option<String>,
+    pub state: Option<String>,
+}
+
+/// Payment methods list response
+#[derive(Debug, Deserialize)]
+pub struct PaymentMethodsList {
+    pub data: Vec<StripePaymentMethod>,
+    pub has_more: bool,
+}
+
 /// Stripe billing portal session
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StripeBillingPortal {
     pub id: String,
     pub url: String,
+}
+
+/// Payment retry result - ICT 7 Fix
+#[derive(Debug)]
+pub struct RetryPaymentResult {
+    pub success: bool,
+    pub error: Option<String>,
 }
 
 /// Line item for checkout
@@ -549,6 +606,202 @@ impl StripeService {
     /// Parse webhook event from JSON payload
     pub fn parse_webhook_event(&self, payload: &str) -> Result<WebhookEvent> {
         Ok(serde_json::from_str(payload)?)
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PAYMENT RETRY - ICT 7 Fix
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// Update default payment method for a customer
+    pub async fn update_default_payment_method(
+        &self,
+        customer_id: &str,
+        payment_method_id: &str,
+    ) -> Result<()> {
+        // Attach payment method to customer
+        self.client
+            .post(&format!("payment_methods/{}/attach", payment_method_id))
+            .form(&[("customer", customer_id)])
+            .send()
+            .await?
+            .error_for_status()?;
+
+        // Set as default invoice payment method
+        self.client
+            .post(&format!("customers/{}", customer_id))
+            .form(&[("invoice_settings[default_payment_method]", payment_method_id)])
+            .send()
+            .await?
+            .error_for_status()?;
+
+        Ok(())
+    }
+
+    /// Retry a failed subscription payment
+    pub async fn retry_subscription_payment(&self, subscription_id: &str) -> Result<RetryPaymentResult> {
+        // Get the latest open invoice for this subscription
+        #[derive(Deserialize)]
+        struct InvoiceList {
+            data: Vec<StripeInvoice>,
+        }
+
+        #[derive(Deserialize)]
+        struct StripeInvoice {
+            id: String,
+            status: String,
+        }
+
+        let invoices: InvoiceList = self
+            .client
+            .get("invoices")
+            .query(&[
+                ("subscription", subscription_id),
+                ("status", "open"),
+                ("limit", "1"),
+            ])
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        let invoice = invoices.data.first().ok_or_else(|| {
+            anyhow::anyhow!("No open invoice found for subscription")
+        })?;
+
+        // Pay the invoice
+        let response = self
+            .client
+            .post(&format!("invoices/{}/pay", invoice.id))
+            .send()
+            .await?;
+
+        if response.status().is_success() {
+            Ok(RetryPaymentResult {
+                success: true,
+                error: None,
+            })
+        } else {
+            let error_body: serde_json::Value = response.json().await?;
+            let error_message = error_body["error"]["message"]
+                .as_str()
+                .unwrap_or("Payment failed")
+                .to_string();
+
+            Ok(RetryPaymentResult {
+                success: false,
+                error: Some(error_message),
+            })
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PAYMENT METHODS MANAGEMENT - ICT 7 Fix
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// List payment methods for a customer
+    /// GET /v1/payment_methods?customer={customer_id}&type=card
+    pub async fn list_payment_methods(&self, customer_id: &str) -> Result<Vec<StripePaymentMethod>> {
+        let response: PaymentMethodsList = self
+            .client
+            .get(format!("{}/payment_methods", STRIPE_API_BASE))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .query(&[
+                ("customer", customer_id),
+                ("type", "card"),
+                ("limit", "100"),
+            ])
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response.data)
+    }
+
+    /// Attach a payment method to a customer
+    /// POST /v1/payment_methods/{id}/attach
+    pub async fn attach_payment_method(
+        &self,
+        payment_method_id: &str,
+        customer_id: &str,
+    ) -> Result<StripePaymentMethod> {
+        let response: StripePaymentMethod = self
+            .client
+            .post(format!(
+                "{}/payment_methods/{}/attach",
+                STRIPE_API_BASE, payment_method_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(&[("customer", customer_id)])
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response)
+    }
+
+    /// Detach a payment method from a customer
+    /// POST /v1/payment_methods/{id}/detach
+    pub async fn detach_payment_method(&self, payment_method_id: &str) -> Result<StripePaymentMethod> {
+        let response: StripePaymentMethod = self
+            .client
+            .post(format!(
+                "{}/payment_methods/{}/detach",
+                STRIPE_API_BASE, payment_method_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response)
+    }
+
+    /// Retrieve a specific payment method
+    /// GET /v1/payment_methods/{id}
+    pub async fn get_payment_method(&self, payment_method_id: &str) -> Result<StripePaymentMethod> {
+        let response: StripePaymentMethod = self
+            .client
+            .get(format!(
+                "{}/payment_methods/{}",
+                STRIPE_API_BASE, payment_method_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response)
+    }
+
+    /// Get customer's default payment method
+    /// Returns the default payment method ID if set
+    pub async fn get_customer_default_payment_method(&self, customer_id: &str) -> Result<Option<String>> {
+        let response: serde_json::Value = self
+            .client
+            .get(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        // Check invoice_settings.default_payment_method first, then default_source
+        let default_pm = response["invoice_settings"]["default_payment_method"]
+            .as_str()
+            .map(|s| s.to_string())
+            .or_else(|| response["default_source"].as_str().map(|s| s.to_string()));
+
+        Ok(default_pm)
     }
 }
 

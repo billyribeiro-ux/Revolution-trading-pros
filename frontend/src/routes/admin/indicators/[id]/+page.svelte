@@ -1,38 +1,66 @@
 <script lang="ts">
 	/**
 	 * Admin Indicator Editor Page
-	 * Apple Principal Engineer ICT 7 Grade - January 2026
+	 * Apple Principal Engineer ICT 7 Grade - February 2026
+	 * Full API integration for files, videos, and license management
 	 */
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
-	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
+	// ICT 7: Match actual backend schema
 	interface Indicator {
-		id: number; // Backend uses i64
+		id: number;
 		name: string;
 		slug: string;
-		description?: string; // Backend uses 'description' not 'tagline'
+		description?: string;
 		long_description?: string;
-		price?: number; // Backend uses price (float dollars), not price_cents
-		is_active?: boolean; // Backend uses 'is_active' not 'status'
-		thumbnail?: string; // Backend uses 'thumbnail' not 'logo_url'
+		price?: number;
+		is_active?: boolean;
+		thumbnail?: string;
 		platform?: string;
 		version?: string;
 		download_url?: string;
 		documentation_url?: string;
-		features?: any; // JSON value in backend
-		requirements?: any; // JSON value in backend
-		screenshots?: any; // JSON value in backend
+		features?: any;
+		requirements?: any;
+		screenshots?: any;
 		meta_title?: string;
 		meta_description?: string;
 		created_at?: string;
 		updated_at?: string;
 	}
 
-	// ICT 7 NOTE: Files/Videos/Platforms endpoints don't exist in backend yet
-	// These features are planned but not implemented in admin_indicators.rs
+	interface IndicatorFile {
+		id: number;
+		indicator_id: number;
+		platform: string;
+		file_name: string;
+		display_name?: string;
+		file_path?: string;
+		file_size_bytes?: number;
+		version?: string;
+		is_current_version?: boolean;
+		is_active?: boolean;
+		display_order?: number;
+		download_count?: number;
+		created_at?: string;
+	}
+
+	interface IndicatorVideo {
+		id: number;
+		indicator_id: number;
+		title: string;
+		description?: string;
+		video_url?: string;
+		embed_url?: string;
+		thumbnail_url?: string;
+		duration_seconds?: number;
+		display_order?: number;
+		is_active?: boolean;
+		created_at?: string;
+	}
 
 	let indicator = $state<Indicator | null>(null);
 	let loading = $state(true);
@@ -40,6 +68,45 @@
 	let activeTab = $state<'details' | 'files' | 'videos' | 'seo'>('details');
 	let error = $state('');
 	let success = $state('');
+
+	// Files and Videos state - ICT 7 with real API integration
+	let files = $state<IndicatorFile[]>([]);
+	let videos = $state<IndicatorVideo[]>([]);
+	let loadingFiles = $state(false);
+	let loadingVideos = $state(false);
+
+	// File upload modal state
+	let showFileModal = $state(false);
+	let newFile = $state({
+		platform: 'tradingview',
+		display_name: '',
+		version: '1.0',
+		file: null as File | null
+	});
+	let uploadingFile = $state(false);
+
+	// Video add modal state
+	let showVideoModal = $state(false);
+	let newVideo = $state({
+		title: '',
+		description: '',
+		video_url: '',
+		embed_url: '',
+		thumbnail_url: ''
+	});
+	let addingVideo = $state(false);
+
+	// Platform options
+	const platformOptions = [
+		{ value: 'tradingview', label: 'TradingView' },
+		{ value: 'thinkorswim', label: 'ThinkorSwim' },
+		{ value: 'metatrader', label: 'MetaTrader' },
+		{ value: 'mt4', label: 'MetaTrader 4' },
+		{ value: 'mt5', label: 'MetaTrader 5' },
+		{ value: 'ninjatrader', label: 'NinjaTrader' },
+		{ value: 'tradestation', label: 'TradeStation' },
+		{ value: 'sierrachart', label: 'Sierra Chart' }
+	];
 
 	// Extract indicator ID from URL pathname
 	let indicatorId = $state('');
@@ -53,18 +120,48 @@
 	const fetchIndicator = async () => {
 		loading = true;
 		try {
-			// ICT 7 FIX: Backend returns indicator directly in data, not data.indicator
 			const indicatorData = await adminFetch(`/api/admin/indicators/${indicatorId}`);
-
 			if (indicatorData.success) {
-				// Backend returns { success: true, data: <indicator> }
 				indicator = indicatorData.data;
+				// Fetch files and videos after indicator loads
+				fetchFiles();
+				fetchVideos();
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
 			console.error(e);
 		} finally {
 			loading = false;
+		}
+	};
+
+	// ICT 7: Fetch indicator files from real API
+	const fetchFiles = async () => {
+		loadingFiles = true;
+		try {
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/files`);
+			if (data.success) {
+				files = data.data || [];
+			}
+		} catch (e) {
+			console.error('Failed to load files:', e);
+		} finally {
+			loadingFiles = false;
+		}
+	};
+
+	// ICT 7: Fetch indicator videos from real API
+	const fetchVideos = async () => {
+		loadingVideos = true;
+		try {
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/videos`);
+			if (data.success) {
+				videos = data.data || [];
+			}
+		} catch (e) {
+			console.error('Failed to load videos:', e);
+		} finally {
+			loadingVideos = false;
 		}
 	};
 
@@ -75,7 +172,6 @@
 		success = '';
 
 		try {
-			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}`, {
 				method: 'PUT',
 				body: JSON.stringify(indicator)
@@ -95,7 +191,6 @@
 		}
 	};
 
-	// ICT 7 FIX: Backend uses /toggle endpoint, not /publish
 	const toggleIndicator = async () => {
 		if (!indicator) return;
 		try {
@@ -112,13 +207,168 @@
 		}
 	};
 
-	// Placeholder data for files and videos (backend endpoints to be implemented)
-	let files = $state<
-		Array<{ id: number; platform: string; filename: string; version: string; is_active: boolean }>
-	>([]);
-	let videos = $state<
-		Array<{ id: number; title: string; thumbnail?: string; duration?: string; platform: string }>
-	>([]);
+	// ICT 7: Upload new file
+	const uploadFile = async () => {
+		if (!newFile.file || !newFile.display_name) {
+			error = 'Please select a file and provide a display name';
+			return;
+		}
+
+		uploadingFile = true;
+		error = '';
+
+		try {
+			const formData = new FormData();
+			formData.append('file', newFile.file);
+			formData.append('platform', newFile.platform);
+			formData.append('display_name', newFile.display_name);
+			formData.append('version', newFile.version);
+
+			const response = await fetch(`/api/admin/indicators/${indicatorId}/files`, {
+				method: 'POST',
+				body: formData,
+				credentials: 'include'
+			});
+
+			const data = await response.json();
+
+			if (data.success) {
+				files = [...files, data.data];
+				showFileModal = false;
+				newFile = { platform: 'tradingview', display_name: '', version: '1.0', file: null };
+				success = 'File uploaded successfully';
+				setTimeout(() => (success = ''), 3000);
+			} else {
+				error = data.error || 'Failed to upload file';
+			}
+		} catch (e) {
+			error = 'Failed to upload file';
+			console.error(e);
+		} finally {
+			uploadingFile = false;
+		}
+	};
+
+	// ICT 7: Delete file
+	const deleteFile = async (fileId: number) => {
+		if (!confirm('Are you sure you want to delete this file?')) return;
+
+		try {
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, {
+				method: 'DELETE'
+			});
+
+			if (data.success) {
+				files = files.filter((f) => f.id !== fileId);
+				success = 'File deleted successfully';
+				setTimeout(() => (success = ''), 3000);
+			} else {
+				error = data.error || 'Failed to delete file';
+			}
+		} catch (e) {
+			error = 'Failed to delete file';
+		}
+	};
+
+	// ICT 7: Toggle file active status
+	const toggleFileStatus = async (fileId: number) => {
+		try {
+			const file = files.find((f) => f.id === fileId);
+			if (!file) return;
+
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, {
+				method: 'PUT',
+				body: JSON.stringify({ is_active: !file.is_active })
+			});
+
+			if (data.success) {
+				files = files.map((f) => (f.id === fileId ? data.data : f));
+			}
+		} catch (e) {
+			error = 'Failed to update file status';
+		}
+	};
+
+	// ICT 7: Add new video
+	const addVideo = async () => {
+		if (!newVideo.title) {
+			error = 'Please provide a video title';
+			return;
+		}
+
+		addingVideo = true;
+		error = '';
+
+		try {
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/videos`, {
+				method: 'POST',
+				body: JSON.stringify(newVideo)
+			});
+
+			if (data.success) {
+				videos = [...videos, data.data];
+				showVideoModal = false;
+				newVideo = { title: '', description: '', video_url: '', embed_url: '', thumbnail_url: '' };
+				success = 'Video added successfully';
+				setTimeout(() => (success = ''), 3000);
+			} else {
+				error = data.error || 'Failed to add video';
+			}
+		} catch (e) {
+			error = 'Failed to add video';
+			console.error(e);
+		} finally {
+			addingVideo = false;
+		}
+	};
+
+	// ICT 7: Delete video
+	const deleteVideo = async (videoId: number) => {
+		if (!confirm('Are you sure you want to delete this video?')) return;
+
+		try {
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, {
+				method: 'DELETE'
+			});
+
+			if (data.success) {
+				videos = videos.filter((v) => v.id !== videoId);
+				success = 'Video deleted successfully';
+				setTimeout(() => (success = ''), 3000);
+			} else {
+				error = data.error || 'Failed to delete video';
+			}
+		} catch (e) {
+			error = 'Failed to delete video';
+		}
+	};
+
+	// Format file size for display
+	const formatFileSize = (bytes?: number): string => {
+		if (!bytes) return 'Unknown';
+		if (bytes < 1024) return `${bytes} B`;
+		if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+		return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+	};
+
+	// Format duration for display
+	const formatDuration = (seconds?: number): string => {
+		if (!seconds) return '';
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	};
+
+	// Handle file input change
+	const handleFileSelect = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		if (target.files && target.files.length > 0) {
+			newFile.file = target.files[0];
+			if (!newFile.display_name) {
+				newFile.display_name = target.files[0].name;
+			}
+		}
+	};
 </script>
 
 <svelte:head>
@@ -141,7 +391,6 @@
 			<div class="header-left">
 				<a href="/admin/indicators" class="back-link">← Back</a>
 				<h1>{indicator.name}</h1>
-				<!-- ICT 7 FIX: Use is_active instead of status -->
 				<span
 					class="status"
 					class:status--published={indicator.is_active}
@@ -152,7 +401,6 @@
 			</div>
 			<div class="header-actions">
 				<a href="/indicators/{indicator.slug}" target="_blank" class="btn-secondary">Preview</a>
-				<!-- ICT 7 FIX: Use toggle endpoint instead of publish -->
 				<button class="btn-success" onclick={toggleIndicator}>
 					{indicator.is_active ? 'Deactivate' : 'Activate'}
 				</button>
@@ -195,19 +443,17 @@
 							<label for="slug">Slug</label>
 							<input type="text" id="slug" name="slug" bind:value={indicator.slug} />
 						</div>
-						<!-- ICT 7 FIX: Match backend fields -->
 						<div class="form-group">
 							<label for="price">Price (USD)</label>
 							<input type="number" id="price" name="price" step="0.01" bind:value={indicator.price} />
 						</div>
 						<div class="form-group">
 							<label for="platform">Platform</label>
-							<input
-								type="text"
-								id="platform" name="platform"
-								bind:value={indicator.platform}
-								placeholder="thinkorswim, tradingview, etc."
-							/>
+							<select id="platform" bind:value={indicator.platform}>
+								{#each platformOptions as opt}
+									<option value={opt.value}>{opt.label}</option>
+								{/each}
+							</select>
 						</div>
 						<div class="form-group">
 							<label for="version">Version</label>
@@ -223,7 +469,6 @@
 					</div>
 				</div>
 
-				<!-- ICT 7 FIX: Match backend fields -->
 				<div class="form-section">
 					<h2>Images & URLs</h2>
 					<div class="form-grid">
@@ -269,13 +514,20 @@
 						></textarea>
 					</div>
 				</div>
+
 			{:else if activeTab === 'files'}
 				<div class="form-section">
 					<div class="section-header">
 						<h2>Indicator Files</h2>
-						<button class="btn-primary">Upload File</button>
+						<button class="btn-primary" onclick={() => (showFileModal = true)}>Upload File</button>
 					</div>
-					{#if files.length === 0}
+
+					{#if loadingFiles}
+						<div class="loading-inline">
+							<div class="spinner-small"></div>
+							<span>Loading files...</span>
+						</div>
+					{:else if files.length === 0}
 						<div class="empty-state">
 							<p>No files uploaded yet</p>
 							<p class="hint">Upload indicator files for different trading platforms</p>
@@ -288,6 +540,8 @@
 										<th>Platform</th>
 										<th>File</th>
 										<th>Version</th>
+										<th>Size</th>
+										<th>Downloads</th>
 										<th>Status</th>
 										<th>Actions</th>
 									</tr>
@@ -296,15 +550,23 @@
 									{#each files as file}
 										<tr>
 											<td class="platform">{file.platform}</td>
-											<td class="file-name">{file.filename}</td>
-											<td>{file.version}</td>
-											<td
-												><span class="file-status" class:active={file.is_active}
-													>{file.is_active ? 'Active' : 'Inactive'}</span
-												></td
-											>
+											<td class="file-name">{file.display_name || file.file_name}</td>
+											<td>{file.version || '1.0'}</td>
+											<td>{formatFileSize(file.file_size_bytes)}</td>
+											<td>{file.download_count || 0}</td>
 											<td>
-												<button class="btn-icon btn-danger">Delete</button>
+												<button
+													class="file-status"
+													class:active={file.is_active}
+													onclick={() => toggleFileStatus(file.id)}
+												>
+													{file.is_active ? 'Active' : 'Inactive'}
+												</button>
+											</td>
+											<td>
+												<button class="btn-icon btn-danger" onclick={() => deleteFile(file.id)} title="Delete file">
+													X
+												</button>
 											</td>
 										</tr>
 									{/each}
@@ -313,13 +575,20 @@
 						</div>
 					{/if}
 				</div>
+
 			{:else if activeTab === 'videos'}
 				<div class="form-section">
 					<div class="section-header">
 						<h2>Tutorial Videos</h2>
-						<button class="btn-primary">Add Video</button>
+						<button class="btn-primary" onclick={() => (showVideoModal = true)}>Add Video</button>
 					</div>
-					{#if videos.length === 0}
+
+					{#if loadingVideos}
+						<div class="loading-inline">
+							<div class="spinner-small"></div>
+							<span>Loading videos...</span>
+						</div>
+					{:else if videos.length === 0}
 						<div class="empty-state">
 							<p>No videos added yet</p>
 							<p class="hint">Add tutorial videos to help users learn the indicator</p>
@@ -328,24 +597,29 @@
 						<div class="videos-grid">
 							{#each videos as video}
 								<div class="video-card">
-									{#if video.thumbnail}
-										<img src={video.thumbnail} alt={video.title} class="thumbnail" />
+									{#if video.thumbnail_url}
+										<img src={video.thumbnail_url} alt={video.title} class="thumbnail" />
 									{:else}
 										<div class="thumbnail-placeholder">No Thumbnail</div>
 									{/if}
 									<div class="video-info">
 										<h3>{video.title}</h3>
 										<div class="video-meta">
-											<span class="tag">{video.platform}</span>
-											{#if video.duration}<span class="tag">{video.duration}</span>{/if}
+											{#if video.duration_seconds}
+												<span class="tag">{formatDuration(video.duration_seconds)}</span>
+											{/if}
+											<span class="tag" class:active={video.is_active}>
+												{video.is_active !== false ? 'Active' : 'Inactive'}
+											</span>
 										</div>
 									</div>
-									<button class="btn-icon btn-danger">×</button>
+									<button class="btn-icon btn-danger" onclick={() => deleteVideo(video.id)} title="Delete video">X</button>
 								</div>
 							{/each}
 						</div>
 					{/if}
 				</div>
+
 			{:else if activeTab === 'seo'}
 				<div class="form-section">
 					<h2>SEO Settings</h2>
@@ -373,6 +647,89 @@
 	{/if}
 </div>
 
+<!-- File Upload Modal -->
+{#if showFileModal}
+	<div class="modal-overlay" onclick={() => (showFileModal = false)}>
+		<div class="modal" onclick={(e) => e.stopPropagation()}>
+			<div class="modal-header">
+				<h2>Upload Indicator File</h2>
+				<button class="btn-close" onclick={() => (showFileModal = false)}>X</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="file-platform">Platform *</label>
+					<select id="file-platform" bind:value={newFile.platform}>
+						{#each platformOptions as opt}
+							<option value={opt.value}>{opt.label}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="file-name">Display Name *</label>
+					<input type="text" id="file-name" bind:value={newFile.display_name} placeholder="e.g., Squeeze Pro v2.0" />
+				</div>
+				<div class="form-group">
+					<label for="file-version">Version</label>
+					<input type="text" id="file-version" bind:value={newFile.version} placeholder="1.0" />
+				</div>
+				<div class="form-group">
+					<label for="file-input">File *</label>
+					<input type="file" id="file-input" onchange={handleFileSelect} />
+					{#if newFile.file}
+						<p class="hint">Selected: {newFile.file.name} ({formatFileSize(newFile.file.size)})</p>
+					{/if}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => (showFileModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={uploadFile} disabled={uploadingFile}>
+					{uploadingFile ? 'Uploading...' : 'Upload File'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Video Add Modal -->
+{#if showVideoModal}
+	<div class="modal-overlay" onclick={() => (showVideoModal = false)}>
+		<div class="modal" onclick={(e) => e.stopPropagation()}>
+			<div class="modal-header">
+				<h2>Add Tutorial Video</h2>
+				<button class="btn-close" onclick={() => (showVideoModal = false)}>X</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="video-title">Title *</label>
+					<input type="text" id="video-title" bind:value={newVideo.title} placeholder="e.g., Getting Started with Squeeze Pro" />
+				</div>
+				<div class="form-group">
+					<label for="video-description">Description</label>
+					<textarea id="video-description" rows="3" bind:value={newVideo.description} placeholder="Brief description of the video"></textarea>
+				</div>
+				<div class="form-group">
+					<label for="video-url">Video URL (Direct)</label>
+					<input type="url" id="video-url" bind:value={newVideo.video_url} placeholder="https://..." />
+				</div>
+				<div class="form-group">
+					<label for="embed-url">Embed URL (YouTube/Vimeo)</label>
+					<input type="url" id="embed-url" bind:value={newVideo.embed_url} placeholder="https://www.youtube.com/embed/..." />
+				</div>
+				<div class="form-group">
+					<label for="thumbnail-url">Thumbnail URL</label>
+					<input type="url" id="thumbnail-url" bind:value={newVideo.thumbnail_url} placeholder="https://..." />
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => (showVideoModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={addVideo} disabled={addingVideo}>
+					{addingVideo ? 'Adding...' : 'Add Video'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
 	.editor-page {
 		padding: 24px;
@@ -396,6 +753,21 @@
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
+	}
+	.spinner-small {
+		width: 20px;
+		height: 20px;
+		border: 2px solid #e5e7eb;
+		border-top-color: #143e59;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+	.loading-inline {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 24px;
+		color: #6b7280;
 	}
 	@keyframes spin {
 		to {
@@ -491,6 +863,17 @@
 	}
 	.btn-success:hover {
 		background: #059669;
+	}
+	.btn-close {
+		background: none;
+		border: none;
+		font-size: 20px;
+		cursor: pointer;
+		color: #6b7280;
+		padding: 4px 8px;
+	}
+	.btn-close:hover {
+		color: #1f2937;
 	}
 
 	.alert {
@@ -611,9 +994,13 @@
 		color: #9ca3af;
 	}
 
+	.files-table {
+		overflow-x: auto;
+	}
 	.files-table table {
 		width: 100%;
 		border-collapse: collapse;
+		min-width: 600px;
 	}
 	.files-table th {
 		text-align: left;
@@ -633,18 +1020,23 @@
 		text-transform: capitalize;
 	}
 	.file-name {
-		color: #6b7280;
-		font-size: 13px;
+		color: #1f2937;
+		font-size: 14px;
 	}
 	.file-status {
 		font-size: 12px;
-		padding: 2px 8px;
+		padding: 4px 12px;
 		border-radius: 4px;
 		background: #f3f4f6;
+		border: none;
+		cursor: pointer;
 	}
 	.file-status.active {
 		background: #d1fae5;
 		color: #065f46;
+	}
+	.file-status:hover {
+		opacity: 0.8;
 	}
 
 	.videos-grid {
@@ -688,6 +1080,9 @@
 		color: #fff;
 		border-radius: 4px;
 	}
+	.tag.active {
+		background: #10b981;
+	}
 	.video-card .btn-icon {
 		position: absolute;
 		top: 8px;
@@ -707,22 +1102,61 @@
 		border-radius: 6px;
 		color: #6b7280;
 		cursor: pointer;
-		/* Touch-friendly sizing */
 		min-height: 44px;
 		min-width: 44px;
+		font-weight: bold;
 	}
 	.btn-danger:hover {
 		background: #fee2e2;
 		color: #dc2626;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * 2026 Mobile-First Responsive Design
-	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
-	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* Modal Styles */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 20px;
+	}
+	.modal {
+		background: #fff;
+		border-radius: 12px;
+		max-width: 500px;
+		width: 100%;
+		max-height: 90vh;
+		overflow-y: auto;
+	}
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 24px;
+		border-bottom: 1px solid #e5e7eb;
+	}
+	.modal-header h2 {
+		margin: 0;
+		font-size: 18px;
+		font-weight: 600;
+	}
+	.modal-body {
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+		padding: 16px 24px;
+		border-top: 1px solid #e5e7eb;
+	}
 
-	/* Mobile base styles */
+	/* Responsive Design */
 	@media (max-width: 639px) {
 		.editor-page {
 			padding: 16px;
@@ -779,16 +1213,19 @@
 		.videos-grid {
 			grid-template-columns: 1fr;
 		}
+
+		.modal {
+			margin: 10px;
+			max-width: calc(100% - 20px);
+		}
 	}
 
-	/* sm: Small devices (≥ 640px) */
 	@media (min-width: 640px) {
 		.header-actions {
 			flex-wrap: nowrap;
 		}
 	}
 
-	/* md: Medium devices (≥ 768px) */
 	@media (min-width: 768px) {
 		.editor-page {
 			padding: 24px;
@@ -799,7 +1236,6 @@
 		}
 	}
 
-	/* Touch device optimizations */
 	@media (hover: none) and (pointer: coarse) {
 		.btn-primary,
 		.btn-secondary,
@@ -815,24 +1251,18 @@
 		input,
 		select,
 		textarea {
-			font-size: 16px; /* Prevent zoom on iOS */
+			font-size: 16px;
 			min-height: 44px;
 		}
 	}
 
-	/* Reduced motion preference */
 	@media (prefers-reduced-motion: reduce) {
-		.spinner {
+		.spinner,
+		.spinner-small {
 			animation: none;
-		}
-
-		.btn-primary:hover,
-		.btn-secondary:hover {
-			transform: none;
 		}
 	}
 
-	/* Safe areas for notched devices */
 	@supports (padding: max(0px)) {
 		.editor-page {
 			padding-bottom: max(24px, env(safe-area-inset-bottom));

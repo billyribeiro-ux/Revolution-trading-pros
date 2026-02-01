@@ -1,168 +1,246 @@
 <!--
 	Indicator Detail & Download Page
 	═══════════════════════════════════════════════════════════════════════════
-	Pixel-perfect match to WordPress implementation
-	Reference: MyIndicatorDownload HTML file
-	
+	Apple Principal Engineer ICT 7 Grade - February 2026
+
 	Features:
+	- Real API integration (no more mock data)
 	- Indicator name and details
 	- Available platforms display
 	- Training videos
 	- Platform-specific download sections
+	- Secure download URL generation
 	- Supporting documentation links
 	- Breadcrumb navigation
-	- Matches original WordPress structure exactly
+	- WordPress-compatible structure
 -->
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
-	interface DownloadFile {
+	// Platform logo mapping
+	const platformLogos: Record<string, string> = {
+		thinkorswim: '/logos/platforms/thinkorswim.png',
+		tradingview: '/logos/platforms/tradingview.png',
+		metatrader: '/logos/platforms/metatrader.png',
+		ninjatrader: '/logos/platforms/ninjatrader.png',
+		tradestation: '/logos/platforms/tradestation.png',
+		sierrachart: '/logos/platforms/sierrachart.png',
+		ctrader: '/logos/platforms/ctrader.png'
+	};
+
+	// Platform display names
+	const platformNames: Record<string, string> = {
+		thinkorswim: 'ThinkorSwim',
+		tradingview: 'TradingView',
+		metatrader: 'MetaTrader',
+		mt4: 'MetaTrader 4',
+		mt5: 'MetaTrader 5',
+		ninjatrader: 'NinjaTrader 8',
+		tradestation: 'TradeStation',
+		sierrachart: 'Sierra Chart',
+		ctrader: 'cTrader'
+	};
+
+	interface IndicatorFile {
+		id: number;
+		file_name: string;
+		display_name?: string;
+		platform: string;
+		version?: string;
+		file_size_bytes?: number;
+	}
+
+	interface IndicatorVideo {
+		id: number;
+		title: string;
+		embed_url?: string;
+		play_url?: string;
+		thumbnail_url?: string;
+	}
+
+	interface Indicator {
+		id: number;
 		name: string;
-		downloadUrl: string;
+		slug: string;
+		description?: string;
+		platform?: string;
+		version?: string;
+		documentation_url?: string;
+		license_key?: string;
 	}
 
 	interface PlatformDownloads {
 		platform: string;
 		logo: string;
-		files: DownloadFile[];
+		files: { id: number; name: string; downloadUrl: string | null }[];
 		notes?: string;
 	}
 
-	interface TrainingVideo {
-		id: string;
-		title: string;
-		videoUrl: string;
-		posterUrl: string;
-	}
+	// State
+	let indicator = $state<Indicator | null>(null);
+	let files = $state<IndicatorFile[]>([]);
+	let videos = $state<IndicatorVideo[]>([]);
+	let loading = $state(true);
+	let error = $state('');
+	let downloading = $state<number | null>(null);
 
-	interface SupportDoc {
-		title: string;
-		url: string;
-		type: 'view' | 'download';
-	}
+	// License key state - ICT 7
+	let licenseKey = $state('');
+	let loadingLicense = $state(false);
+	let showLicenseKey = $state(false);
+	let copiedLicense = $state(false);
 
-	interface Indicator {
-		id: string;
-		name: string;
-		description: string;
-		platforms: string[];
-		trainingVideos: TrainingVideo[];
-		downloads: PlatformDownloads[];
-		supportDocs: SupportDoc[];
-	}
+	// Installation guide state - ICT 7
+	let showInstallGuide = $state(false);
+	let selectedPlatform = $state('');
+	let installGuide = $state('');
+	let loadingGuide = $state(false);
 
-	// Get indicator ID from URL - access directly in derived context
-	let indicator = $derived.by(() => {
-		const id = $page.params.id;
-		return {
-			id: id,
-			name: 'Volume Max Tool Kit (formerly VWAP)',
-			description: 'Professional volume analysis tools for advanced trading',
-			platforms: ['ThinkorSwim', 'TradingView'],
-			trainingVideos: [
-				{
-					id: '1',
-					title: 'Indicator Setup and Q&A, with Eric Purdy',
-					videoUrl:
-						'https://cloud-streaming.s3.amazonaws.com/classes/SubmarketSonar-IndicatorSetup-EP.mp4',
-					posterUrl:
-						'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
-				},
-				{
-					id: '2',
-					title: 'VWAP Training and Live Trading Recorded Session with Raghee Horner',
-					videoUrl:
-						'https://s3.amazonaws.com/cloud-streaming/chatrecordings%2FSTWebinars/1176-RH-06-12-2019__09.01.394_AM.mp4',
-					posterUrl:
-						'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
-				}
-			],
-			downloads: [
-				{
-					platform: 'ThinkorSwim',
-					logo: '/logos/platforms/thinkorswim.png',
-					files: [
-						{
-							name: 'Volume Max Indicator',
-							downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe'
-						},
-						{
-							name: 'VScore EOD Study',
-							downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777'
-						},
-						{
-							name: 'VScore Intraday Signals Study',
-							downloadUrl: '/?st-download-file=4bd68f7bbfec21d14c099258f6833a9c'
-						},
-						{
-							name: 'VScore Bands EOD Study',
-							downloadUrl: '/?st-download-file=4fb2197916c551be4acb037afccc607f'
-						},
-						{
-							name: 'VScore Bands Intraday Study',
-							downloadUrl: '/?st-download-file=560ebea65a1229c04c0c268107fdb693'
-						},
-						{
-							name: 'VProfile EOD Study',
-							downloadUrl: '/?st-download-file=da8f1193496d5cf4bed2cdd049a2d70b'
-						},
-						{
-							name: 'VProfile Intraday Study',
-							downloadUrl: '/?st-download-file=ab0357f17694826819f632d50f6cfccc'
-						},
-						{
-							name: 'Volume Labels',
-							downloadUrl: '/?st-download-file=7aa9537ae79f082d9b8ff2ede9c2561b'
-						}
-					]
-				},
-				{
-					platform: 'TradingView',
-					logo: '/logos/platforms/tradingview.png',
-					files: [],
-					notes:
-						'Please email your TradingView Username to support@simplertrading.com. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available.'
-				}
-			],
-			supportDocs: [
-				{
-					title: 'TOS Installation Guide',
-					url: 'https://intercom.help/simpler-trading/en/articles/3263969',
-					type: 'view'
-				},
-				{
-					title: 'Troubleshooting within TOS',
-					url: 'https://intercom.help/simpler-trading/en/articles/3481530-tos-indicator-will-not-import',
-					type: 'view'
-				},
-				{
-					title: 'TradingView - Installing an Indicator',
-					url: 'https://intercom.help/simpler-trading/en/articles/3498380',
-					type: 'view'
-				},
-				{
-					title: 'TradingView - What is my Username',
-					url: 'https://intercom.help/simpler-trading/en/articles/3606861',
-					type: 'view'
-				},
-				{
-					title: 'What is Volume Max Tool Kit (formerly VWAP)?',
-					url: 'https://intercom.help/simpler-trading/en/articles/3160130',
-					type: 'view'
-				}
-			]
-		} as Indicator;
+	// Get indicator slug from URL params
+	const indicatorSlug = $derived($page.params.id);
+
+	// ICT 7: Fetch indicator data from real API
+	const fetchIndicator = async () => {
+		loading = true;
+		error = '';
+		try {
+			const res = await fetch(`/api/my/indicators/${indicatorSlug}`);
+			const data = await res.json();
+
+			if (data.success) {
+				indicator = data.data.indicator;
+				files = data.data.files || [];
+				videos = data.data.videos || [];
+			} else {
+				error = data.error || 'Failed to load indicator';
+			}
+		} catch (e) {
+			error = 'Failed to load indicator';
+			console.error(e);
+		} finally {
+			loading = false;
+		}
+	};
+
+	// ICT 7: Generate secure download URL
+	const downloadFile = async (fileId: number) => {
+		downloading = fileId;
+		try {
+			const res = await fetch(`/api/my/indicators/${indicatorSlug}/download/${fileId}`);
+			const data = await res.json();
+
+			if (data.success) {
+				// Open secure download URL
+				window.open(data.data.download_url, '_blank');
+			} else {
+				error = data.error || 'Failed to generate download link';
+			}
+		} catch (e) {
+			error = 'Failed to download file';
+			console.error(e);
+		} finally {
+			downloading = null;
+		}
+	};
+
+	// Group files by platform for display
+	const downloadsByPlatform = $derived(() => {
+		const grouped: Record<string, PlatformDownloads> = {};
+
+		for (const file of files) {
+			const platform = file.platform.toLowerCase();
+			if (!grouped[platform]) {
+				grouped[platform] = {
+					platform: platformNames[platform] || file.platform,
+					logo: platformLogos[platform] || '/logos/platforms/generic.png',
+					files: []
+				};
+			}
+			grouped[platform].files.push({
+				id: file.id,
+				name: file.display_name || file.file_name,
+				downloadUrl: null // Will be generated on-demand
+			});
+		}
+
+		return Object.values(grouped);
 	});
+
+	// Available platforms list
+	const availablePlatforms = $derived(() => {
+		const platforms = new Set<string>();
+		for (const file of files) {
+			platforms.add(platformNames[file.platform.toLowerCase()] || file.platform);
+		}
+		if (indicator?.platform) {
+			platforms.add(platformNames[indicator.platform.toLowerCase()] || indicator.platform);
+		}
+		return Array.from(platforms);
+	});
+
+	// ICT 7: Fetch license key
+	const fetchLicenseKey = async () => {
+		loadingLicense = true;
+		try {
+			const res = await fetch(`/api/my/indicators/${indicatorSlug}/license`);
+			const data = await res.json();
+
+			if (data.success) {
+				licenseKey = data.data.license_key;
+			}
+		} catch (e) {
+			console.error('Failed to fetch license key:', e);
+		} finally {
+			loadingLicense = false;
+		}
+	};
+
+	// ICT 7: Copy license key to clipboard
+	const copyLicenseKey = async () => {
+		try {
+			await navigator.clipboard.writeText(licenseKey);
+			copiedLicense = true;
+			setTimeout(() => (copiedLicense = false), 2000);
+		} catch (e) {
+			console.error('Failed to copy license key:', e);
+		}
+	};
+
+	// ICT 7: Fetch installation guide for platform
+	const fetchInstallGuide = async (platform: string) => {
+		selectedPlatform = platform;
+		showInstallGuide = true;
+		loadingGuide = true;
+
+		try {
+			const res = await fetch(`/api/my/indicators/${indicatorSlug}/guide/${platform.toLowerCase()}`);
+			const data = await res.json();
+
+			if (data.success) {
+				installGuide = data.data.instructions || 'No installation guide available.';
+			} else {
+				installGuide = 'Failed to load installation guide.';
+			}
+		} catch (e) {
+			console.error('Failed to fetch installation guide:', e);
+			installGuide = 'Failed to load installation guide.';
+		} finally {
+			loadingGuide = false;
+		}
+	};
+
+	onMount(fetchIndicator);
 </script>
 
 <svelte:head>
-	<title>{indicator.name} - Simpler Trading</title>
+	<title>{indicator?.name || 'Indicator'} - Revolution Trading</title>
 	<meta
 		name="description"
-		content="Download and install {indicator.name} for your trading platform"
+		content="Download and install {indicator?.name || 'indicator'} for your trading platform"
 	/>
-	<meta property="og:title" content={indicator.name} />
+	<meta property="og:title" content={indicator?.name || 'Indicator'} />
 	<meta property="og:type" content="article" />
 </svelte:head>
 
@@ -173,138 +251,306 @@
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
 		<div class="indicators">
-			<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
-			<div class="indicator-detail">
-				<!-- Page Header -->
-				<header class="indicator-detail__header">
-					<h1>{indicator.name}</h1>
-				</header>
+			<!-- ICT 7: Loading state -->
+			{#if loading}
+				<div class="loading-state">
+					<div class="spinner"></div>
+					<p>Loading indicator...</p>
+				</div>
+			{:else if error}
+				<!-- ICT 7: Error state -->
+				<div class="error-state">
+					<p class="error-message">{error}</p>
+					<a href="/dashboard/indicators" class="btn btn-secondary">Back to My Indicators</a>
+				</div>
+			{:else if indicator}
+				<div class="indicator-detail">
+					<!-- Page Header -->
+					<header class="indicator-detail__header">
+						<h1>{indicator.name}</h1>
+					</header>
 
-				<!-- Available Platforms -->
-				<section class="indicator-detail__platforms">
-					<p class="platforms">
-						<strong>Available Platforms:</strong>
-						{indicator.platforms.join(', ')}
-					</p>
-					<hr />
-				</section>
-
-				<!-- Training Videos -->
-				{#if indicator.trainingVideos.length > 0}
-					<section class="indicator-detail__videos">
-						<h2>Training Videos</h2>
-						<div class="videos-grid">
-							{#each indicator.trainingVideos as video (video.id)}
-								<div class="video-container">
-									<video
-										id={video.id}
-										controls
-										width="100%"
-										poster={video.posterUrl}
-										style="aspect-ratio: 16/9;"
-										title={video.title}
-									>
-										<source src={video.videoUrl} type="video/mp4" />
-										Your browser does not support the video tag.
-									</video>
-									<p class="video-title">{video.title}</p>
-								</div>
-							{/each}
-						</div>
+					<!-- Available Platforms -->
+					<section class="indicator-detail__platforms">
+						<p class="platforms">
+							<strong>Available Platforms:</strong>
+							{availablePlatforms().join(', ') || indicator.platform || 'Multiple Platforms'}
+						</p>
+						<hr />
 					</section>
-				{/if}
 
-				<!-- Download Sections by Platform -->
-				{#each indicator.downloads as platformDownload}
-					<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
-						<div class="platform-header">
-							<img
-								width="200"
-								src={platformDownload.logo}
-								srcset={platformDownload.platform === 'TradingView'
-									? '/logos/platforms/tradingview@2x.png 2x'
-									: ''}
-								alt={platformDownload.platform}
-								onerror={(e) => {
-									const img = e.currentTarget as HTMLImageElement;
-									img.style.display = 'none';
-								}}
-							/>
-						</div>
-
-						{#if platformDownload.files.length > 0}
-							<table class="downloads-table">
-								<thead>
-									<tr>
-										<th>{platformDownload.platform} Install File:</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each platformDownload.files as file}
-										<tr>
-											<td>{file.name}</td>
-											<td class="text-right">
-												<a class="orng_btn" href={file.downloadUrl}>
-													<span class="fa fa-download"></span>
-													Click to Download
-												</a>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						{/if}
-
-						{#if platformDownload.notes}
-							<div class="platform_notes">
-								{@html platformDownload.notes}
+					<!-- Training Videos - ICT 7: From real API -->
+					{#if videos.length > 0}
+						<section class="indicator-detail__videos">
+							<h2>Training Videos</h2>
+							<div class="videos-grid">
+								{#each videos as video (video.id)}
+									<div class="video-container">
+										{#if video.embed_url}
+											<iframe
+												src={video.embed_url}
+												title={video.title}
+												style="aspect-ratio: 16/9; width: 100%; border: none;"
+												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+												allowfullscreen
+											></iframe>
+										{:else if video.play_url}
+											<video
+												controls
+												width="100%"
+												poster={video.thumbnail_url}
+												style="aspect-ratio: 16/9;"
+												title={video.title}
+											>
+												<source src={video.play_url} type="video/mp4" />
+												Your browser does not support the video tag.
+											</video>
+										{/if}
+										<p class="video-title">{video.title}</p>
+									</div>
+								{/each}
 							</div>
-						{/if}
-					</section>
-				{/each}
+						</section>
+					{/if}
 
-				<!-- Supporting Documentation -->
-				{#if indicator.supportDocs.length > 0}
-					<section class="st_box">
-						<h2>
-							<strong>Supporting Documentation</strong>
-						</h2>
-						<table class="downloads-table">
-							<tbody>
-								{#each indicator.supportDocs as doc}
+					<!-- Download Sections by Platform - ICT 7: From real API -->
+					{#each downloadsByPlatform() as platformDownload}
+						<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
+							<div class="platform-header">
+								<img
+									width="200"
+									src={platformDownload.logo}
+									alt={platformDownload.platform}
+									onerror={(e) => {
+										const img = e.currentTarget as HTMLImageElement;
+										img.style.display = 'none';
+									}}
+								/>
+							</div>
+
+							{#if platformDownload.files.length > 0}
+								<table class="downloads-table">
+									<thead>
+										<tr>
+											<th>{platformDownload.platform} Install File:</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										{#each platformDownload.files as file}
+											<tr>
+												<td>{file.name}</td>
+												<td class="text-right">
+													<button
+														class="orng_btn"
+														onclick={() => downloadFile(file.id)}
+														disabled={downloading === file.id}
+													>
+														{#if downloading === file.id}
+															<span class="spinner-small"></span>
+															Generating Link...
+														{:else}
+															<span class="fa fa-download"></span>
+															Click to Download
+														{/if}
+													</button>
+												</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							{:else}
+								<p class="platform_notes">
+									No files currently available for {platformDownload.platform}. Please contact support for assistance.
+								</p>
+							{/if}
+
+							{#if platformDownload.notes}
+								<div class="platform_notes">
+									{@html platformDownload.notes}
+								</div>
+							{/if}
+						</section>
+					{/each}
+
+					<!-- No downloads available message -->
+					{#if downloadsByPlatform().length === 0}
+						<section class="st_box">
+							<p class="platform_notes">
+								No download files are currently available for this indicator. Please contact support if you need assistance.
+							</p>
+						</section>
+					{/if}
+
+					<!-- Supporting Documentation - ICT 7: From indicator documentation_url -->
+					{#if indicator.documentation_url}
+						<section class="st_box">
+							<h2>
+								<strong>Supporting Documentation</strong>
+							</h2>
+							<table class="downloads-table">
+								<tbody>
 									<tr>
-										<td>{doc.title}</td>
+										<td>Official Documentation</td>
 										<td class="text-right">
-											<a class="orng_btn" href={doc.url} target="_blank" rel="noopener noreferrer">
-												<span class="fa fa-{doc.type === 'view' ? 'external-link' : 'download'}"
-												></span>
-												Click to {doc.type === 'view' ? 'View' : 'Download'}
+											<a class="orng_btn" href={indicator.documentation_url} target="_blank" rel="noopener noreferrer">
+												<span class="fa fa-external-link"></span>
+												View Documentation
 											</a>
 										</td>
 									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</section>
-				{/if}
+								</tbody>
+							</table>
+						</section>
+					{/if}
 
-				<!-- Back to Indicators -->
-				<div class="indicator-detail__footer">
-					<a href="/dashboard/indicators" class="btn btn-secondary">
-						<span class="fa fa-arrow-left"></span>
-						Back to My Indicators
-					</a>
+					<!-- License Key Section - ICT 7 -->
+					<section class="st_box license-section">
+						<h2><strong>License Key</strong></h2>
+						{#if licenseKey}
+							<div class="license-key-display">
+								<div class="license-key-value">
+									{#if showLicenseKey}
+										<code>{licenseKey}</code>
+									{:else}
+										<code>XXXX-XXXX-XXXX-XXXX</code>
+									{/if}
+								</div>
+								<div class="license-key-actions">
+									<button
+										class="btn btn-small"
+										onclick={() => (showLicenseKey = !showLicenseKey)}
+									>
+										{showLicenseKey ? 'Hide' : 'Show'}
+									</button>
+									<button
+										class="btn btn-small btn-primary"
+										onclick={copyLicenseKey}
+										disabled={!showLicenseKey}
+									>
+										{copiedLicense ? 'Copied!' : 'Copy'}
+									</button>
+								</div>
+							</div>
+							<p class="license-note">
+								This license key is tied to your account. Do not share it with others.
+							</p>
+						{:else}
+							<button
+								class="orng_btn"
+								onclick={fetchLicenseKey}
+								disabled={loadingLicense}
+							>
+								{loadingLicense ? 'Loading...' : 'Get License Key'}
+							</button>
+						{/if}
+					</section>
+
+					<!-- Installation Guide Buttons - ICT 7 -->
+					{#if downloadsByPlatform().length > 0}
+						<section class="st_box">
+							<h2><strong>Installation Guides</strong></h2>
+							<div class="install-guide-buttons">
+								{#each downloadsByPlatform() as platformDownload}
+									<button
+										class="btn btn-outline"
+										onclick={() => fetchInstallGuide(platformDownload.platform)}
+									>
+										{platformDownload.platform} Guide
+									</button>
+								{/each}
+							</div>
+						</section>
+					{/if}
+
+					<!-- Back to Indicators -->
+					<div class="indicator-detail__footer">
+						<a href="/dashboard/indicators" class="btn btn-secondary">
+							<span class="fa fa-arrow-left"></span>
+							Back to My Indicators
+						</a>
+					</div>
 				</div>
-			</div>
+			{/if}
 		</div>
 	</div>
 </div>
 
+<!-- Installation Guide Modal - ICT 7 -->
+{#if showInstallGuide}
+	<div class="modal-overlay" onclick={() => (showInstallGuide = false)}>
+		<div class="modal install-guide-modal" onclick={(e) => e.stopPropagation()}>
+			<div class="modal-header">
+				<h2>{selectedPlatform} Installation Guide</h2>
+				<button class="btn-close" onclick={() => (showInstallGuide = false)}>X</button>
+			</div>
+			<div class="modal-body">
+				{#if loadingGuide}
+					<div class="loading-inline">
+						<div class="spinner"></div>
+						<span>Loading guide...</span>
+					</div>
+				{:else}
+					<div class="guide-content">
+						{@html installGuide.replace(/\n/g, '<br>').replace(/##\s*(.*?)(<br>|$)/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+					</div>
+				{/if}
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" onclick={() => (showInstallGuide = false)}>Close</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * WordPress Exact Match Styles - NO CUSTOM STYLING
+	 * ICT 7 Grade Styles - WordPress Compatible with Real API Integration
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* ICT 7: Loading and error states */
+	.loading-state,
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 80px 20px;
+		text-align: center;
+	}
+
+	.spinner {
+		width: 48px;
+		height: 48px;
+		border: 3px solid #e5e5e5;
+		border-top-color: #f69532;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	.spinner-small {
+		display: inline-block;
+		width: 16px;
+		height: 16px;
+		border: 2px solid #ffffff;
+		border-top-color: transparent;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-right: 8px;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.error-message {
+		color: #dc2626;
+		font-size: 16px;
+		margin: 0 0 20px;
+	}
 
 	.indicators {
 		max-width: 1160px;
@@ -507,6 +753,194 @@
 	.platform_notes a:hover {
 		color: #000000;
 		text-decoration: underline;
+	}
+
+	/* License Key Section - ICT 7 */
+	.license-section {
+		text-align: center;
+	}
+
+	.license-key-display {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+		padding: 20px;
+		background: #f9f9f9;
+		border-radius: 8px;
+		margin-bottom: 16px;
+	}
+
+	.license-key-value {
+		width: 100%;
+	}
+
+	.license-key-value code {
+		display: block;
+		font-family: 'Courier New', monospace;
+		font-size: 20px;
+		font-weight: bold;
+		letter-spacing: 2px;
+		padding: 16px;
+		background: #ffffff;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		color: #333;
+		word-break: break-all;
+	}
+
+	.license-key-actions {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.btn-small {
+		padding: 8px 16px;
+		font-size: 13px;
+		min-height: 36px;
+	}
+
+	.btn-primary {
+		background: #f69532;
+		color: #fff;
+		border: none;
+	}
+
+	.btn-primary:hover {
+		background: #dc7309;
+	}
+
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.license-note {
+		font-size: 13px;
+		color: #888;
+		margin: 0;
+		font-style: italic;
+	}
+
+	/* Installation Guide Buttons - ICT 7 */
+	.install-guide-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		justify-content: center;
+	}
+
+	.btn-outline {
+		padding: 10px 20px;
+		background: transparent;
+		color: #666;
+		border: 1px solid #ddd;
+		border-radius: 20px;
+		font-size: 14px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		min-height: 44px;
+	}
+
+	.btn-outline:hover {
+		background: #f5f5f5;
+		border-color: #143e59;
+		color: #143e59;
+	}
+
+	/* Modal Styles - ICT 7 */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 20px;
+	}
+
+	.modal {
+		background: #fff;
+		border-radius: 12px;
+		max-width: 600px;
+		width: 100%;
+		max-height: 90vh;
+		overflow-y: auto;
+		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 24px;
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.modal-header h2 {
+		margin: 0;
+		font-size: 18px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.btn-close {
+		background: none;
+		border: none;
+		font-size: 24px;
+		cursor: pointer;
+		color: #999;
+		padding: 4px 8px;
+		line-height: 1;
+	}
+
+	.btn-close:hover {
+		color: #333;
+	}
+
+	.modal-body {
+		padding: 24px;
+	}
+
+	.loading-inline {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 12px;
+		padding: 40px;
+		color: #666;
+	}
+
+	.guide-content {
+		color: #666;
+		line-height: 1.8;
+		font-size: 15px;
+	}
+
+	.guide-content :global(h3) {
+		color: #333;
+		font-size: 18px;
+		margin: 24px 0 12px;
+		font-weight: 600;
+	}
+
+	.guide-content :global(h3:first-child) {
+		margin-top: 0;
+	}
+
+	.guide-content :global(strong) {
+		color: #333;
+	}
+
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+		padding: 16px 24px;
+		border-top: 1px solid #e5e5e5;
 	}
 
 	/* Footer */

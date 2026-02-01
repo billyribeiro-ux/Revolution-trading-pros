@@ -40,6 +40,7 @@
 	let loading = $state(false);
 	let initialLoading = $state(true);
 	let errors = $state<Record<string, string>>({});
+	let showAbTestModal = $state(false);
 
 	// Trigger rules based on type
 	let timedDelay = $state(5000);
@@ -680,6 +681,103 @@
 								</div>
 							</div>
 						</div>
+					</div>
+				</Card>
+
+				<!-- Scheduling -->
+				<Card>
+					<h2 class="text-xl font-semibold mb-4">Scheduling</h2>
+					<p class="text-sm text-gray-600 mb-4">
+						Set start and end dates to control when this popup is active. Leave empty for always-on.
+					</p>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							<Input
+								id="popup-start-date"
+								label="Start Date"
+								type="datetime-local"
+								bind:value={formData.start_date}
+							/>
+							<p class="text-xs text-gray-500 mt-1">When the popup should start showing</p>
+						</div>
+
+						<div>
+							<Input
+								id="popup-end-date"
+								label="End Date"
+								type="datetime-local"
+								bind:value={formData.end_date}
+							/>
+							<p class="text-xs text-gray-500 mt-1">When the popup should stop showing</p>
+						</div>
+					</div>
+
+					{#if formData.start_date || formData.end_date}
+						<div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+							<h4 class="text-sm font-semibold text-blue-800 mb-1">Schedule Preview</h4>
+							<p class="text-sm text-blue-700">
+								{#if formData.start_date && formData.end_date}
+									Active from <strong>{new Date(formData.start_date).toLocaleString()}</strong>
+									to <strong>{new Date(formData.end_date).toLocaleString()}</strong>
+								{:else if formData.start_date}
+									Starts <strong>{new Date(formData.start_date).toLocaleString()}</strong>
+									(no end date)
+								{:else if formData.end_date}
+									Ends <strong>{new Date(formData.end_date).toLocaleString()}</strong>
+									(already started)
+								{/if}
+							</p>
+						</div>
+					{/if}
+				</Card>
+
+				<!-- A/B Testing -->
+				<Card>
+					<h2 class="text-xl font-semibold mb-4">A/B Testing</h2>
+					<p class="text-sm text-gray-600 mb-4">
+						Create variants of this popup to test different content, designs, or CTAs.
+					</p>
+
+					{#if formData.ab_test_id}
+						<div class="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
+							<div class="flex items-center gap-2 mb-2">
+								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+									A/B Test Active
+								</span>
+								<span class="text-sm text-green-700">Test ID: {formData.ab_test_id}</span>
+							</div>
+							{#if formData.variant_name}
+								<p class="text-sm text-green-800">
+									This is variant: <strong>{formData.variant_name}</strong>
+								</p>
+							{/if}
+						</div>
+					{:else}
+						<div class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+							<div class="text-gray-400 mb-3">
+								<svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+								</svg>
+							</div>
+							<h3 class="text-lg font-medium text-gray-900 mb-2">No A/B Test Running</h3>
+							<p class="text-sm text-gray-500 mb-4">
+								Create an A/B test to compare different versions of this popup and find what works best.
+							</p>
+							<Button variant="outline" type="button" onclick={() => showAbTestModal = true}>
+								Create A/B Test
+							</Button>
+						</div>
+					{/if}
+
+					<div class="mt-4 bg-gray-50 rounded-md p-4">
+						<h4 class="text-sm font-semibold text-gray-800 mb-2">Tips for A/B Testing</h4>
+						<ul class="text-sm text-gray-600 space-y-1">
+							<li>Test one element at a time (headline, CTA, image)</li>
+							<li>Run tests for at least 7 days for statistical significance</li>
+							<li>Aim for at least 1000 impressions per variant</li>
+							<li>Focus on conversion rate, not just clicks</li>
+						</ul>
 					</div>
 				</Card>
 

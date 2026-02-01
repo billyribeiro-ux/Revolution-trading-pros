@@ -339,7 +339,7 @@ async fn webhook(
     body: String,
 ) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
     // Get signature header
-    let _signature = headers
+    let signature = headers
         .get("stripe-signature")
         .and_then(|v| v.to_str().ok())
         .ok_or_else(|| {
@@ -349,8 +349,36 @@ async fn webhook(
             )
         })?;
 
-    // Verify webhook signature (if webhook secret is configured)
-    // In production, always verify signatures
+    // ICT 7 Fix: Actually verify webhook signature for production security
+    match state.services.stripe.verify_webhook(body.as_bytes(), signature) {
+        Ok(true) => {
+            tracing::debug!(target: "payments", "Webhook signature verified successfully");
+        }
+        Ok(false) => {
+            tracing::error!(target: "payments", "Webhook signature verification failed");
+            return Err((
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Invalid webhook signature"})),
+            ));
+        }
+        Err(e) => {
+            // If webhook secret not configured, log warning but continue (dev mode)
+            if e.to_string().contains("not configured") {
+                tracing::warn!(
+                    target: "payments",
+                    "Webhook secret not configured - skipping signature verification (UNSAFE for production)"
+                );
+            } else {
+                tracing::error!(target: "payments", "Webhook verification error: {}", e);
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Webhook verification failed"})),
+                ));
+            }
+        }
+    }
+
+    // Parse the webhook event
     let event = state
         .services
         .stripe
@@ -499,9 +527,13 @@ async fn create_refund(
 
 /// Get payment configuration (publishable key)
 /// GET /api/payments/config
+/// ICT 7 Fix: Returns both snake_case and camelCase for frontend compatibility
 async fn get_config(State(state): State<AppState>) -> Json<serde_json::Value> {
     Json(json!({
+        // Snake_case (original)
         "publishable_key": state.config.stripe_publishable_key,
+        // CamelCase (frontend compatibility)
+        "publishableKey": state.config.stripe_publishable_key,
         "currency": "usd",
         "country": "US"
     }))
@@ -964,24 +996,117 @@ async fn handle_payment_failed(
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let invoice = &event.data.object;
     let subscription_id = invoice["subscription"].as_str();
+    let customer_email = invoice["customer_email"].as_str();
+
+    // Get payment attempt count and amount from invoice
+    let attempt_count: i32 = invoice["attempt_count"].as_i64().unwrap_or(1) as i32;
+    let amount_due: f64 = invoice["amount_due"].as_i64().unwrap_or(0) as f64 / 100.0;
+
+    // ICT 7 Fix: Calculate grace period end (7 days from now for standard grace period)
+    // Stripe typically retries 3-4 times over ~3 weeks, so 7 days is a reasonable initial grace period
+    let grace_period_days = 7;
+    let grace_period_end = chrono::Utc::now() + chrono::Duration::days(grace_period_days);
 
     if let Some(sub_id) = subscription_id {
+        // ICT 7 Fix: Update membership status AND set grace_period_end
         sqlx::query(
-            "UPDATE user_memberships SET status = 'past_due', updated_at = NOW() WHERE stripe_subscription_id = $1"
+            r#"UPDATE user_memberships SET
+               status = 'past_due',
+               grace_period_end = CASE
+                   WHEN grace_period_end IS NULL OR grace_period_end < NOW()
+                   THEN $1
+                   ELSE grace_period_end
+               END,
+               payment_failure_count = $2,
+               last_payment_failure = NOW(),
+               updated_at = NOW()
+               WHERE stripe_subscription_id = $3"#
         )
+        .bind(grace_period_end.naive_utc())
+        .bind(attempt_count)
         .bind(sub_id)
         .execute(&state.db.pool)
         .await
         .ok();
 
-        // TODO: Send payment failed email
+        // ICT 7 Fix: Send payment failed with grace period email notification
+        if let Some(ref email_service) = state.services.email {
+            // Get user details from membership including plan price
+            #[derive(sqlx::FromRow)]
+            struct UserSubscription {
+                email: String,
+                name: String,
+                plan_name: String,
+                price: Option<f64>,
+            }
+
+            let user_info: Option<UserSubscription> = sqlx::query_as(
+                r#"SELECT u.email, COALESCE(u.name, u.email) as name,
+                   COALESCE(mp.name, 'Subscription') as plan_name,
+                   mp.price::FLOAT8 as price
+                   FROM user_memberships um
+                   JOIN users u ON um.user_id = u.id
+                   LEFT JOIN membership_plans mp ON um.plan_id = mp.id
+                   WHERE um.stripe_subscription_id = $1
+                   LIMIT 1"#
+            )
+            .bind(sub_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
+
+            if let Some(info) = user_info {
+                // Use amount from invoice, fallback to plan price
+                let payment_amount = if amount_due > 0.0 { amount_due } else { info.price.unwrap_or(0.0) };
+                let grace_end_str = grace_period_end.format("%B %d, %Y").to_string();
+
+                let _ = email_service
+                    .send_payment_failed_with_grace(
+                        &info.email,
+                        &info.name,
+                        &info.plan_name,
+                        payment_amount,
+                        &grace_end_str,
+                        attempt_count,
+                    )
+                    .await;
+
+                tracing::info!(
+                    target: "payments",
+                    event = "payment_failed_email_sent",
+                    email = %info.email,
+                    subscription_id = %sub_id,
+                    grace_period_end = %grace_end_str,
+                    attempt_count = %attempt_count,
+                    "Payment failed notification email sent with grace period"
+                );
+            } else if let Some(email) = customer_email {
+                // Fallback: use customer email from invoice if we can't find membership
+                let grace_end_str = grace_period_end.format("%B %d, %Y").to_string();
+                let _ = email_service
+                    .send_payment_failed_with_grace(
+                        email,
+                        "Valued Customer",
+                        "your subscription",
+                        amount_due,
+                        &grace_end_str,
+                        attempt_count,
+                    )
+                    .await;
+            }
+        }
     }
 
     tracing::warn!(
         target: "payments",
         event = "payment_failed",
         invoice_id = %invoice["id"].as_str().unwrap_or("unknown"),
-        "Payment failed"
+        subscription_id = ?subscription_id,
+        attempt_count = %attempt_count,
+        amount_due = %amount_due,
+        grace_period_end = %grace_period_end.format("%Y-%m-%d"),
+        "Payment failed - grace period initialized"
     );
 
     Ok(())
@@ -994,24 +1119,323 @@ async fn handle_refund(
     let charge = &event.data.object;
     let payment_intent = charge["payment_intent"].as_str();
 
+    // ICT 7 Fix: Distinguish between full and partial refunds
+    let refund_amount = charge["amount_refunded"].as_i64().unwrap_or(0);
+    let total_amount = charge["amount"].as_i64().unwrap_or(0);
+
     if let Some(pi) = payment_intent {
+        // Determine refund status: partial_refund vs refunded
+        let refund_status = if refund_amount > 0 && refund_amount < total_amount {
+            "partial_refund"
+        } else {
+            "refunded"
+        };
+
+        // Calculate refund amount in dollars for storage
+        let refund_amount_dollars = refund_amount as f64 / 100.0;
+
         sqlx::query(
-            "UPDATE orders SET status = 'refunded', refunded_at = NOW(), updated_at = NOW() WHERE payment_intent_id = $1"
+            r#"UPDATE orders SET
+               status = $1,
+               refund_amount = COALESCE(refund_amount, 0) + $2,
+               refunded_at = CASE WHEN $1 = 'refunded' THEN NOW() ELSE refunded_at END,
+               updated_at = NOW()
+               WHERE payment_intent_id = $3"#
         )
+        .bind(refund_status)
+        .bind(refund_amount_dollars)
         .bind(pi)
         .execute(&state.db.pool)
         .await
         .ok();
+
+        tracing::info!(
+            target: "payments",
+            event = "charge_refunded",
+            charge_id = %charge["id"].as_str().unwrap_or("unknown"),
+            payment_intent = %pi,
+            refund_amount_cents = %refund_amount,
+            total_amount_cents = %total_amount,
+            refund_status = %refund_status,
+            "Refund processed"
+        );
     }
+
+    Ok(())
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INVOICE GENERATION - ICT 7 Fix
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Invoice generation request
+#[derive(Debug, serde::Deserialize)]
+pub struct GenerateInvoiceRequest {
+    pub order_id: i64,
+}
+
+/// Generate invoice for an order
+/// POST /api/payments/invoice
+async fn generate_invoice(
+    State(state): State<AppState>,
+    user: User,
+    Json(input): Json<GenerateInvoiceRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Verify order belongs to user
+    #[derive(sqlx::FromRow)]
+    struct OrderInvoiceData {
+        id: i64,
+        order_number: String,
+        user_id: i64,
+        status: String,
+        subtotal: f64,
+        discount: f64,
+        tax: f64,
+        total: f64,
+        currency: String,
+        billing_name: Option<String>,
+        billing_email: Option<String>,
+        billing_address: Option<serde_json::Value>,
+        coupon_code: Option<String>,
+        created_at: chrono::NaiveDateTime,
+        completed_at: Option<chrono::NaiveDateTime>,
+    }
+
+    let order: OrderInvoiceData = sqlx::query_as(
+        r#"SELECT id, order_number, user_id, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
+                  tax::FLOAT8 as tax, total::FLOAT8 as total, currency, billing_name, billing_email,
+                  billing_address, coupon_code, created_at, completed_at
+           FROM orders WHERE id = $1"#
+    )
+    .bind(input.order_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Order not found"})),
+        )
+    })?;
+
+    // Check ownership unless admin
+    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    if order.user_id != user.id && !is_admin {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Access denied"})),
+        ));
+    }
+
+    // Fetch order items
+    #[derive(sqlx::FromRow, serde::Serialize)]
+    struct OrderItem {
+        name: String,
+        quantity: i32,
+        unit_price: f64,
+        total: f64,
+    }
+
+    let items: Vec<OrderItem> = sqlx::query_as(
+        "SELECT name, quantity, unit_price::FLOAT8 as unit_price, total::FLOAT8 as total FROM order_items WHERE order_id = $1"
+    )
+    .bind(order.id)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    // Generate invoice number
+    let invoice_number = format!(
+        "INV-{}-{}",
+        order.order_number,
+        chrono::Utc::now().format("%Y%m%d")
+    );
+
+    // Build invoice response
+    let invoice = json!({
+        "invoice_number": invoice_number,
+        "order_number": order.order_number,
+        "status": order.status,
+        "date": order.created_at.and_utc().to_rfc3339(),
+        "completed_at": order.completed_at.map(|d| d.and_utc().to_rfc3339()),
+        "billing": {
+            "name": order.billing_name,
+            "email": order.billing_email,
+            "address": order.billing_address
+        },
+        "items": items,
+        "subtotal": order.subtotal,
+        "discount": order.discount,
+        "coupon_code": order.coupon_code,
+        "tax": order.tax,
+        "total": order.total,
+        "currency": order.currency,
+        "company": {
+            "name": "Revolution Trading Pros",
+            "address": "Trading Professional Services",
+            "email": "billing@revolutiontradingpros.com"
+        }
+    });
 
     tracing::info!(
         target: "payments",
-        event = "charge_refunded",
-        charge_id = %charge["id"].as_str().unwrap_or("unknown"),
-        "Charge refunded"
+        event = "invoice_generated",
+        invoice_number = %invoice_number,
+        order_id = %order.id,
+        user_id = %user.id,
+        "Invoice generated"
     );
 
-    Ok(())
+    Ok(Json(json!({
+        "success": true,
+        "invoice": invoice
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PAYMENT RETRY - ICT 7 Fix
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Retry payment request
+#[derive(Debug, serde::Deserialize)]
+pub struct RetryPaymentRequest {
+    pub subscription_id: String,
+    pub payment_method_id: Option<String>,
+}
+
+/// Retry a failed subscription payment
+/// POST /api/payments/retry
+async fn retry_payment(
+    State(state): State<AppState>,
+    user: User,
+    Json(input): Json<RetryPaymentRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Verify subscription belongs to user
+    #[derive(sqlx::FromRow)]
+    struct MembershipRow {
+        id: i64,
+        user_id: i64,
+        stripe_subscription_id: Option<String>,
+        stripe_customer_id: Option<String>,
+        status: String,
+    }
+
+    let membership: MembershipRow = sqlx::query_as(
+        "SELECT id, user_id, stripe_subscription_id, stripe_customer_id, status FROM user_memberships WHERE stripe_subscription_id = $1"
+    )
+    .bind(&input.subscription_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Subscription not found"})),
+        )
+    })?;
+
+    // Check ownership
+    if membership.user_id != user.id {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Access denied"})),
+        ));
+    }
+
+    // Check if subscription is in past_due status
+    if membership.status != "past_due" {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Subscription is not in past_due status"})),
+        ));
+    }
+
+    // Update payment method if provided
+    if let Some(pm_id) = &input.payment_method_id {
+        if let Some(customer_id) = &membership.stripe_customer_id {
+            state
+                .services
+                .stripe
+                .update_default_payment_method(customer_id, pm_id)
+                .await
+                .map_err(|e| {
+                    (
+                        StatusCode::BAD_GATEWAY,
+                        Json(json!({"error": format!("Failed to update payment method: {}", e)})),
+                    )
+                })?;
+        }
+    }
+
+    // Retry the latest invoice
+    let sub_id = membership.stripe_subscription_id.ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No Stripe subscription ID found"})),
+        )
+    })?;
+
+    let result = state
+        .services
+        .stripe
+        .retry_subscription_payment(&sub_id)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "payments", error = %e, "Payment retry failed");
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Payment retry failed: {}", e)})),
+            )
+        })?;
+
+    // Update membership status if successful
+    if result.success {
+        sqlx::query(
+            "UPDATE user_memberships SET status = 'active', payment_failure_count = 0, updated_at = NOW() WHERE id = $1"
+        )
+        .bind(membership.id)
+        .execute(&state.db.pool)
+        .await
+        .ok();
+
+        tracing::info!(
+            target: "payments",
+            event = "payment_retry_success",
+            subscription_id = %input.subscription_id,
+            user_id = %user.id,
+            "Payment retry successful"
+        );
+    } else {
+        tracing::warn!(
+            target: "payments",
+            event = "payment_retry_failed",
+            subscription_id = %input.subscription_id,
+            user_id = %user.id,
+            error = ?result.error,
+            "Payment retry failed"
+        );
+    }
+
+    Ok(Json(json!({
+        "success": result.success,
+        "message": if result.success { "Payment successful" } else { "Payment failed" },
+        "error": result.error
+    })))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1025,4 +1449,6 @@ pub fn router() -> Router<AppState> {
         .route("/webhook", post(webhook))
         .route("/refund", post(create_refund))
         .route("/config", get(get_config))
+        .route("/invoice", post(generate_invoice))
+        .route("/retry", post(retry_payment))
 }

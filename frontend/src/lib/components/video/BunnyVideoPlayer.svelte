@@ -32,6 +32,14 @@
 		videoGuid: string;
 		/** Bunny library ID */
 		libraryId: string | number;
+		/** Video ID for progress tracking */
+		videoId?: number;
+		/** User ID for progress tracking */
+		userId?: number;
+		/** Video duration in seconds */
+		duration?: number;
+		/** Resume from saved position (seconds) */
+		startTime?: number;
 		/** Video title for accessibility */
 		title?: string;
 		/** Custom thumbnail URL (overrides Bunny default) */
@@ -54,6 +62,10 @@
 		aspectRatio?: '16:9' | '4:3' | '1:1' | '21:9';
 		/** Custom class */
 		class?: string;
+		/** Captions/subtitles URL (VTT format) */
+		captionsUrl?: string;
+		/** Show captions by default */
+		showCaptions?: boolean;
 		/** On video ready callback */
 		onReady?: () => void;
 		/** On video play callback */
@@ -62,11 +74,17 @@
 		onPause?: () => void;
 		/** On video ended callback */
 		onEnded?: () => void;
+		/** On progress update callback */
+		onProgress?: (currentTime: number, percent: number) => void;
 	}
 
 	let {
 		videoGuid,
 		libraryId,
+		videoId,
+		userId,
+		duration = 0,
+		startTime = 0,
 		title = 'Video',
 		thumbnailUrl,
 		blurhash,
@@ -78,10 +96,13 @@
 		responsive = true,
 		aspectRatio = '16:9',
 		class: className = '',
+		captionsUrl,
+		showCaptions = false,
 		onReady,
 		onPlay,
 		onPause,
-		onEnded
+		onEnded,
+		onProgress
 	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -96,11 +117,18 @@
 	let blurhashDataUrl = $state<string | null>(null);
 	let thumbnailLoaded = $state(false);
 
+	// ICT 7 ADDITION: Progress tracking state
+	let currentTime = $state(startTime);
+	let progressInterval: ReturnType<typeof setInterval> | null = null;
+	let lastSavedTime = $state(0);
+	const PROGRESS_SAVE_INTERVAL = 10000; // Save every 10 seconds
+	const PROGRESS_THRESHOLD = 5; // Only save if changed by 5+ seconds
+
 	// ═══════════════════════════════════════════════════════════════════════
 	// COMPUTED
 	// ═══════════════════════════════════════════════════════════════════════
 
-	// Bunny.net optimized embed URL
+	// Bunny.net optimized embed URL with resume support
 	let embedUrl = $derived(() => {
 		const params = new URLSearchParams({
 			autoplay: autoplay ? 'true' : 'false',
@@ -108,11 +136,17 @@
 			muted: muted ? 'true' : 'false',
 			preload: preload ? 'true' : 'false',
 			responsive: responsive ? 'true' : 'false',
-			// Low latency optimizations
-			t: '0', // Start time
+			// ICT 7 ENHANCEMENT: Resume from saved position
+			t: String(startTime || 0),
 			// Bunny player optimizations
 			controls: controls ? 'true' : 'false'
 		});
+
+		// ICT 7 ADDITION: Add captions support
+		if (captionsUrl) {
+			params.set('captions', captionsUrl);
+			params.set('defaultCaptions', showCaptions ? 'true' : 'false');
+		}
 
 		return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoGuid}?${params.toString()}`;
 	});
@@ -159,6 +193,11 @@
 	onDestroy(() => {
 		if (browser) {
 			window.removeEventListener('message', handleIframeMessage);
+			// ICT 7 ADDITION: Clear progress interval and save final position
+			if (progressInterval) {
+				clearInterval(progressInterval);
+			}
+			saveProgress(true); // Force save on unmount
 		}
 	});
 
@@ -178,7 +217,7 @@
 		// Only process messages from Bunny CDN
 		if (!event.origin.includes('mediadelivery.net')) return;
 
-		const { type } = event.data || {};
+		const { type, time } = event.data || {};
 
 		switch (type) {
 			case 'ready':
@@ -187,16 +226,69 @@
 				break;
 			case 'play':
 				isPlaying = true;
+				startProgressTracking();
 				onPlay?.();
 				break;
 			case 'pause':
 				isPlaying = false;
+				stopProgressTracking();
+				saveProgress(true);
 				onPause?.();
 				break;
 			case 'ended':
 				isPlaying = false;
+				stopProgressTracking();
+				saveProgress(true, true); // Mark as completed
 				onEnded?.();
 				break;
+			case 'timeupdate':
+				// ICT 7 ADDITION: Handle timeupdate events from Bunny player
+				if (typeof time === 'number') {
+					currentTime = time;
+					const percent = duration > 0 ? (time / duration) * 100 : 0;
+					onProgress?.(time, percent);
+				}
+				break;
+		}
+	}
+
+	// ICT 7 ADDITION: Progress tracking methods
+	function startProgressTracking() {
+		if (progressInterval) return;
+		progressInterval = setInterval(() => {
+			// Request current time from iframe
+			iframeElement?.contentWindow?.postMessage({ type: 'getCurrentTime' }, '*');
+			// Periodically save progress
+			saveProgress();
+		}, PROGRESS_SAVE_INTERVAL);
+	}
+
+	function stopProgressTracking() {
+		if (progressInterval) {
+			clearInterval(progressInterval);
+			progressInterval = null;
+		}
+	}
+
+	async function saveProgress(force = false, completed = false) {
+		if (!videoId || !userId) return;
+		if (!force && Math.abs(currentTime - lastSavedTime) < PROGRESS_THRESHOLD) return;
+
+		lastSavedTime = currentTime;
+
+		try {
+			await fetch('/api/video-advanced/analytics/progress/' + videoId, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					user_id: userId,
+					current_time: Math.floor(currentTime),
+					duration: duration,
+					completed: completed || (duration > 0 && currentTime >= duration * 0.9)
+				})
+			});
+		} catch {
+			// Silently fail - don't interrupt video playback
 		}
 	}
 
@@ -225,8 +317,21 @@
 		iframeElement?.contentWindow?.postMessage({ type: 'seek', time }, '*');
 	}
 
+	function getCurrentTime(): number {
+		return currentTime;
+	}
+
+	function getProgress(): { currentTime: number; percent: number; completed: boolean } {
+		const percent = duration > 0 ? (currentTime / duration) * 100 : 0;
+		return {
+			currentTime,
+			percent,
+			completed: duration > 0 && currentTime >= duration * 0.9
+		};
+	}
+
 	// Expose methods
-	export { play, pause, seek };
+	export { play, pause, seek, getCurrentTime, getProgress, saveProgress };
 </script>
 
 <!-- Player Container -->

@@ -1,22 +1,29 @@
 <!--
 	URL: /dashboard/day-trading-room/video/[slug]
-	
+
 	Video Detail Page - Pixel-Perfect Match to MasterDash
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation
 	Based on LatestUpdatesPage reference
-	
-	@version 1.0.0
+
+	ICT 7 FIX: Now uses BunnyVideoPlayer with progress tracking
+
+	@version 2.0.0 - January 2026 - Progress Tracking Enabled
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import type { PageData } from './+page.server';
+	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
+	import { authStore } from '$lib/stores/auth.svelte';
 
 	// Server-loaded data with Previous/Next navigation
 	let { data }: { data: PageData } = $props();
 
 	// Reactive video data from server
 	const video = $derived(data.video);
+
+	// Get user ID for progress tracking
+	const userId = $derived(authStore.user?.id);
 
 	// Related videos (could also be fetched from server in the future)
 	const relatedVideos = [
@@ -93,16 +100,16 @@
 		<div class="dv-content-block cpost-content-block w-desc">
 			<div class="current-vid">
 				<div class="video-container current">
-					<video
-						id="dv-player"
-						controls
-						width="100%"
-						poster={video.thumbnailUrl}
-						style="aspect-ratio: 16/9;"
-					>
-						<source src={video.videoUrl} type="video/mp4" />
-						Your browser does not support the video tag.
-					</video>
+					<!-- ICT 7 FIX: Use BunnyVideoPlayer with progress tracking -->
+					<BunnyVideoPlayer
+						videoId={video.id}
+						videoUrl={video.videoUrl}
+						thumbnailUrl={video.thumbnailUrl}
+						title={video.title}
+						{userId}
+						autoplay={false}
+						muted={false}
+					/>
 				</div>
 			</div>
 		</div>
@@ -272,11 +279,11 @@
 		margin: 0 auto;
 	}
 
-	.video-container video {
+	/* BunnyVideoPlayer fills container - no direct video styles needed */
+	.video-container :global(.bunny-video-player) {
 		width: 100%;
-		height: auto;
-		display: block;
-		background: #000;
+		border-radius: 8px;
+		overflow: hidden;
 	}
 
 	.dv-description {
@@ -535,7 +542,8 @@
 			font-size: 0.875rem;
 		}
 
-		.video-container video {
+		/* BunnyVideoPlayer handles its own height constraints */
+		.video-container {
 			max-height: 70dvh;
 		}
 	}
