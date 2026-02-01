@@ -5,7 +5,7 @@
 	 * Complete quiz taking experience with timer, scoring, and results
 	 */
 
-	import { apiFetch } from '$lib/api';
+	import { apiFetch } from '$lib/api/config';
 
 	interface Question {
 		id: number;

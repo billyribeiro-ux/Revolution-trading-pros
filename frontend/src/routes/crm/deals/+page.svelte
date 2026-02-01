@@ -13,7 +13,7 @@
 		dealsByStage,
 		isLoading,
 		error
-	} from '$lib/stores/crm.svelte.ts';
+	} from '$lib/stores/crm';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 

@@ -5,7 +5,7 @@
 	 * Display and submit course reviews with rating distribution
 	 */
 
-	import { apiFetch } from '$lib/api';
+	import { apiFetch } from '$lib/api/config';
 
 	interface Review {
 		id: number;
