@@ -70,13 +70,27 @@
 	let result: QuizResult | null = $state(null);
 	let error = $state('');
 
-	const currentQuestion = $derived(quizData?.questions?.[currentQuestionIndex]);
-	const isLastQuestion = $derived(currentQuestionIndex === (quizData?.questions?.length ?? 0) - 1);
-	const progress = $derived(
-		quizData?.questions ? Math.round(((currentQuestionIndex + 1) / quizData.questions.length) * 100) : 0
-	);
+	const currentQuestion = $derived.by(() => {
+		if (!quizData || !quizData.questions) return undefined;
+		return quizData.questions[currentQuestionIndex];
+	});
+	
+	const isLastQuestion = $derived.by(() => {
+		if (!quizData || !quizData.questions) return false;
+		return currentQuestionIndex === quizData.questions.length - 1;
+	});
+	
+	const progress = $derived.by(() => {
+		if (!quizData || !quizData.questions) return 0;
+		return Math.round(((currentQuestionIndex + 1) / quizData.questions.length) * 100);
+	});
+	
 	const answeredCount = $derived(selectedAnswers.size);
-	const totalQuestions = $derived(quizData?.questions?.length ?? 0);
+	
+	const totalQuestions = $derived.by(() => {
+		if (!quizData || !quizData.questions) return 0;
+		return quizData.questions.length;
+	});
 
 	const formatTime = (seconds: number): string => {
 		const mins = Math.floor(seconds / 60);
