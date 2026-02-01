@@ -311,7 +311,7 @@
 		if (!isVisible || !currentPopup) return;
 
 		// Escape to close
-		if (e.key === 'Escape' && currentPopup.close_on_escape !== false) {
+		if (e.key === 'Escape' && currentPopup.behavior?.escapeClose !== false) {
 			e.preventDefault();
 			handleClose();
 			return;
