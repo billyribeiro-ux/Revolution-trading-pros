@@ -23,6 +23,20 @@
 		rating_distribution: Record<string, number>;
 	}
 
+	interface ReviewsResponse {
+		success: boolean;
+		data?: {
+			reviews: Review[];
+			summary: ReviewSummary;
+		};
+		error?: string;
+	}
+
+	interface ApiResponse {
+		success: boolean;
+		error?: string;
+	}
+
 	interface Props {
 		courseSlug: string;
 		isEnrolled?: boolean;
@@ -49,7 +63,7 @@
 	async function loadReviews() {
 		try {
 			isLoading = true;
-			const res = await apiFetch(`/courses/${courseSlug}/reviews`);
+			const res = await apiFetch<ReviewsResponse>(`/courses/${courseSlug}/reviews`);
 			if (res.success && res.data) {
 				reviews = res.data.reviews || [];
 				summary = res.data.summary || null;
@@ -67,7 +81,7 @@
 			error = '';
 			successMessage = '';
 
-			const res = await apiFetch(`/member/courses/${courseSlug}/reviews`, {
+			const res = await apiFetch<ApiResponse>(`/member/courses/${courseSlug}/reviews`, {
 				method: 'POST',
 				body: JSON.stringify({ rating, title, content })
 			});
@@ -93,7 +107,7 @@
 		if (!confirm('Are you sure you want to delete your review?')) return;
 
 		try {
-			const res = await apiFetch(`/member/courses/${courseSlug}/reviews`, { method: 'DELETE' });
+			const res = await apiFetch<ApiResponse>(`/member/courses/${courseSlug}/reviews`, { method: 'DELETE' });
 			if (res.success) {
 				successMessage = 'Review deleted';
 				await loadReviews();

@@ -23,7 +23,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { IconX, IconCookie, IconSettings, IconCheck } from '$lib/icons';
+	import { IconX, IconSettings, IconCheck } from '$lib/icons';
 
 	// Props
 	interface Props {
@@ -276,7 +276,7 @@
 			<!-- Header -->
 			<div class="cookie-header">
 				<div class="cookie-icon">
-					<IconCookie size={24} />
+					<IconSettings size={24} />
 				</div>
 				<h2 class="cookie-title">Cookie Preferences</h2>
 			</div>

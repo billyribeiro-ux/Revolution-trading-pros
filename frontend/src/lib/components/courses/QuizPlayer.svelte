@@ -39,6 +39,18 @@
 		results?: { question_id: number; correct: boolean; points: number }[];
 	}
 
+	interface QuizStartResponse {
+		success: boolean;
+		data?: QuizData;
+		error?: string;
+	}
+
+	interface QuizSubmitResponse {
+		success: boolean;
+		data?: QuizResult;
+		error?: string;
+	}
+
 	interface Props {
 		courseSlug: string;
 		quizId: number;
@@ -58,13 +70,13 @@
 	let result: QuizResult | null = $state(null);
 	let error = $state('');
 
-	const currentQuestion = $derived(quizData?.questions[currentQuestionIndex]);
-	const isLastQuestion = $derived(currentQuestionIndex === (quizData?.questions.length ?? 0) - 1);
+	const currentQuestion = $derived(quizData?.questions?.[currentQuestionIndex]);
+	const isLastQuestion = $derived(currentQuestionIndex === (quizData?.questions?.length ?? 0) - 1);
 	const progress = $derived(
-		quizData ? Math.round(((currentQuestionIndex + 1) / quizData.questions.length) * 100) : 0
+		quizData?.questions ? Math.round(((currentQuestionIndex + 1) / quizData.questions.length) * 100) : 0
 	);
 	const answeredCount = $derived(selectedAnswers.size);
-	const totalQuestions = $derived(quizData?.questions.length ?? 0);
+	const totalQuestions = $derived(quizData?.questions?.length ?? 0);
 
 	const formatTime = (seconds: number): string => {
 		const mins = Math.floor(seconds / 60);
@@ -76,7 +88,7 @@
 		try {
 			isLoading = true;
 			error = '';
-			const res = await apiFetch(`/member/courses/${courseSlug}/quizzes/${quizId}/start`, {
+			const res = await apiFetch<QuizStartResponse>(`/member/courses/${courseSlug}/quizzes/${quizId}/start`, {
 				method: 'POST'
 			});
 			if (res.success && res.data) {
@@ -140,7 +152,7 @@
 				answer_id: answerId
 			}));
 
-			const res = await apiFetch(
+			const res = await apiFetch<QuizSubmitResponse>(
 				`/member/courses/${courseSlug}/quizzes/${quizId}/attempts/${quizData.attempt_id}/submit`,
 				{
 					method: 'POST',

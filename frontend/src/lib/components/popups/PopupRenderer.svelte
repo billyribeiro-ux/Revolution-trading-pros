@@ -22,7 +22,7 @@
 	import { IconX } from '$lib/icons';
 	import {
 		activePopup,
-		loadActivePopups,
+		getActivePopups,
 		closePopup,
 		recordPopupImpression,
 		recordPopupConversion,
@@ -71,7 +71,7 @@
 		if (!browser) return;
 
 		// Load popups for current page
-		await loadActivePopups();
+		await getActivePopups(window.location.pathname);
 
 		// Set up event listeners
 		setupExitIntent();

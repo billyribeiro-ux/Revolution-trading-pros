@@ -6,14 +6,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
-	import {
-		deals,
-		pipelines,
-		selectedPipeline,
-		dealsByStage,
-		isLoading,
-		error
-	} from '$lib/stores/crm';
+	import { crmStore } from '$lib/stores/crm';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 
@@ -27,34 +20,34 @@
 	});
 
 	async function loadPipelinesAndDeals() {
-		$isLoading = true;
-		$error = null;
+		crmStore.setLoading(true);
+		crmStore.clearError();
 		try {
 			const pls = await crmAPI.getPipelines();
-			pipelines.set(pls);
-			if (pls.length && !$selectedPipeline) {
-				selectedPipeline.set(pls[0]);
+			crmStore.setPipelines(pls);
+			if (pls.length && !crmStore.selectedPipeline) {
+				crmStore.selectPipeline(pls[0]);
 			}
 			await loadDeals();
 		} catch (e) {
 			console.error('Failed to load pipelines/deals', e);
-			$error = 'Failed to load deals. Please try again.';
+			crmStore.setError('Failed to load deals. Please try again.');
 		} finally {
-			$isLoading = false;
+			crmStore.setLoading(false);
 		}
 	}
 
 	async function loadDeals() {
-		if (!$selectedPipeline) return;
+		if (!crmStore.selectedPipeline) return;
 		try {
-			$isLoading = true;
-			const response = await crmAPI.getDeals({ pipeline_id: $selectedPipeline.id, per_page: 500 });
-			deals.set(response.data);
+			crmStore.setLoading(true);
+			const response = await crmAPI.getDeals({ pipeline_id: crmStore.selectedPipeline.id, per_page: 500 });
+			crmStore.setDeals(response.data);
 		} catch (e) {
 			console.error('Failed to load deals', e);
-			$error = 'Failed to load deals. Please try again.';
+			crmStore.setError('Failed to load deals. Please try again.');
 		} finally {
-			$isLoading = false;
+			crmStore.setLoading(false);
 		}
 	}
 
@@ -67,7 +60,7 @@
 	}
 
 	function selectPipeline(p: Pipeline) {
-		selectedPipeline.set(p);
+		crmStore.selectPipeline(p);
 		loadDeals();
 		loadForecast();
 	}
@@ -157,10 +150,10 @@
 
 		<!-- Pipelines Selector -->
 		<div class="mb-4 flex flex-wrap items-center gap-2 text-xs">
-			{#each $pipelines as pipeline}
+			{#each crmStore.pipelines as pipeline}
 				<button
 					class={`rounded-full border px-3 py-1 ${
-						$selectedPipeline && $selectedPipeline.id === pipeline.id
+						crmStore.selectedPipeline && crmStore.selectedPipeline.id === pipeline.id
 							? 'border-sky-500 bg-sky-500/15 text-sky-200'
 							: 'border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-700'
 					}`}
@@ -172,20 +165,20 @@
 		</div>
 
 		<!-- Error -->
-		{#if $error}
+		{#if crmStore.error}
 			<div
 				class="mb-4 rounded-xl border border-rose-700/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200"
 			>
-				{$error}
+				{crmStore.error}
 			</div>
 		{/if}
 
 		<!-- Kanban Board -->
 		<div class="flex gap-3 overflow-x-auto pb-4">
-			{#if !$selectedPipeline}
+			{#if !crmStore.selectedPipeline}
 				<div class="flex-1 py-16 text-center text-sm text-slate-500">No pipelines configured.</div>
 			{:else}
-				{#each $selectedPipeline.stages as stage (stage.id)}
+				{#each crmStore.selectedPipeline.stages as stage (stage.id)}
 					<div
 						class="min-w-[260px] flex-1 rounded-2xl border border-slate-800/80 bg-slate-900/70 p-3"
 					>
@@ -193,7 +186,7 @@
 							<div>
 								<p class="font-medium text-slate-100">{stage.name}</p>
 								<p class="text-[11px] text-slate-500">
-									{stage.probability}% · {$dealsByStage[stage.id]?.length ?? 0} deals
+									{stage.probability}% · {crmStore.dealsByStage[stage.id]?.length ?? 0} deals
 								</p>
 							</div>
 							<span class="rounded-full bg-slate-800/80 px-2 py-1 text-[11px] text-slate-300">
@@ -202,10 +195,10 @@
 						</div>
 
 						<div class="space-y-2 text-xs">
-							{#if !$dealsByStage[stage.id]?.length}
+							{#if !crmStore.dealsByStage[stage.id]?.length}
 								<p class="py-4 text-center text-[11px] text-slate-500">No deals in this stage.</p>
 							{:else}
-								{#each $dealsByStage[stage.id] as deal (deal.id)}
+								{#each crmStore.dealsByStage[stage.id] as deal (deal.id)}
 									<button
 										type="button"
 										class="w-full cursor-pointer rounded-xl border border-slate-800/80 bg-slate-900/90 p-3 text-left hover:border-sky-500/70 focus:outline-none focus:ring-2 focus:ring-sky-500/60"

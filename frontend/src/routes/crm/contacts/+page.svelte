@@ -7,7 +7,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
-	import { contacts, contactFilters, isLoading, error } from '$lib/stores/crm';
+	import { crmStore } from '$lib/stores/crm';
 	import type { Contact, ContactStatus, LifecycleStage } from '$lib/crm/types';
 	import { IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
 
@@ -40,11 +40,11 @@
 	});
 
 	async function loadContacts() {
-		$isLoading = true;
-		$error = null;
+		crmStore.setLoading(true);
+		crmStore.clearError();
 
 		try {
-			$contactFilters = {
+			crmStore.contactFilters = {
 				search: localSearch || undefined,
 				status: localStatus !== 'all' ? localStatus : undefined,
 				lifecycle_stage: localStage !== 'all' ? localStage : undefined,
@@ -53,13 +53,13 @@
 				per_page: 100
 			};
 
-			const response = await crmAPI.getContacts($contactFilters);
-			contacts.set(response.data);
+			const response = await crmAPI.getContacts(crmStore.contactFilters);
+			crmStore.setContacts(response.data);
 		} catch (e) {
 			console.error('Failed to load contacts', e);
-			$error = 'Failed to load contacts. Please try again.';
+			crmStore.setError('Failed to load contacts. Please try again.');
 		} finally {
-			$isLoading = false;
+			crmStore.setLoading(false);
 		}
 	}
 
@@ -67,10 +67,10 @@
 		goto(`/crm/contacts/${contact.id}`);
 	}
 
-	let totalContacts = $derived($contacts.length);
-	let highScoreContacts = $derived($contacts.filter((c) => c.lead_score >= 75).length);
+	let totalContacts = $derived(crmStore.contacts.length);
+	let highScoreContacts = $derived(crmStore.contacts.filter((c: Contact) => c.lead_score >= 75).length);
 	let atRiskCustomers = $derived(
-		$contacts.filter((c) => c.status === 'customer' && c.health_score < 50).length
+		crmStore.contacts.filter((c: Contact) => c.status === 'customer' && c.health_score < 50).length
 	);
 </script>
 
@@ -145,9 +145,9 @@
 			<button
 				class="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-400 disabled:opacity-60"
 				onclick={loadContacts}
-				disabled={$isLoading}
+				disabled={crmStore.isLoading}
 			>
-				{$isLoading ? 'Loading…' : 'Apply filters'}
+				{crmStore.isLoading ? 'Loading…' : 'Apply filters'}
 			</button>
 		</div>
 
@@ -191,11 +191,11 @@
 		</div>
 
 		<!-- Error -->
-		{#if $error}
+		{#if crmStore.error}
 			<div
 				class="mb-4 rounded-xl border border-rose-700/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200"
 			>
-				{$error}
+				{crmStore.error}
 			</div>
 		{/if}
 
@@ -219,16 +219,16 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#if $isLoading && !$contacts.length}
+						{#if crmStore.isLoading && !crmStore.contacts.length}
 							<tr>
 								<td colspan="9" class="px-4 py-8 text-center text-slate-400">Loading contacts…</td>
 							</tr>
-						{:else if !$contacts.length}
+						{:else if !crmStore.contacts.length}
 							<tr>
 								<td colspan="9" class="px-4 py-8 text-center text-slate-500">No contacts found.</td>
 							</tr>
 						{:else}
-							{#each $contacts as contact (contact.id)}
+							{#each crmStore.contacts as contact (contact.id)}
 								<tr
 									class="cursor-pointer border-t border-slate-800/60 hover:bg-slate-800/40"
 									onclick={() => openContact(contact)}
