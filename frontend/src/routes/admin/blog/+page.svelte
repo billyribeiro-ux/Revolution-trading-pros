@@ -1080,114 +1080,136 @@
 		{:else}
 			<!-- List View -->
 			<div class="posts-table-container">
-				<table class="posts-table">
-					<thead>
-						<tr>
-							<th>
-								<input id="select-all-posts-list" name="select-all-posts-list" type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
-							</th>
-							<th>Title</th>
-							<th>Author</th>
-							<th>Status</th>
-							<th>Categories</th>
-							<th>Views</th>
-							<th>SEO</th>
-							<th>Published</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each posts as post (post.id)}
-							<tr class:selected={selectedPosts.has(post.id)}>
-								<td>
-									<input
-										id="post-select-list-{post.id}"
-										name="post-select-list-{post.id}"
-										type="checkbox"
-										checked={selectedPosts.has(post.id)}
-										onchange={() => togglePostSelection(post.id)}
-									/>
-								</td>
-								<td>
-									<div class="table-title">
-										{#if post.featured}
-											<IconStarFilled size={16} class="featured-icon" />
-										{/if}
-										<a href="/admin/blog/edit/{post.id}">{post.title}</a>
-									</div>
-								</td>
-								<td>{post.author?.name || '-'}</td>
-								<td>
-									<span class="status-badge status-{post.status}">
-										{post.status}
-									</span>
-								</td>
-								<td>
-									{#if post.categories?.length > 0}
-										<div class="table-category-tags">
-											{#each (post.categories || []).slice(0, 2) as categoryId}
-												{@const category =
-													typeof categoryId === 'string'
-														? getPredefinedCategoryById(categoryId)
-														: categoryId}
-												{#if category}
-													<span
-														class="category-tag-table"
-														style:--tag-color={category.color || '#E6B800'}>{category.name}</span
-													>
-												{/if}
-											{/each}
-											{#if post.categories.length > 2}
-												<span class="more-tag">+{post.categories.length - 2}</span>
-											{/if}
-										</div>
-									{:else}
-										-
-									{/if}
-								</td>
-								<td>{formatNumber(post.view_count || 0)}</td>
-								<td>
-									<div class="seo-score-bar" style="--score: {post.seo_score}%">
-										{post.seo_score}
-									</div>
-								</td>
-								<td>{post.published_at ? formatDate(post.published_at) : '-'}</td>
-								<td>
-									<div class="table-actions">
-										<button
-											class="action-icon"
-											onclick={() => goto(`/admin/blog/edit/${post.id}`)}
-											title="Edit"
-										>
-											<IconEdit size={16} />
-										</button>
-										<button
-											class="action-icon"
-											onclick={() => (previewPost = post)}
-											title="Preview"
-										>
-											<IconEye size={16} />
-										</button>
-										<button
-											class="action-icon"
-											onclick={() => duplicatePost(post.id)}
-											title="Duplicate"
-										>
-											<IconCopy size={16} />
-										</button>
-										<button
-											class="action-icon danger"
-											onclick={() => deletePost(post.id)}
-											title="Delete"
-										>
-											<IconTrash size={16} />
-										</button>
-									</div>
-								</td>
+				<div class="table-scroll-wrapper">
+					<table class="posts-table">
+						<thead>
+							<tr>
+								<th class="th-checkbox">
+									<input id="select-all-posts-list" name="select-all-posts-list" type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+								</th>
+								<th class="th-title">Title</th>
+								<th class="th-author hidden-mobile">Author</th>
+								<th class="th-status">Status</th>
+								<th class="th-categories hidden-mobile hidden-tablet">Categories</th>
+								<th class="th-views hidden-mobile">Views</th>
+								<th class="th-seo hidden-mobile hidden-tablet">SEO</th>
+								<th class="th-published hidden-mobile">Published</th>
+								<th class="th-actions">Actions</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{#each posts as post (post.id)}
+								<tr class:selected={selectedPosts.has(post.id)}>
+									<td class="td-checkbox">
+										<input
+											id="post-select-list-{post.id}"
+											name="post-select-list-{post.id}"
+											type="checkbox"
+											checked={selectedPosts.has(post.id)}
+											onchange={() => togglePostSelection(post.id)}
+										/>
+									</td>
+									<td class="td-title">
+										<div class="table-title">
+											{#if post.featured}
+												<IconStarFilled size={16} class="featured-icon" />
+											{/if}
+											<a href="/admin/blog/edit/{post.id}">{post.title}</a>
+										</div>
+										<!-- Mobile-only status badge inline -->
+										<span class="mobile-status-badge status-badge status-{post.status}">
+											{post.status}
+										</span>
+									</td>
+									<td class="hidden-mobile">{post.author?.name || '-'}</td>
+									<td class="td-status">
+										<span class="status-badge status-{post.status}">
+											{post.status}
+										</span>
+									</td>
+									<td class="hidden-mobile hidden-tablet">
+										{#if post.categories?.length > 0}
+											<div class="table-category-tags">
+												{#each (post.categories || []).slice(0, 2) as categoryId}
+													{@const category =
+														typeof categoryId === 'string'
+															? getPredefinedCategoryById(categoryId)
+															: categoryId}
+													{#if category}
+														<span
+															class="category-tag-table"
+															style:--tag-color={category.color || '#E6B800'}>{category.name}</span
+														>
+													{/if}
+												{/each}
+												{#if post.categories.length > 2}
+													<span class="more-tag">+{post.categories.length - 2}</span>
+												{/if}
+											</div>
+										{:else}
+											-
+										{/if}
+									</td>
+									<td class="hidden-mobile">{formatNumber(post.view_count || 0)}</td>
+									<td class="hidden-mobile hidden-tablet">
+										<div class="seo-score-bar" style="--score: {post.seo_score}%">
+											{post.seo_score}
+										</div>
+									</td>
+									<td class="hidden-mobile">{post.published_at ? formatDate(post.published_at) : '-'}</td>
+									<td class="td-actions">
+										<div class="table-actions">
+											<button
+												class="action-icon"
+												onclick={() => goto(`/admin/blog/edit/${post.id}`)}
+												title="Edit"
+											>
+												<IconEdit size={16} />
+											</button>
+											<button
+												class="action-icon hidden-mobile"
+												onclick={() => (previewPost = post)}
+												title="Preview"
+											>
+												<IconEye size={16} />
+											</button>
+											<button
+												class="action-icon hidden-mobile hidden-tablet"
+												onclick={() => duplicatePost(post.id)}
+												title="Duplicate"
+											>
+												<IconCopy size={16} />
+											</button>
+											<button
+												class="action-icon danger"
+												onclick={() => deletePost(post.id)}
+												title="Delete"
+											>
+												<IconTrash size={16} />
+											</button>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Mobile Pagination (Simplified) -->
+				<div class="table-pagination">
+					<div class="pagination-info">
+						Showing {posts.length} posts
+					</div>
+					<div class="pagination-controls">
+						<button class="pagination-btn" disabled>
+							Previous
+						</button>
+						<span class="pagination-current">1</span>
+						<button class="pagination-btn" disabled>
+							Next
+						</button>
+					</div>
+				</div>
 			</div>
 		{/if}
 
@@ -2081,9 +2103,63 @@
 		overflow: hidden;
 	}
 
+	/* Responsive table scroll wrapper */
+	.table-scroll-wrapper {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+	}
+
+	.table-scroll-wrapper::-webkit-scrollbar {
+		height: 6px;
+	}
+
+	.table-scroll-wrapper::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.table-scroll-wrapper::-webkit-scrollbar-thumb {
+		background: rgba(148, 163, 184, 0.3);
+		border-radius: 3px;
+	}
+
 	.posts-table {
 		width: 100%;
 		border-collapse: collapse;
+		min-width: 600px;
+	}
+
+	/* Mobile status badge shown inline with title on mobile */
+	.mobile-status-badge {
+		display: none;
+		margin-top: 0.5rem;
+	}
+
+	/* Responsive visibility classes */
+	.hidden-mobile {
+		display: table-cell;
+	}
+
+	.hidden-tablet {
+		display: table-cell;
+	}
+
+	/* Table column specific styling */
+	.th-checkbox,
+	.td-checkbox {
+		width: 48px;
+		min-width: 48px;
+	}
+
+	.th-title {
+		min-width: 200px;
+	}
+
+	.th-actions,
+	.td-actions {
+		width: 140px;
+		min-width: 100px;
 	}
 
 	.posts-table th {
@@ -2217,6 +2293,92 @@
 		background: rgba(239, 68, 68, 0.1);
 		border-color: rgba(239, 68, 68, 0.3);
 		color: #f87171;
+	}
+
+	/* Table Pagination */
+	.table-pagination {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		background: rgba(15, 23, 42, 0.4);
+	}
+
+	.pagination-info {
+		font-size: 0.875rem;
+		color: #94a3b8;
+	}
+
+	.pagination-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.pagination-btn {
+		padding: 0.5rem 1rem;
+		background: rgba(148, 163, 184, 0.1);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 6px;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		min-height: 44px;
+		min-width: 44px;
+	}
+
+	.pagination-btn:hover:not(:disabled) {
+		background: rgba(59, 130, 246, 0.1);
+		border-color: rgba(59, 130, 246, 0.3);
+		color: #3b82f6;
+	}
+
+	.pagination-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.pagination-current {
+		padding: 0.5rem 1rem;
+		background: rgba(59, 130, 246, 0.2);
+		border: 1px solid rgba(59, 130, 246, 0.3);
+		border-radius: 6px;
+		color: #3b82f6;
+		font-weight: 600;
+		font-size: 0.875rem;
+	}
+
+	/* Full pagination numbers - hidden on mobile */
+	.pagination-numbers {
+		display: flex;
+		gap: 0.25rem;
+	}
+
+	.pagination-number {
+		padding: 0.5rem 0.75rem;
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: 6px;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		min-width: 40px;
+		text-align: center;
+	}
+
+	.pagination-number:hover {
+		background: rgba(148, 163, 184, 0.1);
+		color: #f1f5f9;
+	}
+
+	.pagination-number.active {
+		background: rgba(59, 130, 246, 0.2);
+		border-color: rgba(59, 130, 246, 0.3);
+		color: #3b82f6;
+		font-weight: 600;
 	}
 
 	/* Empty State */
@@ -2530,7 +2692,7 @@
 		}
 	}
 
-	/* Mobile Landscape (< 768px) */
+	/* Mobile Landscape / Tablet (< 768px) */
 	@media (max-width: 768px) {
 		.posts-grid {
 			grid-template-columns: 1fr;
@@ -2544,9 +2706,96 @@
 			display: none;
 		}
 
-		.posts-table-container {
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
+		/* Table responsive - hide non-essential columns */
+		.hidden-mobile {
+			display: none !important;
+		}
+
+		/* Show mobile status badge inline with title */
+		.mobile-status-badge {
+			display: inline-block;
+		}
+
+		/* Hide the separate status column on mobile */
+		.td-status {
+			display: none;
+		}
+
+		.th-status {
+			display: none;
+		}
+
+		/* Reduce table minimum width for mobile */
+		.posts-table {
+			min-width: 320px;
+		}
+
+		/* Stacked action buttons on mobile */
+		.table-actions {
+			flex-direction: column;
+			gap: 0.375rem;
+		}
+
+		.action-icon {
+			width: 100%;
+			justify-content: center;
+		}
+
+		/* Pagination simplified */
+		.pagination-numbers {
+			display: none;
+		}
+
+		.table-pagination {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		/* Search/filter controls full width */
+		.controls-left {
+			min-width: 100%;
+		}
+
+		.search-box {
+			width: 100%;
+		}
+
+		/* Bulk actions stacked */
+		.bulk-actions {
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		/* Date range stacked */
+		.date-range {
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.date-input {
+			width: 100%;
+		}
+
+		/* Filter selects full width */
+		.filter-select {
+			width: 100%;
+		}
+
+		/* Action buttons stacked */
+		.action-buttons {
+			width: 100%;
+		}
+
+		.action-buttons .btn-secondary {
+			flex: 1;
+			justify-content: center;
+		}
+	}
+
+	/* Tablet (< 1024px) - hide extra columns */
+	@media (max-width: 1024px) {
+		.hidden-tablet {
+			display: none !important;
 		}
 	}
 
@@ -2572,6 +2821,53 @@
 		.btn-secondary {
 			padding: 0.5rem 0.75rem;
 			font-size: 0.8125rem;
+			width: 100%;
+			justify-content: center;
+		}
+
+		/* Controls bar tighter on mobile */
+		.controls-bar {
+			padding: 0.75rem;
+			gap: 0.75rem;
+		}
+
+		/* Header actions stacked */
+		.header-actions {
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.header-actions .btn-primary,
+		.header-actions .btn-icon {
+			width: 100%;
+		}
+
+		/* View toggle centered */
+		.view-toggle {
+			width: 100%;
+			justify-content: center;
+		}
+
+		/* Sort controls full width */
+		.sort-controls {
+			width: 100%;
+		}
+
+		.sort-controls .filter-select {
+			flex: 1;
+		}
+
+		/* Table title truncation */
+		.td-title {
+			max-width: 180px;
+		}
+
+		.table-title a {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 150px;
+			display: block;
 		}
 	}
 

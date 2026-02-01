@@ -237,7 +237,7 @@
 	/* Page Title */
 	.page-title {
 		text-align: center;
-		font-size: 30px;
+		font-size: 24px;
 		font-weight: 700;
 		color: #333;
 		margin: 0;
@@ -278,7 +278,7 @@
 	.section-title {
 		text-align: center;
 		letter-spacing: 2px;
-		font-size: 28px;
+		font-size: 22px;
 		font-weight: 700;
 		color: #333;
 		margin: 30px 0 10px;
@@ -359,7 +359,7 @@
 	}
 
 	.fl-post-title {
-		font-size: 18px;
+		font-size: 16px;
 		font-weight: 600;
 		line-height: 1.4;
 		margin: 0 0 12px;
@@ -457,18 +457,18 @@
 		background: #076a8a;
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
+	/* Responsive - Mobile First */
+	@media (min-width: 768px) {
 		.page-title {
-			font-size: 24px;
+			font-size: 30px;
 		}
 
 		.section-title {
-			font-size: 22px;
+			font-size: 28px;
 		}
 
 		.fl-post-title {
-			font-size: 16px;
+			font-size: 18px;
 		}
 	}
 </style>

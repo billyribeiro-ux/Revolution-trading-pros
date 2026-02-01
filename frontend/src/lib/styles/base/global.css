@@ -188,15 +188,22 @@
 	background-color: var(--error-emphasis);
 }
 
-/* Button sizes */
+/* Button sizes - with touch target optimization (2026 WCAG standards) */
 .btn-sm {
 	padding: var(--space-2) var(--space-3);
 	font-size: var(--text-sm);
+	min-height: 36px; /* Expands to 44px on touch via global CSS */
 }
 
 .btn-lg {
 	padding: var(--space-4) var(--space-6);
 	font-size: var(--text-lg);
+	min-height: 48px; /* Enhanced touch target */
+}
+
+/* Ensure base button meets touch targets */
+.btn {
+	min-height: 44px; /* Touch target minimum */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

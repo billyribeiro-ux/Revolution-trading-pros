@@ -1314,6 +1314,8 @@
 		display: none;
 		background-color: #0f2d41;
 		padding: 15px 20px;
+		/* Safe area insets for notched devices (2026 mobile standards) */
+		padding-bottom: max(15px, env(safe-area-inset-bottom));
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
@@ -1322,6 +1324,8 @@
 		align-items: center;
 		gap: 12px;
 		width: 100%;
+		/* Touch target optimization - minimum 44px height (2026 WCAG standards) */
+		min-height: 44px;
 		padding: 10px 15px;
 		background-color: transparent;
 		border: none;
@@ -1439,7 +1443,8 @@
 			position: fixed;
 			top: 0;
 			left: 0;
-			bottom: 50px;
+			/* Bottom spacing accounts for toggle footer + safe area inset */
+			bottom: calc(50px + env(safe-area-inset-bottom, 0px));
 			width: 280px;
 			overflow-x: hidden;
 			overflow-y: auto;
@@ -1485,14 +1490,18 @@
 			left: 30px;
 		}
 
-		/* Show toggle footer on mobile */
+		/* Show toggle footer on mobile - with safe area support for notched devices */
 		.dashboard__toggle {
 			display: block;
 			position: fixed;
 			bottom: 0;
 			left: 0;
 			right: 0;
-			height: 50px;
+			/* Height includes safe area inset for notched devices */
+			min-height: calc(50px + env(safe-area-inset-bottom, 0px));
+			padding-bottom: max(0px, env(safe-area-inset-bottom));
+			padding-left: max(20px, env(safe-area-inset-left));
+			padding-right: max(20px, env(safe-area-inset-right));
 			line-height: 50px;
 			z-index: 100010;
 		}

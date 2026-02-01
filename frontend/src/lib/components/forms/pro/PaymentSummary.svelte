@@ -1,4 +1,12 @@
 <script lang="ts">
+	/**
+	 * PaymentSummary Component (FluentForms Pro 6.1.8 - Updated Jan 2026)
+	 *
+	 * Responsive order summary with touch-friendly design.
+	 *
+	 * @version 2.1.0 - Svelte 5 + Responsive Design
+	 */
+
 	interface LineItem {
 		id: string;
 		name: string;
@@ -49,11 +57,12 @@
 	const total = $derived(taxableAmount + taxAmount);
 </script>
 
-<div class="payment-summary">
-	<div class="summary-header">
+<!-- Responsive Payment Summary Component - Mobile-first design -->
+<div class="w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm pb-[env(safe-area-inset-bottom)]">
+	<!-- Summary Header -->
+	<div class="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gray-50 border-b border-gray-200">
 		<svg
-			width="20"
-			height="20"
+			class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 flex-shrink-0"
 			viewBox="0 0 24 24"
 			fill="none"
 			stroke="currentColor"
@@ -63,37 +72,49 @@
 			<circle cx="20" cy="21" r="1"></circle>
 			<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
 		</svg>
-		<span>Order Summary</span>
+		<span class="text-sm sm:text-base md:text-lg font-semibold text-gray-900">Order Summary</span>
 	</div>
 
+	<!-- Line Items - Responsive list -->
 	{#if showBreakdown && items.length > 0}
-		<div class="line-items">
-			{#each items as item (item.id)}
-				<div class="line-item">
-					<div class="item-info">
-						<span class="item-name">{item.name}</span>
+		<div class="p-3 sm:p-4 md:p-5 border-b border-gray-200">
+			{#each items as item, index (item.id)}
+				<div
+					class="flex justify-between items-center py-2.5 sm:py-3 min-h-[44px]"
+					class:border-b={index < items.length - 1}
+					class:border-dashed={index < items.length - 1}
+					class:border-gray-200={index < items.length - 1}
+				>
+					<div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+						<span class="text-sm sm:text-base text-gray-700 truncate">{item.name}</span>
 						{#if item.quantity > 1}
-							<span class="item-qty">x{item.quantity}</span>
+							<span class="text-xs sm:text-sm text-gray-500 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded flex-shrink-0">
+								x{item.quantity}
+							</span>
 						{/if}
 					</div>
-					<span class="item-price">{formatCurrency(item.subtotal)}</span>
+					<span class="text-sm sm:text-base font-medium text-gray-900 ml-3 flex-shrink-0">
+						{formatCurrency(item.subtotal)}
+					</span>
 				</div>
 			{/each}
 		</div>
 	{/if}
 
-	<div class="summary-calculations">
-		<div class="calc-row">
-			<span class="calc-label">Subtotal</span>
-			<span class="calc-value">{formatCurrency(subtotal)}</span>
+	<!-- Calculations Section -->
+	<div class="p-3 sm:p-4 md:p-5 border-b border-gray-200 space-y-2 sm:space-y-3">
+		<!-- Subtotal Row -->
+		<div class="flex justify-between items-center py-1 sm:py-1.5 min-h-[36px] sm:min-h-[40px]">
+			<span class="text-sm sm:text-base text-gray-500">Subtotal</span>
+			<span class="text-sm sm:text-base text-gray-700">{formatCurrency(subtotal)}</span>
 		</div>
 
+		<!-- Discount Row -->
 		{#if discount}
-			<div class="calc-row discount">
-				<span class="calc-label">
+			<div class="flex justify-between items-center py-1 sm:py-1.5 min-h-[36px] sm:min-h-[40px]">
+				<span class="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base text-emerald-600">
 					<svg
-						width="14"
-						height="14"
+						class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
 						viewBox="0 0 24 24"
 						fill="none"
 						stroke="currentColor"
@@ -105,180 +126,51 @@
 						<path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
 						<path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
 					</svg>
-					Discount ({discount.code})
+					<span class="truncate">Discount ({discount.code})</span>
 					{#if discount.type === 'percentage'}
-						<span class="discount-percent">-{discount.value}%</span>
+						<span class="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded flex-shrink-0">
+							-{discount.value}%
+						</span>
 					{/if}
 				</span>
-				<span class="calc-value discount-value">-{formatCurrency(discountAmount)}</span>
+				<span class="text-sm sm:text-base font-medium text-emerald-600 flex-shrink-0">
+					-{formatCurrency(discountAmount)}
+				</span>
 			</div>
 		{/if}
 
+		<!-- Tax Row -->
 		{#if tax}
-			<div class="calc-row tax">
-				<span class="calc-label">
+			<div class="flex justify-between items-center py-1 sm:py-1.5 min-h-[36px] sm:min-h-[40px]">
+				<span class="text-sm sm:text-base text-gray-500">
 					Tax ({tax.rate}%)
 				</span>
-				<span class="calc-value">{formatCurrency(taxAmount)}</span>
+				<span class="text-sm sm:text-base text-gray-700">{formatCurrency(taxAmount)}</span>
 			</div>
 		{/if}
 	</div>
 
-	<div class="summary-total">
-		<span class="total-label">Total</span>
-		<span class="total-value">{formatCurrency(total)}</span>
+	<!-- Total Section - Prominent display -->
+	<div class="flex justify-between items-center p-4 sm:p-5 md:p-6 bg-blue-900 text-white">
+		<span class="text-base sm:text-lg font-medium">Total</span>
+		<span class="text-xl sm:text-2xl md:text-3xl font-bold">{formatCurrency(total)}</span>
 	</div>
 
+	<!-- Savings Badge - Touch-friendly -->
 	{#if discount}
-		<div class="savings-badge">
+		<div class="flex items-center justify-center gap-2 p-3 sm:p-4 bg-emerald-50 text-emerald-700 min-h-[44px]">
 			<svg
-				width="14"
-				height="14"
+				class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
-				stroke-width="2"
+				stroke-width="2.5"
 			>
 				<polyline points="20 6 9 17 4 12"></polyline>
 			</svg>
-			You saved {formatCurrency(discountAmount)}!
+			<span class="text-sm sm:text-base font-medium">
+				You saved {formatCurrency(discountAmount)}!
+			</span>
 		</div>
 	{/if}
 </div>
-
-<style>
-	.payment-summary {
-		background-color: white;
-		border: 1px solid #e5e7eb;
-		border-radius: 0.75rem;
-		overflow: hidden;
-	}
-
-	.summary-header {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 1rem;
-		background-color: #f9fafb;
-		border-bottom: 1px solid #e5e7eb;
-		font-weight: 600;
-		color: #111827;
-	}
-
-	.line-items {
-		padding: 1rem;
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	.line-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.5rem 0;
-	}
-
-	.line-item:not(:last-child) {
-		border-bottom: 1px dashed #e5e7eb;
-	}
-
-	.item-info {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.item-name {
-		font-size: 0.875rem;
-		color: #374151;
-	}
-
-	.item-qty {
-		font-size: 0.75rem;
-		color: #6b7280;
-		padding: 0.125rem 0.375rem;
-		background-color: #f3f4f6;
-		border-radius: 0.25rem;
-	}
-
-	.item-price {
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: #111827;
-	}
-
-	.summary-calculations {
-		padding: 1rem;
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	.calc-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.375rem 0;
-		font-size: 0.875rem;
-	}
-
-	.calc-label {
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		color: #6b7280;
-	}
-
-	.calc-value {
-		color: #374151;
-	}
-
-	.calc-row.discount .calc-label {
-		color: #059669;
-	}
-
-	.discount-percent {
-		font-size: 0.75rem;
-		padding: 0.125rem 0.25rem;
-		background-color: #dcfce7;
-		border-radius: 0.25rem;
-		margin-left: 0.25rem;
-	}
-
-	.discount-value {
-		color: #059669;
-		font-weight: 500;
-	}
-
-	.calc-row.tax .calc-label {
-		color: #6b7280;
-	}
-
-	.summary-total {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1rem;
-		background-color: #1e3a8a;
-		color: white;
-	}
-
-	.total-label {
-		font-weight: 500;
-		font-size: 1rem;
-	}
-
-	.total-value {
-		font-size: 1.5rem;
-		font-weight: 700;
-	}
-
-	.savings-badge {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.375rem;
-		padding: 0.5rem;
-		background-color: #ecfdf5;
-		color: #059669;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-</style>

@@ -523,6 +523,10 @@
 
 	.consent-banner--bottom {
 		bottom: 0;
+		/* Safe area insets for notched devices (2026 mobile standards) */
+		padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+		padding-left: max(1.5rem, env(safe-area-inset-left));
+		padding-right: max(1.5rem, env(safe-area-inset-right));
 	}
 
 	.consent-banner--top {
@@ -615,7 +619,7 @@
 		flex-wrap: wrap;
 	}
 
-	/* Buttons */
+	/* Buttons - with touch target optimization (2026 WCAG standards) */
 	.consent-btn {
 		padding: 0.625rem 1.25rem;
 		border-radius: 0.5rem;
@@ -624,6 +628,8 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
+		/* Touch target minimum 44px height */
+		min-height: 44px;
 	}
 
 	.consent-btn--primary {
@@ -853,11 +859,13 @@
 		border-color: rgba(255, 255, 255, 0.1);
 	}
 
-	/* Floating Button */
+	/* Floating Button - with safe area support for notched devices */
 	.consent-floating-btn {
 		position: fixed;
-		bottom: 1rem;
-		left: 1rem;
+		/* Safe area insets for notched devices (2026 mobile standards) */
+		bottom: max(1rem, env(safe-area-inset-bottom));
+		left: max(1rem, env(safe-area-inset-left));
+		/* Touch target: 48px minimum for floating action buttons */
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;

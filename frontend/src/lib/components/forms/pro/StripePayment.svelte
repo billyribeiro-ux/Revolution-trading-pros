@@ -9,7 +9,7 @@
 	 * - 3D Secure (SCA) authentication
 	 * - Subscription payments
 	 *
-	 * @version 2.0.0 - Svelte 5 + @stripe/stripe-js
+	 * @version 2.1.0 - Svelte 5 + @stripe/stripe-js + Responsive Design
 	 */
 
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
@@ -236,58 +236,99 @@
 	}
 </script>
 
-<div class="stripe-payment" class:disabled class:has-error={error || cardError}>
+<!-- Responsive Stripe Payment Component - Mobile-first design -->
+<div
+	class="flex flex-col gap-3 sm:gap-4 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
+	class:opacity-60={disabled}
+	class:pointer-events-none={disabled}
+>
 	{#if label}
-		<span class="field-label" id="stripe-label">{label}</span>
+		<span
+			class="text-sm sm:text-base font-medium text-gray-700"
+			id="stripe-label"
+		>
+			{label}
+		</span>
 	{/if}
 
 	{#if testMode}
-		<div class="test-mode-banner">
-			<span>⚠️ Test mode - Use card 4242 4242 4242 4242</span>
+		<div class="p-2 sm:p-3 bg-amber-50 border border-amber-500 rounded-md text-xs sm:text-sm text-amber-800">
+			<span>Test mode - Use card 4242 4242 4242 4242</span>
 		</div>
 	{/if}
 
 	{#if loading}
-		<div class="loading-state">
-			<svg class="spinner" viewBox="0 0 24 24">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
+		<div class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base">
+			<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
+				<circle
+					cx="12" cy="12" r="10"
+					stroke="currentColor"
+					stroke-width="3"
+					fill="none"
+					stroke-dasharray="60"
+					stroke-dashoffset="45"
+					stroke-linecap="round"
+				/>
 			</svg>
 			<span>Loading payment form...</span>
 		</div>
 	{:else}
 		{#if paymentRequestAvailable}
-			<div bind:this={paymentRequestRef} class="payment-request-button"></div>
-			<div class="divider">
+			<!-- Payment Request Button (Apple Pay, Google Pay) - Touch-friendly -->
+			<div
+				bind:this={paymentRequestRef}
+				class="mb-2 sm:mb-3 min-h-[44px] sm:min-h-[48px]"
+			></div>
+			<div class="flex items-center gap-3 sm:gap-4 text-gray-500 text-xs sm:text-sm">
+				<span class="flex-1 h-px bg-gray-200"></span>
 				<span>Or pay with card</span>
+				<span class="flex-1 h-px bg-gray-200"></span>
 			</div>
 		{/if}
 
-		<div class="card-element-wrapper">
-			<div bind:this={cardElementRef} class="card-element"></div>
+		<!-- Card Element Wrapper - Larger touch area on mobile -->
+		<div
+			class="p-3 sm:p-4 border border-gray-300 rounded-lg bg-white transition-all duration-150 min-h-[48px] sm:min-h-[52px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10"
+			class:border-red-300={error || cardError}
+		>
+			<div
+				bind:this={cardElementRef}
+				class="min-h-[24px] sm:min-h-[28px]"
+			></div>
 		</div>
 
 		{#if cardError}
-			<p class="card-error">{cardError}</p>
+			<p class="text-xs sm:text-sm text-red-500 m-0 px-1">{cardError}</p>
 		{/if}
 
+		<!-- Pay Button - Full width mobile, touch-friendly 44px+ height -->
 		<button
 			type="button"
-			class="pay-button"
+			class="flex items-center justify-center gap-2 sm:gap-3 w-full min-h-[48px] sm:min-h-[52px] md:min-h-[56px] px-4 sm:px-6 py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-lg text-base sm:text-lg font-semibold cursor-pointer transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] touch-manipulation"
 			onclick={handleSubmit}
 			disabled={disabled || processing || !cardComplete}
 		>
 			{#if processing}
-				<svg class="button-spinner" viewBox="0 0 24 24">
-					<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
+				<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
+					<circle
+						cx="12" cy="12" r="10"
+						stroke="currentColor"
+						stroke-width="3"
+						fill="none"
+						stroke-dasharray="60"
+						stroke-dashoffset="45"
+						stroke-linecap="round"
+					/>
 				</svg>
-				Processing...
+				<span>Processing...</span>
 			{:else}
-				Pay {formatAmount(amount, currency)}
+				<span>Pay {formatAmount(amount, currency)}</span>
 			{/if}
 		</button>
 
-		<div class="secure-badge">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<!-- Secure Badge -->
+		<div class="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 py-2">
+			<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 			</svg>
@@ -296,163 +337,6 @@
 	{/if}
 
 	{#if error}
-		<p class="error-text">{error}</p>
+		<p class="text-xs sm:text-sm text-red-500 m-0 px-1">{error}</p>
 	{/if}
 </div>
-
-<style>
-	.stripe-payment {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.field-label {
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: #374151;
-	}
-
-	.test-mode-banner {
-		padding: 0.5rem 0.75rem;
-		background-color: #fef3c7;
-		border: 1px solid #f59e0b;
-		border-radius: 0.375rem;
-		font-size: 0.75rem;
-		color: #92400e;
-	}
-
-	.loading-state {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1.5rem;
-		background-color: #f9fafb;
-		border: 1px solid #e5e7eb;
-		border-radius: 0.5rem;
-		color: #6b7280;
-	}
-
-	.spinner,
-	.button-spinner {
-		width: 20px;
-		height: 20px;
-		animation: spin 1s linear infinite;
-	}
-
-	.spinner circle,
-	.button-spinner circle {
-		stroke-dasharray: 60;
-		stroke-dashoffset: 45;
-		stroke-linecap: round;
-	}
-
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.payment-request-button {
-		margin-bottom: 0.5rem;
-	}
-
-	.divider {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		color: #6b7280;
-		font-size: 0.875rem;
-	}
-
-	.divider::before,
-	.divider::after {
-		content: '';
-		flex: 1;
-		height: 1px;
-		background-color: #e5e7eb;
-	}
-
-	.card-element-wrapper {
-		padding: 0.75rem 1rem;
-		border: 1px solid #d1d5db;
-		border-radius: 0.5rem;
-		background-color: white;
-		transition:
-			border-color 0.15s,
-			box-shadow 0.15s;
-	}
-
-	.card-element-wrapper:focus-within {
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-	}
-
-	.card-element {
-		min-height: 24px;
-	}
-
-	.card-error {
-		font-size: 0.75rem;
-		color: #ef4444;
-		margin: 0;
-	}
-
-	.pay-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		width: 100%;
-		padding: 0.875rem 1.5rem;
-		background-color: #5469d4;
-		color: white;
-		border: none;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background-color 0.15s;
-	}
-
-	.pay-button:hover:not(:disabled) {
-		background-color: #4354b3;
-	}
-
-	.pay-button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	.secure-badge {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.375rem;
-		font-size: 0.75rem;
-		color: #6b7280;
-	}
-
-	.secure-badge svg {
-		width: 14px;
-		height: 14px;
-	}
-
-	.error-text {
-		font-size: 0.75rem;
-		color: #ef4444;
-		margin: 0;
-	}
-
-	.disabled {
-		opacity: 0.6;
-		pointer-events: none;
-	}
-
-	.has-error .card-element-wrapper {
-		border-color: #fca5a5;
-	}
-</style>
