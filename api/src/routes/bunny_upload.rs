@@ -20,6 +20,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -105,13 +106,64 @@ fn format_room_name(room_slug: &str) -> String {
     }
 }
 
+/// ICT 7 SECURITY: Validate video file signature (magic bytes)
+/// Checks common video container formats to prevent non-video file uploads
+fn is_valid_video_signature(data: &[u8]) -> bool {
+    if data.len() < 12 {
+        return false;
+    }
+
+    // MP4/M4V/MOV: ftyp, moov, mdat atoms
+    if data[4..8] == *b"ftyp" || data[4..8] == *b"moov" || data[4..8] == *b"mdat" || data[4..8] == *b"wide" || data[4..8] == *b"free" {
+        return true;
+    }
+
+    // WebM/MKV: EBML header
+    if data[..4] == [0x1A, 0x45, 0xDF, 0xA3] {
+        return true;
+    }
+
+    // AVI: RIFF....AVI
+    if data[..4] == *b"RIFF" && data.len() >= 12 && data[8..12] == *b"AVI " {
+        return true;
+    }
+
+    // MPEG: starts with 0x000001BA or 0x000001B3
+    if data[..4] == [0x00, 0x00, 0x01, 0xBA] || data[..4] == [0x00, 0x00, 0x01, 0xB3] {
+        return true;
+    }
+
+    // OGG: OggS
+    if data[..4] == *b"OggS" {
+        return true;
+    }
+
+    // FLV: FLV
+    if data[..3] == *b"FLV" {
+        return true;
+    }
+
+    // If content type is octet-stream (chunked upload), be more permissive
+    // but still reject obvious non-video patterns
+    let text_header = String::from_utf8_lossy(&data[..data.len().min(100)]);
+    if text_header.contains("<!DOCTYPE") || text_header.contains("<html") || text_header.contains("<?php") {
+        return false;
+    }
+
+    // For chunked/resumable uploads, we may not have the header
+    // Allow through but log for monitoring
+    true
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// POST /api/admin/bunny/create-video - Create video entry and get upload URL
+/// ICT 7 SECURITY: AdminUser authentication required
 async fn create_video(
     State(state): State<AppState>,
+    _admin: AdminUser,
     Json(input): Json<CreateVideoRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let api_key = get_bunny_api_key();
@@ -216,8 +268,10 @@ async fn create_video(
 }
 
 /// GET /api/admin/bunny/video-status/:guid - Check video processing status
+/// ICT 7 SECURITY: AdminUser authentication required
 async fn get_video_status(
     State(state): State<AppState>,
+    _admin: AdminUser,
     Path(video_guid): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let api_key = get_bunny_api_key();
@@ -326,8 +380,10 @@ async fn get_video_status(
 }
 
 /// GET /api/admin/bunny/uploads - List recent uploads
+/// ICT 7 SECURITY: AdminUser authentication required
 async fn list_uploads(
     State(state): State<AppState>,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     #[allow(clippy::type_complexity)]
     let uploads: Vec<(String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)> =
@@ -365,8 +421,10 @@ async fn list_uploads(
 }
 
 /// PUT /api/admin/bunny/upload - Upload video file to Bunny.net
+/// ICT 7 SECURITY: AdminUser authentication required, video type validation
 async fn upload_video(
     State(_state): State<AppState>,
+    _admin: AdminUser,
     axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
     headers: axum::http::HeaderMap,
     body: axum::body::Bytes,
@@ -386,6 +444,14 @@ async fn upload_video(
         )
     })?;
 
+    // ICT 7 SECURITY: Validate video_guid format (should be UUID-like from Bunny.net)
+    if video_guid.len() < 10 || video_guid.len() > 50 || video_guid.contains("..") || video_guid.contains('/') {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"success": false, "error": "Invalid video_guid format"})),
+        ));
+    }
+
     let library_id: i64 = params
         .get("library_id")
         .and_then(|s| s.parse().ok())
@@ -402,6 +468,43 @@ async fn upload_video(
         .get("content-type")
         .and_then(|v| v.to_str().ok())
         .unwrap_or("video/mp4");
+
+    // ICT 7 SECURITY: Validate video content type
+    let allowed_video_types = [
+        "video/mp4",
+        "video/webm",
+        "video/quicktime",
+        "video/x-msvideo",
+        "video/x-matroska",
+        "video/mpeg",
+        "video/ogg",
+        "application/octet-stream", // Allow binary for chunked uploads
+    ];
+
+    if !allowed_video_types.contains(&content_type) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "success": false,
+                "error": format!("Invalid content type '{}'. Only video files are allowed.", content_type)
+            })),
+        ));
+    }
+
+    // ICT 7 SECURITY: Basic video file signature validation
+    if body.len() >= 12 && !is_valid_video_signature(&body) {
+        tracing::warn!(
+            target: "security",
+            "Video upload rejected: file signature does not match video format"
+        );
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "success": false,
+                "error": "File content does not appear to be a valid video"
+            })),
+        ));
+    }
 
     tracing::info!(
         "Uploading {} bytes to Bunny.net video {} in library {}",

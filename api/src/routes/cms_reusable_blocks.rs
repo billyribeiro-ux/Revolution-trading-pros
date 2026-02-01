@@ -373,33 +373,7 @@ async fn list_reusable_blocks(
     let offset = query.offset.unwrap_or(0);
     let include_deleted = query.include_deleted.unwrap_or(false);
 
-    // Build dynamic query
-    let mut conditions = vec!["1=1".to_string()];
-    let mut bind_index = 1;
-
-    if !include_deleted {
-        conditions.push("deleted_at IS NULL".to_string());
-    }
-
-    if let Some(ref category) = query.category {
-        conditions.push(format!("category = ${}", bind_index));
-        bind_index += 1;
-    }
-
-    if let Some(ref search) = query.search {
-        conditions.push(format!(
-            "(name ILIKE ${0} OR description ILIKE ${0} OR ${0} = ANY(tags))",
-            bind_index
-        ));
-        bind_index += 1;
-    }
-
-    if let Some(is_global) = query.is_global {
-        conditions.push(format!("is_global = ${}", bind_index));
-        let _ = bind_index; // Suppress unused warning - bind_index tracks placeholder position
-    }
-
-    // Sort configuration
+    // Sort configuration - validated against whitelist to prevent SQL injection
     let sort_column = match query.sort_by.as_deref() {
         Some("name") => "name",
         Some("usage_count") => "usage_count",
@@ -411,33 +385,53 @@ async fn list_reusable_blocks(
         _ => "DESC",
     };
 
-    // Count total
-    let count_result: (i64,) = sqlx::query_as(&format!(
-        "SELECT COUNT(*) FROM cms_reusable_blocks WHERE {}",
-        conditions.join(" AND ")
-    ))
+    // Prepare search pattern if provided
+    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+
+    // Count total using parameterized query
+    let count_result: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*)
+        FROM cms_reusable_blocks
+        WHERE ($1::boolean OR deleted_at IS NULL)
+          AND ($2::text IS NULL OR category::text = $2)
+          AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
+          AND ($4::boolean IS NULL OR is_global = $4)
+        "#,
+    )
+    .bind(include_deleted)
+    .bind(&query.category)
+    .bind(&search_pattern)
+    .bind(query.is_global)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     let total = count_result.0;
 
-    // Fetch blocks
+    // Fetch blocks using parameterized query with safe sort columns
+    // Note: sort_column and sort_order are validated against whitelists above
     let blocks: Vec<CmsReusableBlockSummary> = sqlx::query_as(&format!(
         r#"
         SELECT id, name, slug, description, category, tags, thumbnail_url,
                usage_count, is_global, is_locked, version, created_at, updated_at
         FROM cms_reusable_blocks
-        WHERE {}
+        WHERE ($1::boolean OR deleted_at IS NULL)
+          AND ($2::text IS NULL OR category::text = $2)
+          AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
+          AND ($4::boolean IS NULL OR is_global = $4)
         ORDER BY {} {}
-        LIMIT {} OFFSET {}
+        LIMIT $5 OFFSET $6
         "#,
-        conditions.join(" AND "),
         sort_column,
-        sort_order,
-        limit,
-        offset
+        sort_order
     ))
+    .bind(include_deleted)
+    .bind(&query.category)
+    .bind(&search_pattern)
+    .bind(query.is_global)
+    .bind(limit)
+    .bind(offset)
     .fetch_all(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;

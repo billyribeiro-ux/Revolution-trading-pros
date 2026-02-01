@@ -25,6 +25,7 @@ use serde_json::json;
 use tracing::error;
 
 use crate::{
+    middleware::admin::AdminUser,
     services::room_analytics::{
         EquityPoint, MonthlyReturn, RoomAnalytics, RoomAnalyticsService, SetupPerformance,
         TickerPerformance,
@@ -86,6 +87,7 @@ async fn get_room_analytics(
     State(state): State<AppState>,
     Path(slug): Path<String>,
     Query(query): Query<AnalyticsQuery>,
+    _admin: AdminUser,
 ) -> Result<Json<RoomAnalytics>, ApiError> {
     let service = RoomAnalyticsService::new(state.db.pool.clone());
 
@@ -112,6 +114,7 @@ async fn get_equity_curve(
     State(state): State<AppState>,
     Path(slug): Path<String>,
     Query(query): Query<AnalyticsQuery>,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let service = RoomAnalyticsService::new(state.db.pool.clone());
 
@@ -145,6 +148,7 @@ async fn get_equity_curve(
 async fn get_ticker_analytics(
     State(state): State<AppState>,
     Path((slug, ticker)): Path<(String, String)>,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let service = RoomAnalyticsService::new(state.db.pool.clone());
 
@@ -182,6 +186,7 @@ async fn get_monthly_returns(
     State(state): State<AppState>,
     Path(slug): Path<String>,
     Query(query): Query<AnalyticsQuery>,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let service = RoomAnalyticsService::new(state.db.pool.clone());
 
@@ -214,6 +219,7 @@ async fn get_ticker_performance(
     State(state): State<AppState>,
     Path(slug): Path<String>,
     Query(query): Query<AnalyticsQuery>,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let service = RoomAnalyticsService::new(state.db.pool.clone());
 
@@ -246,6 +252,7 @@ async fn get_setup_performance(
     State(state): State<AppState>,
     Path(slug): Path<String>,
     Query(query): Query<AnalyticsQuery>,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let service = RoomAnalyticsService::new(state.db.pool.clone());
 

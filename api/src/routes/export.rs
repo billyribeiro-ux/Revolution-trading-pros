@@ -29,7 +29,7 @@ use serde_json::json;
 use tracing::{error, info};
 
 use crate::{
-    models::User,
+    middleware::admin::AdminUser,
     services::export::{AlertFilters, DateRange, ExportService, TradeFilters},
     AppState,
 };
@@ -150,12 +150,12 @@ pub async fn export_alerts_csv(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<AlertExportParams>,
-    user: User,
+    admin: AdminUser,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     info!(
-        user_id = %user.id,
+        user_id = %admin.0.id,
         room = %room_slug,
-        "Exporting alerts CSV"
+        "Exporting alerts CSV (admin)"
     );
 
     let export_service = ExportService::new();
@@ -209,12 +209,12 @@ pub async fn export_trades_csv(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<TradeExportParams>,
-    user: User,
+    admin: AdminUser,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     info!(
-        user_id = %user.id,
+        user_id = %admin.0.id,
         room = %room_slug,
-        "Exporting trades CSV"
+        "Exporting trades CSV (admin)"
     );
 
     let export_service = ExportService::new();
@@ -264,12 +264,12 @@ pub async fn get_performance_report(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<PerformanceReportParams>,
-    user: User,
+    admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     info!(
-        user_id = %user.id,
+        user_id = %admin.0.id,
         room = %room_slug,
-        "Generating performance report"
+        "Generating performance report (admin)"
     );
 
     let export_service = ExportService::new();

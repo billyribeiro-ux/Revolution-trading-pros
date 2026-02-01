@@ -2,6 +2,7 @@
 //! Apple Principal Engineer ICT 7 Grade - January 2026
 //!
 //! Provides API endpoints for trading rooms and sections management.
+//! ICT 7 SECURITY: Admin endpoints require AdminUser authentication
 //! All 6 rooms in correct order:
 //! 1. Day Trading Room
 //! 2. Swing Trading Room
@@ -20,6 +21,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
+use crate::middleware::admin::AdminUser;
+use crate::models::User;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -478,11 +481,271 @@ async fn list_sections(
     }
 }
 
-/// List traders (admin)
+/// List traders (public - may be empty)
 async fn list_traders(
     State(_state): State<AppState>,
     Query(_query): Query<TradersQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    Ok(Json(json!({
+        "success": true,
+        "data": [],
+        "meta": {
+            "current_page": 1,
+            "per_page": 20,
+            "total": 0,
+            "total_pages": 0
+        }
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ADMIN HANDLERS - ICT 7: Require AdminUser authentication
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// List all trading rooms (admin) - ICT 7: Requires admin auth
+async fn admin_list_trading_rooms(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Query(query): Query<TradingRoomsQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security_audit",
+        event = "admin_list_trading_rooms",
+        "ICT 7 AUDIT: Admin listing trading rooms"
+    );
+
+    let rooms_result = sqlx::query_as::<_, TradingRoom>(
+        r#"
+        SELECT id, name, slug, type, description, short_description,
+               icon, color, logo_url, image_url, sort_order,
+               is_active, is_featured, is_public,
+               available_sections, features, metadata,
+               created_at, updated_at
+        FROM trading_rooms
+        WHERE ($1::bool IS NULL OR is_active = $1)
+        ORDER BY sort_order ASC
+        "#,
+    )
+    .bind(query.active_only)
+    .fetch_all(&state.db.pool)
+    .await;
+
+    match rooms_result {
+        Ok(rooms) if !rooms.is_empty() => {
+            let data: Vec<serde_json::Value> = rooms
+                .iter()
+                .map(|r| {
+                    json!({
+                        "id": r.id,
+                        "name": r.name,
+                        "slug": r.slug,
+                        "type": r.room_type,
+                        "description": r.description,
+                        "short_description": r.short_description,
+                        "icon": r.icon,
+                        "color": r.color,
+                        "logo_url": r.logo_url,
+                        "image_url": r.image_url,
+                        "sort_order": r.sort_order,
+                        "is_active": r.is_active,
+                        "is_featured": r.is_featured,
+                        "is_public": r.is_public,
+                        "available_sections": r.available_sections,
+                        "features": r.features,
+                        "metadata": r.metadata,
+                        "created_at": r.created_at.to_string(),
+                        "updated_at": r.updated_at.to_string()
+                    })
+                })
+                .collect();
+
+            Ok(Json(json!({
+                "success": true,
+                "data": data,
+                "meta": {
+                    "current_page": 1,
+                    "per_page": 20,
+                    "total": data.len(),
+                    "total_pages": 1
+                }
+            })))
+        }
+        _ => {
+            let data = get_fallback_rooms();
+            let len = data.as_array().map(|a| a.len()).unwrap_or(0);
+
+            Ok(Json(json!({
+                "success": true,
+                "data": data,
+                "meta": {
+                    "current_page": 1,
+                    "per_page": 20,
+                    "total": len,
+                    "total_pages": 1
+                }
+            })))
+        }
+    }
+}
+
+/// Get single trading room by slug (admin) - ICT 7: Requires admin auth
+async fn admin_get_trading_room(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Path(slug): Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security_audit",
+        event = "admin_get_trading_room",
+        slug = %slug,
+        "ICT 7 AUDIT: Admin fetching trading room"
+    );
+
+    let room_result = sqlx::query_as::<_, TradingRoom>(
+        r#"
+        SELECT id, name, slug, type, description, short_description,
+               icon, color, logo_url, image_url, sort_order,
+               is_active, is_featured, is_public,
+               available_sections, features, metadata,
+               created_at, updated_at
+        FROM trading_rooms
+        WHERE slug = $1
+        "#,
+    )
+    .bind(&slug)
+    .fetch_optional(&state.db.pool)
+    .await;
+
+    match room_result {
+        Ok(Some(r)) => Ok(Json(json!({
+            "success": true,
+            "data": {
+                "id": r.id,
+                "name": r.name,
+                "slug": r.slug,
+                "type": r.room_type,
+                "description": r.description,
+                "short_description": r.short_description,
+                "icon": r.icon,
+                "color": r.color,
+                "logo_url": r.logo_url,
+                "image_url": r.image_url,
+                "sort_order": r.sort_order,
+                "is_active": r.is_active,
+                "is_featured": r.is_featured,
+                "is_public": r.is_public,
+                "available_sections": r.available_sections,
+                "features": r.features,
+                "metadata": r.metadata,
+                "created_at": r.created_at.to_string(),
+                "updated_at": r.updated_at.to_string()
+            }
+        }))),
+        Ok(None) => {
+            let fallback = get_fallback_rooms();
+            if let Some(rooms) = fallback.as_array() {
+                if let Some(room) = rooms.iter().find(|r| r["slug"] == slug) {
+                    return Ok(Json(json!({
+                        "success": true,
+                        "data": room
+                    })));
+                }
+            }
+            Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({
+                    "success": false,
+                    "error": "Trading room not found"
+                })),
+            ))
+        }
+        Err(_) => {
+            let fallback = get_fallback_rooms();
+            if let Some(rooms) = fallback.as_array() {
+                if let Some(room) = rooms.iter().find(|r| r["slug"] == slug) {
+                    return Ok(Json(json!({
+                        "success": true,
+                        "data": room
+                    })));
+                }
+            }
+            Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({
+                    "success": false,
+                    "error": "Trading room not found"
+                })),
+            ))
+        }
+    }
+}
+
+/// List all sections (admin) - ICT 7: Requires admin auth
+async fn admin_list_sections(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security_audit",
+        event = "admin_list_sections",
+        "ICT 7 AUDIT: Admin listing sections"
+    );
+
+    let sections_result = sqlx::query_as::<_, RoomSection>(
+        r#"
+        SELECT id, section_key, name, description, icon, sort_order,
+               is_active, allowed_resource_types, max_items, restricted_to_rooms
+        FROM room_sections
+        ORDER BY sort_order ASC
+        "#,
+    )
+    .fetch_all(&state.db.pool)
+    .await;
+
+    match sections_result {
+        Ok(sections) if !sections.is_empty() => {
+            let data: Vec<serde_json::Value> = sections
+                .iter()
+                .map(|s| {
+                    json!({
+                        "id": s.id,
+                        "section_key": s.section_key,
+                        "name": s.name,
+                        "description": s.description,
+                        "icon": s.icon,
+                        "sort_order": s.sort_order,
+                        "is_active": s.is_active,
+                        "allowed_resource_types": s.allowed_resource_types,
+                        "max_items": s.max_items,
+                        "restricted_to_rooms": s.restricted_to_rooms
+                    })
+                })
+                .collect();
+
+            Ok(Json(json!({
+                "success": true,
+                "data": data
+            })))
+        }
+        _ => Ok(Json(json!({
+            "success": true,
+            "data": get_fallback_sections()
+        }))),
+    }
+}
+
+/// List traders (admin) - ICT 7: Requires admin auth
+async fn admin_list_traders(
+    State(_state): State<AppState>,
+    _admin: AdminUser,
+    Query(_query): Query<TradersQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security_audit",
+        event = "admin_list_traders",
+        "ICT 7 AUDIT: Admin listing traders"
+    );
+
     Ok(Json(json!({
         "success": true,
         "data": [],
@@ -508,11 +771,17 @@ pub struct VideosQuery {
     pub is_published: Option<bool>,
 }
 
-/// List videos for trading rooms (admin)
-async fn list_videos(
+/// List videos for trading rooms (admin) - ICT 7: Requires admin auth
+async fn admin_list_videos(
     State(state): State<AppState>,
+    _admin: AdminUser,
     Query(query): Query<VideosQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security_audit",
+        event = "admin_list_videos",
+        "ICT 7 AUDIT: Admin listing videos"
+    );
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
@@ -588,12 +857,19 @@ async fn list_videos(
     })))
 }
 
-/// List videos for a specific trading room by slug (admin)
-async fn list_videos_by_room(
+/// List videos for a specific trading room by slug (admin) - ICT 7: Requires admin auth
+async fn admin_list_videos_by_room(
     State(state): State<AppState>,
+    _admin: AdminUser,
     Path(slug): Path<String>,
     Query(query): Query<VideosQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security_audit",
+        event = "admin_list_videos_by_room",
+        room_slug = %slug,
+        "ICT 7 AUDIT: Admin listing videos by room"
+    );
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
@@ -693,14 +969,14 @@ pub fn router() -> Router<AppState> {
         .route("/traders", get(list_traders))
 }
 
-/// Admin router for trading rooms
+/// Admin router for trading rooms - ICT 7: All endpoints require AdminUser authentication
 pub fn admin_router() -> Router<AppState> {
     Router::new()
-        .route("/", get(list_trading_rooms))
-        .route("/sections", get(list_sections))
-        .route("/:slug", get(get_trading_room))
-        .route("/traders", get(list_traders))
+        .route("/", get(admin_list_trading_rooms))
+        .route("/sections", get(admin_list_sections))
+        .route("/:slug", get(admin_get_trading_room))
+        .route("/traders", get(admin_list_traders))
         // ICT 7 FIX: Add videos routes for frontend compatibility
-        .route("/videos", get(list_videos))
-        .route("/videos/:slug", get(list_videos_by_room))
+        .route("/videos", get(admin_list_videos))
+        .route("/videos/:slug", get(admin_list_videos_by_room))
 }

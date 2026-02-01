@@ -18,6 +18,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
+use chrono::Datelike;
 
 // ICT 7 SECURITY FIX: Changed from User to AdminUser for all CRM endpoints
 use crate::{middleware::admin::AdminUser, AppState};
@@ -2175,7 +2176,7 @@ pub struct CrmDeal {
     pub pipeline_id: i64,
     pub stage_id: i64,
     pub owner_id: Option<i64>,
-    pub amount: sqlx::types::BigDecimal,
+    pub amount: sqlx::types::Decimal,
     pub currency: String,
     pub probability: i32,
     pub status: String,
@@ -2314,7 +2315,7 @@ async fn list_pipelines(
             .await
             .unwrap_or((0,));
 
-        let total_value: (Option<sqlx::types::BigDecimal>,) = sqlx::query_as(
+        let total_value: (Option<sqlx::types::Decimal>,) = sqlx::query_as(
             "SELECT SUM(amount) FROM crm_deals WHERE pipeline_id = $1 AND status = 'open'"
         )
         .bind(pipeline.id)
@@ -3042,7 +3043,7 @@ async fn get_deal_forecast(
     };
 
     // Get deals with expected close dates in the period
-    let forecast_deals: Vec<(sqlx::types::BigDecimal, i32)> = sqlx::query_as(
+    let forecast_deals: Vec<(sqlx::types::Decimal, i32)> = sqlx::query_as(
         r#"
         SELECT amount, probability FROM crm_deals
         WHERE status = 'open'

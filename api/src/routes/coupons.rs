@@ -23,6 +23,7 @@ use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
 
 use crate::{
+    middleware::admin::AdminUser,
     models::{order::Coupon, User},
     AppState,
 };
@@ -292,54 +293,51 @@ async fn get_user_coupons(
 
 /// Get all coupons (admin)
 /// GET /api/coupons
+/// ICT 7 SECURITY FIX: Use AdminUser extractor for consistent authorization
 async fn list_coupons(
     State(state): State<AppState>,
-    user: User,
+    _admin: AdminUser,
     Query(query): Query<CouponQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Admin only
-    let is_admin =
-        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
-    if !is_admin {
-        return Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Admin access required"})),
-        ));
-    }
-
     let limit = query.limit.unwrap_or(50).min(100);
-    let offset = query.page.unwrap_or(0) * limit;
+    let page = query.page.unwrap_or(0);
+    let offset = page * limit;
 
-    // ICT 11+ Fix: Explicitly list columns with NULL for description (may not exist in older schemas)
-    let coupon_columns = r#"id, code, NULL::TEXT as description, discount_type, discount_value,
-                  min_purchase, max_discount, usage_limit, usage_count,
-                  is_active, starts_at, expires_at, applicable_products,
-                  applicable_plans, created_at, updated_at"#;
-
+    // ICT 7 FIX: Use Laravel production schema column names
     let coupons: Vec<Coupon> = if query.active_only.unwrap_or(false) {
-        sqlx::query_as(&format!(
-            "SELECT {} FROM coupons WHERE is_active = true ORDER BY created_at DESC LIMIT $1 OFFSET $2",
-            coupon_columns
-        ))
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    } else {
-        sqlx::query_as(&format!(
-            "SELECT {} FROM coupons ORDER BY created_at DESC LIMIT $1 OFFSET $2",
-            coupon_columns
-        ))
+        sqlx::query_as(
+            r#"SELECT id, code, type, value, max_uses, current_uses,
+                      expiry_date, applicable_products, min_purchase_amount,
+                      is_active, created_at, updated_at
+               FROM coupons
+               WHERE is_active = true
+               ORDER BY created_at DESC
+               LIMIT $1 OFFSET $2"#
+        )
         .bind(limit)
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
+            tracing::error!(target: "coupons", error = %e, "Failed to list coupons");
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to list coupons"})))
+        })?
+    } else {
+        sqlx::query_as(
+            r#"SELECT id, code, type, value, max_uses, current_uses,
+                      expiry_date, applicable_products, min_purchase_amount,
+                      is_active, created_at, updated_at
+               FROM coupons
+               ORDER BY created_at DESC
+               LIMIT $1 OFFSET $2"#
+        )
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "coupons", error = %e, "Failed to list coupons");
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to list coupons"})))
         })?
     };
 
@@ -351,33 +349,33 @@ async fn list_coupons(
     Ok(Json(json!({
         "coupons": coupons,
         "total": total,
-        "page": query.page.unwrap_or(0),
-        "limit": limit
+        "page": page,
+        "limit": limit,
+        "total_pages": (total as f64 / limit as f64).ceil() as i64
     })))
 }
 
 /// Create a new coupon (admin)
 /// POST /api/coupons
+/// ICT 7 SECURITY FIX: Use AdminUser extractor for consistent authorization
 async fn create_coupon(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(admin): AdminUser,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
-    // Admin only
-    let is_admin =
-        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
-    if !is_admin {
-        return Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Admin access required"})),
-        ));
-    }
-
     // Validate code
     if input.code.trim().is_empty() {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "Coupon code is required"})),
+        ));
+    }
+
+    // Validate discount type
+    if input.discount_type != "percentage" && input.discount_type != "fixed" {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Discount type must be 'percentage' or 'fixed'"})),
         ));
     }
 
@@ -398,30 +396,21 @@ async fn create_coupon(
         ));
     }
 
-    // Create coupon
+    // ICT 7 FIX: Use Laravel production schema column names
     let coupon: Coupon = sqlx::query_as(
         r#"INSERT INTO coupons (
-            code, description, discount_type, discount_value,
-            min_purchase, max_discount, usage_limit, usage_count,
-            is_active, starts_at, expires_at, applicable_products,
-            applicable_plans, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
-        RETURNING *"#,
+            code, type, value, max_uses, current_uses,
+            expiry_date, applicable_products, min_purchase_amount,
+            is_active, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, 0, $5, $6, $7, $8, NOW(), NOW())
+        RETURNING id, code, type, value, max_uses, current_uses,
+                  expiry_date, applicable_products, min_purchase_amount,
+                  is_active, created_at, updated_at"#,
     )
     .bind(&code)
-    .bind(&input.description)
     .bind(&input.discount_type)
     .bind(input.discount_value)
-    .bind(input.min_purchase)
-    .bind(input.max_discount)
-    .bind(input.usage_limit)
-    .bind(input.is_active.unwrap_or(true))
-    .bind(
-        input
-            .starts_at
-            .as_ref()
-            .and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()),
-    )
+    .bind(input.usage_limit.unwrap_or(0))
     .bind(
         input
             .expires_at
@@ -435,19 +424,15 @@ async fn create_coupon(
             .map(|v| serde_json::to_value(v).ok())
             .flatten(),
     )
-    .bind(
-        input
-            .applicable_plans
-            .as_ref()
-            .map(|v| serde_json::to_value(v).ok())
-            .flatten(),
-    )
+    .bind(input.min_purchase.unwrap_or(Decimal::ZERO))
+    .bind(input.is_active.unwrap_or(true))
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
+        tracing::error!(target: "coupons", error = %e, "Failed to create coupon");
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
+            Json(json!({"error": "Failed to create coupon"})),
         )
     })?;
 
@@ -456,7 +441,7 @@ async fn create_coupon(
         event = "coupon_created",
         coupon_id = %coupon.id,
         code = %coupon.code,
-        created_by = %user.id,
+        created_by = %admin.id,
         "Coupon created"
     );
 
@@ -465,46 +450,41 @@ async fn create_coupon(
 
 /// Update coupon (admin)
 /// PUT /api/coupons/:id
+/// ICT 7 SECURITY FIX: Use AdminUser extractor for consistent authorization
 async fn update_coupon(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(admin): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
-    // Admin only
-    let is_admin =
-        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
-    if !is_admin {
-        return Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Admin access required"})),
-        ));
-    }
+    tracing::info!(
+        target: "coupons",
+        event = "coupon_update",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Admin updating coupon"
+    );
 
+    // ICT 7 FIX: Use Laravel production schema column names
     let coupon: Coupon = sqlx::query_as(
         r#"UPDATE coupons SET
-            description = COALESCE($2, description),
-            discount_type = COALESCE($3, discount_type),
-            discount_value = COALESCE($4, discount_value),
-            min_purchase = $5,
-            max_discount = $6,
-            usage_limit = $7,
+            type = COALESCE($2, type),
+            value = COALESCE($3, value),
+            max_uses = COALESCE($4, max_uses),
+            expiry_date = $5,
+            applicable_products = COALESCE($6, applicable_products),
+            min_purchase_amount = COALESCE($7, min_purchase_amount),
             is_active = COALESCE($8, is_active),
-            expires_at = $9,
-            applicable_products = COALESCE($10, applicable_products),
-            applicable_plans = COALESCE($11, applicable_plans),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING *"#,
+        RETURNING id, code, type, value, max_uses, current_uses,
+                  expiry_date, applicable_products, min_purchase_amount,
+                  is_active, created_at, updated_at"#,
     )
     .bind(id)
-    .bind(&input.description)
     .bind(&input.discount_type)
     .bind(input.discount_value)
-    .bind(input.min_purchase)
-    .bind(input.max_discount)
     .bind(input.usage_limit)
-    .bind(input.is_active)
     .bind(
         input
             .expires_at
@@ -518,19 +498,219 @@ async fn update_coupon(
             .map(|v| serde_json::to_value(v).ok())
             .flatten(),
     )
-    .bind(
-        input
-            .applicable_plans
-            .as_ref()
-            .map(|v| serde_json::to_value(v).ok())
-            .flatten(),
-    )
+    .bind(input.min_purchase)
+    .bind(input.is_active)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
+        tracing::error!(target: "coupons", error = %e, coupon_id = %id, "Failed to update coupon");
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
+            Json(json!({"error": "Failed to update coupon"})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        )
+    })?;
+
+    tracing::info!(
+        target: "coupons",
+        event = "coupon_updated",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Coupon updated successfully"
+    );
+
+    Ok(Json(coupon))
+}
+
+/// Delete coupon (admin)
+/// DELETE /api/coupons/:id
+/// ICT 7 SECURITY FIX: Use AdminUser extractor for consistent authorization
+async fn delete_coupon(
+    State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "security",
+        event = "coupon_delete",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Admin deleting coupon"
+    );
+
+    let result = sqlx::query("DELETE FROM coupons WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "coupons", error = %e, coupon_id = %id, "Failed to delete coupon");
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to delete coupon"})),
+            )
+        })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        ));
+    }
+
+    tracing::info!(
+        target: "coupons",
+        event = "coupon_deleted",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Coupon deleted successfully"
+    );
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+/// Deactivate coupon (admin) - ICT 7 FIX: Soft deactivate
+/// POST /api/coupons/:id/deactivate
+async fn deactivate_coupon(
+    State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "coupons",
+        event = "coupon_deactivate",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Admin deactivating coupon"
+    );
+
+    let result = sqlx::query(
+        "UPDATE coupons SET is_active = false, updated_at = NOW() WHERE id = $1"
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "coupons", error = %e, coupon_id = %id, "Failed to deactivate coupon");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to deactivate coupon"})),
+        )
+    })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        ));
+    }
+
+    Ok(Json(json!({"message": "Coupon deactivated successfully", "id": id})))
+}
+
+/// Reactivate coupon (admin) - ICT 7 FIX: Restore coupon
+/// POST /api/coupons/:id/reactivate
+async fn reactivate_coupon(
+    State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "coupons",
+        event = "coupon_reactivate",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Admin reactivating coupon"
+    );
+
+    let result = sqlx::query(
+        "UPDATE coupons SET is_active = true, updated_at = NOW() WHERE id = $1"
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "coupons", error = %e, coupon_id = %id, "Failed to reactivate coupon");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to reactivate coupon"})),
+        )
+    })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        ));
+    }
+
+    Ok(Json(json!({"message": "Coupon reactivated successfully", "id": id})))
+}
+
+/// Reset coupon usage count (admin) - ICT 7 FIX: Allow resetting usage
+/// POST /api/coupons/:id/reset-usage
+async fn reset_coupon_usage(
+    State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    tracing::info!(
+        target: "coupons",
+        event = "coupon_reset_usage",
+        coupon_id = %id,
+        admin_id = %admin.id,
+        "Admin resetting coupon usage"
+    );
+
+    let result = sqlx::query(
+        "UPDATE coupons SET current_uses = 0, updated_at = NOW() WHERE id = $1"
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "coupons", error = %e, coupon_id = %id, "Failed to reset coupon usage");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to reset coupon usage"})),
+        )
+    })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        ));
+    }
+
+    Ok(Json(json!({"message": "Coupon usage reset successfully", "id": id})))
+}
+
+/// Get single coupon by ID (admin)
+/// GET /api/coupons/:id
+async fn get_coupon(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
+    let coupon: Coupon = sqlx::query_as(
+        r#"SELECT id, code, type, value, max_uses, current_uses,
+                  expiry_date, applicable_products, min_purchase_amount,
+                  is_active, created_at, updated_at
+           FROM coupons WHERE id = $1"#
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "coupons", error = %e, coupon_id = %id, "Failed to fetch coupon");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to fetch coupon"})),
         )
     })?
     .ok_or_else(|| {
@@ -543,55 +723,21 @@ async fn update_coupon(
     Ok(Json(coupon))
 }
 
-/// Delete coupon (admin)
-/// DELETE /api/coupons/:id
-async fn delete_coupon(
-    State(state): State<AppState>,
-    user: User,
-    Path(id): Path<i64>,
-) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
-    // Admin only
-    let is_admin =
-        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
-    if !is_admin {
-        return Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Admin access required"})),
-        ));
-    }
-
-    let result = sqlx::query("DELETE FROM coupons WHERE id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
-
-    if result.rows_affected() == 0 {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Coupon not found"})),
-        ));
-    }
-
-    Ok(StatusCode::NO_CONTENT)
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
-// Router
+// Router - ICT 7 COMPLETE COUPON MANAGEMENT
 // ═══════════════════════════════════════════════════════════════════════════
 
 pub fn router() -> Router<AppState> {
     Router::new()
+        // Public endpoints
         .route("/validate", post(validate_coupon))
         .route("/my", get(get_user_coupons))
         .route("/user/available", get(get_user_coupons)) // Frontend compatibility
-        .route("/", get(list_coupons))
-        .route("/", post(create_coupon))
-        .route("/:id", axum::routing::put(update_coupon))
-        .route("/:id", axum::routing::delete(delete_coupon))
+        // Admin CRUD endpoints
+        .route("/", get(list_coupons).post(create_coupon))
+        .route("/:id", get(get_coupon).put(update_coupon).delete(delete_coupon))
+        // Admin management endpoints - ICT 7 FIX
+        .route("/:id/deactivate", post(deactivate_coupon))
+        .route("/:id/reactivate", post(reactivate_coupon))
+        .route("/:id/reset-usage", post(reset_coupon_usage))
 }

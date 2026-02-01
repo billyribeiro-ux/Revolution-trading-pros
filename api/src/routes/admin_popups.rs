@@ -94,7 +94,7 @@ async fn list_popups(
 
     // Execute queries
     let popups: Vec<crate::models::popup::Popup> = match sqlx::query_as(&sql)
-        .fetch_all(&state.db)
+        .fetch_all(&state.db.pool)
         .await
     {
         Ok(rows) => rows,
@@ -116,7 +116,7 @@ async fn list_popups(
     };
 
     let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db)
+        .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
 
@@ -151,7 +151,7 @@ async fn get_popup(
         "#,
     )
     .bind(id)
-    .fetch_optional(&state.db)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
@@ -240,7 +240,7 @@ async fn create_popup(
     .bind(sqlx::types::Json(&design))
     .bind(req.start_date)
     .bind(req.end_date)
-    .fetch_one(&state.db)
+    .fetch_one(&state.db.pool)
     .await;
 
     match result {
@@ -348,7 +348,7 @@ async fn update_popup(
     .bind(&req.size)
     .bind(&req.animation)
     .bind(id)
-    .execute(&state.db)
+    .execute(&state.db.pool)
     .await;
 
     match result {
@@ -371,12 +371,12 @@ async fn delete_popup(
     // First delete related events
     let _ = sqlx::query("DELETE FROM popup_events WHERE popup_id = $1")
         .bind(id)
-        .execute(&state.db)
+        .execute(&state.db.pool)
         .await;
 
     let result = sqlx::query("DELETE FROM popups WHERE id = $1")
         .bind(id)
-        .execute(&state.db)
+        .execute(&state.db.pool)
         .await;
 
     match result {
@@ -427,7 +427,7 @@ async fn duplicate_popup(
         "#,
     )
     .bind(id)
-    .fetch_one(&state.db)
+    .fetch_one(&state.db.pool)
     .await;
 
     match result {
@@ -460,7 +460,7 @@ async fn get_popup_analytics(
         "SELECT total_views, total_conversions, conversion_rate FROM popups WHERE id = $1",
     )
     .bind(id)
-    .fetch_optional(&state.db)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
@@ -491,7 +491,7 @@ async fn get_popup_analytics(
     .bind(today_start)
     .bind(week_start)
     .bind(month_start)
-    .fetch_optional(&state.db)
+    .fetch_optional(&state.db.pool)
     .await
     .unwrap_or(None)
     .unwrap_or((0, 0, 0));
@@ -510,7 +510,7 @@ async fn get_popup_analytics(
     .bind(today_start)
     .bind(week_start)
     .bind(month_start)
-    .fetch_optional(&state.db)
+    .fetch_optional(&state.db.pool)
     .await
     .unwrap_or(None)
     .unwrap_or((0, 0, 0));
@@ -525,7 +525,7 @@ async fn get_popup_analytics(
         "#,
     )
     .bind(id)
-    .fetch_all(&state.db)
+    .fetch_all(&state.db.pool)
     .await
     .unwrap_or_default();
 
@@ -559,7 +559,7 @@ async fn get_popup_analytics(
         "#,
     )
     .bind(id)
-    .fetch_all(&state.db)
+    .fetch_all(&state.db.pool)
     .await
     .unwrap_or_default();
 
@@ -589,7 +589,7 @@ async fn get_popup_analytics(
     )
     .bind(id)
     .bind(month_start)
-    .fetch_all(&state.db)
+    .fetch_all(&state.db.pool)
     .await
     .unwrap_or_default();
 
@@ -604,7 +604,7 @@ async fn get_popup_analytics(
     )
     .bind(id)
     .bind(month_start)
-    .fetch_all(&state.db)
+    .fetch_all(&state.db.pool)
     .await
     .unwrap_or_default();
 
@@ -674,7 +674,7 @@ async fn toggle_popup_status(
     let result = sqlx::query("UPDATE popups SET status = $1, updated_at = NOW() WHERE id = $2")
         .bind(new_status)
         .bind(id)
-        .execute(&state.db)
+        .execute(&state.db.pool)
         .await;
 
     match result {
@@ -719,7 +719,7 @@ async fn create_ab_test(
     .bind(&body.name)
     .bind(base_popup_id)
     .bind(body.confidence_threshold.unwrap_or(0.95))
-    .fetch_one(&state.db)
+    .fetch_one(&state.db.pool)
     .await;
 
     match test_result {
@@ -760,7 +760,7 @@ async fn create_ab_test(
                 .bind(&variant.content)
                 .bind(test_id)
                 .bind(allocation)
-                .execute(&state.db)
+                .execute(&state.db.pool)
                 .await;
             }
 
@@ -805,7 +805,7 @@ async fn get_ab_test_results(
         "#,
     )
     .bind(test_id)
-    .fetch_all(&state.db)
+    .fetch_all(&state.db.pool)
     .await
     .map_err(|e| {
         (

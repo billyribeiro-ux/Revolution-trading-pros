@@ -1,5 +1,6 @@
 //! Authentication middleware
 //! ICT 7+ Principal Engineer: Redis-cached user lookups for 60-80% faster auth
+//! ICT 7 Security: JWT blacklist checking for token revocation
 
 use axum::{
     extract::FromRequestParts,
@@ -10,8 +11,17 @@ use axum_extra::{
     headers::{authorization::Bearer, Authorization},
     TypedHeader,
 };
+use sha2::{Digest, Sha256};
 
 use crate::{models::User, utils::verify_jwt, AppState};
+
+/// Hash a JWT token for blacklist lookup
+/// Using SHA256 to avoid storing full tokens in Redis
+fn hash_token_for_blacklist(token: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(token.as_bytes());
+    hex::encode(hasher.finalize())
+}
 
 /// Extractor for authenticated users
 /// ICT 7+: Uses Redis cache for user lookups, falls back to database
@@ -40,6 +50,33 @@ impl FromRequestParts<AppState> for User {
             tracing::warn!("JWT verification failed: {:?}", e);
             (StatusCode::UNAUTHORIZED, "Invalid or expired token")
         })?;
+
+        // ICT 7 SECURITY: Check if token has been blacklisted (logout/revocation)
+        if let Some(ref redis) = state.services.redis {
+            let token_hash = hash_token_for_blacklist(bearer.token());
+            match redis.is_token_blacklisted(&token_hash).await {
+                Ok(true) => {
+                    tracing::warn!(
+                        target: "security_audit",
+                        event = "blacklisted_token_rejected",
+                        user_id = %claims.sub,
+                        "Rejected blacklisted JWT token"
+                    );
+                    return Err((StatusCode::UNAUTHORIZED, "Token has been revoked"));
+                }
+                Err(e) => {
+                    // Redis unavailable - log but continue (fail open for availability)
+                    // In high-security environments, consider failing closed instead
+                    tracing::warn!(
+                        target: "security",
+                        event = "blacklist_check_failed",
+                        error = %e,
+                        "Redis blacklist check failed, continuing with token validation"
+                    );
+                }
+                _ => {} // Token not blacklisted, continue
+            }
+        }
 
         // ICT 7+: Try Redis cache first for faster auth (60-80% improvement)
         if let Some(ref redis) = state.services.redis {

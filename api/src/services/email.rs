@@ -751,6 +751,130 @@ impl EmailService {
         self.send(to, &subject, &html, Some(&text)).await
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // NEWSLETTER EMAIL FUNCTIONS - ICT 7+ Double Opt-In & GDPR Compliance
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// Send newsletter confirmation email (double opt-in)
+    pub async fn send_newsletter_confirmation(
+        &self,
+        to: &str,
+        name: &str,
+        confirm_token: &str,
+    ) -> Result<()> {
+        let confirm_url = format!("{}/newsletter/confirm?token={}", self.app_url, confirm_token);
+
+        let subject = "Confirm Your Newsletter Subscription";
+
+        let html = Self::email_template(
+            "Confirm Your Subscription",
+            &format!(
+                r#"
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi{},
+                </p>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Thank you for subscribing to the Revolution Trading Pros newsletter!
+                    Please confirm your subscription by clicking the button below:
+                </p>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;
+                              box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                        Confirm Subscription
+                    </a>
+                </div>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 24px;">
+                    Or copy and paste this link into your browser:
+                </p>
+                <p style="font-size: 14px; color: #10b981; word-break: break-all;">
+                    {}
+                </p>
+                <div style="background: #f3f4f6; border-radius: 12px; padding: 20px; margin-top: 24px;">
+                    <p style="color: #6b7280; margin: 0; font-size: 14px;">
+                        <strong>Why confirm?</strong> We use double opt-in to ensure you actually
+                        requested this newsletter and to comply with privacy regulations (GDPR).
+                    </p>
+                </div>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 24px;">
+                    If you didn't subscribe to our newsletter, you can safely ignore this email.
+                </p>
+                "#,
+                if name.is_empty() { String::new() } else { format!(" <strong>{}</strong>", html_escape(name)) },
+                confirm_url,
+                confirm_url
+            ),
+        );
+
+        let text = format!(
+            "Hi{},\n\n\
+            Thank you for subscribing to the Revolution Trading Pros newsletter!\n\n\
+            Please confirm your subscription by visiting this link:\n{}\n\n\
+            If you didn't subscribe, you can safely ignore this email.\n\n\
+            - The Revolution Trading Pros Team",
+            if name.is_empty() { String::new() } else { format!(" {}", name) },
+            confirm_url
+        );
+
+        self.send(to, subject, &html, Some(&text)).await
+    }
+
+    /// Send newsletter with unsubscribe link (bulk email)
+    pub async fn send_newsletter(
+        &self,
+        to: &str,
+        name: &str,
+        subject: &str,
+        html_content: &str,
+        unsubscribe_token: &str,
+    ) -> Result<()> {
+        let unsubscribe_url = format!(
+            "{}/newsletter/unsubscribe?token={}",
+            self.app_url, unsubscribe_token
+        );
+
+        // Add unsubscribe footer to content
+        let html_with_footer = format!(
+            r#"{}
+            <div style="border-top: 1px solid #e5e7eb; margin-top: 32px; padding-top: 24px; text-align: center;">
+                <p style="font-size: 12px; color: #9ca3af; margin: 0 0 8px 0;">
+                    You're receiving this email because you subscribed to Revolution Trading Pros newsletter.
+                </p>
+                <p style="font-size: 12px; color: #9ca3af; margin: 0;">
+                    <a href="{}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a>
+                    &nbsp;|&nbsp;
+                    <a href="{}/privacy" style="color: #6b7280; text-decoration: underline;">Privacy Policy</a>
+                </p>
+            </div>"#,
+            html_content, unsubscribe_url, self.app_url
+        );
+
+        let full_html = Self::email_template(
+            subject,
+            &format!(
+                r#"
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                    Hi{},
+                </p>
+                {}
+                "#,
+                if name.is_empty() { String::new() } else { format!(" <strong>{}</strong>", html_escape(name)) },
+                html_with_footer
+            ),
+        );
+
+        let text = format!(
+            "Hi{},\n\n{}\n\n---\nUnsubscribe: {}\n\n- The Revolution Trading Pros Team",
+            if name.is_empty() { String::new() } else { format!(" {}", name) },
+            "View this email in your browser for the full content.",
+            unsubscribe_url
+        );
+
+        self.send(to, subject, &full_html, Some(&text)).await
+    }
+
     /// Send order confirmation email
     pub async fn send_order_confirmation(&self, to: &str, order_number: &str) -> Result<()> {
         let subject = format!("Order Confirmed - #{}", order_number);

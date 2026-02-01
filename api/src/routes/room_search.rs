@@ -33,6 +33,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::{error, info, instrument};
 
+use crate::models::User;
 use crate::services::room_search::{
     AlertSearchResult, Pagination, RoomSearchService, SearchFilters, SearchResults,
     SearchSuggestions, SearchableContentType, TradePlanSearchResult, TradeSearchResult,
@@ -146,11 +147,12 @@ pub struct SuggestionsResponse {
 /// Unified search across all content types
 ///
 /// GET /api/room-search/:room_slug?q=NVDA&types=alerts,trades&from=2026-01-01&limit=20
-#[instrument(skip(state), fields(room = %room_slug, query = %params.q))]
+#[instrument(skip(state, _user), fields(room = %room_slug, query = %params.q))]
 async fn search_room(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<SearchParams>,
+    _user: User,
 ) -> Result<Json<SearchApiResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Validate query
     let query = params.q.trim();
@@ -212,11 +214,12 @@ async fn search_room(
 /// Search alerts only
 ///
 /// GET /api/room-search/:room_slug/alerts?q=NVDA&from=2026-01-01
-#[instrument(skip(state), fields(room = %room_slug, query = %params.q))]
+#[instrument(skip(state, _user), fields(room = %room_slug, query = %params.q))]
 async fn search_alerts(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<SearchParams>,
+    _user: User,
 ) -> Result<Json<AlertsSearchResponse>, (StatusCode, Json<serde_json::Value>)> {
     let query = params.q.trim();
     if query.is_empty() {
@@ -267,11 +270,12 @@ async fn search_alerts(
 /// Search trades only
 ///
 /// GET /api/room-search/:room_slug/trades?q=NVDA&from=2026-01-01
-#[instrument(skip(state), fields(room = %room_slug, query = %params.q))]
+#[instrument(skip(state, _user), fields(room = %room_slug, query = %params.q))]
 async fn search_trades(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<SearchParams>,
+    _user: User,
 ) -> Result<Json<TradesSearchResponse>, (StatusCode, Json<serde_json::Value>)> {
     let query = params.q.trim();
     if query.is_empty() {
@@ -322,11 +326,12 @@ async fn search_trades(
 /// Search trade plans only
 ///
 /// GET /api/room-search/:room_slug/trade-plans?q=NVDA&from=2026-01-01
-#[instrument(skip(state), fields(room = %room_slug, query = %params.q))]
+#[instrument(skip(state, _user), fields(room = %room_slug, query = %params.q))]
 async fn search_trade_plans(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<SearchParams>,
+    _user: User,
 ) -> Result<Json<TradePlansSearchResponse>, (StatusCode, Json<serde_json::Value>)> {
     let query = params.q.trim();
     if query.is_empty() {
@@ -377,11 +382,12 @@ async fn search_trade_plans(
 /// Get autocomplete suggestions
 ///
 /// GET /api/room-search/:room_slug/suggestions?q=NV&limit=10
-#[instrument(skip(state), fields(room = %room_slug, prefix = %params.q))]
+#[instrument(skip(state, _user), fields(room = %room_slug, prefix = %params.q))]
 async fn get_suggestions(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<SuggestionParams>,
+    _user: User,
 ) -> Result<Json<SuggestionsResponse>, (StatusCode, Json<serde_json::Value>)> {
     let prefix = params.q.trim();
     if prefix.is_empty() {

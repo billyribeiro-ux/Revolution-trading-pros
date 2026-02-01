@@ -19,7 +19,7 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
-    models::User,
+    middleware::admin::AdminUser,
     services::analytics::{AnalyticsService, DateRange},
     AppState,
 };
@@ -98,10 +98,10 @@ async fn track_reading(
     Ok(Json(json!({"status": "ok"})))
 }
 
-/// Get analytics overview (admin)
+/// Get analytics overview (admin only - sensitive dashboard data)
 async fn get_overview(
     State(state): State<AppState>,
-    _user: User,
+    _admin: AdminUser,
     Query(query): Query<AnalyticsQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let start_date = query.start_date.unwrap_or_else(|| {
@@ -208,13 +208,13 @@ impl RoomAnalyticsQuery {
 // ROOM ANALYTICS HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/// Get comprehensive analytics for a trading room
+/// Get comprehensive analytics for a trading room (admin only)
 /// GET /api/analytics/room/{room_slug}
 async fn get_room_analytics(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<RoomAnalyticsQuery>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let service = AnalyticsService::new(state.db.pool.clone());
     let date_range = params.to_date_range();
@@ -237,13 +237,13 @@ async fn get_room_analytics(
     }
 }
 
-/// Get equity curve data for a trading room
+/// Get equity curve data for a trading room (admin only)
 /// GET /api/analytics/room/{room_slug}/equity-curve
 async fn get_equity_curve(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<RoomAnalyticsQuery>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let service = AnalyticsService::new(state.db.pool.clone());
     let date_range = params.to_date_range();
@@ -266,13 +266,13 @@ async fn get_equity_curve(
     }
 }
 
-/// Get drawdown periods for a trading room
+/// Get drawdown periods for a trading room (admin only)
 /// GET /api/analytics/room/{room_slug}/drawdowns
 async fn get_drawdown_periods(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
     Query(params): Query<RoomAnalyticsQuery>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let service = AnalyticsService::new(state.db.pool.clone());
     let date_range = params.to_date_range();
@@ -295,13 +295,13 @@ async fn get_drawdown_periods(
     }
 }
 
-/// Get ticker-specific analytics
+/// Get ticker-specific analytics (admin only)
 /// GET /api/analytics/room/{room_slug}/ticker/{ticker}
 async fn get_ticker_analytics(
     State(state): State<AppState>,
     Path((room_slug, ticker)): Path<(String, String)>,
     Query(params): Query<RoomAnalyticsQuery>,
-    _user: User,
+    _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let service = AnalyticsService::new(state.db.pool.clone());
     let date_range = params.to_date_range();

@@ -2,6 +2,8 @@
 //! Apple Principal Engineer ICT 7 Grade - January 2026
 //!
 //! Complete indicator management: CRUD, platforms, files, videos, docs, TradingView access
+//!
+//! SECURITY: All endpoints require AdminUser authentication
 
 use axum::{
     extract::{Path, Query, State},
@@ -14,6 +16,7 @@ use serde_json::json;
 use slug::slugify;
 use tracing::{error, info, warn};
 
+use crate::middleware::admin::AdminUser;
 use crate::models::indicator_enhanced::*;
 use crate::AppState;
 
@@ -24,67 +27,60 @@ use crate::AppState;
 /// List all indicators with filters and pagination
 async fn list_indicators(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Query(query): Query<IndicatorListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from(
-        r#"SELECT * FROM indicators_enhanced WHERE deleted_at IS NULL"#
-    );
-    let mut count_sql = String::from(
-        r#"SELECT COUNT(*) FROM indicators_enhanced WHERE deleted_at IS NULL"#
-    );
+    // ICT 7+ SECURITY FIX: Parameterized queries to prevent SQL injection
+    let indicators: Vec<IndicatorEnhanced> = sqlx::query_as(
+        r#"SELECT * FROM indicators_enhanced
+           WHERE deleted_at IS NULL
+             AND ($1::text IS NULL OR category = $1)
+             AND ($2::boolean IS NULL OR is_published = $2)
+             AND ($3::boolean IS NULL OR is_featured = $3)
+             AND ($4::boolean IS NULL OR has_tradingview_access = $4)
+             AND ($5::bigint IS NULL OR supported_platforms @> to_jsonb($5::bigint))
+             AND ($6::text IS NULL OR name ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')
+           ORDER BY is_featured DESC, created_at DESC
+           LIMIT $7 OFFSET $8"#
+    )
+    .bind(query.category.as_deref())
+    .bind(query.is_published)
+    .bind(query.is_featured)
+    .bind(query.has_tradingview)
+    .bind(query.platform_id)
+    .bind(query.search.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to list indicators: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
 
-    let mut conditions: Vec<String> = vec![];
-
-    if let Some(ref category) = query.category {
-        conditions.push(format!("category = '{}'", category));
-    }
-    if let Some(is_published) = query.is_published {
-        conditions.push(format!("is_published = {}", is_published));
-    }
-    if let Some(is_featured) = query.is_featured {
-        conditions.push(format!("is_featured = {}", is_featured));
-    }
-    if let Some(has_tv) = query.has_tradingview {
-        conditions.push(format!("has_tradingview_access = {}", has_tv));
-    }
-    if let Some(platform_id) = query.platform_id {
-        conditions.push(format!("supported_platforms @> '[{}]'::jsonb", platform_id));
-    }
-    if let Some(ref search) = query.search {
-        conditions.push(format!(
-            "(name ILIKE '%{}%' OR description ILIKE '%{}%')",
-            search.replace('\'', "''"),
-            search.replace('\'', "''")
-        ));
-    }
-
-    if !conditions.is_empty() {
-        let where_clause = format!(" AND {}", conditions.join(" AND "));
-        sql.push_str(&where_clause);
-        count_sql.push_str(&where_clause);
-    }
-
-    sql.push_str(&format!(
-        " ORDER BY is_featured DESC, created_at DESC LIMIT {} OFFSET {}",
-        per_page, offset
-    ));
-
-    let indicators: Vec<IndicatorEnhanced> = sqlx::query_as(&sql)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to list indicators: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        })?;
-
-    let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = sqlx::query_as(
+        r#"SELECT COUNT(*) FROM indicators_enhanced
+           WHERE deleted_at IS NULL
+             AND ($1::text IS NULL OR category = $1)
+             AND ($2::boolean IS NULL OR is_published = $2)
+             AND ($3::boolean IS NULL OR is_featured = $3)
+             AND ($4::boolean IS NULL OR has_tradingview_access = $4)
+             AND ($5::bigint IS NULL OR supported_platforms @> to_jsonb($5::bigint))
+             AND ($6::text IS NULL OR name ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')"#
+    )
+    .bind(query.category.as_deref())
+    .bind(query.is_published)
+    .bind(query.is_featured)
+    .bind(query.has_tradingview)
+    .bind(query.platform_id)
+    .bind(query.search.as_deref())
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let indicator_responses: Vec<serde_json::Value> = indicators
         .iter()
@@ -122,6 +118,7 @@ async fn list_indicators(
 /// Get a single indicator with all related data
 async fn get_indicator(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path(indicator_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let indicator: IndicatorEnhanced = sqlx::query_as(
@@ -265,8 +262,17 @@ async fn get_indicator(
 /// Create a new indicator
 async fn create_indicator(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Json(input): Json<CreateIndicatorRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(
+        target: "security",
+        event = "indicator_create",
+        admin_id = %admin.id,
+        indicator_name = %input.name,
+        "Admin creating indicator"
+    );
+
     let slug = slugify(&input.name);
     let tags_json = input.tags.as_ref().map(|t| serde_json::to_value(t).unwrap_or_default());
 
@@ -319,93 +325,82 @@ async fn create_indicator(
 }
 
 /// Update an indicator
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_indicator(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<UpdateIndicatorRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
-
-    if let Some(ref name) = input.name {
-        updates.push(format!("name = '{}'", name.replace('\'', "''")));
-        updates.push(format!("slug = '{}'", slugify(name)));
-    }
-    if let Some(ref subtitle) = input.subtitle {
-        updates.push(format!("subtitle = '{}'", subtitle.replace('\'', "''")));
-    }
-    if let Some(ref description) = input.description {
-        updates.push(format!("description = '{}'", description.replace('\'', "''")));
-    }
-    if let Some(ref description_html) = input.description_html {
-        updates.push(format!("description_html = '{}'", description_html.replace('\'', "''")));
-    }
-    if let Some(ref short_desc) = input.short_description {
-        updates.push(format!("short_description = '{}'", short_desc.replace('\'', "''")));
-    }
-    if let Some(ref thumbnail_url) = input.thumbnail_url {
-        updates.push(format!("thumbnail_url = '{}'", thumbnail_url.replace('\'', "''")));
-    }
-    if let Some(ref preview_image_url) = input.preview_image_url {
-        updates.push(format!("preview_image_url = '{}'", preview_image_url.replace('\'', "''")));
-    }
-    if let Some(ref preview_video_url) = input.preview_video_url {
-        updates.push(format!("preview_video_url = '{}'", preview_video_url.replace('\'', "''")));
-    }
-    if let Some(ref category) = input.category {
-        updates.push(format!("category = '{}'", category.replace('\'', "''")));
-    }
-    if let Some(ref tags) = input.tags {
-        let tags_json = serde_json::to_string(tags).unwrap_or_else(|_| "[]".to_string());
-        updates.push(format!("tags = '{}'::jsonb", tags_json));
-    }
-    if let Some(ref version) = input.version {
-        updates.push(format!("version = '{}'", version));
-        updates.push("release_date = NOW()".to_string());
-    }
-    if let Some(ref version_notes) = input.version_notes {
-        updates.push(format!("version_notes = '{}'", version_notes.replace('\'', "''")));
-    }
-    if let Some(is_published) = input.is_published {
-        updates.push(format!("is_published = {}", is_published));
-    }
-    if let Some(is_featured) = input.is_featured {
-        updates.push(format!("is_featured = {}", is_featured));
-    }
-    if let Some(is_free) = input.is_free {
-        updates.push(format!("is_free = {}", is_free));
-    }
-    if let Some(required_plan_id) = input.required_plan_id {
-        updates.push(format!("required_plan_id = {}", required_plan_id));
-    }
-    if let Some(price_cents) = input.price_cents {
-        updates.push(format!("price_cents = {}", price_cents));
-    }
-    if let Some(has_tv) = input.has_tradingview_access {
-        updates.push(format!("has_tradingview_access = {}", has_tv));
-    }
-    if let Some(tv_invite) = input.tradingview_invite_only {
-        updates.push(format!("tradingview_invite_only = {}", tv_invite));
-    }
-
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE indicators_enhanced SET {} WHERE id = $1 AND deleted_at IS NULL RETURNING id, name",
-        updates.join(", ")
+    info!(
+        target: "security",
+        event = "indicator_update",
+        admin_id = %admin.id,
+        indicator_id = %indicator_id,
+        "Admin updating indicator"
     );
 
-    let result: Option<(i64, String)> = sqlx::query_as(&sql)
-        .bind(indicator_id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update indicator: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        })?;
+    // Generate new slug if name is being updated
+    let new_slug = input.name.as_ref().map(|n| slugify(n));
+    let tags_json = input.tags.as_ref().map(|t| serde_json::to_value(t).unwrap_or_default());
+    let update_version = input.version.is_some();
+
+    // ICT 7+ SECURITY FIX: Parameterized query instead of string concatenation
+    let result: Option<(i64, String)> = sqlx::query_as(
+        r#"UPDATE indicators_enhanced SET
+            name = COALESCE($2, name),
+            slug = COALESCE($3, slug),
+            subtitle = COALESCE($4, subtitle),
+            description = COALESCE($5, description),
+            description_html = COALESCE($6, description_html),
+            short_description = COALESCE($7, short_description),
+            thumbnail_url = COALESCE($8, thumbnail_url),
+            preview_image_url = COALESCE($9, preview_image_url),
+            preview_video_url = COALESCE($10, preview_video_url),
+            category = COALESCE($11, category),
+            tags = COALESCE($12, tags),
+            version = COALESCE($13, version),
+            version_notes = COALESCE($14, version_notes),
+            release_date = CASE WHEN $15 THEN NOW() ELSE release_date END,
+            is_published = COALESCE($16, is_published),
+            is_featured = COALESCE($17, is_featured),
+            is_free = COALESCE($18, is_free),
+            required_plan_id = COALESCE($19, required_plan_id),
+            price_cents = COALESCE($20, price_cents),
+            has_tradingview_access = COALESCE($21, has_tradingview_access),
+            tradingview_invite_only = COALESCE($22, tradingview_invite_only),
+            updated_at = NOW()
+        WHERE id = $1 AND deleted_at IS NULL
+        RETURNING id, name"#
+    )
+    .bind(indicator_id)
+    .bind(&input.name)
+    .bind(&new_slug)
+    .bind(&input.subtitle)
+    .bind(&input.description)
+    .bind(&input.description_html)
+    .bind(&input.short_description)
+    .bind(&input.thumbnail_url)
+    .bind(&input.preview_image_url)
+    .bind(&input.preview_video_url)
+    .bind(&input.category)
+    .bind(&tags_json)
+    .bind(&input.version)
+    .bind(&input.version_notes)
+    .bind(update_version)
+    .bind(input.is_published)
+    .bind(input.is_featured)
+    .bind(input.is_free)
+    .bind(input.required_plan_id)
+    .bind(input.price_cents)
+    .bind(input.has_tradingview_access)
+    .bind(input.tradingview_invite_only)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update indicator: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
 
     match result {
         Some((id, name)) => {
@@ -419,8 +414,16 @@ async fn update_indicator(
 /// Delete an indicator (soft delete)
 async fn delete_indicator(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(
+        target: "security",
+        event = "indicator_delete",
+        admin_id = %admin.id,
+        indicator_id = %indicator_id,
+        "Admin deleting indicator"
+    );
     let result = sqlx::query(
         "UPDATE indicators_enhanced SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL"
     )
@@ -447,6 +450,7 @@ async fn delete_indicator(
 /// List all platforms
 async fn list_platforms(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let platforms: Vec<IndicatorPlatform> = sqlx::query_as(
         "SELECT * FROM indicator_platforms ORDER BY sort_order"
@@ -475,8 +479,10 @@ async fn list_platforms(
 /// Create a new platform
 async fn create_platform(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Json(input): Json<CreatePlatformRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "platform_create", admin_id = %admin.id, platform_name = %input.name, "Admin creating platform");
     let slug = slugify(&input.name);
 
     // Get max sort order
@@ -523,50 +529,43 @@ async fn create_platform(
 }
 
 /// Update a platform
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_platform(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(platform_id): Path<i64>,
     Json(input): Json<UpdatePlatformRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
+    info!(target: "security", event = "platform_update", admin_id = %admin.id, platform_id = %platform_id, "Admin updating platform");
 
-    if let Some(ref name) = input.name {
-        updates.push(format!("name = '{}'", name.replace('\'', "''")));
-        updates.push(format!("slug = '{}'", slugify(name)));
-    }
-    if let Some(ref display_name) = input.display_name {
-        updates.push(format!("display_name = '{}'", display_name.replace('\'', "''")));
-    }
-    if let Some(ref icon_url) = input.icon_url {
-        updates.push(format!("icon_url = '{}'", icon_url.replace('\'', "''")));
-    }
-    if let Some(ref file_extension) = input.file_extension {
-        updates.push(format!("file_extension = '{}'", file_extension));
-    }
-    if let Some(ref instructions) = input.installation_instructions {
-        updates.push(format!("installation_instructions = '{}'", instructions.replace('\'', "''")));
-    }
-    if let Some(is_active) = input.is_active {
-        updates.push(format!("is_active = {}", is_active));
-    }
+    let new_slug = input.name.as_ref().map(|n| slugify(n));
 
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    let sql = format!(
-        "UPDATE indicator_platforms SET {} WHERE id = $1",
-        updates.join(", ")
-    );
-
-    sqlx::query(&sql)
-        .bind(platform_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update platform: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        })?;
+    // ICT 7+ SECURITY FIX: Parameterized query
+    sqlx::query(
+        r#"UPDATE indicator_platforms SET
+            name = COALESCE($2, name),
+            slug = COALESCE($3, slug),
+            display_name = COALESCE($4, display_name),
+            icon_url = COALESCE($5, icon_url),
+            file_extension = COALESCE($6, file_extension),
+            installation_instructions = COALESCE($7, installation_instructions),
+            is_active = COALESCE($8, is_active)
+        WHERE id = $1"#
+    )
+    .bind(platform_id)
+    .bind(&input.name)
+    .bind(&new_slug)
+    .bind(&input.display_name)
+    .bind(&input.icon_url)
+    .bind(&input.file_extension)
+    .bind(&input.installation_instructions)
+    .bind(input.is_active)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update platform: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -578,9 +577,11 @@ async fn update_platform(
 /// Create an indicator video
 async fn create_video(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<CreateIndicatorVideoRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_video_create", admin_id = %admin.id, indicator_id = %indicator_id, "Admin creating indicator video");
     // Get max sort order
     let max_order: (Option<i32>,) = sqlx::query_as(
         "SELECT MAX(sort_order) FROM indicator_videos WHERE indicator_id = $1"
@@ -629,61 +630,47 @@ async fn create_video(
 }
 
 /// Update a video
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_video(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, video_id)): Path<(i64, i64)>,
     Json(input): Json<UpdateIndicatorVideoRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
+    info!(target: "security", event = "indicator_video_update", admin_id = %admin.id, indicator_id = %indicator_id, video_id = %video_id, "Admin updating indicator video");
 
-    if let Some(ref title) = input.title {
-        updates.push(format!("title = '{}'", title.replace('\'', "''")));
-    }
-    if let Some(ref description) = input.description {
-        updates.push(format!("description = '{}'", description.replace('\'', "''")));
-    }
-    if let Some(ref video_url) = input.video_url {
-        updates.push(format!("video_url = '{}'", video_url.replace('\'', "''")));
-    }
-    if let Some(ref bunny_guid) = input.bunny_video_guid {
-        updates.push(format!("bunny_video_guid = '{}'", bunny_guid));
-    }
-    if let Some(ref thumbnail_url) = input.thumbnail_url {
-        updates.push(format!("thumbnail_url = '{}'", thumbnail_url.replace('\'', "''")));
-    }
-    if let Some(duration) = input.duration_seconds {
-        updates.push(format!("duration_seconds = {}", duration));
-    }
-    if let Some(ref video_type) = input.video_type {
-        updates.push(format!("video_type = '{}'", video_type));
-    }
-    if let Some(is_preview) = input.is_preview {
-        updates.push(format!("is_preview = {}", is_preview));
-    }
-    if let Some(is_published) = input.is_published {
-        updates.push(format!("is_published = {}", is_published));
-    }
-
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE indicator_videos SET {} WHERE id = $1 AND indicator_id = $2",
-        updates.join(", ")
-    );
-
-    sqlx::query(&sql)
-        .bind(video_id)
-        .bind(indicator_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update video: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        })?;
+    // ICT 7+ SECURITY FIX: Parameterized query
+    sqlx::query(
+        r#"UPDATE indicator_videos SET
+            title = COALESCE($3, title),
+            description = COALESCE($4, description),
+            video_url = COALESCE($5, video_url),
+            bunny_video_guid = COALESCE($6, bunny_video_guid),
+            thumbnail_url = COALESCE($7, thumbnail_url),
+            duration_seconds = COALESCE($8, duration_seconds),
+            video_type = COALESCE($9, video_type),
+            is_preview = COALESCE($10, is_preview),
+            is_published = COALESCE($11, is_published),
+            updated_at = NOW()
+        WHERE id = $1 AND indicator_id = $2"#
+    )
+    .bind(video_id)
+    .bind(indicator_id)
+    .bind(&input.title)
+    .bind(&input.description)
+    .bind(&input.video_url)
+    .bind(&input.bunny_video_guid)
+    .bind(&input.thumbnail_url)
+    .bind(input.duration_seconds)
+    .bind(&input.video_type)
+    .bind(input.is_preview)
+    .bind(input.is_published)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update video: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -691,8 +678,10 @@ async fn update_video(
 /// Delete a video
 async fn delete_video(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, video_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_video_delete", admin_id = %admin.id, indicator_id = %indicator_id, video_id = %video_id, "Admin deleting indicator video");
     let result = sqlx::query(
         "DELETE FROM indicator_videos WHERE id = $1 AND indicator_id = $2"
     )
@@ -715,6 +704,7 @@ async fn delete_video(
 /// Reorder videos
 async fn reorder_videos(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<ReorderItemsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -740,9 +730,11 @@ async fn reorder_videos(
 /// Create a platform file
 async fn create_platform_file(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<CreatePlatformFileRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_file_create", admin_id = %admin.id, indicator_id = %indicator_id, "Admin creating platform file");
     // If this is latest version, mark other files for this platform as not latest
     if input.is_latest.unwrap_or(true) {
         sqlx::query(
@@ -808,58 +800,45 @@ async fn create_platform_file(
 }
 
 /// Update a platform file
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_platform_file(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, file_id)): Path<(i64, i64)>,
     Json(input): Json<UpdatePlatformFileRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
+    info!(target: "security", event = "indicator_file_update", admin_id = %admin.id, indicator_id = %indicator_id, file_id = %file_id, "Admin updating platform file");
 
-    if let Some(ref file_url) = input.file_url {
-        updates.push(format!("file_url = '{}'", file_url.replace('\'', "''")));
-    }
-    if let Some(ref file_name) = input.file_name {
-        updates.push(format!("file_name = '{}'", file_name.replace('\'', "''")));
-    }
-    if let Some(file_size) = input.file_size_bytes {
-        updates.push(format!("file_size_bytes = {}", file_size));
-    }
-    if let Some(ref version) = input.version {
-        updates.push(format!("version = '{}'", version));
-    }
-    if let Some(ref version_notes) = input.version_notes {
-        updates.push(format!("version_notes = '{}'", version_notes.replace('\'', "''")));
-    }
-    if let Some(ref installation_notes) = input.installation_notes {
-        updates.push(format!("installation_notes = '{}'", installation_notes.replace('\'', "''")));
-    }
-    if let Some(is_latest) = input.is_latest {
-        updates.push(format!("is_latest = {}", is_latest));
-    }
-    if let Some(ref checksum) = input.checksum_sha256 {
-        updates.push(format!("checksum_sha256 = '{}'", checksum));
-    }
-
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE indicator_platform_files SET {} WHERE id = $1 AND indicator_id = $2",
-        updates.join(", ")
-    );
-
-    sqlx::query(&sql)
-        .bind(file_id)
-        .bind(indicator_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update platform file: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        })?;
+    // ICT 7+ SECURITY FIX: Parameterized query
+    sqlx::query(
+        r#"UPDATE indicator_platform_files SET
+            file_url = COALESCE($3, file_url),
+            file_name = COALESCE($4, file_name),
+            file_size_bytes = COALESCE($5, file_size_bytes),
+            version = COALESCE($6, version),
+            version_notes = COALESCE($7, version_notes),
+            installation_notes = COALESCE($8, installation_notes),
+            is_latest = COALESCE($9, is_latest),
+            checksum_sha256 = COALESCE($10, checksum_sha256),
+            updated_at = NOW()
+        WHERE id = $1 AND indicator_id = $2"#
+    )
+    .bind(file_id)
+    .bind(indicator_id)
+    .bind(&input.file_url)
+    .bind(&input.file_name)
+    .bind(input.file_size_bytes)
+    .bind(&input.version)
+    .bind(&input.version_notes)
+    .bind(&input.installation_notes)
+    .bind(input.is_latest)
+    .bind(&input.checksum_sha256)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update platform file: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -867,8 +846,10 @@ async fn update_platform_file(
 /// Delete a platform file
 async fn delete_platform_file(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, file_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_file_delete", admin_id = %admin.id, indicator_id = %indicator_id, file_id = %file_id, "Admin deleting platform file");
     let result = sqlx::query(
         "DELETE FROM indicator_platform_files WHERE id = $1 AND indicator_id = $2"
     )
@@ -906,9 +887,11 @@ async fn delete_platform_file(
 /// Bulk upload files for multiple platforms
 async fn bulk_upload_files(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<BulkUploadFilesRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_bulk_upload", admin_id = %admin.id, indicator_id = %indicator_id, file_count = %input.files.len(), "Admin bulk uploading files");
     let mut created = 0;
 
     for file in &input.files {
@@ -970,9 +953,11 @@ async fn bulk_upload_files(
 /// Create documentation
 async fn create_documentation(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<CreateDocumentationRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_doc_create", admin_id = %admin.id, indicator_id = %indicator_id, "Admin creating documentation");
     // Get max sort order
     let max_order: (Option<i32>,) = sqlx::query_as(
         "SELECT MAX(sort_order) FROM indicator_documentation WHERE indicator_id = $1"
@@ -1018,52 +1003,41 @@ async fn create_documentation(
 }
 
 /// Update documentation
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_documentation(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, doc_id)): Path<(i64, i64)>,
     Json(input): Json<UpdateDocumentationRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
+    info!(target: "security", event = "indicator_doc_update", admin_id = %admin.id, indicator_id = %indicator_id, doc_id = %doc_id, "Admin updating documentation");
 
-    if let Some(ref title) = input.title {
-        updates.push(format!("title = '{}'", title.replace('\'', "''")));
-    }
-    if let Some(ref doc_type) = input.doc_type {
-        updates.push(format!("doc_type = '{}'", doc_type));
-    }
-    if let Some(ref content_html) = input.content_html {
-        updates.push(format!("content_html = '{}'", content_html.replace('\'', "''")));
-    }
-    if let Some(ref file_url) = input.file_url {
-        updates.push(format!("file_url = '{}'", file_url.replace('\'', "''")));
-    }
-    if let Some(ref file_name) = input.file_name {
-        updates.push(format!("file_name = '{}'", file_name.replace('\'', "''")));
-    }
-    if let Some(is_published) = input.is_published {
-        updates.push(format!("is_published = {}", is_published));
-    }
-
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE indicator_documentation SET {} WHERE id = $1 AND indicator_id = $2",
-        updates.join(", ")
-    );
-
-    sqlx::query(&sql)
-        .bind(doc_id)
-        .bind(indicator_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update documentation: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        })?;
+    // ICT 7+ SECURITY FIX: Parameterized query
+    sqlx::query(
+        r#"UPDATE indicator_documentation SET
+            title = COALESCE($3, title),
+            doc_type = COALESCE($4, doc_type),
+            content_html = COALESCE($5, content_html),
+            file_url = COALESCE($6, file_url),
+            file_name = COALESCE($7, file_name),
+            is_published = COALESCE($8, is_published),
+            updated_at = NOW()
+        WHERE id = $1 AND indicator_id = $2"#
+    )
+    .bind(doc_id)
+    .bind(indicator_id)
+    .bind(&input.title)
+    .bind(&input.doc_type)
+    .bind(&input.content_html)
+    .bind(&input.file_url)
+    .bind(&input.file_name)
+    .bind(input.is_published)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update documentation: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -1071,8 +1045,10 @@ async fn update_documentation(
 /// Delete documentation
 async fn delete_documentation(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, doc_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_doc_delete", admin_id = %admin.id, indicator_id = %indicator_id, doc_id = %doc_id, "Admin deleting documentation");
     let result = sqlx::query(
         "DELETE FROM indicator_documentation WHERE id = $1 AND indicator_id = $2"
     )
@@ -1099,9 +1075,11 @@ async fn delete_documentation(
 /// Grant TradingView access to a user
 async fn grant_tradingview_access(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<GrantTradingViewAccessRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "tradingview_access_grant", admin_id = %admin.id, indicator_id = %indicator_id, tv_username = %input.tradingview_username, "Admin granting TradingView access");
     // Validate username format
     if !validate_tradingview_username(&input.tradingview_username) {
         return Err((StatusCode::BAD_REQUEST, Json(json!({
@@ -1153,9 +1131,11 @@ async fn grant_tradingview_access(
 /// Bulk grant TradingView access
 async fn bulk_grant_tradingview_access(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<BulkGrantTradingViewAccessRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "tradingview_access_bulk_grant", admin_id = %admin.id, indicator_id = %indicator_id, count = %input.accesses.len(), "Admin bulk granting TradingView access");
     let mut granted = 0;
     let mut errors: Vec<String> = vec![];
 
@@ -1194,8 +1174,10 @@ async fn bulk_grant_tradingview_access(
 }
 
 /// List TradingView accesses for an indicator
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn list_tradingview_accesses(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Query(query): Query<TradingViewAccessQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1203,38 +1185,27 @@ async fn list_tradingview_accesses(
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = format!(
+    // ICT 7+ SECURITY FIX: Parameterized query
+    let accesses: Vec<(IndicatorTradingViewAccess, Option<String>, Option<String>, Option<String>)> = sqlx::query_as(
         r#"SELECT ta.*, u.email as user_email, u.first_name, u.last_name
            FROM indicator_tradingview_access ta
            LEFT JOIN users u ON ta.user_id = u.id
-           WHERE ta.indicator_id = {}"#,
-        indicator_id
-    );
-
-    if let Some(is_active) = query.is_active {
-        sql.push_str(&format!(" AND ta.is_active = {}", is_active));
-    }
-    if let Some(is_synced) = query.is_synced {
-        sql.push_str(&format!(" AND ta.synced_to_tradingview = {}", is_synced));
-    }
-    if let Some(ref search) = query.search {
-        sql.push_str(&format!(
-            " AND (ta.tradingview_username ILIKE '%{}%' OR u.email ILIKE '%{}%')",
-            search.replace('\'', "''"),
-            search.replace('\'', "''")
-        ));
-    }
-
-    sql.push_str(&format!(
-        " ORDER BY ta.granted_at DESC LIMIT {} OFFSET {}",
-        per_page, offset
-    ));
-
-    let accesses: Vec<(IndicatorTradingViewAccess, Option<String>, Option<String>, Option<String>)> =
-        sqlx::query_as(&sql)
-            .fetch_all(&state.db.pool)
-            .await
-            .unwrap_or_default();
+           WHERE ta.indicator_id = $1
+             AND ($2::boolean IS NULL OR ta.is_active = $2)
+             AND ($3::boolean IS NULL OR ta.synced_to_tradingview = $3)
+             AND ($4::text IS NULL OR ta.tradingview_username ILIKE '%' || $4 || '%' OR u.email ILIKE '%' || $4 || '%')
+           ORDER BY ta.granted_at DESC
+           LIMIT $5 OFFSET $6"#
+    )
+    .bind(indicator_id)
+    .bind(query.is_active)
+    .bind(query.is_synced)
+    .bind(query.search.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
 
     let access_responses: Vec<serde_json::Value> = accesses
         .iter()
@@ -1266,10 +1237,19 @@ async fn list_tradingview_accesses(
         })
         .collect();
 
-    let total: (i64,) = sqlx::query_as(&format!(
-        "SELECT COUNT(*) FROM indicator_tradingview_access WHERE indicator_id = {}",
-        indicator_id
-    ))
+    // ICT 7+ SECURITY FIX: Parameterized count query
+    let total: (i64,) = sqlx::query_as(
+        r#"SELECT COUNT(*) FROM indicator_tradingview_access ta
+           LEFT JOIN users u ON ta.user_id = u.id
+           WHERE ta.indicator_id = $1
+             AND ($2::boolean IS NULL OR ta.is_active = $2)
+             AND ($3::boolean IS NULL OR ta.synced_to_tradingview = $3)
+             AND ($4::text IS NULL OR ta.tradingview_username ILIKE '%' || $4 || '%' OR u.email ILIKE '%' || $4 || '%')"#
+    )
+    .bind(indicator_id)
+    .bind(query.is_active)
+    .bind(query.is_synced)
+    .bind(query.search.as_deref())
     .fetch_one(&state.db.pool)
     .await
     .unwrap_or((0,));
@@ -1287,8 +1267,10 @@ async fn list_tradingview_accesses(
 /// Revoke TradingView access
 async fn revoke_tradingview_access(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, access_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "tradingview_access_revoke", admin_id = %admin.id, indicator_id = %indicator_id, access_id = %access_id, "Admin revoking TradingView access");
     let result = sqlx::query(
         "UPDATE indicator_tradingview_access SET is_active = false WHERE id = $1 AND indicator_id = $2"
     )
@@ -1316,6 +1298,7 @@ async fn revoke_tradingview_access(
 /// Log a download
 async fn log_download(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path((indicator_id, file_id)): Path<(i64, i64)>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1357,6 +1340,7 @@ async fn log_download(
 /// Get indicator stats
 async fn get_indicator_stats(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let total_indicators: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM indicators_enhanced WHERE deleted_at IS NULL"
@@ -1425,47 +1409,41 @@ async fn get_indicator_stats(
 }
 
 /// Get download log
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn get_download_log(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Query(query): Query<DownloadLogQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from(
-        r#"SELECT d.*, u.email, i.name as indicator_name, p.display_name as platform_name, f.file_name
+    // ICT 7+ SECURITY FIX: Parameterized query
+    let logs: Vec<(i64, i64, i64, i64, i64, DateTime<Utc>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>)> = sqlx::query_as(
+        r#"SELECT d.id, d.user_id, d.indicator_id, d.platform_file_id, d.platform_id, d.downloaded_at,
+                  d.ip_address, d.user_agent, u.email, i.name as indicator_name, p.display_name as platform_name, f.file_name
            FROM indicator_download_log d
            LEFT JOIN users u ON d.user_id = u.id
            LEFT JOIN indicators_enhanced i ON d.indicator_id = i.id
            LEFT JOIN indicator_platforms p ON d.platform_id = p.id
            LEFT JOIN indicator_platform_files f ON d.platform_file_id = f.id
-           WHERE 1=1"#
-    );
-
-    if let Some(user_id) = query.user_id {
-        sql.push_str(&format!(" AND d.user_id = {}", user_id));
-    }
-    if let Some(platform_id) = query.platform_id {
-        sql.push_str(&format!(" AND d.platform_id = {}", platform_id));
-    }
-    if let Some(ref from_date) = query.from_date {
-        sql.push_str(&format!(" AND d.downloaded_at >= '{}'", from_date));
-    }
-    if let Some(ref to_date) = query.to_date {
-        sql.push_str(&format!(" AND d.downloaded_at <= '{}'", to_date));
-    }
-
-    sql.push_str(&format!(
-        " ORDER BY d.downloaded_at DESC LIMIT {} OFFSET {}",
-        per_page, offset
-    ));
-
-    let logs: Vec<(i64, i64, i64, i64, i64, DateTime<Utc>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>, Option<String>)> =
-        sqlx::query_as(&sql)
-            .fetch_all(&state.db.pool)
-            .await
-            .unwrap_or_default();
+           WHERE ($1::bigint IS NULL OR d.user_id = $1)
+             AND ($2::bigint IS NULL OR d.platform_id = $2)
+             AND ($3::text IS NULL OR d.downloaded_at >= $3::timestamptz)
+             AND ($4::text IS NULL OR d.downloaded_at <= $4::timestamptz)
+           ORDER BY d.downloaded_at DESC
+           LIMIT $5 OFFSET $6"#
+    )
+    .bind(query.user_id)
+    .bind(query.platform_id)
+    .bind(query.from_date.as_deref())
+    .bind(query.to_date.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
 
     let log_responses: Vec<serde_json::Value> = logs
         .iter()
@@ -1499,9 +1477,12 @@ async fn get_download_log(
 /// Grant user access to an indicator
 async fn grant_user_access(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(indicator_id): Path<i64>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let user_id_for_log = input.get("user_id").and_then(|v| v.as_i64()).unwrap_or(0);
+    info!(target: "security", event = "indicator_access_grant", admin_id = %admin.id, indicator_id = %indicator_id, target_user_id = %user_id_for_log, "Admin granting indicator access");
     let user_id = input.get("user_id").and_then(|v| v.as_i64())
         .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": "user_id required"}))))?;
 
@@ -1545,8 +1526,10 @@ async fn grant_user_access(
 /// Revoke user access
 async fn revoke_user_access(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((indicator_id, user_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "indicator_access_revoke", admin_id = %admin.id, indicator_id = %indicator_id, target_user_id = %user_id, "Admin revoking indicator access");
     let result = sqlx::query(
         "UPDATE user_indicator_access SET is_active = false WHERE indicator_id = $1 AND user_id = $2"
     )

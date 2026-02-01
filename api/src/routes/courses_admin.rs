@@ -2,6 +2,8 @@
 //! Apple Principal Engineer ICT 7 Grade - January 2026
 //!
 //! Complete course management: CRUD, sections, lessons, resources, live sessions, progress
+//!
+//! SECURITY: All endpoints require AdminUser authentication
 
 use axum::{
     extract::{Path, Query, State},
@@ -14,6 +16,7 @@ use serde_json::json;
 use slug::slugify;
 use tracing::{error, info};
 
+use crate::middleware::admin::AdminUser;
 use crate::models::course_enhanced::*;
 use crate::AppState;
 
@@ -24,68 +27,63 @@ use crate::AppState;
 /// List all courses with filters and pagination
 async fn list_courses(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Query(query): Query<CourseListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from(r#"SELECT * FROM courses_enhanced WHERE deleted_at IS NULL"#);
-    let mut count_sql =
-        String::from(r#"SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL"#);
+    // ICT 7+ SECURITY FIX: Parameterized queries to prevent SQL injection
+    let courses: Vec<CourseEnhanced> = sqlx::query_as(
+        r#"SELECT * FROM courses_enhanced
+           WHERE deleted_at IS NULL
+             AND ($1::text IS NULL OR difficulty_level = $1)
+             AND ($2::text IS NULL OR category = $2)
+             AND ($3::bigint IS NULL OR instructor_id = $3)
+             AND ($4::boolean IS NULL OR is_published = $4)
+             AND ($5::boolean IS NULL OR is_featured = $5)
+             AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')
+           ORDER BY is_featured DESC, created_at DESC
+           LIMIT $7 OFFSET $8"#
+    )
+    .bind(query.difficulty_level.as_deref())
+    .bind(query.category.as_deref())
+    .bind(query.instructor_id)
+    .bind(query.is_published)
+    .bind(query.is_featured)
+    .bind(query.search.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to list courses: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
-    // Build dynamic WHERE clauses
-    let mut conditions: Vec<String> = vec![];
-
-    if let Some(ref difficulty) = query.difficulty_level {
-        conditions.push(format!("difficulty_level = '{}'", difficulty));
-    }
-    if let Some(ref category) = query.category {
-        conditions.push(format!("category = '{}'", category));
-    }
-    if let Some(instructor_id) = query.instructor_id {
-        conditions.push(format!("instructor_id = {}", instructor_id));
-    }
-    if let Some(is_published) = query.is_published {
-        conditions.push(format!("is_published = {}", is_published));
-    }
-    if let Some(is_featured) = query.is_featured {
-        conditions.push(format!("is_featured = {}", is_featured));
-    }
-    if let Some(ref search) = query.search {
-        conditions.push(format!(
-            "(title ILIKE '%{}%' OR description ILIKE '%{}%')",
-            search.replace('\'', "''"),
-            search.replace('\'', "''")
-        ));
-    }
-
-    if !conditions.is_empty() {
-        let where_clause = format!(" AND {}", conditions.join(" AND "));
-        sql.push_str(&where_clause);
-        count_sql.push_str(&where_clause);
-    }
-
-    sql.push_str(&format!(
-        " ORDER BY is_featured DESC, created_at DESC LIMIT {} OFFSET {}",
-        per_page, offset
-    ));
-
-    let courses: Vec<CourseEnhanced> = sqlx::query_as(&sql)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to list courses: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
-
-    let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = sqlx::query_as(
+        r#"SELECT COUNT(*) FROM courses_enhanced
+           WHERE deleted_at IS NULL
+             AND ($1::text IS NULL OR difficulty_level = $1)
+             AND ($2::text IS NULL OR category = $2)
+             AND ($3::bigint IS NULL OR instructor_id = $3)
+             AND ($4::boolean IS NULL OR is_published = $4)
+             AND ($5::boolean IS NULL OR is_featured = $5)
+             AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%' OR description ILIKE '%' || $6 || '%')"#
+    )
+    .bind(query.difficulty_level.as_deref())
+    .bind(query.category.as_deref())
+    .bind(query.instructor_id)
+    .bind(query.is_published)
+    .bind(query.is_featured)
+    .bind(query.search.as_deref())
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let course_responses: Vec<serde_json::Value> = courses
         .iter()
@@ -125,6 +123,7 @@ async fn list_courses(
 /// Get a single course with all sections, lessons, resources
 async fn get_course(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path(course_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let course: CourseEnhanced =
@@ -348,8 +347,16 @@ async fn get_course(
 /// Create a new course
 async fn create_course(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Json(input): Json<CreateCourseRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(
+        target: "security",
+        event = "course_create",
+        admin_id = %admin.id,
+        course_title = %input.title,
+        "Admin creating course"
+    );
     let slug = slugify(&input.title);
     let tags_json = input
         .tags
@@ -408,112 +415,84 @@ async fn create_course(
 }
 
 /// Update a course
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_course(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<UpdateCourseRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Build dynamic UPDATE
-    let mut updates: Vec<String> = vec![];
-
-    if let Some(ref title) = input.title {
-        updates.push(format!("title = '{}'", title.replace('\'', "''")));
-        updates.push(format!("slug = '{}'", slugify(title)));
-    }
-    if let Some(ref subtitle) = input.subtitle {
-        updates.push(format!("subtitle = '{}'", subtitle.replace('\'', "''")));
-    }
-    if let Some(ref description) = input.description {
-        updates.push(format!(
-            "description = '{}'",
-            description.replace('\'', "''")
-        ));
-    }
-    if let Some(ref description_html) = input.description_html {
-        updates.push(format!(
-            "description_html = '{}'",
-            description_html.replace('\'', "''")
-        ));
-    }
-    if let Some(ref thumbnail_url) = input.thumbnail_url {
-        updates.push(format!(
-            "thumbnail_url = '{}'",
-            thumbnail_url.replace('\'', "''")
-        ));
-    }
-    if let Some(ref trailer_video_url) = input.trailer_video_url {
-        updates.push(format!(
-            "trailer_video_url = '{}'",
-            trailer_video_url.replace('\'', "''")
-        ));
-    }
-    if let Some(ref difficulty_level) = input.difficulty_level {
-        updates.push(format!("difficulty_level = '{}'", difficulty_level));
-    }
-    if let Some(ref category) = input.category {
-        updates.push(format!("category = '{}'", category.replace('\'', "''")));
-    }
-    if let Some(ref tags) = input.tags {
-        let tags_json = serde_json::to_string(tags).unwrap_or_else(|_| "[]".to_string());
-        updates.push(format!("tags = '{}'::jsonb", tags_json));
-    }
-    if let Some(instructor_id) = input.instructor_id {
-        updates.push(format!("instructor_id = {}", instructor_id));
-    }
-    if let Some(is_published) = input.is_published {
-        updates.push(format!("is_published = {}", is_published));
-        if is_published {
-            updates.push("published_at = COALESCE(published_at, NOW())".to_string());
-        }
-    }
-    if let Some(is_featured) = input.is_featured {
-        updates.push(format!("is_featured = {}", is_featured));
-    }
-    if let Some(is_free) = input.is_free {
-        updates.push(format!("is_free = {}", is_free));
-    }
-    if let Some(required_plan_id) = input.required_plan_id {
-        updates.push(format!("required_plan_id = {}", required_plan_id));
-    }
-    if let Some(price_cents) = input.price_cents {
-        updates.push(format!("price_cents = {}", price_cents));
-    }
-    if let Some(ref prereq) = input.prerequisite_course_ids {
-        let prereq_json = serde_json::to_string(prereq).unwrap_or_else(|_| "[]".to_string());
-        updates.push(format!(
-            "prerequisite_course_ids = '{}'::jsonb",
-            prereq_json
-        ));
-    }
-    if let Some(certificate_enabled) = input.certificate_enabled {
-        updates.push(format!("certificate_enabled = {}", certificate_enabled));
-    }
-    if let Some(threshold) = input.completion_threshold_percent {
-        updates.push(format!("completion_threshold_percent = {}", threshold));
-    }
-
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE courses_enhanced SET {} WHERE id = $1 AND deleted_at IS NULL RETURNING id, title",
-        updates.join(", ")
+    info!(
+        target: "security",
+        event = "course_update",
+        admin_id = %admin.id,
+        course_id = %course_id,
+        "Admin updating course"
     );
 
-    let result: Option<(i64, String)> = sqlx::query_as(&sql)
-        .bind(course_id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update course: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    // Generate new slug if title is being updated
+    let new_slug = input.title.as_ref().map(|t| slugify(t));
+    let tags_json = input.tags.as_ref().map(|t| serde_json::to_value(t).unwrap_or_default());
+    let prereqs_json = input.prerequisite_course_ids.as_ref().map(|p| serde_json::to_value(p).unwrap_or_default());
+    let should_publish = input.is_published.unwrap_or(false);
+
+    // ICT 7+ SECURITY FIX: Parameterized query
+    let result: Option<(i64, String)> = sqlx::query_as(
+        r#"UPDATE courses_enhanced SET
+            title = COALESCE($2, title),
+            slug = COALESCE($3, slug),
+            subtitle = COALESCE($4, subtitle),
+            description = COALESCE($5, description),
+            description_html = COALESCE($6, description_html),
+            thumbnail_url = COALESCE($7, thumbnail_url),
+            trailer_video_url = COALESCE($8, trailer_video_url),
+            difficulty_level = COALESCE($9, difficulty_level),
+            category = COALESCE($10, category),
+            tags = COALESCE($11, tags),
+            instructor_id = COALESCE($12, instructor_id),
+            is_published = COALESCE($13, is_published),
+            published_at = CASE WHEN $14 AND published_at IS NULL THEN NOW() ELSE published_at END,
+            is_featured = COALESCE($15, is_featured),
+            is_free = COALESCE($16, is_free),
+            required_plan_id = COALESCE($17, required_plan_id),
+            price_cents = COALESCE($18, price_cents),
+            prerequisite_course_ids = COALESCE($19, prerequisite_course_ids),
+            certificate_enabled = COALESCE($20, certificate_enabled),
+            completion_threshold_percent = COALESCE($21, completion_threshold_percent),
+            updated_at = NOW()
+        WHERE id = $1 AND deleted_at IS NULL
+        RETURNING id, title"#
+    )
+    .bind(course_id)
+    .bind(&input.title)
+    .bind(&new_slug)
+    .bind(&input.subtitle)
+    .bind(&input.description)
+    .bind(&input.description_html)
+    .bind(&input.thumbnail_url)
+    .bind(&input.trailer_video_url)
+    .bind(&input.difficulty_level)
+    .bind(&input.category)
+    .bind(&tags_json)
+    .bind(input.instructor_id)
+    .bind(input.is_published)
+    .bind(should_publish)
+    .bind(input.is_featured)
+    .bind(input.is_free)
+    .bind(input.required_plan_id)
+    .bind(input.price_cents)
+    .bind(&prereqs_json)
+    .bind(input.certificate_enabled)
+    .bind(input.completion_threshold_percent)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update course: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     match result {
         Some((id, title)) => {
@@ -530,8 +509,10 @@ async fn update_course(
 /// Delete a course (soft delete)
 async fn delete_course(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "course_delete", admin_id = %admin.id, course_id = %course_id, "Admin deleting course");
     let result = sqlx::query(
         "UPDATE courses_enhanced SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
     )
@@ -564,9 +545,11 @@ async fn delete_course(
 /// Create a section in a course
 async fn create_section(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<CreateSectionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "section_create", admin_id = %admin.id, course_id = %course_id, "Admin creating section");
     // Get max sort order
     let max_order: (Option<i32>,) =
         sqlx::query_as("SELECT MAX(sort_order) FROM course_sections WHERE course_id = $1")
@@ -622,61 +605,53 @@ async fn create_section(
 }
 
 /// Update a section
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_section(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((course_id, section_id)): Path<(i64, i64)>,
     Json(input): Json<UpdateSectionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
+    info!(target: "security", event = "section_update", admin_id = %admin.id, course_id = %course_id, section_id = %section_id, "Admin updating section");
 
-    if let Some(ref title) = input.title {
-        updates.push(format!("title = '{}'", title.replace('\'', "''")));
-    }
-    if let Some(ref description) = input.description {
-        updates.push(format!(
-            "description = '{}'",
-            description.replace('\'', "''")
-        ));
-    }
-    if let Some(ref section_type) = input.section_type {
-        updates.push(format!("section_type = '{}'", section_type));
-    }
-    if let Some(ref unlock_type) = input.unlock_type {
-        updates.push(format!("unlock_type = '{}'", unlock_type));
-    }
-    if let Some(unlock_after) = input.unlock_after_section_id {
-        updates.push(format!("unlock_after_section_id = {}", unlock_after));
-    }
-    if let Some(ref unlock_date) = input.unlock_date {
-        updates.push(format!("unlock_date = '{}'::timestamptz", unlock_date));
-    }
-    if let Some(is_published) = input.is_published {
-        updates.push(format!("is_published = {}", is_published));
-    }
+    // Parse unlock_date if provided
+    let unlock_date: Option<DateTime<Utc>> = input.unlock_date.as_ref().and_then(|d| {
+        DateTime::parse_from_rfc3339(d)
+            .ok()
+            .map(|dt| dt.with_timezone(&Utc))
+    });
 
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE course_sections SET {} WHERE id = $1 AND course_id = $2",
-        updates.join(", ")
-    );
-
-    sqlx::query(&sql)
-        .bind(section_id)
-        .bind(course_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update section: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    // ICT 7+ SECURITY FIX: Parameterized query
+    sqlx::query(
+        r#"UPDATE course_sections SET
+            title = COALESCE($3, title),
+            description = COALESCE($4, description),
+            section_type = COALESCE($5, section_type),
+            unlock_type = COALESCE($6, unlock_type),
+            unlock_after_section_id = COALESCE($7, unlock_after_section_id),
+            unlock_date = COALESCE($8, unlock_date),
+            is_published = COALESCE($9, is_published),
+            updated_at = NOW()
+        WHERE id = $1 AND course_id = $2"#
+    )
+    .bind(section_id)
+    .bind(course_id)
+    .bind(&input.title)
+    .bind(&input.description)
+    .bind(&input.section_type)
+    .bind(&input.unlock_type)
+    .bind(input.unlock_after_section_id)
+    .bind(unlock_date)
+    .bind(input.is_published)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update section: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -684,8 +659,10 @@ async fn update_section(
 /// Delete a section
 async fn delete_section(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((course_id, section_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "section_delete", admin_id = %admin.id, course_id = %course_id, section_id = %section_id, "Admin deleting section");
     // Delete associated lessons and resources first
     sqlx::query("DELETE FROM course_resources WHERE section_id = $1")
         .bind(section_id)
@@ -725,6 +702,7 @@ async fn delete_section(
 /// Reorder sections
 async fn reorder_sections(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<ReorderItemsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -750,9 +728,11 @@ async fn reorder_sections(
 /// Create a lesson
 async fn create_lesson(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<CreateLessonRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "lesson_create", admin_id = %admin.id, course_id = %course_id, "Admin creating lesson");
     // Get max sort order for section
     let max_order: (Option<i32>,) =
         sqlx::query_as("SELECT MAX(sort_order) FROM course_lessons WHERE section_id = $1")
@@ -809,85 +789,58 @@ async fn create_lesson(
 }
 
 /// Update a lesson
+/// ICT 7+ SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_lesson(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((course_id, lesson_id)): Path<(i64, i64)>,
     Json(input): Json<UpdateLessonRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let mut updates: Vec<String> = vec![];
+    info!(target: "security", event = "lesson_update", admin_id = %admin.id, course_id = %course_id, lesson_id = %lesson_id, "Admin updating lesson");
 
-    if let Some(section_id) = input.section_id {
-        updates.push(format!("section_id = {}", section_id));
-    }
-    if let Some(ref title) = input.title {
-        updates.push(format!("title = '{}'", title.replace('\'', "''")));
-    }
-    if let Some(ref description) = input.description {
-        updates.push(format!(
-            "description = '{}'",
-            description.replace('\'', "''")
-        ));
-    }
-    if let Some(ref content_html) = input.content_html {
-        updates.push(format!(
-            "content_html = '{}'",
-            content_html.replace('\'', "''")
-        ));
-    }
-    if let Some(ref video_url) = input.video_url {
-        updates.push(format!("video_url = '{}'", video_url.replace('\'', "''")));
-    }
-    if let Some(ref bunny_guid) = input.bunny_video_guid {
-        updates.push(format!("bunny_video_guid = '{}'", bunny_guid));
-    }
-    if let Some(ref thumbnail_url) = input.thumbnail_url {
-        updates.push(format!(
-            "thumbnail_url = '{}'",
-            thumbnail_url.replace('\'', "''")
-        ));
-    }
-    if let Some(duration) = input.duration_seconds {
-        updates.push(format!("duration_seconds = {}", duration));
-    }
-    if let Some(ref lesson_type) = input.lesson_type {
-        updates.push(format!("lesson_type = '{}'", lesson_type));
-    }
-    if let Some(is_preview) = input.is_preview {
-        updates.push(format!("is_preview = {}", is_preview));
-    }
-    if let Some(is_published) = input.is_published {
-        updates.push(format!("is_published = {}", is_published));
-    }
-    if let Some(ref completion_type) = input.completion_type {
-        updates.push(format!("completion_type = '{}'", completion_type));
-    }
-    if let Some(watch_percent) = input.required_watch_percent {
-        updates.push(format!("required_watch_percent = {}", watch_percent));
-    }
-
-    if updates.is_empty() {
-        return Ok(Json(json!({"success": true, "message": "No changes"})));
-    }
-
-    updates.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE course_lessons SET {} WHERE id = $1 AND course_id = $2",
-        updates.join(", ")
-    );
-
-    sqlx::query(&sql)
-        .bind(lesson_id)
-        .bind(course_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            error!("Failed to update lesson: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    // ICT 7+ SECURITY FIX: Parameterized query
+    sqlx::query(
+        r#"UPDATE course_lessons SET
+            section_id = COALESCE($3, section_id),
+            title = COALESCE($4, title),
+            description = COALESCE($5, description),
+            content_html = COALESCE($6, content_html),
+            video_url = COALESCE($7, video_url),
+            bunny_video_guid = COALESCE($8, bunny_video_guid),
+            thumbnail_url = COALESCE($9, thumbnail_url),
+            duration_seconds = COALESCE($10, duration_seconds),
+            lesson_type = COALESCE($11, lesson_type),
+            is_preview = COALESCE($12, is_preview),
+            is_published = COALESCE($13, is_published),
+            completion_type = COALESCE($14, completion_type),
+            required_watch_percent = COALESCE($15, required_watch_percent),
+            updated_at = NOW()
+        WHERE id = $1 AND course_id = $2"#
+    )
+    .bind(lesson_id)
+    .bind(course_id)
+    .bind(input.section_id)
+    .bind(&input.title)
+    .bind(&input.description)
+    .bind(&input.content_html)
+    .bind(&input.video_url)
+    .bind(&input.bunny_video_guid)
+    .bind(&input.thumbnail_url)
+    .bind(input.duration_seconds)
+    .bind(&input.lesson_type)
+    .bind(input.is_preview)
+    .bind(input.is_published)
+    .bind(&input.completion_type)
+    .bind(input.required_watch_percent)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update lesson: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -895,8 +848,10 @@ async fn update_lesson(
 /// Delete a lesson
 async fn delete_lesson(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((course_id, lesson_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "lesson_delete", admin_id = %admin.id, course_id = %course_id, lesson_id = %lesson_id, "Admin deleting lesson");
     // Delete associated resources first
     sqlx::query("DELETE FROM course_resources WHERE lesson_id = $1")
         .bind(lesson_id)
@@ -930,6 +885,7 @@ async fn delete_lesson(
 /// Reorder lessons within a section
 async fn reorder_lessons(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path((course_id, section_id)): Path<(i64, i64)>,
     Json(input): Json<ReorderItemsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -956,9 +912,11 @@ async fn reorder_lessons(
 /// Create a resource (PDF, document, etc.)
 async fn create_resource(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<CreateResourceRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "resource_create", admin_id = %admin.id, course_id = %course_id, "Admin creating resource");
     // Get max sort order
     let max_order: (Option<i32>,) = sqlx::query_as(
         "SELECT MAX(sort_order) FROM course_resources WHERE course_id = $1 AND section_id IS NOT DISTINCT FROM $2 AND lesson_id IS NOT DISTINCT FROM $3"
@@ -1019,8 +977,10 @@ async fn create_resource(
 /// Delete a resource
 async fn delete_resource(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((course_id, resource_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "resource_delete", admin_id = %admin.id, course_id = %course_id, resource_id = %resource_id, "Admin deleting resource");
     let result = sqlx::query("DELETE FROM course_resources WHERE id = $1 AND course_id = $2")
         .bind(resource_id)
         .bind(course_id)
@@ -1051,9 +1011,11 @@ async fn delete_resource(
 /// Create a live session
 async fn create_live_session(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<CreateLiveSessionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "live_session_create", admin_id = %admin.id, course_id = %course_id, "Admin creating live session");
     let session_date =
         NaiveDate::parse_from_str(&input.session_date, "%Y-%m-%d").map_err(|_| {
             (
@@ -1132,9 +1094,11 @@ async fn create_live_session(
 /// Bulk create live sessions
 async fn bulk_create_live_sessions(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<BulkLiveSessionsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "live_sessions_bulk_create", admin_id = %admin.id, course_id = %course_id, count = %input.sessions.len(), "Admin bulk creating live sessions");
     let mut created = 0;
 
     for (i, session) in input.sessions.iter().enumerate() {
@@ -1173,8 +1137,10 @@ async fn bulk_create_live_sessions(
 /// Delete a live session
 async fn delete_live_session(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path((course_id, session_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "live_session_delete", admin_id = %admin.id, course_id = %course_id, session_id = %session_id, "Admin deleting live session");
     let result = sqlx::query("DELETE FROM course_live_sessions WHERE id = $1 AND course_id = $2")
         .bind(session_id)
         .bind(course_id)
@@ -1205,6 +1171,7 @@ async fn delete_live_session(
 /// Enroll a user in a course
 async fn enroll_user(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1217,6 +1184,8 @@ async fn enroll_user(
                 Json(json!({"error": "user_id required"})),
             )
         })?;
+
+    info!(target: "security", event = "course_enroll", admin_id = %admin.id, course_id = %course_id, target_user_id = %user_id, "Admin enrolling user in course");
 
     let enrollment_source = input
         .get("enrollment_source")
@@ -1267,6 +1236,7 @@ async fn enroll_user(
 /// Get course enrollments
 async fn get_enrollments(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path(course_id): Path<i64>,
     Query(query): Query<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1334,6 +1304,7 @@ async fn get_enrollments(
 /// Update lesson progress
 async fn update_lesson_progress(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path((course_id, lesson_id)): Path<(i64, i64)>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1414,6 +1385,7 @@ async fn update_lesson_progress(
 /// Get user's course progress
 async fn get_user_progress(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
     Path((course_id, user_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let enrollment: Option<UserCourseEnrollment> = sqlx::query_as(
@@ -1476,6 +1448,7 @@ async fn get_user_progress(
 /// Get course categories
 async fn get_categories(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let categories: Vec<(String, i64)> = sqlx::query_as(
         "SELECT category, COUNT(*) FROM courses_enhanced WHERE category IS NOT NULL AND deleted_at IS NULL GROUP BY category ORDER BY category"
@@ -1495,6 +1468,7 @@ async fn get_categories(
 /// Get course stats
 async fn get_course_stats(
     State(state): State<AppState>,
+    AdminUser(_admin): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let total_courses: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL")
@@ -1543,8 +1517,10 @@ async fn get_course_stats(
 /// Clone a course
 async fn clone_course(
     State(state): State<AppState>,
+    AdminUser(admin): AdminUser,
     Path(course_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    info!(target: "security", event = "course_clone", admin_id = %admin.id, course_id = %course_id, "Admin cloning course");
     // Get original course
     let original: CourseEnhanced =
         sqlx::query_as("SELECT * FROM courses_enhanced WHERE id = $1 AND deleted_at IS NULL")

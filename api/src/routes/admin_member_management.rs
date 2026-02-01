@@ -3,12 +3,14 @@
 //!
 //! Enterprise-grade member management: CRUD, ban/suspend, activity log,
 //! notes, Excel/PDF export. All routes require admin privileges.
+//!
+//! SECURITY: Uses AdminUser extractor for consistent authorization across all routes.
 
 use axum::{
     extract::{Path, Query, State},
     http::{header, StatusCode},
     response::IntoResponse,
-    routing::{delete, get, patch, post, put},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use chrono::{NaiveDateTime, Utc};
@@ -16,26 +18,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{models::User, AppState};
-
-// ===============================================================================
-// AUTHORIZATION
-// ===============================================================================
-
-fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
-        Ok(())
-    } else {
-        Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({
-                "error": "Access denied",
-                "message": "This action requires admin privileges"
-            })),
-        ))
-    }
-}
+// ICT 7 SECURITY FIX: Use AdminUser extractor for consistent authorization
+use crate::{middleware::admin::AdminUser, AppState};
 
 // ===============================================================================
 // TYPES
@@ -151,12 +135,13 @@ pub struct ActivityQuery {
 // ===============================================================================
 
 /// GET /admin/member-management/:id - Get member with full details
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn get_member_full(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     // Get member basic info
     let member: MemberDetail = sqlx::query_as(
@@ -404,12 +389,13 @@ fn build_member_timeline(
 // ===============================================================================
 
 /// POST /admin/member-management - Create new member
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn create_member(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Json(input): Json<CreateMemberRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     // Validate email
     if !input.email.contains('@') {
@@ -499,13 +485,14 @@ async fn create_member(
 // ===============================================================================
 
 /// PUT /admin/member-management/:id - Update member
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn update_member(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     // Check member exists
     let existing: Option<(i64, String)> =
@@ -642,15 +629,14 @@ async fn update_member(
 // ===============================================================================
 
 /// DELETE /admin/member-management/:id - Delete member (soft delete)
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn delete_member(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // Prevent self-deletion
-    if user.id == id {
+    if admin.0.id == id {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "You cannot delete your own account"})),
@@ -738,16 +724,15 @@ async fn delete_member(
 // ===============================================================================
 
 /// POST /admin/member-management/:id/ban - Ban member
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn ban_member(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<BanMemberRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // Prevent self-ban
-    if user.id == id {
+    if admin.0.id == id {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "You cannot ban your own account"})),
@@ -801,7 +786,7 @@ async fn ban_member(
     .bind(json!({
         "reason": input.reason,
         "duration_days": input.duration_days,
-        "banned_by": user.id
+        "banned_by": admin.0.id
     }))
     .execute(&state.db.pool)
     .await;
@@ -813,15 +798,14 @@ async fn ban_member(
 }
 
 /// POST /admin/member-management/:id/suspend - Suspend member (temporary)
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn suspend_member(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<BanMemberRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
-    if user.id == id {
+    if admin.0.id == id {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "You cannot suspend your own account"})),
@@ -872,7 +856,7 @@ async fn suspend_member(
     .bind(json!({
         "reason": input.reason,
         "duration_days": input.duration_days,
-        "suspended_by": user.id
+        "suspended_by": admin.0.id
     }))
     .execute(&state.db.pool)
     .await;
@@ -884,13 +868,12 @@ async fn suspend_member(
 }
 
 /// POST /admin/member-management/:id/unban - Unban/unsuspend member
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn unban_member(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     sqlx::query(
         r#"
         UPDATE user_status
@@ -915,7 +898,7 @@ async fn unban_member(
         "#,
     )
     .bind(id)
-    .bind(json!({"unbanned_by": user.id}))
+    .bind(json!({"unbanned_by": admin.0.id}))
     .execute(&state.db.pool)
     .await;
 
@@ -929,12 +912,13 @@ async fn unban_member(
 // ===============================================================================
 
 /// GET /admin/member-management/:id/notes - Get member notes
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn get_notes(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Vec<MemberNote>>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     let notes: Vec<MemberNote> = sqlx::query_as(
         r#"
@@ -954,14 +938,13 @@ async fn get_notes(
 }
 
 /// POST /admin/member-management/:id/notes - Create note
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn create_note(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<CreateNoteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     if input.content.trim().is_empty() {
         return Err((
             StatusCode::BAD_REQUEST,
@@ -978,7 +961,7 @@ async fn create_note(
     )
     .bind(id)
     .bind(&input.content)
-    .bind(user.id)
+    .bind(admin.0.id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
@@ -995,12 +978,13 @@ async fn create_note(
 }
 
 /// DELETE /admin/member-management/:id/notes/:note_id - Delete note
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn delete_note(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path((member_id, note_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     let result = sqlx::query("DELETE FROM member_notes WHERE id = $1 AND user_id = $2")
         .bind(note_id)
@@ -1031,13 +1015,14 @@ async fn delete_note(
 // ===============================================================================
 
 /// GET /admin/member-management/:id/activity - Get member activity log
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
 async fn get_activity(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Query(query): Query<ActivityQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(25).min(100);
@@ -1101,63 +1086,70 @@ async fn get_activity(
 // ===============================================================================
 
 /// GET /admin/member-management/export - Export members
+/// ICT 7 SECURITY: Uses AdminUser extractor for automatic authorization
+/// ICT 7 SECURITY: Parameterized queries prevent SQL injection
 async fn export_members(
     State(state): State<AppState>,
-    user: User,
+    admin: AdminUser,
     Query(query): Query<ExportQuery>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
+    let _ = &admin; // Admin authorization handled by extractor
 
     let format = query.format.as_deref().unwrap_or("csv");
 
-    // Build query conditions
-    let mut conditions = Vec::new();
-
-    if let Some(ref status) = query.status {
-        match status.as_str() {
-            "active" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')".to_string()),
-            "trial" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'trial')".to_string()),
-            "churned" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status IN ('cancelled', 'expired')) AND u.id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')".to_string()),
-            _ => {}
+    // ICT 7 SECURITY FIX: Parse dates safely and use parameterized queries
+    let date_from: Option<chrono::NaiveDate> = query.date_from.as_ref().and_then(|d| {
+        if is_valid_date(d) {
+            chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok()
+        } else {
+            None
         }
-    }
+    });
 
-    if let Some(ref date_from) = query.date_from {
-        if is_valid_date(date_from) {
-            conditions.push(format!("u.created_at >= '{}'", date_from));
+    let date_to: Option<chrono::NaiveDate> = query.date_to.as_ref().and_then(|d| {
+        if is_valid_date(d) {
+            chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok()
+        } else {
+            None
         }
-    }
-    if let Some(ref date_to) = query.date_to {
-        if is_valid_date(date_to) {
-            conditions.push(format!("u.created_at <= '{}'", date_to));
-        }
-    }
+    });
 
-    let where_clause = if conditions.is_empty() {
-        "1=1".to_string()
-    } else {
-        conditions.join(" AND ")
-    };
+    // ICT 7 SECURITY FIX: Use parameterized query with optional filters
+    // Status filter: 'active', 'trial', 'churned', or NULL for all
+    let status_filter = query.status.as_deref();
 
-    // Fetch members
+    // Fetch members with parameterized query
     #[allow(clippy::type_complexity)]
     let members: Vec<(i64, Option<String>, String, Option<String>, NaiveDateTime)> =
-        sqlx::query_as(&format!(
+        sqlx::query_as(
             r#"
-        SELECT u.id, u.name, u.email, u.role, u.created_at
-        FROM users u
-        WHERE {}
-        ORDER BY u.created_at DESC
-        LIMIT 10000
-        "#,
-            where_clause
-        ))
+            SELECT u.id, u.name, u.email, u.role, u.created_at
+            FROM users u
+            WHERE ($1::text IS NULL OR (
+                CASE $1
+                    WHEN 'active' THEN u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')
+                    WHEN 'trial' THEN u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'trial')
+                    WHEN 'churned' THEN u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status IN ('cancelled', 'expired'))
+                        AND u.id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')
+                    ELSE TRUE
+                END
+            ))
+            AND ($2::date IS NULL OR u.created_at >= $2::date)
+            AND ($3::date IS NULL OR u.created_at <= $3::date + INTERVAL '1 day')
+            ORDER BY u.created_at DESC
+            LIMIT 10000
+            "#,
+        )
+        .bind(status_filter)
+        .bind(date_from)
+        .bind(date_to)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
+            tracing::error!("Export members query failed: {}", e);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
+                Json(json!({"error": "Failed to export members"})),
             )
         })?;
 

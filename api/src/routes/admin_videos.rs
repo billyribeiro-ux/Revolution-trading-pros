@@ -1490,17 +1490,21 @@ async fn get_transcoding_status(
     .unwrap_or(None);
 
     match status {
-        Some((encoding_status, thumbnail_url, duration, metadata)) => Ok(Json(json!({
-            "success": true,
-            "data": {
-                "video_id": id,
-                "encoding_status": encoding_status.unwrap_or_else(|| "unknown".to_string()),
-                "is_ready": encoding_status.as_deref() == Some("completed"),
-                "thumbnail_url": thumbnail_url,
-                "duration": duration,
-                "metadata": metadata
-            }
-        }))),
+        Some((encoding_status, thumbnail_url, duration, metadata)) => {
+            let is_ready = encoding_status.as_deref() == Some("completed");
+            let status_str = encoding_status.unwrap_or_else(|| "unknown".to_string());
+            Ok(Json(json!({
+                "success": true,
+                "data": {
+                    "video_id": id,
+                    "encoding_status": status_str,
+                    "is_ready": is_ready,
+                    "thumbnail_url": thumbnail_url,
+                    "duration": duration,
+                    "metadata": metadata
+                }
+            })))
+        },
         None => Err((StatusCode::NOT_FOUND, Json(json!({"error": "Video not found"}))))
     }
 }
