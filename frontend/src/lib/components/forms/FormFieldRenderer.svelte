@@ -505,15 +505,20 @@
 		color: #6b7280;
 	}
 
+	/* 2026 Mobile-First Responsive - 44px touch targets, 16px font to prevent iOS zoom */
 	.form-input,
 	.form-range,
 	.form-color {
 		width: 100%;
-		padding: 0.625rem 0.875rem;
+		padding: 0.75rem 1rem;
 		border: 1px solid #d1d5db;
 		border-radius: 0.375rem;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom on focus */
+		min-height: 44px; /* Touch target */
 		transition: all 0.2s;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.form-input:focus {
@@ -532,7 +537,8 @@
 
 	textarea.form-input {
 		resize: vertical;
-		min-height: 100px;
+		min-height: 120px; /* Enhanced for mobile touch */
+		padding: 0.875rem 1rem;
 	}
 
 	select.form-input {
@@ -544,21 +550,35 @@
 	.checkbox-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
+		gap: 0.5rem;
 	}
 
 	.radio-label,
 	.checkbox-label {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.75rem;
 		cursor: pointer;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px for readability */
+		min-height: 44px; /* Touch target */
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.375rem;
+		transition: background-color 0.2s;
+		touch-action: manipulation;
+	}
+
+	.radio-label:hover,
+	.checkbox-label:hover {
+		background-color: #f9fafb;
 	}
 
 	.radio-label input,
 	.checkbox-label input {
 		cursor: pointer;
+		width: 20px;
+		height: 20px;
+		min-width: 20px;
+		accent-color: #2563eb;
 	}
 
 	.range-wrapper {
@@ -582,6 +602,7 @@
 	.rating-wrapper {
 		display: flex;
 		gap: 0.25rem;
+		flex-wrap: wrap;
 	}
 
 	.star-button {
@@ -591,7 +612,13 @@
 		color: #d1d5db;
 		cursor: pointer;
 		transition: color 0.2s;
-		padding: 0;
+		padding: 0.5rem;
+		min-width: 44px; /* Touch target */
+		min-height: 44px; /* Touch target */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		touch-action: manipulation;
 	}
 
 	.star-button:hover,
@@ -614,13 +641,15 @@
 
 	.btn-clear-signature {
 		align-self: flex-end;
-		padding: 0.5rem 1rem;
+		padding: 0.75rem 1.25rem;
 		background-color: #6b7280;
 		color: white;
 		border: none;
 		border-radius: 0.375rem;
-		font-size: 0.75rem;
+		font-size: 1rem; /* 16px for readability */
+		min-height: 44px; /* Touch target */
 		cursor: pointer;
+		touch-action: manipulation;
 	}
 
 	.btn-clear-signature:hover {
@@ -666,11 +695,13 @@
 		align-items: flex-start;
 		gap: 0.75rem;
 		cursor: pointer;
-		padding: 0.75rem;
+		padding: 1rem;
+		min-height: 48px; /* Enhanced touch target */
 		background-color: #f9fafb;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
 		transition: all 0.2s;
+		touch-action: manipulation;
 	}
 
 	.newsletter-checkbox-label:hover {
@@ -680,23 +711,29 @@
 
 	.newsletter-checkbox-label input {
 		margin-top: 0.125rem;
-		width: 1.125rem;
-		height: 1.125rem;
+		width: 20px;
+		height: 20px;
+		min-width: 20px;
 		cursor: pointer;
 		accent-color: #2563eb;
 	}
 
 	.newsletter-checkbox-text {
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px for readability */
 		color: #374151;
 		line-height: 1.5;
 	}
 
 	.privacy-link {
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		color: #6b7280;
 		text-decoration: none;
 		transition: color 0.2s;
+		padding: 0.5rem 0;
+		min-height: 44px; /* Touch target */
+		display: inline-flex;
+		align-items: center;
+		touch-action: manipulation;
 	}
 
 	.privacy-link:hover {
@@ -704,11 +741,18 @@
 		text-decoration: underline;
 	}
 
-	/* Newsletter Categories Styles */
+	/* Newsletter Categories Styles - 2026 Mobile-First */
 	.newsletter-categories-wrapper {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		display: flex;
+		flex-direction: column;
 		gap: 0.75rem;
+	}
+
+	@media (min-width: 640px) {
+		.newsletter-categories-wrapper {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		}
 	}
 
 	.category-card {
@@ -716,6 +760,7 @@
 		align-items: flex-start;
 		gap: 0.75rem;
 		padding: 1rem;
+		min-height: 48px; /* Touch target */
 		background-color: #ffffff;
 		border: 1px solid #e5e7eb;
 		border-left-width: 3px;
@@ -723,6 +768,7 @@
 		border-radius: 0.5rem;
 		cursor: pointer;
 		transition: all 0.2s;
+		touch-action: manipulation;
 	}
 
 	.category-card:hover {
@@ -739,8 +785,9 @@
 
 	.category-card input {
 		margin-top: 0.125rem;
-		width: 1rem;
-		height: 1rem;
+		width: 20px;
+		height: 20px;
+		min-width: 20px;
 		cursor: pointer;
 		accent-color: #2563eb;
 	}
@@ -764,7 +811,7 @@
 	}
 
 	.category-label {
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px for readability */
 		font-weight: 500;
 		color: #111827;
 	}

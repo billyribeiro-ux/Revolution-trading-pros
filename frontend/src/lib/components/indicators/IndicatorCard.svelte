@@ -49,36 +49,49 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Indicator Card Styles - WordPress Match with Modern Hover Effects
+	 * Indicator Card Styles - 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px
+	 * Safe areas: env(safe-area-inset-*)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Mobile-first base styles (< 640px) */
 	.card-grid-spacer {
-		padding-left: 15px;
-		padding-right: 15px;
-		margin-top: 30px;
-		margin-bottom: 30px;
+		width: 100%;
+		padding-left: max(12px, env(safe-area-inset-left));
+		padding-right: max(12px, env(safe-area-inset-right));
+		margin-top: 16px;
+		margin-bottom: 16px;
+		box-sizing: border-box;
 	}
 
 	.flex-grid-item {
 		display: flex;
+		width: 100%;
 	}
 
 	.card {
 		position: relative;
 		background: #fff;
-		border-radius: 5px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+		border-radius: 8px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
-		transition: all 0.15s ease-in-out;
-		padding-bottom: 60px;
+		transition: all 0.2s ease-in-out;
+		padding-bottom: 72px; /* Increased for touch-friendly button */
 	}
 
 	.card:hover {
-		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 		transform: translateY(-2px);
+	}
+
+	/* Active state for touch devices */
+	.card:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	.flex-grid-panel {
@@ -89,7 +102,7 @@
 	}
 
 	.card-body {
-		padding: 20px;
+		padding: 16px;
 		flex-grow: 0;
 		display: flex;
 		flex-direction: column;
@@ -103,11 +116,12 @@
 	}
 
 	.u--squash {
-		padding-bottom: 10px;
+		padding-bottom: 8px;
 	}
 
+	/* Responsive typography - mobile first */
 	.card-title {
-		font-size: 18px;
+		font-size: clamp(15px, 4vw, 18px);
 		font-weight: 700;
 		color: #333;
 		margin: 0;
@@ -122,6 +136,12 @@
 		transition: color 0.2s;
 		display: block;
 		text-align: center;
+		/* Touch-friendly link area */
+		padding: 4px 0;
+		min-height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.card-title a:hover {
@@ -129,7 +149,7 @@
 	}
 
 	.h5 {
-		font-size: 18px;
+		font-size: clamp(15px, 4vw, 18px);
 		font-weight: 600;
 	}
 
@@ -139,13 +159,14 @@
 
 	.article-card__meta {
 		color: #999;
-		font-size: 13px;
+		font-size: clamp(12px, 3vw, 13px);
 		margin: 8px 0 0;
 		text-align: center;
+		line-height: 1.5;
 	}
 
 	.article-card__meta small {
-		font-size: 13px;
+		font-size: inherit;
 	}
 
 	.card-footer {
@@ -153,29 +174,37 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		padding: 0 20px 20px;
+		padding: 0 16px 16px;
+		padding-bottom: max(16px, env(safe-area-inset-bottom));
 		text-align: center;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
 
+	/* Touch-friendly button - minimum 44x44px */
 	.btn {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		text-decoration: none;
-		border-radius: 5px;
+		border-radius: 6px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		transition: all 0.2s ease-in-out;
 		text-align: center;
 		cursor: pointer;
 		border: none;
+		/* Touch-friendly sizing */
+		min-height: 44px;
+		min-width: 44px;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.btn-tiny {
 		font-size: 14px;
-		line-height: 16px;
-		padding: 6px 8px;
+		line-height: 1.2;
+		padding: 12px 16px;
 		font-weight: 600;
 	}
 
@@ -209,42 +238,113 @@
 		text-decoration: none;
 	}
 
-	/* Grid System - WordPress/Bootstrap Standard Breakpoints */
+	/* Grid System - 2026 Mobile-First with Modern Breakpoints */
 	:global(.col-xs-12),
 	:global(.col-sm-6),
 	:global(.col-md-6),
 	:global(.col-lg-4) {
 		width: 100%;
-		padding-left: 15px;
-		padding-right: 15px;
+		padding-left: max(12px, env(safe-area-inset-left));
+		padding-right: max(12px, env(safe-area-inset-right));
 		box-sizing: border-box;
 	}
 
-	/* Small Tablet: 2 columns (≥ 576px) */
-	@media (min-width: 576px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Responsive Breakpoints - Mobile First (min-width)
+	 * xs: 360px, sm: 640px, md: 768px, lg: 1024px, xl: 1280px
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* sm: Small devices (≥ 640px) - 2 columns */
+	@media (min-width: 640px) {
+		.card-grid-spacer {
+			padding-left: 15px;
+			padding-right: 15px;
+			margin-top: 24px;
+			margin-bottom: 24px;
+		}
+
 		:global(.col-sm-6) {
 			width: 50%;
+			max-width: 50%;
+		}
+
+		.card-body {
+			padding: 20px;
+		}
+
+		.card-footer {
+			padding: 0 20px 20px;
 		}
 	}
 
-	/* Tablet: 2 columns (≥ 768px) */
+	/* md: Medium devices (≥ 768px) - 2 columns with more spacing */
 	@media (min-width: 768px) {
+		.card-grid-spacer {
+			margin-top: 30px;
+			margin-bottom: 30px;
+		}
+
 		:global(.col-md-6) {
 			width: 50%;
+			max-width: 50%;
+		}
+
+		.card-title {
+			font-size: 18px;
+		}
+
+		.card {
+			border-radius: 8px;
 		}
 	}
 
-	/* Desktop: 3 columns (≥ 992px) - Standard Bootstrap lg breakpoint */
-	@media (min-width: 992px) {
+	/* lg: Large devices (≥ 1024px) - 3 columns */
+	@media (min-width: 1024px) {
 		:global(.col-lg-4) {
 			width: 33.333333% !important;
+			max-width: 33.333333% !important;
+		}
+
+		.card:hover {
+			box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+			transform: translateY(-4px);
 		}
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
+	/* xl: Extra large devices (≥ 1280px) */
+	@media (min-width: 1280px) {
 		.card-grid-spacer {
-			margin-bottom: 20px;
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+	}
+
+	/* High DPI / Retina displays */
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+		.card {
+			box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.12);
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.card {
+			transition: none;
+		}
+		.card:hover {
+			transform: none;
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.card:hover {
+			transform: none;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+		}
+
+		.btn-tiny {
+			padding: 14px 18px;
 		}
 	}
 </style>

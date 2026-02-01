@@ -699,6 +699,11 @@
 <MarketingFooter />
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 MOBILE-FIRST RESPONSIVE DESIGN
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	/* Custom Tailwind-compatible utilities for specific animations */
 
 	@keyframes marquee {
@@ -712,5 +717,103 @@
 
 	.animate-marquee {
 		animation: marquee 40s linear infinite;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SAFE AREA INSETS - iOS/Android notch & gesture areas
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.course-page-wrapper) {
+		padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TOUCH TARGETS - Minimum 44x44px for all interactive elements
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (hover: none) and (pointer: coarse) {
+		:global(.spotlight-card a),
+		:global(.hero-stats a),
+		:global(button) {
+			min-height: 44px;
+			min-width: 44px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * EXTRA SMALL DEVICES (< 360px) - Base mobile styles
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 359px) {
+		:global(.container) {
+			padding-left: 0.75rem !important;
+			padding-right: 0.75rem !important;
+		}
+
+		:global(.hero-title-line) {
+			font-size: 11vw !important;
+		}
+
+		:global(.spotlight-card) {
+			border-radius: 1rem !important;
+		}
+
+		:global(.spotlight-card .p-8) {
+			padding: 1rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SMALL MOBILE (360px - 639px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 360px) and (max-width: 639px) {
+		:global(.container) {
+			padding-left: 1rem !important;
+			padding-right: 1rem !important;
+		}
+
+		:global(.hero-stats) {
+			flex-direction: column !important;
+			gap: 1rem !important;
+		}
+
+		:global(.hero-stats a) {
+			width: 100%;
+			justify-content: center;
+		}
+
+		:global(.spotlight-card) {
+			border-radius: 1.25rem !important;
+		}
+
+		:global(.ticker-bar) {
+			font-size: 0.7rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TABLET (640px - 767px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 640px) and (max-width: 767px) {
+		:global(.hero-stats) {
+			flex-direction: row !important;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MEDIUM DEVICES (768px - 1023px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		:global(.spotlight-card .p-8) {
+			padding: 1.5rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * REDUCED MOTION - Accessibility
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (prefers-reduced-motion: reduce) {
+		.animate-marquee {
+			animation: none;
+		}
 	}
 </style>

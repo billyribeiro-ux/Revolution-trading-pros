@@ -361,18 +361,22 @@
 		gap: 0.25rem;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets */
 	.action-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
+		width: 44px; /* Touch target */
+		height: 44px; /* Touch target */
+		min-width: 44px;
+		min-height: 44px;
 		background-color: white;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.375rem;
 		color: #6b7280;
 		cursor: pointer;
 		transition: all 0.15s;
+		touch-action: manipulation;
 	}
 
 	.action-btn:hover:not(:disabled) {

@@ -320,8 +320,9 @@
 
 	.download-arrow {
 		flex-shrink: 0;
-		width: 40px;
-		height: 40px;
+		/* Touch-friendly 44x44px minimum */
+		width: 44px;
+		height: 44px;
 		background: #f3f4f6;
 		border-radius: 8px;
 		display: flex;
@@ -333,5 +334,143 @@
 	.indicator-card:hover .download-arrow {
 		background: #143e59;
 		color: #fff;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile base styles (< 640px) */
+	@media (max-width: 639px) {
+		.my-indicators-page {
+			padding: 20px 16px;
+			padding-left: max(16px, env(safe-area-inset-left));
+			padding-right: max(16px, env(safe-area-inset-right));
+			padding-bottom: max(20px, env(safe-area-inset-bottom));
+		}
+
+		.page-header h1 {
+			font-size: 24px;
+		}
+
+		.subtitle {
+			font-size: 14px;
+		}
+
+		/* Single column on mobile */
+		.indicators-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+
+		.indicator-card {
+			padding: 16px;
+			flex-wrap: wrap;
+		}
+
+		.card-image img,
+		.placeholder {
+			width: 56px;
+			height: 56px;
+		}
+
+		.card-content h3 {
+			font-size: 15px;
+		}
+
+		.card-footer {
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.loading,
+		.error-state,
+		.empty-state {
+			padding: 48px 24px;
+		}
+	}
+
+	/* xs: Extra small devices (≥ 360px) */
+	@media (min-width: 360px) {
+		.indicator-card {
+			flex-wrap: nowrap;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) - 2 columns */
+	@media (min-width: 640px) {
+		.my-indicators-page {
+			padding: 24px;
+		}
+
+		.indicators-grid {
+			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
+	@media (min-width: 768px) {
+		.my-indicators-page {
+			padding: 32px;
+		}
+
+		.page-header h1 {
+			font-size: 28px;
+		}
+
+		.indicators-grid {
+			grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+			gap: 20px;
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.indicator-card:hover {
+			transform: translateY(-2px);
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-primary {
+			min-height: 48px;
+			padding: 14px 28px;
+		}
+
+		.indicator-card {
+			min-height: 88px;
+		}
+
+		.indicator-card:hover {
+			transform: none;
+		}
+
+		.indicator-card:active {
+			border-color: #143e59;
+			background: #f9fafb;
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
+		}
+
+		.indicator-card,
+		.download-arrow {
+			transition: none;
+		}
+	}
+
+	/* Safe areas for notched devices */
+	@supports (padding: max(0px)) {
+		.my-indicators-page {
+			padding-left: max(16px, env(safe-area-inset-left));
+			padding-right: max(16px, env(safe-area-inset-right));
+		}
 	}
 </style>

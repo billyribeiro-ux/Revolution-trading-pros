@@ -436,14 +436,19 @@
 		color: #94a3b8;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets, 16px font */
 	.form-input {
 		width: 100%;
-		padding: 0.625rem 0.875rem;
+		padding: 0.75rem 1rem;
+		min-height: 44px; /* Touch target */
 		background: #0f172a;
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		color: #e2e8f0;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.form-input:focus {
@@ -452,24 +457,38 @@
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
+	/* 2026 Mobile-First: Stack on mobile, side-by-side on larger screens */
 	.form-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
+		display: flex;
+		flex-direction: column;
 		gap: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.form-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
 	}
 
 	.checkbox-label {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.75rem;
 		cursor: pointer;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px for readability */
 		font-weight: 500;
 		color: #94a3b8;
+		min-height: 44px; /* Touch target */
+		padding: 0.5rem 0;
+		touch-action: manipulation;
 	}
 
 	.checkbox-label input {
 		cursor: pointer;
+		width: 20px;
+		height: 20px;
+		min-width: 20px;
 	}
 
 	.help-text {
@@ -514,11 +533,20 @@
 		gap: 0.75rem;
 	}
 
+	/* 2026 Mobile-First: Stack rule fields on mobile */
 	.rule-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr auto;
+		display: flex;
+		flex-direction: column;
 		gap: 0.5rem;
-		align-items: center;
+		align-items: stretch;
+	}
+
+	@media (min-width: 640px) {
+		.rule-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr auto;
+			align-items: center;
+		}
 	}
 
 	.btn-remove {
@@ -526,11 +554,17 @@
 		color: #f87171;
 		border: 1px solid rgba(239, 68, 68, 0.2);
 		border-radius: 8px;
-		width: 2rem;
-		height: 2rem;
+		width: 44px; /* Touch target */
+		height: 44px; /* Touch target */
+		min-width: 44px;
+		min-height: 44px;
 		font-size: 1rem;
 		cursor: pointer;
 		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		touch-action: manipulation;
 	}
 
 	.btn-remove:hover {
@@ -539,38 +573,59 @@
 
 	.btn-add-rule {
 		align-self: flex-start;
-		padding: 0.5rem 1rem;
+		padding: 0.75rem 1rem;
+		min-height: 44px; /* Touch target */
 		background: rgba(99, 102, 241, 0.1);
 		color: #a5b4fc;
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
+		touch-action: manipulation;
 	}
 
 	.btn-add-rule:hover {
 		background: rgba(99, 102, 241, 0.2);
 	}
 
+	/* 2026 Mobile-First: Safe area insets and full-width buttons on mobile */
 	.editor-actions {
 		display: flex;
-		justify-content: flex-end;
-		gap: 1rem;
+		flex-direction: column;
+		gap: 0.75rem;
 		margin-top: 2rem;
 		padding-top: 2rem;
+		padding-bottom: env(safe-area-inset-bottom, 0);
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
+	@media (min-width: 640px) {
+		.editor-actions {
+			flex-direction: row;
+			justify-content: flex-end;
+			gap: 1rem;
+		}
+	}
+
 	.btn {
-		padding: 0.75rem 1.5rem;
+		padding: 0.875rem 1.5rem;
+		min-height: 48px; /* Enhanced touch target */
 		border-radius: 8px;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
+		width: 100%;
+		touch-action: manipulation;
+	}
+
+	@media (min-width: 640px) {
+		.btn {
+			width: auto;
+		}
 	}
 
 	.btn-primary {

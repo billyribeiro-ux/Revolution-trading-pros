@@ -166,6 +166,11 @@
 {/if}
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * COURSECARD - 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.card {
 		display: flex;
 		flex-direction: column;
@@ -176,21 +181,35 @@
 		transition: all 0.2s;
 		text-decoration: none;
 		color: inherit;
+		/* Safe area padding for edge-to-edge displays */
+		padding-left: env(safe-area-inset-left);
+		padding-right: env(safe-area-inset-right);
 	}
+
 	.card:hover {
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
+
+	/* Touch target optimization */
+	@media (hover: none) and (pointer: coarse) {
+		.card {
+			min-height: 44px;
+		}
+	}
+
 	.image-wrap {
 		position: relative;
 		aspect-ratio: 16/9;
 		overflow: hidden;
 	}
+
 	.image-wrap img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
+
 	.badge {
 		position: absolute;
 		top: 12px;
@@ -202,6 +221,7 @@
 		text-transform: uppercase;
 		color: #fff;
 	}
+
 	.content {
 		padding: 16px;
 		display: flex;
@@ -209,21 +229,26 @@
 		gap: 8px;
 		flex: 1;
 	}
+
 	.level {
 		font-size: 11px;
 		font-weight: 600;
 		text-transform: uppercase;
 		color: #6b7280;
 	}
+
 	.level--beginner {
 		color: #10b981;
 	}
+
 	.level--intermediate {
 		color: #f59e0b;
 	}
+
 	.level--advanced {
 		color: #ef4444;
 	}
+
 	.title {
 		font-size: 16px;
 		font-weight: 600;
@@ -236,6 +261,7 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
+
 	.desc {
 		font-size: 13px;
 		color: #6b7280;
@@ -247,22 +273,26 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
+
 	.meta {
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
 		margin-top: auto;
 	}
+
 	.instructor {
 		font-size: 13px;
 		color: #4b5563;
 	}
+
 	.stats {
 		display: flex;
 		gap: 6px;
 		font-size: 12px;
 		color: #9ca3af;
 	}
+
 	.footer {
 		display: flex;
 		align-items: center;
@@ -270,7 +300,10 @@
 		padding-top: 12px;
 		border-top: 1px solid #f3f4f6;
 		margin-top: 8px;
+		gap: 8px;
+		flex-wrap: wrap;
 	}
+
 	.rating {
 		display: flex;
 		align-items: center;
@@ -279,18 +312,22 @@
 		color: #1f2937;
 		font-weight: 500;
 	}
+
 	.rating svg {
 		color: #fbbf24;
 	}
+
 	.count {
 		color: #9ca3af;
 		font-weight: 400;
 	}
+
 	.price {
 		font-size: 16px;
 		font-weight: 700;
 		color: #143e59;
 	}
+
 	.progress {
 		height: 4px;
 		background: #e5e7eb;
@@ -298,17 +335,20 @@
 		overflow: hidden;
 		margin-top: 8px;
 	}
+
 	.bar {
 		height: 100%;
 		background: #10b981;
 		border-radius: 2px;
 	}
+
 	.compact {
 		flex-direction: row;
 		padding: 12px;
 		gap: 12px;
 		align-items: center;
 	}
+
 	.compact .thumb {
 		width: 80px;
 		height: 60px;
@@ -316,31 +356,38 @@
 		flex-shrink: 0;
 		object-fit: cover;
 	}
+
 	.compact .info {
 		padding: 0;
 		gap: 4px;
 		display: flex;
 		flex-direction: column;
+		min-width: 0; /* Allow text truncation */
 	}
+
 	.compact .title {
 		font-size: 14px;
 	}
+
 	.compact .meta {
 		flex-direction: row;
 		font-size: 12px;
 		color: #9ca3af;
 	}
+
 	.progress-ring {
 		width: 40px;
 		height: 40px;
 		position: relative;
 		flex-shrink: 0;
 	}
+
 	.progress-ring svg {
 		width: 100%;
 		height: 100%;
 		transform: rotate(-90deg);
 	}
+
 	.progress-ring span {
 		position: absolute;
 		top: 50%;
@@ -349,30 +396,160 @@
 		font-size: 10px;
 		font-weight: 600;
 	}
+
 	.featured {
 		flex-direction: row;
 		max-width: 800px;
 	}
+
 	.featured .image-wrap {
 		width: 320px;
 		flex-shrink: 0;
 		aspect-ratio: auto;
 		height: 200px;
 	}
+
 	.featured .content {
 		padding: 24px;
 	}
+
 	.featured .title {
 		font-size: 20px;
 	}
-	@media (max-width: 768px) {
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * EXTRA SMALL DEVICES (< 360px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 359px) {
+		.content {
+			padding: 12px;
+		}
+
+		.title {
+			font-size: 14px;
+		}
+
+		.desc {
+			font-size: 12px;
+		}
+
+		.compact {
+			padding: 10px;
+			gap: 10px;
+		}
+
+		.compact .thumb {
+			width: 64px;
+			height: 48px;
+		}
+
+		.compact .title {
+			font-size: 13px;
+		}
+
+		.featured .content {
+			padding: 12px;
+		}
+
+		.featured .title {
+			font-size: 16px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SMALL MOBILE (360px - 639px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 360px) and (max-width: 639px) {
+		.content {
+			padding: 14px;
+		}
+
 		.featured {
 			flex-direction: column;
 		}
+
 		.featured .image-wrap {
 			width: 100%;
 			height: auto;
 			aspect-ratio: 16/9;
+		}
+
+		.featured .content {
+			padding: 16px;
+		}
+
+		.footer {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+
+		.rating {
+			justify-content: center;
+		}
+
+		.price {
+			text-align: center;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TABLET (640px - 767px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 640px) and (max-width: 767px) {
+		.featured {
+			flex-direction: column;
+		}
+
+		.featured .image-wrap {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 16/9;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MEDIUM DEVICES (768px+)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 768px) {
+		.featured {
+			flex-direction: row;
+		}
+
+		.featured .image-wrap {
+			width: 320px;
+			height: 200px;
+			aspect-ratio: auto;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * LARGE DEVICES (1024px+)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 1024px) {
+		.content {
+			padding: 20px;
+		}
+
+		.featured .content {
+			padding: 28px;
+		}
+
+		.featured .title {
+			font-size: 22px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * REDUCED MOTION - Accessibility
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (prefers-reduced-motion: reduce) {
+		.card {
+			transition: none;
+		}
+
+		.card:hover {
+			transform: none;
 		}
 	}
 </style>

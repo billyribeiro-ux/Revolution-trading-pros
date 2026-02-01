@@ -264,13 +264,18 @@
 		color: #6b7280;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets, 16px font prevents iOS zoom */
 	.address-input {
 		width: 100%;
-		padding: 0.625rem 0.875rem;
+		padding: 0.75rem 1rem;
 		border: 1px solid #d1d5db;
 		border-radius: 0.375rem;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
+		min-height: 44px; /* Touch target */
 		transition: all 0.2s;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.address-input:focus {

@@ -618,8 +618,203 @@
 		font-weight: 500;
 		text-decoration: none;
 		cursor: pointer;
+		/* Touch-friendly minimum size */
+		min-height: 44px;
 	}
 	.btn-secondary:hover {
 		background: #f3f4f6;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile base styles (< 640px) */
+	@media (max-width: 639px) {
+		.indicator-downloads-page {
+			padding: 20px 16px;
+			padding-left: max(16px, env(safe-area-inset-left));
+			padding-right: max(16px, env(safe-area-inset-right));
+			padding-bottom: max(20px, env(safe-area-inset-bottom));
+		}
+
+		.indicator-info {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+		}
+
+		.logo {
+			width: 48px;
+			height: 48px;
+		}
+
+		h1 {
+			font-size: 22px;
+		}
+
+		.tagline {
+			font-size: 14px;
+		}
+
+		.ownership-info {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		/* Single column platform cards */
+		.platforms-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+
+		.platform-header {
+			padding: 12px 16px;
+		}
+
+		.platform-files {
+			padding: 12px 16px;
+		}
+
+		.download-btn {
+			padding: 14px 16px;
+			min-height: 48px;
+		}
+
+		/* Single column videos */
+		.videos-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+
+		.support-section {
+			padding: 24px 16px;
+		}
+
+		.support-links {
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.support-links .btn-secondary {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.loading,
+		.error-state {
+			padding: 48px 16px;
+		}
+
+		section h2 {
+			font-size: 18px;
+		}
+
+		.section-desc {
+			font-size: 14px;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) */
+	@media (min-width: 640px) {
+		.indicator-downloads-page {
+			padding: 24px;
+		}
+
+		.platforms-grid {
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
+	@media (min-width: 768px) {
+		.indicator-downloads-page {
+			padding: 32px;
+		}
+
+		h1 {
+			font-size: 28px;
+		}
+
+		.platforms-grid {
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 20px;
+		}
+
+		.videos-grid {
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.platform-card:hover {
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.download-btn {
+			min-height: 52px;
+			padding: 16px 20px;
+		}
+
+		.btn-secondary {
+			min-height: 48px;
+			padding: 14px 24px;
+		}
+
+		.back-link {
+			min-height: 44px;
+			display: inline-flex;
+			align-items: center;
+		}
+
+		.platform-card:hover {
+			box-shadow: none;
+		}
+
+		.platform-card:active {
+			background: #f9fafb;
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.spinner,
+		.spinner-small {
+			animation: none;
+		}
+
+		.download-btn,
+		.btn-secondary,
+		.platform-card {
+			transition: none;
+		}
+	}
+
+	/* Safe areas for notched devices */
+	@supports (padding: max(0px)) {
+		.indicator-downloads-page {
+			padding-left: max(16px, env(safe-area-inset-left));
+			padding-right: max(16px, env(safe-area-inset-right));
+			padding-bottom: max(32px, env(safe-area-inset-bottom));
+		}
+	}
+
+	/* Print styles */
+	@media print {
+		.download-btn,
+		.btn-secondary {
+			display: none;
+		}
+
+		.platform-card {
+			break-inside: avoid;
+		}
 	}
 </style>

@@ -566,14 +566,365 @@
 		border-radius: 4px;
 	}
 
-	@media (max-width: 640px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 MOBILE-FIRST RESPONSIVE DESIGN
+	   ═══════════════════════════════════════════════════════════════════════════
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   Touch targets: 44x44px minimum for all interactive elements
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile base styles (default) */
+	.analytics-dashboard {
+		padding: 1rem;
+		border-radius: 10px;
+	}
+
+	.dashboard-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.header-left h3 {
+		font-size: 1.1rem;
+	}
+
+	.header-right {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.period-selector {
+		flex: 1;
+	}
+
+	/* Touch-friendly period buttons - 44px min height */
+	.period-btn {
+		min-height: 40px;
+		padding: 0.5rem 0.625rem;
+		font-size: 0.8rem;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+
+	/* Touch-friendly action buttons - 44px touch target */
+	.btn-refresh,
+	.btn-close {
+		min-width: 40px;
+		min-height: 40px;
+		padding: 0.5rem;
+	}
+
+	/* Stats grid - 2 columns on mobile */
+	.stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.75rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.stat-card {
+		padding: 1rem;
+		border-radius: 10px;
+	}
+
+	.stat-value {
+		font-size: 1.5rem;
+	}
+
+	.stat-label {
+		font-size: 0.7rem;
+	}
+
+	/* Chart section */
+	.chart-section,
+	.top-videos-section,
+	.device-section {
+		padding: 1rem;
+		border-radius: 10px;
+		margin-bottom: 0.75rem;
+	}
+
+	.chart-section h4,
+	.top-videos-section h4,
+	.device-section h4 {
+		font-size: 0.8rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.chart-container {
+		height: 160px;
+	}
+
+	.bar-wrapper {
+		width: 24px;
+	}
+
+	.bar {
+		width: 16px;
+	}
+
+	.bar-label {
+		font-size: 0.5625rem;
+	}
+
+	/* Video info */
+	.video-info {
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 0.875rem;
+	}
+
+	.video-thumb {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+	}
+
+	/* Top videos */
+	.top-video-thumb {
+		width: 50px;
+		height: 28px;
+	}
+
+	.top-video-title {
+		font-size: 0.8rem;
+	}
+
+	.top-video-views {
+		font-size: 0.7rem;
+	}
+
+	/* Device breakdown */
+	.device-info {
+		width: 80px;
+	}
+
+	.device-name,
+	.device-percent {
+		font-size: 0.8rem;
+	}
+
+	/* xs: 360px+ */
+	@media (min-width: 360px) {
+		.analytics-dashboard {
+			padding: 1.125rem;
+		}
+
+		.period-btn {
+			padding: 0.5rem 0.7rem;
+			font-size: 0.8125rem;
+		}
+
+		.stat-card {
+			padding: 1.1rem;
+		}
+
+		.stat-value {
+			font-size: 1.6rem;
+		}
+
+		.chart-container {
+			height: 180px;
+		}
+
+		.bar-wrapper {
+			width: 28px;
+		}
+
+		.bar {
+			width: 18px;
+		}
+
+		.device-info {
+			width: 90px;
+		}
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.analytics-dashboard {
+			padding: 1.25rem;
+			border-radius: 12px;
+		}
+
 		.dashboard-header {
-			flex-direction: column;
-			align-items: flex-start;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+		}
+
+		.header-left h3 {
+			font-size: 1.25rem;
+		}
+
+		.header-right {
+			width: auto;
+		}
+
+		.period-selector {
+			flex: none;
+		}
+
+		.period-btn {
+			min-height: auto;
+			padding: 0.5rem 0.75rem;
+			font-size: 0.875rem;
+		}
+
+		.period-btn:hover {
+			color: var(--text-primary, white);
+		}
+
+		.btn-refresh,
+		.btn-close {
+			min-width: auto;
+			min-height: auto;
+			padding: 0.375rem;
+		}
+
+		.btn-refresh:hover,
+		.btn-close:hover {
+			background: var(--bg-hover, #ffffff1a);
+			color: var(--text-primary, white);
 		}
 
 		.stats-grid {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(4, 1fr);
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+		}
+
+		.stat-card {
+			padding: 1.25rem;
+			border-radius: 12px;
+		}
+
+		.stat-value {
+			font-size: 1.75rem;
+		}
+
+		.stat-label {
+			font-size: 0.75rem;
+		}
+
+		.chart-section,
+		.top-videos-section,
+		.device-section {
+			padding: 1.25rem;
+			border-radius: 12px;
+			margin-bottom: 1rem;
+		}
+
+		.chart-section h4,
+		.top-videos-section h4,
+		.device-section h4 {
+			font-size: 0.875rem;
+			margin-bottom: 1rem;
+		}
+
+		.chart-container {
+			height: 200px;
+		}
+
+		.bar-wrapper {
+			width: 30px;
+		}
+
+		.bar {
+			width: 20px;
+		}
+
+		.bar-label {
+			font-size: 0.625rem;
+		}
+
+		.video-info {
+			flex-direction: row;
+			gap: 1rem;
+			padding: 1rem;
+		}
+
+		.video-thumb {
+			width: 120px;
+			height: 68px;
+			aspect-ratio: auto;
+		}
+
+		.top-video-thumb {
+			width: 60px;
+			height: 34px;
+		}
+
+		.top-video-title {
+			font-size: 0.875rem;
+		}
+
+		.top-video-views {
+			font-size: 0.75rem;
+		}
+
+		.device-info {
+			width: 100px;
+		}
+
+		.device-name,
+		.device-percent {
+			font-size: 0.875rem;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.analytics-dashboard {
+			padding: 1.5rem;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.stats-grid {
+			gap: 1.25rem;
+		}
+
+		.stat-card {
+			padding: 1.5rem;
+		}
+
+		.stat-value {
+			font-size: 2rem;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.bar,
+		.period-btn,
+		.btn-refresh,
+		.btn-close {
+			transition: none;
+		}
+	}
+
+	.period-btn:focus-visible,
+	.btn-refresh:focus-visible,
+	.btn-close:focus-visible {
+		outline: 2px solid var(--primary, #e6b800);
+		outline-offset: 2px;
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.stat-card,
+		.chart-section,
+		.top-videos-section,
+		.device-section {
+			border: 1px solid var(--text-primary, white);
 		}
 	}
 </style>

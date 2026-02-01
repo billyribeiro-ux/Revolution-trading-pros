@@ -176,32 +176,43 @@
 {/if}
 
 <style>
-	/* Empty State */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIDEO GRID (Dashboard) - 2026 Mobile-First Responsive Design
+	   ═══════════════════════════════════════════════════════════════════════════
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   Grid: 1 col (mobile) → 2 cols (sm) → 3 cols (lg) → 4 cols (xl)
+	   Touch targets: 44x44px minimum for pagination buttons
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Empty State - Mobile first */
 	.empty-state {
 		text-align: center;
-		padding: 60px 20px;
+		padding: 40px 16px;
 		color: #666;
 	}
 
 	.empty-state h3 {
-		margin: 0 0 10px;
-		font-size: 18px;
+		margin: 0 0 8px;
+		font-size: 16px;
 	}
 
-	/* Grid Layout - Using Tailwind */
-	/* Grid classes in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 */
+	.empty-state p {
+		font-size: 14px;
+		margin: 0;
+	}
 
-	/* Pagination */
+	/* Pagination - Mobile first with 44px touch targets */
 	.fl-builder-pagination {
 		text-align: center;
-		padding: 30px 0;
+		padding: 24px 16px;
 	}
 
 	.page-numbers {
 		list-style: none;
 		display: flex;
 		justify-content: center;
-		gap: 5px;
+		flex-wrap: wrap;
+		gap: 6px;
 		padding: 0;
 		margin: 0;
 	}
@@ -210,28 +221,26 @@
 		display: inline-block;
 	}
 
+	/* 44px minimum touch targets for mobile */
 	button.page-numbers,
 	span.page-numbers {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 36px;
-		height: 36px;
+		min-width: 44px;
+		min-height: 44px;
 		padding: 0 12px;
 		border: 1px solid #ddd;
 		background: #fff;
 		color: #333;
 		font-size: 14px;
+		font-weight: 500;
 		text-decoration: none;
-		border-radius: 4px;
+		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s ease;
-	}
-
-	button.page-numbers:hover {
-		background: #0984ae;
-		border-color: #0984ae;
-		color: #fff;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	span.page-numbers.current {
@@ -245,5 +254,76 @@
 		border: none;
 		background: transparent;
 		cursor: default;
+		min-width: 32px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile First (min-width queries)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ */
+	@media (min-width: 360px) {
+		.empty-state {
+			padding: 48px 20px;
+		}
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.empty-state {
+			padding: 60px 24px;
+		}
+
+		.empty-state h3 {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+
+		.fl-builder-pagination {
+			padding: 30px 0;
+		}
+
+		.page-numbers {
+			gap: 8px;
+		}
+
+		button.page-numbers,
+		span.page-numbers {
+			min-width: 40px;
+			min-height: 40px;
+		}
+
+		button.page-numbers:hover {
+			background: #0984ae;
+			border-color: #0984ae;
+			color: #fff;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		button.page-numbers,
+		span.page-numbers {
+			min-width: 36px;
+			height: 36px;
+			min-height: 36px;
+			border-radius: 6px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		button.page-numbers,
+		span.page-numbers {
+			transition: none;
+		}
+	}
+
+	button.page-numbers:focus-visible {
+		outline: 2px solid #0984ae;
+		outline-offset: 2px;
 	}
 </style>

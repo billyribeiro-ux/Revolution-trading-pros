@@ -734,4 +734,269 @@
 	.preview-content iframe {
 		border: none;
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 Mobile-First Responsive - PdfDownload
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Base Mobile Styles (xs: 360px) */
+
+	/* Button Variant - Mobile */
+	.pdf-download-button {
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+	}
+
+	.pdf-actions {
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+	}
+
+	.download-btn,
+	.generate-btn {
+		width: 100%;
+		justify-content: center;
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.75rem 1rem;
+	}
+
+	.preview-btn {
+		/* 44px touch target */
+		min-height: 44px;
+		min-width: 44px;
+		padding: 0.75rem;
+	}
+
+	/* Card Variant - Mobile */
+	.pdf-download-card {
+		border-radius: 0.625rem;
+	}
+
+	.card-header {
+		padding: 0.875rem 1rem;
+		gap: 0.625rem;
+	}
+
+	.card-header svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.card-header h3 {
+		font-size: 0.9375rem;
+	}
+
+	.pdf-list {
+		padding: 0.375rem;
+	}
+
+	.pdf-item {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+		padding: 0.875rem;
+	}
+
+	.pdf-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+
+	.pdf-icon svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.pdf-info {
+		width: 100%;
+	}
+
+	.pdf-name {
+		font-size: 0.8125rem;
+	}
+
+	.pdf-meta {
+		font-size: 0.6875rem;
+	}
+
+	.pdf-item .pdf-actions {
+		flex-direction: row;
+		width: 100%;
+		gap: 0.375rem;
+	}
+
+	.action-btn {
+		flex: 1;
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.625rem;
+	}
+
+	.card-footer {
+		padding: 0.625rem 0.875rem;
+	}
+
+	.card-footer .generate-btn {
+		width: 100%;
+	}
+
+	/* Inline Variant - Mobile */
+	.pdf-download-inline {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.pdf-link {
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.625rem 0.875rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Error Message - Mobile */
+	.error-message {
+		font-size: 0.8125rem;
+		padding: 0.625rem 0.875rem;
+	}
+
+	/* Spinner - Mobile */
+	.spinner {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	/* Preview Modal - Mobile Full Screen */
+	.preview-overlay {
+		padding: 0;
+		padding-top: env(safe-area-inset-top, 0px);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	.preview-modal {
+		border-radius: 0;
+		max-width: 100%;
+		height: 100%;
+		max-height: 100%;
+	}
+
+	.preview-header {
+		padding: 0.875rem 1rem;
+	}
+
+	.preview-header h3 {
+		font-size: 1rem;
+	}
+
+	.close-btn {
+		/* 44px touch target */
+		min-height: 44px;
+		min-width: 44px;
+		padding: 0.625rem;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.pdf-download-button {
+			flex-direction: row;
+			width: auto;
+		}
+
+		.pdf-actions {
+			flex-direction: row;
+			width: auto;
+		}
+
+		.download-btn,
+		.generate-btn {
+			width: auto;
+		}
+
+		.pdf-item {
+			flex-direction: row;
+			align-items: center;
+		}
+
+		.pdf-info {
+			width: auto;
+		}
+
+		.pdf-item .pdf-actions {
+			width: auto;
+		}
+
+		.card-footer .generate-btn {
+			width: auto;
+		}
+
+		.pdf-download-inline {
+			flex-direction: row;
+		}
+
+		.preview-overlay {
+			padding: 1rem;
+		}
+
+		.preview-modal {
+			border-radius: 0.75rem;
+			max-width: 95%;
+			height: 90vh;
+			max-height: 90vh;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.card-header {
+			padding: 1rem;
+		}
+
+		.card-header svg {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+
+		.card-header h3 {
+			font-size: 1rem;
+		}
+
+		.pdf-icon {
+			width: 3rem;
+			height: 3rem;
+		}
+
+		.pdf-icon svg {
+			width: 2rem;
+			height: 2rem;
+		}
+
+		.pdf-name {
+			font-size: 0.875rem;
+		}
+
+		.pdf-meta {
+			font-size: 0.75rem;
+		}
+
+		.preview-overlay {
+			padding: 2rem;
+		}
+
+		.preview-modal {
+			max-width: 900px;
+		}
+
+		.preview-header {
+			padding: 1rem;
+		}
+
+		.preview-header h3 {
+			font-size: 1.125rem;
+		}
+	}
 </style>

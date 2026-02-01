@@ -1312,11 +1312,78 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE BREAKPOINTS - Mobile First
+	 * 2026 MOBILE-FIRST RESPONSIVE DESIGN
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Small Mobile (< 480px) */
-	@media (max-width: 480px) {
+	/* DYNAMIC VIEWPORT HEIGHT */
+	@supports (height: 100dvh) {
+		.modal-content {
+			max-height: 90dvh;
+		}
+	}
+
+	/* SAFE AREA INSETS */
+	.course-builder {
+		padding-left: calc(1.5rem + env(safe-area-inset-left));
+		padding-right: calc(1.5rem + env(safe-area-inset-right));
+	}
+
+	.modal-overlay {
+		padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+	}
+
+	/* EXTRA SMALL DEVICES (< 360px) */
+	@media (max-width: 359px) {
+		.course-builder {
+			padding: 0.75rem;
+			border-radius: 8px;
+		}
+
+		.builder-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+			padding-bottom: 0.75rem;
+		}
+
+		.header-left h2 {
+			font-size: 1.1rem;
+		}
+
+		.tabs {
+			flex-wrap: wrap;
+		}
+
+		.tab {
+			flex: 1 1 50%;
+			padding: 0.5rem;
+			font-size: 0.7rem;
+		}
+
+		.form-group input,
+		.form-group select,
+		.form-group textarea {
+			padding: 0.5rem 0.625rem;
+			font-size: 0.8rem;
+		}
+
+		.section-header {
+			padding: 0.625rem 0.75rem;
+		}
+
+		.lesson-item {
+			padding: 0.5rem;
+		}
+
+		.modal-content {
+			padding: 1rem;
+			width: 95%;
+		}
+	}
+
+	/* SMALL MOBILE (360px - 639px) */
+	@media (min-width: 360px) and (max-width: 639px) {
 		.course-builder {
 			padding: 1rem;
 			border-radius: 8px;

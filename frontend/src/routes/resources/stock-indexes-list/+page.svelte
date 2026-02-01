@@ -948,43 +948,313 @@
 		border-color: rgba(255, 255, 255, 0.2);
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
-		.hero {
-			padding: 8rem 1rem 4rem;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 Mobile-First Responsive - Stock Indexes List
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-		.hero__title {
-			font-size: 2.5rem;
+	/* Base Mobile Styles (xs: 360px) */
+	.hero {
+		padding: 5rem 1rem 3rem;
+		padding-top: calc(5rem + env(safe-area-inset-top, 0px));
+		padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+		padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+	}
+
+	.hero__title {
+		font-size: clamp(1.75rem, 8vw, 4.5rem);
+	}
+
+	.hero__subtitle {
+		font-size: clamp(1rem, 3vw, 1.25rem);
+	}
+
+	.section {
+		padding: 2.5rem 1rem;
+		padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+		padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+	}
+
+	.section__title {
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+	}
+
+	.section__description {
+		font-size: clamp(0.9375rem, 2.5vw, 1.125rem);
+	}
+
+	/* S&P 500 Feature - Mobile Stack */
+	.sp500-feature {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.sp500-feature__badge {
+		font-size: 0.6875rem;
+		padding: 0.3125rem 0.875rem;
+	}
+
+	.sp500-feature__title {
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+		margin-bottom: 1rem;
+	}
+
+	.sp500-feature__text {
+		font-size: 0.9375rem;
+		line-height: 1.7;
+	}
+
+	.sp500-feature__text--highlight {
+		padding: 0.875rem 1rem;
+	}
+
+	.sp500-feature__etfs-list {
+		gap: 0.375rem;
+	}
+
+	.etf-chip {
+		/* 44px touch target */
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 0.875rem;
+	}
+
+	.sp500-feature__chart {
+		position: static;
+	}
+
+	.chart-placeholder {
+		min-height: 200px;
+		padding: 2rem;
+	}
+
+	.chart-link {
+		/* 44px touch target */
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	/* Filter Bar - Mobile */
+	.filter-bar {
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1rem;
+	}
+
+	.filter-select {
+		width: 100%;
+		/* 44px touch target */
+		min-height: 44px;
+	}
+
+	/* Index Grid - Mobile Single Column */
+	.index-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.index-card {
+		padding: 1.25rem;
+	}
+
+	.index-card__symbol {
+		font-size: 1.25rem;
+	}
+
+	.index-card__name {
+		font-size: 1rem;
+	}
+
+	.index-card__ticker {
+		font-size: 0.75rem;
+	}
+
+	.index-card__description {
+		font-size: 0.8125rem;
+	}
+
+	.index-card__meta {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.index-card__etfs-list {
+		gap: 0.375rem;
+	}
+
+	.etf-chip--small {
+		/* 44px touch target */
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		padding: 0.375rem 0.75rem;
+	}
+
+	/* FAQ Section - Mobile */
+	.faq-list {
+		gap: 0.75rem;
+	}
+
+	.faq-item__question {
+		padding: 1rem;
+		gap: 0.75rem;
+		/* 44px touch target */
+		min-height: 44px;
+	}
+
+	.faq-item__question span {
+		font-size: 0.9375rem;
+	}
+
+	.faq-item__answer {
+		padding: 0 1rem 1rem 2.75rem;
+	}
+
+	.faq-item__answer p {
+		font-size: 0.8125rem;
+	}
+
+	/* CTA Section - Mobile */
+	.cta-section {
+		padding: 3rem 1rem;
+		padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	.cta-title {
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+	}
+
+	.cta-text {
+		font-size: 1rem;
+	}
+
+	.cta-buttons {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.cta-btn {
+		width: 100%;
+		justify-content: center;
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.875rem 1.5rem;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.hero {
+			padding: 6rem 1.5rem 4rem;
 		}
 
 		.section {
-			padding: 3rem 1rem;
+			padding: 3.5rem 1.5rem;
 		}
 
-		.section__title {
-			font-size: 2rem;
+		.filter-bar {
+			flex-direction: row;
+			padding: 1rem 1.5rem;
 		}
 
-		.sp500-feature__title {
-			font-size: 2rem;
+		.filter-select {
+			width: auto;
 		}
 
 		.index-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.25rem;
 		}
 
-		.cta-title {
-			font-size: 2rem;
+		.index-card__meta {
+			flex-direction: row;
+			gap: 1rem;
 		}
 
 		.cta-buttons {
-			flex-direction: column;
+			flex-direction: row;
+			justify-content: center;
 		}
 
 		.cta-btn {
-			width: 100%;
-			justify-content: center;
+			width: auto;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.hero {
+			padding: 8rem 2rem 5rem;
+		}
+
+		.section {
+			padding: 4rem 2rem;
+		}
+
+		.sp500-feature__text {
+			font-size: 1rem;
+		}
+
+		.chart-placeholder {
+			min-height: 300px;
+			padding: 3rem;
+		}
+
+		.index-grid {
+			gap: 1.5rem;
+		}
+
+		.index-card {
+			padding: 1.5rem;
+		}
+
+		.faq-item__question {
+			padding: 1.25rem 1.5rem;
+		}
+
+		.faq-item__answer {
+			padding: 0 1.5rem 1.5rem 3.75rem;
+		}
+
+		.cta-section {
+			padding: 4rem 2rem;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.hero {
+			padding: 10rem 2rem 6rem;
+		}
+
+		.section {
+			padding: 5rem 2rem;
+		}
+
+		.sp500-feature {
+			grid-template-columns: 1fr 400px;
+			gap: 3rem;
+		}
+
+		.sp500-feature__chart {
+			position: sticky;
+			top: 140px;
+		}
+
+		.index-grid {
+			grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		}
+
+		.cta-section {
+			padding: 5rem 2rem;
+		}
+	}
+
+	/* xl: 1280px+ */
+	@media (min-width: 1280px) {
+		.index-grid {
+			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 </style>

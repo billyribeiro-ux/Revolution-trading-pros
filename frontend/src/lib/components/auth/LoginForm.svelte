@@ -1018,21 +1018,25 @@
 		color: var(--auth-error);
 	}
 
-	/* Form Input */
+	/* Form Input - 2026 Mobile-First Responsive */
 	.form-input {
 		width: 100%;
 		padding: 0.875rem 1rem 0.875rem 3rem;
+		min-height: 44px; /* 2026 touch target minimum */
 		background: var(--auth-input-bg);
 		border: 2px solid var(--auth-input-border);
 		border-radius: 12px;
 		color: var(--auth-input-text);
 		font-family: var(--font-body);
-		font-size: 1rem;
+		font-size: 16px; /* Prevents iOS zoom on focus */
 		font-weight: 500;
 		transition:
 			border-color 0.2s ease,
 			background 0.2s ease;
 		outline: none;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.form-input::placeholder {
@@ -1057,17 +1061,19 @@
 		border-color: var(--auth-error);
 	}
 
-	/* Password Toggle */
+	/* Password Toggle - 2026 Mobile-First with 44px touch target */
 	.password-toggle {
 		position: absolute;
-		right: 0.75rem;
+		right: 0.5rem;
 		top: 50%;
 		transform: translateY(-50%);
 		background: none;
 		border: none;
 		color: var(--auth-muted);
 		cursor: pointer;
-		padding: 0.375rem;
+		padding: 0.625rem;
+		min-width: 44px;
+		min-height: 44px;
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
@@ -1076,6 +1082,7 @@
 			color 0.2s ease,
 			background 0.2s ease;
 		z-index: 2;
+		touch-action: manipulation;
 	}
 
 	.password-toggle:hover {
@@ -1096,20 +1103,32 @@
 		margin-left: 0.25rem;
 	}
 
-	/* Form Row */
+	/* Form Row - 2026 Mobile-First Responsive */
 	.form-row {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
 	}
 
-	/* Checkbox */
+	@media (min-width: 640px) {
+		.form-row {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+		}
+	}
+
+	/* Checkbox - 2026 Mobile-First with 44px touch target */
 	.checkbox-wrapper {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.75rem;
 		cursor: pointer;
+		min-height: 44px; /* 2026 touch target minimum */
+		padding: 0.5rem 0;
+		touch-action: manipulation;
 	}
 
 	.checkbox-input {
@@ -1120,8 +1139,9 @@
 	}
 
 	.checkbox-custom {
-		width: 20px;
-		height: 20px;
+		width: 24px;
+		height: 24px;
+		min-width: 24px;
 		border: 2px solid var(--auth-input-border);
 		border-radius: 6px;
 		background: var(--auth-input-bg);
@@ -1158,7 +1178,7 @@
 		color: var(--auth-text);
 	}
 
-	/* Links */
+	/* Links - 2026 Mobile-First with proper touch targets */
 	.forgot-link,
 	.footer-link,
 	.back-link {
@@ -1167,6 +1187,11 @@
 		color: var(--auth-link);
 		text-decoration: none;
 		transition: color 0.2s ease;
+		min-height: 44px; /* 2026 touch target minimum */
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 0;
+		touch-action: manipulation;
 	}
 
 	.forgot-link:hover,
@@ -1175,21 +1200,23 @@
 		color: var(--auth-link-hover);
 	}
 
-	/* Submit Button */
+	/* Submit Button - 2026 Mobile-First with safe area insets */
 	.form-actions {
 		margin-top: 0.5rem;
+		padding-bottom: env(safe-area-inset-bottom, 0);
 	}
 
 	.submit-btn {
 		position: relative;
 		width: 100%;
 		padding: 1rem 1.5rem;
+		min-height: 48px; /* Enhanced touch target for primary actions */
 		background: var(--auth-btn-primary-bg);
 		border: none;
 		border-radius: 12px;
 		color: var(--auth-btn-primary-text);
 		font-family: var(--font-heading);
-		font-size: 1rem;
+		font-size: 16px; /* Prevents iOS zoom */
 		font-weight: 700;
 		cursor: pointer;
 		overflow: hidden;
@@ -1197,6 +1224,9 @@
 			transform 0.2s ease,
 			box-shadow 0.2s ease;
 		box-shadow: var(--auth-btn-primary-shadow);
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.submit-btn:hover:not(:disabled) {

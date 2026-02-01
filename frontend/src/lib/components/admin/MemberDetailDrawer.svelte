@@ -1353,17 +1353,212 @@
 		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
-	@media (max-width: 640px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 MOBILE-FIRST RESPONSIVE DESIGN
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile: Full-screen drawer */
+	@media (max-width: 639px) {
 		.drawer {
 			width: 100%;
+			max-height: 100dvh;
+			/* Safe area support */
+			padding-top: env(safe-area-inset-top, 0);
+			padding-bottom: env(safe-area-inset-bottom, 0);
+		}
+
+		.drawer-header {
+			padding: 1rem;
+			padding-top: calc(1rem + env(safe-area-inset-top, 0));
+		}
+
+		.member-avatar {
+			width: 48px;
+			height: 48px;
+			font-size: 1.25rem;
+		}
+
+		.member-name {
+			font-size: 1.125rem;
+		}
+
+		/* Touch target: 44x44px minimum */
+		.btn-close {
+			min-width: 44px;
+			min-height: 44px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.quick-stats {
+			grid-template-columns: repeat(2, 1fr);
+			padding: 1rem;
+			gap: 0.5rem;
+		}
+
+		.stat-item {
+			padding: 0.5rem;
+		}
+
+		.stat-value {
+			font-size: 1rem;
+		}
+
+		.action-buttons {
+			padding: 0.75rem 1rem;
+			flex-wrap: wrap;
+		}
+
+		.btn-action {
+			flex: 1 1 calc(50% - 0.25rem);
+			min-height: 44px;
+			padding: 0.75rem 0.5rem;
+		}
+
+		.drawer-tabs {
+			padding: 0 0.5rem;
+		}
+
+		.tab {
+			min-height: 44px;
+			padding: 0.75rem 0.75rem;
+			font-size: 0.75rem;
+		}
+
+		.drawer-content {
+			padding: 1rem;
+			padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0));
+		}
+
+		.info-grid {
+			grid-template-columns: 1fr;
+		}
+
+		/* Notes form */
+		.btn-add-note {
+			width: 100%;
+			min-height: 44px;
+		}
+
+		.note-input {
+			min-height: 44px;
+		}
+
+		.btn-delete-note {
+			min-width: 44px;
+			min-height: 44px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	/* xs: Extra small devices (< 360px) */
+	@media (max-width: 359px) {
+		.drawer-header {
+			gap: 0.75rem;
+		}
+
+		.member-avatar {
+			width: 40px;
+			height: 40px;
+			font-size: 1rem;
+		}
+
+		.member-name {
+			font-size: 1rem;
+		}
+
+		.member-email {
+			font-size: 0.75rem;
 		}
 
 		.quick-stats {
 			grid-template-columns: repeat(2, 1fr);
 		}
 
-		.info-grid {
-			grid-template-columns: 1fr;
+		.stat-value {
+			font-size: 0.875rem;
+		}
+
+		.action-buttons {
+			gap: 0.375rem;
+		}
+
+		.btn-action {
+			font-size: 0.75rem;
+			gap: 0.25rem;
+		}
+	}
+
+	/* Landscape orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.drawer {
+			max-height: 100dvh;
+		}
+
+		.drawer-header {
+			padding: 0.75rem 1rem;
+		}
+
+		.quick-stats {
+			padding: 0.75rem 1rem;
+		}
+
+		.action-buttons {
+			padding: 0.5rem 1rem;
+		}
+
+		.drawer-content {
+			padding: 0.75rem 1rem;
+		}
+	}
+
+	/* Touch target adjustments for touch devices */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-close,
+		.btn-action,
+		.tab,
+		.btn-add-note,
+		.btn-delete-note,
+		.btn-retry {
+			min-height: 44px;
+			-webkit-tap-highlight-color: transparent;
+			touch-action: manipulation;
+		}
+	}
+
+	/* Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.drawer-backdrop,
+		.drawer,
+		.tab-content,
+		.card {
+			animation: none;
+			transition: none;
+		}
+
+		.drawer {
+			transition: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		.drawer {
+			border-left: 2px solid white;
+		}
+
+		.card,
+		.note-item,
+		.activity-item {
+			border-width: 2px;
+		}
+
+		.btn-action,
+		.tab {
+			border: 2px solid currentColor;
 		}
 	}
 </style>

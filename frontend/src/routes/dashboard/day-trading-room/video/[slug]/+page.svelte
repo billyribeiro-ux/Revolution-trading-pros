@@ -158,78 +158,102 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * VIDEO DETAIL PAGE STYLES - Pixel-Perfect Match to MasterDash
+	 * VIDEO DETAIL PAGE - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Title Section */
+	/* Mobile-First Base - Title Section */
 	.dv-section {
-		padding: 30px 0;
+		padding: 20px 0;
 	}
 
 	.cpost-title-section {
 		background: #f4f4f4;
 		border-bottom: 1px solid #e5e5e5;
+		padding-top: max(20px, env(safe-area-inset-top, 20px));
 	}
 
 	.section-inner {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0 20px;
+		padding: 0 16px;
+		padding-left: max(16px, env(safe-area-inset-left, 16px));
+		padding-right: max(16px, env(safe-area-inset-right, 16px));
 		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
 	}
 
+	/* Mobile-First Title - Smaller on mobile */
 	.cpost-title {
-		font-size: 2.5rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		color: #191717;
 		text-align: center;
-		margin: 0 0 10px;
+		margin: 0;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.3;
+		order: 1;
 	}
 
 	.cpost-subtitle {
-		font-size: 1.3rem;
+		font-size: 1rem;
 		font-weight: 400;
 		color: #666;
 		text-align: center;
 		margin: 0;
 		font-family: 'Open Sans', sans-serif;
+		order: 2;
 	}
 
+	/* Mobile Navigation - Stacked above title */
 	.cpost-previous,
 	.cpost-next {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
+		position: static;
+		transform: none;
 	}
 
-	.cpost-previous {
-		left: 20px;
-	}
-
-	.cpost-next {
-		right: 20px;
-	}
-
+	/* Navigation links - Touch-friendly (44px target) */
 	.cpost-previous a,
 	.cpost-next a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 10px 16px;
 		color: #143e59;
 		text-decoration: none;
-		font-size: 1rem;
+		font-size: 0.875rem;
 		font-weight: 600;
-		display: flex;
-		align-items: center;
 		gap: 8px;
+		border-radius: 8px;
+		background: rgba(20, 62, 89, 0.05);
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+		transition: all 0.2s ease;
 	}
 
 	.cpost-previous a:hover,
 	.cpost-next a:hover {
 		color: #076a8a;
+		background: rgba(20, 62, 89, 0.1);
+	}
+
+	.cpost-previous a:focus-visible,
+	.cpost-next a:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
 	.cpost-previous i,
 	.cpost-next i {
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 	}
 
 	/* Video Player Section */
@@ -377,39 +401,142 @@
 		padding: 0 20px 20px;
 	}
 
-	/* Mobile-first: smaller title by default, larger on md+ */
-	.cpost-title {
-		font-size: 1.8rem;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Progressive Enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
+		.section-inner {
+			padding: 0 20px;
+		}
+
+		.cpost-title {
+			font-size: 1.625rem;
+		}
 	}
 
-	@media (min-width: 769px) {
+	/* sm: 640px+ - Large phones / small tablets */
+	@media (min-width: 640px) {
+		.dv-section {
+			padding: 24px 0;
+		}
+
+		.section-inner {
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 12px;
+		}
+
+		.cpost-title {
+			font-size: 1.875rem;
+			width: 100%;
+			order: 0;
+		}
+
+		.cpost-subtitle {
+			font-size: 1.1rem;
+			width: 100%;
+			order: 1;
+		}
+
+		.cpost-previous {
+			order: 2;
+		}
+
+		.cpost-next {
+			order: 3;
+		}
+	}
+
+	/* md: 768px+ - Tablets */
+	@media (min-width: 768px) {
+		.dv-section {
+			padding: 28px 0;
+		}
+
+		.section-inner {
+			position: relative;
+			display: block;
+			padding: 0 80px;
+		}
+
+		.cpost-title {
+			font-size: 2.25rem;
+		}
+
+		.cpost-previous,
+		.cpost-next {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		.cpost-previous {
+			left: 20px;
+		}
+
+		.cpost-next {
+			right: 20px;
+		}
+
+		.cpost-previous a,
+		.cpost-next a {
+			font-size: 1rem;
+		}
+
+		.cpost-previous i,
+		.cpost-next i {
+			font-size: 1.5rem;
+		}
+	}
+
+	/* lg: 1024px+ - Desktop */
+	@media (min-width: 1024px) {
+		.dv-section {
+			padding: 30px 0;
+		}
+
 		.cpost-title {
 			font-size: 2.5rem;
 		}
 
 		.cpost-subtitle {
-			font-size: 1.1rem;
+			font-size: 1.3rem;
+		}
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.cpost-previous a,
+		.cpost-next a,
+		.btn,
+		.card {
+			transition: none;
 		}
 
-		.cpost-previous,
-		.cpost-next {
-			position: static;
+		.card:hover {
 			transform: none;
-			text-align: center;
-			margin: 10px 0;
+		}
+	}
+
+	/* Landscape on mobile - optimize video viewing */
+	@media (max-width: 767px) and (orientation: landscape) {
+		.dv-section {
+			padding: 12px 0;
 		}
 
-		.cpost-previous {
-			order: -1;
+		.cpost-title {
+			font-size: 1.25rem;
 		}
 
-		.cpost-next {
-			order: 1;
+		.cpost-subtitle {
+			font-size: 0.875rem;
 		}
 
-		.section-inner {
-			display: flex;
-			flex-direction: column;
+		.video-container video {
+			max-height: 70dvh;
 		}
 	}
 </style>

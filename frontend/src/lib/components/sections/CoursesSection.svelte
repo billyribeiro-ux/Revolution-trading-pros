@@ -491,6 +491,11 @@
 </section>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * COURSESSECTION - 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	/* Utility for hiding scrollbars */
 	.scrollbar-hide {
 		-ms-overflow-style: none;
@@ -514,5 +519,154 @@
 	}
 	.animate-pulse-slow {
 		animation: pulse-slow 8s ease-in-out infinite;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SAFE AREA INSETS - iOS/Android notch & gesture areas
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	section {
+		padding-left: env(safe-area-inset-left);
+		padding-right: env(safe-area-inset-right);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TOUCH TARGETS - Minimum 44x44px for all interactive elements
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (hover: none) and (pointer: coarse) {
+		:global(.course-card),
+		:global(a[href]) {
+			min-height: 44px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * EXTRA SMALL DEVICES (< 360px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 359px) {
+		section {
+			padding-top: 3rem !important;
+			padding-bottom: 3rem !important;
+		}
+
+		:global(.course-card) {
+			border-radius: 1rem !important;
+		}
+
+		:global(.course-card .p-6),
+		:global(.course-card .p-8),
+		:global(.course-card .p-10) {
+			padding: 1rem !important;
+		}
+
+		:global(.text-5xl),
+		:global(.text-7xl) {
+			font-size: 1.75rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SMALL MOBILE (360px - 639px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 360px) and (max-width: 639px) {
+		section {
+			padding-top: 4rem !important;
+			padding-bottom: 4rem !important;
+		}
+
+		:global(.course-card .p-6),
+		:global(.course-card .p-8) {
+			padding: 1.25rem !important;
+		}
+
+		:global(.grid-cols-2) {
+			grid-template-columns: 1fr !important;
+		}
+
+		:global(.gap-6),
+		:global(.gap-8) {
+			gap: 1rem !important;
+		}
+
+		:global(.text-5xl),
+		:global(.text-7xl) {
+			font-size: 2rem !important;
+		}
+
+		:global(.text-2xl) {
+			font-size: 1.25rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TABLET (640px - 767px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 640px) and (max-width: 767px) {
+		:global(.grid-cols-2) {
+			grid-template-columns: 1fr !important;
+		}
+
+		:global(.gap-6),
+		:global(.gap-8) {
+			gap: 1.25rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MEDIUM DEVICES (768px - 1023px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		:global(.md\\:grid-cols-2) {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DYNAMIC VIEWPORT HEIGHT - Use dvh for modern mobile browsers
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@supports (min-height: 100dvh) {
+		section {
+			min-height: auto;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * REDUCED MOTION - Accessibility
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (prefers-reduced-motion: reduce) {
+		.animate-pulse-slow {
+			animation: none;
+		}
+
+		:global(.course-card) {
+			transition: none !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * LANDSCAPE MOBILE - Optimize for horizontal orientation
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-height: 500px) and (orientation: landscape) {
+		section {
+			padding-top: 2rem !important;
+			padding-bottom: 2rem !important;
+		}
+
+		:global(.mb-24) {
+			margin-bottom: 2rem !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * FEATURE TAGS - Horizontal scroll on mobile
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 767px) {
+		:global(.snap-x) {
+			scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		:global(.snap-start) {
+			scroll-snap-align: start;
+		}
 	}
 </style>

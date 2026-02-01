@@ -197,28 +197,39 @@
 		white-space: nowrap;
 	}
 
-	/* Social Buttons Container */
+	/* Social Buttons Container - 2026 Mobile-First */
 	.social-buttons {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
+		display: flex;
+		flex-direction: column;
 		gap: 0.75rem;
 	}
 
-	/* Social Button Base */
+	@media (min-width: 640px) {
+		.social-buttons {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	/* Social Button Base - 2026 Mobile-First with 44px touch target */
 	.social-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.625rem;
 		padding: 0.875rem 1rem;
+		min-height: 44px; /* 2026 touch target minimum */
 		border-radius: 12px;
 		font-family: var(--font-heading);
-		font-size: 0.9375rem;
+		font-size: 16px; /* Prevents iOS zoom */
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 		border: 2px solid var(--auth-input-border, rgba(100, 116, 139, 0.3));
 		background: var(--auth-input-bg, rgba(15, 23, 42, 0.5));
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.social-btn:disabled {

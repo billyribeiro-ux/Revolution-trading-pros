@@ -239,11 +239,13 @@
 		font-size: 0.75rem;
 	}
 
+	/* 2026 Mobile-First: Increased height for larger thumb */
 	.slider-wrapper {
 		position: relative;
-		height: 24px;
+		height: 32px; /* Increased for larger touch targets */
 		display: flex;
 		align-items: center;
+		touch-action: manipulation;
 	}
 
 	.range-track {
@@ -276,11 +278,12 @@
 		background: transparent;
 	}
 
+	/* 2026 Mobile-First: Enhanced slider thumb touch targets */
 	.range-input::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		appearance: none;
-		width: 20px;
-		height: 20px;
+		width: 28px; /* Enhanced for touch */
+		height: 28px; /* Enhanced for touch */
 		background: #2563eb;
 		border-radius: 50%;
 		cursor: pointer;
@@ -288,6 +291,7 @@
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 		transition: transform 0.2s;
 		pointer-events: auto;
+		touch-action: manipulation;
 	}
 
 	.range-input::-webkit-slider-thumb:hover {
@@ -295,8 +299,8 @@
 	}
 
 	.range-input::-moz-range-thumb {
-		width: 20px;
-		height: 20px;
+		width: 28px; /* Enhanced for touch */
+		height: 28px; /* Enhanced for touch */
 		background: #2563eb;
 		border-radius: 50%;
 		cursor: pointer;

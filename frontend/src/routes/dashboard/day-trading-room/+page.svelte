@@ -269,59 +269,53 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT - Exact WordPress Match
+	   DASHBOARD CONTENT - 2026 Mobile-First Responsive Design
+	   ═══════════════════════════════════════════════════════════════════════════
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   Touch Targets: 44x44px minimum
+	   Safe Areas: env(safe-area-inset-*) for notched devices
+	   Dynamic Viewport: 100dvh for full-screen trading views
 	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile-First Base - Stack sidebar below content on mobile */
 	.dashboard__content {
 		display: flex;
-		flex-flow: row nowrap;
+		flex-direction: column;
+		min-height: 100dvh;
+		padding-bottom: env(safe-area-inset-bottom, 0);
 	}
 
 	.dashboard__content-main {
-		border-right: 1px solid #dbdbdb;
 		flex: 1 1 auto;
 		min-width: 0;
+		border-right: none;
+		border-bottom: 1px solid #dbdbdb;
 	}
 
-	/* Video Tutorial Section */
+	/* Video Tutorial Section - Mobile-First */
 	.dashboard__content-section-member {
-		padding: 30px 20px;
-	}
-
-	@media screen and (min-width: 1024px) {
-		.dashboard__content-section-member {
-			padding: 30px;
-		}
-	}
-
-	@media screen and (min-width: 1440px) {
-		.dashboard__content-section-member {
-			padding: 40px;
-		}
+		padding: 16px;
+		padding-left: max(16px, env(safe-area-inset-left, 16px));
+		padding-right: max(16px, env(safe-area-inset-right, 16px));
 	}
 
 	.dashboard__content-section-member video {
 		width: 100%;
-		border-radius: 5px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		aspect-ratio: 16 / 9;
+		border-radius: 8px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+		background: #000;
+		object-fit: contain;
 	}
 
-	/* Content Sections */
+	/* Content Sections - Mobile-First */
 	.dashboard__content-section {
-		padding: 30px 20px;
+		padding: 16px;
+		padding-left: max(16px, env(safe-area-inset-left, 16px));
+		padding-right: max(16px, env(safe-area-inset-right, 16px));
 		overflow-x: auto;
 		overflow-y: hidden;
-	}
-
-	@media screen and (min-width: 1024px) {
-		.dashboard__content-section {
-			padding: 30px;
-		}
-	}
-
-	@media screen and (min-width: 1440px) {
-		.dashboard__content-section {
-			padding: 40px;
-		}
+		-webkit-overflow-scrolling: touch;
 	}
 
 	/* Weekly Watchlist Section */
@@ -329,12 +323,86 @@
 		background-color: #fff !important;
 	}
 
-	/* Sidebar styling handled by TradingRoomSidebar component */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Progressive Enhancement
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Mobile-first: content stacked by default, row on lg+ */
-	@media (min-width: 993px) {
+	/* xs: 360px+ - Small phones */
+	@media screen and (min-width: 360px) {
+		.dashboard__content-section-member,
+		.dashboard__content-section {
+			padding: 20px;
+		}
+	}
+
+	/* sm: 640px+ - Large phones / small tablets */
+	@media screen and (min-width: 640px) {
+		.dashboard__content-section-member,
+		.dashboard__content-section {
+			padding: 24px;
+		}
+	}
+
+	/* md: 768px+ - Tablets */
+	@media screen and (min-width: 768px) {
+		.dashboard__content-section-member,
+		.dashboard__content-section {
+			padding: 28px;
+		}
+	}
+
+	/* lg: 1024px+ - Desktop - Switch to row layout */
+	@media screen and (min-width: 1024px) {
 		.dashboard__content {
 			flex-direction: row;
+			flex-wrap: nowrap;
+		}
+
+		.dashboard__content-main {
+			border-right: 1px solid #dbdbdb;
+			border-bottom: none;
+		}
+
+		.dashboard__content-section-member,
+		.dashboard__content-section {
+			padding: 30px;
+		}
+	}
+
+	/* xl: 1280px+ - Large desktop */
+	@media screen and (min-width: 1280px) {
+		.dashboard__content-section-member,
+		.dashboard__content-section {
+			padding: 36px;
+		}
+	}
+
+	/* xxl: 1440px+ - Extra large desktop */
+	@media screen and (min-width: 1440px) {
+		.dashboard__content-section-member,
+		.dashboard__content-section {
+			padding: 40px;
+		}
+	}
+
+	/* Landscape orientation on mobile - optimize video viewing */
+	@media screen and (max-width: 1023px) and (orientation: landscape) {
+		.dashboard__content-section-member {
+			padding: 12px 24px;
+		}
+
+		.dashboard__content-section-member video {
+			max-height: 70dvh;
+			width: auto;
+			margin: 0 auto;
+			display: block;
+		}
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.dashboard__content-section-member video {
+			transition: none;
 		}
 	}
 </style>

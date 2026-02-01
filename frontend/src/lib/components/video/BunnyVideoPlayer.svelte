@@ -299,31 +299,47 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BUNNY VIDEO PLAYER - 2026 Mobile-First Responsive Design
+	   ═══════════════════════════════════════════════════════════════════════════
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   Touch targets: 44x44px minimum for all interactive elements
+	   Safe areas: env(safe-area-inset-*) for fullscreen playback
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.bunny-player {
 		position: relative;
 		width: 100%;
 		max-width: 100%;
 		background: #000;
-		border-radius: 8px;
+		border-radius: 6px;
 		overflow: hidden;
 		contain: layout style paint;
+		/* Safe area support for notched devices */
+		padding-left: env(safe-area-inset-left, 0);
+		padding-right: env(safe-area-inset-right, 0);
 	}
 
 	.bunny-player__wrapper {
 		position: relative;
 		width: 100%;
-		height: 0;
-		padding-bottom: var(--aspect-ratio, 56.25%);
+		/* Modern aspect-ratio property with fallback */
+		aspect-ratio: 16 / 9;
 		overflow: hidden;
+	}
+
+	/* Fallback for browsers without aspect-ratio support */
+	@supports not (aspect-ratio: 16 / 9) {
+		.bunny-player__wrapper {
+			height: 0;
+			padding-bottom: var(--aspect-ratio, 56.25%);
+		}
 	}
 
 	/* Blurhash placeholder - renders instantly */
 	.bunny-player__blurhash {
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		inset: 0;
 		background-size: cover;
 		background-position: center;
 		filter: blur(20px);
@@ -334,12 +350,10 @@
 	/* Thumbnail layer */
 	.bunny-player__thumbnail {
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		inset: 0;
 		cursor: pointer;
 		z-index: 2;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.bunny-player__thumbnail img {
@@ -349,18 +363,17 @@
 		transition: filter 0.3s ease;
 	}
 
-	.bunny-player__thumbnail:hover img {
-		filter: brightness(1.1);
-	}
-
-	/* Play button */
+	/* Play button - Mobile first: 56x56px touch target (exceeds 44px minimum) */
 	.bunny-player__play-btn {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		width: 80px;
-		height: 80px;
+		/* Mobile: 56px touch target */
+		width: 56px;
+		height: 56px;
+		min-width: 44px;
+		min-height: 44px;
 		background: rgba(0, 0, 0, 0.7);
 		border: none;
 		border-radius: 50%;
@@ -373,27 +386,25 @@
 			transform 0.2s ease,
 			background 0.2s ease;
 		z-index: 3;
-	}
-
-	.bunny-player__play-btn:hover {
-		transform: translate(-50%, -50%) scale(1.1);
-		background: rgba(0, 0, 0, 0.9);
-	}
-
-	.bunny-player__play-btn:focus-visible {
-		outline: 2px solid #fff;
-		outline-offset: 4px;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.bunny-player__play-btn svg {
-		margin-left: 4px; /* Visual centering for play icon */
+		width: 32px;
+		height: 32px;
+		margin-left: 3px; /* Visual centering for play icon */
+	}
+
+	.bunny-player__play-btn:focus-visible {
+		outline: 3px solid #fff;
+		outline-offset: 4px;
 	}
 
 	/* Video iframe */
 	.bunny-player__iframe {
 		position: absolute;
-		top: 0;
-		left: 0;
+		inset: 0;
 		width: 100%;
 		height: 100%;
 		border: none;
@@ -410,9 +421,9 @@
 	}
 
 	.bunny-player__spinner {
-		width: 48px;
-		height: 48px;
-		border: 4px solid rgba(255, 255, 255, 0.3);
+		width: 40px;
+		height: 40px;
+		border: 3px solid rgba(255, 255, 255, 0.3);
 		border-top-color: #fff;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
@@ -424,20 +435,100 @@
 		}
 	}
 
-	/* Responsive adjustments */
-	@media (max-width: 640px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile First (min-width queries)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
 		.bunny-player__play-btn {
 			width: 60px;
 			height: 60px;
 		}
 
 		.bunny-player__play-btn svg {
-			width: 48px;
-			height: 48px;
+			width: 36px;
+			height: 36px;
 		}
 	}
 
-	/* Reduced motion preference */
+	/* sm: 640px+ - Large phones / small tablets */
+	@media (min-width: 640px) {
+		.bunny-player {
+			border-radius: 8px;
+		}
+
+		.bunny-player__play-btn {
+			width: 72px;
+			height: 72px;
+		}
+
+		.bunny-player__play-btn svg {
+			width: 44px;
+			height: 44px;
+			margin-left: 4px;
+		}
+
+		.bunny-player__spinner {
+			width: 48px;
+			height: 48px;
+			border-width: 4px;
+		}
+
+		.bunny-player__thumbnail:hover img {
+			filter: brightness(1.1);
+		}
+
+		.bunny-player__play-btn:hover {
+			transform: translate(-50%, -50%) scale(1.1);
+			background: rgba(0, 0, 0, 0.9);
+		}
+	}
+
+	/* md: 768px+ - Tablets */
+	@media (min-width: 768px) {
+		.bunny-player__play-btn {
+			width: 80px;
+			height: 80px;
+		}
+
+		.bunny-player__play-btn svg {
+			width: 52px;
+			height: 52px;
+		}
+	}
+
+	/* lg: 1024px+ - Laptops/Desktops */
+	@media (min-width: 1024px) {
+		.bunny-player {
+			border-radius: 12px;
+		}
+
+		.bunny-player__play-btn {
+			width: 88px;
+			height: 88px;
+		}
+
+		.bunny-player__play-btn svg {
+			width: 56px;
+			height: 56px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FULLSCREEN SAFE AREAS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.bunny-player:fullscreen,
+	.bunny-player:-webkit-full-screen {
+		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+		border-radius: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY - Reduced motion preference
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (prefers-reduced-motion: reduce) {
 		.bunny-player__spinner {
 			animation: none;
@@ -447,6 +538,14 @@
 		.bunny-player__play-btn,
 		.bunny-player__thumbnail img {
 			transition: none;
+		}
+	}
+
+	/* High contrast mode support */
+	@media (prefers-contrast: high) {
+		.bunny-player__play-btn {
+			background: #000;
+			border: 2px solid #fff;
 		}
 	}
 </style>

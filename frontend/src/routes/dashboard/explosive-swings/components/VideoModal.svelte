@@ -149,19 +149,22 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════
-	   BACKDROP
+	   2026 RESPONSIVE VIDEO MODAL - Mobile-First Design
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px)
 	   ═══════════════════════════════════════════════════════════════════════ */
+
 	.modal-backdrop {
 		position: fixed;
 		inset: 0;
 		z-index: 10000;
 		isolation: isolate;
 		display: flex;
-		align-items: center;
+		align-items: flex-end; /* Mobile: bottom sheet */
 		justify-content: center;
-		padding: 24px;
-		background: rgba(0, 0, 0, 0.85);
+		padding: 0;
+		background: rgba(0, 0, 0, 0.9);
 		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
 		animation: fadeIn 0.2s ease-out;
 	}
 
@@ -175,59 +178,88 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   CONTAINER
+	   CONTAINER - Mobile First (Full screen)
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.modal-container {
-		position: relative;
+		position: fixed;
+		inset: 0;
 		width: 100%;
-		max-width: 1100px;
+		max-height: 100dvh;
 		background: var(--color-text-primary);
-		border-radius: 16px;
+		border-radius: 0;
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-		animation: scaleIn 0.25s ease-out;
+		animation: slideUp 0.25s ease-out;
+		/* Safe area insets */
+		padding-top: env(safe-area-inset-top, 0);
+		padding-bottom: env(safe-area-inset-bottom, 0);
 	}
 
-	@keyframes scaleIn {
+	@keyframes slideUp {
 		from {
 			opacity: 0;
-			transform: scale(0.95);
+			transform: translateY(100%);
 		}
 		to {
 			opacity: 1;
-			transform: scale(1);
+			transform: translateY(0);
 		}
 	}
 
+	/* Swipe indicator for mobile */
+	.modal-container::before {
+		content: '';
+		position: absolute;
+		top: 8px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 36px;
+		height: 4px;
+		background: rgba(255, 255, 255, 0.3);
+		border-radius: 2px;
+		z-index: 11;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════
-	   CLOSE BUTTON
+	   CLOSE BUTTON - Touch target: 44x44px minimum
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.close-btn {
 		position: absolute;
-		top: 16px;
-		right: 16px;
+		top: calc(12px + env(safe-area-inset-top, 0));
+		right: 12px;
 		z-index: 10;
-		width: 40px;
-		height: 40px;
+		min-width: 44px;
+		min-height: 44px;
+		width: 44px;
+		height: 44px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.15);
 		border: none;
 		border-radius: 50%;
 		color: var(--color-bg-card);
 		cursor: pointer;
 		transition: all 0.2s ease-out;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.close-btn:hover {
-		background: rgba(255, 255, 255, 0.2);
+		background: rgba(255, 255, 255, 0.25);
 		transform: scale(1.1);
 	}
 
+	.close-btn:focus-visible {
+		outline: 2px solid rgba(255, 255, 255, 0.5);
+		outline-offset: 2px;
+	}
+
 	.close-btn svg {
-		width: 20px;
-		height: 20px;
+		width: 22px;
+		height: 22px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -340,46 +372,105 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE BREAKPOINTS
 	   ═══════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 768px) {
-		.modal-backdrop {
-			padding: 16px;
-		}
 
-		.modal-container {
-			border-radius: 12px;
-		}
-
+	/* xs: 360px+ */
+	@media (min-width: 360px) {
 		.video-info {
-			padding: 16px;
-		}
-
-		.video-title {
-			font-size: 16px;
-		}
-
-		.close-btn {
-			top: 12px;
-			right: 12px;
-			width: 36px;
-			height: 36px;
+			padding: 1rem 1.25rem;
 		}
 	}
 
-	@media (max-width: 480px) {
+	/* sm: 640px+ - Centered modal */
+	@media (min-width: 640px) {
 		.modal-backdrop {
-			padding: 8px;
+			align-items: center;
+			padding: 1.5rem;
+		}
+
+		.modal-container {
+			position: relative;
+			inset: auto;
+			max-width: 900px;
+			max-height: 85vh;
+			border-radius: 1rem;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		.modal-container::before {
+			display: none;
+		}
+
+		@keyframes slideUp {
+			from {
+				opacity: 0;
+				transform: scale(0.95);
+			}
+			to {
+				opacity: 1;
+				transform: scale(1);
+			}
+		}
+
+		.close-btn {
+			top: 16px;
+			right: 16px;
 		}
 
 		.video-info {
-			padding: 12px;
+			padding: 1.25rem 1.5rem;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.modal-container {
+			max-width: 1000px;
 		}
 
-		.video-details {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 4px;
+		.video-title {
+			font-size: 18px;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.modal-container {
+			max-width: 1100px;
+			border-radius: 16px;
+		}
+
+		.video-info {
+			padding: 20px 24px;
+		}
+	}
+
+	/* Landscape orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.modal-container {
+			max-height: 100dvh;
+		}
+
+		.video-info {
+			padding: 0.75rem 1rem;
+		}
+	}
+
+	/* Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.modal-backdrop,
+		.modal-container,
+		.close-btn {
+			animation: none;
+			transition: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		.modal-container {
+			border: 2px solid white;
 		}
 	}
 </style>

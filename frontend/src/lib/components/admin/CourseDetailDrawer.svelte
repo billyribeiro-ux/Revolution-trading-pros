@@ -1369,4 +1369,226 @@
 		font-size: 0.8125rem;
 		color: var(--admin-text-muted);
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 MOBILE-FIRST RESPONSIVE DESIGN
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* DYNAMIC VIEWPORT HEIGHT */
+	@supports (height: 100dvh) {
+		.drawer {
+			height: 100dvh;
+		}
+	}
+
+	/* SAFE AREA INSETS */
+	.drawer {
+		padding-top: env(safe-area-inset-top);
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+
+	.drawer-content {
+		padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+	}
+
+	/* TOUCH TARGETS */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-action,
+		.btn-close,
+		.btn-retry,
+		.btn-add-module,
+		.btn-module-action,
+		.tab,
+		.module-header {
+			min-height: 44px;
+			min-width: 44px;
+		}
+
+		.btn-module-action {
+			padding: 0.5rem;
+		}
+	}
+
+	/* EXTRA SMALL DEVICES (< 360px) */
+	@media (max-width: 359px) {
+		.drawer {
+			width: 100%;
+		}
+
+		.drawer-header {
+			padding: 1rem;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+		}
+
+		.course-thumbnail {
+			width: 56px;
+			height: 38px;
+		}
+
+		.course-title {
+			font-size: 1rem;
+		}
+
+		.quick-stats {
+			grid-template-columns: repeat(2, 1fr);
+			padding: 0.75rem 1rem;
+		}
+
+		.action-buttons {
+			flex-wrap: wrap;
+			padding: 0.75rem 1rem;
+		}
+
+		.btn-action {
+			flex: 1 1 calc(50% - 0.25rem);
+			font-size: 0.75rem;
+			padding: 0.5rem;
+		}
+
+		.drawer-tabs {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.tab {
+			padding: 0.75rem;
+			font-size: 0.75rem;
+			white-space: nowrap;
+		}
+
+		.drawer-content {
+			padding: 1rem;
+		}
+
+		.module-header {
+			padding: 0.75rem;
+			flex-wrap: wrap;
+		}
+
+		.module-info {
+			width: 100%;
+			order: -1;
+			margin-bottom: 0.5rem;
+		}
+
+		.module-actions {
+			margin-left: auto;
+		}
+
+		.enrollment-stats {
+			grid-template-columns: 1fr;
+		}
+
+		.analytics-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.info-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* SMALL MOBILE (360px - 639px) */
+	@media (min-width: 360px) and (max-width: 639px) {
+		.drawer {
+			width: 100%;
+		}
+
+		.drawer-header {
+			padding: 1.25rem;
+		}
+
+		.quick-stats {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.action-buttons {
+			flex-wrap: wrap;
+		}
+
+		.btn-action {
+			flex: 1 1 calc(50% - 0.25rem);
+		}
+
+		.drawer-tabs {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.tab {
+			white-space: nowrap;
+		}
+
+		.enrollment-stats {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+		}
+
+		.analytics-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* TABLET (640px - 767px) */
+	@media (min-width: 640px) and (max-width: 767px) {
+		.drawer {
+			width: 480px;
+		}
+
+		.quick-stats {
+			grid-template-columns: repeat(4, 1fr);
+		}
+
+		.enrollment-stats {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	/* MEDIUM DEVICES (768px+) */
+	@media (min-width: 768px) {
+		.drawer {
+			width: 560px;
+		}
+	}
+
+	/* LANDSCAPE MOBILE */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.drawer-header {
+			padding: 0.75rem 1.5rem;
+		}
+
+		.quick-stats {
+			padding: 0.5rem 1rem;
+		}
+
+		.action-buttons {
+			padding: 0.5rem 1rem;
+		}
+
+		.drawer-content {
+			padding: 1rem;
+		}
+	}
+
+	/* REDUCED MOTION */
+	@media (prefers-reduced-motion: reduce) {
+		.drawer {
+			transition: none;
+		}
+
+		.drawer-backdrop {
+			animation: none;
+		}
+
+		.btn-action,
+		.btn-close,
+		.btn-module-action,
+		.tab,
+		.module-header,
+		.lesson-item {
+			transition: none;
+		}
+	}
 </style>

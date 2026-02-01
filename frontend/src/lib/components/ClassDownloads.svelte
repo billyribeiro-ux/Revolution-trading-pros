@@ -603,10 +603,124 @@
 		color: #d32f2f;
 	}
 
-	/* Responsive - Tablet */
-	@media (max-width: 1023px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 Mobile-First Responsive - ClassDownloads
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Base Mobile Styles (xs: 360px) */
+	.class-downloads-wrapper {
+		border-radius: 0.25rem;
+	}
+
+	.downloads-header {
+		padding: 0.75rem 1rem;
+	}
+
+	.downloads-header h2 {
+		font-size: 1rem;
+	}
+
+	.downloads-container {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.downloads-table {
+		font-size: 0.8125rem;
+	}
+
+	/* Sort Button - Touch Target */
+	.sort-btn {
+		padding: 0.625rem 0.75rem;
+		/* 44px touch target */
+		min-height: 44px;
+	}
+
+	.sort-indicator {
+		font-size: 0.625rem;
+	}
+
+	.downloads-table td {
+		padding: 0.625rem 0.75rem;
+	}
+
+	/* Mobile Column Widths */
+	.col-name {
+		width: 70%;
+		min-width: 180px;
+	}
+
+	.col-action {
+		width: 30%;
+		min-width: 60px;
+	}
+
+	.file-icon {
+		font-size: 1rem;
+	}
+
+	.file-name {
+		font-size: 0.8125rem;
+	}
+
+	.file-meta {
+		font-size: 0.6875rem;
+	}
+
+	/* Download Button - Touch Target */
+	.download-btn {
+		/* 44px touch target */
+		width: 44px;
+		height: 44px;
+	}
+
+	.download-btn svg {
+		width: 1.125rem;
+		height: 1.125rem;
+	}
+
+	/* Empty State - Mobile */
+	.empty-state-cell {
+		padding: 2.5rem 1rem !important;
+	}
+
+	.empty-state-content svg {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+
+	.empty-message {
+		font-size: 0.9375rem;
+	}
+
+	.empty-submessage {
+		font-size: 0.8125rem;
+	}
+
+	/* Loading/Error States - Mobile */
+	.loading-state,
+	.error-state {
+		padding: 2.5rem 1rem;
+	}
+
+	.spinner {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.downloads-header {
+			padding: 0.875rem 1.25rem;
+		}
+
+		.downloads-header h2 {
+			font-size: 1.125rem;
+		}
+
 		.col-name {
-			width: 65%;
+			width: 60%;
 		}
 
 		.col-size {
@@ -614,39 +728,100 @@
 		}
 
 		.col-action {
-			width: 15%;
-		}
-	}
-
-	/* Responsive - Mobile */
-	@media (max-width: 639px) {
-		.downloads-header {
-			padding: 12px 16px;
-		}
-
-		.downloads-header h2 {
-			font-size: 1.1rem;
-		}
-
-		.col-name {
-			width: 75%;
-		}
-
-		.col-action {
-			width: 25%;
+			width: 20%;
 		}
 
 		.sort-btn {
-			padding: 10px 12px;
+			padding: 0.75rem 1rem;
 		}
 
 		.downloads-table td {
-			padding: 10px 12px;
+			padding: 0.75rem 1rem;
+		}
+
+		.file-icon {
+			font-size: 1.125rem;
+		}
+
+		.file-name {
+			font-size: 0.875rem;
+		}
+
+		.empty-state-cell {
+			padding: 3rem 1.5rem !important;
+		}
+
+		.empty-state-content svg {
+			width: 3rem;
+			height: 3rem;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.downloads-header {
+			padding: 1rem 1.25rem;
+		}
+
+		.downloads-header h2 {
+			font-size: 1.25rem;
+		}
+
+		.downloads-table {
+			font-size: 0.875rem;
+		}
+
+		.col-name {
+			width: 55%;
+		}
+
+		.col-size {
+			width: 15%;
+		}
+
+		.col-action {
+			width: 10%;
+		}
+
+		.sort-btn {
+			padding: 0.75rem 1rem;
+		}
+
+		.downloads-table td {
+			padding: 0.75rem 1rem;
 		}
 
 		.download-btn {
-			width: 40px;
-			height: 40px;
+			width: 2rem;
+			height: 2rem;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.col-name {
+			width: 55%;
+		}
+
+		.col-size {
+			width: 15%;
+		}
+
+		.col-date {
+			width: 20%;
+		}
+
+		.col-action {
+			width: 10%;
+		}
+
+		.empty-state-cell {
+			padding: 3.75rem 1.5rem !important;
+		}
+
+		.empty-state-content svg {
+			width: 3rem;
+			height: 3rem;
 		}
 	}
 </style>

@@ -1015,16 +1015,20 @@
 		color: var(--checkout-text-muted);
 	}
 
+	/* Input Text - 2026 Mobile-First Responsive */
 	.input-text {
 		width: 100%;
 		padding: 12px 16px;
 		border: 1px solid var(--checkout-border);
 		border-radius: 5px;
-		font-size: 16px;
+		font-size: 16px; /* Prevents iOS zoom on focus */
 		font-weight: 600;
 		color: var(--checkout-text-dark);
 		transition: var(--checkout-transition);
-		min-height: 44px;
+		min-height: 44px; /* 2026 touch target minimum */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.input-text:focus {
@@ -1064,15 +1068,18 @@
 		margin-bottom: 24px;
 	}
 
+	/* Payment Method - 2026 Mobile-First with 44px touch target */
 	.payment-method {
 		display: flex;
 		align-items: flex-start;
 		gap: 12px;
 		padding: 20px;
+		min-height: 44px;
 		border: 2px solid var(--checkout-border);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: var(--checkout-transition);
+		touch-action: manipulation;
 	}
 
 	.payment-method:hover {
@@ -1157,29 +1164,51 @@
 	   CHECKOUT ACTIONS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Checkout Actions - 2026 Mobile-First with safe area insets */
 	.checkout-steps-actions {
 		display: flex;
-		justify-content: space-between;
-		gap: 16px;
+		flex-direction: column;
+		gap: 12px;
+		padding-bottom: env(safe-area-inset-bottom, 0);
+	}
+
+	@media (min-width: 640px) {
+		.checkout-steps-actions {
+			flex-direction: row;
+			justify-content: space-between;
+			gap: 16px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   BUTTONS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Buttons - 2026 Mobile-First with touch targets */
 	.btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
 		padding: 14px 24px;
-		font-size: 15px;
+		font-size: 16px; /* Prevents iOS zoom */
 		font-weight: 700;
 		border-radius: 5px;
 		border: none;
 		cursor: pointer;
 		transition: var(--checkout-transition);
 		text-decoration: none;
+		min-height: 48px; /* Enhanced touch target for primary actions */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
+		width: 100%;
+	}
+
+	@media (min-width: 640px) {
+		.btn {
+			width: auto;
+		}
 	}
 
 	.btn-orange {
@@ -1408,15 +1437,19 @@
 		flex-wrap: wrap;
 	}
 
+	/* Coupon Input - 2026 Mobile-First Responsive */
 	.checkout_coupon input {
 		flex: 1;
 		min-width: 120px;
 		padding: 12px 14px;
 		border: 1px solid var(--checkout-border);
 		border-radius: 5px;
-		font-size: 16px;
+		font-size: 16px; /* Prevents iOS zoom */
 		text-transform: uppercase;
-		min-height: 44px;
+		min-height: 44px; /* 2026 touch target minimum */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.checkout_coupon input:focus {

@@ -1231,6 +1231,11 @@
 {/if}
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 RESPONSIVE POPUP MODAL - Mobile-First Design
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	:global(body) {
 		--popup-overlay-z: 9998;
 		--popup-modal-z: 9999;
@@ -1238,28 +1243,48 @@
 
 	.popup-overlay {
 		position: fixed;
-		top: 0;
-		left: 0;
+		inset: 0;
 		width: 100vw;
-		height: 100vh;
+		height: 100dvh;
 		z-index: var(--popup-overlay-z);
 		cursor: pointer;
 	}
 
+	/* Mobile First: Full screen bottom sheet */
 	.popup-container {
 		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform-origin: center;
+		inset: 0;
 		z-index: var(--popup-modal-z);
-		max-height: 90vh;
+		max-height: 100dvh;
 		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
 		will-change: transform;
+		display: flex;
+		flex-direction: column;
+		/* Safe area insets */
+		padding-top: env(safe-area-inset-top, 0);
+		padding-bottom: env(safe-area-inset-bottom, 0);
+		transform: none;
+	}
+
+	/* Swipe indicator for mobile */
+	.popup-container::before {
+		content: '';
+		position: fixed;
+		top: 8px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 36px;
+		height: 4px;
+		background: rgba(255, 255, 255, 0.3);
+		border-radius: 2px;
+		z-index: 11;
 	}
 
 	.popup-container.mobile {
-		max-width: 95vw;
-		max-height: 85vh;
+		max-width: 100%;
+		max-height: 100dvh;
 	}
 
 	.popup-container.shake {
@@ -1269,19 +1294,22 @@
 	@keyframes shake {
 		0%,
 		100% {
-			transform: translate(-50%, -50%) translateX(0);
+			transform: translateX(0);
 		}
 		25% {
-			transform: translate(-50%, -50%) translateX(-10px);
+			transform: translateX(-10px);
 		}
 		75% {
-			transform: translate(-50%, -50%) translateX(10px);
+			transform: translateX(10px);
 		}
 	}
 
 	.popup-content {
 		position: relative;
 		overflow: hidden;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.progress-bar {
@@ -1294,15 +1322,18 @@
 		z-index: 1;
 	}
 
+	/* Touch target: 44x44px minimum */
 	.popup-close-btn {
 		position: absolute;
-		top: 1rem;
-		right: 1rem;
-		background: rgba(0, 0, 0, 0.3);
+		top: calc(0.75rem + env(safe-area-inset-top, 0));
+		right: 0.75rem;
+		background: rgba(0, 0, 0, 0.4);
 		border: none;
 		border-radius: 50%;
-		width: 36px;
-		height: 36px;
+		min-width: 44px;
+		min-height: 44px;
+		width: 44px;
+		height: 44px;
 		cursor: pointer;
 		color: white;
 		transition: all 0.2s;
@@ -1310,14 +1341,16 @@
 		align-items: center;
 		justify-content: center;
 		z-index: 2;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.popup-close-btn:hover {
-		background: rgba(0, 0, 0, 0.5);
+		background: rgba(0, 0, 0, 0.6);
 		transform: scale(1.1);
 	}
 
-	.popup-close-btn:focus {
+	.popup-close-btn:focus-visible {
 		outline: 2px solid #4f46e5;
 		outline-offset: 2px;
 	}
@@ -1544,10 +1577,16 @@
 		background: rgba(79, 70, 229, 0.7);
 	}
 
-	/* Responsive */
-	@media (max-width: 640px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile (default) */
+	@media (max-width: 639px) {
 		.popup-content {
 			padding: 1.5rem !important;
+			padding-top: calc(1.5rem + env(safe-area-inset-top, 0)) !important;
+			padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0)) !important;
 		}
 
 		.popup-buttons {
@@ -1556,6 +1595,60 @@
 
 		.popup-btn {
 			width: 100%;
+			min-height: 44px;
+		}
+	}
+
+	/* sm: 640px+ - Centered modal */
+	@media (min-width: 640px) {
+		.popup-container {
+			position: fixed;
+			inset: auto;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			max-width: 90vw;
+			max-height: 85vh;
+			border-radius: 1rem;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		.popup-container::before {
+			display: none;
+		}
+
+		.popup-container.shake {
+			animation: shake-centered 0.5s;
+		}
+
+		@keyframes shake-centered {
+			0%,
+			100% {
+				transform: translate(-50%, -50%) translateX(0);
+			}
+			25% {
+				transform: translate(-50%, -50%) translateX(-10px);
+			}
+			75% {
+				transform: translate(-50%, -50%) translateX(10px);
+			}
+		}
+
+		.popup-close-btn {
+			top: 1rem;
+			right: 1rem;
+		}
+	}
+
+	/* Landscape orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.popup-container {
+			max-height: 100dvh;
+		}
+
+		.popup-content {
+			padding: 1rem !important;
 		}
 	}
 

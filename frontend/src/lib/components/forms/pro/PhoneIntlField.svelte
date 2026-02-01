@@ -280,18 +280,21 @@
 		position: relative;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets */
 	.country-button {
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.625rem 0.75rem;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		min-height: 44px; /* Touch target */
 		border: 1px solid #d1d5db;
 		border-right: none;
 		border-radius: 0.375rem 0 0 0.375rem;
 		background-color: #f9fafb;
 		cursor: pointer;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		transition: all 0.2s;
+		touch-action: manipulation;
 	}
 
 	.country-button:hover {
@@ -330,10 +333,12 @@
 
 	.country-search {
 		width: 100%;
-		padding: 0.5rem 0.75rem;
+		padding: 0.75rem 1rem;
 		border: 1px solid #d1d5db;
 		border-radius: 0.25rem;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
+		min-height: 44px; /* Touch target */
+		touch-action: manipulation;
 	}
 
 	.country-search:focus {
@@ -351,13 +356,15 @@
 		align-items: center;
 		gap: 0.5rem;
 		width: 100%;
-		padding: 0.5rem 0.75rem;
+		padding: 0.75rem 1rem;
+		min-height: 44px; /* Touch target */
 		border: none;
 		background-color: white;
 		cursor: pointer;
 		text-align: left;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px for readability */
 		transition: background-color 0.15s;
+		touch-action: manipulation;
 	}
 
 	.country-option:hover {
@@ -387,11 +394,15 @@
 
 	.phone-input {
 		flex: 1;
-		padding: 0.625rem 0.875rem;
+		padding: 0.75rem 1rem;
+		min-height: 44px; /* Touch target */
 		border: 1px solid #d1d5db;
 		border-radius: 0 0.375rem 0.375rem 0;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		transition: all 0.2s;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.phone-input:focus {

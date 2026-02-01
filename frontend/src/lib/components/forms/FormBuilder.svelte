@@ -421,14 +421,19 @@
 		margin-bottom: 0.5rem;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets, 16px font */
 	.form-input {
 		width: 100%;
-		padding: 0.625rem 0.875rem;
+		padding: 0.75rem 1rem;
+		min-height: 44px; /* Touch target */
 		background: #0f172a;
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		color: #e2e8f0;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.form-input:focus {
@@ -440,13 +445,19 @@
 	.checkbox-label {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.75rem;
 		cursor: pointer;
 		color: #94a3b8;
+		min-height: 44px; /* Touch target */
+		padding: 0.5rem 0;
+		touch-action: manipulation;
 	}
 
 	.checkbox-label input {
 		cursor: pointer;
+		width: 20px;
+		height: 20px;
+		min-width: 20px;
 	}
 
 	.fields-section {
@@ -541,14 +552,21 @@
 		gap: 0.5rem;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets for icon buttons */
 	.btn-icon {
 		background: none;
 		border: none;
-		font-size: 1.125rem;
+		font-size: 1.25rem;
 		cursor: pointer;
-		padding: 0.25rem 0.5rem;
+		padding: 0.5rem;
+		min-width: 44px; /* Touch target */
+		min-height: 44px; /* Touch target */
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		opacity: 0.7;
 		transition: opacity 0.2s;
+		touch-action: manipulation;
 	}
 
 	.btn-icon:hover:not(:disabled) {
@@ -584,15 +602,17 @@
 	}
 
 	.field-type-button {
-		padding: 0.75rem;
+		padding: 1rem;
+		min-height: 44px; /* Touch target */
 		background: #0f172a;
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: #e2e8f0;
 		cursor: pointer;
 		transition: all 0.2s;
+		touch-action: manipulation;
 	}
 
 	.field-type-button:hover {
@@ -611,22 +631,41 @@
 		border: 1px solid rgba(239, 68, 68, 0.2);
 	}
 
+	/* 2026 Mobile-First: Safe area insets and full-width buttons on mobile */
 	.builder-actions {
 		display: flex;
-		justify-content: flex-end;
-		gap: 1rem;
+		flex-direction: column;
+		gap: 0.75rem;
 		padding-top: 2rem;
+		padding-bottom: env(safe-area-inset-bottom, 0);
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
+	@media (min-width: 640px) {
+		.builder-actions {
+			flex-direction: row;
+			justify-content: flex-end;
+			gap: 1rem;
+		}
+	}
+
 	.btn {
-		padding: 0.75rem 1.5rem;
+		padding: 0.875rem 1.5rem;
+		min-height: 48px; /* Enhanced touch target */
 		border-radius: 8px;
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
+		width: 100%;
+		touch-action: manipulation;
+	}
+
+	@media (min-width: 640px) {
+		.btn {
+			width: auto;
+		}
 	}
 
 	.btn-primary {
