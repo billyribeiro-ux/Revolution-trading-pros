@@ -138,25 +138,25 @@
 		position: relative;
 		z-index: 1;
 		text-align: center;
-		padding: 2rem;
+		padding: 1.5rem;
 		max-width: 400px;
 	}
 
 	.icon {
-		font-size: 3rem;
+		font-size: 2.5rem;
 		margin-bottom: 1rem;
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 	}
 
 	.title {
-		font-size: 1.25rem;
+		font-size: 1.1rem;
 		font-weight: 600;
 		color: white;
 		margin: 0 0 0.5rem 0;
 	}
 
 	.description {
-		font-size: 0.875rem;
+		font-size: 0.8rem;
 		color: rgba(255, 255, 255, 0.8);
 		margin: 0 0 1.5rem 0;
 		line-height: 1.5;
@@ -193,22 +193,22 @@
 		margin-top: 1rem;
 	}
 
-	/* Responsive */
-	@media (max-width: 640px) {
+	/* Responsive - Mobile First */
+	@media (min-width: 640px) {
 		.overlay {
-			padding: 1.5rem;
+			padding: 2rem;
 		}
 
 		.icon {
-			font-size: 2.5rem;
+			font-size: 3rem;
 		}
 
 		.title {
-			font-size: 1.1rem;
+			font-size: 1.25rem;
 		}
 
 		.description {
-			font-size: 0.8rem;
+			font-size: 0.875rem;
 		}
 	}
 </style>

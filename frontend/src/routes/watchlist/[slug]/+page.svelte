@@ -392,7 +392,7 @@
 	/* Header Section - WordPress Match */
 	.cpost-section.cpost-title-section {
 		background: #143e59;
-		padding: 40px 20px;
+		padding: 25px 15px;
 		text-align: center;
 	}
 
@@ -400,29 +400,39 @@
 		max-width: 1100px;
 		margin: 0 auto;
 		position: relative;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 15px;
 	}
 
 	.cpost-title {
 		color: #fff;
-		font-size: 28px;
+		font-size: 18px;
 		font-weight: 700;
-		margin: 0 0 10px;
+		margin: 0 0 5px;
 		font-family: 'Open Sans', sans-serif;
+		order: -1;
+		width: 100%;
+		padding: 0;
 	}
 
 	.cpost-subtitle {
 		color: rgba(255, 255, 255, 0.8);
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: 400;
-		margin: 0;
+		margin: 0 0 15px;
+		order: 0;
+		width: 100%;
 	}
 
 	/* Pagination Buttons */
 	.cpost-previous,
 	.cpost-next {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
+		position: static;
+		transform: none;
 	}
 
 	.cpost-previous {
@@ -442,10 +452,15 @@
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 600;
-		padding: 10px 16px;
+		padding: 10px;
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 5px;
 		transition: background 0.2s ease;
+	}
+
+	.cpost-previous a span,
+	.cpost-next a span {
+		display: none;
 	}
 
 	.cpost-previous a:hover,
@@ -473,8 +488,8 @@
 
 	.tablinks {
 		flex: 1;
-		padding: 18px 24px;
-		font-size: 16px;
+		padding: 14px 16px;
+		font-size: 14px;
 		font-weight: 600;
 		color: #666;
 		background: transparent;
@@ -500,7 +515,7 @@
 
 	.tabcontent {
 		display: none;
-		padding: 40px 30px;
+		padding: 25px 15px;
 		background: #fff;
 	}
 
@@ -515,7 +530,7 @@
 	}
 
 	.current-title {
-		font-size: 20px;
+		font-size: 18px;
 		font-weight: 700;
 		color: #333;
 		margin: 0 0 20px;
@@ -553,6 +568,7 @@
 	.ww-spreadsheet iframe {
 		display: block;
 		border: none;
+		height: 500px;
 	}
 
 	/* Date Switcher */
@@ -637,85 +653,73 @@
 		font-weight: 700;
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
-		.cpost-section.cpost-title-section {
-			padding: 25px 15px;
-		}
-
+	/* Responsive - Mobile First */
+	@media (min-width: 480px) {
 		.cpost-title {
 			font-size: 20px;
 			padding: 0 80px;
+			order: initial;
+			width: auto;
+			margin: 0 0 10px;
 		}
 
 		.cpost-subtitle {
-			font-size: 14px;
-		}
-
-		.cpost-previous a span,
-		.cpost-next a span {
-			display: none;
-		}
-
-		.cpost-previous a,
-		.cpost-next a {
-			padding: 10px;
-		}
-
-		.tabcontent {
-			padding: 25px 15px;
-		}
-
-		.tablinks {
-			padding: 14px 16px;
-			font-size: 14px;
-		}
-
-		.current-title {
-			font-size: 18px;
-		}
-
-		.ww-spreadsheet iframe {
-			height: 500px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.cpost-title {
-			font-size: 18px;
-			padding: 0 50px;
+			order: initial;
+			width: auto;
+			margin: 0;
 		}
 
 		.cpost-previous,
 		.cpost-next {
-			position: static;
-			transform: none;
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
 		}
 
 		.section-inner {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 15px;
+			display: block;
 		}
+	}
 
-		.cpost-section.cpost-title-section .section-inner {
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: space-between;
+	@media (min-width: 768px) {
+		.cpost-section.cpost-title-section {
+			padding: 40px 20px;
 		}
 
 		.cpost-title {
-			order: -1;
-			width: 100%;
+			font-size: 28px;
 			padding: 0;
-			margin-bottom: 5px;
 		}
 
 		.cpost-subtitle {
-			order: 0;
-			width: 100%;
-			margin-bottom: 15px;
+			font-size: 16px;
+		}
+
+		.cpost-previous a span,
+		.cpost-next a span {
+			display: inline;
+		}
+
+		.cpost-previous a,
+		.cpost-next a {
+			padding: 10px 16px;
+		}
+
+		.tabcontent {
+			padding: 40px 30px;
+		}
+
+		.tablinks {
+			padding: 18px 24px;
+			font-size: 16px;
+		}
+
+		.current-title {
+			font-size: 20px;
+		}
+
+		.ww-spreadsheet iframe {
+			height: 700px;
 		}
 	}
 </style>

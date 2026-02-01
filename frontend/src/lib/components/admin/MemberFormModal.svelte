@@ -1818,44 +1818,356 @@
 	}
 
 	/* ============================================
+	   RESPONSIVE - Tablet (< md: 768px)
+	   ============================================ */
+	@media (max-width: 768px) {
+		.modal-backdrop {
+			padding: var(--space-4);
+			align-items: flex-start;
+			padding-top: var(--space-8);
+		}
+
+		.modal-frame {
+			max-height: calc(100vh - var(--space-12));
+		}
+
+		.modal-container {
+			max-width: 100%;
+		}
+
+		/* Form grid single column on tablet */
+		.form-grid {
+			grid-template-columns: 1fr;
+			gap: var(--space-4);
+		}
+
+		/* Tier selector wrap better */
+		.tier-selector {
+			flex-wrap: wrap;
+		}
+
+		.tier-option {
+			flex: 1 1 calc(50% - 0.5rem);
+			min-width: 120px;
+		}
+
+		/* Quick actions wrap */
+		.quick-actions {
+			flex-wrap: wrap;
+		}
+
+		.quick-btn {
+			flex: 1;
+			min-width: 80px;
+			text-align: center;
+		}
+	}
+
+	/* ============================================
 	   RESPONSIVE - Mobile (< sm: 640px)
 	   ============================================ */
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	@media (max-width: 640px) {
 		.modal-backdrop {
+			padding: var(--space-3);
+			padding-top: var(--space-4);
+			align-items: flex-start;
+		}
+
+		.modal-frame {
+			max-height: calc(100vh - var(--space-8));
+			margin: 0;
+		}
+
+		.modal-container {
+			max-width: 100%;
+			max-height: calc(100vh - var(--space-8));
+			border-radius: var(--radius-lg);
+		}
+
+		/* Reduced header padding on mobile */
+		.modal-header {
 			padding: var(--space-4);
 		}
 
-		.form-grid {
-			grid-template-columns: 1fr;
+		.header-icon {
+			width: 40px;
+			height: 40px;
 		}
 
-		.section-nav {
+		.modal-title {
+			font-size: var(--text-lg);
+		}
+
+		.modal-subtitle {
+			font-size: var(--text-xs);
+		}
+
+		/* Close button larger touch target */
+		.btn-close {
+			min-width: 48px;
+			min-height: 48px;
 			padding: var(--space-3);
+		}
+
+		/* Section nav compact on mobile */
+		.section-nav {
+			padding: var(--space-2) var(--space-3);
+			gap: var(--space-1);
 		}
 
 		.section-tab {
 			padding: var(--space-2) var(--space-3);
+			min-height: 48px;
 		}
 
 		.tab-label {
 			display: none;
 		}
 
-		.modal-form {
-			padding: var(--space-5);
+		.tab-icon {
+			font-size: 1.25rem;
 		}
 
+		/* Form reduced padding on mobile */
+		.modal-form {
+			padding: var(--space-4);
+		}
+
+		.section-header {
+			margin-bottom: var(--space-4);
+		}
+
+		.section-header h3 {
+			font-size: var(--text-sm);
+		}
+
+		/* Form grid single column */
+		.form-grid {
+			grid-template-columns: 1fr;
+			gap: var(--space-4);
+		}
+
+		/* Input fields full width with larger touch targets */
+		.form-input,
+		.form-select,
+		.form-textarea {
+			min-height: 48px;
+			padding: var(--space-3) var(--space-4);
+			font-size: 16px; /* Prevents iOS zoom on focus */
+		}
+
+		.form-label {
+			font-size: var(--text-xs);
+		}
+
+		/* Tier selector stacked on mobile */
 		.tier-selector {
 			flex-direction: column;
+			gap: var(--space-2);
 		}
 
 		.tier-option {
 			width: 100%;
 			justify-content: center;
+			min-height: 48px;
 		}
 
+		/* Quick actions stacked */
+		.quick-actions {
+			flex-direction: column;
+			gap: var(--space-2);
+		}
+
+		.quick-btn {
+			width: 100%;
+			min-height: 44px;
+			justify-content: center;
+		}
+
+		/* Tags input larger touch targets */
+		.tag {
+			min-height: 36px;
+			padding: var(--space-2) var(--space-3);
+		}
+
+		.tag-remove {
+			min-width: 24px;
+			min-height: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		/* Preference cards stacked */
+		.preference-card {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--space-3);
+			padding: var(--space-4);
+		}
+
+		.toggle-switch {
+			align-self: flex-end;
+		}
+
+		/* Modal actions full width stacked */
 		.modal-actions {
 			flex-direction: column;
+			padding: var(--space-4);
+			gap: var(--space-3);
+		}
+
+		.btn-cancel,
+		.btn-submit {
+			width: 100%;
+			min-height: 48px;
+			padding: var(--space-4);
+		}
+
+		/* Password section */
+		.btn-generate {
+			width: 100%;
+			min-height: 44px;
+			justify-content: center;
+		}
+
+		.password-input-wrapper .form-input {
+			padding-right: 3.5rem;
+		}
+
+		.btn-toggle-password {
+			min-width: 44px;
+			min-height: 44px;
+			right: 0.25rem;
+		}
+
+		/* Checkbox larger touch target */
+		.checkbox-box {
+			width: 28px;
+			height: 28px;
+		}
+
+		.checkbox-text {
+			font-size: var(--text-sm);
+		}
+
+		/* Password created section */
+		.password-created {
+			padding: var(--space-5) var(--space-4);
+		}
+
+		.password-display {
+			flex-direction: column;
+			gap: var(--space-3);
+		}
+
+		.password-display code {
+			font-size: var(--text-sm);
+		}
+
+		.btn-copy {
+			width: 100%;
+			min-height: 44px;
+			justify-content: center;
+		}
+	}
+
+	/* ============================================
+	   RESPONSIVE - Extra Small Mobile (< 380px)
+	   ============================================ */
+	@media (max-width: 380px) {
+		.modal-backdrop {
+			padding: var(--space-2);
+		}
+
+		.modal-header {
+			padding: var(--space-3);
+		}
+
+		.header-content {
+			gap: var(--space-3);
+		}
+
+		.header-icon {
+			width: 36px;
+			height: 36px;
+		}
+
+		.modal-title {
+			font-size: var(--text-base);
+		}
+
+		.section-nav {
+			padding: var(--space-2);
+		}
+
+		.section-tab {
+			padding: var(--space-2);
+			min-width: 44px;
+		}
+
+		.modal-form {
+			padding: var(--space-3);
+		}
+
+		.form-input,
+		.form-select,
+		.form-textarea {
+			padding: var(--space-3);
+		}
+
+		.preference-info h4 {
+			font-size: var(--text-sm);
+		}
+
+		.preference-info p {
+			font-size: var(--text-xs);
+		}
+	}
+
+	/* ============================================
+	   TOUCH DEVICE OPTIMIZATIONS
+	   ============================================ */
+	@media (hover: none) and (pointer: coarse) {
+		/* Larger touch targets for all interactive elements */
+		.btn-close,
+		.section-tab,
+		.tier-option,
+		.quick-btn,
+		.tag-remove,
+		.btn-toggle-password,
+		.btn-generate,
+		.btn-copy,
+		.btn-cancel,
+		.btn-submit {
+			min-height: 44px;
+			min-width: 44px;
+		}
+
+		.form-input,
+		.form-select,
+		.form-textarea {
+			min-height: 48px;
+			font-size: 16px; /* Prevents iOS zoom */
+		}
+
+		.checkbox-box {
+			width: 28px;
+			height: 28px;
+		}
+
+		.toggle-switch {
+			width: 56px;
+			height: 32px;
+		}
+
+		.toggle-slider::before {
+			height: 26px;
+			width: 26px;
+		}
+
+		.toggle-switch input:checked + .toggle-slider::before {
+			transform: translateX(24px);
 		}
 	}
 

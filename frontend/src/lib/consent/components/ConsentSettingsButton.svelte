@@ -135,7 +135,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem;
+		padding: 0.625rem;
 		background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
 		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: 2rem;
@@ -162,13 +162,13 @@
 
 	/* Positions */
 	.bottom-left {
-		bottom: 1.5rem;
-		left: 1.5rem;
+		bottom: 1rem;
+		left: 1rem;
 	}
 
 	.bottom-right {
-		bottom: 1.5rem;
-		right: 1.5rem;
+		bottom: 1rem;
+		right: 1rem;
 	}
 
 	.btn-icon {
@@ -179,30 +179,29 @@
 	}
 
 	.btn-label {
-		font-size: 0.875rem;
+		font-size: 0.75rem;
 		font-weight: 500;
 		white-space: nowrap;
 	}
 
-	/* Mobile adjustments */
-	@media (max-width: 640px) {
+	/* Responsive - Mobile First */
+	@media (min-width: 640px) {
 		.consent-settings-btn {
-			padding: 0.625rem;
+			padding: 0.75rem;
 		}
 
 		.bottom-left {
-			bottom: 1rem;
-			left: 1rem;
+			bottom: 1.5rem;
+			left: 1.5rem;
 		}
 
 		.bottom-right {
-			bottom: 1rem;
-			right: 1rem;
+			bottom: 1.5rem;
+			right: 1.5rem;
 		}
 
-		/* Always show label on mobile when expanded */
 		.btn-label {
-			font-size: 0.75rem;
+			font-size: 0.875rem;
 		}
 	}
 

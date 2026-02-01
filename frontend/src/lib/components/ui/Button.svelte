@@ -52,12 +52,14 @@
 			'bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 focus:ring-blue-500 disabled:text-gray-400'
 	};
 
+	// Size variants with touch target optimization (2026 WCAG standards)
+	// Minimum 44px height for touch devices - handled via global CSS on coarse pointers
 	const sizes: Record<string, string> = {
-		xs: 'px-2 py-1 text-xs',
-		sm: 'px-3 py-1.5 text-sm',
-		md: 'px-4 py-2 text-base',
-		lg: 'px-6 py-3 text-lg',
-		xl: 'px-8 py-4 text-xl'
+		xs: 'px-2 py-1 text-xs min-h-8', // 32px base, expands to 44px on touch via CSS
+		sm: 'px-3 py-1.5 text-sm min-h-9', // 36px base, expands to 44px on touch via CSS
+		md: 'px-4 py-2 text-base min-h-10', // 40px base, close to 44px target
+		lg: 'px-6 py-3 text-lg min-h-11', // 44px - meets touch target
+		xl: 'px-8 py-4 text-xl min-h-12' // 48px - enhanced touch target
 	};
 
 	// Compute if button is truly disabled (disabled or loading)

@@ -872,7 +872,12 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		height: var(--toolbar-height);
+		/* Height includes safe area for notched devices */
+		min-height: var(--toolbar-height);
+		/* Safe area insets for notched devices (2026 mobile standards) */
+		padding-top: env(safe-area-inset-top, 0);
+		padding-left: env(safe-area-inset-left, 0);
+		padding-right: env(safe-area-inset-right, 0);
 		background: linear-gradient(135deg, var(--toolbar-bg-start) 0%, var(--toolbar-bg-end) 100%);
 		border-bottom: 2px solid var(--toolbar-border);
 		z-index: 10100; /* Must be higher than NavBar (10001) */
@@ -1144,6 +1149,8 @@
 		align-items: center;
 		gap: 0.75rem;
 		width: 100%;
+		/* Touch target optimization - minimum 44px height (2026 WCAG standards) */
+		min-height: 44px;
 		padding: 0.625rem 0.75rem;
 		background: transparent;
 		border: none;
@@ -1204,8 +1211,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
+		/* Touch target optimization - minimum 44px (2026 WCAG standards) */
+		width: 44px;
+		height: 44px;
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.3);
 		border-radius: 6px;

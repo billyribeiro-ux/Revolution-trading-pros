@@ -135,10 +135,12 @@
 		max-width: 1200px;
 		margin: 0 auto;
 		display: flex;
+		flex-direction: column;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
+		text-align: center;
 	}
 
 	.consent-banner-text {
@@ -164,9 +166,13 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.75rem;
+		width: 100%;
+		justify-content: center;
 	}
 
 	.consent-btn {
+		flex: 1;
+		min-width: 100px;
 		padding: 0.625rem 1.25rem;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -213,21 +219,21 @@
 		border-color: rgba(255, 255, 255, 0.5);
 	}
 
-	/* Responsive adjustments */
-	@media (max-width: 768px) {
+	/* Responsive - Mobile First */
+	@media (min-width: 768px) {
 		.consent-banner-content {
-			flex-direction: column;
-			text-align: center;
+			flex-direction: row;
+			text-align: left;
 		}
 
 		.consent-banner-actions {
-			width: 100%;
-			justify-content: center;
+			width: auto;
+			justify-content: flex-end;
 		}
 
 		.consent-btn {
-			flex: 1;
-			min-width: 100px;
+			flex: none;
+			min-width: auto;
 		}
 	}
 

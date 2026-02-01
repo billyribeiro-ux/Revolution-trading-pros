@@ -183,7 +183,7 @@
 
 	.error-code {
 		display: inline-block;
-		font-size: 5rem;
+		font-size: 4rem;
 		font-weight: 800;
 		background: linear-gradient(135deg, #f97316, #ea580c);
 		-webkit-background-clip: text;
@@ -193,7 +193,7 @@
 	}
 
 	.error-title {
-		font-size: 1.75rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		color: #fff;
 		margin-bottom: 0.75rem;
@@ -232,6 +232,7 @@
 
 	.error-actions {
 		display: flex;
+		flex-direction: column;
 		gap: 1rem;
 		justify-content: center;
 		flex-wrap: wrap;
@@ -242,6 +243,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
 		padding: 0.875rem 1.75rem;
 		font-size: 1rem;
 		font-weight: 600;
@@ -285,21 +287,21 @@
 		text-decoration: underline;
 	}
 
-	@media (max-width: 480px) {
+	@media (min-width: 480px) {
 		.error-code {
-			font-size: 4rem;
+			font-size: 5rem;
 		}
 
 		.error-title {
-			font-size: 1.5rem;
+			font-size: 1.75rem;
 		}
 
 		.error-actions {
-			flex-direction: column;
+			flex-direction: row;
 		}
 
 		.btn {
-			width: 100%;
+			width: auto;
 		}
 	}
 </style>

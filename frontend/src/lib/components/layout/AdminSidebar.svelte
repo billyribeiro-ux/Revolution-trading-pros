@@ -178,7 +178,13 @@
 		position: fixed;
 		top: 0;
 		left: 0;
+		/* Use dynamic viewport height for better mobile browser support */
 		height: 100vh;
+		height: 100dvh;
+		/* Safe area insets for notched devices (2026 mobile standards) */
+		padding-top: env(safe-area-inset-top, 0);
+		padding-bottom: env(safe-area-inset-bottom, 0);
+		padding-left: env(safe-area-inset-left, 0);
 		z-index: var(--z-modal, 500);
 		transition:
 			transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
@@ -207,6 +213,9 @@
 		border: none;
 		color: var(--admin-text-muted);
 		cursor: pointer;
+		/* Touch target optimization - minimum 44px (2026 WCAG standards) */
+		min-width: 44px;
+		min-height: 44px;
 		padding: 0.5rem;
 		border-radius: var(--radius-md, 0.5rem);
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -251,6 +260,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
+		/* Touch target optimization - minimum 44px height (2026 WCAG standards) */
+		min-height: 44px;
 		padding: 0.6rem 0.75rem;
 		color: var(--admin-nav-text);
 		text-decoration: none;

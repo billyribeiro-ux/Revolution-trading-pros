@@ -1,4 +1,12 @@
 <script lang="ts">
+	/**
+	 * PaymentMethodSelector Component (FluentForms Pro 6.1.8 - Updated Jan 2026)
+	 *
+	 * Responsive payment method selector with touch-friendly design.
+	 *
+	 * @version 2.1.0 - Svelte 5 + Responsive Design
+	 */
+
 	import type { FormField } from '$lib/api/forms';
 
 	interface PaymentMethod {
@@ -21,35 +29,35 @@
 		{
 			id: 'stripe',
 			name: 'Credit/Debit Card',
-			icon: '💳',
+			icon: 'card',
 			description: 'Powered by Stripe',
 			enabled: true
 		},
 		{
 			id: 'paypal',
 			name: 'PayPal',
-			icon: '🅿️',
+			icon: 'paypal',
 			description: 'Pay with PayPal account',
 			enabled: true
 		},
 		{
 			id: 'square',
 			name: 'Square',
-			icon: '◻️',
+			icon: 'square',
 			description: 'Powered by Square',
 			enabled: false
 		},
 		{
 			id: 'razorpay',
 			name: 'Razorpay',
-			icon: '💰',
+			icon: 'razorpay',
 			description: 'Popular in India',
 			enabled: false
 		},
 		{
 			id: 'mollie',
 			name: 'Mollie',
-			icon: '🔷',
+			icon: 'mollie',
 			description: 'Popular in Europe',
 			enabled: false
 		}
@@ -62,56 +70,103 @@
 	function handleSelect(methodId: string) {
 		onchange?.(methodId);
 	}
+
+	function getMethodIcon(iconType: string): string {
+		const icons: Record<string, string> = {
+			card: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
+			paypal: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
+			square: 'M4 4h16v16H4V4z',
+			razorpay: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+			mollie: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'
+		};
+		return icons[iconType] || icons.card;
+	}
 </script>
 
-<div class="payment-method-selector">
-	<label class="field-label" for="payment-method-{field.name}">
+<!-- Responsive Payment Method Selector - Mobile-first design -->
+<div class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]">
+	<label
+		class="text-sm sm:text-base font-medium text-gray-700"
+		for="payment-method-{field.name}"
+	>
 		{field.label || 'Payment Method'}
 		{#if field.required}
-			<span class="required">*</span>
+			<span class="text-red-600 ml-1">*</span>
 		{/if}
 	</label>
 
 	{#if field.help_text}
-		<p class="field-help">{field.help_text}</p>
+		<p class="text-xs sm:text-sm text-gray-500 m-0">{field.help_text}</p>
 	{/if}
 
-	<div class="methods-list">
+	<!-- Payment Methods List - Touch-friendly buttons -->
+	<div class="flex flex-col gap-2 sm:gap-3">
 		{#each enabledMethods as method (method.id)}
 			<button
 				type="button"
-				class="method-option"
-				class:selected={value === method.id}
+				class="flex items-center gap-3 sm:gap-4 w-full min-h-[56px] sm:min-h-[64px] md:min-h-[72px] p-3 sm:p-4 border-2 rounded-lg bg-white cursor-pointer transition-all duration-200 text-left touch-manipulation active:scale-[0.98] hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+				class:border-blue-600={value === method.id}
+				class:bg-blue-50={value === method.id}
+				class:border-gray-200={value !== method.id}
 				onclick={() => handleSelect(method.id)}
 			>
+				<!-- Hidden radio for accessibility -->
 				<input
 					id="payment-method-{method.id}"
 					type="radio"
 					name={field.name}
 					value={method.id}
 					checked={value === method.id}
-					class="method-radio"
+					class="sr-only"
 					onchange={() => handleSelect(method.id)}
 				/>
 
-				<span class="method-icon">{method.icon}</span>
+				<!-- Custom radio indicator -->
+				<span
+					class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+					class:border-blue-600={value === method.id}
+					class:bg-blue-600={value === method.id}
+					class:border-gray-300={value !== method.id}
+				>
+					{#if value === method.id}
+						<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></span>
+					{/if}
+				</span>
 
-				<div class="method-info">
-					<span class="method-name">{method.name}</span>
+				<!-- Method Icon -->
+				<span class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 rounded-lg">
+					<svg
+						class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" d={getMethodIcon(method.icon)} />
+					</svg>
+				</span>
+
+				<!-- Method Info -->
+				<div class="flex-1 min-w-0 flex flex-col gap-0.5 sm:gap-1">
+					<span class="text-sm sm:text-base font-medium text-gray-900 truncate">
+						{method.name}
+					</span>
 					{#if method.description}
-						<span class="method-description">{method.description}</span>
+						<span class="text-xs sm:text-sm text-gray-500 truncate">
+							{method.description}
+						</span>
 					{/if}
 				</div>
 
+				<!-- Checkmark for selected -->
 				{#if value === method.id}
-					<span class="check-icon">
+					<span class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center">
 						<svg
-							width="20"
-							height="20"
+							class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2.5"
+							stroke-width="3"
 						>
 							<polyline points="20 6 9 17 4 12"></polyline>
 						</svg>
@@ -121,19 +176,24 @@
 		{/each}
 	</div>
 
-	<!-- Payment method specific info -->
+	<!-- Payment method specific info - Responsive cards -->
 	{#if value === 'stripe'}
-		<div class="method-details stripe">
-			<div class="card-icons">
-				<span class="card-icon" title="Visa">💳 Visa</span>
-				<span class="card-icon" title="Mastercard">💳 Mastercard</span>
-				<span class="card-icon" title="American Express">💳 Amex</span>
-				<span class="card-icon" title="Discover">💳 Discover</span>
+		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-500">
+			<!-- Card Icons - Responsive grid -->
+			<div class="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
+				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType}
+					<span class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200">
+						<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+						</svg>
+						{cardType}
+					</span>
+				{/each}
 			</div>
-			<p class="security-note">
+			<!-- Security Note -->
+			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
 				<svg
-					width="14"
-					height="14"
+					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"
@@ -142,15 +202,14 @@
 					<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 					<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 				</svg>
-				Secured by Stripe. Your card details are encrypted.
+				<span>Secured by Stripe. Your card details are encrypted.</span>
 			</p>
 		</div>
 	{:else if value === 'paypal'}
-		<div class="method-details paypal">
-			<p class="security-note">
+		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-amber-500">
+			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
 				<svg
-					width="14"
-					height="14"
+					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"
@@ -158,164 +217,17 @@
 				>
 					<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 				</svg>
-				You will be redirected to PayPal to complete your payment.
+				<span>You will be redirected to PayPal to complete your payment.</span>
 			</p>
 		</div>
 	{/if}
 
+	<!-- Error Messages -->
 	{#if error && error.length > 0}
-		<div class="field-error">
+		<div class="mt-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
 			{#each error as err}
-				<p>{err}</p>
+				<p class="text-xs sm:text-sm text-red-600 m-0">{err}</p>
 			{/each}
 		</div>
 	{/if}
 </div>
-
-<style>
-	.payment-method-selector {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	.field-label {
-		font-weight: 500;
-		font-size: 0.875rem;
-		color: #374151;
-	}
-
-	.required {
-		color: #dc2626;
-		margin-left: 0.25rem;
-	}
-
-	.field-help {
-		font-size: 0.75rem;
-		color: #6b7280;
-		margin: 0;
-	}
-
-	.methods-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.method-option {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		width: 100%;
-		padding: 1rem;
-		border: 2px solid #e5e7eb;
-		border-radius: 0.5rem;
-		background-color: white;
-		cursor: pointer;
-		transition: all 0.2s;
-		text-align: left;
-	}
-
-	.method-option:hover {
-		border-color: #d1d5db;
-		background-color: #f9fafb;
-	}
-
-	.method-option.selected {
-		border-color: #2563eb;
-		background-color: #eff6ff;
-	}
-
-	.method-radio {
-		width: 18px;
-		height: 18px;
-		accent-color: #2563eb;
-		cursor: pointer;
-	}
-
-	.method-icon {
-		font-size: 1.5rem;
-		line-height: 1;
-	}
-
-	.method-info {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 0.125rem;
-	}
-
-	.method-name {
-		font-weight: 500;
-		color: #111827;
-	}
-
-	.method-description {
-		font-size: 0.75rem;
-		color: #6b7280;
-	}
-
-	.check-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		background-color: #2563eb;
-		border-radius: 50%;
-		color: white;
-	}
-
-	.method-details {
-		padding: 1rem;
-		background-color: #f9fafb;
-		border-radius: 0.5rem;
-		border-left: 3px solid #2563eb;
-	}
-
-	.method-details.stripe {
-		border-left-color: #6366f1;
-	}
-
-	.method-details.paypal {
-		border-left-color: #f59e0b;
-	}
-
-	.card-icons {
-		display: flex;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-		margin-bottom: 0.75rem;
-	}
-
-	.card-icon {
-		font-size: 0.75rem;
-		color: #6b7280;
-		padding: 0.25rem 0.5rem;
-		background-color: white;
-		border-radius: 0.25rem;
-		border: 1px solid #e5e7eb;
-	}
-
-	.security-note {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.75rem;
-		color: #6b7280;
-		margin: 0;
-	}
-
-	.security-note svg {
-		color: #059669;
-	}
-
-	.field-error {
-		font-size: 0.75rem;
-		color: #dc2626;
-	}
-
-	.field-error p {
-		margin: 0;
-	}
-</style>

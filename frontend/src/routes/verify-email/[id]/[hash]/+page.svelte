@@ -109,7 +109,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 2rem;
+		padding: 1rem;
 		position: relative;
 		overflow: hidden;
 		background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
@@ -126,8 +126,8 @@
 	}
 
 	.glow-orb-1 {
-		width: 600px;
-		height: 600px;
+		width: 400px;
+		height: 400px;
 		background: radial-gradient(circle, #2e8eff 0%, transparent 70%);
 		top: -200px;
 		left: -200px;
@@ -135,8 +135,8 @@
 	}
 
 	.glow-orb-2 {
-		width: 500px;
-		height: 500px;
+		width: 350px;
+		height: 350px;
 		background: radial-gradient(circle, #34d399 0%, transparent 70%);
 		bottom: -150px;
 		right: -150px;
@@ -161,7 +161,7 @@
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 24px;
-		padding: 4rem 3rem;
+		padding: 2rem 1.5rem;
 		max-width: 500px;
 		width: 100%;
 		text-align: center;
@@ -207,7 +207,7 @@
 	}
 
 	.verify-content h1 {
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #ffffff;
 		margin-bottom: 1rem;
@@ -215,7 +215,7 @@
 	}
 
 	.verify-content p {
-		font-size: 1.125rem;
+		font-size: 1rem;
 		color: rgba(255, 255, 255, 0.7);
 		line-height: 1.6;
 		margin-bottom: 1rem;
@@ -233,6 +233,7 @@
 
 	.action-buttons {
 		display: flex;
+		flex-direction: column;
 		gap: 1rem;
 		margin-top: 2rem;
 		flex-wrap: wrap;
@@ -240,6 +241,7 @@
 	}
 
 	.btn {
+		width: 100%;
 		padding: 0.875rem 2rem;
 		border-radius: 12px;
 		font-weight: 600;
@@ -272,45 +274,46 @@
 		transform: translateY(-2px);
 	}
 
-	@media (max-width: 768px) {
+	/* Responsive - Mobile First */
+	@media (min-width: 640px) {
+		.verify-container {
+			padding: 2rem;
+		}
+
 		.verify-card {
 			padding: 3rem 2rem;
 		}
 
-		.verify-content h1 {
-			font-size: 1.75rem;
-		}
-
-		.verify-content p {
-			font-size: 1rem;
-		}
-
-		.glow-orb-1 {
-			width: 400px;
-			height: 400px;
-		}
-
-		.glow-orb-2 {
-			width: 350px;
-			height: 350px;
-		}
-	}
-
-	@media (max-width: 640px) {
-		.verify-container {
-			padding: 1rem;
-		}
-
-		.verify-card {
-			padding: 2rem 1.5rem;
-		}
-
 		.action-buttons {
-			flex-direction: column;
+			flex-direction: row;
 		}
 
 		.btn {
-			width: 100%;
+			width: auto;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.verify-card {
+			padding: 4rem 3rem;
+		}
+
+		.verify-content h1 {
+			font-size: 2rem;
+		}
+
+		.verify-content p {
+			font-size: 1.125rem;
+		}
+
+		.glow-orb-1 {
+			width: 600px;
+			height: 600px;
+		}
+
+		.glow-orb-2 {
+			width: 500px;
+			height: 500px;
 		}
 	}
 </style>
