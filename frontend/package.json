@@ -15,6 +15,7 @@
 		"build:cloudflare": "DEPLOY_TARGET=cloudflare vite build",
 		"build:static": "DEPLOY_TARGET=static vite build",
 		"preview": "vite preview",
+		"preview:component": "node scripts/preview-component.js",
 		"check": "NODE_OPTIONS='--max-old-space-size=4096' svelte-check --threshold error",
 		"check:all": "NODE_OPTIONS='--max-old-space-size=4096' svelte-check",
 		"lint": "prettier --check . && eslint .",
