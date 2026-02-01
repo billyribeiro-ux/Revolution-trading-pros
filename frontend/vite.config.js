@@ -44,7 +44,7 @@ export default defineConfig({
 		})
 	],
 	server: {
-		port: 5174,
+		port: 5173,
 		// Enable HTTP/2 for better performance
 		https: false,
 		// Strict localhost binding for consistent HMR
@@ -54,7 +54,7 @@ export default defineConfig({
 		hmr: {
 			protocol: 'ws',
 			host: 'localhost',
-			port: 5174,
+			port: 5173,
 			overlay: true // Enable overlay to see errors clearly
 		},
 		// Proxy API requests to deployed Rust API on Fly.io

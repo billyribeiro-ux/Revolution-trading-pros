@@ -15,7 +15,7 @@ Opens the currently active component file in the Component Workbench with IDE br
 ## Steps
 
 ### 1. Verify dev server is running
-Check if the dev server is running on port 5174. If not, you'll need to start it manually.
+Check if the dev server is running on port 5173. If not, you'll need to start it manually.
 
 ### 2. Run the preview script with the current file
 // turbo
@@ -32,7 +32,7 @@ cd frontend && node scripts/preview-component.js $CURRENT_FILE
 ### 3. Open in IDE browser preview
 The script outputs a URL in the format:
 ```
-WORKBENCH_URL=http://localhost:5174/workbench?component={relativePath}
+WORKBENCH_URL=http://localhost:5173/workbench?component={relativePath}
 ```
 
 The IDE will automatically open this URL in the embedded browser preview panel, showing:
@@ -45,7 +45,7 @@ The IDE will automatically open this URL in the embedded browser preview panel, 
 
 If you have `frontend/src/lib/components/dashboard/VideoCard.svelte` open:
 - Relative path: `dashboard/VideoCard.svelte`
-- Workbench URL: `http://localhost:5174/workbench?component=dashboard/VideoCard.svelte`
+- Workbench URL: `http://localhost:5173/workbench?component=dashboard/VideoCard.svelte`
 
 ## Notes
 

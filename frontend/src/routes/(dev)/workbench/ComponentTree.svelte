@@ -230,16 +230,18 @@
 									class:selected={selectedComponent === component.relativePath}
 									onclick={() => handleSelect(component)}
 								>
-									<button
+									<span
 										class="favorite-btn"
 										class:active={favorites.has(component.relativePath)}
 										onclick={(e) => toggleFavorite(component, e)}
+										role="button"
+										tabindex="0"
 										aria-label={favorites.has(component.relativePath)
 											? 'Remove from favorites'
 											: 'Add to favorites'}
 									>
 										{favorites.has(component.relativePath) ? '⭐' : '☆'}
-									</button>
+									</span>
 									<span class="component-name">{component.name}</span>
 									<span class="component-meta">
 										{#if component.hasSnippets}
