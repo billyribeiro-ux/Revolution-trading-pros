@@ -202,14 +202,14 @@
 		margin: 40px 0;
 	}
 
-	/* Tablet: 2 columns */
+	/* md: 768px - Tablets: 2 columns */
 	@media (min-width: 768px) {
 		.start-here-cards {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	/* Desktop: 2-1 layout */
+	/* lg: 1024px - Desktop: 2-1 layout */
 	@media (min-width: 1024px) {
 		.start-here-cards {
 			gap: 40px;
@@ -234,7 +234,7 @@
 		border-color: #143e59;
 	}
 
-	/* Centered bottom card spans 2 columns on desktop */
+	/* md: 768px - Centered bottom card spans 2 columns on tablets+ */
 	@media (min-width: 768px) {
 		.start-card--centered {
 			grid-column: 1 / -1;
@@ -259,6 +259,7 @@
 		line-height: 1.3;
 	}
 
+	/* md: 768px - Tablets */
 	@media (min-width: 768px) {
 		.start-card__title {
 			font-size: 2rem;
@@ -347,6 +348,7 @@
 		line-height: 1.3;
 	}
 
+	/* md: 768px - Tablets */
 	@media (min-width: 768px) {
 		.page-heading__text {
 			font-size: 2.5rem;
@@ -402,7 +404,8 @@
 		text-decoration: underline;
 	}
 
-	@media (max-width: 640px) {
+	/* sm: 392px - Stack on small phones */
+	@media (max-width: 391px) {
 		.contact-support--container {
 			flex-direction: column;
 			text-align: center;
@@ -426,13 +429,15 @@
 		padding: 30px 20px;
 	}
 
+	/* lg: 1024px - Desktop */
 	@media screen and (min-width: 1024px) {
 		.dashboard__content-section {
 			padding: 30px;
 		}
 	}
 
-	@media screen and (min-width: 1440px) {
+	/* 2xl: 1536px - Large desktops */
+	@media screen and (min-width: 1536px) {
 		.dashboard__content-section {
 			padding: 40px;
 		}

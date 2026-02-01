@@ -308,6 +308,7 @@
 		padding: 30px 20px;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.dashboard__content-section {
 			padding: 40px 30px 20px;
@@ -452,19 +453,22 @@
 		width: 100%;
 	}
 
-	@media (min-width: 576px) {
+	/* sm: 392px - Large phones: 2 columns */
+	@media (min-width: 392px) {
 		.col-sm-6 {
 			width: 50%;
 		}
 	}
 
+	/* md: 768px - Tablets: 2 columns */
 	@media (min-width: 768px) {
 		.col-md-6 {
 			width: 50%;
 		}
 	}
 
-	@media (min-width: 1200px) {
+	/* xl: 1280px - Large desktops: 3 columns */
+	@media (min-width: 1280px) {
 		.col-xl-4 {
 			width: 33.333333%;
 		}

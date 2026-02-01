@@ -168,6 +168,7 @@
 		padding: 30px 20px;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.dashboard__content-section {
 			padding: 40px 30px;
@@ -189,6 +190,7 @@
 		gap: 30px;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.trader-header__columns {
 			flex-direction: row;
@@ -226,6 +228,7 @@
 		text-align: center;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.trader-info {
 			text-align: left;
@@ -252,6 +255,7 @@
 		margin: 0 auto 20px auto;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.trader-info__separator {
 			margin: 0 0 20px 0;
@@ -313,13 +317,15 @@
 		gap: 20px;
 	}
 
-	@media screen and (min-width: 576px) {
+	/* md: 768px - Tablets: 2 columns */
+	@media screen and (min-width: 768px) {
 		.trader-products__grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media screen and (min-width: 992px) {
+	/* lg: 1024px - Desktop: 3 columns */
+	@media screen and (min-width: 1024px) {
 		.trader-products__grid {
 			grid-template-columns: repeat(3, 1fr);
 		}

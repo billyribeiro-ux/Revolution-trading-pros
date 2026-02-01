@@ -217,7 +217,8 @@
 		align-items: start;
 	}
 
-	@media (max-width: 1024px) {
+	/* lg: 1024px - Collapse to single column on tablets and below */
+	@media (max-width: 1023px) {
 		.main-grid {
 			grid-template-columns: 1fr;
 		}
@@ -232,13 +233,15 @@
 		padding: 20px;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.dashboard__content-section-member {
 			padding: 30px;
 		}
 	}
 
-	@media screen and (min-width: 1200px) {
+	/* xl: 1280px - Large desktops */
+	@media screen and (min-width: 1280px) {
 		.dashboard__content-section-member {
 			padding: 40px;
 		}
@@ -287,7 +290,7 @@
 		max-width: 360px;
 	}
 
-	/* Tablet and up: 2 cards on top, 1 centered below */
+	/* md: 768px - Tablets: 2 cards on top, 1 centered below */
 	@media screen and (min-width: 768px) {
 		.card-col {
 			flex: 0 1 360px;
@@ -412,13 +415,15 @@
 		padding: 30px 20px;
 	}
 
+	/* md: 768px - Tablets */
 	@media screen and (min-width: 768px) {
 		.dashboard__content-section {
 			padding: 30px;
 		}
 	}
 
-	@media screen and (min-width: 1200px) {
+	/* xl: 1280px - Large desktops */
+	@media screen and (min-width: 1280px) {
 		.dashboard__content-section {
 			padding: 40px;
 		}
@@ -538,7 +543,8 @@
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	}
 
-	@media (max-width: 1024px) {
+	/* lg: 1024px - Collapse sidebar on tablets and below */
+	@media (max-width: 1023px) {
 		.sidebar {
 			position: static;
 		}
