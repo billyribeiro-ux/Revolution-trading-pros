@@ -136,60 +136,114 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * LATEST UPDATES SECTION - WordPress Exact Match
+	 * LATEST UPDATES SECTION - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Mobile-First Base */
 	.latest-updates {
-		padding: 30px 20px;
-		overflow-x: auto;
-		overflow-y: hidden;
-	}
-
-	@media screen and (min-width: 1280px) {
-		.latest-updates {
-			padding: 30px;
-		}
-	}
-
-	@media screen and (min-width: 1440px) {
-		.latest-updates {
-			padding: 40px;
-		}
+		padding: 16px;
+		padding-left: max(16px, env(safe-area-inset-left, 16px));
+		padding-right: max(16px, env(safe-area-inset-right, 16px));
+		overflow-x: visible;
+		overflow-y: visible;
 	}
 
 	.section-title {
 		color: #333;
 		font-weight: 700;
-		font-size: 20px;
-		margin-bottom: 30px;
+		font-size: 18px;
+		margin-bottom: 20px;
 		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
+		line-height: 1.3;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * UPDATES GRID - Responsive 3-Column Layout
+	 * UPDATES GRID - 2026 Mobile-First Responsive Grid
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.updates-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 1.25rem;
+		gap: 16px;
 	}
 
-	@media screen and (min-width: 768px) {
+	.updates-grid__item {
+		display: flex;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Progressive Enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ - Small phones */
+	@media screen and (min-width: 360px) {
+		.latest-updates {
+			padding: 20px;
+		}
+
+		.updates-grid {
+			gap: 20px;
+		}
+	}
+
+	/* sm: 640px+ - Large phones / small tablets */
+	@media screen and (min-width: 640px) {
+		.latest-updates {
+			padding: 24px;
+		}
+
+		.section-title {
+			font-size: 20px;
+			margin-bottom: 24px;
+		}
+
 		.updates-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media screen and (min-width: 1024px) {
-		.updates-grid {
-			grid-template-columns: repeat(3, 1fr);
+	/* md: 768px+ - Tablets */
+	@media screen and (min-width: 768px) {
+		.latest-updates {
+			padding: 28px;
+		}
+
+		.section-title {
+			margin-bottom: 28px;
 		}
 	}
 
-	.updates-grid__item {
-		display: flex;
+	/* lg: 1024px+ - Desktop */
+	@media screen and (min-width: 1024px) {
+		.latest-updates {
+			padding: 30px;
+		}
+
+		.updates-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.section-title {
+			margin-bottom: 30px;
+		}
+	}
+
+	/* xl: 1280px+ - Large desktop */
+	@media screen and (min-width: 1280px) {
+		.latest-updates {
+			padding: 36px;
+		}
+	}
+
+	/* xxl: 1440px+ - Extra large desktop */
+	@media screen and (min-width: 1440px) {
+		.latest-updates {
+			padding: 40px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -339,36 +393,46 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * BUTTON STYLES - WordPress Exact Match
+	 * BUTTON STYLES - 2026 Touch-Friendly (44x44px minimum)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.article-card .btn {
-		margin: 0 20px 20px;
-		display: block;
-		width: calc(100% - 40px);
+		margin: 0 16px 16px;
+		display: flex;
+		width: calc(100% - 32px);
 		text-align: center;
 	}
 
+	@media screen and (min-width: 640px) {
+		.article-card .btn {
+			margin: 0 20px 20px;
+			width: calc(100% - 40px);
+		}
+	}
+
 	.btn {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
 		text-decoration: none;
-		border-radius: 5px;
+		border-radius: 8px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		transition: all 0.2s ease-in-out;
 		text-align: center;
 		cursor: pointer;
 		border: none;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-tiny {
-		padding: 10px 24px;
+		padding: 12px 20px;
 		font-size: 13px;
-		min-width: 120px;
-		height: 40px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+		min-width: 100px;
+		min-height: 44px;
 	}
 
 	.btn-default {
@@ -387,9 +451,34 @@
 		transform: translateY(-2px);
 	}
 
+	.btn-default:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+	}
+
+	.btn-default:active {
+		transform: translateY(0);
+	}
+
 	.article-card:hover .btn-default {
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.25);
 		transform: translateY(-1px);
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.btn,
+		.btn-default,
+		.article-card,
+		.article-card__image {
+			transition: none;
+			will-change: auto;
+		}
+
+		.article-card:hover,
+		.btn-default:hover {
+			transform: none;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

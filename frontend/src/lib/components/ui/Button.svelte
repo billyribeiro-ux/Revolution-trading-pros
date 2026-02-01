@@ -53,13 +53,13 @@
 	};
 
 	// Size variants with touch target optimization (2026 WCAG standards)
-	// Minimum 44px height for touch devices - handled via global CSS on coarse pointers
+	// Minimum 44px height for all touch devices - mobile-first approach
 	const sizes: Record<string, string> = {
-		xs: 'px-2 py-1 text-xs min-h-8', // 32px base, expands to 44px on touch via CSS
-		sm: 'px-3 py-1.5 text-sm min-h-9', // 36px base, expands to 44px on touch via CSS
-		md: 'px-4 py-2 text-base min-h-10', // 40px base, close to 44px target
-		lg: 'px-6 py-3 text-lg min-h-11', // 44px - meets touch target
-		xl: 'px-8 py-4 text-xl min-h-12' // 48px - enhanced touch target
+		xs: 'px-3 py-2 text-sm min-h-[44px]', // 44px - meets touch target
+		sm: 'px-4 py-2.5 text-sm min-h-[44px]', // 44px - meets touch target
+		md: 'px-4 py-3 text-base min-h-[44px]', // 44px - meets touch target
+		lg: 'px-6 py-3.5 text-lg min-h-[48px]', // 48px - enhanced touch target
+		xl: 'px-8 py-4 text-xl min-h-[52px]' // 52px - enhanced touch target
 	};
 
 	// Compute if button is truly disabled (disabled or loading)
@@ -69,10 +69,10 @@
 <button
 	{type}
 	class="rounded-md font-medium inline-flex items-center justify-center gap-2
-		transition-colors duration-200
+		transition-colors duration-200 touch-manipulation
 		focus:outline-none focus:ring-2 focus:ring-offset-2
 		{variants[variant]} {sizes[size]}
-		{fullWidth ? 'w-full' : ''}
+		{fullWidth ? 'w-full' : 'w-full sm:w-auto'}
 		disabled:cursor-not-allowed disabled:opacity-60
 		{className}"
 	disabled={isDisabled}

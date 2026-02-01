@@ -78,26 +78,26 @@
 	schema={resourcesSchema}
 />
 
-<!-- Hero -->
+<!-- Hero - 2026 Mobile-First Responsive -->
 <section
-	class="relative bg-gradient-to-br from-rtp-blue via-rtp-primary to-rtp-emerald text-white py-20 md:py-32"
+	class="resources-hero relative bg-gradient-to-br from-rtp-blue via-rtp-primary to-rtp-emerald text-white"
 >
 	<div class="absolute inset-0 bg-black/20"></div>
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-		<h1 class="text-4xl md:text-6xl font-heading font-bold mb-6">Free Trading Resources</h1>
-		<p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+	<div class="resources-hero__content relative max-w-7xl mx-auto text-center">
+		<h1 class="resources-hero__title font-heading font-bold">Free Trading Resources</h1>
+		<p class="resources-hero__subtitle text-white/90 max-w-3xl mx-auto">
 			Everything you need to start your trading journey. Guides, tools, and educational content.
 		</p>
 	</div>
 </section>
 
-<!-- Resource Categories -->
-<section class="py-20 bg-rtp-bg">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Resource Categories - 2026 Mobile-First Responsive -->
+<section class="resources-section bg-rtp-bg">
+	<div class="resources-container max-w-7xl mx-auto">
+		<div class="resources-grid">
 			<!-- Beginner Guides -->
-			<div class="bg-rtp-surface rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
-				<div class="w-16 h-16 bg-rtp-emerald/10 rounded-xl flex items-center justify-center mb-6">
+			<div class="resource-card bg-rtp-surface rounded-2xl shadow-lg hover:shadow-xl transition-all">
+				<div class="resource-card__icon bg-rtp-emerald/10 rounded-xl flex items-center justify-center">
 					<svg
 						class="w-8 h-8 text-rtp-emerald"
 						fill="none"
@@ -112,11 +112,11 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Beginner Guides</h3>
-				<ul class="space-y-3 text-rtp-muted">
-					<li class="flex items-start gap-2">
+				<h3 class="resource-card__title font-heading font-bold text-rtp-text">Beginner Guides</h3>
+				<ul class="resource-card__list text-rtp-muted">
+					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="resource-card__check text-rtp-emerald flex-shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -128,9 +128,9 @@
 						</svg>
 						<span>Complete Beginner's Guide to Trading</span>
 					</li>
-					<li class="flex items-start gap-2">
+					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="resource-card__check text-rtp-emerald flex-shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -142,9 +142,9 @@
 						</svg>
 						<span>How to Set Up Your Trading Account</span>
 					</li>
-					<li class="flex items-start gap-2">
+					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="resource-card__check text-rtp-emerald flex-shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -156,9 +156,9 @@
 						</svg>
 						<span>Understanding Options Basics</span>
 					</li>
-					<li class="flex items-start gap-2">
+					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="resource-card__check text-rtp-emerald flex-shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -174,8 +174,8 @@
 			</div>
 
 			<!-- Free Tools -->
-			<div class="bg-rtp-surface rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
-				<div class="w-16 h-16 bg-rtp-primary/10 rounded-xl flex items-center justify-center mb-6">
+			<div class="resource-card bg-rtp-surface rounded-2xl shadow-lg hover:shadow-xl transition-all">
+				<div class="resource-card__icon bg-rtp-primary/10 rounded-xl flex items-center justify-center">
 					<svg
 						class="w-8 h-8 text-rtp-primary"
 						fill="none"
@@ -561,16 +561,16 @@
 	</div>
 </section>
 
-<!-- CTA -->
-<section class="py-20 bg-gradient-to-br from-rtp-blue to-rtp-primary text-white">
-	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-		<h2 class="text-3xl md:text-5xl font-heading font-bold mb-6">Ready to Take the Next Step?</h2>
-		<p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+<!-- CTA - 2026 Mobile-First Responsive -->
+<section class="resources-cta bg-gradient-to-br from-rtp-blue to-rtp-primary text-white">
+	<div class="resources-cta__content max-w-4xl mx-auto text-center">
+		<h2 class="resources-cta__title font-heading font-bold">Ready to Take the Next Step?</h2>
+		<p class="resources-cta__text text-white/90 max-w-2xl mx-auto">
 			Join our community and get access to professional trading rooms, courses, and indicators.
 		</p>
 		<a
 			href="/signup"
-			class="inline-block bg-white text-rtp-primary px-8 py-4 rounded-lg font-semibold hover:bg-rtp-bg transition-all hover:scale-105 shadow-lg"
+			class="resources-cta__btn inline-block bg-white text-rtp-primary rounded-lg font-semibold hover:bg-rtp-bg transition-all hover:scale-105 shadow-lg"
 		>
 			Get Started Free
 		</a>
@@ -578,3 +578,270 @@
 </section>
 
 <MarketingFooter />
+
+<style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 Mobile-First Responsive Styles - Resources Page
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Hero Section - Mobile First */
+	:global(.resources-hero) {
+		padding: 5rem 1rem 3rem;
+		padding-top: calc(5rem + env(safe-area-inset-top, 0px));
+		padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+		padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+	}
+
+	:global(.resources-hero__content) {
+		padding: 0 1rem;
+	}
+
+	:global(.resources-hero__title) {
+		font-size: clamp(1.75rem, 6vw, 3.5rem);
+		margin-bottom: 1rem;
+		line-height: 1.15;
+	}
+
+	:global(.resources-hero__subtitle) {
+		font-size: clamp(1rem, 3vw, 1.5rem);
+		line-height: 1.5;
+	}
+
+	/* Tablet and up */
+	@media (min-width: 640px) {
+		:global(.resources-hero) {
+			padding: 6rem 1.5rem 4rem;
+		}
+
+		:global(.resources-hero__title) {
+			margin-bottom: 1.5rem;
+		}
+	}
+
+	/* Desktop */
+	@media (min-width: 768px) {
+		:global(.resources-hero) {
+			padding: 8rem 2rem 6rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		:global(.resources-hero) {
+			padding: 10rem 2rem 8rem;
+		}
+	}
+
+	/* Resources Section - Mobile First */
+	:global(.resources-section) {
+		padding: 3rem 1rem;
+		padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+		padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+	}
+
+	:global(.resources-container) {
+		padding: 0;
+	}
+
+	/* Resources Grid - Mobile First (single column) */
+	:global(.resources-grid) {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+	}
+
+	/* sm: 640px - 2 columns */
+	@media (min-width: 640px) {
+		:global(.resources-section) {
+			padding: 4rem 1.5rem;
+		}
+
+		:global(.resources-grid) {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.5rem;
+		}
+	}
+
+	/* md: 768px - Still 2 columns but larger gap */
+	@media (min-width: 768px) {
+		:global(.resources-section) {
+			padding: 5rem 2rem;
+		}
+
+		:global(.resources-grid) {
+			gap: 2rem;
+		}
+	}
+
+	/* lg: 1024px - 3 columns */
+	@media (min-width: 1024px) {
+		:global(.resources-grid) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	/* Resource Card - Mobile First */
+	:global(.resource-card) {
+		padding: 1.25rem;
+	}
+
+	:global(.resource-card__icon) {
+		width: 3rem;
+		height: 3rem;
+		margin-bottom: 1rem;
+	}
+
+	:global(.resource-card__icon svg) {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	:global(.resource-card__title) {
+		font-size: 1.25rem;
+		margin-bottom: 0.75rem;
+	}
+
+	:global(.resource-card__list) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+	}
+
+	:global(.resource-card__item) {
+		gap: 0.5rem;
+	}
+
+	:global(.resource-card__check) {
+		width: 1.125rem;
+		height: 1.125rem;
+		margin-top: 0.125rem;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		:global(.resource-card) {
+			padding: 1.5rem;
+		}
+
+		:global(.resource-card__icon) {
+			width: 3.5rem;
+			height: 3.5rem;
+			margin-bottom: 1.25rem;
+		}
+
+		:global(.resource-card__icon svg) {
+			width: 1.75rem;
+			height: 1.75rem;
+		}
+
+		:global(.resource-card__title) {
+			font-size: 1.375rem;
+			margin-bottom: 1rem;
+		}
+
+		:global(.resource-card__list) {
+			gap: 0.75rem;
+		}
+
+		:global(.resource-card__check) {
+			width: 1.25rem;
+			height: 1.25rem;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		:global(.resource-card) {
+			padding: 2rem;
+		}
+
+		:global(.resource-card__icon) {
+			width: 4rem;
+			height: 4rem;
+			margin-bottom: 1.5rem;
+		}
+
+		:global(.resource-card__icon svg) {
+			width: 2rem;
+			height: 2rem;
+		}
+
+		:global(.resource-card__title) {
+			font-size: 1.5rem;
+		}
+	}
+
+	/* CTA Section - Mobile First */
+	:global(.resources-cta) {
+		padding: 3rem 1rem;
+		padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	:global(.resources-cta__content) {
+		padding: 0 1rem;
+	}
+
+	:global(.resources-cta__title) {
+		font-size: clamp(1.5rem, 5vw, 3rem);
+		margin-bottom: 1rem;
+		line-height: 1.2;
+	}
+
+	:global(.resources-cta__text) {
+		font-size: 1rem;
+		margin-bottom: 1.5rem;
+		line-height: 1.6;
+	}
+
+	:global(.resources-cta__btn) {
+		padding: 0.875rem 2rem;
+		font-size: 1rem;
+		/* 44px min touch target */
+		min-height: 44px;
+		min-width: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		:global(.resources-cta) {
+			padding: 4rem 1.5rem;
+		}
+
+		:global(.resources-cta__text) {
+			font-size: 1.125rem;
+			margin-bottom: 2rem;
+		}
+
+		:global(.resources-cta__btn) {
+			padding: 1rem 2.5rem;
+			font-size: 1.125rem;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		:global(.resources-cta) {
+			padding: 5rem 2rem;
+		}
+
+		:global(.resources-cta__title) {
+			margin-bottom: 1.5rem;
+		}
+
+		:global(.resources-cta__btn) {
+			padding: 1rem 3rem;
+		}
+	}
+
+	/* Touch targets - All interactive elements 44x44px minimum */
+	:global(.resource-card a),
+	:global(.resource-card button) {
+		min-height: 44px;
+		min-width: 44px;
+		display: inline-flex;
+		align-items: center;
+	}
+</style>

@@ -130,12 +130,14 @@
 		gap: 0.75rem;
 	}
 
+	/* Pricing Option - 2026 Mobile-First with touch targets */
 	.pricing-option {
 		position: relative;
 		display: flex;
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem 1.5rem;
+		min-height: 60px; /* Enhanced touch target */
 		background: #ffffff;
 		border: 2px solid #e5e7eb;
 		border-radius: 12px;
@@ -143,6 +145,10 @@
 		transition: all 0.2s ease;
 		text-align: left;
 		width: 100%;
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
+		font-size: 16px; /* Prevents iOS zoom */
 	}
 
 	.pricing-option:hover {

@@ -888,4 +888,101 @@
 			padding: 6px 12px;
 		}
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design Enhancements
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Touch-friendly pagination buttons */
+	.page-numbers button,
+	.page-numbers span {
+		min-height: 44px;
+		min-width: 44px;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* Safe areas for notched devices */
+	@supports (padding: max(0px)) {
+		.dashboard__header {
+			padding-left: max(20px, env(safe-area-inset-left));
+			padding-right: max(20px, env(safe-area-inset-right));
+		}
+
+		.dashboard__content-section {
+			padding-left: max(0px, env(safe-area-inset-left));
+			padding-right: max(0px, env(safe-area-inset-right));
+		}
+	}
+
+	/* xs: Extra small devices (< 360px) */
+	@media (max-width: 359px) {
+		.dashboard__page-title {
+			font-size: 20px;
+		}
+
+		.card-grid {
+			margin-left: -8px;
+			margin-right: -8px;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) - 2 columns */
+	@media (min-width: 640px) {
+		:global(.col-sm-6) {
+			width: 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) - 3 columns */
+	@media (min-width: 1024px) {
+		:global(.col-lg-4) {
+			width: 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-orange {
+			min-height: 48px;
+			padding: 14px 28px;
+		}
+
+		.page-numbers button {
+			min-height: 48px;
+			min-width: 48px;
+		}
+
+		.page-numbers button:hover:not(:disabled) {
+			background: #fff;
+			border-color: #e6e6e6;
+		}
+
+		.page-numbers button:active:not(:disabled) {
+			background: #f5f5f5;
+			border-color: #143e59;
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.btn-orange,
+		.page-numbers button {
+			transition: none;
+		}
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.page-numbers .current {
+			border-width: 2px;
+		}
+
+		.btn-orange {
+			border: 2px solid #fff;
+		}
+	}
 </style>

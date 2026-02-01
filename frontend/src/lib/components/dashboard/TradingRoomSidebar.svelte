@@ -447,31 +447,22 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TRADING ROOM SIDEBAR - Pixel Perfect WordPress Match
-	 * Font: Montserrat (as requested by user)
-	 * Source: DASHMAIN lines 3199-3222
+	 * TRADING ROOM SIDEBAR - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
+	 * Features: Slide-in panel on mobile, scrollable content
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Mobile-First Base - Full width, stacked below main content */
 	.dashboard__content-sidebar {
-		flex: 0 0 320px;
-		width: 320px;
+		width: 100%;
 		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		overflow: hidden;
-	}
-
-	@media (max-width: 1199px) {
-		.dashboard__content-sidebar {
-			flex: 0 0 280px;
-			width: 280px;
-		}
-	}
-
-	@media (max-width: 991px) {
-		.dashboard__content-sidebar {
-			display: none;
-		}
+		border-radius: 0;
+		box-shadow: none;
+		overflow: visible;
+		padding-bottom: env(safe-area-inset-bottom, 16px);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -632,28 +623,172 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE DESIGN
+	 * RESPONSIVE BREAKPOINTS - Progressive Enhancement
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1199px) {
-		.content-sidebar__section {
-			padding: 20px;
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
+		.content-sidebar__heading {
+			font-size: 13px;
+			padding: 14px 20px;
 		}
 
+		.script-container,
+		.link-list {
+			padding: 16px 20px;
+		}
+	}
+
+	/* sm: 640px+ - Large phones / small tablets - Two column layout */
+	@media (min-width: 640px) {
+		.dashboard__content-sidebar {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0;
+		}
+
+		.content-sidebar__section {
+			border-right: 1px solid #e5e5e5;
+		}
+
+		.content-sidebar__section:last-child {
+			border-right: none;
+		}
+	}
+
+	/* md: 768px+ - Tablets */
+	@media (min-width: 768px) {
 		.content-sidebar__heading {
-			font-size: 16px;
+			font-size: 14px;
 		}
 
 		.schedule-event h4 {
-			font-size: 13px;
-		}
-
-		.schedule-event span {
-			font-size: 11px;
+			font-size: 15px;
 		}
 
 		.link-list a {
-			font-size: 13px;
+			font-size: 14px;
+			min-height: 44px;
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	/* lg: 1024px+ - Desktop - Sidebar column layout */
+	@media (min-width: 1024px) {
+		.dashboard__content-sidebar {
+			display: block;
+			flex: 0 0 280px;
+			width: 280px;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			max-height: calc(100dvh - 100px);
+			overflow-y: auto;
+			overflow-x: hidden;
+			-webkit-overflow-scrolling: touch;
+			position: sticky;
+			top: 20px;
+		}
+
+		.content-sidebar__section {
+			border-right: none;
+			border-bottom: 1px solid #e5e5e5;
+		}
+
+		.content-sidebar__section:last-child {
+			border-bottom: none;
+		}
+
+		.room-sched {
+			max-height: 300px;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+	}
+
+	/* xl: 1280px+ - Large desktop */
+	@media (min-width: 1280px) {
+		.dashboard__content-sidebar {
+			flex: 0 0 300px;
+			width: 300px;
+		}
+
+		.content-sidebar__heading {
+			font-size: 14px;
+			padding: 14px 24px;
+		}
+
+		.script-container,
+		.link-list {
+			padding: 20px 24px;
+		}
+	}
+
+	/* xxl: 1440px+ - Extra large desktop */
+	@media (min-width: 1440px) {
+		.dashboard__content-sidebar {
+			flex: 0 0 320px;
+			width: 320px;
+		}
+	}
+
+	/* Touch-friendly link list */
+	.link-list a {
+		min-height: 44px;
+		padding: 10px 0;
+		display: flex;
+		align-items: center;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+
+	.link-list a:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
+	/* Schedule scrollable on all devices */
+	.room-sched {
+		max-height: 400px;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		scrollbar-color: #ccc transparent;
+	}
+
+	.room-sched::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.room-sched::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.room-sched::-webkit-scrollbar-thumb {
+		background: #ccc;
+		border-radius: 3px;
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.dashboard__content-sidebar {
+			transition: none;
+		}
+	}
+
+	/* Landscape on mobile - condensed layout */
+	@media (max-width: 1023px) and (orientation: landscape) {
+		.room-sched {
+			max-height: 200px;
+		}
+
+		.schedule-event {
+			padding-bottom: 12px;
+		}
+
+		.link-list li {
+			margin-bottom: 8px;
 		}
 	}
 </style>

@@ -707,9 +707,135 @@
 		border-radius: 6px;
 		color: #6b7280;
 		cursor: pointer;
+		/* Touch-friendly sizing */
+		min-height: 44px;
+		min-width: 44px;
 	}
 	.btn-danger:hover {
 		background: #fee2e2;
 		color: #dc2626;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile base styles */
+	@media (max-width: 639px) {
+		.editor-page {
+			padding: 16px;
+			padding-left: max(16px, env(safe-area-inset-left));
+			padding-right: max(16px, env(safe-area-inset-right));
+		}
+
+		.page-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+		}
+
+		.header-left {
+			flex-wrap: wrap;
+		}
+
+		.header-actions {
+			width: 100%;
+			flex-wrap: wrap;
+		}
+
+		.header-actions button,
+		.header-actions a {
+			flex: 1;
+			min-width: 100px;
+			justify-content: center;
+		}
+
+		h1 {
+			font-size: 20px;
+		}
+
+		.tabs {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+			gap: 0;
+		}
+
+		.tabs button {
+			padding: 12px 16px;
+			white-space: nowrap;
+			min-height: 44px;
+		}
+
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.form-section {
+			padding: 16px;
+		}
+
+		.videos-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) */
+	@media (min-width: 640px) {
+		.header-actions {
+			flex-wrap: nowrap;
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
+	@media (min-width: 768px) {
+		.editor-page {
+			padding: 24px;
+		}
+
+		.form-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-primary,
+		.btn-secondary,
+		.btn-success {
+			padding: 12px 24px;
+			min-height: 48px;
+		}
+
+		.tabs button {
+			min-height: 48px;
+		}
+
+		input,
+		select,
+		textarea {
+			font-size: 16px; /* Prevent zoom on iOS */
+			min-height: 44px;
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
+		}
+
+		.btn-primary:hover,
+		.btn-secondary:hover {
+			transform: none;
+		}
+	}
+
+	/* Safe areas for notched devices */
+	@supports (padding: max(0px)) {
+		.editor-page {
+			padding-bottom: max(24px, env(safe-area-inset-bottom));
+		}
 	}
 </style>

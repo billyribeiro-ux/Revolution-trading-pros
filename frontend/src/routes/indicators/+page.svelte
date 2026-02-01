@@ -1556,7 +1556,125 @@
 		font-size: 1.125rem;
 	}
 
-	/* Responsive */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile-first base improvements */
+	.section-container {
+		padding-left: max(1rem, env(safe-area-inset-left));
+		padding-right: max(1rem, env(safe-area-inset-right));
+	}
+
+	/* Touch-friendly buttons on all devices */
+	.cta-button,
+	.filter-button,
+	.card-button {
+		min-height: 44px;
+		min-width: 44px;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* xs: Extra small devices (≥ 360px) */
+	@media (min-width: 360px) {
+		.hero-section {
+			padding: 5rem 1rem 3rem;
+		}
+
+		.section-container {
+			padding: 0 1rem;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) - 2 columns for cards */
+	@media (min-width: 640px) {
+		.hero-section {
+			padding: 6rem 1.5rem 4rem;
+		}
+
+		.indicators-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.hero-stats {
+			flex-direction: row;
+			gap: 2rem;
+		}
+
+		.filter-buttons {
+			gap: 0.5rem;
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
+	@media (min-width: 768px) {
+		.hero-section {
+			padding: 7rem 2rem 5rem;
+		}
+
+		.truth-grid {
+			grid-template-columns: 1fr;
+			gap: 4rem;
+		}
+
+		.setup-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.confluence-grid {
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+
+		.filter-section {
+			padding: 5rem 2rem 2rem;
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) - 3 columns for cards */
+	@media (min-width: 1024px) {
+		.hero-section {
+			padding: 8rem 2rem 6rem;
+		}
+
+		.indicators-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.truth-grid {
+			grid-template-columns: 1fr 1fr;
+			gap: 6rem;
+		}
+
+		.setup-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+
+		.hero-stats {
+			gap: 4rem;
+		}
+
+		.confluence-grid {
+			flex-wrap: nowrap;
+			gap: 3rem;
+		}
+	}
+
+	/* xl: Extra large devices (≥ 1280px) */
+	@media (min-width: 1280px) {
+		.glow-orb-1 {
+			width: 800px;
+			height: 800px;
+		}
+		.glow-orb-2 {
+			width: 600px;
+			height: 600px;
+		}
+	}
+
+	/* Smaller screens for orbs */
 	@media (max-width: 1200px) {
 		.glow-orb-1 {
 			width: 500px;
@@ -1568,37 +1686,108 @@
 		}
 	}
 
-	@media (max-width: 1024px) {
-		.truth-grid {
-			grid-template-columns: 1fr;
-			gap: 4rem;
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.cta-button {
+			padding: 1.125rem 2.5rem;
 		}
-		.confluence-grid {
-			flex-direction: column;
-			gap: 2rem;
+
+		.filter-button {
+			padding: 0.75rem 1.5rem;
+		}
+
+		.indicator-card:hover {
+			transform: none;
+		}
+
+		.card-button {
+			padding: 1.125rem 1.5rem;
+		}
+
+		/* Disable hover effects on touch */
+		.indicator-card:hover {
+			box-shadow: none;
 		}
 	}
 
-	@media (max-width: 768px) {
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.glow-orb,
+		.chart-line-svg,
+		.animate-float,
+		.indicator-card,
+		.confluence-connector :global(svg) {
+			animation: none !important;
+		}
+
+		.indicator-card,
+		.cta-button,
+		.filter-button,
+		.card-button {
+			transition: none !important;
+		}
+
+		.perspective-grid {
+			animation: none;
+			transform: perspective(500px) rotateX(60deg) scale(2);
+		}
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.indicator-card {
+			border-width: 2px;
+			border-color: #fff;
+		}
+
+		.cta-button.primary {
+			border: 2px solid #fff;
+		}
+
+		.filter-button.active {
+			border: 2px solid #fff;
+		}
+	}
+
+	/* Dark mode forced colors */
+	@media (forced-colors: active) {
+		.gradient-text {
+			background: none;
+			-webkit-text-fill-color: currentColor;
+			color: LinkText;
+		}
+	}
+
+	/* Landscape mobile orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
 		.hero-section {
-			padding: 6rem 1.5rem 4rem;
+			padding: 3rem 1rem 2rem;
 			min-height: auto;
 		}
-		.indicators-grid {
-			grid-template-columns: 1fr;
-		}
+
 		.hero-stats {
-			flex-direction: column;
-			gap: 1.5rem;
+			margin-top: 1rem;
+			padding-top: 1rem;
 		}
-		.stat-item {
-			justify-content: flex-start;
+	}
+
+	/* Print styles */
+	@media print {
+		.glow-orb,
+		.chart-lines,
+		.perspective-grid,
+		.spotlight-overlay {
+			display: none !important;
 		}
-		.filter-section {
-			padding: 4rem 1rem 1rem;
+
+		.indicators-page {
+			background: #fff;
+			color: #000;
 		}
-		.setup-grid {
-			grid-template-columns: 1fr;
+
+		.indicator-card {
+			break-inside: avoid;
+			page-break-inside: avoid;
 		}
 	}
 </style>

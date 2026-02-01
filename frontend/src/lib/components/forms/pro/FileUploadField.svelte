@@ -307,17 +307,20 @@
 		margin-left: 0.25rem;
 	}
 
+	/* 2026 Mobile-First: Enhanced touch target for upload */
 	.dropzone {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 2rem;
+		padding: 2rem 1.5rem;
+		min-height: 120px; /* Enhanced touch area */
 		border: 2px dashed #d1d5db;
 		border-radius: 0.75rem;
 		background-color: #f9fafb;
 		cursor: pointer;
 		transition: all 0.2s;
+		touch-action: manipulation;
 	}
 
 	.dropzone:hover {
@@ -377,7 +380,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		padding: 0.75rem;
+		padding: 1rem;
+		min-height: 60px; /* Touch-friendly height */
 		background-color: #f9fafb;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
@@ -441,18 +445,22 @@
 		transition: width 0.2s;
 	}
 
+	/* 2026 Mobile-First: 44px touch targets */
 	.remove-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
+		width: 44px; /* Touch target */
+		height: 44px; /* Touch target */
+		min-width: 44px;
+		min-height: 44px;
 		border: none;
 		background-color: transparent;
 		color: #9ca3af;
 		cursor: pointer;
 		border-radius: 0.375rem;
 		transition: all 0.15s;
+		touch-action: manipulation;
 	}
 
 	.remove-btn:hover {

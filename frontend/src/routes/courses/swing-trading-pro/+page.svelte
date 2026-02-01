@@ -906,26 +906,133 @@
 		color: rgba(255, 255, 255, 0.6);
 	}
 
-	/* Responsive */
-	@media (max-width: 1024px) {
-		.modules-grid {
-			grid-template-columns: 1fr;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 MOBILE-FIRST RESPONSIVE DESIGN
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-		.glow-orb-1 {
-			width: 400px;
-			height: 400px;
-		}
-
-		.glow-orb-2 {
-			width: 350px;
-			height: 350px;
+	/* DYNAMIC VIEWPORT HEIGHT */
+	@supports (min-height: 100dvh) {
+		.hero-section {
+			min-height: 85dvh;
 		}
 	}
 
-	@media (max-width: 768px) {
+	/* SAFE AREA INSETS */
+	.course-page {
+		padding-left: env(safe-area-inset-left);
+		padding-right: env(safe-area-inset-right);
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+
+	.enrollment-section {
+		padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+	}
+
+	/* TOUCH TARGETS - min 44x44px */
+	@media (hover: none) and (pointer: coarse) {
+		.cta-button,
+		.enrollment-button {
+			min-height: 44px;
+		}
+
+		.module-topics li {
+			min-height: 44px;
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	/* EXTRA SMALL DEVICES (< 360px) */
+	@media (max-width: 359px) {
 		.hero-section {
-			padding: 6rem 1.5rem 4rem;
+			padding: 5rem 1rem 3rem;
+			min-height: auto;
+		}
+
+		.hero-badge {
+			padding: 0.375rem 0.75rem;
+			font-size: 0.75rem;
+		}
+
+		.hero-title {
+			font-size: 2rem;
+		}
+
+		.hero-description {
+			font-size: 0.875rem;
+		}
+
+		.hero-meta {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.meta-item {
+			justify-content: center;
+		}
+
+		.hero-cta {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.cta-button {
+			width: 100%;
+			justify-content: center;
+			padding: 0.875rem 1.5rem;
+		}
+
+		.section-container {
+			padding: 0 0.75rem;
+		}
+
+		.section-title {
+			font-size: 1.5rem;
+		}
+
+		.section-description {
+			font-size: 0.9375rem;
+		}
+
+		.learning-section,
+		.curriculum-section,
+		.features-section {
+			padding: 4rem 0;
+		}
+
+		.learning-card,
+		.module-card {
+			padding: 1.25rem;
+		}
+
+		.module-title {
+			font-size: 1.25rem;
+		}
+
+		.enrollment-card {
+			padding: 1.5rem;
+		}
+
+		.enrollment-content h2 {
+			font-size: 1.5rem;
+		}
+
+		.price-value {
+			font-size: 2.25rem;
+		}
+
+		.glow-orb-1,
+		.glow-orb-2 {
+			width: 200px;
+			height: 200px;
+		}
+	}
+
+	/* SMALL MOBILE (360px - 639px) */
+	@media (min-width: 360px) and (max-width: 639px) {
+		.hero-section {
+			padding: 6rem 1rem 3rem;
 			min-height: auto;
 		}
 
@@ -934,8 +1041,34 @@
 			gap: 1rem;
 		}
 
-		.enrollment-card {
-			padding: 2rem;
+		.hero-cta {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.cta-button {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.section-container {
+			padding: 0 1rem;
+		}
+
+		.learning-grid,
+		.features-grid,
+		.modules-grid,
+		.enrollment-features {
+			grid-template-columns: 1fr;
+		}
+
+		.feature-card {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.feature-icon {
+			margin: 0 auto;
 		}
 
 		.enrollment-pricing {
@@ -953,45 +1086,105 @@
 		}
 
 		.glow-orb-1 {
-			width: 300px;
-			height: 300px;
+			width: 280px;
+			height: 280px;
 		}
 
 		.glow-orb-2 {
-			width: 250px;
-			height: 250px;
+			width: 220px;
+			height: 220px;
 		}
 	}
 
-	@media (max-width: 640px) {
-		.section-container {
-			padding: 0 1rem;
+	/* TABLET (640px - 767px) */
+	@media (min-width: 640px) and (max-width: 767px) {
+		.hero-section {
+			padding: 6rem 1.5rem 4rem;
 		}
 
-		.learning-grid,
+		.hero-meta {
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 1.5rem;
+		}
+
+		.learning-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.modules-grid,
 		.features-grid {
 			grid-template-columns: 1fr;
 		}
+	}
 
+	/* MEDIUM DEVICES (768px - 1023px) */
+	@media (min-width: 768px) and (max-width: 1023px) {
 		.modules-grid {
 			grid-template-columns: 1fr;
 		}
 
+		.learning-grid,
+		.features-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.glow-orb-1 {
+			width: 400px;
+			height: 400px;
+		}
+
+		.glow-orb-2 {
+			width: 350px;
+			height: 350px;
+		}
+	}
+
+	/* LARGE DEVICES (1024px+) */
+	@media (min-width: 1024px) {
+		.modules-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* LANDSCAPE MOBILE */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.hero-section {
+			min-height: auto;
+			padding: 4rem 2rem 3rem;
+		}
+
+		.learning-section,
+		.curriculum-section,
+		.features-section {
+			padding: 3rem 0;
+		}
+
+		.section-description {
+			margin-bottom: 2rem;
+		}
+	}
+
+	/* REDUCED MOTION */
+	@media (prefers-reduced-motion: reduce) {
+		.hero-section,
 		.module-card {
-			padding: 1.5rem;
+			transition: none;
+			transform: none;
+			opacity: 1;
 		}
 
-		.feature-card {
-			flex-direction: column;
-			text-align: center;
+		.glow-orb {
+			animation: none;
 		}
 
-		.feature-icon {
-			margin: 0 auto;
-		}
-
-		.enrollment-features {
-			grid-template-columns: 1fr;
+		.cta-button:hover,
+		.enrollment-button:hover,
+		.learning-card:hover,
+		.module-card:hover,
+		.feature-card:hover {
+			transform: none;
 		}
 	}
 </style>

@@ -99,16 +99,19 @@
 		margin: 0;
 	}
 
+	/* 2026 Mobile-First: Enhanced touch area */
 	.toggle-wrapper {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.75rem;
+		min-height: 44px; /* Touch target */
 	}
 
 	.toggle-label {
-		font-size: 0.875rem;
+		font-size: 1rem; /* 16px for readability */
 		color: #9ca3af;
 		transition: color 0.2s;
+		padding: 0.5rem 0; /* Touch-friendly padding */
 	}
 
 	.toggle-label.active {
@@ -122,8 +125,10 @@
 		align-items: center;
 		background: none;
 		border: none;
-		padding: 0;
+		padding: 0.5rem; /* Touch-friendly padding around switch */
+		margin: -0.5rem; /* Offset to maintain visual position */
 		cursor: pointer;
+		touch-action: manipulation;
 	}
 
 	.toggle-switch:focus {

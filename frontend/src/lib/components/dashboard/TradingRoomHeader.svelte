@@ -148,102 +148,173 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD HEADER - WordPress Exact Match
+	 * DASHBOARD HEADER - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ICT 7: FULL WIDTH - NO GAPS EVER */
+	/* Mobile-First Base - Full width, stacked layout */
 	.dashboard__header {
 		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 16px;
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
-		border-right: 1px solid #dbdbdb;
-		padding: 20px;
+		padding: 16px;
+		padding-top: max(16px, env(safe-area-inset-top, 16px));
+		padding-left: max(16px, env(safe-area-inset-left, 16px));
+		padding-right: max(16px, env(safe-area-inset-right, 16px));
 		margin: 0 !important;
 		width: 100% !important;
 		max-width: none !important;
 		box-sizing: border-box;
 	}
 
-	@media (min-width: 1280px) {
-		.dashboard__header {
-			padding: 30px;
-			width: 100% !important;
-			max-width: none !important;
-			margin: 0 !important;
-		}
-	}
-
-	@media (min-width: 1440px) {
-		.dashboard__header {
-			padding: 30px 40px;
-			width: 100% !important;
-			max-width: none !important;
-			margin: 0 !important;
-		}
-	}
-
-	@media (min-width: 1920px) {
-		.dashboard__header {
-			padding: 40px 60px;
-			width: 100% !important;
-			max-width: none !important;
-			margin: 0 !important;
-		}
-	}
-
 	.dashboard__header-left {
 		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		flex: 1;
-		gap: 15px;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+		width: 100%;
 	}
 
 	.dashboard__page-title {
 		margin: 0;
 		color: #333;
-		font-size: 36px;
-		font-weight: 400;
+		font-size: 24px;
+		font-weight: 600;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		line-height: 1.2;
+		word-wrap: break-word;
 	}
 
 	.dashboard__header-right {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-end;
-		margin-top: 10px;
+		align-items: stretch;
+		gap: 12px;
+		width: 100%;
 	}
 
-	@media (min-width: 820px) {
-		.dashboard__header-right {
-			flex-direction: column;
-			margin-top: 0;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Progressive Enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
+		.dashboard__header {
+			padding: 20px;
+		}
+
+		.dashboard__page-title {
+			font-size: 26px;
 		}
 	}
 
-	/* Button Styles */
+	/* sm: 640px+ - Large phones / small tablets */
+	@media (min-width: 640px) {
+		.dashboard__header {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.dashboard__header-left {
+			flex-direction: row;
+			align-items: center;
+			flex: 1 1 auto;
+			width: auto;
+		}
+
+		.dashboard__header-right {
+			flex-direction: column;
+			align-items: flex-end;
+			width: auto;
+		}
+
+		.dashboard__page-title {
+			font-size: 28px;
+		}
+	}
+
+	/* md: 768px+ - Tablets */
+	@media (min-width: 768px) {
+		.dashboard__header {
+			padding: 24px;
+		}
+
+		.dashboard__page-title {
+			font-size: 32px;
+		}
+	}
+
+	/* lg: 1024px+ - Desktop */
+	@media (min-width: 1024px) {
+		.dashboard__header {
+			padding: 28px;
+			border-right: 1px solid #dbdbdb;
+		}
+
+		.dashboard__page-title {
+			font-size: 34px;
+			font-weight: 400;
+		}
+	}
+
+	/* xl: 1280px+ - Large desktop */
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+
+		.dashboard__page-title {
+			font-size: 36px;
+		}
+	}
+
+	/* xxl: 1440px+ - Extra large desktop */
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+	}
+
+	/* 1920px+ - Ultra wide */
+	@media (min-width: 1920px) {
+		.dashboard__header {
+			padding: 40px 60px;
+		}
+	}
+
+	/* Button Styles - 2026 Touch-Friendly (44x44px minimum) */
 	.btn {
-		display: inline-block;
-		padding: 10px 20px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 12px 20px;
 		font-size: 14px;
 		font-weight: 600;
 		text-align: center;
 		text-decoration: none;
-		border-radius: 4px;
+		border-radius: 8px;
 		transition: all 0.15s ease-in-out;
 		cursor: pointer;
 		border: none;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-xs {
-		padding: 6px 12px;
-		font-size: 12px;
-		height: 40px;
-		display: inline-flex;
-		align-items: center;
+		padding: 10px 16px;
+		font-size: 13px;
+		min-height: 44px;
 	}
 
 	.btn-default {
@@ -260,31 +331,46 @@
 	.btn-default:active,
 	.btn-default:focus {
 		background-color: #e7e7e7;
-		border: 3px solid #c9a0dc;
+		border: 2px solid #c9a0dc;
 		outline: none;
+		outline-offset: 2px;
 		color: #0a84ae;
 	}
 
-	/* Enter Trading Room Button */
+	.btn-default:focus-visible {
+		outline: 2px solid #0a84ae;
+		outline-offset: 2px;
+	}
+
+	/* Enter Trading Room Button - Touch-Friendly */
 	.btn-orange {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		padding: 10px 20px;
+		min-height: 48px;
+		padding: 12px 20px;
 		background-color: #f69532;
 		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;
 		border: none;
-		border-radius: 4px;
+		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.15s ease-in-out;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-orange:hover {
 		background-color: #dc7309;
+	}
+
+	.btn-orange:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
+		box-shadow: 0 0 0 4px rgba(246, 149, 50, 0.5);
 	}
 
 	.btn-orange strong {
@@ -293,8 +379,15 @@
 
 	.btn-tradingroom {
 		text-transform: none;
-		width: 280px;
-		padding: 12px 18px;
+		width: 100%;
+		max-width: 280px;
+		padding: 14px 20px;
+	}
+
+	@media (min-width: 640px) {
+		.btn-tradingroom {
+			width: 280px;
+		}
 	}
 
 	.dropdown-arrow {
@@ -344,22 +437,31 @@
 		pointer-events: none;
 	}
 
+	/* Dropdown Items - Touch-Friendly (44px minimum) */
 	.dropdown-item {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		padding: 15px 20px;
+		gap: 10px;
+		min-height: 48px;
+		padding: 12px 16px;
 		color: #666;
 		font-size: 14px;
 		font-weight: 400;
 		text-decoration: none;
 		transition: background-color 0.15s ease-in-out;
-		border-radius: 5px;
+		border-radius: 8px;
 		white-space: nowrap;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.dropdown-item:hover {
 		background-color: #f4f4f4;
+	}
+
+	.dropdown-item:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: -2px;
 	}
 
 	.dropdown-item__icon {
@@ -368,32 +470,37 @@
 		justify-content: center;
 		flex-shrink: 0;
 		color: #143e59;
+		width: 24px;
+		height: 24px;
 	}
 
 	.dropdown-item__text {
 		flex: 1;
 	}
 
-	/* Trading Room Rules - Legal Compliance */
+	/* Trading Room Rules - Legal Compliance - Mobile-First */
 	.trading-room-rules {
 		text-align: center;
-		margin-top: 10px;
+		margin-top: 12px;
 		width: 100%;
-		max-width: 300px;
-		margin-left: auto;
-		margin-right: auto;
+		padding: 0 8px;
 	}
 
 	.trading-room-rules__link {
-		display: block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
 		margin-bottom: 8px;
-		font-size: 18px;
+		padding: 8px 16px;
+		font-size: 16px;
 		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
-		text-align: center;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.trading-room-rules__link:hover {
@@ -401,39 +508,69 @@
 		text-decoration: underline;
 	}
 
+	.trading-room-rules__link:focus-visible {
+		outline: 2px solid #1e73be;
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
 	.trading-room-rules__disclaimer {
 		margin: 0;
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
-		line-height: 1.4;
+		line-height: 1.5;
 		text-align: center;
 	}
 
-	@media (max-width: 768px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MOBILE ENHANCEMENTS
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (min-width: 640px) {
+		.trading-room-rules {
+			max-width: 300px;
+			margin-left: auto;
+			margin-right: 0;
+		}
+
+		.trading-room-rules__link {
+			font-size: 18px;
+		}
+
+		.trading-room-rules__disclaimer {
+			font-size: 13px;
+		}
+	}
+
+	/* Landscape on mobile - condensed layout */
+	@media (max-width: 767px) and (orientation: landscape) {
 		.dashboard__header {
-			padding: 20px;
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 15px;
+			padding: 12px 20px;
 		}
 
 		.dashboard__page-title {
-			font-size: 24px;
+			font-size: 20px;
 		}
 
-		.dashboard__header-right {
-			width: 100%;
-			align-items: stretch;
+		.trading-room-rules__disclaimer {
+			font-size: 11px;
+		}
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.btn,
+		.btn-orange,
+		.dropdown-item,
+		.dropdown-menu,
+		.trading-room-rules__link {
+			transition: none;
 		}
 
-		.btn-tradingroom {
-			width: 100%;
-		}
-
-		.trading-room-rules {
-			max-width: 100%;
+		.dropdown-arrow {
+			transition: none;
 		}
 	}
 </style>

@@ -139,62 +139,112 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 RESPONSIVE CREATE REDIRECT MODAL - Mobile-First Design
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.modal-overlay {
 		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.5);
+		inset: 0;
+		background: rgba(0, 0, 0, 0.6);
 		display: flex;
-		align-items: center;
+		align-items: flex-end; /* Mobile: bottom sheet */
 		justify-content: center;
 		z-index: 1000;
-		padding: 1rem;
+		padding: 0;
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
 	}
 
 	.modal {
+		position: fixed;
+		inset: 0;
 		background: white;
-		border-radius: 12px;
+		border-radius: 0;
 		width: 100%;
-		max-width: 500px;
+		max-height: 100dvh;
+		display: flex;
+		flex-direction: column;
 		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+		/* Safe area insets */
+		padding-top: env(safe-area-inset-top, 0);
+		padding-bottom: env(safe-area-inset-bottom, 0);
+	}
+
+	/* Swipe indicator for mobile */
+	.modal::before {
+		content: '';
+		position: absolute;
+		top: 8px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 36px;
+		height: 4px;
+		background: rgba(0, 0, 0, 0.15);
+		border-radius: 2px;
+		z-index: 11;
 	}
 
 	.modal-header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 1.5rem;
+		padding: 1rem;
+		padding-top: calc(1.25rem + env(safe-area-inset-top, 0));
 		border-bottom: 1px solid #e5e5e5;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		flex-shrink: 0;
 	}
 
 	.modal-header h2 {
-		font-size: 1.25rem;
+		font-size: 1.125rem;
 		font-weight: 600;
 		color: #1a1a1a;
 		margin: 0;
 	}
 
+	/* Touch target: 44x44px minimum */
 	.close-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
+		width: 44px;
+		height: 44px;
 		background: none;
 		border: none;
 		color: #666;
 		cursor: pointer;
-		padding: 0.25rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 4px;
+		padding: 0;
+		border-radius: 0.75rem;
 		transition: background 0.2s;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.close-btn:hover {
 		background: #f0f0f0;
 	}
 
+	.close-btn:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
+	}
+
 	.modal-body {
-		padding: 1.5rem;
+		flex: 1;
+		padding: 1rem;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
 	}
 
 	.error-message {
@@ -262,26 +312,38 @@
 		color: #999;
 	}
 
+	/* Sticky footer */
 	.modal-footer {
+		position: sticky;
+		bottom: 0;
+		z-index: 10;
 		display: flex;
-		justify-content: flex-end;
+		flex-direction: column;
 		gap: 0.75rem;
-		padding: 1.5rem;
+		padding: 1rem;
+		padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
 		border-top: 1px solid #e5e5e5;
+		background: #f9fafb;
+		flex-shrink: 0;
 	}
 
+	/* Touch target: 44px minimum */
 	.btn-primary,
 	.btn-secondary {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 0.5rem;
+		min-height: 44px;
 		padding: 0.75rem 1.5rem;
-		border-radius: 6px;
+		border-radius: 0.75rem;
 		font-weight: 500;
 		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
 		font-size: 0.95rem;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-primary {
@@ -291,6 +353,11 @@
 
 	.btn-primary:hover:not(:disabled) {
 		background: #2563eb;
+	}
+
+	.btn-primary:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
 	}
 
 	.btn-primary:disabled {
@@ -306,5 +373,97 @@
 
 	.btn-secondary:hover {
 		background: #f8f9fa;
+	}
+
+	.btn-secondary:focus-visible {
+		outline: 2px solid #6b7280;
+		outline-offset: 2px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* sm: 640px+ - Centered modal */
+	@media (min-width: 640px) {
+		.modal-overlay {
+			align-items: center;
+			padding: 1.5rem;
+		}
+
+		.modal {
+			position: relative;
+			inset: auto;
+			max-width: 500px;
+			max-height: 85vh;
+			border-radius: 0.75rem;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		.modal::before {
+			display: none;
+		}
+
+		.modal-header {
+			padding: 1.25rem 1.5rem;
+			padding-top: 1.25rem;
+			border-radius: 0.75rem 0.75rem 0 0;
+		}
+
+		.modal-header h2 {
+			font-size: 1.25rem;
+		}
+
+		.modal-body {
+			padding: 1.5rem;
+		}
+
+		.modal-footer {
+			flex-direction: row;
+			justify-content: flex-end;
+			padding: 1rem 1.5rem;
+			padding-bottom: 1rem;
+			border-radius: 0 0 0.75rem 0.75rem;
+		}
+	}
+
+	/* Landscape orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.modal {
+			max-height: 100dvh;
+		}
+
+		.modal-header {
+			padding: 0.75rem 1rem;
+		}
+
+		.modal-body {
+			padding: 0.75rem 1rem;
+		}
+
+		.modal-footer {
+			padding: 0.75rem 1rem;
+		}
+	}
+
+	/* Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.close-btn,
+		.btn-primary,
+		.btn-secondary {
+			transition: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		.modal {
+			border: 2px solid #000;
+		}
+
+		.btn-primary,
+		.btn-secondary {
+			border: 2px solid currentColor;
+		}
 	}
 </style>

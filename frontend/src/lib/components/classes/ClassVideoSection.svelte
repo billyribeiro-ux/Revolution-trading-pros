@@ -110,34 +110,159 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Design - Mobile First
+	 * 2026 MOBILE-FIRST RESPONSIVE DESIGN
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Safe areas: env(safe-area-inset-*) for fullscreen viewing
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 768px) {
-		.class-video-container {
-			margin-bottom: 20px;
-		}
+	/* Mobile base styles (default) */
+	.class-video-container {
+		margin-bottom: 16px;
+		border-radius: 6px;
+		/* Safe area support */
+		padding-left: env(safe-area-inset-left, 0);
+		padding-right: env(safe-area-inset-right, 0);
+	}
 
-		.video-overlay h3 {
-			font-size: 1.1rem;
-		}
+	.video-overlay {
+		padding: 10px 12px;
+	}
 
-		.class-video-description p {
-			font-size: 0.95rem;
+	.video-overlay h3 {
+		font-size: 0.95rem;
+		margin-bottom: 6px;
+	}
+
+	.class-video-description p {
+		font-size: 0.85rem;
+		line-height: 1.5;
+	}
+
+	/* Video element with aspect-ratio */
+	.class-video-container video {
+		aspect-ratio: 16 / 9;
+		width: 100%;
+		height: auto;
+	}
+
+	/* Fallback for browsers without aspect-ratio */
+	@supports not (aspect-ratio: 16 / 9) {
+		.class-video-container video {
+			padding-top: 56.25%;
+			height: 0;
+			position: relative;
 		}
 	}
 
-	@media (max-width: 480px) {
+	/* xs: 360px+ */
+	@media (min-width: 360px) {
+		.class-video-container {
+			margin-bottom: 18px;
+		}
+
 		.video-overlay {
-			padding: 12px 15px;
+			padding: 12px 14px;
 		}
 
 		.video-overlay h3 {
 			font-size: 1rem;
+			margin-bottom: 8px;
 		}
 
 		.class-video-description p {
 			font-size: 0.9rem;
+		}
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.class-video-container {
+			margin-bottom: 24px;
+			border-radius: 6px;
+		}
+
+		.video-overlay {
+			padding: 14px 18px;
+		}
+
+		.video-overlay h3 {
+			font-size: 1.1rem;
+			margin-bottom: 10px;
+		}
+
+		.class-video-description p {
+			font-size: 0.95rem;
+			line-height: 1.6;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.class-video-container {
+			margin-bottom: 28px;
+		}
+
+		.video-overlay {
+			padding: 15px 20px;
+		}
+
+		.video-overlay h3 {
+			font-size: 1.2rem;
+		}
+
+		.class-video-description p {
+			font-size: 1rem;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.class-video-container {
+			margin-bottom: 30px;
+			border-radius: 8px;
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.class-video-container video::-webkit-media-controls-panel {
+			min-height: 44px;
+		}
+
+		.class-video-container video::-webkit-media-controls-play-button {
+			width: 44px;
+			height: 44px;
+		}
+
+		.class-video-container video::-webkit-media-controls-timeline {
+			height: 44px;
+		}
+
+		.class-video-container video::-webkit-media-controls-volume-slider {
+			height: 44px;
+		}
+	}
+
+	/* Fullscreen safe areas */
+	.class-video-container:fullscreen,
+	.class-video-container:-webkit-full-screen {
+		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+		border-radius: 0;
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.class-video-container,
+		.class-video-container video {
+			transition: none;
+		}
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.video-overlay {
+			border-bottom-width: 2px;
 		}
 	}
 </style>

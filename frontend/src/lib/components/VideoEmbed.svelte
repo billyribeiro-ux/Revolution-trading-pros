@@ -1877,10 +1877,112 @@
 		height: 100%;
 	}
 
-	/* Responsive */
-	@media (max-width: 640px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 MOBILE-FIRST RESPONSIVE DESIGN
+	   ═══════════════════════════════════════════════════════════════════════════
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   Touch targets: 44x44px minimum for all interactive elements
+	   Safe areas: env(safe-area-inset-*) for fullscreen viewing
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile base styles (default) */
+	.video-wrapper {
+		aspect-ratio: 16 / 9;
+		padding-bottom: 0;
+		height: auto;
+	}
+
+	/* Fallback for browsers without aspect-ratio */
+	@supports not (aspect-ratio: 16 / 9) {
+		.video-wrapper {
+			height: 0;
+			padding-bottom: 56.25%;
+		}
+	}
+
+	/* Play overlay - Mobile: 48px touch target */
+	.play-overlay {
+		width: 56px;
+		height: 56px;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 0;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+
+	/* Control buttons - 44px touch target on mobile */
+	.control-btn {
+		min-width: 44px;
+		min-height: 44px;
+		padding: 10px;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+
+	/* Progress bar - taller on mobile for touch */
+	.progress-bar {
+		height: 8px;
+		border: none;
+		padding: 0;
+		margin-bottom: 0.75rem;
+	}
+
+	.progress-thumb {
+		width: 16px;
+		height: 16px;
+		opacity: 1;
+	}
+
+	/* Volume control hidden on mobile */
+	.volume-control {
+		display: none;
+	}
+
+	/* Controls layout for mobile */
+	.controls-row {
+		gap: 0.25rem;
+	}
+
+	.custom-controls {
+		padding: 0.75rem;
+		padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
+	}
+
+	.time-display {
+		font-size: 0.75rem;
+	}
+
+	/* Settings menu for mobile */
+	.settings-menu {
+		right: 0.5rem;
+		bottom: calc(100% + 0.25rem);
+		min-width: 130px;
+	}
+
+	.settings-option {
+		min-height: 44px;
+		display: flex;
+		align-items: center;
+		padding: 0.5rem 0.75rem;
+	}
+
+	/* xs: 360px+ */
+	@media (min-width: 360px) {
+		.custom-controls {
+			padding: 0.875rem;
+			padding-bottom: calc(0.875rem + env(safe-area-inset-bottom, 0));
+		}
+
+		.controls-row {
+			gap: 0.375rem;
+		}
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
 		.volume-control {
-			display: none;
+			display: flex;
 		}
 
 		.controls-row {
@@ -1888,8 +1990,82 @@
 		}
 
 		.control-btn {
-			padding: 0.25rem;
+			min-width: 36px;
+			min-height: 36px;
+			padding: 0.5rem;
 		}
+
+		.progress-bar {
+			height: 4px;
+			margin-bottom: 1rem;
+		}
+
+		.progress-bar:hover {
+			height: 6px;
+		}
+
+		.progress-thumb {
+			width: 12px;
+			height: 12px;
+			opacity: 0;
+		}
+
+		.progress-bar:hover .progress-thumb {
+			opacity: 1;
+		}
+
+		.play-overlay {
+			width: 72px;
+			height: 72px;
+			padding: 1rem;
+		}
+
+		.play-overlay:hover {
+			transform: translate(-50%, -50%) scale(1.1);
+		}
+
+		.custom-controls {
+			padding: 1rem;
+		}
+
+		.time-display {
+			font-size: 0.875rem;
+		}
+
+		.settings-menu {
+			right: 1rem;
+			min-width: 150px;
+		}
+
+		.settings-option {
+			min-height: auto;
+			padding: 0.25rem 0.5rem;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.play-overlay {
+			width: 80px;
+			height: 80px;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.play-overlay {
+			width: 96px;
+			height: 96px;
+		}
+	}
+
+	/* Fullscreen safe areas */
+	.video-embed-container.fullscreen {
+		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+	}
+
+	.video-embed-container.fullscreen .custom-controls {
+		padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
 	}
 
 	/* Accessibility */
@@ -1899,6 +2075,25 @@
 		.custom-controls {
 			transition: none !important;
 			animation: none !important;
+		}
+	}
+
+	.play-overlay:focus-visible,
+	.control-btn:focus-visible,
+	.progress-bar:focus-visible,
+	.settings-option:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.custom-controls {
+			background: rgba(0, 0, 0, 0.95);
+		}
+
+		.progress-played {
+			background: #fff;
 		}
 	}
 </style>

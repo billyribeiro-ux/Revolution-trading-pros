@@ -227,20 +227,19 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * WORDPRESS EXACT MATCH - from INDICATOR_PAGE_REFERENCE.md
-	 * Source: https://my.simplertrading.com/indicators/volume-max-i
+	 * Indicator Detail Page - 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * ICT7+ FIX: NO :global(html/body) - causes CSS cascade pollution
-	 * Instead, use scoped page wrapper with full-viewport coverage
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Page-scoped link colors - :global() scoped to .indicators wrapper */
-	/* ICT7+: This ONLY affects links inside .indicators, not globally */
+	/* Page-scoped link colors - touch-friendly */
 	.indicators :global(a),
 	.indicators :global(a:visited) {
 		color: #1e73be;
+		/* Touch-friendly link padding */
+		padding: 2px 0;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 2px;
 	}
 
 	.indicators :global(a:hover),
@@ -249,13 +248,26 @@
 		color: #000000;
 	}
 
-	/* 3. INDICATORS CONTAINER - Mobile-first */
+	/* Focus state for accessibility */
+	.indicators :global(a:focus-visible) {
+		outline: 2px solid #1e73be;
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+
+	/* Mobile-first base styles */
 	.indicators {
 		background-color: #fff;
-		font-size: 24px;
-		padding: 30px 15px;
+		/* Responsive font size */
+		font-size: clamp(16px, 4vw, 24px);
+		/* Mobile-first padding with safe areas */
+		padding: 20px max(12px, env(safe-area-inset-left));
+		padding-bottom: max(20px, env(safe-area-inset-bottom));
 		max-width: 1200px;
 		margin: auto;
+		/* Better text rendering */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
 	.indicators .indicator-content {
@@ -264,18 +276,82 @@
 		padding: 0;
 	}
 
-	/* Component styles moved to individual component files */
-	/* This page now only contains layout-specific styles */
+	/* Site content wrapper */
+	#content.site-content {
+		min-height: 50vh;
+	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Mobile-First (min-width breakpoints)
-	 * Base styles above are mobile, these scale UP
+	 * Responsive Breakpoints - Mobile First (min-width)
+	 * xs: 360px, sm: 640px, md: 768px, lg: 1024px, xl: 1280px
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Tablet Large (768px+) */
+	/* xs: Extra small devices (≥ 360px) */
+	@media (min-width: 360px) {
+		.indicators {
+			padding: 24px max(16px, env(safe-area-inset-left));
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) */
+	@media (min-width: 640px) {
+		.indicators {
+			padding: 32px 20px;
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
 	@media (min-width: 768px) {
 		.indicators {
 			padding: 50px 15px;
+			font-size: 24px;
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.indicators {
+			padding: 50px 30px;
+		}
+	}
+
+	/* xl: Extra large devices (≥ 1280px) */
+	@media (min-width: 1280px) {
+		.indicators {
+			padding: 50px 40px;
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.indicators :global(a) {
+			/* Larger touch target for links */
+			padding: 4px 2px;
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.indicators,
+		.indicators :global(*) {
+			transition: none !important;
+			animation: none !important;
+		}
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.indicators :global(a) {
+			text-decoration: underline;
+			text-decoration-thickness: 2px;
+		}
+	}
+
+	/* Print styles */
+	@media print {
+		.indicators {
+			padding: 0;
+			font-size: 12pt;
 		}
 	}
 </style>

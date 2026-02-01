@@ -624,57 +624,111 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 RESPONSIVE IMAGE CROP MODAL - Mobile-First Design
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.crop-modal-overlay {
 		position: fixed;
 		inset: 0;
-		background-color: rgba(0, 0, 0, 0.7);
+		background-color: rgba(0, 0, 0, 0.8);
 		z-index: 50;
 		display: flex;
-		align-items: center;
+		align-items: flex-end; /* Mobile: bottom sheet */
 		justify-content: center;
-		padding: 1rem;
+		padding: 0;
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
 	}
 
 	.crop-modal {
+		position: fixed;
+		inset: 0;
 		background-color: white;
-		border-radius: 0.75rem;
+		border-radius: 0;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 		width: 100%;
-		max-width: 56rem;
-		max-height: 90vh;
+		max-height: 100dvh;
 		display: flex;
 		flex-direction: column;
+		overflow: hidden;
+		/* Safe area insets */
+		padding-top: env(safe-area-inset-top, 0);
+		padding-bottom: env(safe-area-inset-bottom, 0);
+	}
+
+	/* Swipe indicator for mobile */
+	.crop-modal::before {
+		content: '';
+		position: absolute;
+		top: 8px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 36px;
+		height: 4px;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 2px;
+		z-index: 11;
 	}
 
 	:global(.dark) .crop-modal {
 		background-color: #1f2937;
 	}
 
+	:global(.dark) .crop-modal::before {
+		background: rgba(255, 255, 255, 0.3);
+	}
+
 	.modal-header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 1rem 1.5rem;
+		padding: 1rem;
+		padding-top: calc(1.25rem + env(safe-area-inset-top, 0));
 		border-bottom: 1px solid #e5e7eb;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		flex-shrink: 0;
 	}
 
 	:global(.dark) .modal-header {
 		border-color: #374151;
+		background: rgba(31, 41, 55, 0.95);
 	}
 
+	/* Touch target: 44x44px minimum */
 	.close-btn {
-		padding: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
+		width: 44px;
+		height: 44px;
+		padding: 0;
 		color: #9ca3af;
-		border-radius: 0.5rem;
+		border-radius: 0.75rem;
 		transition: all 150ms ease;
 		background: transparent;
 		border: none;
 		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.close-btn:hover {
 		color: #4b5563;
 		background-color: #f3f4f6;
+	}
+
+	.close-btn:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
 	}
 
 	:global(.dark) .close-btn:hover {
@@ -942,38 +996,59 @@
 		justify-content: center;
 	}
 
+	/* Sticky footer */
 	.modal-footer {
+		position: sticky;
+		bottom: 0;
+		z-index: 10;
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem 1.5rem;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1rem;
+		padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
 		border-top: 1px solid #e5e7eb;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		flex-shrink: 0;
 	}
 
 	:global(.dark) .modal-footer {
 		border-color: #374151;
+		background: rgba(31, 41, 55, 0.95);
 	}
 
 	.crop-info {
-		font-size: 0.875rem;
+		font-size: 0.8125rem;
 		color: #6b7280;
+		text-align: center;
 	}
 
 	.footer-actions {
 		display: flex;
+		flex-direction: column;
 		gap: 0.75rem;
+		width: 100%;
 	}
 
-	.btn-cancel {
-		padding: 0.5rem 1rem;
+	/* Touch target: 44px minimum height */
+	.btn-cancel,
+	.btn-crop {
+		min-height: 44px;
+		padding: 0.75rem 1.5rem;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #374151;
-		background-color: #f3f4f6;
-		border-radius: 0.5rem;
+		border-radius: 0.75rem;
 		border: none;
 		cursor: pointer;
 		transition: all 150ms ease;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+
+	.btn-cancel {
+		color: #374151;
+		background-color: #f3f4f6;
 	}
 
 	:global(.dark) .btn-cancel {
@@ -985,23 +1060,122 @@
 		background-color: #e5e7eb;
 	}
 
+	.btn-cancel:focus-visible {
+		outline: 2px solid #6b7280;
+		outline-offset: 2px;
+	}
+
 	:global(.dark) .btn-cancel:hover {
 		background-color: #4b5563;
 	}
 
 	.btn-crop {
-		padding: 0.5rem 1rem;
-		font-size: 0.875rem;
-		font-weight: 500;
 		color: white;
 		background-color: #3b82f6;
-		border-radius: 0.5rem;
-		border: none;
-		cursor: pointer;
-		transition: all 150ms ease;
 	}
 
 	.btn-crop:hover {
 		background-color: #2563eb;
+	}
+
+	.btn-crop:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* sm: 640px+ - Centered modal */
+	@media (min-width: 640px) {
+		.crop-modal-overlay {
+			align-items: center;
+			padding: 1.5rem;
+		}
+
+		.crop-modal {
+			position: relative;
+			inset: auto;
+			max-width: 48rem;
+			max-height: 85vh;
+			border-radius: 0.75rem;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		.crop-modal::before {
+			display: none;
+		}
+
+		.modal-header {
+			padding: 1rem 1.5rem;
+			padding-top: 1rem;
+			border-radius: 0.75rem 0.75rem 0 0;
+		}
+
+		.modal-footer {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			padding: 1rem 1.5rem;
+			padding-bottom: 1rem;
+			border-radius: 0 0 0.75rem 0.75rem;
+		}
+
+		.crop-info {
+			text-align: left;
+		}
+
+		.footer-actions {
+			flex-direction: row;
+			width: auto;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.crop-modal {
+			max-width: 56rem;
+		}
+	}
+
+	/* Landscape orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.crop-modal {
+			max-height: 100dvh;
+		}
+
+		.modal-header {
+			padding: 0.5rem 1rem;
+		}
+
+		.toolbar {
+			padding: 0.5rem 1rem;
+		}
+
+		.modal-footer {
+			padding: 0.5rem 1rem;
+		}
+	}
+
+	/* Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.close-btn,
+		.btn-cancel,
+		.btn-crop {
+			transition: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		.crop-modal {
+			border: 2px solid currentColor;
+		}
+
+		.btn-cancel,
+		.btn-crop {
+			border: 2px solid currentColor;
+		}
 	}
 </style>

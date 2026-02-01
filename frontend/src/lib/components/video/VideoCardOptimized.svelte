@@ -283,6 +283,13 @@
 </article>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIDEO CARD OPTIMIZED - 2026 Mobile-First Responsive Design
+	   ═══════════════════════════════════════════════════════════════════════════
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   Touch targets: 44x44px minimum for all interactive elements
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.video-card {
 		display: flex;
 		flex-direction: column;
@@ -290,7 +297,7 @@
 		height: 100%;
 		background: #fff;
 		border: 1px solid #e6e6e6;
-		border-radius: 8px;
+		border-radius: 6px;
 		overflow: hidden;
 		transition:
 			box-shadow 0.2s ease,
@@ -298,33 +305,34 @@
 		contain: layout style;
 	}
 
-	.video-card:hover {
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-		transform: translateY(-2px);
-	}
-
 	/* Thumbnail Container */
 	.video-card__thumbnail-link {
 		display: block;
 		text-decoration: none;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.video-card__thumbnail {
 		position: relative;
 		width: 100%;
-		padding-top: 56.25%; /* 16:9 */
+		/* Modern aspect-ratio property */
+		aspect-ratio: 16 / 9;
 		margin: 0;
 		overflow: hidden;
 		background: #1a1a1a;
 	}
 
+	/* Fallback for browsers without aspect-ratio */
+	@supports not (aspect-ratio: 16 / 9) {
+		.video-card__thumbnail {
+			padding-top: 56.25%;
+		}
+	}
+
 	/* Blurhash Layer */
 	.video-card__blurhash {
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		inset: 0;
 		background-size: cover;
 		background-position: center;
 		filter: blur(20px);
@@ -335,8 +343,7 @@
 	/* Actual Image */
 	.video-card__image {
 		position: absolute;
-		top: 0;
-		left: 0;
+		inset: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -349,78 +356,78 @@
 		opacity: 1;
 	}
 
-	/* Duration Badge */
+	/* Duration Badge - Mobile first */
 	.video-card__duration {
 		position: absolute;
-		bottom: 8px;
-		right: 8px;
+		bottom: 6px;
+		right: 6px;
 		background: rgba(0, 0, 0, 0.85);
 		color: #fff;
-		padding: 4px 8px;
+		padding: 3px 6px;
 		border-radius: 4px;
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		z-index: 3;
 	}
 
-	/* Play Overlay */
+	/* Play Overlay - Mobile first: 48px touch target */
 	.video-card__play-overlay {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		width: 64px;
-		height: 64px;
+		width: 48px;
+		height: 48px;
+		min-width: 44px;
+		min-height: 44px;
 		background: rgba(0, 0, 0, 0.6);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		color: white;
-		opacity: 0;
+		opacity: 0.9;
 		transition: opacity 0.2s ease;
 		z-index: 4;
 	}
 
 	.video-card__play-overlay svg {
-		margin-left: 4px;
+		width: 28px;
+		height: 28px;
+		margin-left: 3px;
 	}
 
-	.video-card:hover .video-card__play-overlay {
-		opacity: 1;
-	}
-
-	/* Content Area */
+	/* Content Area - Mobile first */
 	.video-card__content {
 		display: flex;
 		flex-direction: column;
 		flex: 1;
-		padding: 16px;
+		padding: 12px;
 	}
 
 	/* Tags */
 	.video-card__tags {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
-		margin-bottom: 12px;
+		gap: 4px;
+		margin-bottom: 8px;
 	}
 
 	.video-card__tag {
 		display: inline-block;
-		padding: 4px 10px;
-		font-size: 11px;
+		padding: 3px 8px;
+		font-size: 10px;
 		font-weight: 600;
 		text-transform: uppercase;
 		border-radius: 4px;
 		color: white;
 	}
 
-	/* Title */
+	/* Title - Mobile first */
 	.video-card__title {
-		margin: 0 0 8px;
-		font-size: 16px;
+		margin: 0 0 6px;
+		font-size: 14px;
 		font-weight: 700;
 		line-height: 1.4;
 	}
@@ -429,20 +436,17 @@
 		color: #1a1a1a;
 		text-decoration: none;
 		transition: color 0.2s ease;
-	}
-
-	.video-card__title a:hover {
-		color: #0984ae;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	/* Meta */
 	.video-card__meta {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
-		font-size: 13px;
+		gap: 6px;
+		font-size: 12px;
 		color: #666;
-		margin-bottom: 12px;
+		margin-bottom: 10px;
 	}
 
 	.video-card__trader {
@@ -457,14 +461,14 @@
 	.video-card__date::before,
 	.video-card__views::before {
 		content: '•';
-		margin-right: 8px;
+		margin-right: 6px;
 		color: #ccc;
 	}
 
-	/* Description */
+	/* Description - Mobile first */
 	.video-card__description {
-		margin: 0 0 16px;
-		font-size: 14px;
+		margin: 0 0 12px;
+		font-size: 13px;
 		color: #666;
 		line-height: 1.5;
 		display: -webkit-box;
@@ -475,15 +479,16 @@
 		flex: 1;
 	}
 
-	/* CTA Button */
+	/* CTA Button - 44px min touch target */
 	.video-card__cta {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 10px 20px;
+		min-height: 44px;
+		padding: 10px 16px;
 		background: #f5f5f5;
 		color: #333;
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 600;
 		text-transform: uppercase;
 		text-decoration: none;
@@ -493,33 +498,142 @@
 			color 0.2s ease;
 		margin-top: auto;
 		width: fit-content;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
-	.video-card__cta:hover {
-		background: #0984ae;
-		color: #fff;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile First (min-width queries)
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Responsive */
-	@media (max-width: 640px) {
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
 		.video-card__content {
-			padding: 12px;
+			padding: 14px;
+		}
+
+		.video-card__duration {
+			padding: 4px 8px;
+			font-size: 12px;
 		}
 
 		.video-card__title {
-			font-size: 14px;
+			font-size: 15px;
+		}
+
+		.video-card__cta {
+			padding: 10px 18px;
+			font-size: 13px;
+		}
+	}
+
+	/* sm: 640px+ - Large phones / small tablets */
+	@media (min-width: 640px) {
+		.video-card {
+			border-radius: 8px;
+		}
+
+		.video-card__content {
+			padding: 16px;
 		}
 
 		.video-card__play-overlay {
-			width: 48px;
-			height: 48px;
+			width: 56px;
+			height: 56px;
+			opacity: 0;
 		}
 
 		.video-card__play-overlay svg {
 			width: 32px;
 			height: 32px;
 		}
+
+		.video-card:hover .video-card__play-overlay {
+			opacity: 1;
+		}
+
+		.video-card:hover {
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+			transform: translateY(-2px);
+		}
+
+		.video-card__title a:hover {
+			color: #0984ae;
+		}
+
+		.video-card__cta:hover {
+			background: #0984ae;
+			color: #fff;
+		}
+
+		.video-card__tags {
+			gap: 6px;
+			margin-bottom: 12px;
+		}
+
+		.video-card__tag {
+			padding: 4px 10px;
+			font-size: 11px;
+		}
+
+		.video-card__title {
+			font-size: 16px;
+			margin-bottom: 8px;
+		}
+
+		.video-card__meta {
+			gap: 8px;
+			font-size: 13px;
+			margin-bottom: 12px;
+		}
+
+		.video-card__description {
+			font-size: 14px;
+			margin-bottom: 16px;
+		}
+
+		.video-card__cta {
+			padding: 10px 20px;
+		}
 	}
+
+	/* md: 768px+ - Tablets */
+	@media (min-width: 768px) {
+		.video-card__play-overlay {
+			width: 64px;
+			height: 64px;
+		}
+
+		.video-card__play-overlay svg {
+			width: 40px;
+			height: 40px;
+			margin-left: 4px;
+		}
+
+		.video-card__duration {
+			bottom: 8px;
+			right: 8px;
+		}
+	}
+
+	/* lg: 1024px+ - Laptops/Desktops */
+	@media (min-width: 1024px) {
+		.video-card {
+			border-radius: 10px;
+		}
+
+		.video-card__content {
+			padding: 18px;
+		}
+
+		.video-card__title {
+			font-size: 17px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Reduced motion */
 	@media (prefers-reduced-motion: reduce) {
@@ -533,5 +647,13 @@
 		.video-card:hover {
 			transform: none;
 		}
+	}
+
+	/* Focus visible for keyboard navigation */
+	.video-card__thumbnail-link:focus-visible,
+	.video-card__title a:focus-visible,
+	.video-card__cta:focus-visible {
+		outline: 2px solid #0984ae;
+		outline-offset: 2px;
 	}
 </style>

@@ -1883,18 +1883,367 @@
 		font-size: 0.875rem;
 	}
 
-	/* Responsive */
-	@media (max-width: 640px) {
-		.form-row {
-			grid-template-columns: 1fr;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 Mobile-First Responsive - Admin Resources
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Base Mobile Styles (xs: 360px) - Safe Areas */
+	.admin-resources {
+		padding-left: env(safe-area-inset-left, 0px);
+		padding-right: env(safe-area-inset-right, 0px);
+	}
+
+	/* Page Header - Mobile */
+	.page-header h1 {
+		font-size: 1.375rem;
+	}
+
+	.subtitle {
+		font-size: 0.8125rem;
+	}
+
+	.header-actions {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	/* Buttons - Touch Targets */
+	.btn-primary,
+	.btn-secondary {
+		/* 44px min touch target */
+		min-height: 44px;
+		padding: 0.625rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.btn-icon {
+		/* 44px touch target */
+		width: 44px;
+		height: 44px;
+	}
+
+	/* Room Tabs - Mobile Horizontal Scroll */
+	.room-tabs {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		gap: 0.375rem;
+		padding: 0.375rem;
+	}
+
+	.room-tabs::-webkit-scrollbar {
+		display: none;
+	}
+
+	.room-tab {
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.625rem 1rem;
+		font-size: 0.8125rem;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	/* Stats Bar - Mobile Wrap */
+	.stats-bar {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: 0.75rem 1.25rem;
+		padding: 0.875rem 1rem;
+	}
+
+	.stat {
+		gap: 0.375rem;
+	}
+
+	.stat-value {
+		font-size: 1.125rem;
+	}
+
+	.stat-label {
+		font-size: 0.75rem;
+	}
+
+	/* Filters - Mobile Stack */
+	.filters-bar {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.search-box {
+		min-width: 100%;
+		/* 44px touch target */
+		min-height: 44px;
+	}
+
+	.filter-group {
+		flex-direction: column;
+		width: 100%;
+		gap: 0.5rem;
+	}
+
+	.filter-group select {
+		width: 100%;
+		/* 44px touch target */
+		min-height: 44px;
+		font-size: 0.875rem;
+	}
+
+	/* Resources Grid - Mobile Single Column */
+	.resources-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	/* Resource Card - Mobile */
+	.resource-card {
+		border-radius: 10px;
+	}
+
+	.resource-thumbnail {
+		padding-top: 50%; /* Less tall on mobile */
+	}
+
+	.type-badge {
+		font-size: 0.6rem;
+		padding: 0.1875rem 0.375rem;
+	}
+
+	.resource-content {
+		padding: 0.875rem;
+	}
+
+	.resource-title {
+		font-size: 0.9375rem;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+	}
+
+	.resource-meta {
+		font-size: 0.75rem;
+		gap: 0.5rem;
+	}
+
+	.resource-tags {
+		gap: 0.375rem;
+	}
+
+	.tag {
+		font-size: 0.625rem;
+		padding: 0.1875rem 0.375rem;
+	}
+
+	/* Resource Actions - Mobile Touch Friendly */
+	.resource-actions {
+		padding: 0.625rem 0.875rem;
+		gap: 0.375rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.resource-actions .btn-icon {
+		/* 44px touch target */
+		width: 44px;
+		height: 44px;
+	}
+
+	/* Modal - Mobile Full Width */
+	.modal-overlay {
+		padding: 0.5rem;
+		padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+		padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	.modal {
+		max-width: 100%;
+		max-height: calc(100vh - 1rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+	}
+
+	.modal.modal-large {
+		max-width: 100%;
+	}
+
+	.modal-header {
+		padding: 1rem;
+	}
+
+	.modal-header h2 {
+		font-size: 1.125rem;
+	}
+
+	.modal-body {
+		padding: 1rem;
+	}
+
+	.modal-footer {
+		padding: 0.75rem 1rem;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.modal-footer button {
+		width: 100%;
+		/* 44px touch target */
+		min-height: 44px;
+	}
+
+	/* Form Elements - Mobile */
+	.form-row {
+		grid-template-columns: 1fr;
+		gap: 0.875rem;
+	}
+
+	.form-group label {
+		font-size: 0.8125rem;
+	}
+
+	.form-group input,
+	.form-group textarea,
+	.form-group select {
+		/* 44px touch target */
+		min-height: 44px;
+		font-size: 0.9375rem;
+		padding: 0.625rem 0.875rem;
+	}
+
+	.form-group textarea {
+		min-height: 80px;
+	}
+
+	/* Tags Grid - Mobile */
+	.tags-grid {
+		gap: 0.375rem;
+	}
+
+	.tag-btn {
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.75rem;
+	}
+
+	/* Form Options - Mobile */
+	.form-options {
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.checkbox-label {
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.5rem 0;
+		display: flex;
+		align-items: center;
+	}
+
+	.checkbox-label input[type='checkbox'] {
+		width: 22px;
+		height: 22px;
+	}
+
+	/* Empty/Loading States - Mobile */
+	.empty-state,
+	.loading-state {
+		padding: 3rem 1.5rem;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.page-header h1 {
+			font-size: 1.5rem;
+		}
+
+		.filters-bar {
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+
+		.search-box {
+			min-width: 250px;
+			flex: 1;
+		}
+
+		.filter-group {
+			flex-direction: row;
+			width: auto;
+		}
+
+		.filter-group select {
+			width: auto;
 		}
 
 		.resources-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.25rem;
+		}
+
+		.modal-footer {
+			flex-direction: row;
+			justify-content: flex-end;
+		}
+
+		.modal-footer button {
+			width: auto;
+		}
+
+		.form-options {
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.page-header h1 {
+			font-size: 1.75rem;
+		}
+
+		.room-tabs {
+			flex-wrap: wrap;
+			overflow-x: visible;
 		}
 
 		.stats-bar {
-			justify-content: center;
+			justify-content: flex-start;
+			gap: 1.5rem;
+			padding: 1rem 1.5rem;
+		}
+
+		.stat-value {
+			font-size: 1.25rem;
+		}
+
+		.resources-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.5rem;
+		}
+
+		.modal {
+			max-width: 500px;
+		}
+
+		.modal.modal-large {
+			max-width: 700px;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.resources-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	/* xl: 1280px+ */
+	@media (min-width: 1280px) {
+		.resources-grid {
+			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 		}
 	}
 </style>

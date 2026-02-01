@@ -13,7 +13,20 @@
 <div
 	bind:this={ref}
 	data-slot="dialog-footer"
-	class={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+	class={cn(
+		// Sticky footer for mobile
+		"sticky bottom-0 z-10 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+		// Safe area padding on mobile
+		"pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-0",
+		// Background for sticky effect
+		"bg-background/95 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none",
+		// Padding and border
+		"px-4 pt-3 sm:px-0 sm:pt-0",
+		"border-t sm:border-t-0",
+		// Touch targets
+		"[&>button]:min-h-[44px] [&>button]:touch-manipulation",
+		className
+	)}
 	{...restProps}
 >
 	{@render children?.()}

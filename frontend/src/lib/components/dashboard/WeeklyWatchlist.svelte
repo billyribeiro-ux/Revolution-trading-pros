@@ -151,52 +151,57 @@
 {/if}
 
 <style>
-	/* Weekly Watchlist Section */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * WEEKLY WATCHLIST - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile-First Base */
 	.weekly-watchlist-section {
-		margin-top: 40px;
-		padding-top: 40px;
+		margin-top: 24px;
+		padding-top: 24px;
 		border-top: 1px solid #e6e6e6;
 	}
 
 	.row {
 		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -15px;
+		flex-direction: column;
+		gap: 16px;
 	}
 
 	.col-left {
-		flex: 0 0 100%;
-		max-width: 100%;
-		padding: 0 15px;
-		margin-bottom: 20px;
+		width: 100%;
 	}
 
 	.col-right {
-		flex: 0 0 100%;
-		max-width: 100%;
-		padding: 0 15px;
+		width: 100%;
 		display: none;
 	}
 
 	.section-title-alt {
-		font-size: 24px;
+		font-size: 20px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 20px;
+		margin: 0 0 16px;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		line-height: 1.3;
 	}
 
 	.section-title-alt--underline {
-		padding-bottom: 15px;
+		padding-bottom: 12px;
 		border-bottom: 3px solid #f69532;
 	}
 
 	.h5 {
-		font-size: 18px;
+		font-size: 16px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 10px;
+		margin: 0 0 8px;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		line-height: 1.3;
 	}
 
 	.u--font-weight-bold {
@@ -207,33 +212,47 @@
 		border-radius: 8px;
 		width: 100%;
 		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
 	}
 
 	.u--hide-read-more p {
 		color: #666;
 		font-size: 14px;
-		margin: 0 0 15px;
+		margin: 0 0 12px;
+		line-height: 1.5;
 	}
 
 	.mobile-image {
 		display: block;
-		margin-bottom: 15px;
+		margin-bottom: 12px;
+	}
+
+	.mobile-image a {
+		display: block;
 	}
 
 	.desktop-only {
 		display: none;
 	}
 
+	/* Touch-Friendly Button (44px minimum) */
 	.btn {
-		display: inline-block;
-		padding: 10px 20px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 12px 20px;
 		font-size: 14px;
 		font-weight: 600;
 		text-align: center;
 		text-decoration: none;
-		border-radius: 4px;
+		border-radius: 8px;
 		transition: all 0.2s ease;
 		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-default {
@@ -247,26 +266,71 @@
 		border-color: #0c2638;
 	}
 
-	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 13px;
-		height: 40px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+	.btn-default:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
-	/* Tablet breakpoint */
+	.btn-tiny {
+		padding: 10px 18px;
+		font-size: 13px;
+		min-height: 44px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Progressive Enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
+		.weekly-watchlist-section {
+			margin-top: 28px;
+			padding-top: 28px;
+		}
+
+		.row {
+			gap: 20px;
+		}
+	}
+
+	/* sm: 640px+ - Large phones / small tablets */
+	@media (min-width: 640px) {
+		.weekly-watchlist-section {
+			margin-top: 32px;
+			padding-top: 32px;
+		}
+
+		.section-title-alt {
+			font-size: 22px;
+		}
+
+		.h5 {
+			font-size: 17px;
+		}
+	}
+
+	/* md: 768px+ - Tablets - Two column layout */
 	@media (min-width: 768px) {
+		.weekly-watchlist-section {
+			margin-top: 36px;
+			padding-top: 36px;
+		}
+
+		.row {
+			flex-direction: row;
+			flex-wrap: nowrap;
+			gap: 24px;
+		}
+
 		.col-left {
 			flex: 0 0 50%;
 			max-width: 50%;
-			margin-bottom: 0;
 		}
 
 		.col-right {
 			flex: 0 0 50%;
 			max-width: 50%;
+			display: block;
 		}
 
 		.mobile-image {
@@ -276,10 +340,25 @@
 		.desktop-only {
 			display: block;
 		}
+
+		.section-title-alt {
+			font-size: 24px;
+			margin-bottom: 20px;
+		}
+
+		.h5 {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
 	}
 
-	/* Desktop breakpoint */
-	@media (min-width: 992px) {
+	/* lg: 1024px+ - Desktop */
+	@media (min-width: 1024px) {
+		.weekly-watchlist-section {
+			margin-top: 40px;
+			padding-top: 40px;
+		}
+
 		.col-left {
 			flex: 0 0 41.666667%;
 			max-width: 41.666667%;
@@ -288,6 +367,17 @@
 		.col-right {
 			flex: 0 0 58.333333%;
 			max-width: 58.333333%;
+		}
+
+		.row {
+			gap: 30px;
+		}
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.btn {
+			transition: none;
 		}
 	}
 

@@ -1024,41 +1024,309 @@
 		border-color: rgba(255, 255, 255, 0.2);
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
-		.hero {
-			padding: 8rem 1rem 4rem;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   2026 Mobile-First Responsive - ETF Stocks List
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-		.hero__title {
-			font-size: 2.5rem;
+	/* Base Mobile Styles (xs: 360px) */
+	.hero {
+		padding: 5rem 1rem 3rem;
+		padding-top: calc(5rem + env(safe-area-inset-top, 0px));
+		padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+		padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+	}
+
+	.hero__title {
+		font-size: clamp(1.75rem, 8vw, 4.5rem);
+	}
+
+	.hero__subtitle {
+		font-size: clamp(1rem, 3vw, 1.25rem);
+	}
+
+	.section {
+		padding: 2.5rem 1rem;
+		padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+		padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+	}
+
+	.section__title {
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+	}
+
+	.section__description {
+		font-size: clamp(0.9375rem, 2.5vw, 1.125rem);
+	}
+
+	/* Benefits Grid - Mobile Single Column */
+	.benefits-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.benefit-card {
+		padding: 1.25rem;
+	}
+
+	.benefit-card__icon {
+		width: 40px;
+		height: 40px;
+	}
+
+	.benefit-card__title {
+		font-size: 1rem;
+	}
+
+	.benefit-card__text {
+		font-size: 0.875rem;
+	}
+
+	/* Types Grid - Mobile Single Column */
+	.types-grid {
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
+	}
+
+	.type-card {
+		padding: 1rem;
+	}
+
+	/* ETF Grid - Mobile Single Column */
+	.etf-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.etf-card {
+		padding: 1.25rem;
+	}
+
+	.etf-card__symbol {
+		font-size: 1.25rem;
+	}
+
+	.etf-card__chart-link {
+		/* 44px touch target */
+		width: 44px;
+		height: 44px;
+	}
+
+	.etf-card__name {
+		font-size: 0.9375rem;
+	}
+
+	.etf-card__description {
+		font-size: 0.8125rem;
+	}
+
+	.etf-card__feature {
+		font-size: 0.6875rem;
+		padding: 0.25rem 0.625rem;
+	}
+
+	/* Sector Grid - Mobile Single Column */
+	.sector-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.sector-card {
+		padding: 1.25rem;
+	}
+
+	.sector-card__icon {
+		width: 48px;
+		height: 48px;
+	}
+
+	.sector-card__etf {
+		/* 44px touch target */
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 0.875rem;
+	}
+
+	/* Comparison Table - Mobile Horizontal Scroll */
+	.comparison-table-wrapper {
+		margin: 0 -1rem;
+		padding: 0 1rem;
+	}
+
+	.comparison-table {
+		min-width: 600px;
+	}
+
+	.comparison-table th,
+	.comparison-table td {
+		padding: 0.625rem 0.75rem;
+		font-size: 0.75rem;
+	}
+
+	/* Comparison Summary - Mobile Stack */
+	.comparison-summary {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.comparison-summary__item {
+		padding: 1.25rem;
+	}
+
+	/* CTA Section - Mobile */
+	.cta-section {
+		padding: 3rem 1rem;
+		padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	.cta-title {
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+	}
+
+	.cta-text {
+		font-size: 1rem;
+	}
+
+	.cta-buttons {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.cta-btn {
+		width: 100%;
+		justify-content: center;
+		/* 44px touch target */
+		min-height: 44px;
+		padding: 0.875rem 1.5rem;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.hero {
+			padding: 6rem 1.5rem 4rem;
 		}
 
 		.section {
-			padding: 3rem 1rem;
+			padding: 3.5rem 1.5rem;
 		}
 
-		.section__title {
-			font-size: 2rem;
+		.benefits-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.25rem;
+		}
+
+		.types-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1rem;
+		}
+
+		.etf-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.25rem;
+		}
+
+		.sector-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.25rem;
+		}
+
+		.comparison-summary {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.cta-buttons {
+			flex-direction: row;
+			justify-content: center;
+		}
+
+		.cta-btn {
+			width: auto;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.hero {
+			padding: 8rem 2rem 5rem;
+		}
+
+		.section {
+			padding: 4rem 2rem;
+		}
+
+		.benefits-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.etf-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.5rem;
+		}
+
+		.etf-card {
+			padding: 1.5rem;
+		}
+
+		.sector-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.comparison-table-wrapper {
+			margin: 0;
+			padding: 0;
 		}
 
 		.comparison-table th,
 		.comparison-table td {
-			padding: 0.75rem 1rem;
-			font-size: 0.8rem;
+			padding: 1rem 1.5rem;
+			font-size: 0.9rem;
 		}
 
-		.cta-title {
-			font-size: 2rem;
+		.cta-section {
+			padding: 4rem 2rem;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
+		.hero {
+			padding: 10rem 2rem 6rem;
 		}
 
-		.cta-buttons {
-			flex-direction: column;
+		.section {
+			padding: 5rem 2rem;
 		}
 
-		.cta-btn {
-			width: 100%;
-			justify-content: center;
+		.benefits-grid {
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		}
+
+		.types-grid {
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		}
+
+		.etf-grid {
+			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		}
+
+		.sector-grid {
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		}
+
+		.cta-section {
+			padding: 5rem 2rem;
+		}
+	}
+
+	/* xl: 1280px+ */
+	@media (min-width: 1280px) {
+		.etf-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.sector-grid {
+			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 </style>

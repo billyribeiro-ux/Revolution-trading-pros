@@ -377,49 +377,101 @@
 </div>
 
 <style>
-	/* Dashboard Content */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TRADING ROOM ARCHIVE - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile-First Base */
 	.dashboard__content {
 		display: flex;
 		flex-direction: column;
+		min-height: 100dvh;
 	}
 
 	.dashboard__content-main {
 		flex: 1;
-		padding: 20px;
+		padding: 16px;
+		padding-left: max(16px, env(safe-area-inset-left, 16px));
+		padding-right: max(16px, env(safe-area-inset-right, 16px));
+		padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
 		background: #f5f5f5;
-	}
-
-	@media (min-width: 768px) {
-		.dashboard__content-main {
-			padding: 30px;
-		}
 	}
 
 	.dashboard__content-section {
 		background: #fff;
-		border-radius: 5px;
-		padding: 20px;
+		border-radius: 8px;
+		padding: 16px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	}
-
-	@media (min-width: 768px) {
-		.dashboard__content-section {
-			padding: 30px;
-		}
 	}
 
 	/* Section Title */
 	.section-title {
-		font-size: 20px;
+		font-size: 18px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 20px;
+		margin: 0 0 16px;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.3;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Progressive Enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* xs: 360px+ - Small phones */
+	@media (min-width: 360px) {
+		.dashboard__content-main {
+			padding: 20px;
+		}
+
+		.dashboard__content-section {
+			padding: 20px;
+		}
+
+		.section-title {
+			font-size: 20px;
+			margin-bottom: 20px;
+		}
+	}
+
+	/* sm: 640px+ - Large phones / small tablets */
+	@media (min-width: 640px) {
+		.dashboard__content-main {
+			padding: 24px;
+		}
+
+		.dashboard__content-section {
+			padding: 24px;
+		}
+	}
+
+	/* md: 768px+ - Tablets */
 	@media (min-width: 768px) {
+		.dashboard__content-main {
+			padding: 28px;
+		}
+
+		.dashboard__content-section {
+			padding: 28px;
+		}
+
 		.section-title {
 			font-size: 24px;
+		}
+	}
+
+	/* lg: 1024px+ - Desktop */
+	@media (min-width: 1024px) {
+		.dashboard__content-main {
+			padding: 30px;
+		}
+
+		.dashboard__content-section {
+			padding: 30px;
 		}
 	}
 
@@ -484,34 +536,42 @@
 		pointer-events: none;
 	}
 
+	/* Search Input - Touch-Friendly */
 	.search-input {
 		width: 100%;
-		padding: 10px 40px 10px 40px;
+		min-height: 44px;
+		padding: 12px 44px;
 		border: 1px solid #e6e6e6;
-		border-radius: 4px;
-		font-size: 14px;
+		border-radius: 8px;
+		font-size: 16px; /* Prevents zoom on iOS */
 		font-family: 'Open Sans', sans-serif;
 		transition:
 			border-color 0.2s ease,
 			box-shadow 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.search-input:focus {
 		outline: none;
 		border-color: #0984ae;
-		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.1);
+		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.15);
 	}
 
 	.search-input::placeholder {
 		color: #999;
 	}
 
+	/* Clear Button - Touch-Friendly (44px target) */
 	.clear-btn {
 		position: absolute;
-		right: 10px;
+		right: 4px;
+		width: 36px;
+		height: 36px;
+		min-width: 44px;
+		min-height: 44px;
 		background: none;
 		border: none;
-		padding: 4px;
+		padding: 8px;
 		cursor: pointer;
 		color: #999;
 		display: flex;
@@ -519,11 +579,18 @@
 		justify-content: center;
 		border-radius: 50%;
 		transition: all 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.clear-btn:hover {
 		color: #666;
 		background: #f0f0f0;
+	}
+
+	.clear-btn:focus-visible {
+		outline: 2px solid #0984ae;
+		outline-offset: 2px;
 	}
 
 	/* Date Heading */
@@ -575,27 +642,30 @@
 		margin: 0;
 	}
 
-	/* Buttons */
+	/* Buttons - 2026 Touch-Friendly (44px minimum) */
 	.btn {
-		display: inline-block;
-		padding: 10px 20px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 12px 20px;
 		font-size: 13px;
 		font-weight: 600;
 		text-align: center;
 		text-decoration: none;
-		border-radius: 4px;
+		border-radius: 8px;
 		transition: all 0.2s ease;
 		cursor: pointer;
 		border: none;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-tiny {
-		padding: 8px 16px;
+		padding: 10px 18px;
 		font-size: 12px;
-		height: 40px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+		min-height: 44px;
 	}
 
 	.btn-default {
@@ -607,6 +677,11 @@
 	.btn-default:hover {
 		background: #0c2638;
 		border-color: #0c2638;
+	}
+
+	.btn-default:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
 	/* Empty State */
@@ -643,8 +718,13 @@
 		gap: 5px;
 	}
 
+	/* Pagination - Touch-Friendly (44px minimum) */
 	.page-number {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
 		padding: 8px 14px;
 		border: 1px solid #e6e6e6;
 		background: #fff;
@@ -653,10 +733,17 @@
 		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.page-number:hover {
 		background: #f5f5f5;
+	}
+
+	.page-number:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
 	.page-number.current {
@@ -668,6 +755,7 @@
 	.page-number.dots {
 		cursor: default;
 		background: #fff;
+		min-width: 32px;
 	}
 
 	.page-number.dots:hover {
@@ -680,6 +768,17 @@
 	}
 
 	#products-list > :global(.grid) {
-		margin-bottom: 30px;
+		margin-bottom: 24px;
+	}
+
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.btn,
+		.search-input,
+		.clear-btn,
+		.page-number,
+		.archive-card {
+			transition: none;
+		}
 	}
 </style>

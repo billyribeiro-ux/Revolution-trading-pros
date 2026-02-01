@@ -164,23 +164,26 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DAILY VIDEOS - Pixel-Perfect WordPress Match
-	 * Matches: frontend/Implementation/daily-videos
+	 * DAILY VIDEOS - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Dashboard Filters */
+	/* Mobile-First Dashboard Filters */
 	.dashboard-filters {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		flex-direction: column;
+		align-items: stretch;
 		margin-bottom: 20px;
-		flex-wrap: wrap;
-		gap: 15px;
+		gap: 16px;
 	}
 
 	.dashboard-filters__count {
 		font-size: 14px;
 		color: #666;
+		text-align: center;
 	}
 
 	.dashboard-filters__count .facetwp-counts {
@@ -190,36 +193,70 @@
 	.dashboard-filters__search {
 		display: flex;
 		align-items: center;
+		width: 100%;
 	}
 
 	.dashboard-filters__search form {
 		display: flex;
 		align-items: center;
+		width: 100%;
 	}
 
+	/* Touch-Friendly Search Input */
 	.dashboard-filters__search .facetwp-autocomplete {
-		padding: 8px 12px;
+		flex: 1;
+		min-height: 44px;
+		padding: 12px 16px;
 		border: 1px solid #ddd;
-		border-radius: 4px 0 0 4px;
-		font-size: 14px;
-		width: 200px;
+		border-radius: 8px 0 0 8px;
+		font-size: 16px; /* Prevents iOS zoom */
 		outline: none;
 		color: #333;
 		background-color: #fff;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.dashboard-filters__search .facetwp-autocomplete:focus {
 		border-color: #0e2433;
+		box-shadow: 0 0 0 3px rgba(14, 36, 51, 0.1);
 	}
 
+	/* Touch-Friendly Search Button */
 	.dashboard-filters__search .facetwp-autocomplete-update {
-		padding: 8px 12px;
+		min-width: 48px;
+		min-height: 44px;
+		padding: 12px 16px;
 		background: #0e2433;
 		border: 1px solid #0e2433;
 		border-left: none;
-		border-radius: 0 4px 4px 0;
+		border-radius: 0 8px 8px 0;
 		cursor: pointer;
-		font-size: 14px;
+		font-size: 16px;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+
+	.dashboard-filters__search .facetwp-autocomplete-update:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: -4px;
+	}
+
+	/* sm: 640px+ - Row layout */
+	@media (min-width: 640px) {
+		.dashboard-filters {
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.dashboard-filters__count {
+			text-align: left;
+		}
+
+		.dashboard-filters__search {
+			width: auto;
+			min-width: 280px;
+		}
 	}
 
 	/* Card Grid */
@@ -402,10 +439,15 @@
 		padding: 0 20px 20px;
 	}
 
+	/* Buttons - 2026 Touch-Friendly (44px minimum) */
 	.btn {
-		display: inline-block;
-		padding: 8px 16px;
-		border-radius: 4px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 12px 20px;
+		border-radius: 8px;
 		text-decoration: none;
 		font-weight: 600;
 		font-size: 0.8125rem;
@@ -413,11 +455,14 @@
 		letter-spacing: 0.5px;
 		transition: all 0.2s ease;
 		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.btn-tiny {
-		padding: 6px 12px;
+		padding: 10px 16px;
 		font-size: 0.75rem;
+		min-height: 44px;
 	}
 
 	.btn-default {
@@ -431,12 +476,18 @@
 		color: #fff;
 	}
 
-	/* Pagination */
+	.btn-default:focus-visible {
+		outline: 2px solid #f7941d;
+		outline-offset: 2px;
+	}
+
+	/* Pagination - Touch-Friendly (44px minimum) */
 	.facetwp-pager {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 5px;
+		flex-wrap: wrap;
+		gap: 8px;
 		margin-top: 30px;
 		padding: 20px 0;
 	}
@@ -445,21 +496,28 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 36px;
-		height: 36px;
-		padding: 0 10px;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 0 12px;
 		border: 1px solid #ddd;
-		border-radius: 4px;
+		border-radius: 8px;
 		background: #fff;
 		color: #333;
 		text-decoration: none;
 		font-size: 14px;
 		transition: all 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.facetwp-page:hover {
 		background: #f5f5f5;
 		border-color: #ccc;
+	}
+
+	.facetwp-page:focus-visible {
+		outline: 2px solid #0e2433;
+		outline-offset: 2px;
 	}
 
 	.facetwp-page.active {
@@ -469,8 +527,10 @@
 	}
 
 	.facetwp-page-ellipsis {
-		padding: 0 5px;
+		padding: 0 8px;
 		color: #666;
+		min-width: 32px;
+		text-align: center;
 	}
 
 	/* Empty State */
@@ -486,15 +546,17 @@
 		font-size: 1rem;
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
-		.dashboard-filters {
-			flex-direction: column;
-			align-items: flex-start;
+	/* High contrast / reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.btn,
+		.card,
+		.facetwp-page,
+		.card-media--video .card-image::before {
+			transition: none;
 		}
 
-		.dashboard-filters__search .facetwp-autocomplete {
-			width: 100%;
+		.card:hover {
+			transform: none;
 		}
 	}
 </style>

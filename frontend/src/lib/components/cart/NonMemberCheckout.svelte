@@ -752,16 +752,21 @@
 		text-decoration: none;
 	}
 
+	/* Form Control - 2026 Mobile-First Responsive */
 	.form-control {
 		width: 100%;
 		padding: 12px 16px;
 		border: 1px solid var(--st-border);
 		border-radius: 5px;
-		font-size: 15px;
+		font-size: 16px; /* Prevents iOS zoom on focus */
 		font-weight: 500;
 		color: var(--st-text-dark);
 		background: #ffffff;
 		transition: all 0.15s ease;
+		min-height: 44px; /* 2026 touch target minimum */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.form-control:focus {
@@ -770,10 +775,18 @@
 		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.15);
 	}
 
+	/* Form Row - 2026 Mobile-First (stack on mobile) */
 	.form-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
+		display: flex;
+		flex-direction: column;
 		gap: 16px;
+	}
+
+	@media (min-width: 640px) {
+		.form-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
 	}
 
 	.form-check {
@@ -789,10 +802,13 @@
 		font-weight: 500 !important;
 	}
 
+	/* Checkbox - 2026 Mobile-First with touch target */
 	.form-check-input {
-		width: 18px;
-		height: 18px;
+		width: 24px;
+		height: 24px;
+		min-width: 24px;
 		cursor: pointer;
+		touch-action: manipulation;
 	}
 
 	.form-message {
@@ -834,19 +850,24 @@
 	   BUTTONS - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Button - 2026 Mobile-First with touch targets */
 	.btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
 		padding: 12px 24px;
-		font-size: 14px;
+		font-size: 16px; /* Prevents iOS zoom */
 		font-weight: 700;
 		border-radius: 5px;
 		border: none;
 		cursor: pointer;
 		transition: all 0.15s ease;
 		text-decoration: none;
+		min-height: 44px; /* 2026 touch target minimum */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.btn-lg {
@@ -1071,14 +1092,19 @@
 		gap: 8px;
 	}
 
+	/* Coupon Input - 2026 Mobile-First Responsive */
 	.coupon-input-row .input-text {
 		flex: 1;
-		padding: 10px 12px;
+		padding: 12px 14px;
 		border: 1px solid var(--st-border);
 		border-radius: 5px;
-		font-size: 13px;
+		font-size: 16px; /* Prevents iOS zoom */
 		text-transform: uppercase;
 		font-weight: 600;
+		min-height: 44px; /* 2026 touch target minimum */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.coupon-input-row .input-text:focus {

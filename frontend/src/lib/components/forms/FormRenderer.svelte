@@ -231,10 +231,17 @@
 </div>
 
 <style>
+	/* 2026 Mobile-First Form Container */
 	.revolution-form {
 		max-width: 800px;
 		margin: 0 auto;
-		padding: 2rem;
+		padding: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.revolution-form {
+			padding: 2rem;
+		}
 	}
 
 	.form-description {
@@ -269,40 +276,79 @@
 	.form-fields {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 1.25rem;
 	}
 
+	/* 2026 Mobile-First: Stack all fields vertically on mobile */
 	.fields-container {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	@media (min-width: 640px) {
+		.fields-container {
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 1.5rem;
+		}
 	}
 
 	.field-wrapper {
 		min-width: 0;
 		flex-shrink: 0;
+		width: 100%; /* Full width on mobile */
 	}
 
-	@media (max-width: 768px) {
+	@media (min-width: 640px) {
+		.field-wrapper {
+			width: auto;
+		}
+	}
+
+	/* Force full width on small screens regardless of field width setting */
+	@media (max-width: 639px) {
 		.field-wrapper {
 			width: 100% !important;
 		}
 	}
 
+	/* 2026 Mobile-First: Safe area for notched devices */
 	.form-actions {
 		margin-top: 1.5rem;
 		display: flex;
-		justify-content: flex-end;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding-bottom: env(safe-area-inset-bottom, 0);
 	}
 
+	@media (min-width: 640px) {
+		.form-actions {
+			flex-direction: row;
+			justify-content: flex-end;
+		}
+	}
+
+	/* 2026 Mobile-First Responsive Buttons */
 	.btn {
-		padding: 0.75rem 1.5rem;
+		padding: 0.875rem 1.5rem;
 		border-radius: 0.375rem;
-		font-size: 1rem;
+		font-size: 1rem; /* 16px prevents iOS zoom */
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
+		min-height: 48px; /* Enhanced touch target */
+		width: 100%; /* Full width on mobile */
+		touch-action: manipulation;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+
+	@media (min-width: 640px) {
+		.btn {
+			width: auto;
+		}
 	}
 
 	.btn-primary {

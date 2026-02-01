@@ -655,21 +655,60 @@
 </div>
 
 <style>
-	/* Welcome Heading */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * START HERE PAGE - 2026 Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch Targets: 44x44px minimum
+	 * Safe Areas: env(safe-area-inset-*) for notched devices
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile-First Welcome Heading */
 	.page-heading {
 		text-align: center;
-		margin-bottom: 30px;
+		margin-bottom: 24px;
+		padding: 0 8px;
 	}
 
 	.page-heading__text {
-		font-size: 2rem;
+		font-size: 1.5rem;
 		font-weight: 400;
 		color: #666666;
 		font-family: 'Open Sans', sans-serif;
-		line-height: 1.3;
+		line-height: 1.4;
 	}
 
+	/* xs: 360px+ */
+	@media (min-width: 360px) {
+		.page-heading__text {
+			font-size: 1.625rem;
+		}
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.page-heading {
+			margin-bottom: 28px;
+		}
+
+		.page-heading__text {
+			font-size: 1.875rem;
+		}
+	}
+
+	/* md: 768px+ */
 	@media (min-width: 768px) {
+		.page-heading {
+			margin-bottom: 30px;
+		}
+
+		.page-heading__text {
+			font-size: 2.25rem;
+		}
+	}
+
+	/* lg: 1024px+ */
+	@media (min-width: 1024px) {
 		.page-heading__text {
 			font-size: 2.5rem;
 		}
@@ -746,7 +785,7 @@
 		flex-shrink: 0;
 	}
 
-	/* Accordion Styles */
+	/* Accordion Styles - Touch-Friendly */
 	.accordion {
 		margin-top: 20px;
 	}
@@ -755,7 +794,7 @@
 		background: #ffffff;
 		border: 1px solid #e0e0e0;
 		border-radius: 8px;
-		margin-bottom: 15px;
+		margin-bottom: 12px;
 		overflow: hidden;
 	}
 
@@ -763,21 +802,30 @@
 		border-color: #3879f3;
 	}
 
+	/* Accordion Button - Touch-Friendly (44px minimum) */
 	.accordion__button {
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		padding: 20px 25px;
+		min-height: 48px;
+		padding: 16px 20px;
 		background: #f8f9fa;
 		border: none;
 		cursor: pointer;
 		text-align: left;
 		transition: background 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 
 	.accordion__button:hover {
 		background: #f0f0f0;
+	}
+
+	.accordion__button:focus-visible {
+		outline: 2px solid #3879f3;
+		outline-offset: -2px;
 	}
 
 	.accordion__item.is-open .accordion__button {
@@ -786,29 +834,36 @@
 
 	.accordion__label {
 		flex: 1;
-		font-size: 1.25rem;
+		font-size: 1rem;
 		font-weight: 600;
 		color: #333;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
 	}
 
 	.accordion__subtitle {
 		display: block;
-		font-size: 1rem;
+		font-size: 0.875rem;
 		font-weight: 400;
 		color: #666;
-		margin-top: 8px;
+		margin-top: 6px;
+		line-height: 1.5;
 	}
 
 	.accordion__icon {
 		flex-shrink: 0;
-		margin-left: 15px;
-		margin-top: 3px;
+		margin-left: 12px;
+		margin-top: 2px;
+		min-width: 24px;
+		min-height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.accordion__icon--right {
 		color: #fdac3b;
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 	}
 
 	.accordion__icon--right i {
@@ -816,8 +871,51 @@
 	}
 
 	.accordion__content {
-		padding: 25px;
+		padding: 16px;
 		border-top: 1px solid #e0e0e0;
+	}
+
+	/* sm: 640px+ */
+	@media (min-width: 640px) {
+		.accordion__button {
+			padding: 20px 24px;
+		}
+
+		.accordion__label {
+			font-size: 1.125rem;
+		}
+
+		.accordion__subtitle {
+			font-size: 0.9375rem;
+		}
+
+		.accordion__content {
+			padding: 20px;
+		}
+	}
+
+	/* md: 768px+ */
+	@media (min-width: 768px) {
+		.accordion__button {
+			padding: 20px 25px;
+		}
+
+		.accordion__label {
+			font-size: 1.25rem;
+		}
+
+		.accordion__subtitle {
+			font-size: 1rem;
+			margin-top: 8px;
+		}
+
+		.accordion__icon--right {
+			font-size: 1.5rem;
+		}
+
+		.accordion__content {
+			padding: 25px;
+		}
 	}
 
 	.accordion__content p {

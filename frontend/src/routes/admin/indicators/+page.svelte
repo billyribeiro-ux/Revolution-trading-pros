@@ -710,6 +710,7 @@
 		align-items: center;
 		gap: 1rem;
 		margin-top: 1.5rem;
+		flex-wrap: wrap;
 	}
 
 	.btn-page {
@@ -721,6 +722,9 @@
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		/* Touch-friendly min size */
+		min-height: 44px;
+		min-width: 44px;
 	}
 
 	.btn-page:hover:not(:disabled) {
@@ -736,5 +740,139 @@
 	.page-info {
 		font-size: 0.875rem;
 		color: #64748b;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile-first base improvements */
+	.btn-primary,
+	.btn-secondary,
+	.btn-icon {
+		min-height: 44px;
+		min-width: 44px;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* Mobile: Stack filters vertically */
+	@media (max-width: 639px) {
+		.filters {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.search-box {
+			max-width: 100%;
+			min-width: 100%;
+		}
+
+		.actions-row {
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.actions-row .btn-primary {
+			width: 100%;
+			justify-content: center;
+		}
+
+		/* Hide table, show cards on mobile */
+		.table-container {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		table {
+			min-width: 600px;
+		}
+
+		.indicator-cell {
+			min-width: 200px;
+		}
+
+		/* Stack pagination */
+		.pagination {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) */
+	@media (min-width: 640px) {
+		.filters {
+			flex-direction: row;
+		}
+
+		.search-box {
+			min-width: 200px;
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
+	@media (min-width: 768px) {
+		.page-header h1 {
+			font-size: 2rem;
+		}
+
+		th {
+			padding: 1rem;
+		}
+
+		td {
+			padding: 1.25rem 1rem;
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.search-box {
+			max-width: 500px;
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-icon {
+			width: 2.5rem;
+			height: 2.5rem;
+		}
+
+		td {
+			padding: 1.25rem 1rem;
+		}
+
+		tbody tr:hover {
+			background: transparent;
+		}
+
+		tbody tr:active {
+			background: rgba(100, 116, 139, 0.15);
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.spinner,
+		.spinner-small {
+			animation: none;
+		}
+
+		.btn-primary:hover,
+		.btn-secondary:hover,
+		.btn-icon:hover {
+			transform: none;
+		}
+	}
+
+	/* Safe areas for notched devices */
+	@supports (padding: max(0px)) {
+		.admin-page-container {
+			padding-left: max(1.5rem, env(safe-area-inset-left));
+			padding-right: max(1.5rem, env(safe-area-inset-right));
+			padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+		}
 	}
 </style>

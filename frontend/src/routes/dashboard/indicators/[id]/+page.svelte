@@ -598,4 +598,142 @@
 			text-align: center;
 		}
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * 2026 Mobile-First Responsive Design Enhancements
+	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
+	 * Touch targets: min 44x44px, Safe areas: env(safe-area-inset-*)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Touch-friendly download buttons */
+	.orng_btn {
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.btn {
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Safe areas for notched devices */
+	@supports (padding: max(0px)) {
+		.indicators {
+			padding-left: max(20px, env(safe-area-inset-left));
+			padding-right: max(20px, env(safe-area-inset-right));
+			padding-bottom: max(40px, env(safe-area-inset-bottom));
+		}
+	}
+
+	/* xs: Extra small devices (≥ 360px) */
+	@media (min-width: 360px) {
+		.st_box {
+			padding: 24px 20px;
+		}
+	}
+
+	/* sm: Small devices (≥ 640px) */
+	@media (min-width: 640px) {
+		.st_box {
+			padding: 32px 24px;
+		}
+
+		.downloads-table td,
+		.downloads-table thead th {
+			display: table-cell;
+		}
+
+		.downloads-table thead {
+			display: table-header-group;
+		}
+
+		.downloads-table tbody tr {
+			display: table-row;
+			margin-bottom: 0;
+			border: none;
+			padding: 0;
+		}
+	}
+
+	/* md: Medium devices (≥ 768px) */
+	@media (min-width: 768px) {
+		.st_box {
+			padding: 40px 30px;
+		}
+	}
+
+	/* lg: Large devices (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.video-container:hover {
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+		}
+	}
+
+	/* Touch device optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.orng_btn {
+			min-height: 48px;
+			padding: 12px 24px;
+		}
+
+		.btn {
+			min-height: 48px;
+			padding: 14px 28px;
+		}
+
+		.downloads-table tbody tr:hover {
+			background-color: transparent;
+		}
+
+		.downloads-table tbody tr:active {
+			background-color: #fafafa;
+		}
+
+		/* Video touch controls */
+		.video-container video::-webkit-media-controls-panel {
+			min-height: 44px;
+		}
+	}
+
+	/* Reduced motion preference */
+	@media (prefers-reduced-motion: reduce) {
+		.orng_btn,
+		.btn,
+		.video-container {
+			transition: none;
+		}
+	}
+
+	/* High contrast mode */
+	@media (prefers-contrast: high) {
+		.st_box {
+			border-width: 2px;
+		}
+
+		.downloads-table {
+			border-width: 2px;
+		}
+
+		.orng_btn {
+			border: 2px solid #fff;
+		}
+	}
+
+	/* Print styles */
+	@media print {
+		.indicator-detail__videos,
+		.indicator-detail__footer {
+			display: none;
+		}
+
+		.st_box {
+			break-inside: avoid;
+			page-break-inside: avoid;
+		}
+	}
 </style>

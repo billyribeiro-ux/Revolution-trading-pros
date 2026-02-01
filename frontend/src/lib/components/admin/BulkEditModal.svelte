@@ -581,28 +581,138 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - Mobile (< sm: 640px)
+	   2026 MOBILE-FIRST RESPONSIVE DESIGN
+	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+	/* Mobile: Full-screen bottom sheet */
+	@media (max-width: 639px) {
 		.bulk-edit-modal {
+			position: fixed;
+			inset: 0;
+			border-radius: 0;
 			padding: var(--space-4);
-			max-height: 90vh;
+			padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0));
+			padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0));
+			max-width: 100%;
+			max-height: 100dvh;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.modal-header {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			background: var(--admin-surface-primary);
+			padding-bottom: var(--space-4);
+			margin-bottom: var(--space-4);
+			border-bottom: 1px solid var(--admin-border-subtle);
 		}
 
 		.modal-actions {
+			position: sticky;
+			bottom: 0;
+			z-index: 10;
 			flex-direction: column;
+			gap: var(--space-3);
+			background: var(--admin-surface-primary);
+			margin-top: var(--space-4);
+			padding-top: var(--space-4);
+			padding-bottom: env(safe-area-inset-bottom, 0);
 		}
 
 		.btn-cancel,
 		.btn-save {
 			width: 100%;
 			justify-content: center;
+			min-height: 48px;
 		}
 
 		.radio-group {
 			flex-direction: column;
 			gap: var(--space-2);
+		}
+
+		/* Touch targets */
+		.btn-tag-action,
+		.btn-room-action {
+			width: 36px;
+			height: 36px;
+		}
+	}
+
+	/* xs: Extra small devices (< 360px) */
+	@media (max-width: 359px) {
+		.bulk-edit-modal {
+			padding: var(--space-3);
+		}
+
+		.header-left h3 {
+			font-size: var(--text-base);
+		}
+
+		.tags-grid,
+		.rooms-grid {
+			gap: var(--space-1);
+		}
+
+		.tag-item,
+		.room-item {
+			flex-wrap: wrap;
+		}
+	}
+
+	/* sm: 640px+ - Centered modal */
+	@media (min-width: 640px) {
+		.bulk-edit-modal {
+			position: relative;
+			max-width: 500px;
+			border-radius: var(--radius-xl);
+		}
+	}
+
+	/* Landscape orientation */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.bulk-edit-modal {
+			max-height: 100dvh;
+		}
+
+		.modal-header {
+			margin-bottom: var(--space-3);
+		}
+
+		.edit-sections {
+			gap: var(--space-3);
+		}
+
+		.edit-section {
+			padding: var(--space-3);
+		}
+
+		.modal-actions {
+			flex-direction: row;
+			margin-top: var(--space-3);
+		}
+	}
+
+	/* Touch device adjustments */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-close,
+		.btn-cancel,
+		.btn-save,
+		.section-toggle,
+		.radio-group label,
+		.edit-section select {
+			min-height: 44px;
+			-webkit-tap-highlight-color: transparent;
+			touch-action: manipulation;
+		}
+
+		.btn-tag-action,
+		.btn-room-action {
+			width: 40px;
+			height: 40px;
 		}
 	}
 
@@ -618,6 +728,21 @@
 		.btn-room-action,
 		.edit-section select {
 			transition: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		.bulk-edit-modal {
+			border: 2px solid var(--admin-text-primary);
+		}
+
+		.edit-section {
+			border: 1px solid var(--admin-border-light);
+		}
+
+		.btn-cancel,
+		.btn-save {
+			border: 2px solid currentColor;
 		}
 	}
 </style>
