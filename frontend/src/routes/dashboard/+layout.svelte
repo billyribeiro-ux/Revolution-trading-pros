@@ -362,6 +362,11 @@
 				},
 				{ href: '/dashboard/explosive-swings/watchlist', icon: 'list', text: 'Watchlist' },
 				{ href: '/dashboard/explosive-swings/video-library', icon: 'video', text: 'Video Library' },
+				{
+					href: '/dashboard/explosive-swings/learning-center',
+					icon: 'school',
+					text: 'Learning Center'
+				},
 				{ href: '/dashboard/explosive-swings/favorites', icon: 'star', text: 'Favorites' }
 			]
 		},
