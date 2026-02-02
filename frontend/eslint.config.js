@@ -1,74 +1,56 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from 'eslint-plugin-storybook';
-
 import js from '@eslint/js';
+import ts from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 import svelte from 'eslint-plugin-svelte';
-import globals from 'globals';
-import ts from 'typescript-eslint';
-
 import prettier from 'eslint-config-prettier';
+import globals from 'globals';
 
-export default ts.config(
-	js.configs.recommended,
-	...ts.configs.recommended,
-	...svelte.configs['flat/recommended'],
-	prettier,
-	...svelte.configs['flat/prettier'],
-	{
-		languageOptions: {
-			globals: {
-				...globals.browser,
-				...globals.node
-			}
-		}
-	},
-	{
-		files: ['**/*.svelte'],
-		languageOptions: {
-			parserOptions: {
-				parser: ts.parser
-			}
-		}
-	},
-	{
-		files: ['**/*.svelte.ts', '**/*.svelte.js'],
-		languageOptions: {
-			parser: ts.parser,
-			parserOptions: {
-				project: null
-			}
-		}
-	},
-	{
-		files: ['**/*.cjs'],
-		rules: {
-			'@typescript-eslint/no-require-imports': 'off'
-		}
-	},
-	{
-		rules: {
-			// Enabled as warnings - use underscore prefix (_varName) for intentionally unused vars
-			'@typescript-eslint/no-unused-vars': [
-				'warn',
-				{ argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-			],
-			// Enabled as warning - gradually replace 'any' with proper types
-			'@typescript-eslint/no-explicit-any': 'warn',
-			'svelte/no-at-html-tags': 'off',
-			'svelte/no-navigation-without-resolve': 'off',
-			'svelte/require-each-key': 'off',
-			'svelte/prefer-svelte-reactivity': 'off',
-			'svelte/no-dom-manipulating': 'off',
-			'svelte/no-immutable-reactive-statements': 'off',
-			'no-useless-escape': 'off',
-			'no-case-declarations': 'off',
-			'svelte/infinite-reactive-loop': 'off',
-			'svelte/no-shorthand-style-property-overrides': 'off',
-			'@typescript-eslint/no-unused-expressions': 'off'
-		}
-	},
-	{
-		ignores: ['build/', '.svelte-kit/', 'dist/']
-	},
-	storybook.configs['flat/recommended']
-);
+export default [
+  js.configs.recommended,
+  {
+    files: ['**/*.{js,ts,svelte}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      }
+    }
+  },
+  {
+    files: ['**/*.{ts,svelte}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: './tsconfig.json',
+        extraFileExtensions: ['.svelte']
+      }
+    },
+    plugins: {
+      '@typescript-eslint': ts
+    },
+    rules: {
+      ...ts.configs.strict.rules,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off'
+    }
+  },
+  {
+    files: ['**/*.svelte'],
+    languageOptions: {
+      parser: svelte.parser,
+      parserOptions: {
+        parser: tsParser
+      }
+    },
+    plugins: {
+      svelte
+    },
+    rules: {
+      ...svelte.configs.recommended.rules,
+      'svelte/no-at-html-tags': 'error'
+    }
+  },
+  prettier
+];
