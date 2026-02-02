@@ -71,6 +71,7 @@
 		IconBulb
 	} from '$lib/icons';
 	import { onMount, onDestroy } from 'svelte';
+	import DOMPurify from 'isomorphic-dompurify';
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
@@ -135,6 +136,17 @@
 	let gifPlaying = $state<boolean>(true);
 	let lightboxOpen = $state<boolean>(false);
 	let lightboxIndex = $state<number>(0);
+
+	// Error boundary state
+	let renderError = $state<Error | null>(null);
+
+	// P0 Security: Sanitized HTML content
+	let sanitizedHTML = $derived(
+		block.content.html ? DOMPurify.sanitize(block.content.html, {
+			ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 's', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre', 'code', 'img', 'div', 'span', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+			ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'style']
+		}) : ''
+	);
 
 	// ==========================================================================
 	// Interactive Block Functions
@@ -385,7 +397,28 @@
 	});
 
 	onDestroy(() => {
-		if (countdownInterval) { clearInterval(countdownInterval); }
+		// P0: Clear all timers
+		if (countdownInterval) {
+			clearInterval(countdownInterval);
+			countdownInterval = null;
+		}
+
+		// P0: Clean up audio resources
+		if (audioRef) {
+			audioRef.pause();
+			audioRef.src = '';
+			audioRef.load();
+			audioRef = null;
+		}
+
+		// P0: Restore body scroll if lightbox was open
+		if (lightboxOpen) {
+			document.body.style.overflow = '';
+			lightboxOpen = false;
+		}
+
+		// P0: Reset error state
+		renderError = null;
 	});
 
 	// ==========================================================================
@@ -1108,8 +1141,9 @@
 
 	<!-- TRADING-SPECIFIC BLOCKS -->
 	{:else if block.type === 'ticker'}
-		{@const tickerData = block.content.tickerData || {}}
-		{@const tickers = tickerData.tickers || [{ symbol: block.content.ticker || 'SPY', price: 0, change: 0, changePercent: 0 }]}
+		{@const defaultTicker = { symbol: block.content.ticker || 'SPY', price: 0, change: 0, changePercent: 0 }}
+		{@const tickerData = block.content.tickerData || { tickers: [defaultTicker], multiRow: false }}
+		{@const tickers = tickerData.tickers}
 		{@const isMultiRow = tickerData.multiRow || false}
 		<div class="ticker-block" class:ticker-multi-row={isMultiRow} role="region" aria-label="Stock ticker display">
 			<div class="ticker-header-bar">
@@ -1126,7 +1160,7 @@
 						<div class="ticker-symbol-row">
 							{#if isEditing}
 								<input type="text" class="ticker-symbol-input" value={ticker.symbol || 'SPY'} placeholder="SYMBOL" onchange={(e) => { const newTickers = [...tickers]; newTickers[index] = { ...ticker, symbol: (e.target as HTMLInputElement).value.toUpperCase() }; updateContent({ tickerData: { ...tickerData, tickers: newTickers } }); }} aria-label="Ticker symbol" />
-								{#if tickers.length > 1}<button type="button" class="ticker-remove-btn" onclick={() => { const newTickers = tickers.filter((_, i) => i !== index); updateContent({ tickerData: { ...tickerData, tickers: newTickers } }); }} aria-label="Remove ticker"><IconX size={12} /></button>{/if}
+								{#if tickers.length > 1}<button type="button" class="ticker-remove-btn" onclick={() => { const newTickers = tickers.filter((_t: typeof ticker, i: number) => i !== index); updateContent({ tickerData: { ...tickerData, tickers: newTickers } }); }} aria-label="Remove ticker"><IconX size={12} /></button>{/if}
 							{:else}<span class="ticker-symbol">{ticker.symbol || 'SPY'}</span>{/if}
 							<span class="ticker-direction-icon">{#if isPositive}<IconTrendingUp size={16} />{:else}<IconTrendingDown size={16} />{/if}</span>
 						</div>
@@ -1220,7 +1254,7 @@
 			</div>
 		{:else}
 			<div class="html-block-preview">
-				{@html block.content.html || ''}
+				{@html sanitizedHTML}
 			</div>
 		{/if}
 
