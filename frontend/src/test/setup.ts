@@ -50,8 +50,9 @@ global.ResizeObserver = class ResizeObserver {
 	unobserve() {}
 } as unknown as typeof ResizeObserver;
 
-// Mock performance APIs (cast to any to avoid TypeScript narrowing issues)
-const perf = performance as Record<string, unknown>;
+// Mock performance APIs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const perf = performance as any;
 if (!perf.mark) perf.mark = vi.fn();
 if (!perf.measure) perf.measure = vi.fn();
 if (!perf.getEntriesByName) perf.getEntriesByName = vi.fn().mockReturnValue([]);
