@@ -153,7 +153,7 @@
 		<div class="preview-wrapper" style={wrapperStyle}>
 			<div class="preview-container" style={containerStyle}>
 				{#key JSON.stringify(propValues)}
-					<svelte:component this={LoadedComponent} {...propValues} />
+					<LoadedComponent {...propValues} />
 				{/key}
 			</div>
 		</div>
