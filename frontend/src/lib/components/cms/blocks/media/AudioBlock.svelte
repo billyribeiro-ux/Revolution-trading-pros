@@ -2,7 +2,8 @@
 /**
  * Audio Block Component
  * ═══════════════════════════════════════════════════════════════════════════
- * Audio player with full controls - Apple Principal Engineer ICT 7 Standard
+ * Full-featured audio player with controls, file upload, and URL input
+ * Apple Principal Engineer ICT 7 Standard - Svelte 5 Runes
  */
 -->
 
@@ -14,10 +15,11 @@
 		IconVolumeOff,
 		IconWaveSine,
 		IconFile,
-		IconAlertCircle
+		IconAlertCircle,
+		IconUpload
 	} from '$lib/icons';
 	import { useMediaControls } from '../hooks/useMediaControls.svelte';
-	import { sanitizeURL } from '$lib/utils/sanitization';
+	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -34,7 +36,14 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
+
+	// ==========================================================================
+	// Local State
+	// ==========================================================================
+
+	let audioElement: HTMLAudioElement | null = $state(null);
+	let urlInputValue = $state('');
 
 	// ==========================================================================
 	// Media Controls Hook
@@ -42,12 +51,34 @@
 
 	const controls = useMediaControls({
 		blockId: props.blockId,
-		type: 'audio',
 		onError: props.onError,
 		onEnded: () => {
 			console.log('Audio playback ended');
 		}
 	});
+
+	// Sync audio element with controls hook when it changes
+	$effect(() => {
+		if (audioElement) {
+			controls.setMediaElement(audioElement);
+		}
+	});
+
+	// ==========================================================================
+	// Time Formatting
+	// ==========================================================================
+
+	function formatTime(seconds: number): string {
+		if (!seconds || isNaN(seconds) || !isFinite(seconds)) {
+			return '0:00';
+		}
+
+		const totalSeconds = Math.floor(seconds);
+		const mins = Math.floor(totalSeconds / 60);
+		const secs = totalSeconds % 60;
+
+		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	}
 
 	// ==========================================================================
 	// Content Updates
@@ -70,11 +101,24 @@
 		document.execCommand('insertText', false, text);
 	}
 
-	function handleURLChange(e: Event): void {
-		const value = (e.target as HTMLInputElement).value;
-		const sanitized = sanitizeURL(value);
+	function handleURLInput(e: Event): void {
+		urlInputValue = (e.target as HTMLInputElement).value;
+	}
+
+	function handleURLSubmit(): void {
+		const sanitized = sanitizeURL(urlInputValue.trim());
 		if (sanitized) {
 			updateContent({ mediaUrl: sanitized });
+			urlInputValue = '';
+		} else if (urlInputValue.trim()) {
+			props.onError?.(new Error('Invalid URL format. Please enter a valid audio URL.'));
+		}
+	}
+
+	function handleURLKeydown(e: KeyboardEvent): void {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			handleURLSubmit();
 		}
 	}
 
@@ -82,21 +126,50 @@
 		const file = (e.target as HTMLInputElement).files?.[0];
 		if (!file) return;
 
-		// Validate file type
-		if (!file.type.startsWith('audio/')) {
-			props.onError?.(new Error('Invalid file type. Please upload an audio file.'));
-			return;
-		}
+		// Validate file using validateFile utility
+		const validation = validateFile(file, {
+			maxSize: 10 * 1024 * 1024, // 10MB max
+			allowedTypes: ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp3', 'audio/wave'],
+			allowedExtensions: ['mp3', 'wav', 'ogg']
+		});
 
-		// Validate file size (10MB max)
-		const maxSize = 10 * 1024 * 1024;
-		if (file.size > maxSize) {
-			props.onError?.(new Error('File too large. Maximum size: 10MB'));
+		if (!validation.valid) {
+			props.onError?.(new Error(validation.error || 'Invalid audio file'));
 			return;
 		}
 
 		const url = URL.createObjectURL(file);
 		updateContent({ mediaUrl: url });
+	}
+
+	// ==========================================================================
+	// Progress Bar Handlers
+	// ==========================================================================
+
+	function handleProgressClick(e: MouseEvent): void {
+		const container = e.currentTarget as HTMLElement;
+		const rect = container.getBoundingClientRect();
+		const percent = ((e.clientX - rect.left) / rect.width) * 100;
+		controls.seek(Math.max(0, Math.min(100, percent)));
+	}
+
+	function handleProgressKeydown(e: KeyboardEvent): void {
+		if (e.key === 'ArrowLeft') {
+			e.preventDefault();
+			controls.seek(Math.max(0, controls.progress - 5));
+		} else if (e.key === 'ArrowRight') {
+			e.preventDefault();
+			controls.seek(Math.min(100, controls.progress + 5));
+		}
+	}
+
+	// ==========================================================================
+	// Volume Handlers
+	// ==========================================================================
+
+	function handleVolumeChange(e: Event): void {
+		const value = parseFloat((e.target as HTMLInputElement).value);
+		controls.setVolume(value);
 	}
 
 	// ==========================================================================
@@ -111,9 +184,9 @@
 
 <div class="audio-block" role="region" aria-label="Audio player">
 	{#if hasAudio && sanitizedURL}
-		<!-- Audio Element (hidden) -->
+		<!-- Audio Element (hidden, bound to local variable) -->
 		<audio
-			bind:this={controls.elementRef}
+			bind:this={audioElement}
 			src={sanitizedURL}
 			ontimeupdate={controls.handleTimeUpdate}
 			onended={controls.handleEnded}
@@ -150,20 +223,14 @@
 			<!-- Progress Bar -->
 			<div
 				class="audio-progress-container"
-				onclick={controls.handleSeekClick}
-				onkeydown={(e) => {
-					if (e.key === 'ArrowLeft') {
-						controls.seek(Math.max(0, controls.progress - 5));
-					} else if (e.key === 'ArrowRight') {
-						controls.seek(Math.min(100, controls.progress + 5));
-					}
-				}}
+				onclick={handleProgressClick}
+				onkeydown={handleProgressKeydown}
 				role="slider"
 				aria-label="Audio progress"
 				aria-valuemin={0}
 				aria-valuemax={100}
 				aria-valuenow={Math.round(controls.progress)}
-				aria-valuetext="{controls.formatTime(controls.currentTime)} of {controls.formatTime(controls.duration)}"
+				aria-valuetext="{formatTime(controls.currentTime)} of {formatTime(controls.duration)}"
 				tabindex="0"
 			>
 				<div class="audio-progress-bar" style="width: {controls.progress}%"></div>
@@ -172,11 +239,11 @@
 			<!-- Time Display -->
 			<div class="audio-time" aria-live="off">
 				<time datetime="PT{Math.floor(controls.currentTime)}S">
-					{controls.formatTime(controls.currentTime)}
+					{formatTime(controls.currentTime)}
 				</time>
 				<span aria-hidden="true">/</span>
 				<time datetime="PT{Math.floor(controls.duration)}S">
-					{controls.formatTime(controls.duration)}
+					{formatTime(controls.duration)}
 				</time>
 			</div>
 
@@ -201,7 +268,7 @@
 					max="1"
 					step="0.1"
 					value={controls.volume}
-					oninput={controls.handleVolumeChange}
+					oninput={handleVolumeChange}
 					class="audio-volume-slider"
 					aria-label="Volume"
 				/>
@@ -217,8 +284,8 @@
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
-				role="textbox"
-				aria-label="Audio caption"
+				role={props.isEditing ? 'textbox' : undefined}
+				aria-label={props.isEditing ? 'Audio caption' : undefined}
 				aria-multiline="false"
 			>
 				{props.block.content.mediaCaption || ''}
@@ -228,27 +295,43 @@
 		<!-- Placeholder (Edit Mode) -->
 		<div class="audio-placeholder">
 			<IconWaveSine size={48} aria-hidden="true" />
-			<span>Add audio URL</span>
+			<span class="audio-placeholder-title">Add Audio</span>
+			<span class="audio-placeholder-subtitle">Enter a URL or upload an audio file</span>
 
-			<input
-				type="url"
-				placeholder="https://example.com/audio.mp3"
-				onchange={handleURLChange}
-				aria-label="Audio URL"
-			/>
+			<div class="audio-url-input-wrapper">
+				<input
+					type="url"
+					placeholder="https://example.com/audio.mp3"
+					value={urlInputValue}
+					oninput={handleURLInput}
+					onkeydown={handleURLKeydown}
+					aria-label="Audio URL"
+				/>
+				<button
+					type="button"
+					class="audio-url-submit"
+					onclick={handleURLSubmit}
+					disabled={!urlInputValue.trim()}
+					aria-label="Add audio from URL"
+				>
+					Add
+				</button>
+			</div>
 
 			<span class="audio-upload-divider">or</span>
 
 			<label class="audio-file-upload">
-				<IconFile size={20} aria-hidden="true" />
+				<IconUpload size={20} aria-hidden="true" />
 				<span>Upload audio file</span>
 				<input
 					type="file"
-					accept="audio/*"
+					accept="audio/mpeg,audio/wav,audio/ogg,.mp3,.wav,.ogg"
 					onchange={handleFileUpload}
 					aria-label="Upload audio file"
 				/>
 			</label>
+
+			<span class="audio-supported-formats">Supported: MP3, WAV, OGG (max 10MB)</span>
 		</div>
 	{:else}
 		<!-- No audio in view mode -->
@@ -264,7 +347,10 @@
 		width: 100%;
 	}
 
-	/* Player */
+	/* ==========================================================================
+	   Player
+	   ========================================================================== */
+
 	.audio-player {
 		display: flex;
 		align-items: center;
@@ -287,7 +373,7 @@
 		color: white;
 		cursor: pointer;
 		flex-shrink: 0;
-		transition: all 0.15s;
+		transition: all 0.15s ease;
 	}
 
 	.audio-play-btn:hover {
@@ -308,6 +394,10 @@
 		color: #64748b;
 		flex-shrink: 0;
 	}
+
+	/* ==========================================================================
+	   Progress Bar
+	   ========================================================================== */
 
 	.audio-progress-container {
 		flex: 1;
@@ -332,6 +422,10 @@
 		pointer-events: none;
 	}
 
+	/* ==========================================================================
+	   Time Display
+	   ========================================================================== */
+
 	.audio-time {
 		display: flex;
 		align-items: center;
@@ -342,6 +436,10 @@
 		min-width: 70px;
 		flex-shrink: 0;
 	}
+
+	/* ==========================================================================
+	   Volume Controls
+	   ========================================================================== */
 
 	.audio-volume-container {
 		display: flex;
@@ -362,7 +460,7 @@
 		color: #94a3b8;
 		cursor: pointer;
 		border-radius: 6px;
-		transition: all 0.15s;
+		transition: all 0.15s ease;
 	}
 
 	.audio-mute-btn:hover {
@@ -392,7 +490,7 @@
 		background: white;
 		border-radius: 50%;
 		cursor: pointer;
-		transition: transform 0.15s;
+		transition: transform 0.15s ease;
 	}
 
 	.audio-volume-slider::-webkit-slider-thumb:hover {
@@ -406,14 +504,17 @@
 		border: none;
 		border-radius: 50%;
 		cursor: pointer;
-		transition: transform 0.15s;
+		transition: transform 0.15s ease;
 	}
 
 	.audio-volume-slider::-moz-range-thumb:hover {
 		transform: scale(1.2);
 	}
 
-	/* Caption */
+	/* ==========================================================================
+	   Caption
+	   ========================================================================== */
+
 	.audio-caption {
 		margin: 0.75rem 0 0;
 		font-size: 0.875rem;
@@ -431,7 +532,10 @@
 		color: #9ca3af;
 	}
 
-	/* Placeholder */
+	/* ==========================================================================
+	   Placeholder
+	   ========================================================================== */
+
 	.audio-placeholder {
 		display: flex;
 		flex-direction: column;
@@ -445,20 +549,66 @@
 		color: #9ca3af;
 	}
 
-	.audio-placeholder input[type='url'] {
+	.audio-placeholder-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #374151;
+	}
+
+	.audio-placeholder-subtitle {
+		font-size: 0.875rem;
+		color: #9ca3af;
+	}
+
+	.audio-url-input-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		width: 100%;
 		max-width: 400px;
+		margin-top: 0.5rem;
+	}
+
+	.audio-url-input-wrapper input[type='url'] {
+		flex: 1;
 		padding: 0.75rem 1rem;
 		border: 1px solid #d1d5db;
 		border-radius: 8px;
 		font-size: 0.875rem;
-		transition: border-color 0.15s;
+		transition: border-color 0.15s ease;
 	}
 
-	.audio-placeholder input[type='url']:focus {
+	.audio-url-input-wrapper input[type='url']:focus {
 		outline: none;
 		border-color: #3b82f6;
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.audio-url-submit {
+		padding: 0.75rem 1.25rem;
+		background: #3b82f6;
+		border: none;
+		border-radius: 8px;
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.audio-url-submit:hover:not(:disabled) {
+		background: #2563eb;
+	}
+
+	.audio-url-submit:disabled {
+		background: #e5e7eb;
+		color: #9ca3af;
+		cursor: not-allowed;
+	}
+
+	.audio-url-submit:focus-visible {
+		outline: 2px solid #60a5fa;
+		outline-offset: 2px;
 	}
 
 	.audio-upload-divider {
@@ -478,7 +628,7 @@
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.15s;
+		transition: all 0.15s ease;
 		position: relative;
 		overflow: hidden;
 	}
@@ -495,7 +645,16 @@
 		cursor: pointer;
 	}
 
-	/* Empty State */
+	.audio-supported-formats {
+		font-size: 0.75rem;
+		color: #9ca3af;
+		margin-top: 0.5rem;
+	}
+
+	/* ==========================================================================
+	   Empty State
+	   ========================================================================== */
+
 	.audio-empty {
 		display: flex;
 		flex-direction: column;
@@ -508,7 +667,10 @@
 		color: #6b7280;
 	}
 
-	/* Responsive */
+	/* ==========================================================================
+	   Responsive
+	   ========================================================================== */
+
 	@media (max-width: 768px) {
 		.audio-player {
 			flex-wrap: wrap;
@@ -524,9 +686,24 @@
 		.audio-volume-container {
 			display: none;
 		}
+
+		.audio-url-input-wrapper {
+			flex-direction: column;
+		}
+
+		.audio-url-input-wrapper input[type='url'] {
+			width: 100%;
+		}
+
+		.audio-url-submit {
+			width: 100%;
+		}
 	}
 
-	/* Dark Mode */
+	/* ==========================================================================
+	   Dark Mode
+	   ========================================================================== */
+
 	:global(.dark) .audio-caption {
 		color: #94a3b8;
 	}
@@ -542,10 +719,23 @@
 		color: #94a3b8;
 	}
 
-	:global(.dark) .audio-placeholder input[type='url'] {
+	:global(.dark) .audio-placeholder-title {
+		color: #f1f5f9;
+	}
+
+	:global(.dark) .audio-placeholder-subtitle {
+		color: #64748b;
+	}
+
+	:global(.dark) .audio-url-input-wrapper input[type='url'] {
 		background: #0f172a;
 		border-color: #334155;
 		color: #e2e8f0;
+	}
+
+	:global(.dark) .audio-url-submit:disabled {
+		background: #334155;
+		color: #64748b;
 	}
 
 	:global(.dark) .audio-file-upload {
@@ -556,5 +746,9 @@
 
 	:global(.dark) .audio-file-upload:hover {
 		background: #334155;
+	}
+
+	:global(.dark) .audio-supported-formats {
+		color: #64748b;
 	}
 </style>
