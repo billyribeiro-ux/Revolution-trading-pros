@@ -83,22 +83,74 @@
 		tocItems = items;
 	}
 
-	function handleScroll(): void {
+	let intersectionObserver: IntersectionObserver | null = null;
+
+	function setupIntersectionObserver(): void {
 		if (!browser) return;
 
-		const headings = tocItems.map((item) => document.getElementById(item.id)).filter(Boolean);
-		const scrollPos = window.scrollY + 100;
+		// Clean up existing observer
+		if (intersectionObserver) {
+			intersectionObserver.disconnect();
+		}
 
-		let current = '';
-		for (const heading of headings) {
-			if (heading && heading.offsetTop <= scrollPos) {
-				current = heading.id;
+		const headingElements = tocItems
+			.map((item) => document.getElementById(item.id))
+			.filter((el): el is HTMLElement => el !== null);
+
+		if (headingElements.length === 0) return;
+
+		// Track which headings are currently visible
+		const visibleHeadings = new Map<string, number>();
+
+		intersectionObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					const id = entry.target.id;
+					if (entry.isIntersecting) {
+						// Store the top position for sorting
+						visibleHeadings.set(id, entry.boundingClientRect.top);
+					} else {
+						visibleHeadings.delete(id);
+					}
+				});
+
+				// Find the heading closest to the top of the viewport
+				if (visibleHeadings.size > 0) {
+					let closestId = '';
+					let closestTop = Infinity;
+
+					visibleHeadings.forEach((top, id) => {
+						if (top >= 0 && top < closestTop) {
+							closestTop = top;
+							closestId = id;
+						}
+					});
+
+					// If no heading is below the viewport top, use the last visible one
+					if (!closestId) {
+						let highestTop = -Infinity;
+						visibleHeadings.forEach((top, id) => {
+							if (top > highestTop) {
+								highestTop = top;
+								closestId = id;
+							}
+						});
+					}
+
+					if (closestId && closestId !== activeHeading) {
+						stateManager.setTocState(props.blockId, { activeHeading: closestId });
+					}
+				}
+			},
+			{
+				rootMargin: '-80px 0px -70% 0px',
+				threshold: [0, 0.25, 0.5, 0.75, 1]
 			}
-		}
+		);
 
-		if (current && current !== activeHeading) {
-			stateManager.setTocState(props.blockId, { activeHeading: current });
-		}
+		headingElements.forEach((element) => {
+			intersectionObserver?.observe(element);
+		});
 	}
 
 	function handleTitleInput(e: Event): void {
@@ -112,27 +164,49 @@
 		document.execCommand('insertText', false, text);
 	}
 
+	// Track screen width for mobile behavior
+	let isMobile = $state(false);
+
+	function checkMobile(): void {
+		if (!browser) return;
+		isMobile = window.innerWidth < 768;
+		// Auto-collapse on mobile by default
+		if (isMobile && tocState.open) {
+			stateManager.setTocState(props.blockId, { open: false });
+		}
+	}
+
 	onMount(() => {
 		generateToc();
-		window.addEventListener('scroll', handleScroll, { passive: true });
+		checkMobile();
 
-		const observer = new MutationObserver(() => {
+		// Set up IntersectionObserver after TOC is generated
+		setupIntersectionObserver();
+
+		// Watch for DOM changes to regenerate TOC
+		const mutationObserver = new MutationObserver(() => {
 			generateToc();
+			// Re-setup intersection observer when headings change
+			setupIntersectionObserver();
 		});
 
-		observer.observe(document.body, {
+		mutationObserver.observe(document.body, {
 			childList: true,
 			subtree: true
 		});
 
+		// Handle resize for mobile behavior
+		window.addEventListener('resize', checkMobile, { passive: true });
+
 		return () => {
-			window.removeEventListener('scroll', handleScroll);
-			observer.disconnect();
+			intersectionObserver?.disconnect();
+			mutationObserver.disconnect();
+			window.removeEventListener('resize', checkMobile);
 		};
 	});
 </script>
 
-<nav class="toc-block" aria-label="Table of contents">
+<nav class="toc-block" class:mobile={isMobile} aria-label="Table of contents">
 	<button
 		type="button"
 		class="toc-header"
@@ -435,5 +509,60 @@
 		background: #1e293b;
 		border-color: #475569;
 		color: #e2e8f0;
+	}
+
+	/* Mobile styles */
+	.toc-block.mobile {
+		border-radius: 8px;
+	}
+
+	.toc-block.mobile .toc-header {
+		padding: 0.75rem 1rem;
+		font-size: 0.9375rem;
+	}
+
+	.toc-block.mobile .toc-list {
+		padding: 0 1rem 0.75rem;
+	}
+
+	.toc-block.mobile .toc-link {
+		padding: 0.375rem 0.5rem;
+		font-size: 0.8125rem;
+	}
+
+	.toc-block.mobile .toc-item.toc-level-3 {
+		padding-left: 0.75rem;
+	}
+
+	.toc-block.mobile .toc-item.toc-level-4 {
+		padding-left: 1.5rem;
+	}
+
+	.toc-block.mobile .toc-item.toc-level-5 {
+		padding-left: 2.25rem;
+	}
+
+	.toc-block.mobile .toc-item.toc-level-6 {
+		padding-left: 3rem;
+	}
+
+	@media (max-width: 768px) {
+		.toc-block {
+			position: relative;
+		}
+
+		.toc-settings {
+			padding: 0.75rem 1rem;
+		}
+
+		.setting-field {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+
+		.setting-field select {
+			width: 100%;
+		}
 	}
 </style>

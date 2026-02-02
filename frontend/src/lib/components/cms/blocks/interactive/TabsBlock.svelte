@@ -2,7 +2,7 @@
 /**
  * Tabs Block Component
  * ═══════════════════════════════════════════════════════════════════════════
- * Horizontal/vertical tabs with keyboard navigation
+ * Horizontal/vertical tabs with keyboard navigation and fade animations
  */
 -->
 
@@ -20,11 +20,11 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	let tabs = $derived(
-		props.block.content.tabItems || [
+		props.block.content.tabs || [
 			{ id: 'tab_1', label: 'Tab 1', content: 'Content for tab 1' },
 			{ id: 'tab_2', label: 'Tab 2', content: 'Content for tab 2' }
 		]
@@ -34,17 +34,30 @@
 	let activeTab = $derived(stateManager.getActiveTab(props.blockId, defaultTabId));
 	let orientation = $derived((props.block.settings.tabOrientation as 'horizontal' | 'vertical') || 'horizontal');
 
+	// Track previous active tab for animation
+	let previousActiveTab = $state<string | null>(null);
+	let isTransitioning = $state(false);
+
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
 	}
 
 	function setActiveTab(tabId: string): void {
-		stateManager.setActiveTab(props.blockId, tabId);
+		if (tabId !== activeTab) {
+			previousActiveTab = activeTab;
+			isTransitioning = true;
+			stateManager.setActiveTab(props.blockId, tabId);
+			// Reset transition state after animation completes
+			setTimeout(() => {
+				isTransitioning = false;
+				previousActiveTab = null;
+			}, 200);
+		}
 	}
 
 	function updateTab(index: number, field: 'label' | 'content', value: string): void {
 		const newTabs = tabs.map((tab, i) => (i === index ? { ...tab, [field]: value } : tab));
-		updateContent({ tabItems: newTabs });
+		updateContent({ tabs: newTabs });
 	}
 
 	function addTab(): void {
@@ -56,14 +69,14 @@
 				content: ''
 			}
 		];
-		updateContent({ tabItems: newTabs });
+		updateContent({ tabs: newTabs });
 	}
 
 	function removeTab(index: number): void {
 		if (tabs.length > 1) {
 			const removedTab = tabs[index];
 			const newTabs = tabs.filter((_, i) => i !== index);
-			updateContent({ tabItems: newTabs });
+			updateContent({ tabs: newTabs });
 
 			if (activeTab === removedTab.id) {
 				setActiveTab(newTabs[0].id);
@@ -169,10 +182,13 @@
 			<div
 				id="tab-panel-{props.blockId}-{tab.id}"
 				class="tab-panel"
+				class:active={activeTab === tab.id}
+				class:fade-in={activeTab === tab.id && isTransitioning}
+				class:fade-out={previousActiveTab === tab.id && isTransitioning}
 				role="tabpanel"
 				aria-labelledby="tab-btn-{props.blockId}-{tab.id}"
-				hidden={activeTab !== tab.id}
-				tabindex="0"
+				hidden={activeTab !== tab.id && previousActiveTab !== tab.id}
+				tabindex={activeTab === tab.id ? 0 : -1}
 			>
 				{#if props.isEditing}
 					<div
@@ -350,15 +366,54 @@
 
 	.tabs-panels {
 		flex: 1;
+		position: relative;
+		overflow: hidden;
 	}
 
 	.tab-panel {
 		padding: 1.5rem;
 		background: white;
+		position: relative;
+		opacity: 1;
+		transition: opacity 0.2s ease-in-out;
 	}
 
 	.tab-panel[hidden] {
 		display: none;
+	}
+
+	.tab-panel.fade-in {
+		animation: fadeIn 0.2s ease-in-out forwards;
+	}
+
+	.tab-panel.fade-out {
+		animation: fadeOut 0.2s ease-in-out forwards;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes fadeOut {
+		from {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		to {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
 	}
 
 	.tab-panel:focus-visible {
