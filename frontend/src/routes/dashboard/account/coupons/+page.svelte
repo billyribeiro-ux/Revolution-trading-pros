@@ -19,7 +19,8 @@
 		coupons: Coupon[];
 	}
 
-	let { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	const coupons = $derived(data.coupons || []);
 	let copiedCode = $state<string | null>(null);

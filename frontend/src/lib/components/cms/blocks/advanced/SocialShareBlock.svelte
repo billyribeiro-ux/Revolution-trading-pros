@@ -42,7 +42,7 @@
 	// Props & State
 	// =========================================================================
 
-	const props: Props = $props();
+	let props: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	// =========================================================================

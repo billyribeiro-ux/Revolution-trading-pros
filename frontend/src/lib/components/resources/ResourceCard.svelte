@@ -26,13 +26,22 @@
 		onPreview?: (resource: RoomResource) => void;
 	}
 
-	const { resource, showAccessLevel = true, showVersion = false, showFavorite = true, compact = false, onClick, onDownload, onPreview }: Props = $props();
+	let {
+		resource,
+		showAccessLevel = true,
+		showVersion = false,
+		showFavorite = true,
+		compact = false,
+		onClick,
+		onDownload,
+		onPreview
+	}: Props = $props();
 
-	const displayInfo = $derived(formatResourceForDisplay(resource));
-	const isVideo = $derived(resource.resource_type === 'video');
-	const isPremium = $derived(resource.access_level !== 'free');
-	const formattedSize = $derived(resource.formatted_size || '');
-	const hasVersion = $derived((resource.version ?? 1) > 1);
+	let displayInfo = $derived(formatResourceForDisplay(resource));
+	let isVideo = $derived(resource.resource_type === 'video');
+	let isPremium = $derived(resource.access_level !== 'free');
+	let formattedSize = $derived(resource.formatted_size || '');
+	let hasVersion = $derived((resource.version ?? 1) > 1);
 
 	// Default thumbnail based on resource type
 	function getDefaultThumbnail(type: string): string {
@@ -48,7 +57,8 @@
 		return defaults[type] || defaults.other;
 	}
 
-	async function handleDownload() {
+	async function handleDownload(event: MouseEvent) {
+		event.stopPropagation();
 		// Track download
 		try {
 			await trackDownload(resource.id);
@@ -58,7 +68,8 @@
 		onDownload?.(resource);
 	}
 
-	function handlePreview() {
+	function handlePreview(event: MouseEvent) {
+		event.stopPropagation();
 		onPreview?.(resource);
 	}
 
@@ -101,8 +112,8 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <article
 	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
 	class:compact
@@ -157,7 +168,7 @@
 			<div class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
 				<button
 					class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform hover:scale-110"
-					onclick={(e: MouseEvent) => { e.stopPropagation(); handlePreview(); }}
+					onclick={handlePreview}
 					aria-label="Play video"
 				>
 					<svg class="h-8 w-8 pl-1" fill="currentColor" viewBox="0 0 24 24">
@@ -244,7 +255,7 @@
 		<!-- Action button -->
 		<button
 			class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-			onclick={(e: MouseEvent) => { e.stopPropagation(); isVideo ? handlePreview() : handleDownload(); }}
+			onclick={isVideo ? handlePreview : handleDownload}
 		>
 			{displayInfo.actionLabel}
 		</button>

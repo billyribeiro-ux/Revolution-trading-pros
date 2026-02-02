@@ -11,7 +11,7 @@
 		IconTrendingUp
 	} from '$lib/icons';
 
-	let heroVisible = false;
+	let heroVisible = $state(false);
 
 	onMount(() => {
 		if (!browser) return;

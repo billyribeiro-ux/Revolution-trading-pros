@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -121,7 +121,10 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with cleanup
+	$effect(() => {
+		if (!browser) return;
+
 		loadPosts();
 		loadStats();
 		setupWebSocket();
@@ -132,12 +135,13 @@
 			loadStats();
 			if (viewMode === 'list') loadPosts();
 		}, 30000);
-	});
 
-	onDestroy(() => {
-		if (ws) ws.close();
-		if (refreshInterval) clearInterval(refreshInterval);
-		document.removeEventListener('keydown', handleKeyboard);
+		// Cleanup on destroy
+		return () => {
+			if (ws) ws.close();
+			if (refreshInterval) clearInterval(refreshInterval);
+			document.removeEventListener('keydown', handleKeyboard);
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

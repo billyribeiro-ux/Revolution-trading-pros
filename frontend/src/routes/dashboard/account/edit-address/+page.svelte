@@ -24,7 +24,9 @@
 		message?: string;
 	}
 
-	let { data, form }: { data: PageData; form?: ActionData } = $props();
+	let props: { data: PageData; form?: ActionData } = $props();
+	let data = $derived(props.data);
+	let form = $derived(props.form);
 
 	const address = $derived(data.address || {});
 </script>

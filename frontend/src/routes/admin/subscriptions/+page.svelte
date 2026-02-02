@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		getSubscriptions,
 		getSubscriptionStats,
@@ -56,23 +56,30 @@
 	// Debounce timer for search
 	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-	onMount(async () => {
-		// Load connection status first
-		await connections.load();
-		connectionLoading = false;
+	// Svelte 5: Initialize on mount with cleanup
+	$effect(() => {
+		if (!browser) return;
 
-		// Only load data if payment is connected
-		if ($isPaymentConnected) {
-			await loadData();
-		} else {
-			loading = false;
-		}
-	});
+		const init = async () => {
+			// Load connection status first
+			await connections.load();
+			connectionLoading = false;
 
-	onDestroy(() => {
-		if (searchDebounceTimer) {
-			clearTimeout(searchDebounceTimer);
-		}
+			// Only load data if payment is connected
+			if ($isPaymentConnected) {
+				await loadData();
+			} else {
+				loading = false;
+			}
+		};
+		init();
+
+		// Cleanup on destroy
+		return () => {
+			if (searchDebounceTimer) {
+				clearTimeout(searchDebounceTimer);
+			}
+		};
 	});
 
 	// Debounced search handler

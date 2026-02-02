@@ -11,7 +11,6 @@
   - Access control indication
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { trackDownload } from '$lib/api/room-resources';
 
@@ -24,7 +23,14 @@
 		onVersionSelect?: (resource: RoomResource) => void;
 	}
 
-	let { resource, open = $bindable(false), showVersionHistory = false, onClose, onDownload, onVersionSelect }: Props = $props();
+	let {
+		resource,
+		open = $bindable(false),
+		showVersionHistory = false,
+		onClose,
+		onDownload,
+		onVersionSelect
+	}: Props = $props();
 
 	let downloading = $state(false);
 	let versions = $state<RoomResource[]>([]);
@@ -34,12 +40,12 @@
 	let dragging = $state(false);
 	let startPos = $state({ x: 0, y: 0 });
 
-	const isVideo = $derived(resource.resource_type === 'video');
-	const isPdf = $derived(resource.resource_type === 'pdf');
-	const isImage = $derived(resource.resource_type === 'image');
-	const isDocument = $derived(resource.resource_type === 'document' || resource.resource_type === 'spreadsheet');
-	const canPreview = $derived(isVideo || isPdf || isImage);
-	const isPremium = $derived(resource.access_level !== 'free');
+	let isVideo = $derived(resource.resource_type === 'video');
+	let isPdf = $derived(resource.resource_type === 'pdf');
+	let isImage = $derived(resource.resource_type === 'image');
+	let isDocument = $derived(resource.resource_type === 'document' || resource.resource_type === 'spreadsheet');
+	let canPreview = $derived(isVideo || isPdf || isImage);
+	let isPremium = $derived(resource.access_level !== 'free');
 
 	// Load version history if requested
 	async function loadVersionHistory() {
@@ -162,26 +168,27 @@
 
 	// Version selection
 	function selectVersion(version: RoomResource) {
-		dispatch('versionSelect', { resource: version });
+		onVersionSelect?.(version);
 	}
 
-	// Lifecycle
-	onMount(() => {
-		document.addEventListener('keydown', handleKeydown);
-	});
-
-	onDestroy(() => {
-		document.removeEventListener('keydown', handleKeydown);
+	// Lifecycle - keyboard event handling
+	$effect(() => {
+		if (open) {
+			document.addEventListener('keydown', handleKeydown);
+			return () => {
+				document.removeEventListener('keydown', handleKeydown);
+			};
+		}
 	});
 </script>
 
 {#if open}
 	<!-- Backdrop -->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
-		on:click={handleClose}
+		onclick={handleClose}
 		aria-label="Close viewer"
 	></div>
 
@@ -238,7 +245,7 @@
 				<!-- Download button -->
 				<button
 					class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-					on:click={handleDownload}
+					onclick={handleDownload}
 					disabled={downloading}
 				>
 					{#if downloading}
@@ -258,7 +265,7 @@
 				<!-- Close button -->
 				<button
 					class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-					on:click={handleClose}
+					onclick={handleClose}
 					aria-label="Close"
 				>
 					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -314,7 +321,7 @@
 						<div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-black/70 p-2 backdrop-blur-sm">
 							<button
 								class="rounded p-1 text-white hover:bg-white/20"
-								on:click={zoomOut}
+								onclick={zoomOut}
 								disabled={imageZoom <= 0.5}
 								aria-label="Zoom out"
 							>
@@ -325,7 +332,7 @@
 							<span class="min-w-[3rem] text-center text-sm text-white">{Math.round(imageZoom * 100)}%</span>
 							<button
 								class="rounded p-1 text-white hover:bg-white/20"
-								on:click={zoomIn}
+								onclick={zoomIn}
 								disabled={imageZoom >= 3}
 								aria-label="Zoom in"
 							>
@@ -335,7 +342,7 @@
 							</button>
 							<button
 								class="rounded p-1 text-white hover:bg-white/20"
-								on:click={resetZoom}
+								onclick={resetZoom}
 								aria-label="Reset zoom"
 							>
 								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -429,7 +436,7 @@
 								{#each versions as version}
 									<button
 										class="w-full rounded-lg border p-3 text-left transition-colors {version.id === resource.id ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20' : 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'}"
-										on:click={() => selectVersion(version)}
+										onclick={() => selectVersion(version)}
 									>
 										<div class="flex items-center justify-between">
 											<span class="text-sm font-medium text-gray-900 dark:text-white">

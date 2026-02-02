@@ -198,8 +198,8 @@
 		}
 	];
 
-	let resource: LearningResource | null = null;
-	let loading = true;
+	let resource = $state<LearningResource | null>(null);
+	let loading = $state(true);
 
 	onMount(() => {
 		const slug = page.params.slug;

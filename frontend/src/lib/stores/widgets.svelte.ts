@@ -1,5 +1,5 @@
 /**
- * Dashboard Widgets Store - Apple ICT9+ Design
+ * Dashboard Widgets Store - Apple ICT9+ Design (Svelte 5 Runes)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * Manages dashboard widget configuration with:
@@ -8,10 +8,9 @@
  * - Drag and drop reordering
  * - Size configuration
  *
- * @version 1.0.0
+ * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 
 export type WidgetSize = 'small' | 'medium' | 'large' | 'full';
@@ -217,123 +216,143 @@ function saveConfig(config: WidgetConfig) {
 	}
 }
 
-function createWidgetStore() {
-	const { subscribe, set, update } = writable<WidgetConfig>(loadConfig());
+// ═══════════════════════════════════════════════════════════════════════════════
+// State (Svelte 5 Runes)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-	// Auto-save on changes
-	subscribe((config) => {
-		saveConfig(config);
+let widgetConfig = $state<WidgetConfig>(loadConfig());
+
+// Auto-save on changes
+if (browser) {
+	$effect.root(() => {
+		$effect(() => {
+			saveConfig(widgetConfig);
+		});
 	});
-
-	return {
-		subscribe,
-
-		// Toggle widget visibility
-		toggleWidget(id: string) {
-			update((config) => ({
-				...config,
-				widgets: config.widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w))
-			}));
-		},
-
-		// Update widget size
-		setWidgetSize(id: string, size: WidgetSize) {
-			update((config) => ({
-				...config,
-				widgets: config.widgets.map((w) => (w.id === id ? { ...w, size } : w))
-			}));
-		},
-
-		// Reorder widgets
-		reorderWidgets(fromIndex: number, toIndex: number) {
-			update((config) => {
-				const widgets = [...config.widgets];
-				const [removed] = widgets.splice(fromIndex, 1);
-				if (!removed) return config;
-				widgets.splice(toIndex, 0, removed);
-
-				// Update order values
-				return {
-					...config,
-					widgets: widgets.map((w, i) => ({ ...w, order: i }))
-				};
-			});
-		},
-
-		// Move widget by id
-		moveWidget(id: string, direction: 'up' | 'down') {
-			update((config) => {
-				const widgets = [...config.widgets].sort((a, b) => a.order - b.order);
-				const currentIndex = widgets.findIndex((w) => w.id === id);
-
-				if (currentIndex === -1) return config;
-
-				const targetIndex =
-					direction === 'up'
-						? Math.max(0, currentIndex - 1)
-						: Math.min(widgets.length - 1, currentIndex + 1);
-
-				if (currentIndex === targetIndex) return config;
-
-				const [removed] = widgets.splice(currentIndex, 1);
-				if (!removed) return config;
-				widgets.splice(targetIndex, 0, removed);
-
-				return {
-					...config,
-					widgets: widgets.map((w, i) => ({ ...w, order: i }))
-				};
-			});
-		},
-
-		// Set layout mode
-		setLayout(layout: 'grid' | 'list') {
-			update((config) => ({ ...config, layout }));
-		},
-
-		// Toggle auto-refresh
-		toggleAutoRefresh() {
-			update((config) => ({ ...config, autoRefresh: !config.autoRefresh }));
-		},
-
-		// Set refresh interval
-		setRefreshInterval(interval: number) {
-			update((config) => ({ ...config, refreshInterval: interval }));
-		},
-
-		// Mark widget as refreshed
-		markRefreshed(id: string) {
-			update((config) => ({
-				...config,
-				widgets: config.widgets.map((w) => (w.id === id ? { ...w, lastRefreshed: Date.now() } : w))
-			}));
-		},
-
-		// Reset to defaults
-		resetToDefaults() {
-			set(defaultConfig);
-		},
-
-		// Get visible widgets sorted by order
-		getVisibleWidgets(): DashboardWidget[] {
-			const config = get({ subscribe });
-			return config.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order);
-		}
-	};
 }
 
-export const widgetStore = createWidgetStore();
+// ═══════════════════════════════════════════════════════════════════════════════
+// Widget Store API
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// Derived stores
-export const visibleWidgets = derived(widgetStore, ($config) =>
-	$config.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order)
+export const widgetStore = {
+	get config() {
+		return widgetConfig;
+	},
+
+	get widgets() {
+		return widgetConfig.widgets;
+	},
+
+	get layout() {
+		return widgetConfig.layout;
+	},
+
+	get autoRefresh() {
+		return widgetConfig.autoRefresh;
+	},
+
+	// Toggle widget visibility
+	toggleWidget(id: string) {
+		widgetConfig = {
+			...widgetConfig,
+			widgets: widgetConfig.widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w))
+		};
+	},
+
+	// Update widget size
+	setWidgetSize(id: string, size: WidgetSize) {
+		widgetConfig = {
+			...widgetConfig,
+			widgets: widgetConfig.widgets.map((w) => (w.id === id ? { ...w, size } : w))
+		};
+	},
+
+	// Reorder widgets
+	reorderWidgets(fromIndex: number, toIndex: number) {
+		const widgets = [...widgetConfig.widgets];
+		const [removed] = widgets.splice(fromIndex, 1);
+		if (!removed) return;
+		widgets.splice(toIndex, 0, removed);
+
+		// Update order values
+		widgetConfig = {
+			...widgetConfig,
+			widgets: widgets.map((w, i) => ({ ...w, order: i }))
+		};
+	},
+
+	// Move widget by id
+	moveWidget(id: string, direction: 'up' | 'down') {
+		const widgets = [...widgetConfig.widgets].sort((a, b) => a.order - b.order);
+		const currentIndex = widgets.findIndex((w) => w.id === id);
+
+		if (currentIndex === -1) return;
+
+		const targetIndex =
+			direction === 'up'
+				? Math.max(0, currentIndex - 1)
+				: Math.min(widgets.length - 1, currentIndex + 1);
+
+		if (currentIndex === targetIndex) return;
+
+		const [removed] = widgets.splice(currentIndex, 1);
+		if (!removed) return;
+		widgets.splice(targetIndex, 0, removed);
+
+		widgetConfig = {
+			...widgetConfig,
+			widgets: widgets.map((w, i) => ({ ...w, order: i }))
+		};
+	},
+
+	// Set layout mode
+	setLayout(layout: 'grid' | 'list') {
+		widgetConfig = { ...widgetConfig, layout };
+	},
+
+	// Toggle auto-refresh
+	toggleAutoRefresh() {
+		widgetConfig = { ...widgetConfig, autoRefresh: !widgetConfig.autoRefresh };
+	},
+
+	// Set refresh interval
+	setRefreshInterval(interval: number) {
+		widgetConfig = { ...widgetConfig, refreshInterval: interval };
+	},
+
+	// Mark widget as refreshed
+	markRefreshed(id: string) {
+		widgetConfig = {
+			...widgetConfig,
+			widgets: widgetConfig.widgets.map((w) => (w.id === id ? { ...w, lastRefreshed: Date.now() } : w))
+		};
+	},
+
+	// Reset to defaults
+	resetToDefaults() {
+		widgetConfig = { ...defaultConfig };
+	},
+
+	// Get visible widgets sorted by order
+	getVisibleWidgets(): DashboardWidget[] {
+		return widgetConfig.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order);
+	}
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Derived Values (Svelte 5 Runes)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const visibleWidgets = $derived(
+	widgetConfig.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order)
 );
 
-export const hiddenWidgets = derived(widgetStore, ($config) =>
-	$config.widgets.filter((w) => !w.visible).sort((a, b) => a.order - b.order)
+export const hiddenWidgets = $derived(
+	widgetConfig.widgets.filter((w) => !w.visible).sort((a, b) => a.order - b.order)
 );
 
-export const widgetsByCategory = derived(widgetStore, ($config) => {
+export const widgetsByCategory = $derived.by(() => {
 	const categories: Record<string, DashboardWidget[]> = {
 		analytics: [],
 		content: [],
@@ -341,7 +360,7 @@ export const widgetsByCategory = derived(widgetStore, ($config) => {
 		system: []
 	};
 
-	for (const widget of $config.widgets) {
+	for (const widget of widgetConfig.widgets) {
 		const categoryArray = categories[widget.category];
 		if (categoryArray) {
 			categoryArray.push(widget);
@@ -351,5 +370,5 @@ export const widgetsByCategory = derived(widgetStore, ($config) => {
 	return categories;
 });
 
-export const widgetLayout = derived(widgetStore, ($config) => $config.layout);
-export const autoRefreshEnabled = derived(widgetStore, ($config) => $config.autoRefresh);
+export const widgetLayout = $derived(widgetConfig.layout);
+export const autoRefreshEnabled = $derived(widgetConfig.autoRefresh);

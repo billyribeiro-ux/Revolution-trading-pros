@@ -21,36 +21,47 @@
 		onExport?: (format: 'csv' | 'json') => void;
 	}
 
-	const { stockList, showHeader = true, showExport = true, compact = false, onSymbolClick, onExport }: Props = $props();
+	let {
+		stockList,
+		showHeader = true,
+		showExport = true,
+		compact = false,
+		onSymbolClick,
+		onExport
+	}: Props = $props();
 
 	let sortColumn = $state<keyof StockSymbol>('symbol');
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 	let searchQuery = $state('');
 
 	// Parse symbols if needed
-	const symbols = $derived(Array.isArray(stockList.symbols)
-		? stockList.symbols
-		: typeof stockList.symbols === 'string'
-			? JSON.parse(stockList.symbols)
-			: []);
+	let symbols = $derived(
+		Array.isArray(stockList.symbols)
+			? stockList.symbols
+			: typeof stockList.symbols === 'string'
+				? JSON.parse(stockList.symbols)
+				: []
+	);
 
 	// Filter and sort symbols
-	const filteredSymbols = $derived(symbols
-		.filter((s: StockSymbol) => {
-			if (!searchQuery) return true;
-			const query = searchQuery.toLowerCase();
-			return (
-				s.symbol.toLowerCase().includes(query) ||
-				s.name?.toLowerCase().includes(query) ||
-				s.sector?.toLowerCase().includes(query)
-			);
-		})
-		.sort((a: StockSymbol, b: StockSymbol) => {
-			const aVal = a[sortColumn] ?? '';
-			const bVal = b[sortColumn] ?? '';
-			const comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
-			return sortDirection === 'asc' ? comparison : -comparison;
-		}));
+	let filteredSymbols = $derived(
+		symbols
+			.filter((s: StockSymbol) => {
+				if (!searchQuery) return true;
+				const query = searchQuery.toLowerCase();
+				return (
+					s.symbol.toLowerCase().includes(query) ||
+					s.name?.toLowerCase().includes(query) ||
+					s.sector?.toLowerCase().includes(query)
+				);
+			})
+			.sort((a: StockSymbol, b: StockSymbol) => {
+				const aVal = a[sortColumn] ?? '';
+				const bVal = b[sortColumn] ?? '';
+				const comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+				return sortDirection === 'asc' ? comparison : -comparison;
+			})
+	);
 
 	function handleSort(column: keyof StockSymbol) {
 		if (sortColumn === column) {

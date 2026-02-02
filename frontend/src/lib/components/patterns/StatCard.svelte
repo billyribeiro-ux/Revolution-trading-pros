@@ -19,21 +19,14 @@
 		loading?: boolean;
 	}
 
-	let {
-		title,
-		value,
-		subtitle = '',
-		trend = null,
-		trendLabel = '',
-		icon = null,
-		iconColor = 'primary',
-		loading = false
-	}: Props = $props();
+	let props: Props = $props();
 
+	let trend = $derived(props.trend ?? null);
 	let trendDirection = $derived(
 		trend === null ? 'neutral' : trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral'
 	);
 	let formattedTrend = $derived(trend !== null ? `${trend > 0 ? '+' : ''}${trend}%` : '');
+	let iconColor = $derived(props.iconColor ?? 'primary');
 
 	const iconColors = {
 		primary: 'bg-rtp-primary-soft text-rtp-primary',
@@ -45,22 +38,22 @@
 </script>
 
 <div class="stat-card">
-	{#if icon}
-		{@const IconComponent = icon}
+	{#if props.icon}
+		{@const IconComponent = props.icon}
 		<div class="stat-icon {iconColors[iconColor]}">
 			<IconComponent size={24} />
 		</div>
 	{/if}
 
 	<div class="stat-content">
-		{#if loading}
+		{#if props.loading}
 			<div class="skeleton-value"></div>
 			<div class="skeleton-title"></div>
 		{:else}
-			<div class="stat-value">{value}</div>
-			<div class="stat-title">{title}</div>
+			<div class="stat-value">{props.value}</div>
+			<div class="stat-title">{props.title}</div>
 
-			{#if trend !== null || subtitle}
+			{#if trend !== null || props.subtitle}
 				<div class="stat-footer">
 					{#if trend !== null}
 						<span class="trend trend-{trendDirection}">
@@ -74,8 +67,8 @@
 							{formattedTrend}
 						</span>
 					{/if}
-					{#if trendLabel || subtitle}
-						<span class="trend-label">{trendLabel || subtitle}</span>
+					{#if props.trendLabel || props.subtitle}
+						<span class="trend-label">{props.trendLabel || props.subtitle}</span>
 					{/if}
 				</div>
 			{/if}

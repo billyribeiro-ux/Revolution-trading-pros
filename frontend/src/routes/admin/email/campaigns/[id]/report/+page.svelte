@@ -52,10 +52,14 @@
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
-	// Props
+	// Props (Svelte 5 - no destructuring)
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let { data }: { data: PageData } = $props();
+	interface Props {
+		data: PageData;
+	}
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types

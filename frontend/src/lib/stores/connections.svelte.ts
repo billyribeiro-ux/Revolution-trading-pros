@@ -1,5 +1,5 @@
 /**
- * API Connections Store - Apple ICT9+ Enterprise Grade
+ * API Connections Store - Apple ICT9+ Enterprise Grade (Svelte 5 Runes)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * Centralized store for managing API connection status across the application.
@@ -9,10 +9,9 @@
  * - Automatic background refresh
  * - Connection health monitoring
  *
- * @version 1.0.0
+ * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 
@@ -168,7 +167,7 @@ export const FEATURE_SERVICES: Record<string, ServiceKey[]> = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Store
+// State (Svelte 5 Runes)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const initialState: ConnectionsState = {
@@ -178,7 +177,7 @@ const initialState: ConnectionsState = {
 	error: null
 };
 
-const connectionsStore = writable<ConnectionsState>(initialState);
+let connectionsState = $state<ConnectionsState>({ ...initialState });
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // API Functions
@@ -246,31 +245,43 @@ async function fetchConnectionStatus(): Promise<Record<string, ConnectionStatus>
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
 export const connections = {
-	subscribe: connectionsStore.subscribe,
+	get state() {
+		return connectionsState;
+	},
+
+	get connectionsList() {
+		return connectionsState.connections;
+	},
+
+	get isLoading() {
+		return connectionsState.isLoading;
+	},
+
+	get error() {
+		return connectionsState.error;
+	},
 
 	/**
 	 * Load connection status (with caching)
 	 */
 	async load(force = false): Promise<void> {
-		const state = get(connectionsStore);
-
 		// Check cache
-		if (!force && state.lastFetched && Date.now() - state.lastFetched < CACHE_TTL) {
+		if (!force && connectionsState.lastFetched && Date.now() - connectionsState.lastFetched < CACHE_TTL) {
 			return;
 		}
 
-		connectionsStore.update((s) => ({ ...s, isLoading: true, error: null }));
+		connectionsState = { ...connectionsState, isLoading: true, error: null };
 
 		try {
 			const connectionData = await fetchConnectionStatus();
 
-			connectionsStore.update((s) => ({
-				...s,
+			connectionsState = {
+				...connectionsState,
 				connections: connectionData,
 				isLoading: false,
 				lastFetched: Date.now(),
 				error: null
-			}));
+			};
 		} catch (error) {
 			// On error, set default state with built-in services marked as connected
 			const defaultConnections: Record<string, ConnectionStatus> = {
@@ -306,13 +317,13 @@ export const connections = {
 				}
 			};
 
-			connectionsStore.update((s) => ({
-				...s,
+			connectionsState = {
+				...connectionsState,
 				connections: defaultConnections,
 				isLoading: false,
 				lastFetched: Date.now(),
 				error: error instanceof Error ? error.message : 'Failed to load connections'
-			}));
+			};
 		}
 	},
 
@@ -320,27 +331,24 @@ export const connections = {
 	 * Check if a specific service is connected
 	 */
 	isConnected(serviceKey: string): boolean {
-		const state = get(connectionsStore);
-		return state.connections[serviceKey]?.isConnected ?? false;
+		return connectionsState.connections[serviceKey]?.isConnected ?? false;
 	},
 
 	/**
 	 * Check if any service in a feature category is connected
 	 */
 	isFeatureConnected(feature: keyof typeof FEATURE_SERVICES): boolean {
-		const state = get(connectionsStore);
 		const services = FEATURE_SERVICES[feature] || [];
-		return services.some((key) => state.connections[key]?.isConnected);
+		return services.some((key) => connectionsState.connections[key]?.isConnected);
 	},
 
 	/**
 	 * Get connected services for a feature
 	 */
 	getConnectedServices(feature: keyof typeof FEATURE_SERVICES): ConnectionStatus[] {
-		const state = get(connectionsStore);
 		const services = FEATURE_SERVICES[feature] || [];
 		return services
-			.map((key) => state.connections[key])
+			.map((key) => connectionsState.connections[key])
 			.filter((conn): conn is ConnectionStatus => conn?.isConnected === true);
 	},
 
@@ -348,8 +356,7 @@ export const connections = {
 	 * Get status for a specific service
 	 */
 	getStatus(serviceKey: string): ConnectionStatus | null {
-		const state = get(connectionsStore);
-		return state.connections[serviceKey] || null;
+		return connectionsState.connections[serviceKey] || null;
 	},
 
 	/**
@@ -378,84 +385,84 @@ export const connections = {
 	 */
 	reset(): void {
 		this.stopAutoRefresh();
-		connectionsStore.set(initialState);
+		connectionsState = { ...initialState };
 	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Derived Stores
+// Derived Values (Svelte 5 Runes)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Check if analytics is connected
  */
-export const isAnalyticsConnected = derived(connectionsStore, ($state) => {
+export const isAnalyticsConnected = $derived.by(() => {
 	const analyticsServices = FEATURE_SERVICES['analytics'];
-	return analyticsServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if SEO tools are connected
  */
-export const isSeoConnected = derived(connectionsStore, ($state) => {
+export const isSeoConnected = $derived.by(() => {
 	const seoServices = FEATURE_SERVICES['seo'];
-	return seoServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return seoServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if email is connected
  */
-export const isEmailConnected = derived(connectionsStore, ($state) => {
+export const isEmailConnected = $derived.by(() => {
 	const emailServices = FEATURE_SERVICES['email'];
-	return emailServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return emailServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if payment is connected
  */
-export const isPaymentConnected = derived(connectionsStore, ($state) => {
+export const isPaymentConnected = $derived.by(() => {
 	const paymentServices = FEATURE_SERVICES['payment'];
-	return paymentServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return paymentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if CRM is connected
  */
-export const isCrmConnected = derived(connectionsStore, ($state) => {
+export const isCrmConnected = $derived.by(() => {
 	const crmServices = FEATURE_SERVICES['crm'];
-	return crmServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return crmServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if Fluent ecosystem is connected (any Fluent product)
  */
-export const isFluentConnected = derived(connectionsStore, ($state) => {
+export const isFluentConnected = $derived.by(() => {
 	const fluentServices = FEATURE_SERVICES['fluent'];
-	return fluentServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return fluentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if Forms is connected (FluentForms Pro)
  */
-export const isFormsConnected = derived(connectionsStore, ($state) => {
+export const isFormsConnected = $derived.by(() => {
 	const formsServices = FEATURE_SERVICES['forms'];
-	return formsServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return formsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if behavior tracking is connected
  */
-export const isBehaviorConnected = derived(connectionsStore, ($state) => {
+export const isBehaviorConnected = $derived.by(() => {
 	const behaviorServices = FEATURE_SERVICES['behavior'];
-	return behaviorServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
+	return behaviorServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Get all connection statuses (for connection health panel)
  */
-export const allConnectionStatuses = derived(connectionsStore, ($state) => {
+export const allConnectionStatuses = $derived.by(() => {
 	const statuses: Record<string, ConnectionState> = {};
-	for (const [key, conn] of Object.entries($state.connections)) {
+	for (const [key, conn] of Object.entries(connectionsState.connections)) {
 		statuses[key] = conn.status;
 	}
 	return statuses;
@@ -464,22 +471,22 @@ export const allConnectionStatuses = derived(connectionsStore, ($state) => {
 /**
  * Get all connected services count
  */
-export const connectedCount = derived(connectionsStore, ($state) => {
-	return Object.values($state.connections).filter((c) => c.isConnected).length;
-});
+export const connectedCount = $derived(
+	Object.values(connectionsState.connections).filter((c) => c.isConnected).length
+);
 
 /**
  * Get services with errors
  */
-export const servicesWithErrors = derived(connectionsStore, ($state) => {
-	return Object.values($state.connections).filter((c) => c.status === 'error');
-});
+export const servicesWithErrors = $derived(
+	Object.values(connectionsState.connections).filter((c) => c.status === 'error')
+);
 
 /**
  * Overall connection health
  */
-export const overallHealth = derived(connectionsStore, ($state) => {
-	const connected = Object.values($state.connections).filter((c) => c.isConnected);
+export const overallHealth = $derived.by(() => {
+	const connected = Object.values(connectionsState.connections).filter((c) => c.isConnected);
 	if (connected.length === 0) return 0;
 
 	const totalHealth = connected.reduce((sum, c) => sum + c.healthScore, 0);

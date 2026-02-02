@@ -87,7 +87,8 @@
 	}
 
 	// Svelte 5 $props() rune - the official way to receive page data
-	const { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes

@@ -14,7 +14,7 @@
 	 * @version 1.0.0 - Enterprise Edition
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
@@ -122,16 +122,22 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await connections.load();
-		connections.startAutoRefresh();
-		await loadHealthData();
+	// Svelte 5: Initialize on mount with cleanup
+	$effect(() => {
+		if (!browser) return;
 
-		isLoading = false;
-	});
+		const init = async () => {
+			await connections.load();
+			connections.startAutoRefresh();
+			await loadHealthData();
+			isLoading = false;
+		};
+		init();
 
-	onDestroy(() => {
-		connections.stopAutoRefresh();
+		// Cleanup on destroy
+		return () => {
+			connections.stopAutoRefresh();
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════

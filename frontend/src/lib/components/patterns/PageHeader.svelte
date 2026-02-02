@@ -20,7 +20,9 @@
 		actions?: Snippet;
 	}
 
-	const { title, subtitle, breadcrumbs = [], actions }: Props = $props();
+	let props: Props = $props();
+
+	let breadcrumbs = $derived(props.breadcrumbs ?? []);
 </script>
 
 <header class="page-header">
@@ -44,15 +46,15 @@
 
 	<div class="header-content">
 		<div class="header-text">
-			<h1 class="page-title">{title}</h1>
-			{#if subtitle}
-				<p class="page-subtitle">{subtitle}</p>
+			<h1 class="page-title">{props.title}</h1>
+			{#if props.subtitle}
+				<p class="page-subtitle">{props.subtitle}</p>
 			{/if}
 		</div>
 
-		{#if actions}
+		{#if props.actions}
 			<div class="header-actions">
-				{@render actions()}
+				{@render props.actions()}
 			</div>
 		{/if}
 	</div>

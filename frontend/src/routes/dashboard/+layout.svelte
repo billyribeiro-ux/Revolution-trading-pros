@@ -57,7 +57,9 @@
 		};
 	}
 
-	let { children, data }: Props = $props();
+	let props: Props = $props();
+	let children = $derived(props.children);
+	let data = $derived(props.data);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

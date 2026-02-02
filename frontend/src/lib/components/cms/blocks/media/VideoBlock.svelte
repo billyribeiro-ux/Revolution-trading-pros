@@ -33,13 +33,13 @@
 		onError?: (error: Error) => void;
 	}
 
-	const { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
+	let props: Props = $props();
 
 	// ==========================================================================
 	// Local State
 	// ==========================================================================
 
-	let urlInputValue = $state(block.content.mediaUrl || '');
+	let urlInputValue = $state(props.block.content.mediaUrl || '');
 	let isLoading = $state(false);
 	let hasError = $state(false);
 	let errorMessage = $state('');
@@ -48,8 +48,8 @@
 	// Derived State with $derived.by()
 	// ==========================================================================
 
-	const mediaUrl = $derived(block.content.mediaUrl || '');
-	const mediaCaption = $derived(block.content.mediaCaption || '');
+	const mediaUrl = $derived(props.block.content.mediaUrl || '');
+	const mediaCaption = $derived(props.block.content.mediaCaption || '');
 
 	/**
 	 * Auto-detect video type from URL
@@ -132,8 +132,8 @@
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		onUpdate({
-			content: { ...block.content, ...updates }
+		props.onUpdate({
+			content: { ...props.block.content, ...updates }
 		});
 	}
 
@@ -150,7 +150,7 @@
 		if (!sanitized) {
 			hasError = true;
 			errorMessage = 'Invalid URL format. Please enter a valid video URL.';
-			onError?.(new Error(errorMessage));
+			props.onError?.(new Error(errorMessage));
 			return;
 		}
 
@@ -163,7 +163,7 @@
 		if (!isYouTube && !isVimeo && !isNative) {
 			hasError = true;
 			errorMessage = 'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
-			onError?.(new Error(errorMessage));
+			props.onError?.(new Error(errorMessage));
 			return;
 		}
 
@@ -200,7 +200,7 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load video. Please check the URL and try again.';
-		onError?.(new Error(errorMessage));
+		props.onError?.(new Error(errorMessage));
 	}
 
 	function handleNativeVideoLoad(): void {
@@ -212,7 +212,7 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load video file. The format may not be supported.';
-		onError?.(new Error(errorMessage));
+		props.onError?.(new Error(errorMessage));
 	}
 
 	function clearVideo(): void {
@@ -236,17 +236,17 @@
 
 	// Sync input value with block content
 	$effect(() => {
-		urlInputValue = block.content.mediaUrl || '';
+		urlInputValue = props.block.content.mediaUrl || '';
 	});
 </script>
 
 <div
 	class="video-block"
-	class:video-block--selected={isSelected}
-	class:video-block--editing={isEditing}
+	class:video-block--selected={props.isSelected}
+	class:video-block--editing={props.isEditing}
 	role="region"
 	aria-label="Video player"
-	data-block-id={blockId}
+	data-block-id={props.blockId}
 >
 	{#if hasVideo && embedUrl}
 		<!-- Video Container with 16:9 Aspect Ratio -->
@@ -299,7 +299,7 @@
 			{/if}
 
 			<!-- Edit Mode: Clear Button -->
-			{#if isEditing && !isLoading}
+			{#if props.isEditing && !isLoading}
 				<button
 					type="button"
 					class="video-clear-btn"
@@ -317,20 +317,20 @@
 		<!-- Caption -->
 		{#if mediaCaption || isEditing}
 			<figcaption
-				contenteditable={isEditing}
+				contenteditable={props.isEditing}
 				class="video-caption"
-				class:video-caption--placeholder={!mediaCaption && isEditing}
+				class:video-caption--placeholder={!mediaCaption && props.isEditing}
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
-				role={isEditing ? 'textbox' : undefined}
-				aria-label={isEditing ? 'Video caption' : undefined}
+				role={props.isEditing ? 'textbox' : undefined}
+				aria-label={props.isEditing ? 'Video caption' : undefined}
 				aria-multiline="false"
 			>
 				{mediaCaption}
 			</figcaption>
 		{/if}
-	{:else if isEditing}
+	{:else if props.isEditing}
 		<!-- Placeholder State (Edit Mode) -->
 		<div class="video-placeholder">
 			<div class="video-placeholder-icon">

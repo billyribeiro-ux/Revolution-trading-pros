@@ -46,7 +46,7 @@
 	// Props & State
 	// =========================================================================
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	// Derived content values with defaults
 	const content = $derived(props.block.content as ChecklistContent);

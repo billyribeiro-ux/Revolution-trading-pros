@@ -5,7 +5,7 @@
 	 * Apple Principal Engineer Grade - February 2026
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import {
 		IconShoppingCart,
@@ -193,8 +193,9 @@
 		}
 	}
 
-	onMount(() => {
-		loadOrders();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadOrders();
 	});
 </script>
 

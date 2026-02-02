@@ -3,7 +3,6 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import {
@@ -344,7 +343,9 @@
 		fetchDashboardStats();
 	}
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
 		mounted = true;
 		// Built-in analytics and SEO - no external connection needed
 		analyticsConnected = true;

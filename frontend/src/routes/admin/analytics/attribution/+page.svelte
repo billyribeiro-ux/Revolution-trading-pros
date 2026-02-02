@@ -5,7 +5,7 @@
 	 * Compare attribution models and analyze marketing
 	 * channel performance across the customer journey.
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		analyticsApi,
 		type AttributionReport,
@@ -60,8 +60,9 @@
 		return '$' + num.toFixed(0);
 	}
 
-	onMount(() => {
-		loadAttribution();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadAttribution();
 	});
 
 	// Calculate totals

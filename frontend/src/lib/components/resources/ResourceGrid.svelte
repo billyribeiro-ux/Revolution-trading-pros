@@ -10,7 +10,6 @@
   - Loading states
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { RoomResource, ResourceListQuery, ContentType, ResourceType, AccessLevel } from '$lib/api/room-resources';
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
@@ -36,11 +35,29 @@
 		onPreview?: (resource: RoomResource) => void;
 	}
 
-	const { roomId, contentType, resourceType, section, accessLevel, courseId, lessonId, showSearch = true, showFilters = true, showAccessLevel = true, showVersion = false, columns = 3, compact = false, perPage = 12, initialResources, onSelect, onDownload, onPreview }: Props = $props();
+	let {
+		roomId = undefined,
+		contentType = undefined,
+		resourceType = undefined,
+		section = undefined,
+		accessLevel = undefined,
+		courseId = undefined,
+		lessonId = undefined,
+		showSearch = true,
+		showFilters = true,
+		showAccessLevel = true,
+		showVersion = false,
+		columns = 3,
+		compact = false,
+		perPage = 12,
+		initialResources = undefined,
+		onSelect,
+		onDownload,
+		onPreview
+	}: Props = $props();
 
-	const hasInitialResources = initialResources !== undefined;
 	let resources = $state<RoomResource[]>(initialResources ?? []);
-	let loading = $state(!hasInitialResources);
+	let loading = $state(!initialResources);
 	let error = $state('');
 	let currentPage = $state(1);
 	let totalPages = $state(1);
@@ -123,8 +140,8 @@
 	}
 
 	// Initial load
-	onMount(() => {
-		if (!hasInitialResources) {
+	$effect(() => {
+		if (!initialResources) {
 			loadResources();
 		}
 	});
@@ -164,7 +181,7 @@
 	}
 
 	// Grid column classes
-	const gridClasses = $derived({
+	let gridClasses = $derived({
 		2: 'grid-cols-1 sm:grid-cols-2',
 		3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
 		4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'

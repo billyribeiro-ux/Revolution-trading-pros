@@ -12,7 +12,9 @@
 		error?: string;
 	}
 
-	let { data, form }: { data: PageData; form?: ActionData } = $props();
+	let props: { data: PageData; form?: ActionData } = $props();
+	let data = $derived(props.data);
+	let form = $derived(props.form);
 
 	let stripe: any = $state(null);
 	let elements: any = $state(null);

@@ -43,7 +43,7 @@
 	// Props & State
 	// =========================================================================
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	let viewMode = $state<ViewMode>('edit');
 	let isExpanded = $state(false);

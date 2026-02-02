@@ -22,7 +22,8 @@
 		data: PageData;
 	}
 
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	// Derived state for reactive computed values
 	let videos = $derived(data.videos ?? []);

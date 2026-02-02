@@ -30,7 +30,8 @@
 	}
 
 	// SSR data from +page.server.ts
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	// Fallback article data - used when API returns empty (declared before $derived that uses it)
 	const fallbackArticles = [

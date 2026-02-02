@@ -1,166 +1,203 @@
-import { writable, derived } from 'svelte/store';
+/**
+ * Workflow Canvas Store - Svelte 5 Runes
+ * @version 2.0.0 - Migrated to Svelte 5 Runes (February 2026)
+ */
+
 import type { WorkflowNode, WorkflowEdge, WorkflowCanvas } from '$lib/types/workflow';
 
-function createWorkflowStore() {
-	const initialState: WorkflowCanvas = {
-		nodes: [],
-		edges: [],
-		zoom: 1,
-		pan: { x: 0, y: 0 }
-	};
-	const { subscribe, set, update } = writable<WorkflowCanvas>(initialState);
+// Initial state
+const initialState: WorkflowCanvas = {
+	nodes: [],
+	edges: [],
+	zoom: 1,
+	pan: { x: 0, y: 0 }
+};
 
-	return {
-		subscribe,
+// Svelte 5 reactive state
+let canvasState = $state<WorkflowCanvas>({ ...initialState });
 
-		// Node operations
-		addNode: (node: WorkflowNode) => {
-			update((state) => ({
-				...state,
-				nodes: [...state.nodes, node]
-			}));
-		},
+// Derived values
+const selectedNodeValue = $derived(canvasState.selectedNode);
+const selectedEdgeValue = $derived(canvasState.selectedEdge);
+const canvasNodesValue = $derived(canvasState.nodes);
+const canvasEdgesValue = $derived(canvasState.edges);
 
-		updateNode: (nodeId: number, updates: Partial<WorkflowNode>) => {
-			update((state) => ({
-				...state,
-				nodes: state.nodes.map((node) => (node.id === nodeId ? { ...node, ...updates } : node))
-			}));
-		},
+// Store with actions
+export const workflowCanvas = {
+	// Getters
+	get state() {
+		return canvasState;
+	},
+	get nodes() {
+		return canvasNodesValue;
+	},
+	get edges() {
+		return canvasEdgesValue;
+	},
+	get zoom() {
+		return canvasState.zoom;
+	},
+	get pan() {
+		return canvasState.pan;
+	},
+	get selectedNode() {
+		return selectedNodeValue;
+	},
+	get selectedEdge() {
+		return selectedEdgeValue;
+	},
 
-		deleteNode: (nodeId: number) => {
-			update((state) => {
-				const newState: WorkflowCanvas = {
-					...state,
-					nodes: state.nodes.filter((node) => node.id !== nodeId),
-					edges: state.edges.filter(
-						(edge) => edge.from_node_id !== nodeId && edge.to_node_id !== nodeId
-					)
-				};
-				if (state.selectedNode?.id !== nodeId && state.selectedNode) {
-					newState.selectedNode = state.selectedNode;
-				}
-				return newState;
-			});
-		},
+	// Node operations
+	addNode(node: WorkflowNode) {
+		canvasState = {
+			...canvasState,
+			nodes: [...canvasState.nodes, node]
+		};
+	},
 
-		moveNode: (nodeId: number, position: { x: number; y: number }) => {
-			update((state) => ({
-				...state,
-				nodes: state.nodes.map((node) =>
-					node.id === nodeId ? { ...node, position_x: position.x, position_y: position.y } : node
-				)
-			}));
-		},
+	updateNode(nodeId: number, updates: Partial<WorkflowNode>) {
+		canvasState = {
+			...canvasState,
+			nodes: canvasState.nodes.map((node) => (node.id === nodeId ? { ...node, ...updates } : node))
+		};
+	},
 
-		// Edge operations
-		addEdge: (edge: WorkflowEdge) => {
-			update((state) => ({
-				...state,
-				edges: [...state.edges, edge]
-			}));
-		},
-
-		updateEdge: (edgeId: number, updates: Partial<WorkflowEdge>) => {
-			update((state) => ({
-				...state,
-				edges: state.edges.map((edge) => (edge.id === edgeId ? { ...edge, ...updates } : edge))
-			}));
-		},
-
-		deleteEdge: (edgeId: number) => {
-			update((state) => {
-				const newState: WorkflowCanvas = {
-					...state,
-					edges: state.edges.filter((edge) => edge.id !== edgeId)
-				};
-				if (state.selectedEdge?.id !== edgeId && state.selectedEdge) {
-					newState.selectedEdge = state.selectedEdge;
-				}
-				return newState;
-			});
-		},
-
-		// Selection
-		selectNode: (node?: WorkflowNode) => {
-			update((state) => {
-				const newState: WorkflowCanvas = { ...state };
-				if (node) {
-					newState.selectedNode = node;
-				} else {
-					delete newState.selectedNode;
-				}
-				delete newState.selectedEdge;
-				return newState;
-			});
-		},
-
-		selectEdge: (edge?: WorkflowEdge) => {
-			update((state) => {
-				const newState: WorkflowCanvas = { ...state };
-				if (edge) {
-					newState.selectedEdge = edge;
-				} else {
-					delete newState.selectedEdge;
-				}
-				delete newState.selectedNode;
-				return newState;
-			});
-		},
-
-		clearSelection: () => {
-			update((state) => {
-				const newState: WorkflowCanvas = { ...state };
-				delete newState.selectedNode;
-				delete newState.selectedEdge;
-				return newState;
-			});
-		},
-
-		// Canvas operations
-		setZoom: (zoom: number) => {
-			update((state) => ({
-				...state,
-				zoom: Math.max(0.1, Math.min(2, zoom))
-			}));
-		},
-
-		setPan: (pan: { x: number; y: number }) => {
-			update((state) => ({
-				...state,
-				pan
-			}));
-		},
-
-		// Load workflow
-		loadWorkflow: (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
-			set({
-				nodes,
-				edges,
-				zoom: 1,
-				pan: { x: 0, y: 0 }
-			});
-		},
-
-		// Reset
-		reset: () => {
-			set({
-				nodes: [],
-				edges: [],
-				zoom: 1,
-				pan: { x: 0, y: 0 }
-			});
+	deleteNode(nodeId: number) {
+		const newState: WorkflowCanvas = {
+			...canvasState,
+			nodes: canvasState.nodes.filter((node) => node.id !== nodeId),
+			edges: canvasState.edges.filter(
+				(edge) => edge.from_node_id !== nodeId && edge.to_node_id !== nodeId
+			)
+		};
+		if (canvasState.selectedNode?.id !== nodeId && canvasState.selectedNode) {
+			newState.selectedNode = canvasState.selectedNode;
 		}
-	};
-}
+		canvasState = newState;
+	},
 
-export const workflowCanvas = createWorkflowStore();
+	moveNode(nodeId: number, position: { x: number; y: number }) {
+		canvasState = {
+			...canvasState,
+			nodes: canvasState.nodes.map((node) =>
+				node.id === nodeId ? { ...node, position_x: position.x, position_y: position.y } : node
+			)
+		};
+	},
 
-// Derived stores
-export const selectedNode = derived(workflowCanvas, ($canvas) => $canvas.selectedNode);
+	// Edge operations
+	addEdge(edge: WorkflowEdge) {
+		canvasState = {
+			...canvasState,
+			edges: [...canvasState.edges, edge]
+		};
+	},
 
-export const selectedEdge = derived(workflowCanvas, ($canvas) => $canvas.selectedEdge);
+	updateEdge(edgeId: number, updates: Partial<WorkflowEdge>) {
+		canvasState = {
+			...canvasState,
+			edges: canvasState.edges.map((edge) => (edge.id === edgeId ? { ...edge, ...updates } : edge))
+		};
+	},
 
-export const canvasNodes = derived(workflowCanvas, ($canvas) => $canvas.nodes);
+	deleteEdge(edgeId: number) {
+		const newState: WorkflowCanvas = {
+			...canvasState,
+			edges: canvasState.edges.filter((edge) => edge.id !== edgeId)
+		};
+		if (canvasState.selectedEdge?.id !== edgeId && canvasState.selectedEdge) {
+			newState.selectedEdge = canvasState.selectedEdge;
+		}
+		canvasState = newState;
+	},
 
-export const canvasEdges = derived(workflowCanvas, ($canvas) => $canvas.edges);
+	// Selection
+	selectNode(node?: WorkflowNode) {
+		const newState: WorkflowCanvas = { ...canvasState };
+		if (node) {
+			newState.selectedNode = node;
+		} else {
+			delete newState.selectedNode;
+		}
+		delete newState.selectedEdge;
+		canvasState = newState;
+	},
+
+	selectEdge(edge?: WorkflowEdge) {
+		const newState: WorkflowCanvas = { ...canvasState };
+		if (edge) {
+			newState.selectedEdge = edge;
+		} else {
+			delete newState.selectedEdge;
+		}
+		delete newState.selectedNode;
+		canvasState = newState;
+	},
+
+	clearSelection() {
+		const newState: WorkflowCanvas = { ...canvasState };
+		delete newState.selectedNode;
+		delete newState.selectedEdge;
+		canvasState = newState;
+	},
+
+	// Canvas operations
+	setZoom(zoom: number) {
+		canvasState = {
+			...canvasState,
+			zoom: Math.max(0.1, Math.min(2, zoom))
+		};
+	},
+
+	setPan(pan: { x: number; y: number }) {
+		canvasState = {
+			...canvasState,
+			pan
+		};
+	},
+
+	// Load workflow
+	loadWorkflow(nodes: WorkflowNode[], edges: WorkflowEdge[]) {
+		canvasState = {
+			nodes,
+			edges,
+			zoom: 1,
+			pan: { x: 0, y: 0 }
+		};
+	},
+
+	// Reset
+	reset() {
+		canvasState = {
+			nodes: [],
+			edges: [],
+			zoom: 1,
+			pan: { x: 0, y: 0 }
+		};
+	}
+};
+
+// Legacy exports for backward compatibility
+export const selectedNode = {
+	get value() {
+		return selectedNodeValue;
+	}
+};
+
+export const selectedEdge = {
+	get value() {
+		return selectedEdgeValue;
+	}
+};
+
+export const canvasNodes = {
+	get value() {
+		return canvasNodesValue;
+	}
+};
+
+export const canvasEdges = {
+	get value() {
+		return canvasEdgesValue;
+	}
+};

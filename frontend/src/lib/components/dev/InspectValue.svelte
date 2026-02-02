@@ -7,11 +7,11 @@
 	 * @description Wrapper for svelte-inspect-value for debugging reactive values
 	 * @version 1.1.0 - ICT 7 Fix: Use expandLevel instead of collapsed
 	 * @standards Apple Principal Engineer ICT 7+ Standards
-	 * 
+	 *
 	 * USAGE:
 	 * <InspectValue value={myReactiveValue} label="My Value" />
 	 * <InspectValue value={myReactiveValue} label="My Value" expandLevel={0} /> <!-- collapsed -->
-	 * 
+	 *
 	 * Only renders in development mode.
 	 */
 	import { dev } from '$app/environment';
@@ -23,12 +23,12 @@
 		expandLevel?: number;
 	}
 
-	const { value, label = 'Value', expandLevel = 1 }: Props = $props();
+	let props: Props = $props();
 </script>
 
 {#if dev}
 	<div class="inspect-wrapper">
-		<Inspect {value} name={label} {expandLevel} />
+		<Inspect value={props.value} name={props.label ?? 'Value'} expandLevel={props.expandLevel ?? 1} />
 	</div>
 {/if}
 

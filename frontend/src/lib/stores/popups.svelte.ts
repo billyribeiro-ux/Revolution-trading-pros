@@ -1,4 +1,8 @@
-import { writable, derived } from 'svelte/store';
+/**
+ * Popup Store - Svelte 5 Runes
+ * @version 2.0.0 - Migrated to Svelte 5 Runes (February 2026)
+ */
+
 import { browser } from '$app/environment';
 
 // Popup configuration types for a fully customizable popup system
@@ -320,137 +324,142 @@ function savePopupState(state: PopupState) {
 	}
 }
 
-// Create the popup store
-function createPopupStore() {
-	const { subscribe, update } = writable<PopupState>(loadPopupState());
+// =============================================================================
+// Svelte 5 Reactive State
+// =============================================================================
 
-	return {
-		subscribe,
+let storeState = $state<PopupState>(loadPopupState());
 
-		// Show a popup
-		show: (popup: Popup) => {
-			update((state) => {
-				const newState = { ...state, activePopup: popup };
-				savePopupState(newState);
-				return newState;
-			});
-		},
+// Derived value for active popup
+const activePopupValue = $derived(storeState.activePopup);
 
-		// Hide the current popup
-		hide: () => {
-			update((state) => {
-				const newState = { ...state, activePopup: null };
-				savePopupState(newState);
-				return newState;
-			});
-		},
+// =============================================================================
+// Exported Store (Svelte 5 Pattern)
+// =============================================================================
 
-		// Record that a popup was shown
-		recordImpression: (popupId: string, _meta?: Record<string, any>) => {
-			update((state) => {
-				const now = Date.now();
-				const history = [...state.popupHistory];
-				const existing = history.find((h) => h.popupId === popupId);
+export const popupStore = {
+	// Getters
+	get state() {
+		return storeState;
+	},
+	get activePopup() {
+		return activePopupValue;
+	},
+	get popupHistory() {
+		return storeState.popupHistory;
+	},
+	get pageViews() {
+		return storeState.pageViews;
+	},
 
-				if (existing) {
-					existing.lastShown = now;
-					existing.shownCount++;
-				} else {
-					history.push({
-						popupId,
-						lastShown: now,
-						shownCount: 1
-					});
-				}
+	// Show a popup
+	show(popup: Popup) {
+		storeState = { ...storeState, activePopup: popup };
+		savePopupState(storeState);
+	},
 
-				const newState = { ...state, popupHistory: history };
-				savePopupState(newState);
+	// Hide the current popup
+	hide() {
+		storeState = { ...storeState, activePopup: null };
+		savePopupState(storeState);
+	},
 
-				// Send to backend API
-				if (browser) {
-					import('$lib/api/popups').then(({ recordPopupImpression }) => {
-						recordPopupImpression(popupId).catch((err) => {
-							console.error('Failed to record impression:', err);
-						});
-					});
-				}
+	// Record that a popup was shown
+	recordImpression(popupId: string, _meta?: Record<string, any>) {
+		const now = Date.now();
+		const history = [...storeState.popupHistory];
+		const existing = history.find((h) => h.popupId === popupId);
 
-				return newState;
-			});
-		},
-
-		// Record a conversion (button click, form submit, etc.)
-		recordConversion: (popupId: string, data?: Record<string, any>) => {
-			// Send to backend API
-			if (browser) {
-				import('$lib/api/popups').then(({ recordPopupConversion }) => {
-					recordPopupConversion(popupId, data).catch((err) => {
-						console.error('Failed to record conversion:', err);
-					});
-				});
-			}
-		},
-
-		// Check if popup should be shown based on frequency rules
-		canShow: (popup: Popup): boolean => {
-			if (!browser) return false;
-
-			const state = loadPopupState();
-			const history = state.popupHistory.find((h) => h.popupId === popup.id);
-			const now = Date.now();
-
-			if (!history) return true;
-
-			switch (popup.displayRules.frequency) {
-				case 'always':
-					return true;
-
-				case 'once-per-session':
-					// Check if shown in current session
-					return history.lastShown < state.sessionStart;
-
-				case 'once-per-day':
-					const dayInMs = 24 * 60 * 60 * 1000;
-					return now - history.lastShown > dayInMs;
-
-				case 'once-per-week':
-					const weekInMs = 7 * 24 * 60 * 60 * 1000;
-					return now - history.lastShown > weekInMs;
-
-				case 'once-ever':
-					return history.shownCount === 0;
-
-				default:
-					return true;
-			}
-		},
-
-		// Increment page view count
-		incrementPageView: () => {
-			update((state) => {
-				const newState = { ...state, pageViews: state.pageViews + 1 };
-				savePopupState(newState);
-				return newState;
-			});
-		},
-
-		// Clear all popup history (for testing/debugging)
-		clearHistory: () => {
-			update((state) => {
-				const newState = {
-					...state,
-					popupHistory: [],
-					pageViews: 0,
-					sessionStart: Date.now()
-				};
-				savePopupState(newState);
-				return newState;
+		if (existing) {
+			existing.lastShown = now;
+			existing.shownCount++;
+		} else {
+			history.push({
+				popupId,
+				lastShown: now,
+				shownCount: 1
 			});
 		}
-	};
-}
 
-export const popupStore = createPopupStore();
+		storeState = { ...storeState, popupHistory: history };
+		savePopupState(storeState);
 
-// Derived store for active popup
-export const activePopup = derived(popupStore, ($popupStore) => $popupStore.activePopup);
+		// Send to backend API
+		if (browser) {
+			import('$lib/api/popups').then(({ recordPopupImpression }) => {
+				recordPopupImpression(popupId).catch((err) => {
+					console.error('Failed to record impression:', err);
+				});
+			});
+		}
+	},
+
+	// Record a conversion (button click, form submit, etc.)
+	recordConversion(popupId: string, data?: Record<string, any>) {
+		// Send to backend API
+		if (browser) {
+			import('$lib/api/popups').then(({ recordPopupConversion }) => {
+				recordPopupConversion(popupId, data).catch((err) => {
+					console.error('Failed to record conversion:', err);
+				});
+			});
+		}
+	},
+
+	// Check if popup should be shown based on frequency rules
+	canShow(popup: Popup): boolean {
+		if (!browser) return false;
+
+		const history = storeState.popupHistory.find((h) => h.popupId === popup.id);
+		const now = Date.now();
+
+		if (!history) return true;
+
+		switch (popup.displayRules.frequency) {
+			case 'always':
+				return true;
+
+			case 'once-per-session':
+				// Check if shown in current session
+				return history.lastShown < storeState.sessionStart;
+
+			case 'once-per-day':
+				const dayInMs = 24 * 60 * 60 * 1000;
+				return now - history.lastShown > dayInMs;
+
+			case 'once-per-week':
+				const weekInMs = 7 * 24 * 60 * 60 * 1000;
+				return now - history.lastShown > weekInMs;
+
+			case 'once-ever':
+				return history.shownCount === 0;
+
+			default:
+				return true;
+		}
+	},
+
+	// Increment page view count
+	incrementPageView() {
+		storeState = { ...storeState, pageViews: storeState.pageViews + 1 };
+		savePopupState(storeState);
+	},
+
+	// Clear all popup history (for testing/debugging)
+	clearHistory() {
+		storeState = {
+			...storeState,
+			popupHistory: [],
+			pageViews: 0,
+			sessionStart: Date.now()
+		};
+		savePopupState(storeState);
+	}
+};
+
+// Legacy export for backward compatibility
+export const activePopup = {
+	get value() {
+		return activePopupValue;
+	}
+};

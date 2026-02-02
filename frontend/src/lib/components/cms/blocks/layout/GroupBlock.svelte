@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	// Padding presets
 	type PaddingSize = 'none' | 'small' | 'medium' | 'large';

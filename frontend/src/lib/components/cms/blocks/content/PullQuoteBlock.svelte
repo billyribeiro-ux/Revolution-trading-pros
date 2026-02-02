@@ -42,7 +42,7 @@
 	// Props & State
 	// =========================================================================
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	// Generate unique IDs for ARIA labelling
 	const quoteId = $derived(`pullquote-${props.blockId}`);

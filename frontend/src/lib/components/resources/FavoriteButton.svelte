@@ -9,7 +9,6 @@
   - Accessible design
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { addFavorite, removeFavorite, checkFavorite } from '$lib/api/room-resources';
 
 	interface Props {
@@ -20,30 +19,21 @@
 		onChange?: (favorited: boolean) => void;
 	}
 
-	const { resourceId, initialFavorited, size = 'md', showLabel = false, onChange }: Props = $props();
+	let {
+		resourceId,
+		initialFavorited = undefined,
+		size = 'md',
+		showLabel = false,
+		onChange
+	}: Props = $props();
 
-	// Capture initial values to avoid state_referenced_locally warnings
-	const hasInitialValue = initialFavorited !== undefined;
 	let isFavorited = $state(initialFavorited ?? false);
-	let loading = $state(!hasInitialValue);
+	let loading = $state(initialFavorited === undefined);
 	let updating = $state(false);
 
-	// Size classes
-	const sizeClasses = $derived({
-		sm: 'h-6 w-6 p-1',
-		md: 'h-8 w-8 p-1.5',
-		lg: 'h-10 w-10 p-2'
-	}[size]);
-
-	const iconSize = $derived({
-		sm: 'h-4 w-4',
-		md: 'h-5 w-5',
-		lg: 'h-6 w-6'
-	}[size]);
-
 	// Check initial state if not provided
-	onMount(() => {
-		if (initialFavorited === undefined) {
+	$effect(() => {
+		if (initialFavorited === undefined && typeof window !== 'undefined') {
 			loadFavoriteState();
 		}
 	});
@@ -60,7 +50,8 @@
 		}
 	}
 
-	async function toggleFavorite() {
+	async function toggleFavorite(event: MouseEvent) {
+		event.stopPropagation();
 		if (updating) return;
 
 		updating = true;
@@ -84,6 +75,19 @@
 			updating = false;
 		}
 	}
+
+	// Size classes
+	let sizeClasses = $derived({
+		sm: 'h-6 w-6 p-1',
+		md: 'h-8 w-8 p-1.5',
+		lg: 'h-10 w-10 p-2'
+	}[size]);
+
+	let iconSize = $derived({
+		sm: 'h-4 w-4',
+		md: 'h-5 w-5',
+		lg: 'h-6 w-6'
+	}[size]);
 </script>
 
 <button
@@ -91,7 +95,7 @@
 	class="favorite-button inline-flex items-center gap-1.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-not-allowed disabled:opacity-50 {sizeClasses} {isFavorited
 		? 'text-amber-500 hover:text-amber-600'
 		: 'text-gray-400 hover:text-amber-500'}"
-	onclick={(e: MouseEvent) => { e.stopPropagation(); toggleFavorite(); }}
+	onclick={toggleFavorite}
 	disabled={loading || updating}
 	aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
 	aria-pressed={isFavorited}

@@ -9,7 +9,6 @@
   - Recent uploads
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { ResourceAnalytics } from '$lib/api/room-resources';
 	import { getResourceAnalytics } from '$lib/api/room-resources';
 
@@ -18,16 +17,15 @@
 		initialData?: ResourceAnalytics;
 	}
 
-	const { roomId, initialData }: Props = $props();
+	let { roomId = undefined, initialData = undefined }: Props = $props();
 
-	const hasInitialData = initialData !== undefined;
-	let analytics = $state<ResourceAnalytics | null>(initialData ?? null);
-	let loading = $state(!hasInitialData);
+	let analytics: ResourceAnalytics | null = $state(initialData ?? null);
+	let loading = $state(!initialData);
 	let error = $state('');
 
-	onMount(async () => {
+	$effect(() => {
 		if (!initialData) {
-			await loadAnalytics();
+			loadAnalytics();
 		}
 	});
 

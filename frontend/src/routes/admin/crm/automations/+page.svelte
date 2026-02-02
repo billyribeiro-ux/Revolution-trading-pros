@@ -15,28 +15,29 @@
 -->
 
 <script lang="ts">
-	import { onMount, untrack } from 'svelte';
-	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconShare from '@tabler/icons-svelte-runes/icons/share';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
-	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
+	import { untrack } from 'svelte';
+	import { browser } from '$app/environment';
+	import IconRoute from '@tabler/icons-svelte/icons/route';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconShare from '@tabler/icons-svelte/icons/share';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconUserPlus from '@tabler/icons-svelte/icons/user-plus';
+	import IconFilter from '@tabler/icons-svelte/icons/filter';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 
@@ -484,9 +485,15 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await loadFunnels();
-		isInitialized = true;
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
+		const init = async () => {
+			await loadFunnels();
+			isInitialized = true;
+		};
+		init();
 	});
 </script>
 

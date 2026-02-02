@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	let fileUrl = $derived(props.block.content.fileUrl || '');
 	let fileName = $derived(props.block.content.fileName || 'Document');

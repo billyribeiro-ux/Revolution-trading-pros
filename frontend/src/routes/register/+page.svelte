@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Register Page - Svelte 5 January 2026
+	 * @version 2.0.0
+	 */
 	import { register } from '$lib/api/auth';
 	import {
 		IconUser,
@@ -13,33 +17,35 @@
 		IconEye,
 		IconEyeOff
 	} from '$lib/icons';
-	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
-	let name = '';
-	let email = '';
-	let password = '';
-	let password_confirmation = '';
-	let showPassword = false;
-	let showConfirmPassword = false;
-	let errors: Record<string, string[]> = {};
-	let generalError = '';
-	let isLoading = false;
-	let registrationSuccess = false;
-	let successMessage = '';
+	// Svelte 5 state runes
+	let name = $state('');
+	let email = $state('');
+	let password = $state('');
+	let password_confirmation = $state('');
+	let showPassword = $state(false);
+	let showConfirmPassword = $state(false);
+	let errors = $state<Record<string, string[]>>({});
+	let generalError = $state('');
+	let isLoading = $state(false);
+	let registrationSuccess = $state(false);
+	let successMessage = $state('');
 
-	let cardRef: HTMLElement;
-	let particlesRef: HTMLElement;
-	let formRef: HTMLElement;
+	// Element refs
+	let cardRef = $state<HTMLElement | null>(null);
+	let particlesRef = $state<HTMLElement | null>(null);
+	let formRef = $state<HTMLElement | null>(null);
 
 	// Track GSAP animations for cleanup to prevent memory leaks
-	let mainTimeline: any = null;
-	let sparkleTimeline: any = null;
-	let particleAnimations: any[] = [];
-	let gsapLib: any = null;
+	let mainTimeline = $state<any>(null);
+	let sparkleTimeline = $state<any>(null);
+	let particleAnimations = $state<any[]>([]);
+	let gsapLib = $state<any>(null);
 
-	onMount(() => {
+	// Svelte 5 effect for initialization and cleanup
+	$effect(() => {
 		if (!browser) return;
 
 		// Dynamic GSAP import for SSR safety - use IIFE to handle async
@@ -102,7 +108,10 @@
 			});
 		})();
 
-		return cleanup;
+		// Cleanup function returned from $effect
+		return () => {
+			cleanup();
+		};
 	});
 
 	/**
@@ -142,12 +151,6 @@
 			]);
 		}
 	}
-
-	onDestroy(() => {
-		if (browser) {
-			cleanup();
-		}
-	});
 
 	function createEmeraldParticles() {
 		if (!particlesRef) return;

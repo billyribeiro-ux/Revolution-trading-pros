@@ -13,7 +13,8 @@
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	/** @type {{ data: any }} */
-	let { data } = $props();
+	let props = $props();
+	let data = $derived(props.data);
 </script>
 
 <svelte:head>

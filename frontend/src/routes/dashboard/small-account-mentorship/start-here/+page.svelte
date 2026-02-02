@@ -19,7 +19,8 @@
 		data: PageData;
 	}
 
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = $state<Set<number>>(new Set());

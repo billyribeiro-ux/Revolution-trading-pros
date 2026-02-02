@@ -14,7 +14,8 @@
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Server-loaded data with Previous/Next navigation
-	let { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	// Reactive video data from server
 	const video = $derived(data.video);

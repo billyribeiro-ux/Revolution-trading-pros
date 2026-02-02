@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconGauge,
@@ -31,8 +31,9 @@
 	let recommendations: OptimizationRecommendation[] = [];
 	let warmingCaches = false;
 
-	onMount(async () => {
-		await loadData();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadData();
 	});
 
 	async function loadData() {

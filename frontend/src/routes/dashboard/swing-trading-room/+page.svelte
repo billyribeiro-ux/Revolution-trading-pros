@@ -24,7 +24,8 @@
 	}
 
 	// SSR data from +page.server.ts
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	// Article data - matches WordPress structure
 	const articles = [

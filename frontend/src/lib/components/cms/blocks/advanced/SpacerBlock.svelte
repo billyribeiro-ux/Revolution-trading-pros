@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	// Height presets matching the spec
 	const HEIGHT_PRESETS = {

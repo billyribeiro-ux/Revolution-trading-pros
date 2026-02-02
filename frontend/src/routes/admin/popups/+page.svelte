@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconPlus,
@@ -18,9 +17,12 @@
 	let loading = $state(true);
 	let selectedTab = $state<'active' | 'inactive' | 'all'>('all');
 
-	onMount(async () => {
-		await loadPopups();
-		if (browser) {
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
+		const init = async () => {
+			await loadPopups();
 			const { gsap } = await import('gsap');
 			gsap.from('.popup-card', {
 				opacity: 0,
@@ -29,7 +31,8 @@
 				stagger: 0.1,
 				ease: 'power3.out'
 			});
-		}
+		};
+		init();
 	});
 
 	async function loadPopups() {

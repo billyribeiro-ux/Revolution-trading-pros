@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Email Verification Page - Apple ICT 11+ Principal Engineer Grade
+	 * Email Verification Page - Svelte 5 January 2026
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * ENTERPRISE FEATURES:
@@ -15,12 +15,12 @@
 	 * - Progressive enhancement
 	 * - Error recovery flows
 	 *
-	 * @version 3.0.0
+	 * @version 4.0.0 - Svelte 5 January 2026
 	 * @author Revolution Trading Pros
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
@@ -281,23 +281,25 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Lifecycle
+	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		trackEvent('verification_page_view');
 		verify();
 
 		// Add keyboard listener
 		window.addEventListener('keydown', handleKeydown);
-	});
 
-	onDestroy(() => {
-		// Cleanup
-		if (redirectTimer) {
-			clearInterval(redirectTimer);
-		}
-		window.removeEventListener('keydown', handleKeydown);
+		// Cleanup function returned from $effect
+		return () => {
+			if (redirectTimer) {
+				clearInterval(redirectTimer);
+			}
+			window.removeEventListener('keydown', handleKeydown);
+		};
 	});
 </script>
 

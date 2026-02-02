@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type Error404 } from '$lib/api/seo';
@@ -15,9 +15,15 @@
 		total_hits: 0
 	});
 
-	onMount(async () => {
-		await loadErrors();
-		await loadStats();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
+		const init = async () => {
+			await loadErrors();
+			await loadStats();
+		};
+		init();
 	});
 
 	async function loadErrors() {

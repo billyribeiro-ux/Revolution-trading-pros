@@ -8,28 +8,28 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
+	// Svelte 5 January 2026 best practice - no destructuring
 	interface Props {
 		title: string;
 		subtitle?: string;
 		description?: string;
 	}
 
-	let { title, subtitle = '', description = '' }: Props = $props();
+	let props: Props = $props();
 </script>
 
 <section class="class-section cpost-section" id="class-info">
 	<div class="section-inner">
 		<div id="class-header-wrapper">
 			<div id="class-title-section">
-				<h1>{title}</h1>
-				{#if subtitle}
-					<h3>{subtitle}</h3>
+				<h1>{props.title}</h1>
+				{#if props.subtitle}
+					<h3>{props.subtitle}</h3>
 				{/if}
 			</div>
-			{#if description}
+			{#if props.description}
 				<div id="class-description">
-					<p>{description}</p>
+					<p>{props.description}</p>
 				</div>
 			{/if}
 		</div>

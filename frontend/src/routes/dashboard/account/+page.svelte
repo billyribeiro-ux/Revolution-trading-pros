@@ -5,7 +5,8 @@
 		data: AccountPageData;
 	}
 
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	/**
 	 * Display name with fallback chain:

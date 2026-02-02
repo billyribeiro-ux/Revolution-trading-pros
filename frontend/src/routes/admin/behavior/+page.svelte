@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconEye,
 		IconCursor,
@@ -74,17 +74,23 @@
 		loadData();
 	}
 
-	onMount(async () => {
-		// Load connection status first
-		await connections.load();
-		connectionLoading = false;
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
 
-		// Only load data if behavior tracking is connected
-		if ($isBehaviorConnected) {
-			await loadData();
-		} else {
-			isLoading = false;
-		}
+		const init = async () => {
+			// Load connection status first
+			await connections.load();
+			connectionLoading = false;
+
+			// Only load data if behavior tracking is connected
+			if ($isBehaviorConnected) {
+				await loadData();
+			} else {
+				isLoading = false;
+			}
+		};
+		init();
 	});
 </script>
 

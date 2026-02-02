@@ -1,4 +1,8 @@
-import { writable, derived, get } from 'svelte/store';
+/**
+ * Cart Store - Svelte 5 Runes Migration
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
 import { browser } from '$app/environment';
 
 export interface CartItem {
@@ -100,165 +104,177 @@ function loadCart(): CartState {
 	return { items: [] };
 }
 
-// Create the cart store
-function createCartStore() {
-	const { subscribe, set, update } = writable<CartState>(loadCart());
+// ═══════════════════════════════════════════════════════════════════════════
+// Svelte 5 Runes State
+// ═══════════════════════════════════════════════════════════════════════════
 
-	// Save to localStorage whenever cart changes
-	if (browser) {
-		subscribe((state) => {
+let cartState = $state<CartState>(loadCart());
+
+// Save to localStorage whenever cart changes
+if (browser) {
+	$effect.root(() => {
+		$effect(() => {
 			try {
-				localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
+				localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartState));
 			} catch (error) {
 				console.error('Error saving cart to localStorage:', error);
 			}
 		});
-	}
-
-	return {
-		subscribe,
-
-		/**
-		 * Add item to cart - Limited to quantity of 1 per product/service
-		 * Returns true if item was added, false if already in cart
-		 */
-		addItem: (item: Omit<CartItem, 'quantity'>): boolean => {
-			let added = false;
-			update((state) => {
-				// Check if exact item already exists (same ID and interval)
-				const existingIndex = state.items.findIndex(
-					(i) => i.id === item.id && i.interval === item.interval
-				);
-
-				if (existingIndex >= 0) {
-					// Item already in cart - DO NOT increase quantity (max 1 per item)
-					added = false;
-				} else {
-					// Add new item with quantity 1 (always 1, never more)
-					state.items.push({ ...item, quantity: 1 });
-					added = true;
-				}
-
-				return state;
-			});
-			return added;
-		},
-
-		/**
-		 * Check if an item is already in the cart
-		 */
-		hasItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly'): boolean => {
-			const state = get({ subscribe });
-			return state.items.some((i) => i.id === itemId && i.interval === interval);
-		},
-
-		/**
-		 * Check if user has any subscription variant of a product in cart
-		 */
-		hasAnyVariant: (itemId: string): CartItem | undefined => {
-			const state = get({ subscribe });
-			return state.items.find((i) => i.id === itemId);
-		},
-
-		/**
-		 * Remove item from cart
-		 */
-		removeItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime') => {
-			update((state) => {
-				state.items = state.items.filter(
-					(item) => !(item.id === itemId && item.interval === interval)
-				);
-				return state;
-			});
-		},
-
-		/**
-		 * Update item quantity - Enforces max quantity of 1
-		 */
-		updateQuantity: (
-			itemId: string,
-			quantity: number,
-			interval?: 'monthly' | 'quarterly' | 'yearly'
-		) => {
-			update((state) => {
-				const item = state.items.find((i) => i.id === itemId && i.interval === interval);
-
-				if (item) {
-					if (quantity <= 0) {
-						// Remove item if quantity is 0 or less
-						state.items = state.items.filter((i) => !(i.id === itemId && i.interval === interval));
-					} else {
-						// Enforce max quantity of 1
-						item.quantity = Math.min(quantity, 1);
-					}
-				}
-
-				return state;
-			});
-		},
-
-		/**
-		 * Apply coupon to cart
-		 */
-		applyCoupon: (couponCode: string, discount: number) => {
-			update((state) => {
-				state.items = state.items.map((item) => ({
-					...item,
-					couponCode,
-					discount
-				}));
-				return state;
-			});
-		},
-
-		/**
-		 * Remove coupon from cart
-		 */
-		removeCoupon: () => {
-			update((state) => {
-				state.items = state.items.map((item) => {
-					const { couponCode, discount, ...rest } = item;
-					return rest as CartItem;
-				});
-				return state;
-			});
-		},
-
-		/**
-		 * Clear entire cart
-		 */
-		clearCart: () => {
-			set({ items: [] });
-		},
-
-		/**
-		 * Get item count
-		 */
-		getItemCount: (state: CartState): number => {
-			return state.items.reduce((total, item) => total + item.quantity, 0);
-		},
-
-		/**
-		 * Get cart total
-		 */
-		getTotal: (state: CartState): number => {
-			return state.items.reduce((total, item) => total + item.price * item.quantity, 0);
-		}
-	};
+	});
 }
 
-export const cartStore = createCartStore();
+// ═══════════════════════════════════════════════════════════════════════════
+// Cart Store API
+// ═══════════════════════════════════════════════════════════════════════════
 
-// Derived stores for computed values
-export const cartItemCount = derived(cartStore, ($cart) =>
-	$cart.items.reduce((total, item) => total + item.quantity, 0)
+export const cartStore = {
+	get state() {
+		return cartState;
+	},
+
+	get items() {
+		return cartState.items;
+	},
+
+	/**
+	 * Add item to cart - Limited to quantity of 1 per product/service
+	 * Returns true if item was added, false if already in cart
+	 */
+	addItem(item: Omit<CartItem, 'quantity'>): boolean {
+		// Check if exact item already exists (same ID and interval)
+		const existingIndex = cartState.items.findIndex(
+			(i) => i.id === item.id && i.interval === item.interval
+		);
+
+		if (existingIndex >= 0) {
+			// Item already in cart - DO NOT increase quantity (max 1 per item)
+			return false;
+		}
+
+		// Add new item with quantity 1 (always 1, never more)
+		cartState.items = [...cartState.items, { ...item, quantity: 1 }];
+		return true;
+	},
+
+	/**
+	 * Check if an item is already in the cart
+	 */
+	hasItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly'): boolean {
+		return cartState.items.some((i) => i.id === itemId && i.interval === interval);
+	},
+
+	/**
+	 * Check if user has any subscription variant of a product in cart
+	 */
+	hasAnyVariant(itemId: string): CartItem | undefined {
+		return cartState.items.find((i) => i.id === itemId);
+	},
+
+	/**
+	 * Remove item from cart
+	 */
+	removeItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime') {
+		cartState.items = cartState.items.filter(
+			(item) => !(item.id === itemId && item.interval === interval)
+		);
+	},
+
+	/**
+	 * Update item quantity - Enforces max quantity of 1
+	 */
+	updateQuantity(
+		itemId: string,
+		quantity: number,
+		interval?: 'monthly' | 'quarterly' | 'yearly'
+	) {
+		const itemIndex = cartState.items.findIndex(
+			(i) => i.id === itemId && i.interval === interval
+		);
+
+		if (itemIndex >= 0) {
+			if (quantity <= 0) {
+				// Remove item if quantity is 0 or less
+				cartState.items = cartState.items.filter(
+					(i) => !(i.id === itemId && i.interval === interval)
+				);
+			} else {
+				// Enforce max quantity of 1
+				cartState.items = cartState.items.map((item, index) =>
+					index === itemIndex ? { ...item, quantity: Math.min(quantity, 1) } : item
+				);
+			}
+		}
+	},
+
+	/**
+	 * Apply coupon to cart
+	 */
+	applyCoupon(couponCode: string, discount: number) {
+		cartState.items = cartState.items.map((item) => ({
+			...item,
+			couponCode,
+			discount
+		}));
+	},
+
+	/**
+	 * Remove coupon from cart
+	 */
+	removeCoupon() {
+		cartState.items = cartState.items.map((item) => {
+			const { couponCode, discount, ...rest } = item;
+			return rest as CartItem;
+		});
+	},
+
+	/**
+	 * Clear entire cart
+	 */
+	clearCart() {
+		cartState = { items: [] };
+	},
+
+	/**
+	 * Get item count
+	 */
+	getItemCount(): number {
+		return cartState.items.reduce((total, item) => total + item.quantity, 0);
+	},
+
+	/**
+	 * Get cart total
+	 */
+	getTotal(): number {
+		return cartState.items.reduce((total, item) => total + item.price * item.quantity, 0);
+	}
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Derived Values (using $derived)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const cartItemCount = $derived(
+	cartState.items.reduce((total, item) => total + item.quantity, 0)
 );
 
-export const cartTotal = derived(cartStore, ($cart) =>
-	$cart.items.reduce((total, item) => total + item.price * item.quantity, 0)
+export const cartTotal = $derived(
+	cartState.items.reduce((total, item) => total + item.price * item.quantity, 0)
 );
 
-export const hasCartItems = derived(cartItemCount, ($count) => $count > 0);
+export const hasCartItems = $derived(cartItemCount > 0);
+
+// Getter functions for reactive access in components
+export function getCartItemCount() {
+	return cartState.items.reduce((total, item) => total + item.quantity, 0);
+}
+
+export function getCartTotal() {
+	return cartState.items.reduce((total, item) => total + item.price * item.quantity, 0);
+}
+
+export function getHasCartItems() {
+	return cartState.items.length > 0;
+}
 
 /**
  * Helper function to add a product to cart

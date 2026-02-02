@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
@@ -83,8 +83,9 @@
 		return new Date(date).toLocaleDateString();
 	};
 
-	onMount(() => {
-		fetchIndicators();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) fetchIndicators();
 	});
 
 	$effect(() => {

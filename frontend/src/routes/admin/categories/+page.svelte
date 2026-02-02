@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
 	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
@@ -400,8 +400,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		loadCategories();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadCategories();
 	});
 </script>
 

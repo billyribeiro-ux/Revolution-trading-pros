@@ -9,7 +9,6 @@
   - Empty state handling
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { RecentlyAccessed } from '$lib/api/room-resources';
 	import { getRecentlyAccessed } from '$lib/api/room-resources';
 
@@ -21,17 +20,21 @@
 		onSelect?: (item: RecentlyAccessed) => void;
 	}
 
-	const { limit = 10, showTitle = true, compact = false, initialData, onSelect }: Props = $props();
+	let {
+		limit = 10,
+		showTitle = true,
+		compact = false,
+		initialData = undefined,
+		onSelect
+	}: Props = $props();
 
-	// Capture initial values to avoid reactive warnings
-	const hasInitialData = initialData !== undefined;
 	let items = $state<RecentlyAccessed[]>(initialData ?? []);
-	let loading = $state(!hasInitialData);
+	let loading = $state(!initialData);
 	let error = $state('');
 
-	onMount(async () => {
+	$effect(() => {
 		if (!initialData) {
-			await loadRecentlyAccessed();
+			loadRecentlyAccessed();
 		}
 	});
 

@@ -1,5 +1,5 @@
 /**
- * Keyboard Shortcuts Store - Apple ICT9+ Enterprise Grade
+ * Keyboard Shortcuts Store - Svelte 5 Runes
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * Global keyboard shortcut management with:
@@ -8,10 +8,9 @@
  * - Shortcut groups
  * - Help modal integration
  *
- * @version 1.0.0
+ * @version 2.0.0 - Svelte 5 Runes Migration (February 2026)
  */
 
-import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 
@@ -167,7 +166,7 @@ const defaultShortcuts: Omit<KeyboardShortcut, 'action'>[] = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Store
+// Svelte 5 Reactive State
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const initialState: KeyboardState = {
@@ -176,7 +175,12 @@ const initialState: KeyboardState = {
 	activeContext: 'global'
 };
 
-const keyboardStore = writable<KeyboardState>(initialState);
+let storeState = $state<KeyboardState>(initialState);
+
+// Derived values
+const shortcutsValue = $derived(storeState.shortcuts);
+const isHelpOpenValue = $derived(storeState.isHelpOpen);
+const activeContextValue = $derived(storeState.activeContext);
 
 // Key sequence tracking
 let keySequence: string[] = [];
@@ -197,7 +201,6 @@ function handleKeyDown(event: KeyboardEvent) {
 		}
 	}
 
-	const state = get(keyboardStore);
 	const key = event.key;
 
 	// Build modifier string
@@ -209,7 +212,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	// Check for modifier-based shortcuts first
 	if (modifiers.length > 0) {
-		const shortcut = state.shortcuts.find((s) => {
+		const shortcut = storeState.shortcuts.find((s) => {
 			if (!s.enabled) return false;
 			const sModifiers = s.keys.filter((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k));
 			const sKey = s.keys.find((k) => !['Meta', 'Control', 'Shift', 'Alt'].includes(k));
@@ -240,7 +243,7 @@ function handleKeyDown(event: KeyboardEvent) {
 		}, 500);
 
 		// Check for sequence match
-		const shortcut = state.shortcuts.find((s) => {
+		const shortcut = storeState.shortcuts.find((s) => {
 			if (!s.enabled) return false;
 			if (s.keys.some((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k))) return false;
 			return (
@@ -259,7 +262,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	// Handle special keys
 	if (key === 'Escape') {
-		const shortcut = state.shortcuts.find((s) => s.id === 'escape' && s.enabled);
+		const shortcut = storeState.shortcuts.find((s) => s.id === 'escape' && s.enabled);
 		if (shortcut) {
 			shortcut.action();
 		}
@@ -267,16 +270,28 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	if (key === '?' && event.shiftKey) {
 		event.preventDefault();
-		keyboardStore.update((s) => ({ ...s, isHelpOpen: !s.isHelpOpen }));
+		storeState = { ...storeState, isHelpOpen: !storeState.isHelpOpen };
 	}
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Store Actions
+// Exported Store (Svelte 5 Pattern)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const keyboard = {
-	subscribe: keyboardStore.subscribe,
+	// Getters
+	get state() {
+		return storeState;
+	},
+	get shortcuts() {
+		return shortcutsValue;
+	},
+	get isHelpOpen() {
+		return isHelpOpenValue;
+	},
+	get activeContext() {
+		return activeContextValue;
+	},
 
 	/**
 	 * Initialize keyboard shortcuts
@@ -310,7 +325,7 @@ export const keyboard = {
 				})
 		}));
 
-		keyboardStore.update((s) => ({ ...s, shortcuts }));
+		storeState = { ...storeState, shortcuts };
 
 		// Add event listener
 		window.addEventListener('keydown', handleKeyDown);
@@ -330,71 +345,73 @@ export const keyboard = {
 	 * Register a custom shortcut
 	 */
 	register(shortcut: KeyboardShortcut) {
-		keyboardStore.update((state) => ({
-			...state,
+		storeState = {
+			...storeState,
 			shortcuts: [
-				...state.shortcuts.filter((s) => s.id !== shortcut.id),
+				...storeState.shortcuts.filter((s) => s.id !== shortcut.id),
 				{ ...shortcut, enabled: true }
 			]
-		}));
+		};
 	},
 
 	/**
 	 * Register an action handler for an existing shortcut ID
 	 */
 	registerAction(id: string, action: () => void) {
-		keyboardStore.update((state) => ({
-			...state,
-			shortcuts: state.shortcuts.map((s) => (s.id === id ? { ...s, action, enabled: true } : s))
-		}));
+		storeState = {
+			...storeState,
+			shortcuts: storeState.shortcuts.map((s) =>
+				s.id === id ? { ...s, action, enabled: true } : s
+			)
+		};
 	},
 
 	/**
 	 * Unregister a shortcut
 	 */
 	unregister(id: string) {
-		keyboardStore.update((state) => ({
-			...state,
-			shortcuts: state.shortcuts.filter((s) => s.id !== id)
-		}));
+		storeState = {
+			...storeState,
+			shortcuts: storeState.shortcuts.filter((s) => s.id !== id)
+		};
 	},
 
 	/**
 	 * Enable/disable a shortcut
 	 */
 	setEnabled(id: string, enabled: boolean) {
-		keyboardStore.update((state) => ({
-			...state,
-			shortcuts: state.shortcuts.map((s) => (s.id === id ? { ...s, enabled } : s))
-		}));
+		storeState = {
+			...storeState,
+			shortcuts: storeState.shortcuts.map((s) => (s.id === id ? { ...s, enabled } : s))
+		};
 	},
 
 	/**
 	 * Set active context
 	 */
 	setContext(context: string) {
-		keyboardStore.update((s) => ({ ...s, activeContext: context }));
+		storeState = { ...storeState, activeContext: context };
 	},
 
 	/**
 	 * Toggle help modal
 	 */
 	toggleHelp() {
-		keyboardStore.update((s) => ({ ...s, isHelpOpen: !s.isHelpOpen }));
+		storeState = { ...storeState, isHelpOpen: !storeState.isHelpOpen };
 	},
 
 	/**
 	 * Open help modal
 	 */
 	openHelp() {
-		keyboardStore.update((s) => ({ ...s, isHelpOpen: true }));
+		storeState = { ...storeState, isHelpOpen: true };
 	},
 
 	/**
 	 * Close help modal
 	 */
 	closeHelp() {
-		keyboardStore.update((s) => ({ ...s, isHelpOpen: false }));
+		storeState = { ...storeState, isHelpOpen: false };
 	},
 
 	/**

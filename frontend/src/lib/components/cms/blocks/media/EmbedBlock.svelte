@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	let embedUrl = $derived(props.block.content.embedUrl || '');
 	let embedType = $derived(props.block.content.embedType || 'custom');

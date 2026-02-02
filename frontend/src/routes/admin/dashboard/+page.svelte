@@ -9,7 +9,6 @@
 	 * NO FAKE DATA - Everything reflects actual connection status!
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -171,15 +170,17 @@
 		return `${Math.floor(seconds / 3600)}h ago`;
 	}
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with cleanup
+	$effect(() => {
 		if (!browser) return;
 		loadDashboard();
 		// Refresh every 60 seconds
 		refreshInterval = setInterval(loadDashboard, 60000);
-	});
 
-	onDestroy(() => {
-		if (refreshInterval) clearInterval(refreshInterval);
+		// Cleanup on destroy
+		return () => {
+			if (refreshInterval) clearInterval(refreshInterval);
+		};
 	});
 
 	// Count connected services

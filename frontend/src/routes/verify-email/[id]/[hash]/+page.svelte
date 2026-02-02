@@ -1,51 +1,61 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	/**
+	 * Email Verification Hash Page - Svelte 5 January 2026
+	 * @version 2.0.0
+	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { browser } from '$app/environment';
 	import { IconCircleCheck, IconAlertCircle } from '$lib/icons';
 
+	// Svelte 5 state runes
 	let verifying = $state(true);
 	let success = $state(false);
 	let error = $state('');
 	let message = $state('');
 
-	onMount(async () => {
+	// Svelte 5 effect for initialization
+	$effect(() => {
+		if (!browser) return;
+
 		// ICT 11+ FIX: The hash IS the token - construct proper API call
 		// Backend expects: GET /api/auth/verify-email?token=xxx
 		const { hash } = page.params;
 		const token = hash;
 
-		try {
-			// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoint
-			const response = await fetch(
-				`/api/auth/verify-email?token=${encodeURIComponent(token ?? '')}`,
-				{
-					method: 'GET',
-					headers: {
-						Accept: 'application/json'
-					},
-					credentials: 'include'
+		(async () => {
+			try {
+				// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoint
+				const response = await fetch(
+					`/api/auth/verify-email?token=${encodeURIComponent(token ?? '')}`,
+					{
+						method: 'GET',
+						headers: {
+							Accept: 'application/json'
+						},
+						credentials: 'include'
+					}
+				);
+
+				const data = await response.json();
+
+				if (response.ok) {
+					success = true;
+					message = data.message || 'Email verified successfully!';
+
+					// Redirect to login after 3 seconds
+					setTimeout(() => {
+						goto('/login?verified=true');
+					}, 3000);
+				} else {
+					error = data.message || 'Verification failed. The link may be invalid or expired.';
 				}
-			);
-
-			const data = await response.json();
-
-			if (response.ok) {
-				success = true;
-				message = data.message || 'Email verified successfully!';
-
-				// Redirect to login after 3 seconds
-				setTimeout(() => {
-					goto('/login?verified=true');
-				}, 3000);
-			} else {
-				error = data.message || 'Verification failed. The link may be invalid or expired.';
+			} catch (err: any) {
+				error = 'Network error. Please check your connection and try again.';
+			} finally {
+				verifying = false;
 			}
-		} catch (err: any) {
-			error = 'Network error. Please check your connection and try again.';
-		} finally {
-			verifying = false;
-		}
+		})();
 	});
 </script>
 
