@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	let symbol = $derived(props.block.content.alertSymbol || 'SPY');
 	let direction = $derived((props.block.content.alertDirection as 'above' | 'below') || 'above');

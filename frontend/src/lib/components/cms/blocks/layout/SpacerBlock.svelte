@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	// Height presets
 	const HEIGHT_PRESETS = [

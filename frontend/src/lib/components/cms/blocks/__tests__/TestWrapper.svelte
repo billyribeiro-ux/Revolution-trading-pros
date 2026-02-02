@@ -16,10 +16,13 @@
 		stateManager?: BlockStateManager;
 	}
 
-	let { children, stateManager = new BlockStateManager() }: Props = $props();
+	let props: Props = $props();
+
+	// Use provided stateManager or create a default one
+	let resolvedStateManager = $derived(props.stateManager ?? new BlockStateManager());
 
 	// Set the context when the component mounts
-	setBlockStateManager(stateManager);
+	setBlockStateManager(resolvedStateManager);
 </script>
 
-{@render children()}
+{@render props.children()}

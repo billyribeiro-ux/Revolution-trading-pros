@@ -22,20 +22,14 @@
 		onRowClick?: (row: Record<string, unknown>) => void;
 	}
 
-	const {
-		columns,
-		data,
-		loading = false,
-		emptyMessage = 'No data available',
-		onRowClick
-	}: Props = $props();
+	let props: Props = $props();
 
 	let sortKey = $state<string | null>(null);
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 
-	const sortedData = $derived.by(() => {
-		if (!sortKey) return data;
-		return [...data].sort((a, b) => {
+	let sortedData = $derived.by(() => {
+		if (!sortKey) return props.data;
+		return [...props.data].sort((a, b) => {
 			const aVal = a[sortKey!];
 			const bVal = b[sortKey!];
 			if (aVal === bVal) return 0;
@@ -54,12 +48,12 @@
 	}
 
 	function handleRowClick(row: Record<string, unknown>) {
-		onRowClick?.(row);
+		props.onRowClick?.(row);
 	}
 </script>
 
 <div class="data-table-container">
-	{#if loading}
+	{#if props.loading}
 		<div class="loading-overlay">
 			<div class="loading-spinner"></div>
 		</div>
@@ -68,7 +62,7 @@
 	<table class="data-table">
 		<thead>
 			<tr>
-				{#each columns as column}
+				{#each props.columns as column}
 					<th
 						style:width={column.width}
 						class:sortable={column.sortable}
@@ -88,18 +82,18 @@
 		<tbody>
 			{#if sortedData.length === 0}
 				<tr>
-					<td colspan={columns.length} class="empty-message">{emptyMessage}</td>
+					<td colspan={props.columns.length} class="empty-message">{props.emptyMessage ?? 'No data available'}</td>
 				</tr>
 			{:else}
 				{#each sortedData as row, i}
 					<tr
-						class:clickable={!!onRowClick}
+						class:clickable={!!props.onRowClick}
 						onclick={() => handleRowClick(row)}
 						onkeydown={(e) => e.key === 'Enter' && handleRowClick(row)}
-						tabindex={onRowClick ? 0 : -1}
-						role={onRowClick ? 'button' : undefined}
+						tabindex={props.onRowClick ? 0 : -1}
+						role={props.onRowClick ? 'button' : undefined}
 					>
-						{#each columns as column}
+						{#each props.columns as column}
 							<td>{row[column.key] ?? ''}</td>
 						{/each}
 					</tr>

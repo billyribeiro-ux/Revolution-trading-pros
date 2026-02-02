@@ -1,14 +1,13 @@
 /**
- * Media Store - Enterprise Media Management State
+ * Media Store - Enterprise Media Management State (Svelte 5 Runes)
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * Centralized state management for media files, folders, uploads,
  * and selections across the Revolution Trading platform.
  *
- * @version 1.0.0
+ * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { mediaApi, type MediaFile, type MediaFolder, type UploadProgress } from '$lib/api/media';
 
@@ -73,378 +72,380 @@ const initialUploadState: UploadState = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Media Store
+// Media Store (Svelte 5 Runes)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function createMediaStore() {
-	const { subscribe, set, update } = writable<MediaState>(initialMediaState);
+let mediaState = $state<MediaState>({ ...initialMediaState });
 
-	return {
-		subscribe,
+export const mediaStore = {
+	get state() {
+		return mediaState;
+	},
 
-		// ───────────────────────────────────────────────────────────────────
-		// Load Files
-		// ───────────────────────────────────────────────────────────────────
+	get files() {
+		return mediaState.files;
+	},
 
-		async loadFiles(page: number = 1) {
-			update((state) => ({ ...state, isLoading: true, error: null }));
+	get folders() {
+		return mediaState.folders;
+	},
 
-			try {
-				const currentState = get({ subscribe });
-				const response = await mediaApi.getFiles({
-					...(currentState.currentFolder && { folder_id: currentState.currentFolder }),
-					...(currentState.filterType && { file_type: currentState.filterType }),
-					...(currentState.searchQuery && { search: currentState.searchQuery }),
-					sort: currentState.sortBy,
-					order: currentState.sortOrder,
-					page,
-					per_page: currentState.pagination.per_page
-				});
+	get selectedFiles() {
+		return mediaState.selectedFiles;
+	},
 
-				update((state) => ({
-					...state,
-					files: response.files,
-					pagination: response.pagination,
-					isLoading: false
-				}));
-			} catch (error) {
-				update((state) => ({
-					...state,
-					error: error instanceof Error ? error.message : 'Failed to load files',
-					isLoading: false
-				}));
-			}
-		},
+	get isLoading() {
+		return mediaState.isLoading;
+	},
 
-		// ───────────────────────────────────────────────────────────────────
-		// Load Folders
-		// ───────────────────────────────────────────────────────────────────
+	get viewMode() {
+		return mediaState.viewMode;
+	},
 
-		async loadFolders() {
-			try {
-				const response = await mediaApi.getFolders();
-				update((state) => ({ ...state, folders: response.folders }));
-			} catch (error) {
-				console.error('Failed to load folders:', error);
-			}
-		},
+	// ───────────────────────────────────────────────────────────────────
+	// Load Files
+	// ───────────────────────────────────────────────────────────────────
 
-		// ───────────────────────────────────────────────────────────────────
-		// Navigation
-		// ───────────────────────────────────────────────────────────────────
+	async loadFiles(page: number = 1) {
+		mediaState = { ...mediaState, isLoading: true, error: null };
 
-		setCurrentFolder(folderId: string | null) {
-			update((state) => ({ ...state, currentFolder: folderId, selectedFiles: new Set() }));
-			this.loadFiles(1);
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// Selection
-		// ───────────────────────────────────────────────────────────────────
-
-		selectFile(id: string) {
-			update((state) => {
-				const newSelected = new Set(state.selectedFiles);
-				newSelected.add(id);
-				return { ...state, selectedFiles: newSelected };
+		try {
+			const response = await mediaApi.getFiles({
+				...(mediaState.currentFolder && { folder_id: mediaState.currentFolder }),
+				...(mediaState.filterType && { file_type: mediaState.filterType }),
+				...(mediaState.searchQuery && { search: mediaState.searchQuery }),
+				sort: mediaState.sortBy,
+				order: mediaState.sortOrder,
+				page,
+				per_page: mediaState.pagination.per_page
 			});
-		},
 
-		deselectFile(id: string) {
-			update((state) => {
-				const newSelected = new Set(state.selectedFiles);
-				newSelected.delete(id);
-				return { ...state, selectedFiles: newSelected };
-			});
-		},
-
-		toggleFileSelection(id: string) {
-			update((state) => {
-				const newSelected = new Set(state.selectedFiles);
-				if (newSelected.has(id)) {
-					newSelected.delete(id);
-				} else {
-					newSelected.add(id);
-				}
-				return { ...state, selectedFiles: newSelected };
-			});
-		},
-
-		selectAll() {
-			update((state) => ({
-				...state,
-				selectedFiles: new Set(state.files.map((f) => f.id))
-			}));
-		},
-
-		deselectAll() {
-			update((state) => ({ ...state, selectedFiles: new Set() }));
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// View & Sort
-		// ───────────────────────────────────────────────────────────────────
-
-		setViewMode(mode: 'grid' | 'list') {
-			update((state) => ({ ...state, viewMode: mode }));
-			if (browser) {
-				localStorage.setItem('media_view_mode', mode);
-			}
-		},
-
-		setSortBy(sortBy: 'name' | 'date' | 'size' | 'type') {
-			update((state) => ({ ...state, sortBy }));
-			this.loadFiles(1);
-		},
-
-		setSortOrder(order: 'asc' | 'desc') {
-			update((state) => ({ ...state, sortOrder: order }));
-			this.loadFiles(1);
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// Search & Filter
-		// ───────────────────────────────────────────────────────────────────
-
-		setSearchQuery(query: string) {
-			update((state) => ({ ...state, searchQuery: query }));
-			// Debounce search
-			setTimeout(() => {
-				this.loadFiles(1);
-			}, 300);
-		},
-
-		setFilterType(type: string | null) {
-			update((state) => ({ ...state, filterType: type }));
-			this.loadFiles(1);
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// File Operations
-		// ───────────────────────────────────────────────────────────────────
-
-		async deleteFile(id: string, force: boolean = false) {
-			await mediaApi.deleteFile(id, force);
-			update((state) => ({
-				...state,
-				files: state.files.filter((f) => f.id !== id),
-				selectedFiles: new Set([...state.selectedFiles].filter((fid) => fid !== id))
-			}));
-		},
-
-		async bulkDelete(force: boolean = false) {
-			const state = get({ subscribe });
-			const ids = Array.from(state.selectedFiles);
-
-			if (ids.length === 0) return;
-
-			await mediaApi.bulkDelete(ids, force);
-			update((s) => ({
-				...s,
-				files: s.files.filter((f) => !ids.includes(f.id)),
-				selectedFiles: new Set()
-			}));
-		},
-
-		async bulkMove(folderId: string) {
-			const state = get({ subscribe });
-			const ids = Array.from(state.selectedFiles);
-
-			if (ids.length === 0) return;
-
-			await mediaApi.bulkMove(ids, folderId);
-			this.loadFiles();
-			this.deselectAll();
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// Folder Operations
-		// ───────────────────────────────────────────────────────────────────
-
-		async createFolder(data: { name: string; parent_id?: string; description?: string }) {
-			const response = await mediaApi.createFolder(data);
-			update((state) => ({
-				...state,
-				folders: [...state.folders, response.folder]
-			}));
-			return response.folder;
-		},
-
-		async deleteFolder(id: string, deleteFiles: boolean = false) {
-			await mediaApi.deleteFolder(id, deleteFiles);
-			update((state) => ({
-				...state,
-				folders: state.folders.filter((f) => f.id !== id),
-				currentFolder: state.currentFolder === id ? null : state.currentFolder
-			}));
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// State Management
-		// ───────────────────────────────────────────────────────────────────
-
-		reset() {
-			set(initialMediaState);
-		},
-
-		clearError() {
-			update((state) => ({ ...state, error: null }));
-		},
-
-		// ───────────────────────────────────────────────────────────────────
-		// Initialize
-		// ───────────────────────────────────────────────────────────────────
-
-		async initialize() {
-			// Load saved view mode
-			if (browser) {
-				const savedViewMode = localStorage.getItem('media_view_mode');
-				if (savedViewMode === 'grid' || savedViewMode === 'list') {
-					update((state) => ({ ...state, viewMode: savedViewMode }));
-				}
-			}
-
-			await this.loadFolders();
-			await this.loadFiles();
+			mediaState = {
+				...mediaState,
+				files: response.files,
+				pagination: response.pagination,
+				isLoading: false
+			};
+		} catch (error) {
+			mediaState = {
+				...mediaState,
+				error: error instanceof Error ? error.message : 'Failed to load files',
+				isLoading: false
+			};
 		}
-	};
-}
+	},
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Upload Store
-// ═══════════════════════════════════════════════════════════════════════════
+	// ───────────────────────────────────────────────────────────────────
+	// Load Folders
+	// ───────────────────────────────────────────────────────────────────
 
-function createUploadStore() {
-	const { subscribe, set, update } = writable<UploadState>(initialUploadState);
+	async loadFolders() {
+		try {
+			const response = await mediaApi.getFolders();
+			mediaState = { ...mediaState, folders: response.folders };
+		} catch (error) {
+			console.error('Failed to load folders:', error);
+		}
+	},
 
-	return {
-		subscribe,
+	// ───────────────────────────────────────────────────────────────────
+	// Navigation
+	// ───────────────────────────────────────────────────────────────────
 
-		async uploadFiles(
-			files: File[],
-			options?: {
-				folder_id?: string;
-				optimize?: boolean;
-				generate_webp?: boolean;
+	setCurrentFolder(folderId: string | null) {
+		mediaState = { ...mediaState, currentFolder: folderId, selectedFiles: new Set() };
+		this.loadFiles(1);
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// Selection
+	// ───────────────────────────────────────────────────────────────────
+
+	selectFile(id: string) {
+		const newSelected = new Set(mediaState.selectedFiles);
+		newSelected.add(id);
+		mediaState = { ...mediaState, selectedFiles: newSelected };
+	},
+
+	deselectFile(id: string) {
+		const newSelected = new Set(mediaState.selectedFiles);
+		newSelected.delete(id);
+		mediaState = { ...mediaState, selectedFiles: newSelected };
+	},
+
+	toggleFileSelection(id: string) {
+		const newSelected = new Set(mediaState.selectedFiles);
+		if (newSelected.has(id)) {
+			newSelected.delete(id);
+		} else {
+			newSelected.add(id);
+		}
+		mediaState = { ...mediaState, selectedFiles: newSelected };
+	},
+
+	selectAll() {
+		mediaState = {
+			...mediaState,
+			selectedFiles: new Set(mediaState.files.map((f) => f.id))
+		};
+	},
+
+	deselectAll() {
+		mediaState = { ...mediaState, selectedFiles: new Set() };
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// View & Sort
+	// ───────────────────────────────────────────────────────────────────
+
+	setViewMode(mode: 'grid' | 'list') {
+		mediaState = { ...mediaState, viewMode: mode };
+		if (browser) {
+			localStorage.setItem('media_view_mode', mode);
+		}
+	},
+
+	setSortBy(sortBy: 'name' | 'date' | 'size' | 'type') {
+		mediaState = { ...mediaState, sortBy };
+		this.loadFiles(1);
+	},
+
+	setSortOrder(order: 'asc' | 'desc') {
+		mediaState = { ...mediaState, sortOrder: order };
+		this.loadFiles(1);
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// Search & Filter
+	// ───────────────────────────────────────────────────────────────────
+
+	setSearchQuery(query: string) {
+		mediaState = { ...mediaState, searchQuery: query };
+		// Debounce search
+		setTimeout(() => {
+			this.loadFiles(1);
+		}, 300);
+	},
+
+	setFilterType(type: string | null) {
+		mediaState = { ...mediaState, filterType: type };
+		this.loadFiles(1);
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// File Operations
+	// ───────────────────────────────────────────────────────────────────
+
+	async deleteFile(id: string, force: boolean = false) {
+		await mediaApi.deleteFile(id, force);
+		mediaState = {
+			...mediaState,
+			files: mediaState.files.filter((f) => f.id !== id),
+			selectedFiles: new Set([...mediaState.selectedFiles].filter((fid) => fid !== id))
+		};
+	},
+
+	async bulkDelete(force: boolean = false) {
+		const ids = Array.from(mediaState.selectedFiles);
+
+		if (ids.length === 0) return;
+
+		await mediaApi.bulkDelete(ids, force);
+		mediaState = {
+			...mediaState,
+			files: mediaState.files.filter((f) => !ids.includes(f.id)),
+			selectedFiles: new Set()
+		};
+	},
+
+	async bulkMove(folderId: string) {
+		const ids = Array.from(mediaState.selectedFiles);
+
+		if (ids.length === 0) return;
+
+		await mediaApi.bulkMove(ids, folderId);
+		this.loadFiles();
+		this.deselectAll();
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// Folder Operations
+	// ───────────────────────────────────────────────────────────────────
+
+	async createFolder(data: { name: string; parent_id?: string; description?: string }) {
+		const response = await mediaApi.createFolder(data);
+		mediaState = {
+			...mediaState,
+			folders: [...mediaState.folders, response.folder]
+		};
+		return response.folder;
+	},
+
+	async deleteFolder(id: string, deleteFiles: boolean = false) {
+		await mediaApi.deleteFolder(id, deleteFiles);
+		mediaState = {
+			...mediaState,
+			folders: mediaState.folders.filter((f) => f.id !== id),
+			currentFolder: mediaState.currentFolder === id ? null : mediaState.currentFolder
+		};
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// State Management
+	// ───────────────────────────────────────────────────────────────────
+
+	reset() {
+		mediaState = { ...initialMediaState };
+	},
+
+	clearError() {
+		mediaState = { ...mediaState, error: null };
+	},
+
+	// ───────────────────────────────────────────────────────────────────
+	// Initialize
+	// ───────────────────────────────────────────────────────────────────
+
+	async initialize() {
+		// Load saved view mode
+		if (browser) {
+			const savedViewMode = localStorage.getItem('media_view_mode');
+			if (savedViewMode === 'grid' || savedViewMode === 'list') {
+				mediaState = { ...mediaState, viewMode: savedViewMode };
 			}
-		) {
-			const uploadMap = new Map<string, UploadProgress>();
+		}
 
-			files.forEach((file) => {
-				const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-				uploadMap.set(id, {
-					file,
-					progress: 0,
-					status: 'pending'
-				});
+		await this.loadFolders();
+		await this.loadFiles();
+	}
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Upload Store (Svelte 5 Runes)
+// ═══════════════════════════════════════════════════════════════════════════
+
+let uploadState = $state<UploadState>({ ...initialUploadState });
+
+export const uploadStore = {
+	get state() {
+		return uploadState;
+	},
+
+	get uploads() {
+		return uploadState.uploads;
+	},
+
+	get isUploading() {
+		return uploadState.isUploading;
+	},
+
+	async uploadFiles(
+		files: File[],
+		options?: {
+			folder_id?: string;
+			optimize?: boolean;
+			generate_webp?: boolean;
+		}
+	) {
+		const uploadMap = new Map<string, UploadProgress>();
+
+		files.forEach((file) => {
+			const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+			uploadMap.set(id, {
+				file,
+				progress: 0,
+				status: 'pending'
 			});
+		});
 
-			update((state) => ({
-				...state,
-				uploads: uploadMap,
-				isUploading: true
-			}));
+		uploadState = {
+			...uploadState,
+			uploads: uploadMap,
+			isUploading: true
+		};
 
-			// Upload files sequentially or in parallel
-			for (const [id, upload] of uploadMap.entries()) {
-				try {
-					update((state) => {
-						const newUploads = new Map(state.uploads);
-						newUploads.set(id, { ...upload, status: 'uploading' });
-						return { ...state, uploads: newUploads };
-					});
+		// Upload files sequentially or in parallel
+		for (const [id, upload] of uploadMap.entries()) {
+			try {
+				const newUploads = new Map(uploadState.uploads);
+				newUploads.set(id, { ...upload, status: 'uploading' });
+				uploadState = { ...uploadState, uploads: newUploads };
 
-					const result = await mediaApi.uploadFile(upload.file, options, (progress) => {
-						update((state) => {
-							const newUploads = new Map(state.uploads);
-							const current = newUploads.get(id);
-							if (current) {
-								newUploads.set(id, { ...current, progress });
-							}
-							return { ...state, uploads: newUploads };
-						});
-					});
-
-					update((state) => {
-						const newUploads = new Map(state.uploads);
-						newUploads.set(id, {
-							...upload,
-							status: 'complete',
-							progress: 100,
-							media_id: result.file.id
-						});
-						return { ...state, uploads: newUploads };
-					});
-
-					// Refresh media list
-					mediaStore.loadFiles();
-				} catch (error) {
-					update((state) => {
-						const newUploads = new Map(state.uploads);
-						newUploads.set(id, {
-							...upload,
-							status: 'error',
-							error: error instanceof Error ? error.message : 'Upload failed'
-						});
-						return { ...state, uploads: newUploads };
-					});
-				}
-			}
-
-			update((state) => ({ ...state, isUploading: false }));
-
-			// Clear completed uploads after 5 seconds
-			setTimeout(() => {
-				update((state) => {
-					const newUploads = new Map(state.uploads);
-					for (const [id, upload] of newUploads.entries()) {
-						if (upload.status === 'complete') {
-							newUploads.delete(id);
-						}
+				const result = await mediaApi.uploadFile(upload.file, options, (progress) => {
+					const progressUploads = new Map(uploadState.uploads);
+					const current = progressUploads.get(id);
+					if (current) {
+						progressUploads.set(id, { ...current, progress });
 					}
-					return { ...state, uploads: newUploads };
+					uploadState = { ...uploadState, uploads: progressUploads };
 				});
-			}, 5000);
-		},
 
-		clearUploads() {
-			set(initialUploadState);
-		},
+				const completeUploads = new Map(uploadState.uploads);
+				completeUploads.set(id, {
+					...upload,
+					status: 'complete',
+					progress: 100,
+					media_id: result.file.id
+				});
+				uploadState = { ...uploadState, uploads: completeUploads };
 
-		removeUpload(id: string) {
-			update((state) => {
-				const newUploads = new Map(state.uploads);
-				newUploads.delete(id);
-				return { ...state, uploads: newUploads };
-			});
+				// Refresh media list
+				mediaStore.loadFiles();
+			} catch (error) {
+				const errorUploads = new Map(uploadState.uploads);
+				errorUploads.set(id, {
+					...upload,
+					status: 'error',
+					error: error instanceof Error ? error.message : 'Upload failed'
+				});
+				uploadState = { ...uploadState, uploads: errorUploads };
+			}
 		}
-	};
-}
+
+		uploadState = { ...uploadState, isUploading: false };
+
+		// Clear completed uploads after 5 seconds
+		setTimeout(() => {
+			const cleanUploads = new Map(uploadState.uploads);
+			for (const [id, upload] of cleanUploads.entries()) {
+				if (upload.status === 'complete') {
+					cleanUploads.delete(id);
+				}
+			}
+			uploadState = { ...uploadState, uploads: cleanUploads };
+		}, 5000);
+	},
+
+	clearUploads() {
+		uploadState = { ...initialUploadState };
+	},
+
+	removeUpload(id: string) {
+		const newUploads = new Map(uploadState.uploads);
+		newUploads.delete(id);
+		uploadState = { ...uploadState, uploads: newUploads };
+	}
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Exports
+// Derived Values (Svelte 5 Runes)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const mediaStore = createMediaStore();
-export const uploadStore = createUploadStore();
+export const currentFiles = $derived(mediaState.files);
+export const currentFolders = $derived(mediaState.folders);
+export const selectedFilesSet = $derived(mediaState.selectedFiles);
+export const selectedCount = $derived(mediaState.selectedFiles.size);
+export const hasSelection = $derived(mediaState.selectedFiles.size > 0);
+export const currentViewMode = $derived(mediaState.viewMode);
+export const isMediaLoading = $derived(mediaState.isLoading);
 
-// Derived stores
-export const currentFiles = derived(mediaStore, ($media) => $media.files);
-export const currentFolders = derived(mediaStore, ($media) => $media.folders);
-export const selectedFiles = derived(mediaStore, ($media) => $media.selectedFiles);
-export const selectedCount = derived(selectedFiles, ($selected) => $selected.size);
-export const hasSelection = derived(selectedCount, ($count) => $count > 0);
-export const viewMode = derived(mediaStore, ($media) => $media.viewMode);
-export const isLoading = derived(mediaStore, ($media) => $media.isLoading);
-
-// Upload derived stores
-export const activeUploads = derived(uploadStore, ($upload) =>
-	Array.from($upload.uploads.values())
-);
-export const uploadCount = derived(activeUploads, ($uploads) => $uploads.length);
-export const isUploading = derived(uploadStore, ($upload) => $upload.isUploading);
-export const uploadProgress = derived(activeUploads, ($uploads) => {
-	if ($uploads.length === 0) return 0;
-	const total = $uploads.reduce((sum, u) => sum + u.progress, 0);
-	return total / $uploads.length;
+// Upload derived values
+export const activeUploads = $derived(Array.from(uploadState.uploads.values()));
+export const uploadCount = $derived(uploadState.uploads.size);
+export const isCurrentlyUploading = $derived(uploadState.isUploading);
+export const uploadProgress = $derived.by(() => {
+	const uploads = Array.from(uploadState.uploads.values());
+	if (uploads.length === 0) return 0;
+	const total = uploads.reduce((sum, u) => sum + u.progress, 0);
+	return total / uploads.length;
 });

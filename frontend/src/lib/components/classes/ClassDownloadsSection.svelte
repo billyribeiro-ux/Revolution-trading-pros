@@ -8,7 +8,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	interface Download {
@@ -27,7 +26,7 @@
 		title?: string;
 	}
 
-	let { courseSlug, title = 'Class Downloads' }: Props = $props();
+	let props: Props = $props();
 
 	let downloads = $state<Download[]>([]);
 	let isLoading = $state(true);
@@ -35,23 +34,26 @@
 	let sortBy = $state<'name' | 'date' | 'size'>('name');
 	let sortOrder = $state<'asc' | 'desc'>('asc');
 
-	onMount(async () => {
-		try {
-			const response = await fetch(`/api/my/courses/${courseSlug}/downloads`, {
-				credentials: 'include'
-			});
+	$effect(() => {
+		async function loadDownloads() {
+			try {
+				const response = await fetch(`/api/my/courses/${props.courseSlug}/downloads`, {
+					credentials: 'include'
+				});
 
-			if (!response.ok) {
-				throw new Error('Failed to load downloads');
+				if (!response.ok) {
+					throw new Error('Failed to load downloads');
+				}
+
+				const data = await response.json();
+				downloads = data.data || [];
+			} catch (e) {
+				error = e instanceof Error ? e.message : 'Failed to load downloads';
+			} finally {
+				isLoading = false;
 			}
-
-			const data = await response.json();
-			downloads = data.data || [];
-		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to load downloads';
-		} finally {
-			isLoading = false;
 		}
+		loadDownloads();
 	});
 
 	const sortedDownloads = $derived.by(() => {
@@ -108,7 +110,7 @@
 <section class="class-section cpost-section" id="dl-rp-row">
 	<div class="section-inner">
 		<section class="class-subsection" id="class-downloads">
-			<h2>{title}</h2>
+			<h2>{props.title ?? 'Class Downloads'}</h2>
 			<div class="class-downloads-container">
 				{#if isLoading}
 					<div class="file-browser-loading">

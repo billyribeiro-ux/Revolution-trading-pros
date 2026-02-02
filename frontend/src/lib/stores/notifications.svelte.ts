@@ -1,15 +1,14 @@
 /**
- * Revolution Trading Pros - Enterprise Notification Store
+ * Revolution Trading Pros - Enterprise Notification Store (Svelte 5 Runes)
  * ======================================================
  * Centralized notification management with persistence,
  * categorization, and real-time updates.
  *
- * @version 1.0.0
+ * @version 2.0.0 - Svelte 5 Runes Migration
  * @author Revolution Trading Pros
  * @level L8 Principal Engineer
  */
 
-import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 import { websocketService, type NotificationPayload } from '$lib/services/websocket';
 
@@ -46,95 +45,165 @@ function generateId(): string {
 	return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-function createNotificationStore() {
-	// Load initial state from localStorage
-	const getInitialState = (): NotificationState => {
-		if (browser) {
-			try {
-				const stored = localStorage.getItem(STORAGE_KEY);
-				if (stored) {
-					const parsed = JSON.parse(stored);
-					return {
-						notifications: parsed.notifications.map((n: Notification) => ({
-							...n,
-							timestamp: new Date(n.timestamp)
-						})),
-						isLoading: false,
-						hasNewNotifications: parsed.notifications.some((n: Notification) => !n.read)
-					};
-				}
-			} catch (error) {
-				console.error('Failed to load notifications:', error);
-			}
-		}
-		return {
-			notifications: [],
-			isLoading: false,
-			hasNewNotifications: false
-		};
-	};
+// ═══════════════════════════════════════════════════════════════════════════
+// State Loading
+// ═══════════════════════════════════════════════════════════════════════════
 
-	const { subscribe, set, update } = writable<NotificationState>(getInitialState());
-
-	// Persist to localStorage
-	function persist(state: NotificationState) {
-		if (browser) {
-			try {
-				// Only store limited number of notifications
-				const toStore = {
-					notifications: state.notifications.slice(0, MAX_STORED_NOTIFICATIONS)
+function getInitialState(): NotificationState {
+	if (browser) {
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (stored) {
+				const parsed = JSON.parse(stored);
+				return {
+					notifications: parsed.notifications.map((n: Notification) => ({
+						...n,
+						timestamp: new Date(n.timestamp)
+					})),
+					isLoading: false,
+					hasNewNotifications: parsed.notifications.some((n: Notification) => !n.read)
 				};
-				localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
-			} catch (error) {
-				console.error('Failed to persist notifications:', error);
 			}
+		} catch (error) {
+			console.error('Failed to load notifications:', error);
 		}
 	}
+	return {
+		notifications: [],
+		isLoading: false,
+		hasNewNotifications: false
+	};
+}
 
-	// WebSocket listener for real-time notifications
-	let wsUnsubscribe: (() => void) | null = null;
-
-	function initWebSocket(userId?: string) {
-		if (!browser || !userId) {
-			return;
-		}
-
-		// Subscribe to user notifications via WebSocket
-		wsUnsubscribe = websocketService.subscribeToNotifications(
-			userId,
-			(notification: NotificationPayload) => {
-				// Convert WebSocket notification to our format
-				add({
-					id: notification.id,
-					type: notification.type,
-					priority: notification.priority,
-					title: notification.title,
-					message: notification.message,
-					timestamp: new Date(notification.timestamp),
-					read: notification.read,
-					dismissed: notification.dismissed,
-					...(notification.action && {
-						action: {
-							label: notification.action.label,
-							...(notification.action.href && { href: notification.action.href })
-						}
-					}),
-					...(notification.metadata && {
-						metadata: notification.metadata as Record<string, unknown>
-					})
-				});
-			}
-		);
-	}
-
-	function destroyWebSocket() {
-		if (wsUnsubscribe) {
-			wsUnsubscribe();
-			wsUnsubscribe = null;
+// Persist to localStorage
+function persist(state: NotificationState) {
+	if (browser) {
+		try {
+			// Only store limited number of notifications
+			const toStore = {
+				notifications: state.notifications.slice(0, MAX_STORED_NOTIFICATIONS)
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+		} catch (error) {
+			console.error('Failed to persist notifications:', error);
 		}
 	}
+}
 
-	function add(notification: Partial<Notification> & { title: string; message: string }) {
+// ═══════════════════════════════════════════════════════════════════════════
+// State (Svelte 5 Runes)
+// ═══════════════════════════════════════════════════════════════════════════
+
+let notificationState = $state<NotificationState>(getInitialState());
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sound and Browser Notification Helpers
+// ═══════════════════════════════════════════════════════════════════════════
+
+function playNotificationSound() {
+	try {
+		// Create a simple beep using Web Audio API
+		const audioContext = new (
+			window.AudioContext ||
+			(window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+		)();
+		const oscillator = audioContext.createOscillator();
+		const gainNode = audioContext.createGain();
+
+		oscillator.connect(gainNode);
+		gainNode.connect(audioContext.destination);
+
+		oscillator.frequency.value = 800;
+		oscillator.type = 'sine';
+		gainNode.gain.value = 0.1;
+
+		oscillator.start();
+		oscillator.stop(audioContext.currentTime + 0.1);
+	} catch {
+		// Audio not available
+	}
+}
+
+async function showBrowserNotification(notification: Notification) {
+	if (!('Notification' in window)) return;
+
+	if (Notification.permission === 'default') {
+		await Notification.requestPermission();
+	}
+
+	if (Notification.permission === 'granted') {
+		new Notification(notification.title, {
+			body: notification.message,
+			icon: '/favicon.png',
+			tag: notification.id
+		});
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WebSocket Integration
+// ═══════════════════════════════════════════════════════════════════════════
+
+let wsUnsubscribe: (() => void) | null = null;
+
+function initWebSocket(userId?: string) {
+	if (!browser || !userId) {
+		return;
+	}
+
+	// Subscribe to user notifications via WebSocket
+	wsUnsubscribe = websocketService.subscribeToNotifications(
+		userId,
+		(notification: NotificationPayload) => {
+			// Convert WebSocket notification to our format
+			notificationStore.add({
+				id: notification.id,
+				type: notification.type,
+				priority: notification.priority,
+				title: notification.title,
+				message: notification.message,
+				timestamp: new Date(notification.timestamp),
+				read: notification.read,
+				dismissed: notification.dismissed,
+				...(notification.action && {
+					action: {
+						label: notification.action.label,
+						...(notification.action.href && { href: notification.action.href })
+					}
+				}),
+				...(notification.metadata && {
+					metadata: notification.metadata as Record<string, unknown>
+				})
+			});
+		}
+	);
+}
+
+function destroyWebSocket() {
+	if (wsUnsubscribe) {
+		wsUnsubscribe();
+		wsUnsubscribe = null;
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Notification Store API
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const notificationStore = {
+	get state() {
+		return notificationState;
+	},
+
+	get notifications() {
+		return notificationState.notifications;
+	},
+
+	get hasNewNotifications() {
+		return notificationState.hasNewNotifications;
+	},
+
+	add(notification: Partial<Notification> & { title: string; message: string }) {
 		const newNotification: Notification = {
 			id: notification.id || generateId(),
 			type: notification.type || 'info',
@@ -148,15 +217,13 @@ function createNotificationStore() {
 			...(notification.metadata && { metadata: notification.metadata })
 		};
 
-		update((state) => {
-			const newState = {
-				...state,
-				notifications: [newNotification, ...state.notifications].slice(0, MAX_STORED_NOTIFICATIONS),
-				hasNewNotifications: true
-			};
-			persist(newState);
-			return newState;
-		});
+		const newState = {
+			...notificationState,
+			notifications: [newNotification, ...notificationState.notifications].slice(0, MAX_STORED_NOTIFICATIONS),
+			hasNewNotifications: true
+		};
+		persist(newState);
+		notificationState = newState;
 
 		// Play notification sound for high priority
 		if (browser && (notification.priority === 'high' || notification.priority === 'urgent')) {
@@ -169,146 +236,101 @@ function createNotificationStore() {
 		}
 
 		return newNotification.id;
-	}
+	},
 
-	function markAsRead(id: string) {
-		update((state) => {
-			const newState = {
-				...state,
-				notifications: state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
-				hasNewNotifications: state.notifications.some((n) => n.id !== id && !n.read)
-			};
-			persist(newState);
-			return newState;
-		});
-	}
+	markAsRead(id: string) {
+		const newState = {
+			...notificationState,
+			notifications: notificationState.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+			hasNewNotifications: notificationState.notifications.some((n) => n.id !== id && !n.read)
+		};
+		persist(newState);
+		notificationState = newState;
+	},
 
-	function markAllAsRead() {
-		update((state) => {
-			const newState = {
-				...state,
-				notifications: state.notifications.map((n) => ({ ...n, read: true })),
-				hasNewNotifications: false
-			};
-			persist(newState);
-			return newState;
-		});
-	}
+	markAllAsRead() {
+		const newState = {
+			...notificationState,
+			notifications: notificationState.notifications.map((n) => ({ ...n, read: true })),
+			hasNewNotifications: false
+		};
+		persist(newState);
+		notificationState = newState;
+	},
 
-	function dismiss(id: string) {
-		update((state) => {
-			const newState = {
-				...state,
-				notifications: state.notifications.map((n) =>
-					n.id === id ? { ...n, dismissed: true, read: true } : n
-				)
-			};
-			persist(newState);
-			return newState;
-		});
-	}
+	dismiss(id: string) {
+		const newState = {
+			...notificationState,
+			notifications: notificationState.notifications.map((n) =>
+				n.id === id ? { ...n, dismissed: true, read: true } : n
+			)
+		};
+		persist(newState);
+		notificationState = newState;
+	},
 
-	function remove(id: string) {
-		update((state) => {
-			const newState = {
-				...state,
-				notifications: state.notifications.filter((n) => n.id !== id),
-				hasNewNotifications: state.notifications.some((n) => n.id !== id && !n.read)
-			};
-			persist(newState);
-			return newState;
-		});
-	}
+	remove(id: string) {
+		const newState = {
+			...notificationState,
+			notifications: notificationState.notifications.filter((n) => n.id !== id),
+			hasNewNotifications: notificationState.notifications.some((n) => n.id !== id && !n.read)
+		};
+		persist(newState);
+		notificationState = newState;
+	},
 
-	function clear() {
+	clear() {
 		const newState: NotificationState = {
 			notifications: [],
 			isLoading: false,
 			hasNewNotifications: false
 		};
-		set(newState);
+		notificationState = newState;
 		persist(newState);
+	},
+
+	initWebSocket,
+	destroyWebSocket,
+
+	// Convenience methods for different types
+	info(title: string, message: string, options?: Partial<Notification>) {
+		return this.add({ ...options, type: 'info', title, message });
+	},
+
+	success(title: string, message: string, options?: Partial<Notification>) {
+		return this.add({ ...options, type: 'success', title, message });
+	},
+
+	warning(title: string, message: string, options?: Partial<Notification>) {
+		return this.add({ ...options, type: 'warning', title, message });
+	},
+
+	error(title: string, message: string, options?: Partial<Notification>) {
+		return this.add({ ...options, type: 'error', title, message });
+	},
+
+	system(title: string, message: string, options?: Partial<Notification>) {
+		return this.add({ ...options, type: 'system', title, message });
 	}
+};
 
-	function playNotificationSound() {
-		try {
-			// Create a simple beep using Web Audio API
-			const audioContext = new (
-				window.AudioContext ||
-				(window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-			)();
-			const oscillator = audioContext.createOscillator();
-			const gainNode = audioContext.createGain();
+// ═══════════════════════════════════════════════════════════════════════════
+// Derived Values (Svelte 5 Runes)
+// ═══════════════════════════════════════════════════════════════════════════
 
-			oscillator.connect(gainNode);
-			gainNode.connect(audioContext.destination);
+export const notifications = $derived(notificationState.notifications);
 
-			oscillator.frequency.value = 800;
-			oscillator.type = 'sine';
-			gainNode.gain.value = 0.1;
-
-			oscillator.start();
-			oscillator.stop(audioContext.currentTime + 0.1);
-		} catch {
-			// Audio not available
-		}
-	}
-
-	async function showBrowserNotification(notification: Notification) {
-		if (!('Notification' in window)) return;
-
-		if (Notification.permission === 'default') {
-			await Notification.requestPermission();
-		}
-
-		if (Notification.permission === 'granted') {
-			new Notification(notification.title, {
-				body: notification.message,
-				icon: '/favicon.png',
-				tag: notification.id
-			});
-		}
-	}
-
-	return {
-		subscribe,
-		add,
-		markAsRead,
-		markAllAsRead,
-		dismiss,
-		remove,
-		clear,
-		initWebSocket,
-		destroyWebSocket,
-
-		// Convenience methods for different types
-		info: (title: string, message: string, options?: Partial<Notification>) =>
-			add({ ...options, type: 'info', title, message }),
-		success: (title: string, message: string, options?: Partial<Notification>) =>
-			add({ ...options, type: 'success', title, message }),
-		warning: (title: string, message: string, options?: Partial<Notification>) =>
-			add({ ...options, type: 'warning', title, message }),
-		error: (title: string, message: string, options?: Partial<Notification>) =>
-			add({ ...options, type: 'error', title, message }),
-		system: (title: string, message: string, options?: Partial<Notification>) =>
-			add({ ...options, type: 'system', title, message })
-	};
-}
-
-export const notificationStore = createNotificationStore();
-
-// Derived stores
-export const notifications = derived(notificationStore, ($store) => $store.notifications);
-export const unreadNotifications = derived(notificationStore, ($store) =>
-	$store.notifications.filter((n) => !n.read && !n.dismissed)
+export const unreadNotifications = $derived(
+	notificationState.notifications.filter((n) => !n.read && !n.dismissed)
 );
-export const unreadCount = derived(unreadNotifications, ($unread) => $unread.length);
-export const hasNewNotifications = derived(
-	notificationStore,
-	($store) => $store.hasNewNotifications
+
+export const unreadCount = $derived(
+	notificationState.notifications.filter((n) => !n.read && !n.dismissed).length
 );
+
+export const hasNewNotificationsFlag = $derived(notificationState.hasNewNotifications);
 
 // Notification by priority
-export const urgentNotifications = derived(notificationStore, ($store) =>
-	$store.notifications.filter((n) => n.priority === 'urgent' && !n.dismissed)
+export const urgentNotifications = $derived(
+	notificationState.notifications.filter((n) => n.priority === 'urgent' && !n.dismissed)
 );

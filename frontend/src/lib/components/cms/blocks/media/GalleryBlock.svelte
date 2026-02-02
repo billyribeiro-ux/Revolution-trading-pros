@@ -65,7 +65,7 @@
 	// Props and State
 	// ============================================================================
 
-	const props: Props = $props();
+	let props: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	// Local state for URL input when adding new images

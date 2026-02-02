@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	let symbol = $derived(props.block.content.tradeSymbol || 'AAPL');
 	let direction = $derived((props.block.content.tradeDirection as 'long' | 'short') || 'long');

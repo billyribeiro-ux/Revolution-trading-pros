@@ -8,7 +8,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
+	// Svelte 5 January 2026 best practice - no destructuring
 	interface Props {
 		videoUrl: string;
 		videoTitle: string;
@@ -19,42 +19,34 @@
 		poster?: string;
 	}
 
-	let {
-		videoUrl,
-		videoTitle,
-		videoId = '',
-		overlayTitle = '',
-		overlayDescription = '',
-		showOverlay = false,
-		poster = ''
-	}: Props = $props();
+	let props: Props = $props();
 </script>
 
 <div class="class-video-container current current-vid">
-	{#if showOverlay && overlayTitle}
+	{#if props.showOverlay && props.overlayTitle}
 		<div class="video-overlay">
-			<h3>{overlayTitle}</h3>
-			{#if overlayDescription}
+			<h3>{props.overlayTitle}</h3>
+			{#if props.overlayDescription}
 				<div class="class-video-description">
-					<p>{overlayDescription}</p>
+					<p>{props.overlayDescription}</p>
 				</div>
 			{/if}
 		</div>
 	{/if}
 
-	{#if videoId}
-		<div id={videoId} class="class-video-player"></div>
+	{#if props.videoId}
+		<div id={props.videoId} class="class-video-player"></div>
 	{/if}
 
 	<video
-		id={videoUrl}
+		id={props.videoUrl}
 		controls
 		width="100%"
-		{poster}
+		poster={props.poster}
 		style="aspect-ratio: 16/9;"
-		title={videoTitle}
+		title={props.videoTitle}
 	>
-		<source src={videoUrl} type="video/mp4" />
+		<source src={props.videoUrl} type="video/mp4" />
 		Your browser does not support the video tag.
 	</video>
 </div>

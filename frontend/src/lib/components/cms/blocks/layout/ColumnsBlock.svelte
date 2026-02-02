@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	// Column presets
 	type ColumnPreset = '50/50' | '33/33/33' | '66/34' | '34/66' | '25/25/25/25' | 'custom';
