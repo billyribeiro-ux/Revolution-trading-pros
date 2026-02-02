@@ -277,14 +277,20 @@
 					</div>
 				{:else if isImage}
 					<!-- Image viewer with zoom -->
-					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
 						class="relative flex h-full w-full items-center justify-center overflow-hidden p-4"
 						on:mousedown={handleMouseDown}
 						on:mousemove={handleMouseMove}
 						on:mouseup={handleMouseUp}
 						on:mouseleave={handleMouseUp}
-						role="img"
+						on:keydown={(e) => {
+							if (e.key === '+' || e.key === '=') zoomIn();
+							if (e.key === '-' || e.key === '_') zoomOut();
+							if (e.key === '0') resetZoom();
+						}}
+						tabindex="0"
+						role="region"
+						aria-label="Image viewer with zoom and pan controls. Use +/- keys to zoom, drag to pan."
 					>
 						<img
 							src={resource.file_url}
