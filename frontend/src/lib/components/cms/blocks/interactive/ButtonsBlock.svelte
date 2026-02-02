@@ -32,9 +32,15 @@
 	}
 
 	let buttons = $derived<ButtonItem[]>(
-		props.block.content.buttonItems || [
-			{ id: 'btn_1', text: 'Learn More', url: '#', style: 'primary', newTab: false }
-		]
+		(props.block.content.buttonItems?.map(item => ({
+			id: item.id,
+			text: item.text,
+			url: item.url,
+			style: (item.style || 'primary') as 'primary' | 'secondary' | 'outline' | 'ghost',
+			newTab: item.newTab || false
+		})) || [
+			{ id: 'btn_1', text: 'Learn More', url: '#', style: 'primary' as const, newTab: false }
+		])
 	);
 
 	let layout = $derived((props.block.settings.buttonLayout as 'row' | 'column' | 'wrap') || 'row');
@@ -133,7 +139,7 @@
 			<div class="layout-settings">
 				<label class="setting-field">
 					<span>Layout:</span>
-					<select value={layout} onchange={(e) => props.onUpdate({ settings: { ...props.block.settings, buttonLayout: (e.target as HTMLSelectElement).value } })}>
+					<select value={layout} onchange={(e) => props.onUpdate({ settings: { ...props.block.settings, buttonLayout: (e.target as HTMLSelectElement).value as 'row' | 'column' | 'wrap' } })}>
 						<option value="row">Row</option>
 						<option value="column">Column</option>
 						<option value="wrap">Wrap</option>
@@ -141,7 +147,7 @@
 				</label>
 				<label class="setting-field">
 					<span>Align:</span>
-					<select value={alignment} onchange={(e) => props.onUpdate({ settings: { ...props.block.settings, buttonAlignment: (e.target as HTMLSelectElement).value } })}>
+					<select value={alignment} onchange={(e) => props.onUpdate({ settings: { ...props.block.settings, buttonAlignment: (e.target as HTMLSelectElement).value as 'left' | 'center' | 'right' } })}>
 						<option value="left">Left</option>
 						<option value="center">Center</option>
 						<option value="right">Right</option>

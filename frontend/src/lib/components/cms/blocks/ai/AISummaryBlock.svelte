@@ -196,7 +196,7 @@
 
 	.summary-error { padding: 0.5rem 0.75rem; background: #fef2f2; color: #dc2626; font-size: 0.8125rem; border-radius: 6px; margin-bottom: 0.75rem; }
 
-	.output-section { }
+	.output-section { margin-top: 1rem; }
 	.output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 	.output-header span { font-size: 0.75rem; font-weight: 600; color: #6b21a8; text-transform: uppercase; }
 	.regen-btn {
