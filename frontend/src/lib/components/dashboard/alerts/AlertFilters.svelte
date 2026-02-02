@@ -23,7 +23,13 @@
 		showCounts?: boolean;
 	}
 
-	let { selected, onFilterChange, counts, showCounts = false }: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let selected = $derived(props.selected);
+	let onFilterChange = $derived(props.onFilterChange);
+	let counts = $derived(props.counts);
+	let showCounts = $derived(props.showCounts ?? false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FILTER OPTIONS

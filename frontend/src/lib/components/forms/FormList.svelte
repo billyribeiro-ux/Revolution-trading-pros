@@ -16,7 +16,7 @@
 		onViewAnalytics?: (form: Form) => void;
 	}
 
-	let { onEdit, onViewSubmissions, onViewAnalytics }: Props = $props();
+	let props: Props = $props();
 
 	let forms: Form[] = $state([]);
 	let loading = $state(true);
@@ -191,26 +191,26 @@
 							<td>{formatDate(form.published_at)}</td>
 							<td>
 								<div class="action-buttons">
-									{#if onEdit}
-										<button class="btn-icon" onclick={() => onEdit?.(form)} title="Edit">
+									{#if props.onEdit}
+										<button class="btn-icon" onclick={() => props.onEdit?.(form)} title="Edit">
 											✏️
 										</button>
 									{/if}
 
-									{#if onViewSubmissions}
+									{#if props.onViewSubmissions}
 										<button
 											class="btn-icon"
-											onclick={() => onViewSubmissions?.(form)}
+											onclick={() => props.onViewSubmissions?.(form)}
 											title="View Submissions"
 										>
 											📊
 										</button>
 									{/if}
 
-									{#if onViewAnalytics}
+									{#if props.onViewAnalytics}
 										<button
 											class="btn-icon"
-											onclick={() => onViewAnalytics?.(form)}
+											onclick={() => props.onViewAnalytics?.(form)}
 											title="View Analytics"
 										>
 											📈

@@ -21,7 +21,7 @@
 		formTitle: string;
 	}
 
-	let { formId, formSlug, formTitle }: Props = $props();
+	let props: Props = $props();
 
 	// Embed types
 	const embedTypes = [
@@ -64,7 +64,7 @@
 		loading = true;
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${formId}/embed`, {
+			const response = await fetch(`/api/forms/${props.formId}/embed`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -94,7 +94,7 @@
 	async function generateShareLink() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${formId}/share`, {
+			const response = await fetch(`/api/forms/${props.formId}/share`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -145,7 +145,7 @@
 <div class="embed-generator">
 	<div class="generator-header">
 		<h3>Embed & Share</h3>
-		<p class="subtitle">Share "{formTitle}" anywhere</p>
+		<p class="subtitle">Share "{props.formTitle}" anywhere</p>
 	</div>
 
 	<div class="generator-content">
@@ -292,8 +292,8 @@
 			<div class="section">
 				<h3 class="section-label">QR Code</h3>
 				<div class="qr-container">
-					<img src={qrCodeUrl} alt="QR Code for {formTitle}" class="qr-code" />
-					<a href={qrCodeUrl} download="form-qr-{formSlug}.png" class="btn-download">
+					<img src={qrCodeUrl} alt="QR Code for {props.formTitle}" class="qr-code" />
+					<a href={qrCodeUrl} download="form-qr-{props.formSlug}.png" class="btn-download">
 						Download QR Code
 					</a>
 				</div>
@@ -307,7 +307,7 @@
 				<a
 					href="https://twitter.com/intent/tweet?url={encodeURIComponent(
 						shareUrl
-					)}&text={encodeURIComponent(formTitle)}"
+					)}&text={encodeURIComponent(props.formTitle)}"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="social-btn twitter"
@@ -331,7 +331,7 @@
 					LinkedIn
 				</a>
 				<a
-					href="mailto:?subject={encodeURIComponent(formTitle)}&body={encodeURIComponent(shareUrl)}"
+					href="mailto:?subject={encodeURIComponent(props.formTitle)}&body={encodeURIComponent(shareUrl)}"
 					class="social-btn email"
 				>
 					Email

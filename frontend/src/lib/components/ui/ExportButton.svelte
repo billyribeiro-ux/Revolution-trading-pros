@@ -28,16 +28,15 @@
 		onexport?: (detail: { format: string; count: number }) => void;
 	}
 
-	let {
-		data = [],
-		columns = [],
-		filename = 'export',
-		title = '',
-		subtitle = '',
-		disabled = false,
-		size = 'md',
-		onexport
-	}: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data ?? []);
+	let columns = $derived(props.columns ?? []);
+	let filename = $derived(props.filename ?? 'export');
+	let title = $derived(props.title ?? '');
+	let subtitle = $derived(props.subtitle ?? '');
+	let disabled = $derived(props.disabled ?? false);
+	let size = $derived(props.size ?? 'md');
+	let onexport = $derived(props.onexport);
 
 	let isOpen = $state(false);
 	let buttonRef: HTMLButtonElement;

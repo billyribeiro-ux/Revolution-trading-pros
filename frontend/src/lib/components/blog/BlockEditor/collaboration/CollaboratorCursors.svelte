@@ -52,18 +52,17 @@
 		labelPosition?: 'top' | 'bottom' | 'left' | 'right';
 	}
 
-	let {
-		collaborators,
-		containerRef = null,
-		blockElements = new Map(),
-		showLabels = true,
-		showBlockSelections = true,
-		showTextSelections = true,
-		showTypingIndicators = true,
-		showIdleStatus = true,
-		zIndex = 1000,
-		labelPosition = 'top'
-	}: Props = $props();
+	let props: Props = $props();
+	const collaborators = $derived(props.collaborators);
+	const containerRef = $derived(props.containerRef ?? null);
+	const blockElements = $derived(props.blockElements ?? new Map());
+	const showLabels = $derived(props.showLabels ?? true);
+	const showBlockSelections = $derived(props.showBlockSelections ?? true);
+	const showTextSelections = $derived(props.showTextSelections ?? true);
+	const showTypingIndicators = $derived(props.showTypingIndicators ?? true);
+	const showIdleStatus = $derived(props.showIdleStatus ?? true);
+	const zIndex = $derived(props.zIndex ?? 1000);
+	const labelPosition = $derived(props.labelPosition ?? 'top');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State

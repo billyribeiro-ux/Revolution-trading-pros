@@ -20,17 +20,18 @@
 		showLabel?: boolean;
 	}
 
-	let {
-		roomSlug,
-		itemType,
-		itemId,
-		title = '',
-		excerpt = '',
-		href = '',
-		thumbnailUrl = '',
-		size = 'md',
-		showLabel = false
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let roomSlug = $derived(props.roomSlug);
+	let itemType = $derived(props.itemType);
+	let itemId = $derived(props.itemId);
+	let title = $derived(props.title ?? '');
+	let excerpt = $derived(props.excerpt ?? '');
+	let href = $derived(props.href ?? '');
+	let thumbnailUrl = $derived(props.thumbnailUrl ?? '');
+	let size = $derived(props.size ?? 'md');
+	let showLabel = $derived(props.showLabel ?? false);
 
 	let isFavorited = $state(false);
 	let isLoading = $state(false);

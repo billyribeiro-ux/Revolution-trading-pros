@@ -36,7 +36,10 @@
 		thumbnailUrl: string;
 	}
 
-	let { courseId, lessonTitle = 'Video', onUploadComplete, onError }: Props = $props();
+	let props: Props = $props();
+
+	// Props with defaults
+	const lessonTitle = $derived(props.lessonTitle ?? 'Video');
 
 	let file = $state<File | null>(null);
 	let uploading = $state(false);
@@ -80,7 +83,7 @@
 
 		try {
 			// Get TUS upload URL from backend
-			const response = await fetch(`/api/admin/courses/${courseId}/video-upload`, {
+			const response = await fetch(`/api/admin/courses/${props.courseId}/video-upload`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title: lessonTitle || file.name })
@@ -131,7 +134,7 @@
 					errorMessage = error.message || 'Upload failed';
 					status = 'error';
 					uploading = false;
-					onError?.(errorMessage);
+					props.onError?.(errorMessage);
 				},
 				onProgress: (bytesUploaded: number, bytesTotal: number) => {
 					progress = Math.round((bytesUploaded / bytesTotal) * 100);
@@ -158,7 +161,7 @@
 			errorMessage = msg;
 			status = 'error';
 			uploading = false;
-			onError?.(msg);
+			props.onError?.(msg);
 		}
 	};
 
@@ -172,7 +175,7 @@
 		setTimeout(() => {
 			status = 'complete';
 			uploading = false;
-			onUploadComplete?.(result);
+			props.onUploadComplete?.(result);
 		}, 2000);
 	};
 

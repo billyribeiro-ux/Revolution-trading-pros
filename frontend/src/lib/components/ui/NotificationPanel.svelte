@@ -32,7 +32,9 @@
 		onclick?: (notification: Notification) => void;
 	}
 
-	let { position = 'top-right', onclick }: Props = $props();
+	let props: Props = $props();
+	let position = $derived(props.position ?? 'top-right');
+	let onclick = $derived(props.onclick);
 
 	let isOpen = $state(false);
 	let bellRef: HTMLButtonElement | null = $state(null);

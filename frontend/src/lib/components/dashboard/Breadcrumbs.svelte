@@ -26,11 +26,11 @@
 		items?: BreadcrumbItem[];
 	}
 
-	let { items = [] }: Props = $props();
+	let props: Props = $props();
 
 	// Generate breadcrumb items from current page if not provided
 	const breadcrumbItems = $derived.by(() => {
-		if (items.length > 0) return items;
+		if (props.items && props.items.length > 0) return props.items;
 
 		// Default: Current page only (no Home link)
 		const currentPath = page?.url?.pathname ?? '/dashboard';

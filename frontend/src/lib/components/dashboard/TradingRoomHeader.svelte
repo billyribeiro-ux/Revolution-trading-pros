@@ -29,7 +29,13 @@
 		tradingRooms?: TradingRoom[];
 	}
 
-	let { roomName, startHereUrl, pageTitle, tradingRooms = [] }: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let roomName = $derived(props.roomName);
+	let startHereUrl = $derived(props.startHereUrl);
+	let pageTitle = $derived(props.pageTitle);
+	let tradingRooms = $derived(props.tradingRooms ?? []);
 
 	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
 	let displayTitle = $derived(pageTitle || `${roomName} Dashboard`);

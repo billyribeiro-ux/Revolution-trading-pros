@@ -31,17 +31,18 @@
 		class?: string;
 	}
 
-	let {
-		title = '',
-		subtitle = '',
-		variant = 'default',
-		padding = 'md',
-		hover = false,
-		headerAction,
-		children,
-		footer,
-		class: className = ''
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const title = $derived(props.title ?? '');
+	const subtitle = $derived(props.subtitle ?? '');
+	const variant = $derived(props.variant ?? 'default');
+	const padding = $derived(props.padding ?? 'md');
+	const hover = $derived(props.hover ?? false);
+	const headerAction = $derived(props.headerAction);
+	const children = $derived(props.children);
+	const footer = $derived(props.footer);
+	const className = $derived(props.class ?? '');
 
 	const paddingClasses = {
 		none: 'p-none',

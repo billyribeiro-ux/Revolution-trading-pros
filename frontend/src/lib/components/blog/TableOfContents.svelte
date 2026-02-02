@@ -32,20 +32,21 @@
 		position?: 'inline' | 'sidebar' | 'floating';
 	}
 
-	let {
-		contentBlocks = [],
-		title = 'In This Article',
-		minHeadings = 2,
-		maxDepth = 4,
-		showNumbers = true,
-		collapsible = true,
-		defaultExpanded = true,
-		sticky = true,
-		showProgress = true,
-		smoothScroll = true,
-		highlightActive = true,
-		position = 'inline'
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for local use
+	const contentBlocks = $derived(props.contentBlocks ?? []);
+	const title = $derived(props.title ?? 'In This Article');
+	const minHeadings = $derived(props.minHeadings ?? 2);
+	const maxDepth = $derived(props.maxDepth ?? 4);
+	const showNumbers = $derived(props.showNumbers ?? true);
+	const collapsible = $derived(props.collapsible ?? true);
+	const defaultExpanded = $derived(props.defaultExpanded ?? true);
+	const sticky = $derived(props.sticky ?? true);
+	const showProgress = $derived(props.showProgress ?? true);
+	const smoothScroll = $derived(props.smoothScroll ?? true);
+	const highlightActive = $derived(props.highlightActive ?? true);
+	const position = $derived(props.position ?? 'inline');
 
 	interface TocItem {
 		id: string;

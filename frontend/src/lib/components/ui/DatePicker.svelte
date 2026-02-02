@@ -33,7 +33,12 @@
 		disabled?: boolean;
 	}
 
-	const { value, onchange, label, required = false, disabled = false }: Props = $props();
+	let props: Props = $props();
+	let value = $derived(props.value);
+	let onchange = $derived(props.onchange);
+	let label = $derived(props.label);
+	let required = $derived(props.required ?? false);
+	let disabled = $derived(props.disabled ?? false);
 
 	// Local state
 	let isOpen = $state(false);

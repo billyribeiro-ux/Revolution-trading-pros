@@ -96,13 +96,12 @@
 		showSaveOption?: boolean;
 	}
 
-	let {
-		blockType,
-		currentBlock = null,
-		isModal = false,
-		position = null,
-		showSaveOption = true
-	}: Props = $props();
+	let props: Props = $props();
+	const blockType = $derived(props.blockType);
+	const currentBlock = $derived(props.currentBlock ?? null);
+	const isModal = $derived(props.isModal ?? false);
+	const position = $derived(props.position ?? null);
+	const showSaveOption = $derived(props.showSaveOption ?? true);
 
 	// ==========================================================================
 	// Events

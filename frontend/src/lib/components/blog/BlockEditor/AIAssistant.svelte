@@ -93,7 +93,11 @@
 		onapply: (content: string) => void;
 	}
 
-	let { editorState, blockId, contentId, onapply }: Props = $props();
+	let props: Props = $props();
+	const editorState = $derived(props.editorState);
+	const blockId = $derived(props.blockId);
+	const contentId = $derived(props.contentId);
+	const onapply = $derived(props.onapply);
 
 	// ==========================================================================
 	// State - Svelte 5 Runes

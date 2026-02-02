@@ -52,23 +52,39 @@
 		onrowClick?: (row: Record<string, unknown>) => void;
 	}
 
-	let {
-		columns = [],
-		data = [],
-		loading = false,
-		sortBy = $bindable(''),
-		sortDir = $bindable('asc'),
-		selectable = false,
-		selectedIds = $bindable([]),
-		idKey = 'id',
-		exportable = false,
-		exportFilename = 'export',
-		emptyMessage = 'No data available',
-		mobileBreakpoint = 768,
-		onsort,
-		onselect,
-		onrowClick
-	}: Props = $props();
+	let props: Props = $props();
+	let columns = $derived(props.columns ?? []);
+	let data = $derived(props.data ?? []);
+	let loading = $derived(props.loading ?? false);
+	let sortBy = $state(props.sortBy ?? '');
+	let sortDir = $state<'asc' | 'desc'>(props.sortDir ?? 'asc');
+	let selectable = $derived(props.selectable ?? false);
+	let selectedIds = $state<(string | number)[]>(props.selectedIds ?? []);
+	let idKey = $derived(props.idKey ?? 'id');
+	let exportable = $derived(props.exportable ?? false);
+	let exportFilename = $derived(props.exportFilename ?? 'export');
+	let emptyMessage = $derived(props.emptyMessage ?? 'No data available');
+	let mobileBreakpoint = $derived(props.mobileBreakpoint ?? 768);
+	let onsort = $derived(props.onsort);
+	let onselect = $derived(props.onselect);
+	let onrowClick = $derived(props.onrowClick);
+
+	// Sync with external prop changes
+	$effect(() => {
+		if (props.sortBy !== undefined && props.sortBy !== sortBy) {
+			sortBy = props.sortBy;
+		}
+	});
+	$effect(() => {
+		if (props.sortDir !== undefined && props.sortDir !== sortDir) {
+			sortDir = props.sortDir;
+		}
+	});
+	$effect(() => {
+		if (props.selectedIds !== undefined) {
+			selectedIds = props.selectedIds;
+		}
+	});
 
 	let isMobile = $state(false);
 	let tableRef: HTMLDivElement;

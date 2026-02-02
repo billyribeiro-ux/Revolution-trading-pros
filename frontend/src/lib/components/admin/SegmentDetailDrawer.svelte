@@ -71,7 +71,15 @@
 		onExport?: (segment: Segment) => void;
 	}
 
-	let { isOpen, segment, onClose, onEdit, onDelete, onExport }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure for internal use
+	const isOpen = $derived(props.isOpen);
+	const segment = $derived(props.segment);
+	const onClose = $derived(props.onClose);
+	const onEdit = $derived(props.onEdit);
+	const onDelete = $derived(props.onDelete);
+	const onExport = $derived(props.onExport);
 
 	// State
 	let activeTab = $state<'overview' | 'members' | 'analytics'>('overview');

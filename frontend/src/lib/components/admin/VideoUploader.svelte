@@ -21,7 +21,12 @@
 		onCancel?: () => void;
 	}
 
-	let { membershipId = '', onUploadComplete, onCancel }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const membershipId = $derived(props.membershipId ?? '');
+	const onUploadComplete = $derived(props.onUploadComplete);
+	const onCancel = $derived(props.onCancel);
 
 	// Types
 	interface UploadedVideo {

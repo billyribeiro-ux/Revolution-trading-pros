@@ -27,21 +27,20 @@
 		quality?: number;
 	}
 
-	let {
-		src,
-		alt,
-		blurhash = null,
-		width = '100%',
-		height = 'auto',
-		class: className = '',
-		loading = 'lazy',
-		decoding = 'async',
-		sizes,
-		srcset,
-		autoSrcset = false,
-		breakpoints = [320, 640, 768, 1024, 1280, 1536],
-		quality = 80
-	}: Props = $props();
+	let props: Props = $props();
+	let src = $derived(props.src);
+	let alt = $derived(props.alt);
+	let blurhash = $derived(props.blurhash ?? null);
+	let width = $derived(props.width ?? '100%');
+	let height = $derived(props.height ?? 'auto');
+	let className = $derived(props.class ?? '');
+	let loading = $derived(props.loading ?? 'lazy');
+	let decoding = $derived(props.decoding ?? 'async');
+	let sizes = $derived(props.sizes);
+	let srcset = $derived(props.srcset);
+	let autoSrcset = $derived(props.autoSrcset ?? false);
+	let breakpoints = $derived(props.breakpoints ?? [320, 640, 768, 1024, 1280, 1536]);
+	let quality = $derived(props.quality ?? 80);
 
 	/**
 	 * Generate responsive srcset from base URL

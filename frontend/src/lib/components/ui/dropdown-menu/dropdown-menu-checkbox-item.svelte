@@ -5,16 +5,37 @@
 	import { cn, type WithoutChildrenOrChild } from "$lib/utils.js";
 	import type { Snippet } from "svelte";
 
-	let {
-		ref = $bindable(null),
-		checked = $bindable(false),
-		indeterminate = $bindable(false),
-		class: className,
-		children: childrenProp,
-		...restProps
-	}: WithoutChildrenOrChild<DropdownMenuPrimitive.CheckboxItemProps> & {
+	type CheckboxItemProps = WithoutChildrenOrChild<DropdownMenuPrimitive.CheckboxItemProps> & {
 		children?: Snippet;
-	} = $props();
+	};
+
+	let props: CheckboxItemProps = $props();
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let checked = $state(props.checked ?? false);
+	let indeterminate = $state(props.indeterminate ?? false);
+	let className = $derived(props.class);
+	let childrenProp = $derived(props.children);
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+	$effect(() => {
+		if (props.checked !== undefined && props.checked !== checked) {
+			checked = props.checked;
+		}
+	});
+	$effect(() => {
+		if (props.indeterminate !== undefined && props.indeterminate !== indeterminate) {
+			indeterminate = props.indeterminate;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, checked: __, indeterminate: ___, class: ____, children: _____, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <DropdownMenuPrimitive.CheckboxItem

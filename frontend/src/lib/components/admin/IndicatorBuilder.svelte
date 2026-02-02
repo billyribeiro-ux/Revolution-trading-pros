@@ -49,7 +49,12 @@
 		onClose?: () => void;
 	}
 
-	let { indicatorId, onSave, onClose }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure for internal use
+	const indicatorId = $derived(props.indicatorId);
+	const onSave = $derived(props.onSave);
+	const onClose = $derived(props.onClose);
 
 	let indicator = $state<Indicator | null>(null);
 	let platforms = $state<Platform[]>([]);

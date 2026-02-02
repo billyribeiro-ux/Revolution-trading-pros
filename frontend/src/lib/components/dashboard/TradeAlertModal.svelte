@@ -40,14 +40,15 @@
 		onSave: (alert: AlertCreateInput | AlertUpdateInput, isEdit: boolean) => Promise<void>;
 	}
 
-	let {
-		isOpen = $bindable(),
-		roomSlug,
-		editAlert = null,
-		entryAlerts = [],
-		onClose,
-		onSave
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults (isOpen uses $bindable via props)
+	let isOpen = $derived(props.isOpen);
+	let roomSlug = $derived(props.roomSlug);
+	let editAlert = $derived(props.editAlert ?? null);
+	let entryAlerts = $derived(props.entryAlerts ?? []);
+	let onClose = $derived(props.onClose);
+	let onSave = $derived(props.onSave);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

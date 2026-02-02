@@ -33,14 +33,12 @@
 		onclick?: () => void;
 	}
 
-	let {
-		course,
-		variant = 'default',
-		showProgress = false,
-		progress = 0,
-		href,
-		onclick
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Props with defaults
+	const variant = $derived(props.variant ?? 'default');
+	const showProgress = $derived(props.showProgress ?? false);
+	const progress = $derived(props.progress ?? 0);
 
 	const formatDuration = (minutes: number | undefined): string => {
 		if (!minutes) return '';
@@ -57,8 +55,8 @@
 
 	// ICT 11+ FIX: Use existing logo file that actually exists
 	const defaultImage = '/revolution-trading-pros.png';
-	const imageUrl = $derived(course.card_image_url || defaultImage);
-	const linkHref = $derived(href || `/classes/${course.slug}`);
+	const imageUrl = $derived(props.course.card_image_url || defaultImage);
+	const linkHref = $derived(props.href || `/classes/${props.course.slug}`);
 </script>
 
 {#if variant === 'compact'}
@@ -66,19 +64,19 @@
 		href={linkHref}
 		class="card compact"
 		onclick={(e) => {
-			if (onclick) {
+			if (props.onclick) {
 				e.preventDefault();
-				onclick();
+				props.onclick();
 			}
 		}}
 	>
-		<img src={imageUrl} alt={course.title} class="thumb" loading="lazy" />
+		<img src={imageUrl} alt={props.course.title} class="thumb" loading="lazy" />
 		<div class="info">
-			<h4 class="title">{course.title}</h4>
+			<h4 class="title">{props.course.title}</h4>
 			<div class="meta">
-				{#if course.lesson_count}<span>{course.lesson_count} lessons</span>{/if}
-				{#if course.total_duration_minutes}<span
-						>• {formatDuration(course.total_duration_minutes)}</span
+				{#if props.course.lesson_count}<span>{props.course.lesson_count} lessons</span>{/if}
+				{#if props.course.total_duration_minutes}<span
+						>• {formatDuration(props.course.total_duration_minutes)}</span
 					>{/if}
 			</div>
 		</div>
@@ -108,39 +106,39 @@
 		href={linkHref}
 		class="card {variant}"
 		onclick={(e) => {
-			if (onclick) {
+			if (props.onclick) {
 				e.preventDefault();
-				onclick();
+				props.onclick();
 			}
 		}}
 	>
 		<div class="image-wrap">
-			<img src={imageUrl} alt={course.title} loading="lazy" />
-			{#if course.card_badge}
-				<span class="badge" style="background-color: {course.card_badge_color || '#10b981'}"
-					>{course.card_badge}</span
+			<img src={imageUrl} alt={props.course.title} loading="lazy" />
+			{#if props.course.card_badge}
+				<span class="badge" style="background-color: {props.course.card_badge_color || '#10b981'}"
+					>{props.course.card_badge}</span
 				>
 			{/if}
 		</div>
 		<div class="content">
-			{#if course.level}
-				<span class="level level--{course.level?.toLowerCase()}">{course.level}</span>
+			{#if props.course.level}
+				<span class="level level--{props.course.level?.toLowerCase()}">{props.course.level}</span>
 			{/if}
-			<h3 class="title">{course.title}</h3>
-			{#if course.card_description}
-				<p class="desc">{course.card_description}</p>
+			<h3 class="title">{props.course.title}</h3>
+			{#if props.course.card_description}
+				<p class="desc">{props.course.card_description}</p>
 			{/if}
 			<div class="meta">
-				{#if course.instructor_name}<span class="instructor">{course.instructor_name}</span>{/if}
+				{#if props.course.instructor_name}<span class="instructor">{props.course.instructor_name}</span>{/if}
 				<div class="stats">
-					{#if course.lesson_count}<span>{course.lesson_count} lessons</span>{/if}
-					{#if course.total_duration_minutes}<span
-							>• {formatDuration(course.total_duration_minutes)}</span
+					{#if props.course.lesson_count}<span>{props.course.lesson_count} lessons</span>{/if}
+					{#if props.course.total_duration_minutes}<span
+							>• {formatDuration(props.course.total_duration_minutes)}</span
 						>{/if}
 				</div>
 			</div>
 			<div class="footer">
-				{#if course.avg_rating}
+				{#if props.course.avg_rating}
 					<div class="rating">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -152,11 +150,11 @@
 								points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
 							/></svg
 						>
-						<span>{course.avg_rating.toFixed(1)}</span>
-						{#if course.review_count}<span class="count">({course.review_count})</span>{/if}
+						<span>{props.course.avg_rating.toFixed(1)}</span>
+						{#if props.course.review_count}<span class="count">({props.course.review_count})</span>{/if}
 					</div>
 				{/if}
-				<span class="price">{formatPrice(course.price_cents, course.is_free)}</span>
+				<span class="price">{formatPrice(props.course.price_cents, props.course.is_free)}</span>
 			</div>
 			{#if showProgress}
 				<div class="progress"><div class="bar" style="width: {progress}%"></div></div>

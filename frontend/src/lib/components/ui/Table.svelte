@@ -8,7 +8,10 @@
 		children?: Snippet;
 	}
 
-	let { headers = [], striped = false, hoverable = true, children }: Props = $props();
+	let props: Props = $props();
+	let headers = $derived(props.headers ?? []);
+	let striped = $derived(props.striped ?? false);
+	let hoverable = $derived(props.hoverable ?? true);
 </script>
 
 <div class="overflow-x-auto">
@@ -32,7 +35,7 @@
 				? '[&>tr:nth-child(even)]:bg-gray-50'
 				: ''} {hoverable ? 'hoverable' : ''}"
 		>
-			{@render children?.()}
+			{@render props.children?.()}
 		</tbody>
 	</table>
 </div>

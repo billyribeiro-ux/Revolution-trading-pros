@@ -25,7 +25,12 @@
 		title?: string;
 	}
 
-	let { contentBlocks = [], showAfterScroll = 300, title = 'Contents' }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for local use
+	const contentBlocks = $derived(props.contentBlocks ?? []);
+	const showAfterScroll = $derived(props.showAfterScroll ?? 300);
+	const title = $derived(props.title ?? 'Contents');
 
 	// Svelte 5: Reactive state using $state() rune
 	let isVisible = $state(false);

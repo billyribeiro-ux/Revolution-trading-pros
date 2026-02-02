@@ -16,7 +16,11 @@
 		label?: string;
 	}
 
-	const { thumbnails, selected, onselect, label = 'Select Thumbnail' }: Props = $props();
+	let props: Props = $props();
+	let thumbnails = $derived(props.thumbnails);
+	let selected = $derived(props.selected);
+	let onselect = $derived(props.onselect);
+	let label = $derived(props.label ?? 'Select Thumbnail');
 </script>
 
 {#if thumbnails.length > 0}

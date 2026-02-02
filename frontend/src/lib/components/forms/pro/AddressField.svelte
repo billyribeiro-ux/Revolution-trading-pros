@@ -17,7 +17,7 @@
 		onchange?: (value: AddressValue) => void;
 	}
 
-	let { field, value = {}, error, onchange }: Props = $props();
+	let props: Props = $props();
 
 	const defaultValue: AddressValue = {
 		address_line_1: '',
@@ -30,13 +30,13 @@
 
 	let addressData = $state<AddressValue>({ ...defaultValue });
 
-	const showAddress2 = $derived(field.attributes?.show_address_2 !== false);
-	const showCountry = $derived(field.attributes?.show_country !== false);
-	const enableAutocomplete = $derived(field.attributes?.enable_autocomplete !== false);
+	const showAddress2 = $derived(props.field.attributes?.show_address_2 !== false);
+	const showCountry = $derived(props.field.attributes?.show_country !== false);
+	const enableAutocomplete = $derived(props.field.attributes?.enable_autocomplete !== false);
 
 	// Sync with prop value changes
 	$effect(() => {
-		addressData = { ...defaultValue, ...value };
+		addressData = { ...defaultValue, ...props.value };
 	});
 
 	const countries = [
@@ -68,7 +68,7 @@
 
 	function handleFieldChange(fieldName: keyof AddressValue, newValue: string) {
 		addressData = { ...addressData, [fieldName]: newValue };
-		onchange?.(addressData);
+		props.onchange?.(addressData);
 	}
 
 	function getInputClasses(hasError: boolean): string {
@@ -78,27 +78,27 @@
 
 <div class="address-field">
 	<div class="field-label">
-		{field.label}
-		{#if field.required}
+		{props.field.label}
+		{#if props.field.required}
 			<span class="required">*</span>
 		{/if}
 	</div>
 
-	{#if field.help_text}
-		<p class="field-help">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
 	<div class="address-fields">
 		<!-- Address Line 1 -->
 		<div class="field-row full">
-			<label class="sub-label" for={`${field.name}-address1`}>Address Line 1</label>
+			<label class="sub-label" for={`${props.field.name}-address1`}>Address Line 1</label>
 			<input
 				type="text"
-				id={`${field.name}-address1`}
-				name={`${field.name}[address_line_1]`}
+				id={`${props.field.name}-address1`}
+				name={`${props.field.name}[address_line_1]`}
 				placeholder="Street address"
 				value={addressData.address_line_1}
-				required={field.required}
+				required={props.field.required}
 				class={getInputClasses(!!error)}
 				autocomplete={enableAutocomplete ? 'address-line1' : 'off'}
 				oninput={(e: Event) =>
@@ -109,11 +109,11 @@
 		<!-- Address Line 2 -->
 		{#if showAddress2}
 			<div class="field-row full">
-				<label class="sub-label" for={`${field.name}-address2`}>Address Line 2</label>
+				<label class="sub-label" for={`${props.field.name}-address2`}>Address Line 2</label>
 				<input
 					type="text"
-					id={`${field.name}-address2`}
-					name={`${field.name}[address_line_2]`}
+					id={`${props.field.name}-address2`}
+					name={`${props.field.name}[address_line_2]`}
 					placeholder="Apartment, suite, unit, etc. (optional)"
 					value={addressData.address_line_2}
 					class="address-input"
@@ -127,14 +127,14 @@
 		<!-- City & State Row -->
 		<div class="field-row half-row">
 			<div class="half-field">
-				<label class="sub-label" for={`${field.name}-city`}>City</label>
+				<label class="sub-label" for={`${props.field.name}-city`}>City</label>
 				<input
 					type="text"
-					id={`${field.name}-city`}
-					name={`${field.name}[city]`}
+					id={`${props.field.name}-city`}
+					name={`${props.field.name}[city]`}
 					placeholder="City"
 					value={addressData.city}
-					required={field.required}
+					required={props.field.required}
 					class={getInputClasses(!!error)}
 					autocomplete={enableAutocomplete ? 'address-level2' : 'off'}
 					oninput={(e: Event) =>
@@ -142,14 +142,14 @@
 				/>
 			</div>
 			<div class="half-field">
-				<label class="sub-label" for={`${field.name}-state`}>State / Province</label>
+				<label class="sub-label" for={`${props.field.name}-state`}>State / Province</label>
 				<input
 					type="text"
-					id={`${field.name}-state`}
-					name={`${field.name}[state]`}
+					id={`${props.field.name}-state`}
+					name={`${props.field.name}[state]`}
 					placeholder="State / Province"
 					value={addressData.state}
-					required={field.required}
+					required={props.field.required}
 					class={getInputClasses(!!error)}
 					autocomplete={enableAutocomplete ? 'address-level1' : 'off'}
 					oninput={(e: Event) =>
@@ -161,14 +161,14 @@
 		<!-- Zip & Country Row -->
 		<div class="field-row half-row">
 			<div class="half-field">
-				<label class="sub-label" for={`${field.name}-zip`}>ZIP / Postal Code</label>
+				<label class="sub-label" for={`${props.field.name}-zip`}>ZIP / Postal Code</label>
 				<input
 					type="text"
-					id={`${field.name}-zip`}
-					name={`${field.name}[zip]`}
+					id={`${props.field.name}-zip`}
+					name={`${props.field.name}[zip]`}
 					placeholder="ZIP / Postal Code"
 					value={addressData.zip}
-					required={field.required}
+					required={props.field.required}
 					class={getInputClasses(!!error)}
 					autocomplete={enableAutocomplete ? 'postal-code' : 'off'}
 					oninput={(e: Event) =>
@@ -177,12 +177,12 @@
 			</div>
 			{#if showCountry}
 				<div class="half-field">
-					<label class="sub-label" for={`${field.name}-country`}>Country</label>
+					<label class="sub-label" for={`${props.field.name}-country`}>Country</label>
 					<select
-						id={`${field.name}-country`}
-						name={`${field.name}[country]`}
+						id={`${props.field.name}-country`}
+						name={`${props.field.name}[country]`}
 						value={addressData.country}
-						required={field.required}
+						required={props.field.required}
 						class={getInputClasses(!!error)}
 						autocomplete={enableAutocomplete ? 'country' : 'off'}
 						onchange={(e: Event) =>
@@ -198,9 +198,9 @@
 		</div>
 	</div>
 
-	{#if error && error.length > 0}
+	{#if props.error && error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each props.error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

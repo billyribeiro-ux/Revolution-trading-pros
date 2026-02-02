@@ -7,18 +7,28 @@
 	import { cn, type WithoutChildrenOrChild } from "$lib/utils.js";
 	import type { ComponentProps } from "svelte";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		portalProps,
-		children,
-		showCloseButton = true,
-		...restProps
-	}: WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
+	type ContentProps = WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
 		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof DialogPortal>>;
 		children: Snippet;
 		showCloseButton?: boolean;
-	} = $props();
+	};
+
+	let props: ContentProps = $props();
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let className = $derived(props.class);
+	let portalProps = $derived(props.portalProps);
+	let showCloseButton = $derived(props.showCloseButton ?? true);
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, class: __, portalProps: ___, children: ____, showCloseButton: _____, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <DialogPortal {...portalProps}>
@@ -51,7 +61,7 @@
 
 		<!-- Content wrapper with proper padding -->
 		<div class="flex-1 overflow-y-auto overscroll-contain p-4 pt-6 sm:p-6 -webkit-overflow-scrolling-touch">
-			{@render children?.()}
+			{@render props.children?.()}
 		</div>
 
 		{#if showCloseButton}

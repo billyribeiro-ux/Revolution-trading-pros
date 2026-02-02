@@ -69,18 +69,17 @@
 		showRecent?: boolean;
 	}
 
-	let {
-		onUpload,
-		accept = 'image/*',
-		maxSize = 10 * 1024 * 1024, // 10MB
-		multiple = false,
-		collection = 'blog-images',
-		compact = false,
-		processBeforeUpload = true,
-		processOptions = {},
-		showLibrary = true,
-		showRecent = true
-	}: Props = $props();
+	let props: Props = $props();
+	const onUpload = $derived(props.onUpload);
+	const accept = $derived(props.accept ?? 'image/*');
+	const maxSize = $derived(props.maxSize ?? 10 * 1024 * 1024); // 10MB
+	const multiple = $derived(props.multiple ?? false);
+	const collection = $derived(props.collection ?? 'blog-images');
+	const compact = $derived(props.compact ?? false);
+	const processBeforeUpload = $derived(props.processBeforeUpload ?? true);
+	const processOptions = $derived(props.processOptions ?? {});
+	const showLibrary = $derived(props.showLibrary ?? true);
+	const showRecent = $derived(props.showRecent ?? true);
 
 	// ==========================================================================
 	// State

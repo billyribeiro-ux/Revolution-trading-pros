@@ -11,17 +11,23 @@
 		onchange?: (e: Event) => void;
 	}
 
-	let {
-		value = $bindable(''),
-		options = [],
-		placeholder = 'Select...',
-		label = '',
-		error = '',
-		disabled = false,
-		required = false,
-		id = '',
-		onchange
-	}: Props = $props();
+	let props: Props = $props();
+	let value = $state(props.value ?? '');
+	let options = $derived(props.options ?? []);
+	let placeholder = $derived(props.placeholder ?? 'Select...');
+	let label = $derived(props.label ?? '');
+	let error = $derived(props.error ?? '');
+	let disabled = $derived(props.disabled ?? false);
+	let required = $derived(props.required ?? false);
+	let id = $derived(props.id ?? '');
+	let onchange = $derived(props.onchange);
+
+	// Sync with external value changes
+	$effect(() => {
+		if (props.value !== undefined && props.value !== value) {
+			value = props.value;
+		}
+	});
 </script>
 
 <div class="w-full">

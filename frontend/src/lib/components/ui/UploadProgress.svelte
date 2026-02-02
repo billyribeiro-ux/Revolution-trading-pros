@@ -17,13 +17,16 @@
 		statusText?: string;
 	}
 
-	const { progress, status, statusText }: Props = $props();
+	let props: Props = $props();
+	let progress = $derived(props.progress);
+	let status = $derived(props.status);
+	let statusText = $derived(props.statusText);
 
 	// Derived
-	const isIndeterminate = $derived(status === 'preparing' || status === 'processing');
-	const displayProgress = $derived(status === 'uploading' ? progress : 100);
-	const defaultStatusText = $derived(getDefaultStatusText(status, progress));
-	const finalStatusText = $derived(statusText || defaultStatusText);
+	let isIndeterminate = $derived(status === 'preparing' || status === 'processing');
+	let displayProgress = $derived(status === 'uploading' ? progress : 100);
+	let defaultStatusText = $derived(getDefaultStatusText(status, progress));
+	let finalStatusText = $derived(statusText || defaultStatusText);
 
 	function getDefaultStatusText(s: UploadStatus, p: number): string {
 		switch (s) {

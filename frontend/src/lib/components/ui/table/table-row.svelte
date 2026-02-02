@@ -2,12 +2,20 @@
 	import { cn, type WithElementRef } from "$lib/utils.js";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLTableRowElement>> = $props();
+	let props: WithElementRef<HTMLAttributes<HTMLTableRowElement>> = $props();
+	let ref = $state<HTMLTableRowElement | null>(props.ref ?? null);
+	let className = $derived(props.class);
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, class: __, children: ___, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <tr
@@ -19,5 +27,5 @@
 	)}
 	{...restProps}
 >
-	{@render children?.()}
+	{@render props.children?.()}
 </tr>

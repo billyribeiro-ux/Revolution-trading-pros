@@ -26,7 +26,11 @@
 		className?: string;
 	}
 
-	let { sections = [], className = '' }: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let sections = $derived(props.sections ?? []);
+	let className = $derived(props.className ?? '');
 </script>
 
 <aside class="dashboard__content-sidebar {className}">

@@ -23,15 +23,16 @@
 		onClose?: () => void;
 	}
 
-	let {
-		contentType = 'daily_video',
-		traderId = null,
-		roomIds = [],
-		uploadToAll = false,
-		tags = [],
-		onComplete,
-		onClose
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const contentType = $derived(props.contentType ?? 'daily_video');
+	const traderId = $derived(props.traderId ?? null);
+	const roomIds = $derived(props.roomIds ?? []);
+	const uploadToAll = $derived(props.uploadToAll ?? false);
+	const tags = $derived(props.tags ?? []);
+	const onComplete = $derived(props.onComplete);
+	const onClose = $derived(props.onClose);
 
 	let files = $state<File[]>([]);
 	let batchId = $state<string | null>(null);

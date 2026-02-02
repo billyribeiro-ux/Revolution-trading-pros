@@ -22,7 +22,7 @@
 		onchange?: (value: PhoneValue) => void;
 	}
 
-	let { field, value = {}, error, onchange }: Props = $props();
+	let props: Props = $props();
 
 	const countries: Country[] = [
 		{ code: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
@@ -84,7 +84,7 @@
 	let searchQuery = $state('');
 
 	$effect(() => {
-		defaultCountry = field.attributes?.default_country || 'US';
+		defaultCountry = props.field.attributes?.default_country || 'US';
 	});
 
 	$effect(() => {
@@ -123,7 +123,7 @@
 
 	function emitChange() {
 		const fullNumber = `${selectedCountry.dialCode}${phoneNumber.replace(/\D/g, '')}`;
-		onchange?.({
+		props.onchange?.({
 			country_code: selectedCountry.code,
 			dial_code: selectedCountry.dialCode,
 			number: phoneNumber,
@@ -155,15 +155,15 @@
 </script>
 
 <div class="phone-intl-field">
-	<label class="field-label" for={`field-${field.name}`}>
-		{field.label}
-		{#if field.required}
+	<label class="field-label" for={`field-${props.field.name}`}>
+		{props.field.label}
+		{#if props.field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if field.help_text}
-		<p class="field-help">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
 	<div class="phone-input-wrapper">
@@ -220,11 +220,11 @@
 
 		<input
 			type="tel"
-			id={`field-${field.name}`}
-			name={field.name}
-			placeholder={field.placeholder || 'Phone number'}
+			id={`field-${props.field.name}`}
+			name={props.field.name}
+			placeholder={props.field.placeholder || 'Phone number'}
 			value={phoneNumber}
-			required={field.required}
+			required={props.field.required}
 			class="phone-input"
 			class:input-error={error && error.length > 0}
 			oninput={handlePhoneInput}
@@ -233,10 +233,10 @@
 
 	<input
 		type="hidden"
-		name={`${field.name}_full`}
+		name={`${props.field.name}_full`}
 		value={`${selectedCountry.dialCode}${phoneNumber.replace(/\D/g, '')}`}
 	/>
-	<input type="hidden" name={`${field.name}_country`} value={selectedCountry.code} />
+	<input type="hidden" name={`${props.field.name}_country`} value={selectedCountry.code} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

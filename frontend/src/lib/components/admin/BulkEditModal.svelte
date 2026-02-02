@@ -21,15 +21,16 @@
 		onClose?: () => void;
 	}
 
-	let {
-		selectedIds,
-		contentTypes = [],
-		traders = [],
-		rooms = [],
-		tags = [],
-		onSaved,
-		onClose
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const selectedIds = $derived(props.selectedIds);
+	const contentTypes = $derived(props.contentTypes ?? []);
+	const traders = $derived(props.traders ?? []);
+	const rooms = $derived(props.rooms ?? []);
+	const tags = $derived(props.tags ?? []);
+	const onSaved = $derived(props.onSaved);
+	const onClose = $derived(props.onClose);
 
 	let isSaving = $state(false);
 	let error = $state('');

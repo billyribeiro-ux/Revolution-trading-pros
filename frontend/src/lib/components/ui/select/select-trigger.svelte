@@ -3,15 +3,25 @@
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
 	import { cn, type WithoutChild } from "$lib/utils.js";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		size = "default",
-		...restProps
-	}: WithoutChild<SelectPrimitive.TriggerProps> & {
+	type TriggerProps = WithoutChild<SelectPrimitive.TriggerProps> & {
 		size?: "sm" | "default";
-	} = $props();
+	};
+
+	let props: TriggerProps = $props();
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let className = $derived(props.class);
+	let size = $derived(props.size ?? "default");
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, class: __, children: ___, size: ____, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <SelectPrimitive.Trigger
@@ -24,6 +34,6 @@
 	)}
 	{...restProps}
 >
-	{@render children?.()}
+	{@render props.children?.()}
 	<ChevronDownIcon class="size-4 opacity-50" />
 </SelectPrimitive.Trigger>

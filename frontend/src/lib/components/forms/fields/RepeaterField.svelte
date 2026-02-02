@@ -27,19 +27,19 @@
 		onchange?: (value: RepeaterRow[]) => void;
 	}
 
-	let { field, value = [], error, onchange }: Props = $props();
+	let props: Props = $props();
 
 	// Get repeater configuration from field attributes
-	const minItems = $derived(field.attributes?.['min_items'] ?? 0);
-	const maxItems = $derived(field.attributes?.['max_items'] ?? 10);
-	const addButtonText = $derived(field.attributes?.['add_button_text'] ?? 'Add Item');
-	const itemLabel = $derived(field.attributes?.['item_label'] ?? 'Item');
-	const collapsible = $derived(field.attributes?.['collapsible'] ?? true);
-	const confirmDelete = $derived(field.attributes?.['confirm_delete'] ?? true);
+	const minItems = $derived(props.field.attributes?.['min_items'] ?? 0);
+	const maxItems = $derived(props.field.attributes?.['max_items'] ?? 10);
+	const addButtonText = $derived(props.field.attributes?.['add_button_text'] ?? 'Add Item');
+	const itemLabel = $derived(props.field.attributes?.['item_label'] ?? 'Item');
+	const collapsible = $derived(props.field.attributes?.['collapsible'] ?? true);
+	const confirmDelete = $derived(props.field.attributes?.['confirm_delete'] ?? true);
 
 	// Sub-fields configuration - use $derived to maintain reactivity
 	const subFields = $derived<Partial<FormField>[]>(
-		field.attributes?.['sub_fields'] ?? [
+		props.field.attributes?.['sub_fields'] ?? [
 			{ name: 'title', label: 'Title', field_type: 'text', required: true },
 			{ name: 'description', label: 'Description', field_type: 'textarea' }
 		]
@@ -50,8 +50,8 @@
 
 	// Sync rows with value prop and minItems using $effect
 	$effect(() => {
-		if (value && value.length > 0) {
-			rows = value;
+		if (props.value && props.value.length > 0) {
+			rows = props.value;
 		} else if (minItems > 0 && rows.length === 0) {
 			rows = Array.from({ length: minItems }, () => createNewRow());
 		}
@@ -144,7 +144,7 @@
 
 	// Emit change
 	function emitChange() {
-		onchange?.(rows);
+		props.onchange?.(rows);
 	}
 
 	// Get summary text for collapsed row
@@ -159,22 +159,22 @@
 </script>
 
 <div class="repeater-field">
-	<label class="repeater-label" for={field.name + '_repeater'}>
-		{field.label}
-		{#if field.required}
+	<label class="repeater-label" for={props.field.name + '_repeater'}>
+		{props.field.label}
+		{#if props.field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if field.help_text}
-		<p class="repeater-help">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="repeater-help">{props.field.help_text}</p>
 	{/if}
 
 	<!-- Hidden input for form association -->
 	<input
 		type="hidden"
-		id={field.name + '_repeater'}
-		name={field.name}
+		id={props.field.name + '_repeater'}
+		name={props.field.name}
 		value={JSON.stringify(rows)}
 	/>
 
@@ -226,7 +226,7 @@
 						{#each subFields as subField}
 							{#if subField.name}
 								<div class="sub-field" style="width: {subField.width ?? 100}%">
-									<label class="sub-field-label" for="{field.name}_{row.id}_{subField.name}">
+									<label class="sub-field-label" for="{props.field.name}_{row.id}_{subField.name}">
 										{subField.label}
 										{#if subField.required}
 											<span class="required">*</span>
@@ -236,7 +236,7 @@
 									{#if subField.field_type === 'text'}
 										<input
 											type="text"
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
 												updateFieldValue(
@@ -249,7 +249,7 @@
 										/>
 									{:else if subField.field_type === 'textarea'}
 										<textarea
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
 												updateFieldValue(
@@ -264,7 +264,7 @@
 									{:else if subField.field_type === 'number'}
 										<input
 											type="number"
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
 												updateFieldValue(
@@ -278,7 +278,7 @@
 									{:else if subField.field_type === 'email'}
 										<input
 											type="email"
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
 												updateFieldValue(
@@ -305,7 +305,7 @@
 										</label>
 									{:else if subField.field_type === 'select'}
 										<select
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											onchange={(e: Event) =>
 												updateFieldValue(
@@ -327,7 +327,7 @@
 									{:else if subField.field_type === 'date'}
 										<input
 											type="date"
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											onchange={(e: Event) =>
 												updateFieldValue(
@@ -340,7 +340,7 @@
 									{:else}
 										<input
 											type="text"
-											id="{field.name}_{row.id}_{subField.name}"
+											id="{props.field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
 												updateFieldValue(
@@ -379,9 +379,9 @@
 	</div>
 
 	<!-- Errors -->
-	{#if error && error.length > 0}
+	{#if props.error && error.length > 0}
 		<div class="field-errors">
-			{#each error as err}
+			{#each props.error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

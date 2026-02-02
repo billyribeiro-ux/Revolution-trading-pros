@@ -76,7 +76,13 @@
 		onclose?: () => void;
 	}
 
-	let { searchQuery = '', isModal = false, position = null, showPresets = true, oninsert, onclose }: Props = $props();
+	let props: Props = $props();
+	const searchQuery = $derived(props.searchQuery ?? '');
+	const isModal = $derived(props.isModal ?? false);
+	const position = $derived(props.position ?? null);
+	const showPresets = $derived(props.showPresets ?? true);
+	const oninsert = $derived(props.oninsert);
+	const onclose = $derived(props.onclose);
 
 	// ==========================================================================
 	// State

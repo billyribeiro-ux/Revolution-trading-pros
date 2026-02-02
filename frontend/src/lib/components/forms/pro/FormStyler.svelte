@@ -63,14 +63,14 @@
 		onSettingsChange?: (settings: StyleSettings) => void;
 	}
 
-	let { settings = {}, previewMode = false, onSettingsChange }: Props = $props();
+	let props: Props = $props();
 
 	let currentSettings = $state<StyleSettings>({});
 	let activeTab = $state<'container' | 'inputs' | 'buttons' | 'typography'>('container');
 
 	// Sync currentSettings with settings prop
 	$effect(() => {
-		if (settings !== undefined) currentSettings = { ...settings };
+		if (props.settings !== undefined) currentSettings = { ...props.settings };
 	});
 
 	const shadowOptions = {

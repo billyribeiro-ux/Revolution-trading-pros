@@ -37,15 +37,14 @@
 	// Props
 	// ==========================================================================
 
-	let {
-		blocks,
-		selectedBlockId,
-		onSelectBlock,
-		onUpdateBlock,
-		onDeleteBlock,
-		onMoveBlock,
-		isEditing
-	}: VirtualBlockListProps = $props();
+	let props: VirtualBlockListProps = $props();
+	const blocks = $derived(props.blocks);
+	const selectedBlockId = $derived(props.selectedBlockId);
+	const onSelectBlock = $derived(props.onSelectBlock);
+	const onUpdateBlock = $derived(props.onUpdateBlock);
+	const onDeleteBlock = $derived(props.onDeleteBlock);
+	const onMoveBlock = $derived(props.onMoveBlock);
+	const isEditing = $derived(props.isEditing);
 
 	// ==========================================================================
 	// Constants

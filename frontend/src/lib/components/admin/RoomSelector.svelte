@@ -15,14 +15,24 @@
 		type Room
 	} from '$lib/config/rooms';
 
-	// Props
-	let {
-		selectedRooms = $bindable<string[]>([]),
-		disabled = false
-	}: {
+	// Props interface
+	interface Props {
 		selectedRooms?: string[];
 		disabled?: boolean;
-	} = $props();
+	}
+
+	let props: Props = $props();
+
+	// Bindable state for two-way binding - sync with props
+	let selectedRooms = $state<string[]>(props.selectedRooms ?? []);
+	const disabled = $derived(props.disabled ?? false);
+
+	// Sync selectedRooms back to parent via effect
+	$effect(() => {
+		if (props.selectedRooms !== undefined) {
+			selectedRooms = props.selectedRooms;
+		}
+	});
 
 	// State
 	let isExpanded = $state(false);

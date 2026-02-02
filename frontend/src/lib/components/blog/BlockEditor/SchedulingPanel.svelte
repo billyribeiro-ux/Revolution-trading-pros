@@ -30,7 +30,12 @@
 		onScheduleCreated?: (schedule: Schedule) => void;
 	}
 
-	let { contentId, contentTitle = 'Content', isOpen, onClose, onScheduleCreated }: Props = $props();
+	let props: Props = $props();
+	const contentId = $derived(props.contentId);
+	const contentTitle = $derived(props.contentTitle ?? 'Content');
+	const isOpen = $derived(props.isOpen);
+	const onClose = $derived(props.onClose);
+	const onScheduleCreated = $derived(props.onScheduleCreated);
 
 	// Types
 	interface Schedule {

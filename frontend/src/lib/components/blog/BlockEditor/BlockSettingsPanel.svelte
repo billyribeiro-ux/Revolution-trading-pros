@@ -24,7 +24,9 @@
 		onupdate: (updates: Partial<Block>) => void;
 	}
 
-	let { block, onupdate }: Props = $props();
+	let props: Props = $props();
+	const block = $derived(props.block);
+	const onupdate = $derived(props.onupdate);
 
 	// Datasource types
 	interface Datasource {

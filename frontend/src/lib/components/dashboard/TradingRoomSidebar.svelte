@@ -71,7 +71,10 @@
 	// PROPS - Per-room schedule support
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let { planSlug = 'day-trading-room' }: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let planSlug = $derived(props.planSlug ?? 'day-trading-room');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// CONFIGURATION - ICT 11+ Enterprise Settings

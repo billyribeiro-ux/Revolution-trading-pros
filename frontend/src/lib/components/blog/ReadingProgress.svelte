@@ -24,15 +24,16 @@
 		zIndex?: number;
 	}
 
-	let {
-		contentSelector = '.post-body',
-		height = 4,
-		color = '#3b82f6',
-		backgroundColor = 'rgba(59, 130, 246, 0.2)',
-		position = 'top',
-		showPercentage = false,
-		zIndex = 9999
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for local use
+	const contentSelector = $derived(props.contentSelector ?? '.post-body');
+	const height = $derived(props.height ?? 4);
+	const color = $derived(props.color ?? '#3b82f6');
+	const backgroundColor = $derived(props.backgroundColor ?? 'rgba(59, 130, 246, 0.2)');
+	const position = $derived(props.position ?? 'top');
+	const showPercentage = $derived(props.showPercentage ?? false);
+	const zIndex = $derived(props.zIndex ?? 9999);
 
 	let progress = $state(0);
 	let isVisible = $state(false);

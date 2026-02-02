@@ -32,25 +32,24 @@
 		onclick?: () => void;
 	}
 
-	let {
-		title,
-		value,
-		format = 'number',
-		decimals = 0,
-		prefix = '',
-		suffix = '',
-		trend = null,
-		trendLabel = 'vs last period',
-		icon = null,
-		color = 'blue',
-		loading = false,
-		delay = 0,
-		clickable = false,
-		sparklineData = [],
-		target = null,
-		targetLabel = 'Target',
-		onclick
-	}: Props = $props();
+	let props: Props = $props();
+	let title = $derived(props.title);
+	let value = $derived(props.value);
+	let format = $derived(props.format ?? 'number');
+	let decimals = $derived(props.decimals ?? 0);
+	let prefix = $derived(props.prefix ?? '');
+	let suffix = $derived(props.suffix ?? '');
+	let trend = $derived(props.trend ?? null);
+	let trendLabel = $derived(props.trendLabel ?? 'vs last period');
+	let icon = $derived(props.icon ?? null);
+	let color = $derived(props.color ?? 'blue');
+	let loading = $derived(props.loading ?? false);
+	let delay = $derived(props.delay ?? 0);
+	let clickable = $derived(props.clickable ?? false);
+	let sparklineData = $derived(props.sparklineData ?? []);
+	let target = $derived(props.target ?? null);
+	let targetLabel = $derived(props.targetLabel ?? 'Target');
+	let onclick = $derived(props.onclick);
 
 	let cardRef: HTMLDivElement;
 	let isVisible = $state(false);

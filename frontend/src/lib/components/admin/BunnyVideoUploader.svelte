@@ -27,12 +27,13 @@
 		apiBase?: string;
 	}
 
-	let {
-		onUploadComplete,
-		onError,
-		libraryId = 585929, // Default Bunny library ID (revolution-trading-courses)
-		apiBase = '/api/admin/bunny'
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const onUploadComplete = $derived(props.onUploadComplete);
+	const onError = $derived(props.onError);
+	const libraryId = $derived(props.libraryId ?? 585929); // Default Bunny library ID (revolution-trading-courses)
+	const apiBase = $derived(props.apiBase ?? '/api/admin/bunny');
 
 	// State
 	let isDragging = $state(false);

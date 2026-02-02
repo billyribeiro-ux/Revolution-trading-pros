@@ -21,7 +21,7 @@
 		onchange?: (logic: ConditionalLogic | null) => void;
 	}
 
-	let { fields, currentFieldName, value, onchange }: Props = $props();
+	let props: Props = $props();
 
 	// Default logic structure
 	const defaultLogic: ConditionalLogic = {
@@ -35,8 +35,8 @@
 
 	// Sync with prop changes
 	$effect(() => {
-		if (value) {
-			logic = { ...defaultLogic, ...value };
+		if (props.value) {
+			logic = { ...defaultLogic, ...props.value };
 		}
 	});
 
@@ -69,12 +69,12 @@
 	// Filter fields that can be referenced (exclude current field)
 	$effect(() => {
 		// Update parent when logic changes
-		onchange?.(logic.enabled ? logic : null);
+		props.onchange?.(logic.enabled ? logic : null);
 	});
 
 	// Get available fields for rules
 	function getAvailableFields(): FormField[] {
-		return fields.filter((f) => f.name !== currentFieldName && !isLayoutField(f.field_type));
+		return props.fields.filter((f) => f.name !== props.currentFieldName && !isLayoutField(f.field_type));
 	}
 
 	// Check if field type is layout-only
@@ -84,7 +84,7 @@
 
 	// Get operators for a field type
 	function getOperatorsForField(fieldName: string): typeof operators {
-		const field = fields.find((f) => f.name === fieldName);
+		const field = props.fields.find((f) => f.name === fieldName);
 		if (!field) return operators.filter((op) => op.types.includes('all'));
 
 		return operators.filter(
@@ -94,7 +94,7 @@
 
 	// Get field options for value dropdown
 	function getFieldOptions(fieldName: string): string[] {
-		const field = fields.find((f) => f.name === fieldName);
+		const field = props.fields.find((f) => f.name === fieldName);
 		if (!field?.options) return [];
 
 		if (Array.isArray(field.options)) {
@@ -167,7 +167,7 @@
 
 		const rulesText = logic.rules
 			.map((rule) => {
-				const field = fields.find((f) => f.name === rule.field);
+				const field = props.fields.find((f) => f.name === rule.field);
 				const fieldLabel = field?.label || rule.field;
 				const operatorLabel =
 					operators.find((op) => op.value === rule.operator)?.label || rule.operator;

@@ -8,7 +8,7 @@
 		oncancel?: () => void;
 	}
 
-	let { field = null, availableFields = [], onsave, oncancel }: Props = $props();
+	let props: Props = $props();
 
 	// Default validation object to prevent null reference errors (ICT 7 Fix)
 	const createDefaultValidation = () => ({
@@ -41,25 +41,25 @@
 
 	// Sync with prop changes - ICT 7 Fix: Always ensure validation is an object
 	$effect(() => {
-		if (field) {
+		if (props.field) {
 			fieldData = {
-				...field,
-				field_type: field.field_type ?? 'text',
-				label: field.label ?? '',
-				name: field.name ?? '',
-				placeholder: field.placeholder ?? '',
-				help_text: field.help_text ?? '',
-				default_value: field.default_value ?? '',
-				options: field.options ?? null,
-				validation: field.validation ? { ...createDefaultValidation(), ...field.validation } : createDefaultValidation(),
-				conditional_logic: field.conditional_logic ?? null,
-				attributes: field.attributes ?? null,
-				required: field.required ?? false,
-				order: field.order ?? 0,
-				width: field.width ?? 12
+				...props.field,
+				field_type: props.field.field_type ?? 'text',
+				label: props.field.label ?? '',
+				name: props.field.name ?? '',
+				placeholder: props.field.placeholder ?? '',
+				help_text: props.field.help_text ?? '',
+				default_value: props.field.default_value ?? '',
+				options: props.field.options ?? null,
+				validation: props.field.validation ? { ...createDefaultValidation(), ...props.field.validation } : createDefaultValidation(),
+				conditional_logic: props.field.conditional_logic ?? null,
+				attributes: props.field.attributes ?? null,
+				required: props.field.required ?? false,
+				order: props.field.order ?? 0,
+				width: props.field.width ?? 12
 			};
-			showConditionalLogic = !!field.conditional_logic;
-			optionsText = field.options ? field.options.join('\n') : '';
+			showConditionalLogic = !!props.field.conditional_logic;
+			optionsText = props.field.options ? props.field.options.join('\n') : '';
 		}
 	});
 
@@ -93,11 +93,11 @@
 				.replace(/^_+|_+$/g, '');
 		}
 
-		onsave?.(fieldData);
+		props.onsave?.(fieldData);
 	}
 
 	function handleCancel() {
-		oncancel?.();
+		props.oncancel?.();
 	}
 
 	function addConditionalRule() {
@@ -358,7 +358,7 @@
 								<label for="rule-field-{index}" class="sr-only">Rule field</label>
 								<select id="rule-field-{index}" bind:value={rule.field} class="form-input">
 									<option value="">Select field...</option>
-									{#each availableFields as availField}
+									{#each props.availableFields ?? [] as availField}
 										<option value={availField.name}>{availField.label}</option>
 									{/each}
 								</select>

@@ -64,17 +64,18 @@
 		compact?: boolean;
 	}
 
-	let {
-		accept = 'any',
-		multiple = true,
-		maxFiles = 20,
-		maxSize = 500 * 1024 * 1024, // 500MB for videos
-		collection = 'uploads',
-		roomId,
-		onUploadComplete,
-		onClose,
-		compact = false
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const accept = $derived(props.accept ?? 'any');
+	const multiple = $derived(props.multiple ?? true);
+	const maxFiles = $derived(props.maxFiles ?? 20);
+	const maxSize = $derived(props.maxSize ?? 500 * 1024 * 1024); // 500MB for videos
+	const collection = $derived(props.collection ?? 'uploads');
+	const roomId = $derived(props.roomId);
+	const onUploadComplete = $derived(props.onUploadComplete);
+	const onClose = $derived(props.onClose);
+	const compact = $derived(props.compact ?? false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

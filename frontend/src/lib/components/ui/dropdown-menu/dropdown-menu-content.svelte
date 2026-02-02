@@ -4,15 +4,26 @@
 	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 	import type { ComponentProps } from "svelte";
 
-	let {
-		ref = $bindable(null),
-		sideOffset = 4,
-		portalProps,
-		class: className,
-		...restProps
-	}: DropdownMenuPrimitive.ContentProps & {
+	type ContentProps = DropdownMenuPrimitive.ContentProps & {
 		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof DropdownMenuPortal>>;
-	} = $props();
+	};
+
+	let props: ContentProps = $props();
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let sideOffset = $derived(props.sideOffset ?? 4);
+	let portalProps = $derived(props.portalProps);
+	let className = $derived(props.class);
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, sideOffset: __, portalProps: ___, class: ____, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <DropdownMenuPortal {...portalProps}>

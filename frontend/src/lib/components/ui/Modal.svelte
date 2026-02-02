@@ -29,17 +29,21 @@
 		initialFocusSelector?: string;
 	}
 
-	let {
-		open = $bindable(false),
-		title = '',
-		size = 'md',
-		onclose,
-		children,
-		footer,
-		closeOnBackdrop = true,
-		closeOnEscape = true,
-		initialFocusSelector
-	}: Props = $props();
+	let props: Props = $props();
+	let open = $state(props.open ?? false);
+	let title = $derived(props.title ?? '');
+	let size = $derived(props.size ?? 'md');
+	let onclose = $derived(props.onclose);
+	let closeOnBackdrop = $derived(props.closeOnBackdrop ?? true);
+	let closeOnEscape = $derived(props.closeOnEscape ?? true);
+	let initialFocusSelector = $derived(props.initialFocusSelector);
+
+	// Sync with external open state changes
+	$effect(() => {
+		if (props.open !== undefined && props.open !== open) {
+			open = props.open;
+		}
+	});
 
 	// Generate unique ID for ARIA attributes
 	const modalId = `modal-${Math.random().toString(36).substring(2, 9)}`;
@@ -209,13 +213,13 @@
 
 			<!-- Body - Scrollable -->
 			<div id={descId} class="modal-body-2026">
-				{@render children?.()}
+				{@render props.children?.()}
 			</div>
 
 			<!-- Footer - Sticky -->
-			{#if footer}
+			{#if props.footer}
 				<div class="modal-footer-2026">
-					{@render footer()}
+					{@render props.footer()}
 				</div>
 			{/if}
 		</div>

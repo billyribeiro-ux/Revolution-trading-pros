@@ -17,14 +17,13 @@
 		class?: string;
 	}
 
-	let {
-		variant = 'text',
-		width = '100%',
-		height = 'auto',
-		lines = 1,
-		animated = true,
-		class: className = ''
-	}: Props = $props();
+	let props: Props = $props();
+	let variant = $derived(props.variant ?? 'text');
+	let width = $derived(props.width ?? '100%');
+	let height = $derived(props.height ?? 'auto');
+	let lines = $derived(props.lines ?? 1);
+	let animated = $derived(props.animated ?? true);
+	let className = $derived(props.class ?? '');
 </script>
 
 {#if variant === 'text'}

@@ -24,16 +24,17 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		courseId,
-		module = null,
-		nextSortOrder = 1,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const isOpen = $derived(props.isOpen);
+	const modeProp = $derived(props.mode);
+	const courseId = $derived(props.courseId);
+	const module = $derived(props.module ?? null);
+	const nextSortOrder = $derived(props.nextSortOrder ?? 1);
+	const onSave = $derived(props.onSave);
+	const onSaved = $derived(props.onSaved);
+	const onClose = $derived(props.onClose);
 
 	// Derive mode from props
 	let mode = $derived(modeProp ?? (module ? 'edit' : 'create'));
