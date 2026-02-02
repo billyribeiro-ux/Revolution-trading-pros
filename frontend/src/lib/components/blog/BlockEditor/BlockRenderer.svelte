@@ -1155,8 +1155,8 @@
 				{@const risk = Math.abs(entry - exit)}
 				{@const reward = Math.abs(target - entry)}
 				{@const rrRatio = risk > 0 ? (reward / risk).toFixed(2) : '0.00'}
+				<div class="alert-rr-display"><div class="alert-rr-item risk"><span class="alert-rr-label">Risk</span><span class="alert-rr-value">${risk.toFixed(2)}</span></div><div class="alert-rr-divider">:</div><div class="alert-rr-item reward"><span class="alert-rr-label">Reward</span><span class="alert-rr-value">${reward.toFixed(2)}</span></div><div class="alert-rr-ratio"><span class="alert-rr-ratio-label">R:R</span><span class="alert-rr-ratio-value">{rrRatio}</span></div></div>
 			</svelte:fragment>
-			<div class="alert-rr-display"><div class="alert-rr-item risk"><span class="alert-rr-label">Risk</span><span class="alert-rr-value">${risk.toFixed(2)}</span></div><div class="alert-rr-divider">:</div><div class="alert-rr-item reward"><span class="alert-rr-label">Reward</span><span class="alert-rr-value">${reward.toFixed(2)}</span></div><div class="alert-rr-ratio"><span class="alert-rr-ratio-label">R:R</span><span class="alert-rr-ratio-value">{rrRatio}</span></div></div>
 		</div>
 
 	{:else if block.type === 'tradingIdea'}
