@@ -1148,13 +1148,30 @@
 				<div class="alert-level entry"><span class="alert-level-label">Entry</span>{#if isEditing}<input type="number" class="alert-level-input" value={alertData.entryPrice || 0} step="0.01" onchange={(e) => updateContent({ alertData: { ...alertData, entryPrice: parseFloat((e.target as HTMLInputElement).value) || 0 } })} aria-label="Entry price" />{:else}<span class="alert-level-value">${(alertData.entryPrice || 0).toFixed(2)}</span>{/if}</div>
 				<div class="alert-level exit"><span class="alert-level-label">Exit</span>{#if isEditing}<input type="number" class="alert-level-input" value={alertData.exitPrice || 0} step="0.01" onchange={(e) => updateContent({ alertData: { ...alertData, exitPrice: parseFloat((e.target as HTMLInputElement).value) || 0 } })} aria-label="Exit price" />{:else}<span class="alert-level-value">${(alertData.exitPrice || 0).toFixed(2)}</span>{/if}</div>
 			</div>
-			{@const entry = alertData.entryPrice || 0}{@const exit = alertData.exitPrice || 0}{@const target = alertData.targetPrice || 0}{@const risk = Math.abs(entry - exit)}{@const reward = Math.abs(target - entry)}{@const rrRatio = risk > 0 ? (reward / risk).toFixed(2) : '0.00'}
+			<svelte:fragment>
+				{@const entry = alertData.entryPrice || 0}
+				{@const exit = alertData.exitPrice || 0}
+				{@const target = alertData.targetPrice || 0}
+				{@const risk = Math.abs(entry - exit)}
+				{@const reward = Math.abs(target - entry)}
+				{@const rrRatio = risk > 0 ? (reward / risk).toFixed(2) : '0.00'}
+			</svelte:fragment>
 			<div class="alert-rr-display"><div class="alert-rr-item risk"><span class="alert-rr-label">Risk</span><span class="alert-rr-value">${risk.toFixed(2)}</span></div><div class="alert-rr-divider">:</div><div class="alert-rr-item reward"><span class="alert-rr-label">Reward</span><span class="alert-rr-value">${reward.toFixed(2)}</span></div><div class="alert-rr-ratio"><span class="alert-rr-ratio-label">R:R</span><span class="alert-rr-ratio-value">{rrRatio}</span></div></div>
 		</div>
 
 	{:else if block.type === 'tradingIdea'}
-		{@const ideaData = block.content.ideaData || {}}{@const direction = ideaData.direction || 'long'}{@const isLong = direction === 'long'}{@const entry = ideaData.entryPrice || 0}{@const stopLoss = ideaData.stopLoss || 0}{@const takeProfit = ideaData.takeProfit || 0}{@const risk = Math.abs(entry - stopLoss)}{@const reward = Math.abs(takeProfit - entry)}{@const rrRatio = risk > 0 ? (reward / risk).toFixed(2) : '0.00'}{@const confidence = ideaData.confidence || 50}
-		<div class="trading-idea-block" class:idea-long={isLong} class:idea-short={!isLong} role="article" aria-label="Trading idea">
+		<svelte:fragment>
+			{@const ideaData = block.content.ideaData || {}}
+			{@const direction = ideaData.direction || 'long'}
+			{@const isLong = direction === 'long'}
+			{@const entry = ideaData.entryPrice || 0}
+			{@const stopLoss = ideaData.stopLoss || 0}
+			{@const takeProfit = ideaData.takeProfit || 0}
+			{@const risk = Math.abs(entry - stopLoss)}
+			{@const reward = Math.abs(takeProfit - entry)}
+			{@const rrRatio = risk > 0 ? (reward / risk).toFixed(2) : '0.00'}
+			{@const confidence = ideaData.confidence || 50}
+			<div class="trading-idea-block" class:idea-long={isLong} class:idea-short={!isLong} role="article" aria-label="Trading idea">
 			<div class="idea-header">
 				<div class="idea-direction" class:long={isLong} class:short={!isLong}>{#if isLong}<IconTrendingUp size={20} /><span>LONG</span>{:else}<IconTrendingDown size={20} /><span>SHORT</span>{/if}</div>
 				<div class="idea-symbol-container">{#if isEditing}<input type="text" class="idea-symbol-input" value={ideaData.symbol || 'SPY'} placeholder="SYMBOL" onchange={(e) => updateContent({ ideaData: { ...ideaData, symbol: (e.target as HTMLInputElement).value.toUpperCase() } })} aria-label="Symbol" />{:else}<span class="idea-symbol">{ideaData.symbol || 'SPY'}</span>{/if}</div>
@@ -1173,6 +1190,7 @@
 			<div class="idea-confidence"><div class="idea-confidence-header"><IconFlame size={16} aria-hidden="true" /><span class="idea-confidence-label">Confidence Level</span><span class="idea-confidence-value">{confidence}%</span></div>{#if isEditing}<input type="range" class="idea-confidence-slider" min="0" max="100" value={confidence} oninput={(e) => updateContent({ ideaData: { ...ideaData, confidence: parseInt((e.target as HTMLInputElement).value) || 50 } })} aria-label="Confidence level" />{:else}<div class="idea-confidence-bar-container"><div class="idea-confidence-bar" style="width: {confidence}%" class:low={confidence < 40} class:medium={confidence >= 40 && confidence < 70} class:high={confidence >= 70}></div></div>{/if}</div>
 			<div class="idea-footer"><div class="idea-timestamp"><IconClock size={14} aria-hidden="true" /><span>{ideaData.timestamp || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span></div><div class="idea-actions"><IconBulb size={16} aria-hidden="true" /><span>Trading Idea</span></div></div>
 		</div>
+		</svelte:fragment>
 		<!-- Custom HTML Block -->
 	{:else if block.type === 'html'}
 		{#if isEditing}

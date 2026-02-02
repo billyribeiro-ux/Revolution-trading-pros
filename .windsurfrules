@@ -19,15 +19,15 @@ Every change MUST result in 0 errors, 0 warnings, 0 regressions.
 ## 🎯 BEFORE ANY CHANGE
 1. READ entire file
 2. TRACE imports/exports
-3. RUN `pnpm run check` (must pass)
+3. RUN `npm run check` (must pass)
 4. MAP dependencies
 
 ## ✅ AFTER EVERY CHANGE
 ```bash
-pnpm run check    # 0 errors
-pnpm run lint     # 0 warnings
-pnpm run build    # success
-pnpm run test     # all pass
+npm run check    # 0 errors
+npm run lint     # 0 warnings
+npm run build    # success
+npm run test     # all pass
 ```
 
 ## ⚡ SVELTE 5 ONLY

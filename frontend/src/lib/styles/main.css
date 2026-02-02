@@ -37,6 +37,7 @@
 
 /* Design Tokens */
 @import './tokens/index.css';
+@import './design-tokens.css'; /* ICT 7 Fix: Global --color-* variables for dashboard pages */
 
 /* Base Styles */
 @import './base/index.css';
