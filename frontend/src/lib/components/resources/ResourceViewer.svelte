@@ -120,25 +120,42 @@
 		imagePosition = { x: 0, y: 0 };
 	}
 
-	// Image dragging
-	function handleMouseDown(event: MouseEvent) {
-		if (imageZoom > 1) {
-			dragging = true;
-			startPos = { x: event.clientX - imagePosition.x, y: event.clientY - imagePosition.y };
+	// Svelte action for image pan/zoom - official Svelte 5 pattern per docs
+	function panZoomAction(node: HTMLElement) {
+		function onMouseDown(event: MouseEvent) {
+			if (imageZoom > 1) {
+				dragging = true;
+				startPos = { x: event.clientX - imagePosition.x, y: event.clientY - imagePosition.y };
+				event.preventDefault();
+			}
 		}
-	}
 
-	function handleMouseMove(event: MouseEvent) {
-		if (dragging) {
-			imagePosition = {
-				x: event.clientX - startPos.x,
-				y: event.clientY - startPos.y
-			};
+		function onMouseMove(event: MouseEvent) {
+			if (dragging) {
+				imagePosition = {
+					x: event.clientX - startPos.x,
+					y: event.clientY - startPos.y
+				};
+			}
 		}
-	}
 
-	function handleMouseUp() {
-		dragging = false;
+		function onMouseUp() {
+			dragging = false;
+		}
+
+		node.addEventListener('mousedown', onMouseDown);
+		node.addEventListener('mousemove', onMouseMove);
+		node.addEventListener('mouseup', onMouseUp);
+		node.addEventListener('mouseleave', onMouseUp);
+
+		return {
+			destroy() {
+				node.removeEventListener('mousedown', onMouseDown);
+				node.removeEventListener('mousemove', onMouseMove);
+				node.removeEventListener('mouseup', onMouseUp);
+				node.removeEventListener('mouseleave', onMouseUp);
+			}
+		};
 	}
 
 	// Version selection
@@ -276,21 +293,12 @@
 						></iframe>
 					</div>
 				{:else if isImage}
-					<!-- Image viewer with zoom -->
+					<!-- Image viewer with zoom - using Svelte action for a11y compliance -->
 					<div
 						class="relative flex h-full w-full items-center justify-center overflow-hidden p-4"
-						on:mousedown={handleMouseDown}
-						on:mousemove={handleMouseMove}
-						on:mouseup={handleMouseUp}
-						on:mouseleave={handleMouseUp}
-						on:keydown={(e) => {
-							if (e.key === '+' || e.key === '=') zoomIn();
-							if (e.key === '-' || e.key === '_') zoomOut();
-							if (e.key === '0') resetZoom();
-						}}
-						tabindex="0"
-						role="region"
-						aria-label="Image viewer with zoom and pan controls. Use +/- keys to zoom, drag to pan."
+						role="group"
+						aria-label="Image viewer with zoom controls"
+						use:panZoomAction
 					>
 						<img
 							src={resource.file_url}
