@@ -87,6 +87,7 @@ import IconBrandTelegram from '@tabler/icons-svelte/icons/brand-telegram';
 import IconBrandTiktok from '@tabler/icons-svelte/icons/brand-tiktok';
 import IconBrandTrello from '@tabler/icons-svelte/icons/brand-trello';
 import IconBrandTwitter from '@tabler/icons-svelte/icons/brand-twitter';
+import IconBrandVimeo from '@tabler/icons-svelte/icons/brand-vimeo';
 import IconBrandX from '@tabler/icons-svelte/icons/brand-x';
 import IconBrandYoutube from '@tabler/icons-svelte/icons/brand-youtube';
 import IconBroadcast from '@tabler/icons-svelte/icons/broadcast';
@@ -182,6 +183,9 @@ import IconFileDescription from '@tabler/icons-svelte/icons/file-description';
 import IconFileExport from '@tabler/icons-svelte/icons/file-export';
 import IconFileSpreadsheet from '@tabler/icons-svelte/icons/file-spreadsheet';
 import IconFileText from '@tabler/icons-svelte/icons/file-text';
+import IconFileTypePdf from '@tabler/icons-svelte/icons/file-type-pdf';
+import IconFileTypeDoc from '@tabler/icons-svelte/icons/file-type-doc';
+import IconFileZip from '@tabler/icons-svelte/icons/file-zip';
 import IconFilter from '@tabler/icons-svelte/icons/filter';
 import IconFlag from '@tabler/icons-svelte/icons/flag';
 import IconFlame from '@tabler/icons-svelte/icons/flame';
@@ -530,6 +534,7 @@ export {
 	IconBrandTiktok,
 	IconBrandTrello,
 	IconBrandTwitter,
+	IconBrandVimeo,
 	IconBrandX,
 	IconBrandYoutube,
 	IconBroadcast,
@@ -618,6 +623,9 @@ export {
 	IconFileExport,
 	IconFileSpreadsheet,
 	IconFileText,
+	IconFileTypePdf,
+	IconFileTypeDoc,
+	IconFileZip,
 	IconFilter,
 	IconFingerprint,
 	IconFingerprintScan,

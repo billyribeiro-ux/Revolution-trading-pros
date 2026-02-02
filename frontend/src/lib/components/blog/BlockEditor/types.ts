@@ -207,6 +207,94 @@ export interface BlockContent {
 		newTab?: boolean;
 		icon?: string;
 	}>;
+
+	// Toggle block
+	toggleTitle?: string;
+	toggleContent?: string;
+
+	// TOC block
+	tocTitle?: string;
+
+	// Ticker block items
+	tickerItems?: Array<{
+		id: string;
+		symbol: string;
+		price: number;
+		change: number;
+		changePercent: number;
+	}>;
+
+	// Price Alert block
+	alertSymbol?: string;
+	alertDirection?: 'above' | 'below';
+	alertTarget?: number;
+	alertEntry?: number;
+	alertStop?: number;
+	alertNote?: string;
+
+	// Trading Idea block
+	tradeSymbol?: string;
+	tradeDirection?: 'long' | 'short';
+	tradeEntry?: number;
+	tradeStop?: number;
+	tradeTarget1?: number;
+	tradeTarget2?: number;
+	tradeConfidence?: number;
+	tradeThesis?: string;
+	tradeTimeframe?: string;
+
+	// AI Summary block
+	summarySource?: string;
+	summaryLength?: 'short' | 'medium' | 'long';
+	summaryOutput?: string;
+
+	// AI Translation block
+	translationSource?: string;
+	translationSourceLang?: string;
+	translationTargetLang?: string;
+	translationOutput?: string;
+	translationView?: 'stacked' | 'side-by-side';
+
+	// Card block
+	cardImage?: string;
+	cardTitle?: string;
+	cardDescription?: string;
+	cardButtonText?: string;
+	cardButtonUrl?: string;
+
+	// Testimonial block
+	testimonialQuote?: string;
+	testimonialAuthor?: string;
+	testimonialTitle?: string;
+	testimonialPhoto?: string;
+
+	// CTA block
+	ctaTitle?: string;
+	ctaDescription?: string;
+	ctaButtonText?: string;
+	ctaButtonUrl?: string;
+	ctaStyle?: 'default' | 'gradient' | 'minimal';
+
+	// Countdown block
+	countdownTarget?: string;
+	countdownTitle?: string;
+	countdownExpiredMessage?: string;
+
+	// Social Share block
+	shareTitle?: string;
+	sharePlatforms?: string[];
+
+	// Author block
+	authorName?: string;
+	authorBio?: string;
+	authorPhoto?: string;
+	authorSocials?: Array<{ platform: string; url: string }>;
+
+	// Newsletter block
+	newsletterTitle?: string;
+	newsletterDescription?: string;
+	newsletterButtonText?: string;
+	newsletterPlaceholder?: string;
 }
 
 export interface BlockItem {
@@ -381,6 +469,30 @@ export interface BlockSettings {
 	summaryLength?: 'short' | 'medium' | 'long';
 	sourceLanguage?: string;
 	targetLanguage?: string;
+
+	// Card block settings
+	cardNewTab?: boolean;
+
+	// Ticker block settings
+	tickerLayout?: 'grid' | 'list';
+
+	// Tabs block settings
+	tabOrientation?: 'horizontal' | 'vertical';
+
+	// Buttons block settings
+	buttonAlignment?: 'left' | 'center' | 'right';
+
+	// TOC block settings
+	tocMaxLevel?: number;
+
+	// Countdown settings
+	countdownStyle?: 'default' | 'minimal' | 'bold';
+
+	// CTA block settings
+	ctaNewTab?: boolean;
+
+	// Newsletter block settings
+	newsletterStyle?: 'default' | 'minimal' | 'card';
 }
 
 export interface AnimationSettings {

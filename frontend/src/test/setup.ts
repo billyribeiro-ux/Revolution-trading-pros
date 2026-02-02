@@ -50,22 +50,13 @@ global.ResizeObserver = class ResizeObserver {
 	unobserve() {}
 } as unknown as typeof ResizeObserver;
 
-// Mock performance APIs
-if (!('mark' in performance)) {
-	performance.mark = vi.fn();
-}
-if (!('measure' in performance)) {
-	performance.measure = vi.fn();
-}
-if (!('getEntriesByName' in performance)) {
-	performance.getEntriesByName = vi.fn().mockReturnValue([]);
-}
-if (!('clearMarks' in performance)) {
-	performance.clearMarks = vi.fn();
-}
-if (!('clearMeasures' in performance)) {
-	performance.clearMeasures = vi.fn();
-}
+// Mock performance APIs (cast to any to avoid TypeScript narrowing issues)
+const perf = performance as Record<string, unknown>;
+if (!perf.mark) perf.mark = vi.fn();
+if (!perf.measure) perf.measure = vi.fn();
+if (!perf.getEntriesByName) perf.getEntriesByName = vi.fn().mockReturnValue([]);
+if (!perf.clearMarks) perf.clearMarks = vi.fn();
+if (!perf.clearMeasures) perf.clearMeasures = vi.fn();
 
 // Mock crypto for nonce generation
 if (!global.crypto) {
