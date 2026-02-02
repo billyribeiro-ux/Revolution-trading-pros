@@ -1,24 +1,17 @@
 <!--
 /**
  * Callout Block Component
- * ═══════════════════════════════════════════════════════════════════════════
- * Highlighted information box with different types (info, success, warning, error, tip)
- * Production-ready with accessibility, dark mode, and dismissible option
+ * ============================================================================
+ * Highlighted information box with different types (info, success, warning, error)
+ * Features emoji icons, dismissible option, and dark mode support
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
  */
 -->
 
 <script lang="ts">
-	import {
-		IconInfoCircle,
-		IconCircleCheck,
-		IconAlertTriangle,
-		IconCircleX,
-		IconBulb,
-		IconX
-	} from '$lib/icons';
+	import { IconX } from '$lib/icons';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -26,15 +19,17 @@
 	// Types
 	// =========================================================================
 
-	type CalloutType = 'info' | 'success' | 'warning' | 'error' | 'tip';
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	type IconComponent = any;
+	type CalloutType = 'info' | 'success' | 'warning' | 'error';
 
 	interface CalloutConfig {
-		icon: IconComponent;
+		emoji: string;
 		label: string;
-		ariaRole: 'note' | 'alert';
+		bg: string;
+		border: string;
+		text: string;
+		darkBg: string;
+		darkBorder: string;
+		darkText: string;
 	}
 
 	interface Props {
@@ -50,7 +45,7 @@
 	// Props & State
 	// =========================================================================
 
-	const props: Props = $props();
+	let props: Props = $props();
 
 	let isDismissed = $state(false);
 
@@ -58,12 +53,10 @@
 	// Derived Values
 	// =========================================================================
 
-	let calloutType = $derived(
-		(props.block.content.calloutType as CalloutType) || 'info'
-	);
-	let title = $derived(props.block.content.calloutTitle || '');
-	let content = $derived(props.block.content.calloutContent || 'Enter your callout message here...');
-	let dismissible = $derived(props.block.settings.calloutDismissible || false);
+	let calloutType = $derived((props.block.settings.type as CalloutType) || 'info');
+	let title = $derived(props.block.content.title || '');
+	let description = $derived(props.block.content.description || 'Enter your callout message here...');
+	let dismissible = $derived(props.block.settings.dismissible || false);
 
 	// =========================================================================
 	// Configuration
@@ -71,29 +64,44 @@
 
 	const CALLOUT_CONFIG: Record<CalloutType, CalloutConfig> = {
 		info: {
-			icon: IconInfoCircle,
+			emoji: '\u2139\uFE0F',
 			label: 'Information',
-			ariaRole: 'note'
+			bg: '#eff6ff',
+			border: '#3b82f6',
+			text: '#1e3a8a',
+			darkBg: 'rgba(59, 130, 246, 0.15)',
+			darkBorder: '#3b82f6',
+			darkText: '#93c5fd'
 		},
 		success: {
-			icon: IconCircleCheck,
+			emoji: '\u2713',
 			label: 'Success',
-			ariaRole: 'note'
+			bg: '#f0fdf4',
+			border: '#10b981',
+			text: '#065f46',
+			darkBg: 'rgba(16, 185, 129, 0.15)',
+			darkBorder: '#10b981',
+			darkText: '#6ee7b7'
 		},
 		warning: {
-			icon: IconAlertTriangle,
+			emoji: '\u26A0\uFE0F',
 			label: 'Warning',
-			ariaRole: 'alert'
+			bg: '#fffbeb',
+			border: '#f59e0b',
+			text: '#92400e',
+			darkBg: 'rgba(245, 158, 11, 0.15)',
+			darkBorder: '#f59e0b',
+			darkText: '#fcd34d'
 		},
 		error: {
-			icon: IconCircleX,
+			emoji: '\u2715',
 			label: 'Error',
-			ariaRole: 'alert'
-		},
-		tip: {
-			icon: IconBulb,
-			label: 'Tip',
-			ariaRole: 'note'
+			bg: '#fef2f2',
+			border: '#ef4444',
+			text: '#991b1b',
+			darkBg: 'rgba(239, 68, 68, 0.15)',
+			darkBorder: '#ef4444',
+			darkText: '#fca5a5'
 		}
 	};
 
@@ -131,14 +139,26 @@
 
 {#if !isDismissed || props.isEditing}
 	<div
-		class="callout-block callout-{calloutType}"
+		class="callout-block"
 		class:dismissed={isDismissed}
-		role={currentConfig.ariaRole}
+		class:callout-info={calloutType === 'info'}
+		class:callout-success={calloutType === 'success'}
+		class:callout-warning={calloutType === 'warning'}
+		class:callout-error={calloutType === 'error'}
+		role="alert"
 		aria-label="{currentConfig.label} callout"
+		style="
+			--callout-bg: {currentConfig.bg};
+			--callout-border: {currentConfig.border};
+			--callout-text: {currentConfig.text};
+			--callout-dark-bg: {currentConfig.darkBg};
+			--callout-dark-border: {currentConfig.darkBorder};
+			--callout-dark-text: {currentConfig.darkText};
+		"
 	>
-		<!-- Icon -->
+		<!-- Emoji Icon -->
 		<div class="callout-icon" aria-hidden="true">
-			<svelte:component this={currentConfig.icon} size={24} />
+			{currentConfig.emoji}
 		</div>
 
 		<!-- Content -->
@@ -149,21 +169,21 @@
 						contenteditable="true"
 						class="callout-title"
 						data-placeholder="Add title (optional)..."
-						oninput={(e) => updateContent({ calloutTitle: (e.target as HTMLElement).textContent || '' })}
+						oninput={(e) => updateContent({ title: (e.target as HTMLElement).textContent || '' })}
 						onpaste={handlePaste}
 					>{title}</strong>
 				{/if}
 				<p
 					contenteditable="true"
-					class="callout-text"
-					oninput={(e) => updateContent({ calloutContent: (e.target as HTMLElement).textContent || '' })}
+					class="callout-description"
+					oninput={(e) => updateContent({ description: (e.target as HTMLElement).textContent || '' })}
 					onpaste={handlePaste}
-				>{content}</p>
+				>{description}</p>
 			{:else}
 				{#if title}
 					<strong class="callout-title">{title}</strong>
 				{/if}
-				<p class="callout-text">{content}</p>
+				<p class="callout-description">{description}</p>
 			{/if}
 		</div>
 
@@ -188,13 +208,12 @@
 				<span>Type:</span>
 				<select
 					value={calloutType}
-					onchange={(e) => updateContent({ calloutType: (e.target as HTMLSelectElement).value as CalloutType })}
+					onchange={(e) => updateSettings({ type: (e.target as HTMLSelectElement).value as CalloutType })}
 				>
 					<option value="info">Info (Blue)</option>
 					<option value="success">Success (Green)</option>
-					<option value="warning">Warning (Yellow)</option>
+					<option value="warning">Warning (Amber)</option>
 					<option value="error">Error (Red)</option>
-					<option value="tip">Tip (Purple)</option>
 				</select>
 			</label>
 
@@ -202,7 +221,7 @@
 				<input
 					type="checkbox"
 					checked={dismissible}
-					onchange={(e) => updateSettings({ calloutDismissible: (e.target as HTMLInputElement).checked })}
+					onchange={(e) => updateSettings({ dismissible: (e.target as HTMLInputElement).checked })}
 				/>
 				<span>Dismissible</span>
 			</label>
@@ -218,7 +237,9 @@
 		gap: 1rem;
 		padding: 1.25rem 1.5rem;
 		border-radius: 12px;
-		border-left: 4px solid;
+		border-left: 4px solid var(--callout-border);
+		background-color: var(--callout-bg);
+		color: var(--callout-text);
 		position: relative;
 		transition: opacity 0.2s ease, transform 0.2s ease;
 	}
@@ -228,51 +249,16 @@
 		pointer-events: none;
 	}
 
-	/* Type Variants - Light Mode */
-	.callout-info {
-		background-color: #eff6ff;
-		border-left-color: #3b82f6;
-		color: #1e40af;
-	}
-
-	.callout-success {
-		background-color: #f0fdf4;
-		border-left-color: #22c55e;
-		color: #166534;
-	}
-
-	.callout-warning {
-		background-color: #fefce8;
-		border-left-color: #eab308;
-		color: #854d0e;
-	}
-
-	.callout-error {
-		background-color: #fef2f2;
-		border-left-color: #ef4444;
-		color: #991b1b;
-	}
-
-	.callout-tip {
-		background-color: #faf5ff;
-		border-left-color: #a855f7;
-		color: #6b21a8;
-	}
-
-	/* Icon */
+	/* Emoji Icon */
 	.callout-icon {
 		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		font-size: 1.5rem;
+		line-height: 1;
 		margin-top: 0.125rem;
 	}
-
-	.callout-info .callout-icon { color: #3b82f6; }
-	.callout-success .callout-icon { color: #22c55e; }
-	.callout-warning .callout-icon { color: #eab308; }
-	.callout-error .callout-icon { color: #ef4444; }
-	.callout-tip .callout-icon { color: #a855f7; }
 
 	/* Content */
 	.callout-content {
@@ -293,7 +279,7 @@
 		opacity: 0.5;
 	}
 
-	.callout-text {
+	.callout-description {
 		margin: 0;
 		font-size: 0.9375rem;
 		line-height: 1.6;
@@ -311,6 +297,7 @@
 		border: none;
 		border-radius: 6px;
 		background: transparent;
+		color: currentColor;
 		cursor: pointer;
 		opacity: 0.6;
 		transition: opacity 0.15s, background-color 0.15s;
@@ -371,29 +358,10 @@
 	}
 
 	/* Dark Mode */
-	:global(.dark) .callout-info {
-		background-color: rgba(59, 130, 246, 0.15);
-		color: #93c5fd;
-	}
-
-	:global(.dark) .callout-success {
-		background-color: rgba(34, 197, 94, 0.15);
-		color: #86efac;
-	}
-
-	:global(.dark) .callout-warning {
-		background-color: rgba(234, 179, 8, 0.15);
-		color: #fde047;
-	}
-
-	:global(.dark) .callout-error {
-		background-color: rgba(239, 68, 68, 0.15);
-		color: #fca5a5;
-	}
-
-	:global(.dark) .callout-tip {
-		background-color: rgba(168, 85, 247, 0.15);
-		color: #d8b4fe;
+	:global(.dark) .callout-block {
+		background-color: var(--callout-dark-bg);
+		border-left-color: var(--callout-dark-border);
+		color: var(--callout-dark-text);
 	}
 
 	:global(.dark) .callout-dismiss:hover {

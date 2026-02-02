@@ -2,26 +2,15 @@
 /**
  * Button Block Component
  * ═══════════════════════════════════════════════════════════════════════════
- * Single CTA button with multiple variants, sizes, and icon support
+ * Single CTA button with multiple style variants, sizes, and full-width option
  * Production-ready with accessibility, dark mode, and responsive design
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
  */
 -->
 
 <script lang="ts">
-	import {
-		IconExternalLink,
-		IconArrowRight,
-		IconArrowLeft,
-		IconDownload,
-		IconPlay,
-		IconMail,
-		IconPhone,
-		IconShoppingCart,
-		IconRocket
-	} from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -30,13 +19,8 @@
 	// Types
 	// =========================================================================
 
-	type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+	type ButtonStyle = 'primary' | 'secondary' | 'outline' | 'ghost';
 	type ButtonSize = 'small' | 'medium' | 'large';
-	type IconPosition = 'left' | 'right' | 'none';
-	type IconType = 'arrow-right' | 'arrow-left' | 'external' | 'download' | 'play' | 'mail' | 'phone' | 'cart' | 'rocket' | 'none';
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	type IconComponent = any;
 
 	interface Props {
 		block: Block;
@@ -59,36 +43,11 @@
 
 	let buttonText = $derived(props.block.content.buttonText || 'Click Here');
 	let buttonUrl = $derived(props.block.content.buttonUrl || '#');
-	let variant = $derived((props.block.content.buttonVariant as ButtonVariant) || 'primary');
-	let size = $derived((props.block.content.buttonSize as ButtonSize) || 'medium');
-	let iconType = $derived((props.block.content.buttonIcon as IconType) || 'none');
-	let iconPosition = $derived((props.block.content.buttonIconPosition as IconPosition) || 'right');
-	let target = $derived((props.block.settings.buttonTarget as '_blank' | '_self') || '_self');
-	let fullWidth = $derived(props.block.settings.buttonFullWidth || false);
-	let disabled = $derived(props.block.settings.buttonDisabled || false);
+	let buttonStyle = $derived((props.block.content.buttonStyle as ButtonStyle) || 'primary');
+	let buttonSize = $derived((props.block.content.buttonSize as ButtonSize) || 'medium');
+	let fullWidth = $derived(props.block.settings.fullWidth || false);
 
 	let sanitizedUrl = $derived(sanitizeURL(buttonUrl) || '#');
-	let isExternal = $derived(target === '_blank');
-
-	// =========================================================================
-	// Icon Configuration
-	// =========================================================================
-
-	const ICON_MAP: Record<IconType, IconComponent | null> = {
-		'arrow-right': IconArrowRight,
-		'arrow-left': IconArrowLeft,
-		'external': IconExternalLink,
-		'download': IconDownload,
-		'play': IconPlay,
-		'mail': IconMail,
-		'phone': IconPhone,
-		'cart': IconShoppingCart,
-		'rocket': IconRocket,
-		'none': null
-	};
-
-	let CurrentIcon = $derived(ICON_MAP[iconType]);
-	let iconSize = $derived(size === 'small' ? 14 : size === 'large' ? 20 : 16);
 
 	// =========================================================================
 	// Handlers
@@ -109,7 +68,7 @@
 	}
 
 	function handleClick(e: MouseEvent): void {
-		if (props.isEditing || disabled) {
+		if (props.isEditing) {
 			e.preventDefault();
 		}
 	}
@@ -122,64 +81,29 @@
 	aria-label="Call to action"
 >
 	{#if props.isEditing}
-		<!-- Edit Mode: Inline Editing -->
-		<span
-			class="btn btn-{variant} btn-{size}"
+		<!-- Edit Mode: Inline Editing with contenteditable span -->
+		<a
+			href={sanitizedUrl}
+			class="btn btn-{buttonStyle} btn-{buttonSize}"
 			class:full-width={fullWidth}
-			class:disabled={disabled}
+			onclick={handleClick}
 			role="button"
-			tabindex="0"
 		>
-			{#if CurrentIcon && iconPosition === 'left'}
-				<span class="btn-icon" aria-hidden="true">
-					<svelte:component this={CurrentIcon} size={iconSize} />
-				</span>
-			{/if}
-
 			<span
 				contenteditable="true"
 				class="btn-text"
 				oninput={(e) => updateContent({ buttonText: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
 			>{buttonText}</span>
-
-			{#if CurrentIcon && iconPosition === 'right'}
-				<span class="btn-icon" aria-hidden="true">
-					<svelte:component this={CurrentIcon} size={iconSize} />
-				</span>
-			{/if}
-		</span>
+		</a>
 	{:else}
-		<!-- View Mode: Actual Link/Button -->
+		<!-- View Mode: Actual Link -->
 		<a
-			href={disabled ? undefined : sanitizedUrl}
-			class="btn btn-{variant} btn-{size}"
+			href={sanitizedUrl}
+			class="btn btn-{buttonStyle} btn-{buttonSize}"
 			class:full-width={fullWidth}
-			class:disabled={disabled}
-			target={isExternal ? '_blank' : undefined}
-			rel={isExternal ? 'noopener noreferrer' : undefined}
-			aria-disabled={disabled}
-			onclick={handleClick}
 		>
-			{#if CurrentIcon && iconPosition === 'left'}
-				<span class="btn-icon" aria-hidden="true">
-					<svelte:component this={CurrentIcon} size={iconSize} />
-				</span>
-			{/if}
-
 			<span class="btn-text">{buttonText}</span>
-
-			{#if CurrentIcon && iconPosition === 'right'}
-				<span class="btn-icon" aria-hidden="true">
-					<svelte:component this={CurrentIcon} size={iconSize} />
-				</span>
-			{/if}
-
-			{#if isExternal && iconType !== 'external'}
-				<span class="btn-external-indicator" aria-hidden="true">
-					<IconExternalLink size={iconSize - 2} />
-				</span>
-			{/if}
 		</a>
 	{/if}
 </div>
@@ -201,10 +125,10 @@
 
 		<div class="settings-row">
 			<label class="setting-field">
-				<span>Variant:</span>
+				<span>Style:</span>
 				<select
-					value={variant}
-					onchange={(e) => updateContent({ buttonVariant: (e.target as HTMLSelectElement).value as ButtonVariant })}
+					value={buttonStyle}
+					onchange={(e) => updateContent({ buttonStyle: (e.target as HTMLSelectElement).value as ButtonStyle })}
 				>
 					<option value="primary">Primary</option>
 					<option value="secondary">Secondary</option>
@@ -216,7 +140,7 @@
 			<label class="setting-field">
 				<span>Size:</span>
 				<select
-					value={size}
+					value={buttonSize}
 					onchange={(e) => updateContent({ buttonSize: (e.target as HTMLSelectElement).value as ButtonSize })}
 				>
 					<option value="small">Small</option>
@@ -227,67 +151,13 @@
 		</div>
 
 		<div class="settings-row">
-			<label class="setting-field">
-				<span>Icon:</span>
-				<select
-					value={iconType}
-					onchange={(e) => updateContent({ buttonIcon: (e.target as HTMLSelectElement).value as IconType })}
-				>
-					<option value="none">None</option>
-					<option value="arrow-right">Arrow Right</option>
-					<option value="arrow-left">Arrow Left</option>
-					<option value="external">External Link</option>
-					<option value="download">Download</option>
-					<option value="play">Play</option>
-					<option value="mail">Email</option>
-					<option value="phone">Phone</option>
-					<option value="cart">Cart</option>
-					<option value="rocket">Rocket</option>
-				</select>
-			</label>
-
-			{#if iconType !== 'none'}
-				<label class="setting-field">
-					<span>Icon Position:</span>
-					<select
-						value={iconPosition}
-						onchange={(e) => updateContent({ buttonIconPosition: (e.target as HTMLSelectElement).value as IconPosition })}
-					>
-						<option value="left">Left</option>
-						<option value="right">Right</option>
-					</select>
-				</label>
-			{/if}
-		</div>
-
-		<div class="settings-row">
-			<label class="setting-field">
-				<span>Target:</span>
-				<select
-					value={target}
-					onchange={(e) => updateSettings({ buttonTarget: (e.target as HTMLSelectElement).value as '_blank' | '_self' })}
-				>
-					<option value="_self">Same Window</option>
-					<option value="_blank">New Tab</option>
-				</select>
-			</label>
-
 			<label class="setting-checkbox">
 				<input
 					type="checkbox"
 					checked={fullWidth}
-					onchange={(e) => updateSettings({ buttonFullWidth: (e.target as HTMLInputElement).checked })}
+					onchange={(e) => updateSettings({ fullWidth: (e.target as HTMLInputElement).checked })}
 				/>
 				<span>Full Width</span>
-			</label>
-
-			<label class="setting-checkbox">
-				<input
-					type="checkbox"
-					checked={disabled}
-					onchange={(e) => updateSettings({ buttonDisabled: (e.target as HTMLInputElement).checked })}
-				/>
-				<span>Disabled</span>
 			</label>
 		</div>
 	</div>
@@ -347,78 +217,75 @@
 		border-radius: 10px;
 	}
 
-	/* Primary Variant */
+	/* Primary Variant - Blue #3b82f6 */
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: #3b82f6;
 		color: white;
-		border-color: transparent;
+		border-color: #3b82f6;
 	}
 
-	.btn-primary:hover:not(.disabled) {
-		background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+	.btn-primary:hover {
+		background: #2563eb;
+		border-color: #2563eb;
 		transform: translateY(-1px);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 	}
 
-	.btn-primary:active:not(.disabled) {
+	.btn-primary:active {
 		transform: translateY(0);
 	}
 
-	/* Secondary Variant */
+	/* Secondary Variant - Gray #6b7280 */
 	.btn-secondary {
-		background: #1e293b;
+		background: #6b7280;
 		color: white;
-		border-color: transparent;
+		border-color: #6b7280;
 	}
 
-	.btn-secondary:hover:not(.disabled) {
-		background: #334155;
+	.btn-secondary:hover {
+		background: #4b5563;
+		border-color: #4b5563;
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(30, 41, 59, 0.4);
+		box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
 	}
 
-	/* Outline Variant */
+	.btn-secondary:active {
+		transform: translateY(0);
+	}
+
+	/* Outline Variant - Transparent with blue border */
 	.btn-outline {
 		background: transparent;
 		color: #3b82f6;
 		border-color: #3b82f6;
 	}
 
-	.btn-outline:hover:not(.disabled) {
+	.btn-outline:hover {
 		background: #3b82f6;
 		color: white;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 	}
 
-	/* Ghost Variant */
+	.btn-outline:active {
+		transform: translateY(0);
+	}
+
+	/* Ghost Variant - Transparent with blue text */
 	.btn-ghost {
 		background: transparent;
 		color: #3b82f6;
 		border-color: transparent;
 	}
 
-	.btn-ghost:hover:not(.disabled) {
+	.btn-ghost:hover {
 		background: rgba(59, 130, 246, 0.1);
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 	}
 
-	/* Disabled State */
-	.btn.disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-		pointer-events: none;
-	}
-
-	/* Icon */
-	.btn-icon {
-		display: inline-flex;
-		align-items: center;
-		flex-shrink: 0;
-	}
-
-	.btn-external-indicator {
-		display: inline-flex;
-		align-items: center;
-		opacity: 0.7;
-		margin-left: 0.25rem;
+	.btn-ghost:active {
+		transform: translateY(0);
 	}
 
 	/* Button Text (for contenteditable) */
@@ -487,12 +354,24 @@
 	}
 
 	/* Dark Mode */
-	:global(.dark) .btn-secondary {
-		background: #475569;
+	:global(.dark) .btn-primary {
+		background: #3b82f6;
+		border-color: #3b82f6;
 	}
 
-	:global(.dark) .btn-secondary:hover:not(.disabled) {
-		background: #64748b;
+	:global(.dark) .btn-primary:hover {
+		background: #60a5fa;
+		border-color: #60a5fa;
+	}
+
+	:global(.dark) .btn-secondary {
+		background: #6b7280;
+		border-color: #6b7280;
+	}
+
+	:global(.dark) .btn-secondary:hover {
+		background: #9ca3af;
+		border-color: #9ca3af;
 	}
 
 	:global(.dark) .btn-outline {
@@ -500,7 +379,7 @@
 		border-color: #60a5fa;
 	}
 
-	:global(.dark) .btn-outline:hover:not(.disabled) {
+	:global(.dark) .btn-outline:hover {
 		background: #60a5fa;
 		color: #0f172a;
 	}
@@ -509,7 +388,7 @@
 		color: #60a5fa;
 	}
 
-	:global(.dark) .btn-ghost:hover:not(.disabled) {
+	:global(.dark) .btn-ghost:hover {
 		background: rgba(96, 165, 250, 0.15);
 	}
 

@@ -3,23 +3,14 @@
  * Image Block Component
  * ═══════════════════════════════════════════════════════════════════════════
  * Production-ready responsive image block with lightbox support
- * Apple Principal Engineer ICT 7 Standard
+ * Features: srcset generation, loading states, file validation, lightbox
  */
 -->
 
 <script lang="ts">
-	import {
-		IconPhoto,
-		IconUpload,
-		IconLink,
-		IconX,
-		IconLoader2,
-		IconAlertCircle,
-		IconRefresh,
-		IconMaximize,
-		IconAdjustments
-	} from '$lib/icons';
-	import { sanitizeURL, sanitizeText } from '$lib/utils/sanitization';
+	import { IconPhoto, IconMaximize, IconX } from '$lib/icons';
+	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
+	import { generateSrcSet } from '$lib/utils/performance';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -48,6 +39,8 @@
 	// Local State
 	// ==========================================================================
 
+	let imageLoaded = $state(false);
+	let imageError = $state(false);
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
 	let showObjectFitControls = $state(false);
@@ -67,23 +60,21 @@
 	const hasImage = $derived(!!imageUrl);
 	const sanitizedURL = $derived(imageUrl ? sanitizeURL(imageUrl) : '');
 
-	// Generate srcset for responsive images
+	// Generate srcset for responsive images using performance utility
 	const srcset = $derived(() => {
 		if (!sanitizedURL) return '';
 		// If it's a blob URL or data URL, don't generate srcset
 		if (sanitizedURL.startsWith('blob:') || sanitizedURL.startsWith('data:')) {
 			return '';
 		}
-		// Generate responsive srcset widths
-		const widths = [400, 800, 1200, 1600];
-		return widths
-			.map((w) => {
-				// If the URL already has query params, append; otherwise add
-				const separator = sanitizedURL.includes('?') ? '&' : '?';
-				return `${sanitizedURL}${separator}w=${w} ${w}w`;
-			})
-			.join(', ');
+		return generateSrcSet(sanitizedURL, [400, 800, 1200, 1600]);
 	});
+
+	// Lightbox state from manager
+	const lightboxState = $derived(stateManager.getLightboxState());
+	const isLightboxOpen = $derived(
+		lightboxState.open && lightboxState.blockId === props.blockId
+	);
 
 	// Unique IDs for ARIA
 	const captionId = $derived(`image-caption-${props.blockId}`);
@@ -118,6 +109,29 @@
 	}
 
 	// ==========================================================================
+	// Image Loading Handlers
+	// ==========================================================================
+
+	function handleImageLoad(): void {
+		imageLoaded = true;
+		imageError = false;
+	}
+
+	function handleImageError(): void {
+		imageLoaded = false;
+		imageError = true;
+		props.onError?.(new Error(`Failed to load image: ${sanitizedURL}`));
+	}
+
+	// Reset loading state when URL changes
+	$effect(() => {
+		if (sanitizedURL) {
+			imageLoaded = false;
+			imageError = false;
+		}
+	});
+
+	// ==========================================================================
 	// File Upload Handlers
 	// ==========================================================================
 
@@ -146,19 +160,15 @@
 	async function processFile(file: File): Promise<void> {
 		uploadError = null;
 
-		// Validate file type
-		if (!file.type.startsWith('image/') || !ALLOWED_TYPES.includes(file.type)) {
-			const error = 'Invalid file type. Please upload an image (JPEG, PNG, GIF, WebP, or SVG).';
-			uploadError = error;
-			props.onError?.(new Error(error));
-			return;
-		}
+		// Validate file using sanitization utility
+		const validation = validateFile(file, {
+			maxSize: MAX_FILE_SIZE,
+			allowedTypes: ALLOWED_TYPES
+		});
 
-		// Validate file size
-		if (file.size > MAX_FILE_SIZE) {
-			const error = 'File too large. Maximum size is 10MB.';
-			uploadError = error;
-			props.onError?.(new Error(error));
+		if (!validation.valid) {
+			uploadError = validation.error || 'Invalid file';
+			props.onError?.(new Error(uploadError));
 			return;
 		}
 
@@ -174,7 +184,7 @@
 
 			updateContent({
 				mediaUrl: objectUrl,
-				mediaAlt: sanitizeText(file.name.replace(/\.[^/.]+$/, ''))
+				mediaAlt: validation.sanitizedName?.replace(/\.[^/.]+$/, '') || file.name.replace(/\.[^/.]+$/, '')
 			});
 
 			uploadError = null;
@@ -217,21 +227,19 @@
 	// ==========================================================================
 
 	function handleAltInput(e: Event): void {
-		const target = e.target as HTMLElement;
-		const text = sanitizeText(target.textContent || '', 500);
-		updateContent({ mediaAlt: text });
+		const target = e.target as HTMLInputElement;
+		updateContent({ mediaAlt: target.value });
 	}
 
 	function handleCaptionInput(e: Event): void {
 		const target = e.target as HTMLElement;
-		const text = sanitizeText(target.textContent || '', 1000);
-		updateContent({ mediaCaption: text });
+		updateContent({ mediaCaption: target.textContent || '' });
 	}
 
 	function handlePaste(e: ClipboardEvent): void {
 		e.preventDefault();
 		const text = e.clipboardData?.getData('text/plain') || '';
-		document.execCommand('insertText', false, sanitizeText(text, 1000));
+		document.execCommand('insertText', false, text.slice(0, 1000));
 	}
 
 	function handleObjectFitChange(fit: 'cover' | 'contain' | 'fill'): void {
@@ -240,21 +248,40 @@
 	}
 
 	// ==========================================================================
-	// Image Actions
+	// Lightbox Handlers
 	// ==========================================================================
 
-	function handleImageClick(): void {
-		if (!props.isEditing && hasImage) {
+	function openLightbox(): void {
+		if (!props.isEditing && hasImage && !imageError) {
 			stateManager.openLightbox(props.blockId, 0, 1);
 		}
+	}
+
+	function closeLightbox(): void {
+		stateManager.closeLightbox();
+	}
+
+	function handleImageClick(): void {
+		openLightbox();
 	}
 
 	function handleImageKeyDown(e: KeyboardEvent): void {
 		if ((e.key === 'Enter' || e.key === ' ') && !props.isEditing && hasImage) {
 			e.preventDefault();
-			stateManager.openLightbox(props.blockId, 0, 1);
+			openLightbox();
 		}
 	}
+
+	function handleLightboxKeyDown(e: KeyboardEvent): void {
+		if (e.key === 'Escape') {
+			e.preventDefault();
+			closeLightbox();
+		}
+	}
+
+	// ==========================================================================
+	// Image Actions
+	// ==========================================================================
 
 	function removeImage(): void {
 		updateContent({
@@ -263,6 +290,8 @@
 			mediaCaption: ''
 		});
 		uploadError = null;
+		imageLoaded = false;
+		imageError = false;
 	}
 
 	function retryUpload(): void {
@@ -275,6 +304,8 @@
 	}
 </script>
 
+<svelte:window onkeydown={isLightboxOpen ? handleLightboxKeyDown : undefined} />
+
 <div
 	class="image-block"
 	class:image-block--selected={props.isSelected}
@@ -285,8 +316,31 @@
 	{#if hasImage && sanitizedURL}
 		<!-- Image Display -->
 		<div class="image-block__container">
-			{#if props.isEditing}
-				<!-- Edit Mode Overlay -->
+			<!-- Loading Spinner -->
+			{#if !imageLoaded && !imageError}
+				<div class="image-block__loading-overlay">
+					<div class="image-block__spinner" aria-label="Loading image"></div>
+				</div>
+			{/if}
+
+			<!-- Error State -->
+			{#if imageError}
+				<div class="image-block__error-overlay">
+					<IconPhoto size={48} aria-hidden="true" />
+					<span class="image-block__error-text">Failed to load image</span>
+					<button
+						type="button"
+						class="image-block__retry-btn"
+						onclick={removeImage}
+						aria-label="Remove broken image"
+					>
+						Remove
+					</button>
+				</div>
+			{/if}
+
+			<!-- Edit Mode Overlay -->
+			{#if props.isEditing && props.isSelected}
 				<div class="image-block__edit-overlay">
 					<button
 						type="button"
@@ -303,12 +357,12 @@
 						aria-label="Object fit settings"
 						aria-expanded={showObjectFitControls}
 					>
-						<IconAdjustments size={18} aria-hidden="true" />
+						Fit
 					</button>
 					<button
 						type="button"
 						class="image-block__action-btn image-block__action-btn--preview"
-						onclick={handleImageClick}
+						onclick={openLightbox}
 						aria-label="Preview in lightbox"
 					>
 						<IconMaximize size={18} aria-hidden="true" />
@@ -334,6 +388,13 @@
 				{/if}
 			{/if}
 
+			<!-- View Mode Hover Overlay -->
+			{#if !props.isEditing && imageLoaded && !imageError}
+				<div class="image-block__hover-overlay" aria-hidden="true">
+					<IconMaximize size={32} />
+				</div>
+			{/if}
+
 			<!-- Responsive Image -->
 			<img
 				src={sanitizedURL}
@@ -343,6 +404,8 @@
 				loading="lazy"
 				decoding="async"
 				class="image-block__image"
+				class:image-block__image--loaded={imageLoaded}
+				class:image-block__image--error={imageError}
 				style="object-fit: {objectFit}"
 				role={props.isEditing ? undefined : 'button'}
 				tabindex={props.isEditing ? -1 : 0}
@@ -350,29 +413,26 @@
 				aria-describedby={caption ? captionId : undefined}
 				onclick={props.isEditing ? undefined : handleImageClick}
 				onkeydown={props.isEditing ? undefined : handleImageKeyDown}
+				onload={handleImageLoad}
+				onerror={handleImageError}
 			/>
 		</div>
 
-		<!-- Alt Text Editor (Edit Mode) -->
-		{#if props.isEditing}
+		<!-- Alt Text Editor (Edit Mode & Selected) -->
+		{#if props.isEditing && props.isSelected}
 			<div class="image-block__alt-editor">
 				<label class="image-block__alt-label" for={descriptionId}>
 					Alt text (accessibility)
 				</label>
-				<p
+				<input
 					id={descriptionId}
-					contenteditable="true"
+					type="text"
 					class="image-block__alt-input"
-					class:image-block__alt-input--empty={!imageAlt}
+					value={imageAlt}
 					oninput={handleAltInput}
-					onpaste={handlePaste}
-					data-placeholder="Describe this image for screen readers..."
-					role="textbox"
+					placeholder="Describe this image for screen readers..."
 					aria-label="Image alt text"
-					aria-multiline="false"
-				>
-					{imageAlt}
-				</p>
+				/>
 			</div>
 		{/if}
 
@@ -407,13 +467,13 @@
 			{#if isUploading}
 				<!-- Loading State -->
 				<div class="image-block__loading">
-					<IconLoader2 size={48} class="image-block__spinner" aria-hidden="true" />
+					<div class="image-block__spinner" aria-hidden="true"></div>
 					<span class="image-block__loading-text">Uploading image...</span>
 				</div>
 			{:else if uploadError}
 				<!-- Error State -->
-				<div class="image-block__error">
-					<IconAlertCircle size={48} aria-hidden="true" />
+				<div class="image-block__upload-error">
+					<IconPhoto size={48} aria-hidden="true" />
 					<span class="image-block__error-text">{uploadError}</span>
 					<button
 						type="button"
@@ -421,8 +481,7 @@
 						onclick={retryUpload}
 						aria-label="Retry upload"
 					>
-						<IconRefresh size={18} aria-hidden="true" />
-						<span>Try Again</span>
+						Try Again
 					</button>
 				</div>
 			{:else}
@@ -435,17 +494,15 @@
 					<div class="image-block__upload-actions">
 						<button
 							type="button"
-							class="image-block__upload-btn image-block__upload-btn--file"
+							class="image-block__upload-btn"
 							onclick={triggerFileInput}
 						>
-							<IconUpload size={18} aria-hidden="true" />
-							<span>Upload File</span>
+							Upload File
 						</button>
 
 						<span class="image-block__upload-divider">or</span>
 
 						<div class="image-block__url-input-wrapper">
-							<IconLink size={18} aria-hidden="true" />
 							<input
 								type="url"
 								class="image-block__url-input"
@@ -492,6 +549,36 @@
 	{/if}
 </div>
 
+<!-- Lightbox -->
+{#if isLightboxOpen && sanitizedURL}
+	<div
+		class="image-block__lightbox"
+		role="dialog"
+		aria-modal="true"
+		aria-label="Image lightbox"
+		onclick={closeLightbox}
+		onkeydown={handleLightboxKeyDown}
+	>
+		<button
+			type="button"
+			class="image-block__lightbox-close"
+			onclick={closeLightbox}
+			aria-label="Close lightbox"
+		>
+			<IconX size={24} aria-hidden="true" />
+		</button>
+		<img
+			src={sanitizedURL}
+			alt={imageAlt}
+			class="image-block__lightbox-image"
+			onclick={(e) => e.stopPropagation()}
+		/>
+		{#if caption}
+			<p class="image-block__lightbox-caption">{caption}</p>
+		{/if}
+	</div>
+{/if}
+
 <style>
 	/* ==========================================================================
 	 * Block Container - BEM Naming Convention
@@ -513,7 +600,7 @@
 	.image-block__container {
 		position: relative;
 		overflow: hidden;
-		border-radius: 8px;
+		border-radius: 12px;
 		background: #f1f5f9;
 	}
 
@@ -522,20 +609,106 @@
 		width: 100%;
 		height: auto;
 		max-height: 70vh;
-		transition: transform 0.2s ease;
+		opacity: 0;
+		transition: opacity 0.3s ease, transform 0.2s ease;
+	}
+
+	.image-block__image--loaded {
+		opacity: 1;
+	}
+
+	.image-block__image--error {
+		opacity: 0;
 	}
 
 	.image-block:not(.image-block--editing) .image-block__image {
 		cursor: zoom-in;
 	}
 
-	.image-block:not(.image-block--editing) .image-block__image:hover {
-		transform: scale(1.01);
+	.image-block:not(.image-block--editing) .image-block__container:hover .image-block__image--loaded {
+		transform: scale(1.02);
 	}
 
 	.image-block:not(.image-block--editing) .image-block__image:focus {
 		outline: 3px solid #3b82f6;
 		outline-offset: 2px;
+	}
+
+	/* ==========================================================================
+	 * Loading Overlay
+	 * ========================================================================== */
+
+	.image-block__loading-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #f1f5f9;
+		z-index: 5;
+	}
+
+	.image-block__spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e2e8f0;
+		border-top-color: #3b82f6;
+		border-radius: 50%;
+		animation: image-block-spin 1s linear infinite;
+	}
+
+	@keyframes image-block-spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* ==========================================================================
+	 * Error Overlay
+	 * ========================================================================== */
+
+	.image-block__error-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		background: #fef2f2;
+		color: #dc2626;
+		z-index: 5;
+	}
+
+	.image-block__error-text {
+		font-size: 0.9375rem;
+		color: #dc2626;
+		text-align: center;
+	}
+
+	/* ==========================================================================
+	 * Hover Overlay (View Mode)
+	 * ========================================================================== */
+
+	.image-block__hover-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.4);
+		color: white;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		pointer-events: none;
+		z-index: 5;
+	}
+
+	.image-block:not(.image-block--editing) .image-block__container:hover .image-block__hover-overlay {
+		opacity: 1;
 	}
 
 	/* ==========================================================================
@@ -553,21 +726,26 @@
 		transition: opacity 0.2s ease;
 	}
 
-	.image-block--editing .image-block__container:hover .image-block__edit-overlay {
+	.image-block--editing .image-block__container:hover .image-block__edit-overlay,
+	.image-block--selected .image-block__edit-overlay {
 		opacity: 1;
 	}
 
 	.image-block__action-btn {
-		width: 36px;
+		min-width: 36px;
 		height: 36px;
+		padding: 0 0.75rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		gap: 0.25rem;
 		background: rgba(0, 0, 0, 0.7);
 		backdrop-filter: blur(4px);
 		border: none;
 		border-radius: 8px;
 		color: white;
+		font-size: 0.8125rem;
+		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.15s ease;
 	}
@@ -638,7 +816,7 @@
 		padding: 0.75rem;
 		background: #f8fafc;
 		border: 1px solid #e2e8f0;
-		border-radius: 8px;
+		border-radius: 12px;
 	}
 
 	.image-block__alt-label {
@@ -652,7 +830,7 @@
 	}
 
 	.image-block__alt-input {
-		margin: 0;
+		width: 100%;
 		padding: 0.5rem;
 		font-size: 0.875rem;
 		line-height: 1.5;
@@ -661,7 +839,6 @@
 		border: 1px solid #e2e8f0;
 		border-radius: 6px;
 		outline: none;
-		min-height: 2.5rem;
 		transition: border-color 0.15s ease;
 	}
 
@@ -670,8 +847,7 @@
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 
-	.image-block__alt-input--empty:empty::before {
-		content: attr(data-placeholder);
+	.image-block__alt-input::placeholder {
 		color: #94a3b8;
 	}
 
@@ -899,35 +1075,16 @@
 		color: #64748b;
 	}
 
-	:global(.image-block__spinner) {
-		animation: image-block-spin 1s linear infinite;
-	}
-
-	@keyframes image-block-spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
 	/* ==========================================================================
-	 * Error State
+	 * Upload Error State
 	 * ========================================================================== */
 
-	.image-block__error {
+	.image-block__upload-error {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 0.75rem;
 		color: #ef4444;
-	}
-
-	.image-block__error-text {
-		font-size: 0.9375rem;
-		color: #dc2626;
-		text-align: center;
 	}
 
 	.image-block__retry-btn {
@@ -972,6 +1129,74 @@
 	}
 
 	/* ==========================================================================
+	 * Lightbox
+	 * ========================================================================== */
+
+	.image-block__lightbox {
+		position: fixed;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.9);
+		z-index: 9999;
+		padding: 2rem;
+		animation: lightbox-fadeIn 0.2s ease;
+	}
+
+	@keyframes lightbox-fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.image-block__lightbox-close {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		width: 48px;
+		height: 48px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		border-radius: 50%;
+		color: white;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	.image-block__lightbox-close:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.image-block__lightbox-close:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 2px;
+	}
+
+	.image-block__lightbox-image {
+		max-width: 100%;
+		max-height: calc(100vh - 8rem);
+		object-fit: contain;
+		border-radius: 8px;
+	}
+
+	.image-block__lightbox-caption {
+		margin-top: 1rem;
+		color: rgba(255, 255, 255, 0.8);
+		font-size: 0.9375rem;
+		font-style: italic;
+		text-align: center;
+		max-width: 600px;
+	}
+
+	/* ==========================================================================
 	 * Mobile Responsive
 	 * ========================================================================== */
 
@@ -1002,13 +1227,25 @@
 		}
 
 		.image-block__action-btn {
-			width: 32px;
+			min-width: 32px;
 			height: 32px;
+			padding: 0 0.5rem;
 		}
 
 		.image-block__fit-controls {
 			flex-wrap: wrap;
 			justify-content: center;
+		}
+
+		.image-block__lightbox {
+			padding: 1rem;
+		}
+
+		.image-block__lightbox-close {
+			top: 0.5rem;
+			right: 0.5rem;
+			width: 40px;
+			height: 40px;
 		}
 	}
 
@@ -1018,6 +1255,19 @@
 
 	:global(.dark) .image-block__container {
 		background: #1e293b;
+	}
+
+	:global(.dark) .image-block__loading-overlay {
+		background: #1e293b;
+	}
+
+	:global(.dark) .image-block__spinner {
+		border-color: #334155;
+		border-top-color: #3b82f6;
+	}
+
+	:global(.dark) .image-block__error-overlay {
+		background: rgba(239, 68, 68, 0.1);
 	}
 
 	:global(.dark) .image-block__alt-editor {
@@ -1040,7 +1290,7 @@
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 	}
 
-	:global(.dark) .image-block__alt-input--empty:empty::before {
+	:global(.dark) .image-block__alt-input::placeholder {
 		color: #64748b;
 	}
 

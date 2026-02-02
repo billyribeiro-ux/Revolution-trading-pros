@@ -208,7 +208,8 @@
 	<div
 		class="spacer-block"
 		style:height={height}
-		aria-hidden="true"
+		role="separator"
+		aria-label="Vertical spacing"
 	></div>
 {/if}
 
@@ -216,6 +217,7 @@
 	.spacer-block {
 		position: relative;
 		width: 100%;
+		transition: height 0.2s ease-out;
 	}
 
 	.spacer-block.editing {

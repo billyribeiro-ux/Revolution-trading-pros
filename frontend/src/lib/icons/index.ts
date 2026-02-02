@@ -457,6 +457,32 @@ import IconZoomIn from '@tabler/icons-svelte/icons/zoom-in';
 import IconZoomMoney from '@tabler/icons-svelte/icons/zoom-money';
 import IconZoomOut from '@tabler/icons-svelte/icons/zoom-out';
 
+// Custom local SVG icons
+import IconPlusLocal from './IconPlus.svelte';
+import IconXLocal from './IconX.svelte';
+import IconChevronDownLocal from './IconChevronDown.svelte';
+import IconChevronLeftLocal from './IconChevronLeft.svelte';
+import IconChevronRightLocal from './IconChevronRight.svelte';
+import IconCheckLocal from './IconCheck.svelte';
+import IconMinusLocal from './IconMinus.svelte';
+import IconPhotoLocal from './IconPhoto.svelte';
+import IconVideoLocal from './IconVideo.svelte';
+import IconCodeLocal from './IconCode.svelte';
+import IconListLocal from './IconList.svelte';
+import IconPlayerPlayLocal from './IconPlayerPlay.svelte';
+import IconPlayerPauseLocal from './IconPlayerPause.svelte';
+import IconVolumeLocal from './IconVolume.svelte';
+import IconVolumeOffLocal from './IconVolumeOff.svelte';
+import IconMaximizeLocal from './IconMaximize.svelte';
+import IconCopyLocal from './IconCopy.svelte';
+import IconLinkLocal from './IconLink.svelte';
+import IconLayoutGridLocal from './IconLayoutGrid.svelte';
+import IconColumnsLocal from './IconColumns.svelte';
+import IconStarLocal from './IconStar.svelte';
+import IconCircleLocal from './IconCircle.svelte';
+import IconSquareLocal from './IconSquare.svelte';
+import IconSparklesLocal from './IconSparkles.svelte';
+
 // Re-export all icons
 export {
 	// Alignment Icons
@@ -866,7 +892,32 @@ export {
 	IconZoomCheck,
 	IconZoomIn,
 	IconZoomMoney,
-	IconZoomOut
+	IconZoomOut,
+	// Custom local SVG icons (lightweight alternatives)
+	IconPlusLocal,
+	IconXLocal,
+	IconChevronDownLocal,
+	IconChevronLeftLocal,
+	IconChevronRightLocal,
+	IconCheckLocal,
+	IconMinusLocal,
+	IconPhotoLocal,
+	IconVideoLocal,
+	IconCodeLocal,
+	IconListLocal,
+	IconPlayerPlayLocal,
+	IconPlayerPauseLocal,
+	IconVolumeLocal,
+	IconVolumeOffLocal,
+	IconMaximizeLocal,
+	IconCopyLocal,
+	IconLinkLocal,
+	IconLayoutGridLocal,
+	IconColumnsLocal,
+	IconStarLocal,
+	IconCircleLocal,
+	IconSquareLocal,
+	IconSparklesLocal
 };
 
 import type { Component } from 'svelte';

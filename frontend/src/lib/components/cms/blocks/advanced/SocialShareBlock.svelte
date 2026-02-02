@@ -2,15 +2,32 @@
 /**
  * Social Share Block Component
  * ═══════════════════════════════════════════════════════════════════════════
- * Social media share buttons
+ * Social media share buttons with platform-specific styling
+ * Features: Twitter/X, Facebook, LinkedIn, Email, Copy Link
+ *
+ * @version 2.0.0
+ * @author Revolution Trading Pros
  */
 -->
 
 <script lang="ts">
-	import { IconBrandTwitter, IconBrandFacebook, IconBrandLinkedin, IconLink, IconCheck } from '$lib/icons';
+	import { IconLink, IconCheck } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { browser } from '$app/environment';
 	import type { Block, BlockContent } from '../types';
+
+	// =========================================================================
+	// Types
+	// =========================================================================
+
+	interface Platform {
+		id: string;
+		name: string;
+		icon: string;
+		color: string;
+		hoverColor: string;
+		getShareUrl: () => string;
+	}
 
 	interface Props {
 		block: Block;
@@ -21,17 +38,25 @@
 		onError?: (error: Error) => void;
 	}
 
+	// =========================================================================
+	// Props & State
+	// =========================================================================
+
 	const props: Props = $props();
 	const stateManager = getBlockStateManager();
 
-	let title = $derived(props.block.content.shareTitle || 'Share this article');
-	let platforms = $derived(props.block.content.sharePlatforms || ['twitter', 'facebook', 'linkedin', 'copy']);
+	// =========================================================================
+	// Derived Values
+	// =========================================================================
 
-	let linkCopied = $state(false);
+	let linkCopied = $derived(stateManager.getLinkCopied(props.blockId));
+	let enabledPlatforms = $derived(
+		props.block.content.sharePlatforms || ['twitter', 'facebook', 'linkedin', 'email']
+	);
 
-	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
-	}
+	// =========================================================================
+	// Helper Functions
+	// =========================================================================
 
 	function getShareUrl(): string {
 		return browser ? window.location.href : '';
@@ -41,34 +66,94 @@
 		return browser ? document.title : '';
 	}
 
-	function shareTwitter(): void {
-		const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent(getPageTitle())}`;
-		window.open(url, '_blank', 'width=550,height=420');
+	// =========================================================================
+	// Platform Configuration
+	// =========================================================================
+
+	const platforms: Platform[] = [
+		{
+			id: 'twitter',
+			name: 'Twitter (X)',
+			icon: '𝕏',
+			color: '#000000',
+			hoverColor: '#1a1a1a',
+			getShareUrl: () =>
+				`https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent(getPageTitle())}`
+		},
+		{
+			id: 'facebook',
+			name: 'Facebook',
+			icon: 'f',
+			color: '#1877f2',
+			hoverColor: '#0c5dc7',
+			getShareUrl: () =>
+				`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`
+		},
+		{
+			id: 'linkedin',
+			name: 'LinkedIn',
+			icon: 'in',
+			color: '#0a66c2',
+			hoverColor: '#084d94',
+			getShareUrl: () =>
+				`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`
+		},
+		{
+			id: 'email',
+			name: 'Email',
+			icon: '@',
+			color: '#6b7280',
+			hoverColor: '#4b5563',
+			getShareUrl: () =>
+				`mailto:?subject=${encodeURIComponent(getPageTitle())}&body=${encodeURIComponent(getShareUrl())}`
+		}
+	];
+
+	// =========================================================================
+	// Handlers
+	// =========================================================================
+
+	function updateContent(updates: Partial<BlockContent>): void {
+		props.onUpdate({ content: { ...props.block.content, ...updates } });
 	}
 
-	function shareFacebook(): void {
-		const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`;
-		window.open(url, '_blank', 'width=550,height=420');
-	}
+	function openSharePopup(platform: Platform): void {
+		if (props.isEditing) return;
 
-	function shareLinkedin(): void {
-		const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`;
-		window.open(url, '_blank', 'width=550,height=420');
+		try {
+			const url = platform.getShareUrl();
+			if (platform.id === 'email') {
+				window.location.href = url;
+			} else {
+				window.open(url, '_blank', 'width=550,height=420,menubar=no,toolbar=no');
+			}
+		} catch (err) {
+			props.onError?.(err instanceof Error ? err : new Error('Failed to share'));
+		}
 	}
 
 	async function copyLink(): Promise<void> {
-		await navigator.clipboard.writeText(getShareUrl());
-		linkCopied = true;
-		setTimeout(() => { linkCopied = false; }, 2000);
+		if (props.isEditing) return;
+
+		try {
+			await navigator.clipboard.writeText(getShareUrl());
+			stateManager.setLinkCopied(props.blockId, true);
+
+			setTimeout(() => {
+				stateManager.setLinkCopied(props.blockId, false);
+			}, 2000);
+		} catch (err) {
+			props.onError?.(err instanceof Error ? err : new Error('Failed to copy link'));
+		}
 	}
 
-	function togglePlatform(platform: string): void {
-		const current = [...platforms];
-		const index = current.indexOf(platform);
+	function togglePlatform(platformId: string): void {
+		const current = [...enabledPlatforms];
+		const index = current.indexOf(platformId);
 		if (index > -1) {
 			current.splice(index, 1);
 		} else {
-			current.push(platform);
+			current.push(platformId);
 		}
 		updateContent({ sharePlatforms: current });
 	}
@@ -79,53 +164,64 @@
 	}
 </script>
 
-<div class="social-share-block" role="region" aria-label="Share this content">
-	{#if props.isEditing}
-		<span
-			contenteditable="true"
-			class="share-title"
-			oninput={(e) => updateContent({ shareTitle: (e.target as HTMLElement).textContent || '' })}
-			onpaste={handlePaste}
-		>{title}</span>
-	{:else}
-		<span class="share-title">{title}</span>
-	{/if}
+<div
+	class="social-share-block"
+	class:disabled={props.isEditing}
+	role="region"
+	aria-label="Share this content"
+>
+	<span class="share-label">Share this:</span>
 
 	<div class="share-buttons">
-		{#if platforms.includes('twitter')}
-			<button type="button" class="share-btn twitter" onclick={shareTwitter} aria-label="Share on Twitter">
-				<IconBrandTwitter size={20} />
-			</button>
-		{/if}
-		{#if platforms.includes('facebook')}
-			<button type="button" class="share-btn facebook" onclick={shareFacebook} aria-label="Share on Facebook">
-				<IconBrandFacebook size={20} />
-			</button>
-		{/if}
-		{#if platforms.includes('linkedin')}
-			<button type="button" class="share-btn linkedin" onclick={shareLinkedin} aria-label="Share on LinkedIn">
-				<IconBrandLinkedin size={20} />
-			</button>
-		{/if}
-		{#if platforms.includes('copy')}
-			<button type="button" class="share-btn copy" class:copied={linkCopied} onclick={copyLink} aria-label={linkCopied ? 'Copied!' : 'Copy link'}>
-				{#if linkCopied}
-					<IconCheck size={20} />
-				{:else}
-					<IconLink size={20} />
-				{/if}
-			</button>
-		{/if}
+		{#each platforms as platform (platform.id)}
+			{#if enabledPlatforms.includes(platform.id)}
+				<button
+					type="button"
+					class="share-btn"
+					style="--btn-color: {platform.color}; --btn-hover-color: {platform.hoverColor};"
+					onclick={() => openSharePopup(platform)}
+					disabled={props.isEditing}
+					aria-label="Share on {platform.name}"
+				>
+					<span class="platform-icon">{platform.icon}</span>
+				</button>
+			{/if}
+		{/each}
+
+		<button
+			type="button"
+			class="share-btn copy-btn"
+			class:copied={linkCopied}
+			onclick={copyLink}
+			disabled={props.isEditing}
+			aria-label={linkCopied ? 'Copied!' : 'Copy link'}
+		>
+			{#if linkCopied}
+				<IconCheck size={20} />
+			{:else}
+				<IconLink size={20} />
+			{/if}
+		</button>
 	</div>
 
 	{#if props.isEditing && props.isSelected}
 		<div class="share-settings">
 			<span class="settings-label">Show platforms:</span>
 			<div class="platform-toggles">
-				<label><input type="checkbox" checked={platforms.includes('twitter')} onchange={() => togglePlatform('twitter')} /> Twitter</label>
-				<label><input type="checkbox" checked={platforms.includes('facebook')} onchange={() => togglePlatform('facebook')} /> Facebook</label>
-				<label><input type="checkbox" checked={platforms.includes('linkedin')} onchange={() => togglePlatform('linkedin')} /> LinkedIn</label>
-				<label><input type="checkbox" checked={platforms.includes('copy')} onchange={() => togglePlatform('copy')} /> Copy Link</label>
+				{#each platforms as platform (platform.id)}
+					<label class="toggle-label">
+						<input
+							type="checkbox"
+							checked={enabledPlatforms.includes(platform.id)}
+							onchange={() => togglePlatform(platform.id)}
+						/>
+						<span>{platform.name}</span>
+					</label>
+				{/each}
+				<label class="toggle-label">
+					<input type="checkbox" checked={true} disabled />
+					<span>Copy Link</span>
+				</label>
 			</div>
 		</div>
 	{/if}
@@ -142,11 +238,14 @@
 		flex-wrap: wrap;
 	}
 
-	.share-title {
+	.social-share-block.disabled {
+		opacity: 0.7;
+	}
+
+	.share-label {
 		font-size: 0.9375rem;
 		font-weight: 500;
 		color: #64748b;
-		outline: none;
 	}
 
 	.share-buttons {
@@ -163,25 +262,41 @@
 		border: none;
 		border-radius: 10px;
 		cursor: pointer;
-		transition: all 0.15s;
+		transition: all 0.15s ease;
 		color: white;
+		background: var(--btn-color);
+		font-weight: 700;
 	}
 
-	.share-btn:hover { transform: translateY(-2px); }
-	.share-btn:active { transform: translateY(0); }
+	.share-btn:hover:not(:disabled) {
+		background: var(--btn-hover-color);
+		transform: translateY(-2px);
+	}
 
-	.share-btn.twitter { background: #1da1f2; }
-	.share-btn.twitter:hover { background: #0c8de4; }
+	.share-btn:active:not(:disabled) {
+		transform: translateY(0);
+	}
 
-	.share-btn.facebook { background: #1877f2; }
-	.share-btn.facebook:hover { background: #0c5dc7; }
+	.share-btn:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
 
-	.share-btn.linkedin { background: #0a66c2; }
-	.share-btn.linkedin:hover { background: #084d94; }
+	.platform-icon {
+		font-size: 1rem;
+		line-height: 1;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
 
-	.share-btn.copy { background: #64748b; }
-	.share-btn.copy:hover { background: #475569; }
-	.share-btn.copy.copied { background: #22c55e; }
+	.copy-btn {
+		--btn-color: #6b7280;
+		--btn-hover-color: #4b5563;
+	}
+
+	.copy-btn.copied {
+		--btn-color: #22c55e;
+		--btn-hover-color: #16a34a;
+	}
 
 	.share-settings {
 		width: 100%;
@@ -205,7 +320,7 @@
 		flex-wrap: wrap;
 	}
 
-	.platform-toggles label {
+	.toggle-label {
 		display: flex;
 		align-items: center;
 		gap: 0.375rem;
@@ -214,8 +329,42 @@
 		cursor: pointer;
 	}
 
-	:global(.dark) .social-share-block { background: #1e293b; }
-	:global(.dark) .share-title { color: #94a3b8; }
-	:global(.dark) .share-settings { border-color: #334155; }
-	:global(.dark) .platform-toggles label { color: #94a3b8; }
+	.toggle-label input {
+		width: 16px;
+		height: 16px;
+		cursor: pointer;
+	}
+
+	.toggle-label input:disabled {
+		cursor: not-allowed;
+	}
+
+	/* Dark Mode Support */
+	:global(.dark) .social-share-block {
+		background: #1e293b;
+	}
+
+	:global(.dark) .share-label {
+		color: #94a3b8;
+	}
+
+	:global(.dark) .share-settings {
+		border-color: #334155;
+	}
+
+	:global(.dark) .settings-label {
+		color: #94a3b8;
+	}
+
+	:global(.dark) .toggle-label {
+		color: #94a3b8;
+	}
+
+	:global(.dark) .share-btn {
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	}
+
+	:global(.dark) .share-btn:hover:not(:disabled) {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+	}
 </style>

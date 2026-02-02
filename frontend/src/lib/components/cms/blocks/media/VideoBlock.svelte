@@ -2,34 +2,14 @@
 /**
  * Video Block Component
  * ============================================================================
- * Production-ready video player with YouTube, Vimeo, and native video support
- * Apple Principal Engineer ICT 7 Standard
- *
- * Features:
- * - YouTube support with privacy-enhanced mode (youtube-nocookie.com)
- * - Vimeo support
- * - Native HTML5 video (MP4, WebM)
- * - Auto-detect platform from URL
- * - Responsive 16:9 aspect ratio
- * - Editable captions
- * - Loading state with smooth transitions
- * - Comprehensive error handling
- * - Full ARIA accessibility
- * - Dark mode support
+ * Production-ready video player with YouTube, Vimeo, and native video support.
+ * Features auto-detection of video platforms, responsive 16:9 embed container,
+ * editable captions, and comprehensive dark mode support.
  */
 -->
 
 <script lang="ts">
-	import {
-		IconVideo,
-		IconBrandYoutube,
-		IconBrandVimeo,
-		IconPlayerPlay,
-		IconLink,
-		IconLoader2,
-		IconAlertCircle,
-		IconX
-	} from '$lib/icons';
+	import { IconVideo } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -38,13 +18,7 @@
 	// Type Definitions
 	// ==========================================================================
 
-	type VideoType = 'youtube' | 'vimeo' | 'native' | 'unknown';
-
-	interface VideoInfo {
-		type: VideoType;
-		id?: string;
-		embedUrl?: string;
-	}
+	type VideoType = 'youtube' | 'vimeo' | 'native';
 
 	// ==========================================================================
 	// Props
@@ -59,169 +33,144 @@
 		onError?: (error: Error) => void;
 	}
 
-	const props: Props = $props();
+	const { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ==========================================================================
 	// Local State
 	// ==========================================================================
 
-	let isLoading = $state(true);
+	let urlInputValue = $state(block.content.mediaUrl || '');
+	let isLoading = $state(false);
 	let hasError = $state(false);
 	let errorMessage = $state('');
-	let urlInputValue = $state(props.block.content.mediaUrl || '');
 
 	// ==========================================================================
-	// URL Parsing Functions
+	// Derived State with $derived.by()
 	// ==========================================================================
+
+	const mediaUrl = $derived(block.content.mediaUrl || '');
+	const mediaCaption = $derived(block.content.mediaCaption || '');
 
 	/**
-	 * Parse video URL to determine platform and extract video ID
+	 * Auto-detect video type from URL
+	 * - YouTube (youtube.com, youtu.be) -> 'youtube'
+	 * - Vimeo (vimeo.com) -> 'vimeo'
+	 * - Other -> 'native'
 	 */
-	function parseVideoUrl(url: string): VideoInfo {
-		if (!url) {
-			return { type: 'unknown' };
-		}
+	const videoType = $derived.by((): VideoType | null => {
+		if (!mediaUrl) return null;
 
-		const trimmedUrl = url.trim();
+		const url = mediaUrl.toLowerCase();
 
-		// YouTube detection (youtube.com and youtu.be)
-		if (trimmedUrl.includes('youtube.com') || trimmedUrl.includes('youtu.be')) {
-			const match = trimmedUrl.match(
-				/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-			);
-			if (match?.[1]) {
-				return {
-					type: 'youtube',
-					id: match[1],
-					embedUrl: `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0&modestbranding=1`
-				};
-			}
+		// YouTube detection
+		if (url.includes('youtube.com') || url.includes('youtu.be')) {
+			return 'youtube';
 		}
 
 		// Vimeo detection
-		if (trimmedUrl.includes('vimeo.com')) {
-			const match = trimmedUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-			if (match?.[1]) {
-				return {
-					type: 'vimeo',
-					id: match[1],
-					embedUrl: `https://player.vimeo.com/video/${match[1]}?dnt=1`
-				};
-			}
+		if (url.includes('vimeo.com')) {
+			return 'vimeo';
 		}
 
-		// Native video detection (MP4, WebM, OGG)
-		const videoExtensions = /\.(mp4|webm|ogg|mov)(\?.*)?$/i;
-		if (videoExtensions.test(trimmedUrl)) {
-			return {
-				type: 'native',
-				embedUrl: trimmedUrl
-			};
-		}
-
-		// Check for common video hosting patterns
-		if (
-			trimmedUrl.includes('.mp4') ||
-			trimmedUrl.includes('.webm') ||
-			trimmedUrl.includes('video/')
-		) {
-			return {
-				type: 'native',
-				embedUrl: trimmedUrl
-			};
-		}
-
-		return { type: 'unknown' };
-	}
+		// Default to native for direct video URLs
+		return 'native';
+	});
 
 	/**
-	 * Get embed URL for supported platforms
+	 * Extract video ID for embeds
+	 * - YouTube: /watch?v=ID or youtu.be/ID
+	 * - Vimeo: vimeo.com/ID
 	 */
-	function getEmbedUrl(type: VideoType, id: string): string {
-		switch (type) {
-			case 'youtube':
-				return `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
-			case 'vimeo':
-				return `https://player.vimeo.com/video/${id}?dnt=1`;
-			default:
-				return '';
+	const videoId = $derived.by((): string | null => {
+		if (!mediaUrl || !videoType) return null;
+
+		if (videoType === 'youtube') {
+			// Match youtube.com/watch?v=ID, youtube.com/embed/ID, youtube.com/v/ID, youtu.be/ID
+			const match = mediaUrl.match(
+				/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+			);
+			return match?.[1] || null;
 		}
-	}
 
-	// ==========================================================================
-	// Derived State
-	// ==========================================================================
-
-	const mediaUrl = $derived(props.block.content.mediaUrl || '');
-	const videoInfo = $derived(parseVideoUrl(mediaUrl));
-	const hasVideo = $derived(videoInfo.type !== 'unknown' && !!videoInfo.embedUrl);
-	const sanitizedEmbedUrl = $derived(
-		videoInfo.embedUrl ? sanitizeURL(videoInfo.embedUrl) : ''
-	);
-	const mediaCaption = $derived(props.block.content.mediaCaption || '');
-
-	const platformIcon = $derived(() => {
-		switch (videoInfo.type) {
-			case 'youtube':
-				return IconBrandYoutube;
-			case 'vimeo':
-				return IconBrandVimeo;
-			default:
-				return IconVideo;
+		if (videoType === 'vimeo') {
+			// Match vimeo.com/ID or vimeo.com/video/ID
+			const match = mediaUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+			return match?.[1] || null;
 		}
+
+		return null;
 	});
 
-	const platformLabel = $derived(() => {
-		switch (videoInfo.type) {
-			case 'youtube':
-				return 'YouTube';
-			case 'vimeo':
-				return 'Vimeo';
-			case 'native':
-				return 'Video';
-			default:
-				return 'Unknown';
+	/**
+	 * Generate embed URL based on video type
+	 * - YouTube: https://www.youtube-nocookie.com/embed/{id}?rel=0&modestbranding=1
+	 * - Vimeo: https://player.vimeo.com/video/{id}?title=0&byline=0&portrait=0
+	 * - Native: Use the original URL
+	 */
+	const embedUrl = $derived.by((): string | null => {
+		if (!mediaUrl) return null;
+
+		if (videoType === 'youtube' && videoId) {
+			return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
 		}
+
+		if (videoType === 'vimeo' && videoId) {
+			return `https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0`;
+		}
+
+		if (videoType === 'native') {
+			return sanitizeURL(mediaUrl);
+		}
+
+		return null;
 	});
 
-	const iframeTitle = $derived(
-		mediaCaption || `${platformLabel()} video player`
-	);
+	const hasVideo = $derived(!!embedUrl);
 
 	// ==========================================================================
 	// Content Update Handlers
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({
-			content: { ...props.block.content, ...updates }
+		onUpdate({
+			content: { ...block.content, ...updates }
 		});
 	}
 
 	function handleUrlInput(e: Event): void {
-		const value = (e.target as HTMLInputElement).value;
-		urlInputValue = value;
+		const target = e.target as HTMLInputElement;
+		urlInputValue = target.value;
 	}
 
 	function handleUrlSubmit(): void {
-		const sanitized = sanitizeURL(urlInputValue.trim());
-		if (sanitized) {
-			const info = parseVideoUrl(sanitized);
-			if (info.type === 'unknown') {
-				hasError = true;
-				errorMessage = 'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
-				props.onError?.(new Error(errorMessage));
-				return;
-			}
-			hasError = false;
-			errorMessage = '';
-			isLoading = true;
-			updateContent({ mediaUrl: sanitized });
-		} else if (urlInputValue.trim()) {
+		const trimmed = urlInputValue.trim();
+		if (!trimmed) return;
+
+		const sanitized = sanitizeURL(trimmed);
+		if (!sanitized) {
 			hasError = true;
 			errorMessage = 'Invalid URL format. Please enter a valid video URL.';
-			props.onError?.(new Error(errorMessage));
+			onError?.(new Error(errorMessage));
+			return;
 		}
+
+		// Validate that we can parse it as a video
+		const url = sanitized.toLowerCase();
+		const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
+		const isVimeo = url.includes('vimeo.com');
+		const isNative = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('video/');
+
+		if (!isYouTube && !isVimeo && !isNative) {
+			hasError = true;
+			errorMessage = 'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
+			onError?.(new Error(errorMessage));
+			return;
+		}
+
+		hasError = false;
+		errorMessage = '';
+		isLoading = true;
+		updateContent({ mediaUrl: sanitized });
 	}
 
 	function handleUrlKeydown(e: KeyboardEvent): void {
@@ -251,14 +200,7 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load video. Please check the URL and try again.';
-		props.onError?.(new Error(errorMessage));
-	}
-
-	function handleNativeVideoError(): void {
-		isLoading = false;
-		hasError = true;
-		errorMessage = 'Failed to load video file. The format may not be supported.';
-		props.onError?.(new Error(errorMessage));
+		onError?.(new Error(errorMessage));
 	}
 
 	function handleNativeVideoLoad(): void {
@@ -266,10 +208,18 @@
 		hasError = false;
 	}
 
+	function handleNativeVideoError(): void {
+		isLoading = false;
+		hasError = true;
+		errorMessage = 'Failed to load video file. The format may not be supported.';
+		onError?.(new Error(errorMessage));
+	}
+
 	function clearVideo(): void {
 		urlInputValue = '';
 		hasError = false;
 		errorMessage = '';
+		isLoading = false;
 		updateContent({ mediaUrl: '', mediaCaption: '' });
 	}
 
@@ -283,45 +233,51 @@
 			hasError = false;
 		}
 	});
+
+	// Sync input value with block content
+	$effect(() => {
+		urlInputValue = block.content.mediaUrl || '';
+	});
 </script>
 
 <div
 	class="video-block"
-	class:video-block--selected={props.isSelected}
-	class:video-block--editing={props.isEditing}
+	class:video-block--selected={isSelected}
+	class:video-block--editing={isEditing}
 	role="region"
 	aria-label="Video player"
+	data-block-id={blockId}
 >
-	{#if hasVideo && sanitizedEmbedUrl}
-		<!-- Video Container -->
+	{#if hasVideo && embedUrl}
+		<!-- Video Container with 16:9 Aspect Ratio -->
 		<div class="video-container">
-			<!-- Loading Overlay -->
+			<!-- Loading State -->
 			{#if isLoading}
 				<div class="video-loading" aria-live="polite">
-					<IconLoader2 size={32} class="video-loading-spinner" aria-hidden="true" />
+					<div class="video-loading-spinner" aria-hidden="true"></div>
 					<span class="visually-hidden">Loading video...</span>
 				</div>
 			{/if}
 
-			<!-- Error Overlay -->
+			<!-- Error State -->
 			{#if hasError}
 				<div class="video-error" role="alert">
-					<IconAlertCircle size={32} aria-hidden="true" />
+					<IconVideo size={32} aria-hidden="true" />
 					<span>{errorMessage}</span>
 				</div>
 			{/if}
 
 			<!-- Native Video Player -->
-			{#if videoInfo.type === 'native'}
+			{#if videoType === 'native'}
 				<video
-					src={sanitizedEmbedUrl}
+					src={embedUrl}
 					class="video-native"
 					class:video-hidden={isLoading || hasError}
 					controls
 					preload="metadata"
 					onloadeddata={handleNativeVideoLoad}
 					onerror={handleNativeVideoError}
-					aria-label={iframeTitle}
+					aria-label={mediaCaption || 'Video player'}
 				>
 					<track kind="captions" label="Captions" />
 					Your browser does not support the video tag.
@@ -329,8 +285,8 @@
 			{:else}
 				<!-- Iframe Embed (YouTube/Vimeo) -->
 				<iframe
-					src={sanitizedEmbedUrl}
-					title={iframeTitle}
+					src={embedUrl}
+					title={mediaCaption || `${videoType === 'youtube' ? 'YouTube' : 'Vimeo'} video player`}
 					class="video-iframe"
 					class:video-hidden={isLoading || hasError}
 					frameborder="0"
@@ -339,41 +295,43 @@
 					loading="lazy"
 					onload={handleIframeLoad}
 					onerror={handleIframeError}
-					aria-label={iframeTitle}
 				></iframe>
 			{/if}
 
-			<!-- Edit Mode Overlay -->
-			{#if props.isEditing && !isLoading}
+			<!-- Edit Mode: Clear Button -->
+			{#if isEditing && !isLoading}
 				<button
 					type="button"
 					class="video-clear-btn"
 					onclick={clearVideo}
 					aria-label="Remove video"
 				>
-					<IconX size={16} aria-hidden="true" />
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
 				</button>
 			{/if}
 		</div>
 
 		<!-- Caption -->
-		{#if mediaCaption || props.isEditing}
+		{#if mediaCaption || isEditing}
 			<figcaption
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="video-caption"
-				class:video-caption--placeholder={!mediaCaption && props.isEditing}
+				class:video-caption--placeholder={!mediaCaption && isEditing}
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Video caption' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Video caption' : undefined}
 				aria-multiline="false"
 			>
 				{mediaCaption}
 			</figcaption>
 		{/if}
-	{:else if props.isEditing}
-		<!-- Placeholder (Edit Mode) -->
+	{:else if isEditing}
+		<!-- Placeholder State (Edit Mode) -->
 		<div class="video-placeholder">
 			<div class="video-placeholder-icon">
 				<IconVideo size={48} aria-hidden="true" />
@@ -384,7 +342,10 @@
 			</span>
 
 			<div class="video-url-input-wrapper">
-				<IconLink size={18} aria-hidden="true" />
+				<svg class="video-url-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+					<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+				</svg>
 				<input
 					type="url"
 					placeholder="https://www.youtube.com/watch?v=..."
@@ -401,36 +362,35 @@
 					disabled={!urlInputValue.trim()}
 					aria-label="Add video"
 				>
-					<IconPlayerPlay size={18} aria-hidden="true" />
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polygon points="5 3 19 12 5 21 5 3"></polygon>
+					</svg>
 				</button>
 			</div>
 
 			{#if hasError}
 				<div class="video-input-error" role="alert">
-					<IconAlertCircle size={16} aria-hidden="true" />
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="12" y1="8" x2="12" y2="12"></line>
+						<line x1="12" y1="16" x2="12.01" y2="16"></line>
+					</svg>
 					<span>{errorMessage}</span>
 				</div>
 			{/if}
 
 			<div class="video-supported-platforms">
-				<span class="video-platform">
-					<IconBrandYoutube size={16} aria-hidden="true" />
-					YouTube
-				</span>
-				<span class="video-platform">
-					<IconBrandVimeo size={16} aria-hidden="true" />
-					Vimeo
-				</span>
-				<span class="video-platform">
-					<IconVideo size={16} aria-hidden="true" />
-					MP4/WebM
-				</span>
+				<span class="video-platform">YouTube</span>
+				<span class="video-platform-divider">|</span>
+				<span class="video-platform">Vimeo</span>
+				<span class="video-platform-divider">|</span>
+				<span class="video-platform">MP4/WebM</span>
 			</div>
 		</div>
 	{:else}
 		<!-- Empty State (View Mode) -->
 		<div class="video-empty" role="status">
-			<IconAlertCircle size={32} aria-hidden="true" />
+			<IconVideo size={32} aria-hidden="true" />
 			<span>No video available</span>
 		</div>
 	{/if}
@@ -453,7 +413,7 @@
 	}
 
 	/* ==========================================================================
-	   Video Container (16:9 Aspect Ratio)
+	   Video Container (16:9 Aspect Ratio via padding-bottom: 56.25%)
 	   ========================================================================== */
 
 	.video-container {
@@ -491,11 +451,15 @@
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		color: #64748b;
 		z-index: 10;
 	}
 
-	.video-loading :global(.video-loading-spinner) {
+	.video-loading-spinner {
+		width: 32px;
+		height: 32px;
+		border: 3px solid #334155;
+		border-top-color: #3b82f6;
+		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
@@ -567,7 +531,7 @@
 	}
 
 	/* ==========================================================================
-	   Caption
+	   Caption (Contenteditable)
 	   ========================================================================== */
 
 	.video-caption {
@@ -590,7 +554,7 @@
 	}
 
 	/* ==========================================================================
-	   Placeholder (Edit Mode)
+	   Placeholder State (Edit Mode)
 	   ========================================================================== */
 
 	.video-placeholder {
@@ -632,14 +596,18 @@
 		margin-top: 0.5rem;
 		background: white;
 		border: 1px solid #d1d5db;
-		border-radius: 8px;
-		color: #94a3b8;
+		border-radius: 12px;
 		transition: all 0.15s ease;
 	}
 
 	.video-url-input-wrapper:focus-within {
 		border-color: #3b82f6;
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.video-url-icon {
+		color: #94a3b8;
+		flex-shrink: 0;
 	}
 
 	.video-url-input-wrapper input {
@@ -663,7 +631,7 @@
 		justify-content: center;
 		background: #3b82f6;
 		border: none;
-		border-radius: 6px;
+		border-radius: 8px;
 		color: white;
 		cursor: pointer;
 		flex-shrink: 0;
@@ -693,28 +661,24 @@
 		margin-top: 0.5rem;
 		padding: 0.5rem 1rem;
 		background: #fef2f2;
-		border-radius: 6px;
+		border-radius: 8px;
 		color: #dc2626;
 		font-size: 0.8125rem;
 	}
 
 	.video-supported-platforms {
 		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
-		justify-content: center;
-		gap: 1rem;
+		gap: 0.5rem;
 		margin-top: 1rem;
 		padding-top: 1rem;
 		border-top: 1px solid #e5e7eb;
-	}
-
-	.video-platform {
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
 		font-size: 0.75rem;
 		color: #9ca3af;
+	}
+
+	.video-platform-divider {
+		color: #d1d5db;
 	}
 
 	/* ==========================================================================
@@ -763,13 +727,21 @@
 		}
 
 		.video-supported-platforms {
-			gap: 0.75rem;
+			gap: 0.375rem;
 		}
 	}
 
 	/* ==========================================================================
-	   Dark Mode
+	   Dark Mode Support
 	   ========================================================================== */
+
+	:global(.dark) .video-block {
+		background: transparent;
+	}
+
+	:global(.dark) .video-container {
+		background: #0f172a;
+	}
 
 	:global(.dark) .video-caption {
 		color: #94a3b8;
@@ -810,6 +782,10 @@
 		color: #64748b;
 	}
 
+	:global(.dark) .video-url-icon {
+		color: #64748b;
+	}
+
 	:global(.dark) .video-url-submit:disabled {
 		background: #334155;
 		color: #64748b;
@@ -824,8 +800,8 @@
 		border-color: #334155;
 	}
 
-	:global(.dark) .video-platform {
-		color: #64748b;
+	:global(.dark) .video-platform-divider {
+		color: #475569;
 	}
 
 	:global(.dark) .video-empty {

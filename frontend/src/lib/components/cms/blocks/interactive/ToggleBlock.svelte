@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconChevronDown } from '$lib/icons';
+	import { IconChevronDown, IconPlus, IconMinus } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -24,6 +24,7 @@
 	const stateManager = getBlockStateManager();
 
 	let defaultOpen = $derived(props.block.settings.defaultOpen || false);
+	let iconStyle = $derived<'chevron' | 'plusminus'>(props.block.settings.iconStyle || 'chevron');
 	let isOpen = $derived(stateManager.getToggleState(props.blockId, defaultOpen));
 
 	function updateContent(updates: Partial<BlockContent>): void {
@@ -78,8 +79,16 @@
 			<span class="toggle-title">{title}</span>
 		{/if}
 
-		<span class="toggle-icon" class:rotated={isOpen} aria-hidden="true">
-			<IconChevronDown size={20} />
+		<span class="toggle-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
+			{#if iconStyle === 'plusminus'}
+				{#if isOpen}
+					<IconMinus size={20} />
+				{:else}
+					<IconPlus size={20} />
+				{/if}
+			{:else}
+				<IconChevronDown size={20} />
+			{/if}
 		</span>
 	</button>
 
@@ -121,6 +130,24 @@
 						})}
 				/>
 				<span>Open by default</span>
+			</label>
+
+			<label class="setting-field">
+				<span>Icon style:</span>
+				<select
+					value={iconStyle}
+					onchange={(e) =>
+						props.onUpdate({
+							settings: {
+								...props.block.settings,
+								iconStyle: (e.target as HTMLSelectElement).value as 'chevron' | 'plusminus'
+							}
+						})}
+					aria-label="Toggle icon style"
+				>
+					<option value="chevron">Chevron</option>
+					<option value="plusminus">Plus/Minus</option>
+				</select>
 			</label>
 		</div>
 	{/if}
@@ -213,6 +240,9 @@
 		padding: 1rem 1.25rem;
 		background: #f9fafb;
 		border-top: 1px solid #e5e7eb;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
 	}
 
 	.setting-checkbox {
@@ -226,6 +256,33 @@
 
 	.setting-checkbox input {
 		cursor: pointer;
+	}
+
+	.setting-field {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.875rem;
+		color: #374151;
+	}
+
+	.setting-field span {
+		font-weight: 500;
+	}
+
+	.setting-field select {
+		padding: 0.5rem 0.75rem;
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		background: white;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+
+	.setting-field select:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 
 	/* Dark Mode */
@@ -255,6 +312,16 @@
 
 	:global(.dark) .setting-checkbox {
 		color: #e5e7eb;
+	}
+
+	:global(.dark) .setting-field {
+		color: #e5e7eb;
+	}
+
+	:global(.dark) .setting-field select {
+		background: #1e293b;
+		border-color: #475569;
+		color: #e2e8f0;
 	}
 
 	/* Mobile */
