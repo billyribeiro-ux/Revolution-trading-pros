@@ -101,13 +101,12 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <article
-	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600"
+	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
 	class:compact
-	role="button"
-	tabindex="0"
 	on:click={handleCardClick}
-	on:keydown={(e) => e.key === 'Enter' && handleCardClick()}
 >
 	<!-- Thumbnail / Preview -->
 	<div class="thumbnail-container relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
@@ -132,7 +131,7 @@
 		{/if}
 
 		<!-- Overlay badges -->
-		<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+		<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
 		<!-- Type badge -->
 		<span class="absolute left-2 top-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">

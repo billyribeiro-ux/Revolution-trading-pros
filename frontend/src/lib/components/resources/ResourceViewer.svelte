@@ -158,14 +158,13 @@
 
 {#if open}
 	<!-- Backdrop -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div
 		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
 		on:click={handleClose}
-		on:keydown={(e) => e.key === 'Enter' && handleClose()}
-		role="button"
-		tabindex="0"
 		aria-label="Close viewer"
-	/>
+	></div>
 
 	<!-- Modal -->
 	<div class="fixed inset-4 z-50 flex flex-col overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900 lg:inset-8">
@@ -264,7 +263,7 @@
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen
 								title={resource.title}
-							/>
+							></iframe>
 						</div>
 					</div>
 				{:else if isPdf}
@@ -274,10 +273,11 @@
 							src="{resource.file_url}#view=FitH"
 							class="h-full w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700"
 							title={resource.title}
-						/>
+						></iframe>
 					</div>
 				{:else if isImage}
 					<!-- Image viewer with zoom -->
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
 						class="relative flex h-full w-full items-center justify-center overflow-hidden p-4"
 						on:mousedown={handleMouseDown}

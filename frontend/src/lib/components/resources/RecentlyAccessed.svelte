@@ -183,7 +183,7 @@
 		border-radius: 3px;
 	}
 
-	.dark .scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
+	:global(.dark .scrollbar-thumb-gray-600::-webkit-scrollbar-thumb) {
 		background-color: rgb(75 85 99);
 	}
 
