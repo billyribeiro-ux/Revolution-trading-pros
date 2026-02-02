@@ -121,12 +121,21 @@ const mockIntl = {
 const mockFetch = vi.fn(() => Promise.resolve({ ok: true }));
 
 // Use vi.stubGlobal for proper vitest integration
+// Note: Only stub globals that don't break jsdom for component tests
 vi.stubGlobal('localStorage', mockLocalStorage);
-vi.stubGlobal('window', mockWindow);
-vi.stubGlobal('document', mockDocument);
-vi.stubGlobal('navigator', mockNavigator);
-vi.stubGlobal('Intl', mockIntl);
 vi.stubGlobal('fetch', mockFetch);
+
+// Only stub window/document/navigator if NOT in jsdom environment
+// This allows @testing-library/svelte component tests to work properly
+const isJsdom = typeof document !== 'undefined' && document.body !== undefined;
+
+if (!isJsdom) {
+	vi.stubGlobal('window', mockWindow);
+	vi.stubGlobal('document', mockDocument);
+	vi.stubGlobal('navigator', mockNavigator);
+}
+
+vi.stubGlobal('Intl', mockIntl);
 
 // Export mocks for test assertions
 export {

@@ -39,7 +39,7 @@ export type {
 	VisibleRange,
 	BlockMeasurement,
 	PerformanceMetrics
-} from './VirtualBlockList.svelte';
+} from './VirtualBlockList.types';
 
 // AI & Content
 export { default as AIAssistant } from './AIAssistant.svelte';

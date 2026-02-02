@@ -18,46 +18,20 @@
 -->
 
 <script lang="ts" module>
-	import type { Block } from './types';
-
-	// ==========================================================================
-	// Types
-	// ==========================================================================
-
-	export interface VirtualBlockListProps {
-		blocks: Block[];
-		selectedBlockId: string | null;
-		onSelectBlock: (id: string) => void;
-		onUpdateBlock: (id: string, updates: Partial<Block>) => void;
-		onDeleteBlock: (id: string) => void;
-		onMoveBlock: (fromIndex: number, toIndex: number) => void;
-		isEditing: boolean;
-	}
-
-	export interface VisibleRange {
-		start: number;
-		end: number;
-	}
-
-	export interface BlockMeasurement {
-		height: number;
-		measured: boolean;
-	}
-
-	export interface PerformanceMetrics {
-		renderTime: number;
-		visibleCount: number;
-		totalBlocks: number;
-		measuredBlocks: number;
-		scrollPosition: number;
-		fps: number;
-	}
+	// Re-export types from the dedicated types file
+	export type {
+		VirtualBlockListProps,
+		VisibleRange,
+		BlockMeasurement,
+		PerformanceMetrics
+	} from './VirtualBlockList.types';
 </script>
 
 <script lang="ts">
 	import { tick, onMount, onDestroy } from 'svelte';
 	import { IconGripVertical, IconTrash, IconCopy, IconChevronUp, IconChevronDown } from '$lib/icons';
 	import BlockRenderer from './BlockRenderer.svelte';
+	import type { VirtualBlockListProps, BlockMeasurement } from './VirtualBlockList.types';
 
 	// ==========================================================================
 	// Props

@@ -76,6 +76,83 @@
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import type { Block, BlockContent } from './types';
+	import type { Component } from 'svelte';
+
+	// ==========================================================================
+	// Block Component Imports (Phase 3 Advanced Blocks)
+	// ==========================================================================
+
+	// Media blocks
+	import ImageBlock from '../../cms/blocks/media/ImageBlock.svelte';
+	import VideoBlock from '../../cms/blocks/media/VideoBlock.svelte';
+	import GalleryBlock from '../../cms/blocks/media/GalleryBlock.svelte';
+
+	// Layout blocks
+	import ColumnsBlock from '../../cms/blocks/layout/ColumnsBlock.svelte';
+	import GroupBlock from '../../cms/blocks/layout/GroupBlock.svelte';
+	import DividerBlock from '../../cms/blocks/layout/DividerBlock.svelte';
+	import SpacerBlock from '../../cms/blocks/layout/SpacerBlock.svelte';
+
+	// Content blocks
+	import PullQuoteBlock from '../../cms/blocks/content/PullQuoteBlock.svelte';
+	import ChecklistBlock from '../../cms/blocks/content/ChecklistBlock.svelte';
+
+	// Trading blocks
+	import ChartBlock from '../../cms/blocks/trading/ChartBlock.svelte';
+	import RiskDisclaimerBlock from '../../cms/blocks/trading/RiskDisclaimerBlock.svelte';
+
+	// Advanced blocks
+	import CalloutBlock from '../../cms/blocks/advanced/CalloutBlock.svelte';
+	import ButtonBlock from '../../cms/blocks/advanced/ButtonBlock.svelte';
+	import RelatedPostsBlock from '../../cms/blocks/advanced/RelatedPostsBlock.svelte';
+	import HtmlBlock from '../../cms/blocks/advanced/HtmlBlock.svelte';
+
+	// ==========================================================================
+	// Block Component Map
+	// ==========================================================================
+
+	/**
+	 * Maps block types to their corresponding Svelte components.
+	 * Components in this map will be rendered using svelte:component
+	 * instead of inline template rendering.
+	 */
+	const blockComponentMap: Record<string, Component<any>> = {
+		// Media blocks
+		image: ImageBlock,
+		video: VideoBlock,
+		gallery: GalleryBlock,
+		// Layout blocks
+		columns: ColumnsBlock,
+		group: GroupBlock,
+		divider: DividerBlock,
+		spacer: SpacerBlock,
+		// Content blocks
+		pullquote: PullQuoteBlock,
+		checklist: ChecklistBlock,
+		// Trading blocks
+		chart: ChartBlock,
+		riskDisclaimer: RiskDisclaimerBlock,
+		// Advanced blocks
+		callout: CalloutBlock,
+		button: ButtonBlock,
+		relatedPosts: RelatedPostsBlock,
+		html: HtmlBlock
+	};
+
+	/**
+	 * Gets the component for a block type from the component map.
+	 * Returns undefined if the block type should use inline rendering.
+	 */
+	function getBlockComponent(blockType: string): Component<any> | undefined {
+		return blockComponentMap[blockType];
+	}
+
+	/**
+	 * Check if a block type has a dedicated component
+	 */
+	function hasBlockComponent(blockType: string): boolean {
+		return blockType in blockComponentMap;
+	}
 
 	// ==========================================================================
 	// Props
@@ -236,7 +313,7 @@
 
 	function addGalleryImage() {
 		const images = block.content.galleryImages || [];
-		updateContent({ galleryImages: [...images, { url: '', alt: '' }] });
+		updateContent({ galleryImages: [...images, { id: crypto.randomUUID(), url: '', alt: '' }] });
 	}
 
 	function updateGalleryImage(index: number, field: string, value: string) {
@@ -599,7 +676,7 @@
 	// Reusable/Global Component Functions
 	// ==========================================================================
 
-	function getReusableAuthHeaders(): HeadersInit {
+	function getReusableAuthHeaders(): Record<string, string> {
 		const token = getAuthToken();
 		return {
 			'Content-Type': 'application/json',
@@ -675,8 +752,22 @@
 </script>
 
 <div class="block-renderer block-{block.type}" style={getBlockStyles()}>
+	<!-- Component-Based Block Rendering -->
+	<!-- These blocks use imported Svelte components instead of inline templates -->
+	{#if hasBlockComponent(block.type)}
+		{@const BlockComponent = getBlockComponent(block.type)}
+		{#if BlockComponent}
+			<svelte:component
+				this={BlockComponent}
+				{block}
+				{isSelected}
+				{isEditing}
+				{onUpdate}
+			/>
+		{/if}
+
 	<!-- Paragraph Block -->
-	{#if block.type === 'paragraph'}
+	{:else if block.type === 'paragraph'}
 		<p
 			bind:this={_editableRef}
 			contenteditable={isEditing}
@@ -1298,12 +1389,12 @@
 	<!-- CTA Block -->
 	{:else if block.type === 'cta'}
 		<section class="cta-block" class:cta-dark={block.settings.backgroundColor === 'dark'} class:cta-gradient={block.settings.backgroundColor === 'gradient'} role="region" aria-label="Call to action">
-			{#if isEditing && isSelected}<div class="cta-edit-fields"><label class="edit-field"><span>Background Style</span><select value={block.settings.backgroundColor || 'light'} onchange={(e: Event) => onUpdate({ settings: { ...block.settings, backgroundColor: (e.target as HTMLSelectElement).value } })}><option value="light">Light</option><option value="dark">Dark</option><option value="gradient">Gradient</option></select></label><label class="edit-field"><span>Primary Button URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://example.com" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>Secondary Button URL</span><input type="url" value={block.settings.linkTarget || ''} placeholder="https://example.com" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkTarget: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
+			{#if isEditing && isSelected}<div class="cta-edit-fields"><label class="edit-field"><span>Background Style</span><select value={block.settings.backgroundColor || 'light'} onchange={(e: Event) => onUpdate({ settings: { ...block.settings, backgroundColor: (e.target as HTMLSelectElement).value } })}><option value="light">Light</option><option value="dark">Dark</option><option value="gradient">Gradient</option></select></label><label class="edit-field"><span>Primary Button URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://example.com" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>Secondary Button URL</span><input type="url" value={block.settings.secondaryLinkUrl || ''} placeholder="https://example.com" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, secondaryLinkUrl: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
 			<h2 contenteditable={isEditing} class="cta-heading editable-content" class:placeholder={!block.content.text} oninput={handleTextInput} onpaste={handlePaste} data-placeholder="Compelling Headline">{block.content.text || ''}</h2>
 			<p contenteditable={isEditing} class="cta-description editable-content" class:placeholder={!block.content.html} oninput={(e: Event) => updateContent({ html: (e.target as HTMLElement).textContent || '' })} onpaste={handlePaste} data-placeholder="Supporting text that encourages action...">{block.content.html || ''}</p>
 			<div class="cta-buttons">
 				<a href={block.settings.linkUrl || '#'} class="cta-btn cta-btn-primary" onclick={(e: MouseEvent) => isEditing && e.preventDefault()}><span contenteditable={isEditing} oninput={(e: Event) => updateContent({ code: (e.target as HTMLElement).textContent || '' })}>{block.content.code || 'Get Started'}</span></a>
-				<a href={block.settings.linkTarget || '#'} class="cta-btn cta-btn-secondary" onclick={(e: MouseEvent) => isEditing && e.preventDefault()}><span contenteditable={isEditing} oninput={(e: Event) => updateContent({ language: (e.target as HTMLElement).textContent || '' })}>{block.content.language || 'Learn More'}</span></a>
+				<a href={block.settings.secondaryLinkUrl || '#'} class="cta-btn cta-btn-secondary" onclick={(e: MouseEvent) => isEditing && e.preventDefault()}><span contenteditable={isEditing} oninput={(e: Event) => updateContent({ language: (e.target as HTMLElement).textContent || '' })}>{block.content.language || 'Learn More'}</span></a>
 			</div>
 		</section>
 
@@ -1339,13 +1430,13 @@
 	<!-- Author Block -->
 	{:else if block.type === 'author'}
 		<aside class="author-block" role="complementary" aria-label="About the author">
-			{#if isEditing && isSelected}<div class="author-edit-fields"><label class="edit-field"><span>Author Photo URL</span><input type="url" value={block.content.mediaUrl || ''} placeholder="https://example.com/photo.jpg" oninput={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /></label><label class="edit-field"><span>Twitter URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://twitter.com/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>LinkedIn URL</span><input type="url" value={block.settings.linkTarget || ''} placeholder="https://linkedin.com/in/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkTarget: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
+			{#if isEditing && isSelected}<div class="author-edit-fields"><label class="edit-field"><span>Author Photo URL</span><input type="url" value={block.content.mediaUrl || ''} placeholder="https://example.com/photo.jpg" oninput={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /></label><label class="edit-field"><span>Twitter URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://twitter.com/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>LinkedIn URL</span><input type="url" value={block.settings.secondaryLinkUrl || ''} placeholder="https://linkedin.com/in/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, secondaryLinkUrl: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
 			<div class="author-avatar">{#if block.content.mediaUrl}<img src={block.content.mediaUrl} alt="Author photo" />{:else}<IconUser size={48} />{/if}</div>
 			<div class="author-info">
 				<span class="author-label">Written by</span>
 				<h4 contenteditable={isEditing} class="author-name editable-content" class:placeholder={!block.content.text} oninput={handleTextInput} onpaste={handlePaste} data-placeholder="Author Name">{block.content.text || ''}</h4>
 				<p contenteditable={isEditing} class="author-bio editable-content" class:placeholder={!block.content.html} oninput={(e: Event) => updateContent({ html: (e.target as HTMLElement).textContent || '' })} onpaste={handlePaste} data-placeholder="Short bio about the author...">{block.content.html || ''}</p>
-				<div class="author-social">{#if block.settings.linkUrl}<a href={block.settings.linkUrl} target="_blank" rel="noopener noreferrer" class="author-social-link" aria-label="Twitter"><IconBrandX size={18} /></a>{/if}{#if block.settings.linkTarget}<a href={block.settings.linkTarget} target="_blank" rel="noopener noreferrer" class="author-social-link" aria-label="LinkedIn"><IconBrandLinkedin size={18} /></a>{/if}</div>
+				<div class="author-social">{#if block.settings.linkUrl}<a href={block.settings.linkUrl} target="_blank" rel="noopener noreferrer" class="author-social-link" aria-label="Twitter"><IconBrandX size={18} /></a>{/if}{#if block.settings.secondaryLinkUrl}<a href={block.settings.secondaryLinkUrl} target="_blank" rel="noopener noreferrer" class="author-social-link" aria-label="LinkedIn"><IconBrandLinkedin size={18} /></a>{/if}</div>
 			</div>
 		</aside>
 
