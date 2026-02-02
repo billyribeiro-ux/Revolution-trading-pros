@@ -114,7 +114,6 @@
 		"@storybook/addon-a11y": "^10.2.0",
 		"@storybook/addon-docs": "^10.2.0",
 		"@storybook/addon-svelte-csf": "^5.0.10",
-		"@storybook/addon-vitest": "^10.2.0",
 		"@storybook/sveltekit": "^10.2.0",
 		"@sveltejs/adapter-cloudflare": "^7.2.6",
 		"@sveltejs/adapter-static": "3.0.10",
