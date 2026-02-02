@@ -18,19 +18,19 @@
 	import { goto } from '$app/navigation';
 	import { ROOMS, type Room } from '$lib/config/rooms';
 	import { AdminApiError } from '$lib/api/admin';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconUser from '@tabler/icons-svelte/icons/user';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconUser from '@tabler/icons-svelte-runes/icons/user';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS

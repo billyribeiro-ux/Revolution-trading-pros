@@ -10,43 +10,45 @@
   - Loading states
 -->
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { RoomResource, ResourceListQuery, ContentType, ResourceType, AccessLevel } from '$lib/api/room-resources';
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
 
-	export let roomId: number | undefined = undefined;
-	export let contentType: ContentType | undefined = undefined;
-	export let resourceType: ResourceType | undefined = undefined;
-	export let section: string | undefined = undefined;
-	export let accessLevel: AccessLevel | undefined = undefined;
-	export let courseId: number | undefined = undefined;
-	export let lessonId: number | undefined = undefined;
-	export let showSearch = true;
-	export let showFilters = true;
-	export let showAccessLevel = true;
-	export let showVersion = false;
-	export let columns: 2 | 3 | 4 = 3;
-	export let compact = false;
-	export let perPage = 12;
-	export let initialResources: RoomResource[] | undefined = undefined;
+	interface Props {
+		roomId?: number;
+		contentType?: ContentType;
+		resourceType?: ResourceType;
+		section?: string;
+		accessLevel?: AccessLevel;
+		courseId?: number;
+		lessonId?: number;
+		showSearch?: boolean;
+		showFilters?: boolean;
+		showAccessLevel?: boolean;
+		showVersion?: boolean;
+		columns?: 2 | 3 | 4;
+		compact?: boolean;
+		perPage?: number;
+		initialResources?: RoomResource[];
+		onSelect?: (resource: RoomResource) => void;
+		onDownload?: (resource: RoomResource) => void;
+		onPreview?: (resource: RoomResource) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		select: { resource: RoomResource };
-		download: { resource: RoomResource };
-		preview: { resource: RoomResource };
-	}>();
+	const { roomId, contentType, resourceType, section, accessLevel, courseId, lessonId, showSearch = true, showFilters = true, showAccessLevel = true, showVersion = false, columns = 3, compact = false, perPage = 12, initialResources, onSelect, onDownload, onPreview }: Props = $props();
 
-	let resources: RoomResource[] = initialResources ?? [];
-	let loading = !initialResources;
-	let error = '';
-	let currentPage = 1;
-	let totalPages = 1;
-	let total = 0;
-	let searchQuery = '';
-	let selectedType: ResourceType | '' = resourceType ?? '';
-	let selectedSection = section ?? '';
-	let selectedAccessLevel: AccessLevel | '' = accessLevel ?? '';
+	const hasInitialResources = initialResources !== undefined;
+	let resources = $state<RoomResource[]>(initialResources ?? []);
+	let loading = $state(!hasInitialResources);
+	let error = $state('');
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let total = $state(0);
+	let searchQuery = $state('');
+	let selectedType = $state<ResourceType | ''>(resourceType ?? '');
+	let selectedSection = $state(section ?? '');
+	let selectedAccessLevel = $state<AccessLevel | ''>(accessLevel ?? '');
 
 	// Resource type options
 	const resourceTypes: { value: ResourceType | ''; label: string }[] = [
@@ -121,15 +123,11 @@
 	}
 
 	// Initial load
-	if (!initialResources) {
-		loadResources();
-	}
-
-	// Reload when filters change
-	$: if (typeof window !== 'undefined') {
-		currentPage = 1;
-		void loadResources();
-	}
+	onMount(() => {
+		if (!hasInitialResources) {
+			loadResources();
+		}
+	});
 
 	// Debounced search
 	let searchTimeout: ReturnType<typeof setTimeout>;
@@ -153,24 +151,24 @@
 		loadResources();
 	}
 
-	function handleResourceClick(event: CustomEvent<{ resource: RoomResource }>) {
-		dispatch('select', event.detail);
+	function handleResourceClick(resource: RoomResource) {
+		onSelect?.(resource);
 	}
 
-	function handleResourceDownload(event: CustomEvent<{ resource: RoomResource }>) {
-		dispatch('download', event.detail);
+	function handleResourceDownload(resource: RoomResource) {
+		onDownload?.(resource);
 	}
 
-	function handleResourcePreview(event: CustomEvent<{ resource: RoomResource }>) {
-		dispatch('preview', event.detail);
+	function handleResourcePreview(resource: RoomResource) {
+		onPreview?.(resource);
 	}
 
 	// Grid column classes
-	$: gridClasses = {
+	const gridClasses = $derived({
 		2: 'grid-cols-1 sm:grid-cols-2',
 		3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
 		4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-	}[columns];
+	}[columns]);
 </script>
 
 <div class="resource-grid">
@@ -184,7 +182,7 @@
 						type="search"
 						placeholder="Search resources..."
 						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-						on:input={handleSearch}
+						oninput={handleSearch}
 					/>
 					<svg
 						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
@@ -203,7 +201,7 @@
 					<!-- Type filter -->
 					<select
 						bind:value={selectedType}
-						on:change={handleFilterChange}
+						onchange={handleFilterChange}
 						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					>
 						{#each resourceTypes as type}
@@ -214,7 +212,7 @@
 					<!-- Section filter -->
 					<select
 						bind:value={selectedSection}
-						on:change={handleFilterChange}
+						onchange={handleFilterChange}
 						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					>
 						{#each sectionOptions as opt}
@@ -225,7 +223,7 @@
 					<!-- Access level filter -->
 					<select
 						bind:value={selectedAccessLevel}
-						on:change={handleFilterChange}
+						onchange={handleFilterChange}
 						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					>
 						{#each accessLevelOptions as opt}
@@ -271,7 +269,7 @@
 			<p class="mt-2 text-sm text-red-600 dark:text-red-300">{error}</p>
 			<button
 				class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-				on:click={loadResources}
+				onclick={loadResources}
 			>
 				Try Again
 			</button>
@@ -293,7 +291,7 @@
 			{#if searchQuery}
 				<button
 					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-					on:click={() => { searchQuery = ''; loadResources(); }}
+					onclick={() => { searchQuery = ''; loadResources(); }}
 				>
 					Clear Search
 				</button>
@@ -308,9 +306,9 @@
 					{showAccessLevel}
 					{showVersion}
 					{compact}
-					on:click={handleResourceClick}
-					on:download={handleResourceDownload}
-					on:preview={handleResourcePreview}
+					onClick={handleResourceClick}
+					onDownload={handleResourceDownload}
+					onPreview={handleResourcePreview}
 				/>
 			{/each}
 		</div>
@@ -322,7 +320,7 @@
 				<button
 					class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
 					disabled={currentPage === 1}
-					on:click={() => handlePageChange(currentPage - 1)}
+					onclick={() => handlePageChange(currentPage - 1)}
 				>
 					Previous
 				</button>
@@ -333,7 +331,7 @@
 					{#if pageNum > 0 && pageNum <= totalPages}
 						<button
 							class="rounded-lg px-3 py-2 text-sm font-medium {pageNum === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}"
-							on:click={() => handlePageChange(pageNum)}
+							onclick={() => handlePageChange(pageNum)}
 						>
 							{pageNum}
 						</button>
@@ -344,7 +342,7 @@
 				<button
 					class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
 					disabled={currentPage === totalPages}
-					on:click={() => handlePageChange(currentPage + 1)}
+					onclick={() => handlePageChange(currentPage + 1)}
 				>
 					Next
 				</button>

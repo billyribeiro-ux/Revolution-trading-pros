@@ -16,15 +16,15 @@
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
 
 	// Icons
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
-	import IconArrowUp from '@tabler/icons-svelte/icons/arrow-up';
-	import IconArrowDown from '@tabler/icons-svelte/icons/arrow-down';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
+	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
+	import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS

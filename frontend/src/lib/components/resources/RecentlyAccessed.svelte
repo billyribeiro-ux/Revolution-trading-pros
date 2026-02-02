@@ -10,22 +10,24 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { createEventDispatcher } from 'svelte';
 	import type { RecentlyAccessed } from '$lib/api/room-resources';
 	import { getRecentlyAccessed } from '$lib/api/room-resources';
 
-	export let limit = 10;
-	export let showTitle = true;
-	export let compact = false;
-	export let initialData: RecentlyAccessed[] | undefined = undefined;
+	interface Props {
+		limit?: number;
+		showTitle?: boolean;
+		compact?: boolean;
+		initialData?: RecentlyAccessed[];
+		onSelect?: (item: RecentlyAccessed) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		select: { item: RecentlyAccessed };
-	}>();
+	const { limit = 10, showTitle = true, compact = false, initialData, onSelect }: Props = $props();
 
-	let items: RecentlyAccessed[] = initialData ?? [];
-	let loading = !initialData;
-	let error = '';
+	// Capture initial values to avoid reactive warnings
+	const hasInitialData = initialData !== undefined;
+	let items = $state<RecentlyAccessed[]>(initialData ?? []);
+	let loading = $state(!hasInitialData);
+	let error = $state('');
 
 	onMount(async () => {
 		if (!initialData) {
@@ -48,7 +50,7 @@
 	}
 
 	function handleItemClick(item: RecentlyAccessed) {
-		dispatch('select', { item });
+		onSelect?.(item);
 	}
 
 	function getResourceIcon(type: string): string {
@@ -91,7 +93,7 @@
 			{#if items.length > 0}
 				<button
 					class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-					on:click={loadRecentlyAccessed}
+					onclick={loadRecentlyAccessed}
 				>
 					Refresh
 				</button>
@@ -114,7 +116,7 @@
 			<p class="text-sm text-red-600 dark:text-red-400">{error}</p>
 			<button
 				class="mt-2 text-sm text-red-700 underline hover:no-underline dark:text-red-300"
-				on:click={loadRecentlyAccessed}
+				onclick={loadRecentlyAccessed}
 			>
 				Try again
 			</button>
@@ -132,7 +134,7 @@
 			{#each items as item (item.id)}
 				<button
 					class="group w-40 flex-shrink-0 text-left transition-transform hover:scale-[1.02] {compact ? '' : 'w-48'}"
-					on:click={() => handleItemClick(item)}
+					onclick={() => handleItemClick(item)}
 				>
 					<!-- Thumbnail -->
 					<div class="relative aspect-video overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">

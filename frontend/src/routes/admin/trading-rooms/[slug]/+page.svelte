@@ -37,21 +37,21 @@
 	} from '$lib/api/room-resources';
 
 	// Icons
-	import IconTable from '@tabler/icons-svelte/icons/table';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
-	import IconPin from '@tabler/icons-svelte/icons/pin';
-	import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
+	import IconTable from '@tabler/icons-svelte-runes/icons/table';
+	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
+	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES

@@ -17,16 +17,16 @@
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 
 	// Icons
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconLink from '@tabler/icons-svelte/icons/link';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconArchive from '@tabler/icons-svelte/icons/archive';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS

@@ -11,9 +11,10 @@
 	import type { Contact, ContactStatus, LifecycleStage } from '$lib/crm/types';
 	import { IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
 
-	let localSearch = $state('');
-	let localStatus = $state<ContactStatus | 'all'>('all');
-	let localStage = $state<LifecycleStage | 'all'>('all');
+	// Initialize filters from URL query params (ICT 7: URL-driven state)
+	let localSearch = $state(page.url.searchParams.get('search') ?? '');
+	let localStatus = $state<ContactStatus | 'all'>((page.url.searchParams.get('status') as ContactStatus) ?? 'all');
+	let localStage = $state<LifecycleStage | 'all'>((page.url.searchParams.get('stage') as LifecycleStage) ?? 'all');
 
 	const statusOptions: { value: ContactStatus | 'all'; label: string }[] = [
 		{ value: 'all', label: 'All statuses' },

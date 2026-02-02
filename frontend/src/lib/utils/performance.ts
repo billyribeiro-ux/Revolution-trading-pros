@@ -1233,6 +1233,20 @@ export const perfMonitor = new PerformanceMonitor();
  */
 export const memoryManager = new MemoryManager<object>();
 
+/**
+ * Initialize performance monitoring
+ * Starts FPS tracking and sets up performance observers
+ */
+export function initPerformanceMonitoring(): void {
+  if (typeof window === 'undefined') return;
+  
+  // Start FPS monitoring
+  perfMonitor.startFpsMonitoring();
+  
+  // Log initialization
+  console.debug('[Performance] Monitoring initialized');
+}
+
 // ============================================================================
 // Legacy Web Vitals Support (for backwards compatibility)
 // ============================================================================

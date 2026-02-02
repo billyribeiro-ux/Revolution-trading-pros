@@ -16,25 +16,25 @@
 
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconMailForward from '@tabler/icons-svelte/icons/mail-forward';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconSend from '@tabler/icons-svelte/icons/send';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconSend from '@tabler/icons-svelte-runes/icons/send';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 

@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconLockSquare from '@tabler/icons-svelte/icons/lock-square';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconServer from '@tabler/icons-svelte/icons/server';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconLockSquare from '@tabler/icons-svelte-runes/icons/lock-square';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconServer from '@tabler/icons-svelte-runes/icons/server';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
