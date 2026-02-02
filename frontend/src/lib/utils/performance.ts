@@ -1,460 +1,1311 @@
 /**
- * Performance Monitoring - Google November 2025 Web Vitals Tracking
+ * Performance Monitoring Utilities
  * ══════════════════════════════════════════════════════════════════════════════
- * Tracks Core Web Vitals: LCP, INP (replaced FID March 2024), CLS, TTFB, FCP
- * Non-blocking, production-ready performance monitoring
+ * Comprehensive performance monitoring, optimization utilities, and memory management
+ * for high-performance web applications.
  *
- * Updated for November 2025 Google Core Web Vitals:
- * - INP (Interaction to Next Paint) replaced FID as official CWV
- * - Enhanced reporting for AI-driven search ranking signals
+ * Features:
+ * - PerformanceMonitor class for tracking metrics and FPS
+ * - Debounce and throttle with TypeScript generics
+ * - Lazy loading with caching
+ * - Virtual scroll calculations
+ * - Image optimization utilities
+ * - Memory management with WeakRef/FinalizationRegistry
+ * - Scheduler utilities for idle/animation frame work
+ * - Network-aware feature loading
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
 /// <reference lib="dom" />
 /// <reference lib="dom.iterable" />
 
-// ICT 11+ Principal Engineer: Import from centralized config - single source of truth
+// ============================================================================
+// Types and Interfaces
+// ============================================================================
+
+export interface PerformanceMetricEntry {
+  name: string;
+  value: number;
+  timestamp: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface MetricStats {
+  name: string;
+  count: number;
+  total: number;
+  average: number;
+  min: number;
+  max: number;
+  latest: number;
+}
+
+export interface PerformanceReport {
+  metrics: MetricStats[];
+  fps: number;
+  memory: MemoryMetrics | null;
+  degraded: boolean;
+  timestamp: number;
+}
+
+export interface MemoryMetrics {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+  usagePercentage: number;
+}
+
+export interface VirtualScrollIndices {
+  startIndex: number;
+  endIndex: number;
+  visibleCount: number;
+  offsetY: number;
+}
+
+export interface NetworkInfo {
+  effectiveType: '4g' | '3g' | '2g' | 'slow-2g' | 'unknown';
+  downlink: number;
+  rtt: number;
+  saveData: boolean;
+  online: boolean;
+}
+
+export interface ImageOptimizationOptions {
+  baseUrl?: string;
+  format?: 'webp' | 'avif' | 'jpeg' | 'png' | 'auto';
+  quality?: number;
+  fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+}
+
+// ============================================================================
+// PerformanceMonitor Class
+// ============================================================================
+
+/**
+ * Performance monitoring class for tracking metrics, FPS, and memory usage
+ */
+export class PerformanceMonitor {
+  private marks: Map<string, number> = new Map();
+  private metrics: Map<string, PerformanceMetricEntry[]> = new Map();
+  private fpsHistory: number[] = [];
+  private lastFrameTime: number = 0;
+  private frameCount: number = 0;
+  private fpsUpdateInterval: number = 1000;
+  private currentFps: number = 60;
+  private isMonitoringFps: boolean = false;
+  private rafId: number | null = null;
+
+  // Performance thresholds for degradation detection
+  private thresholds = {
+    fps: 30,
+    memoryUsagePercent: 80,
+    avgMetricMs: 100
+  };
+
+  constructor(options?: { thresholds?: Partial<typeof PerformanceMonitor.prototype.thresholds> }) {
+    if (options?.thresholds) {
+      this.thresholds = { ...this.thresholds, ...options.thresholds };
+    }
+  }
+
+  /**
+   * Mark the start of a performance measurement
+   */
+  markStart(name: string): void {
+    this.marks.set(name, performance.now());
+  }
+
+  /**
+   * Mark the end of a performance measurement and record the duration
+   */
+  markEnd(name: string, metadata?: Record<string, unknown>): number | null {
+    const startTime = this.marks.get(name);
+    if (startTime === undefined) {
+      console.warn(`[PerformanceMonitor] No start mark found for: ${name}`);
+      return null;
+    }
+
+    const duration = performance.now() - startTime;
+    this.marks.delete(name);
+    this.recordMetric(name, duration, metadata);
+    return duration;
+  }
+
+  /**
+   * Record a metric value directly
+   */
+  recordMetric(name: string, value: number, metadata?: Record<string, unknown>): void {
+    const entry: PerformanceMetricEntry = {
+      name,
+      value,
+      timestamp: Date.now(),
+      metadata
+    };
+
+    if (!this.metrics.has(name)) {
+      this.metrics.set(name, []);
+    }
+
+    const entries = this.metrics.get(name)!;
+    entries.push(entry);
+
+    // Keep only the last 100 entries per metric to prevent memory bloat
+    if (entries.length > 100) {
+      entries.shift();
+    }
+  }
+
+  /**
+   * Get all recorded metrics for a specific name
+   */
+  getMetrics(name: string): PerformanceMetricEntry[] {
+    return this.metrics.get(name) || [];
+  }
+
+  /**
+   * Get average metrics for all or specific metric names
+   */
+  getAverageMetrics(names?: string[]): MetricStats[] {
+    const targetNames = names || Array.from(this.metrics.keys());
+    const stats: MetricStats[] = [];
+
+    for (const name of targetNames) {
+      const entries = this.metrics.get(name);
+      if (!entries || entries.length === 0) continue;
+
+      const values = entries.map(e => e.value);
+      const total = values.reduce((sum, v) => sum + v, 0);
+      const average = total / values.length;
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const latest = values[values.length - 1];
+
+      stats.push({
+        name,
+        count: entries.length,
+        total,
+        average,
+        min,
+        max,
+        latest
+      });
+    }
+
+    return stats;
+  }
+
+  /**
+   * Check if performance is degraded based on thresholds
+   */
+  isPerformanceDegraded(): boolean {
+    // Check FPS
+    if (this.currentFps < this.thresholds.fps) {
+      return true;
+    }
+
+    // Check memory usage
+    const memory = this.getMemoryMetrics();
+    if (memory && memory.usagePercentage > this.thresholds.memoryUsagePercent) {
+      return true;
+    }
+
+    // Check average metric times
+    const allStats = this.getAverageMetrics();
+    for (const stat of allStats) {
+      if (stat.average > this.thresholds.avgMetricMs) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Update FPS calculation (call this in animation frame loop)
+   */
+  updateFPS(timestamp?: number): void {
+    const now = timestamp || performance.now();
+
+    if (this.lastFrameTime === 0) {
+      this.lastFrameTime = now;
+      return;
+    }
+
+    this.frameCount++;
+    const elapsed = now - this.lastFrameTime;
+
+    if (elapsed >= this.fpsUpdateInterval) {
+      this.currentFps = Math.round((this.frameCount * 1000) / elapsed);
+      this.fpsHistory.push(this.currentFps);
+
+      // Keep only last 60 FPS samples
+      if (this.fpsHistory.length > 60) {
+        this.fpsHistory.shift();
+      }
+
+      this.frameCount = 0;
+      this.lastFrameTime = now;
+    }
+  }
+
+  /**
+   * Start automatic FPS monitoring
+   */
+  startFPSMonitoring(): void {
+    if (this.isMonitoringFps) return;
+    this.isMonitoringFps = true;
+
+    const loop = (timestamp: number) => {
+      this.updateFPS(timestamp);
+      if (this.isMonitoringFps) {
+        this.rafId = requestAnimationFrame(loop);
+      }
+    };
+
+    this.rafId = requestAnimationFrame(loop);
+  }
+
+  /**
+   * Stop automatic FPS monitoring
+   */
+  stopFPSMonitoring(): void {
+    this.isMonitoringFps = false;
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+  }
+
+  /**
+   * Get current FPS and history
+   */
+  getFPS(): { current: number; average: number; history: number[] } {
+    const average = this.fpsHistory.length > 0
+      ? this.fpsHistory.reduce((sum, fps) => sum + fps, 0) / this.fpsHistory.length
+      : this.currentFps;
+
+    return {
+      current: this.currentFps,
+      average: Math.round(average),
+      history: [...this.fpsHistory]
+    };
+  }
+
+  /**
+   * Get memory metrics if available
+   */
+  getMemoryMetrics(): MemoryMetrics | null {
+    if (typeof window === 'undefined') return null;
+
+    // Memory API is non-standard but available in Chrome
+    const perfMemory = (performance as any).memory;
+    if (!perfMemory) return null;
+
+    return {
+      usedJSHeapSize: perfMemory.usedJSHeapSize,
+      totalJSHeapSize: perfMemory.totalJSHeapSize,
+      jsHeapSizeLimit: perfMemory.jsHeapSizeLimit,
+      usagePercentage: (perfMemory.usedJSHeapSize / perfMemory.jsHeapSizeLimit) * 100
+    };
+  }
+
+  /**
+   * Generate a comprehensive performance report
+   */
+  getReport(): PerformanceReport {
+    return {
+      metrics: this.getAverageMetrics(),
+      fps: this.currentFps,
+      memory: this.getMemoryMetrics(),
+      degraded: this.isPerformanceDegraded(),
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Clear all recorded metrics and reset state
+   */
+  clear(): void {
+    this.marks.clear();
+    this.metrics.clear();
+    this.fpsHistory = [];
+    this.frameCount = 0;
+    this.lastFrameTime = 0;
+    this.currentFps = 60;
+  }
+}
+
+// ============================================================================
+// Debounce and Throttle Utilities
+// ============================================================================
+
+/**
+ * Debounce function with proper TypeScript generics
+ * Delays execution until after a specified wait time has elapsed since the last call
+ */
+export function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  wait: number,
+  options?: { leading?: boolean; trailing?: boolean; maxWait?: number }
+): T & { cancel: () => void; flush: () => ReturnType<T> | undefined } {
+  const { leading = false, trailing = true, maxWait } = options || {};
+
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let maxTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastCallTime: number | undefined;
+  let lastInvokeTime: number = 0;
+  let lastArgs: Parameters<T> | undefined;
+  let lastThis: any;
+  let result: ReturnType<T> | undefined;
+
+  const invokeFunc = (time: number): ReturnType<T> => {
+    const args = lastArgs!;
+    const thisArg = lastThis;
+
+    lastArgs = undefined;
+    lastThis = undefined;
+    lastInvokeTime = time;
+    result = fn.apply(thisArg, args);
+    return result;
+  };
+
+  const shouldInvoke = (time: number): boolean => {
+    const timeSinceLastCall = lastCallTime === undefined ? 0 : time - lastCallTime;
+    const timeSinceLastInvoke = time - lastInvokeTime;
+
+    return (
+      lastCallTime === undefined ||
+      timeSinceLastCall >= wait ||
+      timeSinceLastCall < 0 ||
+      (maxWait !== undefined && timeSinceLastInvoke >= maxWait)
+    );
+  };
+
+  const trailingEdge = (time: number): ReturnType<T> | undefined => {
+    timeoutId = null;
+
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = undefined;
+    lastThis = undefined;
+    return result;
+  };
+
+  const timerExpired = (): void => {
+    const time = Date.now();
+    if (shouldInvoke(time)) {
+      trailingEdge(time);
+      return;
+    }
+    // Restart timer
+    const timeSinceLastCall = time - (lastCallTime || 0);
+    const timeSinceLastInvoke = time - lastInvokeTime;
+    const timeWaiting = wait - timeSinceLastCall;
+    const maxTimeWaiting = maxWait !== undefined ? maxWait - timeSinceLastInvoke : timeWaiting;
+
+    timeoutId = setTimeout(timerExpired, Math.min(timeWaiting, maxTimeWaiting));
+  };
+
+  const leadingEdge = (time: number): ReturnType<T> | undefined => {
+    lastInvokeTime = time;
+    timeoutId = setTimeout(timerExpired, wait);
+
+    if (maxWait !== undefined) {
+      maxTimeoutId = setTimeout(() => {
+        if (timeoutId) {
+          trailingEdge(Date.now());
+        }
+      }, maxWait);
+    }
+
+    return leading ? invokeFunc(time) : result;
+  };
+
+  const debounced = function (this: any, ...args: Parameters<T>): ReturnType<T> | undefined {
+    const time = Date.now();
+    const isInvoking = shouldInvoke(time);
+
+    lastArgs = args;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timeoutId === null) {
+        return leadingEdge(time);
+      }
+      if (maxWait !== undefined) {
+        timeoutId = setTimeout(timerExpired, wait);
+        return invokeFunc(time);
+      }
+    }
+
+    if (timeoutId === null) {
+      timeoutId = setTimeout(timerExpired, wait);
+    }
+
+    return result;
+  } as T & { cancel: () => void; flush: () => ReturnType<T> | undefined };
+
+  debounced.cancel = (): void => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    if (maxTimeoutId) {
+      clearTimeout(maxTimeoutId);
+      maxTimeoutId = null;
+    }
+    lastInvokeTime = 0;
+    lastCallTime = undefined;
+    lastArgs = undefined;
+    lastThis = undefined;
+  };
+
+  debounced.flush = (): ReturnType<T> | undefined => {
+    if (timeoutId === null) {
+      return result;
+    }
+    return trailingEdge(Date.now());
+  };
+
+  return debounced;
+}
+
+/**
+ * Throttle function with proper TypeScript generics
+ * Limits execution to at most once per specified interval
+ */
+export function throttle<T extends (...args: any[]) => any>(
+  fn: T,
+  limit: number,
+  options?: { leading?: boolean; trailing?: boolean }
+): T & { cancel: () => void } {
+  const { leading = true, trailing = true } = options || {};
+
+  let lastCallTime: number = 0;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: Parameters<T> | undefined;
+  let lastThis: any;
+  let result: ReturnType<T>;
+
+  const invokeFunc = (): ReturnType<T> => {
+    const args = lastArgs!;
+    const thisArg = lastThis;
+    lastArgs = undefined;
+    lastThis = undefined;
+    lastCallTime = Date.now();
+    result = fn.apply(thisArg, args);
+    return result;
+  };
+
+  const throttled = function (this: any, ...args: Parameters<T>): ReturnType<T> {
+    const now = Date.now();
+    const remaining = limit - (now - lastCallTime);
+
+    lastArgs = args;
+    lastThis = this;
+
+    if (remaining <= 0 || remaining > limit) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      if (leading || lastCallTime !== 0) {
+        return invokeFunc();
+      }
+    }
+
+    if (timeoutId === null && trailing) {
+      timeoutId = setTimeout(() => {
+        timeoutId = null;
+        if (trailing && lastArgs) {
+          invokeFunc();
+        }
+      }, remaining > 0 ? remaining : limit);
+    }
+
+    return result;
+  } as T & { cancel: () => void };
+
+  throttled.cancel = (): void => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    lastCallTime = 0;
+    lastArgs = undefined;
+    lastThis = undefined;
+  };
+
+  return throttled;
+}
+
+// ============================================================================
+// Lazy Loading Utilities
+// ============================================================================
+
+const lazyLoadCache = new Map<string, Promise<any>>();
+
+/**
+ * Lazy load a module or resource with caching
+ */
+export async function lazyLoad<T>(
+  key: string,
+  loader: () => Promise<T>,
+  options?: { force?: boolean; timeout?: number }
+): Promise<T> {
+  const { force = false, timeout = 30000 } = options || {};
+
+  // Return cached promise if available and not forcing refresh
+  if (!force && lazyLoadCache.has(key)) {
+    return lazyLoadCache.get(key) as Promise<T>;
+  }
+
+  // Create loading promise with timeout
+  const loadPromise = new Promise<T>((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      lazyLoadCache.delete(key);
+      reject(new Error(`Lazy load timeout for: ${key}`));
+    }, timeout);
+
+    loader()
+      .then((result) => {
+        clearTimeout(timeoutId);
+        resolve(result);
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        lazyLoadCache.delete(key);
+        reject(error);
+      });
+  });
+
+  lazyLoadCache.set(key, loadPromise);
+  return loadPromise;
+}
+
+/**
+ * Clear the lazy load cache
+ */
+export function clearLazyLoadCache(key?: string): void {
+  if (key) {
+    lazyLoadCache.delete(key);
+  } else {
+    lazyLoadCache.clear();
+  }
+}
+
+// ============================================================================
+// Virtual Scroll Utilities
+// ============================================================================
+
+/**
+ * Calculate indices for virtual scrolling
+ */
+export function calculateVirtualScrollIndices(
+  scrollTop: number,
+  containerHeight: number,
+  itemHeight: number,
+  totalItems: number,
+  overscan: number = 3
+): VirtualScrollIndices {
+  // Calculate visible range
+  const visibleCount = Math.ceil(containerHeight / itemHeight);
+  const startIndex = Math.floor(scrollTop / itemHeight);
+
+  // Apply overscan for smoother scrolling
+  const overscanStart = Math.max(0, startIndex - overscan);
+  const overscanEnd = Math.min(totalItems - 1, startIndex + visibleCount + overscan);
+
+  // Calculate offset for positioning
+  const offsetY = overscanStart * itemHeight;
+
+  return {
+    startIndex: overscanStart,
+    endIndex: overscanEnd,
+    visibleCount: overscanEnd - overscanStart + 1,
+    offsetY
+  };
+}
+
+/**
+ * Calculate dynamic virtual scroll indices for variable height items
+ */
+export function calculateDynamicVirtualScrollIndices(
+  scrollTop: number,
+  containerHeight: number,
+  itemHeights: number[],
+  overscan: number = 3
+): VirtualScrollIndices & { heights: number[] } {
+  const totalItems = itemHeights.length;
+  if (totalItems === 0) {
+    return { startIndex: 0, endIndex: 0, visibleCount: 0, offsetY: 0, heights: [] };
+  }
+
+  // Build cumulative heights for binary search
+  const cumulativeHeights: number[] = [0];
+  for (let i = 0; i < totalItems; i++) {
+    cumulativeHeights.push(cumulativeHeights[i] + itemHeights[i]);
+  }
+
+  // Binary search for start index
+  let startIndex = 0;
+  let low = 0;
+  let high = totalItems - 1;
+
+  while (low <= high) {
+    const mid = Math.floor((low + high) / 2);
+    if (cumulativeHeights[mid] <= scrollTop) {
+      startIndex = mid;
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+
+  // Find end index
+  let endIndex = startIndex;
+  const targetBottom = scrollTop + containerHeight;
+
+  while (endIndex < totalItems && cumulativeHeights[endIndex] < targetBottom) {
+    endIndex++;
+  }
+
+  // Apply overscan
+  const overscanStart = Math.max(0, startIndex - overscan);
+  const overscanEnd = Math.min(totalItems - 1, endIndex + overscan);
+
+  return {
+    startIndex: overscanStart,
+    endIndex: overscanEnd,
+    visibleCount: overscanEnd - overscanStart + 1,
+    offsetY: cumulativeHeights[overscanStart],
+    heights: itemHeights.slice(overscanStart, overscanEnd + 1)
+  };
+}
+
+// ============================================================================
+// Image Optimization Utilities
+// ============================================================================
+
+/**
+ * Get optimized image URL with transformations
+ */
+export function getOptimizedImageUrl(
+  src: string,
+  width: number,
+  height?: number,
+  options?: ImageOptimizationOptions
+): string {
+  const { baseUrl, format = 'auto', quality = 80, fit = 'cover' } = options || {};
+
+  // Handle relative URLs
+  const fullSrc = src.startsWith('http') ? src : `${baseUrl || ''}${src}`;
+
+  // If using a CDN that supports transformations (e.g., Cloudinary, imgix, Cloudflare)
+  // This is a generic implementation - customize for your CDN
+  const url = new URL(fullSrc, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+
+  url.searchParams.set('w', String(width));
+  if (height) {
+    url.searchParams.set('h', String(height));
+  }
+  url.searchParams.set('q', String(quality));
+  url.searchParams.set('fit', fit);
+
+  if (format !== 'auto') {
+    url.searchParams.set('fm', format);
+  } else {
+    // Auto-detect best format based on browser support
+    if (typeof window !== 'undefined') {
+      const supportsAvif = document.createElement('canvas').toDataURL('image/avif').startsWith('data:image/avif');
+      const supportsWebp = document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp');
+
+      if (supportsAvif) {
+        url.searchParams.set('fm', 'avif');
+      } else if (supportsWebp) {
+        url.searchParams.set('fm', 'webp');
+      }
+    }
+  }
+
+  return url.toString();
+}
+
+/**
+ * Generate srcset for responsive images
+ */
+export function generateSrcSet(
+  src: string,
+  widths: number[] = [320, 640, 768, 1024, 1280, 1536, 1920],
+  options?: ImageOptimizationOptions
+): string {
+  return widths
+    .map((width) => {
+      const url = getOptimizedImageUrl(src, width, undefined, options);
+      return `${url} ${width}w`;
+    })
+    .join(', ');
+}
+
+/**
+ * Generate sizes attribute for responsive images
+ */
+export function generateSizes(breakpoints: { maxWidth: number; size: string }[]): string {
+  const sorted = [...breakpoints].sort((a, b) => a.maxWidth - b.maxWidth);
+  const sizes = sorted.map((bp) => `(max-width: ${bp.maxWidth}px) ${bp.size}`);
+  sizes.push('100vw'); // Default fallback
+  return sizes.join(', ');
+}
+
+/**
+ * Preload an image and return a promise
+ */
+export function preloadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+
+    img.onload = () => resolve(img);
+    img.onerror = (error) => reject(new Error(`Failed to preload image: ${src}`));
+
+    // Start loading
+    img.src = src;
+
+    // Handle already cached images
+    if (img.complete) {
+      resolve(img);
+    }
+  });
+}
+
+/**
+ * Preload multiple images with concurrency control
+ */
+export async function preloadImages(
+  sources: string[],
+  concurrency: number = 4
+): Promise<Map<string, HTMLImageElement | Error>> {
+  const results = new Map<string, HTMLImageElement | Error>();
+  const queue = [...sources];
+
+  const worker = async () => {
+    while (queue.length > 0) {
+      const src = queue.shift()!;
+      try {
+        const img = await preloadImage(src);
+        results.set(src, img);
+      } catch (error) {
+        results.set(src, error as Error);
+      }
+    }
+  };
+
+  const workers = Array(Math.min(concurrency, sources.length))
+    .fill(null)
+    .map(() => worker());
+
+  await Promise.all(workers);
+  return results;
+}
+
+// ============================================================================
+// Memory Manager Class
+// ============================================================================
+
+type CleanupCallback = (heldValue: any) => void;
+
+/**
+ * Memory manager using WeakRef and FinalizationRegistry for automatic cleanup
+ */
+export class MemoryManager<T extends object> {
+  private registry: FinalizationRegistry<any>;
+  private refs: Map<string, WeakRef<T>> = new Map();
+  private cleanupCallbacks: Map<string, CleanupCallback> = new Map();
+
+  constructor() {
+    // FinalizationRegistry calls cleanup when objects are garbage collected
+    this.registry = new FinalizationRegistry((heldValue: { key: string; value: any }) => {
+      this.refs.delete(heldValue.key);
+
+      // Call custom cleanup if registered
+      const cleanup = this.cleanupCallbacks.get(heldValue.key);
+      if (cleanup) {
+        cleanup(heldValue.value);
+        this.cleanupCallbacks.delete(heldValue.key);
+      }
+    });
+  }
+
+  /**
+   * Register an object to be tracked
+   */
+  register(key: string, object: T, heldValue?: any, cleanup?: CleanupCallback): void {
+    // Clean up existing ref if present
+    const existingRef = this.refs.get(key);
+    if (existingRef) {
+      this.unregister(key);
+    }
+
+    // Create weak reference
+    const ref = new WeakRef(object);
+    this.refs.set(key, ref);
+
+    // Register with finalization registry
+    this.registry.register(object, { key, value: heldValue || key }, object);
+
+    // Store cleanup callback if provided
+    if (cleanup) {
+      this.cleanupCallbacks.set(key, cleanup);
+    }
+  }
+
+  /**
+   * Get a registered object (may return undefined if garbage collected)
+   */
+  get(key: string): T | undefined {
+    const ref = this.refs.get(key);
+    return ref?.deref();
+  }
+
+  /**
+   * Check if an object is still alive
+   */
+  has(key: string): boolean {
+    const ref = this.refs.get(key);
+    return ref !== undefined && ref.deref() !== undefined;
+  }
+
+  /**
+   * Manually unregister an object
+   */
+  unregister(key: string): boolean {
+    const ref = this.refs.get(key);
+    if (!ref) return false;
+
+    const object = ref.deref();
+    if (object) {
+      this.registry.unregister(object);
+    }
+
+    this.refs.delete(key);
+    this.cleanupCallbacks.delete(key);
+    return true;
+  }
+
+  /**
+   * Get all active keys
+   */
+  keys(): string[] {
+    const activeKeys: string[] = [];
+    for (const [key, ref] of this.refs.entries()) {
+      if (ref.deref() !== undefined) {
+        activeKeys.push(key);
+      }
+    }
+    return activeKeys;
+  }
+
+  /**
+   * Get count of alive references
+   */
+  size(): number {
+    let count = 0;
+    for (const ref of this.refs.values()) {
+      if (ref.deref() !== undefined) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Clean up dead references (optional manual cleanup)
+   */
+  prune(): number {
+    let pruned = 0;
+    for (const [key, ref] of this.refs.entries()) {
+      if (ref.deref() === undefined) {
+        this.refs.delete(key);
+        this.cleanupCallbacks.delete(key);
+        pruned++;
+      }
+    }
+    return pruned;
+  }
+
+  /**
+   * Clear all references
+   */
+  clear(): void {
+    for (const [key, ref] of this.refs.entries()) {
+      const object = ref.deref();
+      if (object) {
+        this.registry.unregister(object);
+      }
+    }
+    this.refs.clear();
+    this.cleanupCallbacks.clear();
+  }
+}
+
+// ============================================================================
+// Scheduler Utilities
+// ============================================================================
+
+// Type for requestIdleCallback which may not be available in all environments
+interface IdleDeadline {
+  didTimeout: boolean;
+  timeRemaining(): number;
+}
+
+type IdleCallback = (deadline: IdleDeadline) => void;
+
+declare global {
+  interface Window {
+    requestIdleCallback?: (callback: IdleCallback, options?: { timeout: number }) => number;
+    cancelIdleCallback?: (handle: number) => void;
+  }
+}
+
+/**
+ * Schedule work during idle time using requestIdleCallback
+ * Falls back to setTimeout if not available
+ */
+export function scheduleIdleWork<T>(
+  work: (deadline: IdleDeadline) => T,
+  options?: { timeout?: number }
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const { timeout = 1000 } = options || {};
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback!(
+        (deadline) => {
+          try {
+            const result = work(deadline);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        },
+        { timeout }
+      );
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(() => {
+        try {
+          // Simulate deadline object
+          const mockDeadline: IdleDeadline = {
+            didTimeout: false,
+            timeRemaining: () => 50 // Conservative estimate
+          };
+          const result = work(mockDeadline);
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      }, 1);
+    }
+  });
+}
+
+/**
+ * Schedule work for next animation frame using requestAnimationFrame
+ */
+export function scheduleWork<T>(work: (timestamp: number) => T): Promise<T> {
+  return new Promise((resolve, reject) => {
+    if (typeof window !== 'undefined' && 'requestAnimationFrame' in window) {
+      requestAnimationFrame((timestamp) => {
+        try {
+          const result = work(timestamp);
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } else {
+      // Fallback for SSR or environments without RAF
+      setTimeout(() => {
+        try {
+          const result = work(performance.now());
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      }, 16); // ~60fps
+    }
+  });
+}
+
+/**
+ * Schedule a series of work chunks during idle time
+ */
+export async function scheduleChunkedWork<T, R>(
+  items: T[],
+  processor: (item: T, index: number) => R,
+  options?: { chunkSize?: number; timeout?: number }
+): Promise<R[]> {
+  const { chunkSize = 10, timeout = 1000 } = options || {};
+  const results: R[] = [];
+  let index = 0;
+
+  while (index < items.length) {
+    await scheduleIdleWork(
+      (deadline) => {
+        while (
+          index < items.length &&
+          (deadline.timeRemaining() > 0 || deadline.didTimeout)
+        ) {
+          const endIndex = Math.min(index + chunkSize, items.length);
+          for (let i = index; i < endIndex; i++) {
+            results.push(processor(items[i], i));
+          }
+          index = endIndex;
+
+          if (deadline.timeRemaining() <= 0) break;
+        }
+      },
+      { timeout }
+    );
+  }
+
+  return results;
+}
+
+// ============================================================================
+// Network-Aware Loading
+// ============================================================================
+
+/**
+ * Get network information if available
+ */
+export function getNetworkInfo(): NetworkInfo {
+  const defaultInfo: NetworkInfo = {
+    effectiveType: 'unknown',
+    downlink: 10,
+    rtt: 100,
+    saveData: false,
+    online: true
+  };
+
+  if (typeof navigator === 'undefined') {
+    return defaultInfo;
+  }
+
+  // Check online status
+  defaultInfo.online = navigator.onLine;
+
+  // Check for Network Information API
+  const connection = (navigator as any).connection ||
+    (navigator as any).mozConnection ||
+    (navigator as any).webkitConnection;
+
+  if (!connection) {
+    return defaultInfo;
+  }
+
+  return {
+    effectiveType: connection.effectiveType || 'unknown',
+    downlink: connection.downlink || 10,
+    rtt: connection.rtt || 100,
+    saveData: connection.saveData || false,
+    online: navigator.onLine
+  };
+}
+
+/**
+ * Determine if a feature should be loaded based on network conditions
+ */
+export function shouldLoadFeature(
+  featureType: 'video' | 'image' | 'animation' | 'heavy' | 'light',
+  options?: { respectSaveData?: boolean; minConnectionType?: NetworkInfo['effectiveType'] }
+): boolean {
+  const { respectSaveData = true, minConnectionType = '3g' } = options || {};
+  const network = getNetworkInfo();
+
+  // Always deny if offline
+  if (!network.online) {
+    return featureType === 'light';
+  }
+
+  // Respect save data mode
+  if (respectSaveData && network.saveData) {
+    return featureType === 'light';
+  }
+
+  // Connection type priority
+  const connectionPriority: Record<NetworkInfo['effectiveType'], number> = {
+    '4g': 4,
+    '3g': 3,
+    '2g': 2,
+    'slow-2g': 1,
+    'unknown': 3 // Assume decent connection if unknown
+  };
+
+  const currentPriority = connectionPriority[network.effectiveType];
+  const minPriority = connectionPriority[minConnectionType];
+
+  // Feature requirements
+  const featureRequirements: Record<typeof featureType, number> = {
+    video: 4,      // Only on 4g
+    heavy: 3,      // 3g or better
+    animation: 3,  // 3g or better
+    image: 2,      // 2g or better
+    light: 1       // Always load
+  };
+
+  const requiredPriority = featureRequirements[featureType];
+
+  return currentPriority >= Math.max(requiredPriority, minPriority);
+}
+
+/**
+ * Get recommended quality settings based on network
+ */
+export function getQualityForNetwork(): {
+  imageQuality: number;
+  videoQuality: 'auto' | '1080p' | '720p' | '480p' | '360p';
+  enableAnimations: boolean;
+  prefetchEnabled: boolean;
+} {
+  const network = getNetworkInfo();
+
+  if (network.saveData) {
+    return {
+      imageQuality: 50,
+      videoQuality: '360p',
+      enableAnimations: false,
+      prefetchEnabled: false
+    };
+  }
+
+  switch (network.effectiveType) {
+    case '4g':
+      return {
+        imageQuality: 85,
+        videoQuality: 'auto',
+        enableAnimations: true,
+        prefetchEnabled: true
+      };
+    case '3g':
+      return {
+        imageQuality: 70,
+        videoQuality: '720p',
+        enableAnimations: true,
+        prefetchEnabled: false
+      };
+    case '2g':
+      return {
+        imageQuality: 50,
+        videoQuality: '480p',
+        enableAnimations: false,
+        prefetchEnabled: false
+      };
+    case 'slow-2g':
+      return {
+        imageQuality: 40,
+        videoQuality: '360p',
+        enableAnimations: false,
+        prefetchEnabled: false
+      };
+    default:
+      return {
+        imageQuality: 80,
+        videoQuality: 'auto',
+        enableAnimations: true,
+        prefetchEnabled: true
+      };
+  }
+}
+
+// ============================================================================
+// Global Instances
+// ============================================================================
+
+/**
+ * Global performance monitor instance
+ */
+export const perfMonitor = new PerformanceMonitor();
+
+/**
+ * Global memory manager instance
+ */
+export const memoryManager = new MemoryManager<object>();
+
+// ============================================================================
+// Legacy Web Vitals Support (for backwards compatibility)
+// ============================================================================
+
+// Import from centralized config - single source of truth
 import { API_ENDPOINTS } from '$lib/api/config';
 
-export interface PerformanceMetric {
-	name: string;
-	value: number;
-	rating: 'good' | 'needs-improvement' | 'poor';
-	delta?: number;
-	id?: string;
+export interface LegacyPerformanceMetric {
+  name: string;
+  value: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+  delta?: number;
+  id?: string;
 }
 
 /**
- * Report performance metrics (can be sent to analytics)
+ * Report legacy performance metric (for backwards compatibility)
  */
-function reportMetric(metric: PerformanceMetric): void {
-	// Log to console in development
-	if (import.meta.env.DEV) {
-		console.log(`[Performance] ${metric.name}:`, {
-			value: Math.round(metric.value),
-			rating: metric.rating
-		});
-	}
+function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
+  if (import.meta.env.DEV) {
+    console.log(`[Performance] ${metric.name}:`, {
+      value: Math.round(metric.value),
+      rating: metric.rating
+    });
+  }
 
-	// Send to analytics in production
-	if (import.meta.env.PROD && typeof window !== 'undefined' && typeof navigator !== 'undefined') {
-		// Example: Send to Google Analytics
-		if ('gtag' in window) {
-			(window as any).gtag('event', metric.name, {
-				value: Math.round(metric.value),
-				metric_rating: metric.rating,
-				metric_delta: metric.delta ? Math.round(metric.delta) : undefined,
-				metric_id: metric.id
-			});
-		}
+  if (import.meta.env.PROD && typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+    if ('gtag' in window) {
+      (window as any).gtag('event', metric.name, {
+        value: Math.round(metric.value),
+        metric_rating: metric.rating,
+        metric_delta: metric.delta ? Math.round(metric.delta) : undefined,
+        metric_id: metric.id
+      });
+    }
 
-		// Send to same-origin proxy to avoid CORB/CORS issues
-		// ICT 11+: Use text/plain to avoid preflight (sendBeacon can't handle preflight)
-		if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function') {
-			const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
-			navigator.sendBeacon(API_ENDPOINTS.analytics.performance, blob);
-		}
-	}
+    if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function') {
+      const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
+      navigator.sendBeacon(API_ENDPOINTS.analytics.performance, blob);
+    }
+  }
 }
 
-/**
- * Get rating based on thresholds
- */
 function getRating(
-	value: number,
-	thresholds: [number, number]
+  value: number,
+  thresholds: [number, number]
 ): 'good' | 'needs-improvement' | 'poor' {
-	if (value <= thresholds[0]) return 'good';
-	if (value <= thresholds[1]) return 'needs-improvement';
-	return 'poor';
+  if (value <= thresholds[0]) return 'good';
+  if (value <= thresholds[1]) return 'needs-improvement';
+  return 'poor';
 }
 
 /**
- * Largest Contentful Paint (LCP)
- * Good: < 2.5s, Needs Improvement: < 4s, Poor: >= 4s
- */
-export function measureLCP(): void {
-	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
-
-	try {
-		let reported = false;
-		const observer = new PerformanceObserver((list) => {
-			if (reported) return;
-
-			const entries = list.getEntries();
-			const lastEntry = entries[entries.length - 1] as any;
-
-			const metric: PerformanceMetric = {
-				name: 'LCP',
-				value: lastEntry.renderTime || lastEntry.loadTime,
-				rating: getRating(lastEntry.renderTime || lastEntry.loadTime, [2500, 4000]),
-				id: lastEntry.id
-			};
-
-			reportMetric(metric);
-		});
-
-		observer.observe({ type: 'largest-contentful-paint', buffered: true });
-
-		// Disconnect after page load settles
-		setTimeout(() => {
-			reported = true;
-			observer.disconnect();
-		}, 10000);
-	} catch (error) {
-		console.error('LCP measurement failed:', error);
-	}
-}
-
-/**
- * Interaction to Next Paint (INP) - Replaced FID as Core Web Vital in March 2024
- * Good: < 200ms, Needs Improvement: < 500ms, Poor: >= 500ms
- *
- * INP measures responsiveness to ALL user interactions, not just the first one.
- * It captures the worst interaction latency throughout the page lifecycle.
- *
- * @returns Cleanup function to remove event listeners (prevents memory leaks in SPAs)
- */
-export function measureINP(): (() => void) | undefined {
-	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
-
-	try {
-		let worstINP = 0;
-		let reported = false;
-		let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-		const observer = new PerformanceObserver((list) => {
-			const entries = list.getEntries();
-			entries.forEach((entry: any) => {
-				// Calculate interaction duration (input delay + processing + presentation delay)
-				const interactionDuration = entry.duration;
-				if (interactionDuration > worstINP) {
-					worstINP = interactionDuration;
-				}
-			});
-		});
-
-		observer.observe({
-			type: 'event',
-			buffered: true,
-			durationThreshold: 16
-		} as PerformanceObserverInit);
-
-		// Report INP on page visibility change (user leaving)
-		const reportINP = () => {
-			if (!reported && worstINP > 0) {
-				reported = true;
-				const metric: PerformanceMetric = {
-					name: 'INP',
-					value: worstINP,
-					rating: getRating(worstINP, [200, 500])
-				};
-				reportMetric(metric);
-				observer.disconnect();
-			}
-		};
-
-		// Named handler for cleanup (prevents memory leaks)
-		const visibilityHandler = () => {
-			if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
-				reportINP();
-			}
-		};
-
-		// Report when page is hidden (most accurate)
-		if (typeof document !== 'undefined') {
-			document.addEventListener('visibilitychange', visibilityHandler);
-		}
-
-		// Fallback: report after 30 seconds of page load
-		timeoutId = setTimeout(() => {
-			reportINP();
-		}, 30000);
-
-		// Return cleanup function for SPA navigation
-		return () => {
-			if (typeof document !== 'undefined') {
-				document.removeEventListener('visibilitychange', visibilityHandler);
-			}
-			if (timeoutId) clearTimeout(timeoutId);
-			observer.disconnect();
-		};
-	} catch (error) {
-		console.error('INP measurement failed:', error);
-		return undefined;
-	}
-}
-
-/**
- * First Input Delay (FID) - DEPRECATED: Replaced by INP in March 2024
- * Kept for backwards compatibility and legacy analytics
- * Good: < 100ms, Needs Improvement: < 300ms, Poor: >= 300ms
- * @deprecated Use measureINP() instead - INP is the official Core Web Vital since March 2024
- */
-export function measureFID(): void {
-	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
-
-	try {
-		let reported = false;
-		const observer = new PerformanceObserver((list) => {
-			if (reported) return;
-			reported = true;
-
-			const entries = list.getEntries();
-			const entry = entries[0] as any;
-			if (!entry) return;
-
-			const metric: PerformanceMetric = {
-				name: 'FID',
-				value: entry.processingStart - entry.startTime,
-				rating: getRating(entry.processingStart - entry.startTime, [100, 300])
-			};
-
-			reportMetric(metric);
-			observer.disconnect();
-		});
-
-		observer.observe({ type: 'first-input', buffered: true });
-	} catch (error) {
-		console.error('FID measurement failed:', error);
-	}
-}
-
-/**
- * Cumulative Layout Shift (CLS)
- * Good: < 0.1, Needs Improvement: < 0.25, Poor: >= 0.25
- *
- * @returns Cleanup function to remove event listeners (prevents memory leaks in SPAs)
- */
-export function measureCLS(): (() => void) | undefined {
-	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
-
-	try {
-		let clsValue = 0;
-		let reported = false;
-		let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-		const observer = new PerformanceObserver((list) => {
-			const entries = list.getEntries();
-			entries.forEach((entry: any) => {
-				if (!entry.hadRecentInput) {
-					clsValue += entry.value;
-				}
-			});
-		});
-
-		observer.observe({ type: 'layout-shift', buffered: true });
-
-		// Named handler for proper cleanup (prevents memory leaks)
-		const visibilityHandler = () => {
-			if (typeof document !== 'undefined' && document.visibilityState === 'hidden' && !reported) {
-				reported = true;
-				const metric: PerformanceMetric = {
-					name: 'CLS',
-					value: clsValue,
-					rating: getRating(clsValue, [0.1, 0.25])
-				};
-				reportMetric(metric);
-				observer.disconnect();
-			}
-		};
-
-		// Report CLS once after initial load settles (5 seconds)
-		timeoutId = setTimeout(() => {
-			if (!reported) {
-				reported = true;
-				const metric: PerformanceMetric = {
-					name: 'CLS',
-					value: clsValue,
-					rating: getRating(clsValue, [0.1, 0.25])
-				};
-				reportMetric(metric);
-				observer.disconnect();
-			}
-		}, 5000);
-
-		// Also report on page hide
-		if (typeof document !== 'undefined') {
-			document.addEventListener('visibilitychange', visibilityHandler);
-		}
-
-		// Return cleanup function for SPA navigation
-		return () => {
-			if (typeof document !== 'undefined') {
-				document.removeEventListener('visibilitychange', visibilityHandler);
-			}
-			if (timeoutId) clearTimeout(timeoutId);
-			observer.disconnect();
-		};
-	} catch (error) {
-		console.error('CLS measurement failed:', error);
-		return undefined;
-	}
-}
-
-/**
- * First Contentful Paint (FCP)
- * Good: < 1.8s, Needs Improvement: < 3s, Poor: >= 3s
- */
-export function measureFCP(): void {
-	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
-
-	try {
-		let reported = false;
-		const observer = new PerformanceObserver((list) => {
-			if (reported) return;
-
-			const entries = list.getEntries();
-			// Find the first-contentful-paint entry
-			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
-			if (!fcpEntry) return;
-
-			reported = true;
-			const metric: PerformanceMetric = {
-				name: 'FCP',
-				value: fcpEntry.startTime,
-				rating: getRating(fcpEntry.startTime, [1800, 3000])
-			};
-
-			reportMetric(metric);
-			observer.disconnect();
-		});
-
-		observer.observe({ type: 'paint', buffered: true });
-	} catch (error) {
-		console.error('FCP measurement failed:', error);
-	}
-}
-
-/**
- * Time to First Byte (TTFB)
- * Good: < 800ms, Needs Improvement: < 1800ms, Poor: >= 1800ms
- */
-export function measureTTFB(): void {
-	if (typeof window === 'undefined' || typeof performance === 'undefined') return;
-
-	try {
-		const navigationEntry = performance.getEntriesByType(
-			'navigation'
-		)[0] as PerformanceNavigationTiming;
-
-		if (navigationEntry) {
-			const ttfb = navigationEntry.responseStart - navigationEntry.requestStart;
-
-			const metric: PerformanceMetric = {
-				name: 'TTFB',
-				value: ttfb,
-				rating: getRating(ttfb, [800, 1800])
-			};
-
-			reportMetric(metric);
-		}
-	} catch (error) {
-		console.error('TTFB measurement failed:', error);
-	}
-}
-
-// Store cleanup functions for SPA navigation
-let performanceCleanupFns: Array<() => void> = [];
-
-/**
- * Initialize all performance monitoring
- * Call this once on app mount
- *
- * @returns Cleanup function to remove all listeners (call on component destroy in SPAs)
- */
-export function initPerformanceMonitoring(): () => void {
-	if (typeof window === 'undefined') return () => {};
-
-	// Wait for page load to avoid blocking
-	if (document.readyState === 'complete') {
-		startMonitoring();
-	} else {
-		const loadHandler = () => startMonitoring();
-		window.addEventListener('load', loadHandler, { once: true });
-	}
-
-	// Return master cleanup function
-	return () => {
-		performanceCleanupFns.forEach((cleanup) => cleanup());
-		performanceCleanupFns = [];
-	};
-}
-
-function startMonitoring(): void {
-	// Clear any previous cleanup functions (in case of re-initialization)
-	performanceCleanupFns.forEach((cleanup) => cleanup());
-	performanceCleanupFns = [];
-
-	// Measure all Core Web Vitals (November 2025 standard)
-	measureLCP(); // Largest Contentful Paint
-
-	// Collect cleanup functions from metrics that return them
-	const inpCleanup = measureINP(); // Interaction to Next Paint (replaced FID in March 2024)
-	if (inpCleanup) performanceCleanupFns.push(inpCleanup);
-
-	const clsCleanup = measureCLS(); // Cumulative Layout Shift
-	if (clsCleanup) performanceCleanupFns.push(clsCleanup);
-
-	measureFCP(); // First Contentful Paint
-	measureTTFB(); // Time to First Byte
-
-	// Legacy FID for backwards compatibility with older analytics
-	measureFID();
-
-	// Log bundle size in development
-	if (import.meta.env.DEV) {
-		logBundleSize();
-	}
-}
-
-/**
- * Log bundle size for monitoring
- */
-function logBundleSize(): void {
-	if (typeof window === 'undefined' || !('performance' in window)) return;
-
-	try {
-		const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
-		let totalSize = 0;
-		let jsSize = 0;
-		let cssSize = 0;
-
-		resources.forEach((resource) => {
-			const size = resource.transferSize || 0;
-			totalSize += size;
-
-			if (resource.name.endsWith('.js')) {
-				jsSize += size;
-			} else if (resource.name.endsWith('.css')) {
-				cssSize += size;
-			}
-		});
-
-		console.log('[Performance] Bundle Size:', {
-			total: `${(totalSize / 1024).toFixed(2)} KB`,
-			js: `${(jsSize / 1024).toFixed(2)} KB`,
-			css: `${(cssSize / 1024).toFixed(2)} KB`
-		});
-	} catch (error) {
-		console.error('Bundle size logging failed:', error);
-	}
-}
-
-/**
- * Measure custom performance marks
+ * Measure custom performance marks (legacy)
  */
 export function measureCustomMetric(name: string, startMark: string, endMark: string): void {
-	if (typeof window === 'undefined' || !('performance' in window)) return;
+  if (typeof window === 'undefined' || !('performance' in window)) return;
 
-	try {
-		performance.measure(name, startMark, endMark);
-		const measure = performance.getEntriesByName(name)[0];
+  try {
+    performance.measure(name, startMark, endMark);
+    const measure = performance.getEntriesByName(name)[0];
 
-		if (measure) {
-			console.log(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
-		}
-	} catch (error) {
-		console.error(`Custom metric measurement failed for ${name}:`, error);
-	}
+    if (measure) {
+      console.log(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
+    }
+  } catch (error) {
+    console.error(`Custom metric measurement failed for ${name}:`, error);
+  }
 }
+
+// Export types for external use
+export type {
+  IdleDeadline,
+  IdleCallback,
+  CleanupCallback
+};
