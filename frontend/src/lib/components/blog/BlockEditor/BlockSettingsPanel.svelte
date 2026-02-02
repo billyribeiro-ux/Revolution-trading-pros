@@ -5,11 +5,18 @@
 	 * Advanced block settings with typography, colors, spacing,
 	 * borders, animations, and responsive controls.
 	 *
-	 * @version 1.0.0
+	 * Features:
+	 * - Storyblok-style datasource integration for dropdown fields
+	 * - Dynamic option loading from datasources
+	 * - Full typography, colors, spacing controls
+	 *
+	 * @version 1.1.0
 	 * @author Revolution Trading Pros
 	 */
 
+	import { onMount } from 'svelte';
 	import type { Block, BlockSettings } from './types';
+	import { getApiBaseUrl, getAuthToken } from '$lib/api/config';
 
 	interface Props {
 		block: Block;
@@ -17,6 +24,79 @@
 	}
 
 	let { block, onupdate }: Props = $props();
+
+	// Datasource types
+	interface Datasource {
+		id: string;
+		name: string;
+		slug: string;
+		description: string | null;
+		entry_count: number;
+	}
+
+	interface DatasourceEntry {
+		name: string;
+		value: string;
+	}
+
+	// Datasource state
+	let datasources = $state<Datasource[]>([]);
+	let datasourceEntries = $state<Record<string, DatasourceEntry[]>>({});
+	let loadingDatasources = $state(false);
+	let loadingEntries = $state<Record<string, boolean>>({});
+
+	// Fetch available datasources
+	async function fetchDatasources() {
+		if (datasources.length > 0) return; // Already loaded
+
+		loadingDatasources = true;
+		try {
+			const token = getAuthToken();
+			const response = await fetch(`${getApiBaseUrl()}/cms/datasources?limit=100`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				datasources = data.data || [];
+			}
+		} catch (err) {
+			console.error('Failed to fetch datasources:', err);
+		} finally {
+			loadingDatasources = false;
+		}
+	}
+
+	// Fetch entries for a specific datasource
+	async function fetchDatasourceEntries(slug: string): Promise<DatasourceEntry[]> {
+		if (datasourceEntries[slug]) return datasourceEntries[slug];
+
+		loadingEntries = { ...loadingEntries, [slug]: true };
+		try {
+			// Use public API endpoint for fetching entries
+			const response = await fetch(`${getApiBaseUrl()}/cms/datasources/public/${slug}`);
+
+			if (response.ok) {
+				const data = await response.json();
+				const entries = data.entries || [];
+				datasourceEntries = { ...datasourceEntries, [slug]: entries };
+				return entries;
+			}
+		} catch (err) {
+			console.error(`Failed to fetch entries for ${slug}:`, err);
+		} finally {
+			loadingEntries = { ...loadingEntries, [slug]: false };
+		}
+		return [];
+	}
+
+	// Load datasources when panel mounts
+	onMount(() => {
+		fetchDatasources();
+	});
 
 	// Wrapper to update settings
 	function updateSettings(settings: Partial<BlockSettings>): void {
@@ -1131,6 +1211,129 @@
 					</div>
 				{/if}
 			</div>
+
+			<!-- Datasource Section (for dropdown/select blocks) -->
+			<div class="section">
+				<button class="section-header" onclick={() => toggleSection('datasource')}>
+					<span>Datasource Options</span>
+					<span class="chevron" class:expanded={expandedSections.has('datasource')}>▼</span>
+				</button>
+				{#if expandedSections.has('datasource')}
+					<div class="section-content">
+						<p class="section-info">
+							Connect dropdown fields to reusable datasources for dynamic options.
+						</p>
+
+						<div class="field">
+							<label>
+								Option Source
+								<select
+									value={block.settings.optionSource || 'static'}
+									onchange={(e: Event) =>
+										updateSetting('optionSource', (e.currentTarget as HTMLSelectElement).value)}
+								>
+									<option value="static">Static Options</option>
+									<option value="datasource">From Datasource</option>
+								</select>
+							</label>
+						</div>
+
+						{#if block.settings.optionSource === 'datasource'}
+							<div class="field">
+								<label>
+									Select Datasource
+									{#if loadingDatasources}
+										<span class="loading-indicator">Loading...</span>
+									{/if}
+									<select
+										value={block.settings.datasourceSlug || ''}
+										onchange={async (e: Event) => {
+											const slug = (e.currentTarget as HTMLSelectElement).value;
+											updateSetting('datasourceSlug', slug);
+											if (slug) {
+												await fetchDatasourceEntries(slug);
+											}
+										}}
+									>
+										<option value="">-- Select a datasource --</option>
+										{#each datasources as ds}
+											<option value={ds.slug}>
+												{ds.name} ({ds.entry_count} entries)
+											</option>
+										{/each}
+									</select>
+								</label>
+							</div>
+
+							{#if block.settings.datasourceSlug}
+								<div class="datasource-preview">
+									<span class="field-label">Preview Options:</span>
+									{#if loadingEntries[block.settings.datasourceSlug]}
+										<span class="loading-indicator">Loading entries...</span>
+									{:else if datasourceEntries[block.settings.datasourceSlug]?.length > 0}
+										<div class="preview-entries">
+											{#each datasourceEntries[block.settings.datasourceSlug].slice(0, 5) as entry}
+												<span class="preview-entry">
+													{entry.name} <code>({entry.value})</code>
+												</span>
+											{/each}
+											{#if datasourceEntries[block.settings.datasourceSlug].length > 5}
+												<span class="preview-more">
+													+{datasourceEntries[block.settings.datasourceSlug].length - 5} more
+												</span>
+											{/if}
+										</div>
+									{:else}
+										<span class="no-entries">No entries in this datasource</span>
+									{/if}
+								</div>
+
+								<div class="field">
+									<label>
+										Dimension (for translations)
+										<input
+											type="text"
+											placeholder="default"
+											value={block.settings.datasourceDimension || 'default'}
+											onchange={(e: Event) =>
+												updateSetting('datasourceDimension', (e.currentTarget as HTMLInputElement).value)}
+										/>
+									</label>
+									<p class="help-text">Use 'en', 'de', 'fr', etc. for localized options</p>
+								</div>
+
+								<div class="field">
+									<label class="checkbox-label-inline">
+										<input
+											type="checkbox"
+											checked={block.settings.datasourceIncludeEmpty !== false}
+											onchange={(e: Event) =>
+												updateSetting('datasourceIncludeEmpty', (e.currentTarget as HTMLInputElement).checked)}
+										/>
+										<span>Include empty "Select..." option</span>
+									</label>
+								</div>
+							{/if}
+						{/if}
+
+						{#if block.settings.optionSource !== 'datasource'}
+							<div class="field">
+								<label>
+									Static Options (one per line)
+									<textarea
+										rows="4"
+										placeholder="Option 1|value1&#10;Option 2|value2&#10;Option 3|value3"
+										value={block.settings.staticOptions || ''}
+										onchange={(e: Event) =>
+											updateSetting('staticOptions', (e.currentTarget as HTMLTextAreaElement).value)}
+									></textarea>
+								</label>
+								<p class="help-text">Format: Label|value (one per line)</p>
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
 		{:else if activeTab === 'responsive'}
 			<!-- Visibility Section -->
 			<div class="section">
@@ -1831,5 +2034,101 @@
 		background: #3b82f6;
 		border-color: #3b82f6;
 		color: white;
+	}
+
+	/* Datasource Section Styles */
+	.section-info {
+		font-size: 0.75rem;
+		color: var(--text-secondary, #6b7280);
+		margin: 0 0 1rem 0;
+		line-height: 1.5;
+		padding: 0.75rem;
+		background: rgba(59, 130, 246, 0.05);
+		border-radius: 0.375rem;
+		border-left: 3px solid var(--primary, #3b82f6);
+	}
+
+	.loading-indicator {
+		display: inline-block;
+		font-size: 0.7rem;
+		color: var(--text-tertiary, #9ca3af);
+		margin-left: 0.5rem;
+	}
+
+	.datasource-preview {
+		margin: 1rem 0;
+		padding: 0.75rem;
+		background: var(--bg-secondary, #f9fafb);
+		border-radius: 0.375rem;
+		border: 1px solid var(--border-color, #e5e7eb);
+	}
+
+	.datasource-preview .field-label {
+		display: block;
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--text-secondary, #6b7280);
+		text-transform: uppercase;
+		margin-bottom: 0.5rem;
+	}
+
+	.preview-entries {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+	}
+
+	.preview-entry {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8rem;
+		color: var(--text-primary, #1f2937);
+	}
+
+	.preview-entry code {
+		font-size: 0.7rem;
+		padding: 0.125rem 0.375rem;
+		background: rgba(99, 102, 241, 0.1);
+		color: var(--primary, #3b82f6);
+		border-radius: 0.25rem;
+	}
+
+	.preview-more {
+		font-size: 0.75rem;
+		color: var(--text-tertiary, #9ca3af);
+		font-style: italic;
+		margin-top: 0.25rem;
+	}
+
+	.no-entries {
+		font-size: 0.8rem;
+		color: var(--text-tertiary, #9ca3af);
+		font-style: italic;
+	}
+
+	.help-text {
+		font-size: 0.7rem;
+		color: var(--text-tertiary, #9ca3af);
+		margin: 0.25rem 0 0 0;
+	}
+
+	.checkbox-label-inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		cursor: pointer;
+		margin-top: 0.5rem;
+	}
+
+	.checkbox-label-inline input[type='checkbox'] {
+		width: 16px;
+		height: 16px;
+		accent-color: var(--primary, #3b82f6);
+	}
+
+	.checkbox-label-inline span {
+		font-size: 0.85rem;
+		color: var(--text-primary, #1f2937);
 	}
 </style>

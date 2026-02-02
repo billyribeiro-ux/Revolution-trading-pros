@@ -3,7 +3,7 @@
  * ImageUploader - Drag & Drop Image Upload Component
  * =============================================================================
  * Enterprise-grade image uploader with R2 CDN integration, image processing,
- * blurhash placeholders, and progress tracking
+ * blurhash placeholders, progress tracking, and Asset Manager integration
  *
  * Features:
  * - Drag and drop zone
@@ -14,15 +14,17 @@
  * - Progress bar with percentage
  * - Error handling with retry
  * - Multiple file support
+ * - Choose from Asset Manager library
+ * - Recent assets quick access
  *
- * @version 1.0.0
+ * @version 2.0.0 - February 2026
  * @author Revolution Trading Pros
  */
 -->
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import {
 		uploadImage,
@@ -38,6 +40,7 @@
 		type ProcessedImage,
 		type ProcessOptions
 	} from './upload/image-processor';
+	import AssetManager from './AssetManager.svelte';
 
 	// ==========================================================================
 	// Props
@@ -60,6 +63,10 @@
 		processBeforeUpload?: boolean;
 		/** Image processing options */
 		processOptions?: ProcessOptions;
+		/** Show "Choose from library" button */
+		showLibrary?: boolean;
+		/** Show recent assets quick access */
+		showRecent?: boolean;
 	}
 
 	let {
@@ -70,7 +77,9 @@
 		collection = 'blog-images',
 		compact = false,
 		processBeforeUpload = true,
-		processOptions = {}
+		processOptions = {},
+		showLibrary = true,
+		showRecent = true
 	}: Props = $props();
 
 	// ==========================================================================
@@ -96,6 +105,23 @@
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let dropZone = $state<HTMLDivElement | null>(null);
 
+	// Asset Manager state
+	let assetManagerOpen = $state(false);
+	let recentAssets = $state<RecentAsset[]>([]);
+	let showRecentPanel = $state(false);
+	let isLoadingRecent = $state(false);
+
+	interface RecentAsset {
+		id: string;
+		filename: string;
+		cdn_url: string;
+		thumbnail_url: string | null;
+		mime_type: string;
+		width: number | null;
+		height: number | null;
+		blurhash: string | null;
+	}
+
 	// Derived state
 	const isUploading = $derived(uploadQueue.some(
 		(item) => item.status === 'processing' || item.status === 'uploading'
@@ -115,6 +141,11 @@
 	onMount(() => {
 		// Add paste event listener
 		document.addEventListener('paste', handlePaste);
+
+		// Load recent assets if enabled
+		if (showRecent) {
+			loadRecentAssets();
+		}
 	});
 
 	onDestroy(() => {
@@ -129,6 +160,83 @@
 			}
 		});
 	});
+
+	// ==========================================================================
+	// Asset Manager Integration
+	// ==========================================================================
+
+	async function loadRecentAssets() {
+		if (!showRecent) return;
+
+		isLoadingRecent = true;
+		try {
+			const response = await fetch('/api/cms/assets/recent?limit=8', {
+				credentials: 'include'
+			});
+			if (response.ok) {
+				const data = await response.json();
+				recentAssets = data.filter((a: RecentAsset) => a.mime_type.startsWith('image/'));
+			}
+		} catch (error) {
+			console.error('Failed to load recent assets:', error);
+		} finally {
+			isLoadingRecent = false;
+		}
+	}
+
+	function openAssetManager() {
+		assetManagerOpen = true;
+	}
+
+	function handleAssetSelect(asset: any) {
+		// Convert asset to UploadResult format
+		const result: UploadResult = {
+			url: asset.cdn_url,
+			filename: asset.filename,
+			size: asset.file_size,
+			width: asset.width,
+			height: asset.height,
+			blurhash: asset.blurhash,
+			thumbnailUrl: asset.thumbnail_url
+		};
+
+		onUpload(result);
+
+		// Track usage
+		trackAssetUsage(asset.id);
+	}
+
+	function handleRecentAssetClick(asset: RecentAsset) {
+		const result: UploadResult = {
+			url: asset.cdn_url,
+			filename: asset.filename,
+			size: 0,
+			width: asset.width || undefined,
+			height: asset.height || undefined,
+			blurhash: asset.blurhash || undefined,
+			thumbnailUrl: asset.thumbnail_url || undefined
+		};
+
+		onUpload(result);
+		trackAssetUsage(asset.id);
+		showRecentPanel = false;
+	}
+
+	async function trackAssetUsage(assetId: string) {
+		try {
+			await fetch(`/api/cms/assets/${assetId}/track-usage`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					content_type: 'blog_post',
+					field_name: 'image_block'
+				})
+			});
+		} catch (error) {
+			// Silent fail - usage tracking is not critical
+		}
+	}
 
 	// ==========================================================================
 	// Event Handlers
@@ -418,6 +526,67 @@
 </script>
 
 <div class="image-uploader" class:compact class:dragging={isDragging}>
+	<!-- Library & Recent Actions -->
+	{#if (showLibrary || showRecent) && !compact}
+		<div class="library-actions" transition:fade={{ duration: 150 }}>
+			{#if showLibrary}
+				<button type="button" class="library-btn" onclick={openAssetManager}>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<rect x="3" y="3" width="7" height="7" />
+						<rect x="14" y="3" width="7" height="7" />
+						<rect x="14" y="14" width="7" height="7" />
+						<rect x="3" y="14" width="7" height="7" />
+					</svg>
+					Choose from library
+				</button>
+			{/if}
+			{#if showRecent && recentAssets.length > 0}
+				<button
+					type="button"
+					class="recent-btn"
+					class:active={showRecentPanel}
+					onclick={() => (showRecentPanel = !showRecentPanel)}
+				>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="12" cy="12" r="10" />
+						<polyline points="12 6 12 12 16 14" />
+					</svg>
+					Recent
+					<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						style="transform: rotate({showRecentPanel ? 180 : 0}deg)"
+					>
+						<polyline points="6 9 12 15 18 9" />
+					</svg>
+				</button>
+			{/if}
+		</div>
+	{/if}
+
+	<!-- Recent Assets Panel -->
+	{#if showRecentPanel && recentAssets.length > 0}
+		<div class="recent-panel" transition:slide={{ duration: 200 }}>
+			<div class="recent-grid">
+				{#each recentAssets as asset (asset.id)}
+					<button
+						type="button"
+						class="recent-asset"
+						onclick={() => handleRecentAssetClick(asset)}
+						title={asset.filename}
+					>
+						<img
+							src={asset.thumbnail_url || asset.cdn_url}
+							alt={asset.filename}
+							loading="lazy"
+						/>
+					</button>
+				{/each}
+			</div>
+			<button type="button" class="view-all-btn" onclick={openAssetManager}>
+				View all assets
+			</button>
+		</div>
+	{/if}
+
 	<!-- Drop Zone -->
 	<div
 		bind:this={dropZone}
@@ -594,6 +763,14 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Asset Manager Modal -->
+<AssetManager
+	isOpen={assetManagerOpen}
+	onClose={() => (assetManagerOpen = false)}
+	onSelect={handleAssetSelect}
+	acceptTypes={['image']}
+/>
 
 <style>
 	.image-uploader {
@@ -987,6 +1164,122 @@
 		.file-hints {
 			flex-direction: column;
 			gap: 0.5rem;
+		}
+	}
+
+	/* ========================================================================== */
+	/* Library & Recent Assets */
+	/* ========================================================================== */
+
+	.library-actions {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.library-btn,
+	.recent-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.875rem;
+		background: rgba(59, 130, 246, 0.1);
+		border: 1px solid rgba(59, 130, 246, 0.2);
+		border-radius: 8px;
+		color: #3b82f6;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.library-btn:hover,
+	.recent-btn:hover,
+	.recent-btn.active {
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.3);
+	}
+
+	.library-btn svg,
+	.recent-btn svg {
+		width: 16px;
+		height: 16px;
+		flex-shrink: 0;
+	}
+
+	.recent-btn .chevron {
+		width: 14px;
+		height: 14px;
+		margin-left: auto;
+		transition: transform 0.2s;
+	}
+
+	.recent-panel {
+		margin-bottom: 0.75rem;
+		padding: 0.75rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 10px;
+	}
+
+	.recent-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+		gap: 0.5rem;
+	}
+
+	.recent-asset {
+		aspect-ratio: 1;
+		border: 2px solid transparent;
+		border-radius: 6px;
+		overflow: hidden;
+		cursor: pointer;
+		background: #1e293b;
+		padding: 0;
+		transition: all 0.2s;
+	}
+
+	.recent-asset:hover {
+		border-color: #3b82f6;
+		transform: scale(1.05);
+	}
+
+	.recent-asset img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.view-all-btn {
+		width: 100%;
+		margin-top: 0.75rem;
+		padding: 0.5rem;
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 6px;
+		color: #94a3b8;
+		font-size: 0.75rem;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.view-all-btn:hover {
+		background: rgba(255, 255, 255, 0.05);
+		color: #f1f5f9;
+	}
+
+	@media (max-width: 640px) {
+		.library-actions {
+			flex-direction: column;
+		}
+
+		.library-btn,
+		.recent-btn {
+			justify-content: center;
+		}
+
+		.recent-grid {
+			grid-template-columns: repeat(4, 1fr);
 		}
 	}
 </style>
