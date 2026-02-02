@@ -33,6 +33,7 @@ export type BlockType =
 	| 'columns'
 	| 'group'
 	| 'separator'
+	| 'divider' // Alias for separator
 	| 'spacer'
 	| 'row'
 	// Interactive Blocks
@@ -90,8 +91,12 @@ export interface BlockContent {
 	mediaAlt?: string;
 	mediaCaption?: string;
 
+	// Video content
+	videoUrl?: string;
+	videoCaption?: string;
+
 	// Gallery content
-	galleryImages?: Array<{ url: string; alt?: string; caption?: string }>;
+	galleryImages?: Array<{ id: string; url: string; alt: string; caption?: string }>;
 
 	// File content
 	fileUrl?: string;
@@ -103,7 +108,14 @@ export interface BlockContent {
 
 	// Nested content
 	children?: Block[];
+	blocks?: Block[]; // For group block
 	items?: BlockItem[];
+
+	// Columns layout content
+	columns?: Array<{ blocks: Block[]; width?: string }>;
+
+	// Checklist content
+	checklistItems?: Array<{ id: string; text: string; checked: boolean }>;
 
 	// Special content
 	embedUrl?: string;
@@ -133,6 +145,15 @@ export interface BlockContent {
 	ticker?: string;
 	chartType?: 'line' | 'candle' | 'bar';
 	priceTarget?: number;
+
+	// Chart block
+	chartMode?: 'embed' | 'image';
+	chartSymbol?: string;
+	chartInterval?: string;
+	chartTheme?: 'light' | 'dark' | 'auto';
+	chartImageUrl?: string;
+	chartImageAlt?: string;
+	chartImageCaption?: string;
 
 	// AI content
 	aiPrompt?: string;
@@ -243,6 +264,13 @@ export interface BlockContent {
 	tradeThesis?: string;
 	tradeTimeframe?: string;
 
+	// Risk Disclaimer block
+	disclaimerText?: string;
+	disclaimerStyle?: 'warning' | 'danger' | 'info';
+	disclaimerExpandedText?: string;
+	disclaimerPreset?: 'general' | 'trading' | 'investment' | 'custom';
+	disclaimerRequireAck?: boolean;
+
 	// AI Summary block
 	summarySource?: string;
 	summaryLength?: 'short' | 'medium' | 'long';
@@ -295,6 +323,28 @@ export interface BlockContent {
 	newsletterDescription?: string;
 	newsletterButtonText?: string;
 	newsletterPlaceholder?: string;
+
+	// Callout block
+	calloutType?: 'info' | 'success' | 'warning' | 'error' | 'tip';
+	calloutTitle?: string;
+	calloutContent?: string;
+
+	// Button block (single CTA)
+	buttonText?: string;
+	buttonUrl?: string;
+	buttonVariant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+	buttonSize?: 'small' | 'medium' | 'large';
+	buttonIcon?: string;
+	buttonIconPosition?: 'left' | 'right' | 'none';
+
+	// Related Posts block
+	relatedPostsTitle?: string;
+	relatedPostsLayout?: 'grid' | 'list';
+	relatedPostsCount?: number;
+	relatedPostIds?: string[];
+
+	// HTML block
+	htmlContent?: string;
 }
 
 export interface BlockItem {
@@ -343,7 +393,7 @@ export interface BlockSettings {
 	// Border
 	borderWidth?: string;
 	borderColor?: string;
-	borderStyle?: 'solid' | 'dashed' | 'dotted' | 'none';
+	borderStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
 	borderRadius?: string;
 
 	// Shadow
@@ -413,9 +463,21 @@ export interface BlockSettings {
 	flexDirection?: 'row' | 'column';
 	justifyContent?: string;
 	alignItems?: string;
+	alignment?: string; // For group block alignment
 	gap?: string;
 	columnCount?: number;
 	columnLayout?: string;
+	columnPreset?: string; // For columns block
+	columnGap?: string; // For columns block
+
+	// Divider/Separator settings
+	dividerStyle?: 'solid' | 'dashed' | 'dotted' | 'double';
+	dividerWidth?: string;
+	dividerColor?: string;
+	dividerSpacing?: string;
+
+	// Spacer settings
+	spacerHeight?: string;
 
 	// Image specific
 	imageSize?: 'thumbnail' | 'medium' | 'large' | 'full' | 'custom';
@@ -431,6 +493,7 @@ export interface BlockSettings {
 
 	// Link
 	linkUrl?: string;
+	secondaryLinkUrl?: string;
 	linkTarget?: '_blank' | '_self';
 	linkRel?: string;
 
@@ -438,7 +501,7 @@ export interface BlockSettings {
 	buttonStyle?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
 	buttonSize?: 'small' | 'medium' | 'large';
 	buttonIcon?: string;
-	buttonIconPosition?: 'left' | 'right';
+	buttonIconPosition?: 'left' | 'right' | 'none';
 
 	// Responsive visibility
 	hideOnDesktop?: boolean;
@@ -485,6 +548,16 @@ export interface BlockSettings {
 	// TOC block settings
 	tocMaxLevel?: number;
 
+	// Checklist settings
+	showProgress?: boolean;
+	strikethrough?: boolean;
+
+	// Chart settings
+	chartHeight?: string;
+	chartTheme?: 'auto' | 'light' | 'dark';
+	chartShowToolbar?: boolean;
+	chartAllowFullscreen?: boolean;
+
 	// Countdown settings
 	countdownStyle?: 'default' | 'minimal' | 'bold';
 
@@ -493,6 +566,27 @@ export interface BlockSettings {
 
 	// Newsletter block settings
 	newsletterStyle?: 'default' | 'minimal' | 'card';
+
+	// Callout block settings
+	calloutDismissible?: boolean;
+	dismissible?: boolean; // Alias for callout dismissible
+
+	// Risk Disclaimer settings
+	requireAcknowledgment?: boolean;
+
+	// Button block settings (single CTA)
+	buttonTarget?: '_blank' | '_self';
+	buttonFullWidth?: boolean;
+	buttonDisabled?: boolean;
+
+	// Related Posts block settings
+	relatedPostsShowExcerpt?: boolean;
+	relatedPostsShowCategory?: boolean;
+
+	// HTML block settings
+	htmlEditorHeight?: 'small' | 'medium' | 'large' | 'auto';
+	htmlShowWarning?: boolean;
+	htmlHeight?: string;
 }
 
 export interface AnimationSettings {
@@ -594,44 +688,35 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
 		name: 'Text',
 		icon: 'text',
 		color: '#3b82f6',
-		blocks: [
-			'paragraph',
-			'heading',
-			'quote',
-			'pullquote',
-			'code',
-			'preformatted',
-			'list',
-			'checklist'
-		]
+		blocks: ['paragraph', 'heading', 'quote', 'code', 'preformatted', 'list']
 	},
 	{
 		id: 'media',
 		name: 'Media',
 		icon: 'photo',
 		color: '#10b981',
-		blocks: ['image', 'gallery', 'video', 'audio', 'file', 'embed', 'gif']
+		blocks: ['image', 'video', 'gallery', 'audio', 'file', 'embed', 'gif']
 	},
 	{
 		id: 'layout',
 		name: 'Layout',
 		icon: 'layout',
 		color: '#8b5cf6',
-		blocks: ['columns', 'group', 'separator', 'spacer', 'row']
+		blocks: ['columns', 'group', 'divider', 'spacer', 'separator', 'row']
 	},
 	{
-		id: 'interactive',
-		name: 'Interactive',
-		icon: 'click',
-		color: '#f59e0b',
-		blocks: ['button', 'buttons', 'accordion', 'tabs', 'toggle', 'toc']
+		id: 'content',
+		name: 'Content',
+		icon: 'article',
+		color: '#14b8a6',
+		blocks: ['pullquote', 'checklist']
 	},
 	{
 		id: 'trading',
 		name: 'Trading',
 		icon: 'chart-line',
 		color: '#ef4444',
-		blocks: ['ticker', 'chart', 'priceAlert', 'tradingIdea', 'riskDisclaimer']
+		blocks: ['chart', 'riskDisclaimer', 'ticker', 'priceAlert', 'tradingIdea']
 	},
 	{
 		id: 'advanced',
@@ -640,15 +725,24 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
 		color: '#ec4899',
 		blocks: [
 			'callout',
+			'button',
+			'relatedPosts',
+			'html',
 			'card',
 			'testimonial',
 			'cta',
 			'countdown',
 			'socialShare',
 			'author',
-			'relatedPosts',
 			'newsletter'
 		]
+	},
+	{
+		id: 'interactive',
+		name: 'Interactive',
+		icon: 'click',
+		color: '#f59e0b',
+		blocks: ['buttons', 'accordion', 'tabs', 'toggle', 'toc']
 	},
 	{
 		id: 'ai',
@@ -662,7 +756,7 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
 		name: 'Custom',
 		icon: 'code',
 		color: '#64748b',
-		blocks: ['shortcode', 'html', 'reusable']
+		blocks: ['shortcode', 'reusable']
 	}
 ];
 
@@ -750,10 +844,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	pullquote: {
 		type: 'pullquote',
 		name: 'Pull Quote',
-		description: 'A highlighted quote',
+		description: 'Highlight a key quote',
 		icon: 'blockquote',
-		category: 'text',
-		keywords: ['featured', 'highlight', 'callout'],
+		category: 'content',
+		keywords: ['featured', 'highlight', 'callout', 'key', 'important'],
 		supports: { align: true, color: true, typography: true, spacing: true, customCSS: true },
 		defaultContent: { text: '' },
 		defaultSettings: { textAlign: 'center', fontSize: '1.5rem' }
@@ -794,10 +888,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	checklist: {
 		type: 'checklist',
 		name: 'Checklist',
-		description: 'Interactive checklist',
+		description: 'Create an interactive checklist',
 		icon: 'checklist',
-		category: 'text',
-		keywords: ['todo', 'tasks', 'checkbox'],
+		category: 'content',
+		keywords: ['todo', 'tasks', 'checkbox', 'interactive', 'list'],
 		supports: { color: true, spacing: true, customCSS: true },
 		defaultContent: { items: [] },
 		defaultSettings: {}
@@ -805,10 +899,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	image: {
 		type: 'image',
 		name: 'Image',
-		description: 'Insert an image',
+		description: 'Add an image with caption',
 		icon: 'photo',
 		category: 'media',
-		keywords: ['picture', 'photo', 'media'],
+		keywords: ['picture', 'photo', 'media', 'caption'],
 		supports: {
 			align: true,
 			spacing: true,
@@ -823,10 +917,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	gallery: {
 		type: 'gallery',
 		name: 'Gallery',
-		description: 'Multiple images in a grid',
+		description: 'Create an image gallery',
 		icon: 'photo-album',
 		category: 'media',
-		keywords: ['images', 'photos', 'grid', 'masonry'],
+		keywords: ['images', 'photos', 'grid', 'masonry', 'collection'],
 		supports: { spacing: true, customCSS: true },
 		defaultContent: { items: [] },
 		defaultSettings: { columnCount: 3 }
@@ -834,10 +928,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	video: {
 		type: 'video',
 		name: 'Video',
-		description: 'Embed a video',
+		description: 'Embed YouTube, Vimeo, or upload video',
 		icon: 'video',
 		category: 'media',
-		keywords: ['movie', 'film', 'youtube', 'vimeo'],
+		keywords: ['movie', 'film', 'youtube', 'vimeo', 'embed', 'upload'],
 		supports: { align: true, spacing: true, customCSS: true },
 		defaultContent: {},
 		defaultSettings: {}
@@ -889,10 +983,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	columns: {
 		type: 'columns',
 		name: 'Columns',
-		description: 'Multi-column layout',
+		description: 'Create multi-column layout',
 		icon: 'columns',
 		category: 'layout',
-		keywords: ['grid', 'row', 'layout'],
+		keywords: ['grid', 'row', 'layout', 'multi-column'],
 		supports: { spacing: true, responsive: true, customCSS: true, nested: true },
 		defaultContent: { columnCount: 2, children: [] },
 		defaultSettings: { gap: '2rem' }
@@ -926,13 +1020,24 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		defaultContent: {},
 		defaultSettings: {}
 	},
+	divider: {
+		type: 'divider',
+		name: 'Divider',
+		description: 'Add a horizontal separator',
+		icon: 'minus',
+		category: 'layout',
+		keywords: ['separator', 'hr', 'line', 'rule', 'horizontal'],
+		supports: { spacing: true, color: true, customCSS: true },
+		defaultContent: {},
+		defaultSettings: { dividerStyle: 'solid', dividerWidth: '1px', dividerColor: '#e5e7eb' }
+	},
 	spacer: {
 		type: 'spacer',
 		name: 'Spacer',
-		description: 'Add vertical space',
+		description: 'Add vertical spacing',
 		icon: 'spacing-vertical',
 		category: 'layout',
-		keywords: ['space', 'gap', 'margin'],
+		keywords: ['space', 'gap', 'margin', 'vertical'],
 		supports: { responsive: true },
 		defaultContent: {},
 		defaultSettings: { height: '40px' }
@@ -951,10 +1056,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	button: {
 		type: 'button',
 		name: 'Button',
-		description: 'Call-to-action button',
+		description: 'Add a call-to-action button',
 		icon: 'click',
-		category: 'interactive',
-		keywords: ['cta', 'link', 'action'],
+		category: 'advanced',
+		keywords: ['cta', 'link', 'action', 'call-to-action'],
 		supports: {
 			align: true,
 			color: true,
@@ -1036,11 +1141,11 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	},
 	chart: {
 		type: 'chart',
-		name: 'Trading Chart',
-		description: 'Interactive trading chart',
+		name: 'Chart',
+		description: 'Embed TradingView chart',
 		icon: 'chart-candle',
 		category: 'trading',
-		keywords: ['candlestick', 'graph', 'technical'],
+		keywords: ['candlestick', 'graph', 'technical', 'tradingview', 'embed'],
 		supports: { spacing: true, customCSS: true },
 		defaultContent: { ticker: 'SPY', chartType: 'candle' },
 		defaultSettings: { height: '400px' }
@@ -1070,10 +1175,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	riskDisclaimer: {
 		type: 'riskDisclaimer',
 		name: 'Risk Disclaimer',
-		description: 'Trading risk warning',
+		description: 'Add a risk warning',
 		icon: 'alert-triangle',
 		category: 'trading',
-		keywords: ['warning', 'disclaimer', 'legal'],
+		keywords: ['warning', 'disclaimer', 'legal', 'risk', 'caution'],
 		supports: { color: true, spacing: true, customCSS: true },
 		defaultContent: {
 			text: 'Trading involves substantial risk of loss and is not suitable for all investors.'
@@ -1083,10 +1188,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	callout: {
 		type: 'callout',
 		name: 'Callout',
-		description: 'Highlighted information box',
+		description: 'Add an info/warning box',
 		icon: 'info-circle',
 		category: 'advanced',
-		keywords: ['info', 'notice', 'alert', 'warning'],
+		keywords: ['info', 'notice', 'alert', 'warning', 'box', 'highlight'],
 		supports: { color: true, spacing: true, border: true, customCSS: true },
 		defaultContent: { text: '' },
 		defaultSettings: {}
@@ -1167,10 +1272,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	relatedPosts: {
 		type: 'relatedPosts',
 		name: 'Related Posts',
-		description: 'Related articles grid',
+		description: 'Show related content',
 		icon: 'article',
 		category: 'advanced',
-		keywords: ['suggestions', 'similar', 'articles'],
+		keywords: ['suggestions', 'similar', 'articles', 'related', 'content'],
 		supports: { spacing: true, customCSS: true },
 		defaultContent: {},
 		defaultSettings: { columnCount: 3 }
@@ -1233,10 +1338,10 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 	html: {
 		type: 'html',
 		name: 'Custom HTML',
-		description: 'Raw HTML code',
+		description: 'Add raw HTML code',
 		icon: 'code',
-		category: 'custom',
-		keywords: ['raw', 'custom', 'embed'],
+		category: 'advanced',
+		keywords: ['raw', 'custom', 'embed', 'code', 'html'],
 		supports: { spacing: true },
 		defaultContent: { html: '' },
 		defaultSettings: {}

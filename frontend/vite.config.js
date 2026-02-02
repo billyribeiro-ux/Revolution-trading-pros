@@ -13,13 +13,23 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}', 'tests/unit/**/*.{test,spec}.{js,ts}'],
 		environment: 'jsdom',
 		globals: true,
-		setupFiles: ['src/lib/observability/__tests__/setup.ts'],
+		setupFiles: [
+			'src/lib/observability/__tests__/setup.ts',
+			'src/test/setup.ts'
+		],
 		// Mock SvelteKit modules
 		alias: {
 			'$app/environment': new URL(
 				'./src/lib/observability/__tests__/mocks/app-environment.ts',
 				import.meta.url
 			).pathname
+		},
+		// Coverage configuration for block components
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json', 'html'],
+			include: ['src/lib/components/cms/blocks/**/*.svelte'],
+			exclude: ['**/__tests__/**', '**/*.test.ts', '**/*.spec.ts']
 		}
 	},
 	plugins: [

@@ -33,11 +33,21 @@
 		code: () => import('./content/CodeBlock.svelte'),
 		list: () => import('./content/ListBlock.svelte'),
 		quote: () => import('./content/QuoteBlock.svelte'),
+		pullquote: () => import('./content/PullQuoteBlock.svelte'),
+		checklist: () => import('./content/ChecklistBlock.svelte'),
 		// Media blocks
+		image: () => import('./media/ImageBlock.svelte'),
+		video: () => import('./media/VideoBlock.svelte'),
+		gallery: () => import('./media/GalleryBlock.svelte'),
 		audio: () => import('./media/AudioBlock.svelte'),
 		file: () => import('./media/FileBlock.svelte'),
 		embed: () => import('./media/EmbedBlock.svelte'),
 		gif: () => import('./media/GifBlock.svelte'),
+		// Layout blocks
+		columns: () => import('./layout/ColumnsBlock.svelte'),
+		group: () => import('./layout/GroupBlock.svelte'),
+		divider: () => import('./layout/DividerBlock.svelte'),
+		spacer: () => import('./layout/SpacerBlock.svelte'),
 		// Interactive blocks
 		accordion: () => import('./interactive/AccordionBlock.svelte'),
 		tabs: () => import('./interactive/TabsBlock.svelte'),
@@ -48,6 +58,8 @@
 		ticker: () => import('./trading/TickerBlock.svelte'),
 		priceAlert: () => import('./trading/PriceAlertBlock.svelte'),
 		tradingIdea: () => import('./trading/TradingIdeaBlock.svelte'),
+		chart: () => import('./trading/ChartBlock.svelte'),
+		riskDisclaimer: () => import('./trading/RiskDisclaimerBlock.svelte'),
 		// AI blocks
 		aiGenerated: () => import('./ai/AIGeneratedBlock.svelte'),
 		aiSummary: () => import('./ai/AISummaryBlock.svelte'),
@@ -59,7 +71,11 @@
 		countdown: () => import('./advanced/CountdownBlock.svelte'),
 		socialShare: () => import('./advanced/SocialShareBlock.svelte'),
 		author: () => import('./advanced/AuthorBlock.svelte'),
-		newsletter: () => import('./advanced/NewsletterBlock.svelte')
+		newsletter: () => import('./advanced/NewsletterBlock.svelte'),
+		callout: () => import('./advanced/CalloutBlock.svelte'),
+		button: () => import('./advanced/ButtonBlock.svelte'),
+		relatedPosts: () => import('./advanced/RelatedPostsBlock.svelte'),
+		html: () => import('./advanced/HtmlBlock.svelte')
 	};
 
 	$effect(() => {

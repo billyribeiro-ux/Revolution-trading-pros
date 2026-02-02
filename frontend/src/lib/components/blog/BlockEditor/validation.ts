@@ -409,6 +409,7 @@ export const ALL_BLOCK_TYPES = [
 	'columns',
 	'group',
 	'separator',
+	'divider',
 	'spacer',
 	'row',
 	// Interactive Blocks
@@ -879,6 +880,7 @@ export const blockSchemas = {
 	columns: createTypeSpecificBlockSchema('columns', columnsContentSchema),
 	group: createTypeSpecificBlockSchema('group', groupContentSchema),
 	separator: createTypeSpecificBlockSchema('separator', separatorContentSchema),
+	divider: createTypeSpecificBlockSchema('divider', separatorContentSchema),
 	spacer: createTypeSpecificBlockSchema('spacer', spacerContentSchema),
 	row: createTypeSpecificBlockSchema('row', rowContentSchema),
 
@@ -1029,14 +1031,14 @@ export function validateBlocks(blocks: unknown[]): ValidationResults {
  * Type guard to check if a string is a valid block type
  */
 export function isValidBlockType(type: string): type is BlockType {
-	return ALL_BLOCK_TYPES.includes(type as BlockType);
+	return (ALL_BLOCK_TYPES as readonly string[]).includes(type);
 }
 
 /**
  * Gets the schema for a specific block type
  */
 export function getBlockSchema(type: BlockType) {
-	return blockSchemas[type];
+	return blockSchemas[type as keyof typeof blockSchemas];
 }
 
 // =============================================================================
