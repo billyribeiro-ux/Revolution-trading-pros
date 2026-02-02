@@ -19,7 +19,11 @@
 		onclose: () => void;
 	}
 
-	let { isOpen = false, onclose }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const isOpen = $derived(props.isOpen ?? false);
+	const onclose = $derived(props.onclose);
 
 	interface NavItem {
 		label: string;

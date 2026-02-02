@@ -24,7 +24,10 @@
 		meta: SeoMetadata;
 	}
 
-	let { meta = $bindable() }: Props = $props();
+	let props: Props = $props();
+
+	// Access bindable meta from props
+	let meta = $derived(props.meta);
 
 	let newKeyword = $state('');
 

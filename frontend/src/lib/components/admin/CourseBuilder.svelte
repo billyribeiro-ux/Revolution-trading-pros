@@ -45,7 +45,12 @@
 		onClose?: () => void;
 	}
 
-	let { courseId, onSave, onClose }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure for internal use
+	const courseId = $derived(props.courseId);
+	const onSave = $derived(props.onSave);
+	const onClose = $derived(props.onClose);
 
 	let course = $state<Course | null>(null);
 	let isLoading = $state(true);

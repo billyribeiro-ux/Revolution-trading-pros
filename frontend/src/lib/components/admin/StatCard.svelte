@@ -19,7 +19,15 @@
 		color?: 'blue' | 'green' | 'purple' | 'amber';
 	}
 
-	let { title, value, icon: Icon, trend = '', trendUp = true, color = 'blue' }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const title = $derived(props.title);
+	const value = $derived(props.value);
+	const Icon = $derived(props.icon);
+	const trend = $derived(props.trend ?? '');
+	const trendUp = $derived(props.trendUp ?? true);
+	const color = $derived(props.color ?? 'blue');
 </script>
 
 <div class="stat-card">

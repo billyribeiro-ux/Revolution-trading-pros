@@ -24,30 +24,30 @@
 		onToggle?: (collapsed: boolean) => void;
 	}
 
-	const { items = [], collapsed = false, header, footer, onToggle }: Props = $props();
+	let props: Props = $props();
 
 	let isCollapsed = $state(false);
 
 	$effect(() => {
-		isCollapsed = collapsed;
+		isCollapsed = props.collapsed ?? false;
 	});
 
 	function toggleSidebar() {
 		isCollapsed = !isCollapsed;
-		onToggle?.(isCollapsed);
+		props.onToggle?.(isCollapsed);
 	}
 </script>
 
 <aside class="app-sidebar" class:collapsed={isCollapsed}>
-	{#if header}
+	{#if props.header}
 		<div class="sidebar-header">
-			{@render header()}
+			{@render props.header()}
 		</div>
 	{/if}
 
 	<nav class="sidebar-nav">
 		<ul>
-			{#each items as item}
+			{#each props.items ?? [] as item}
 				<li>
 					<a href={item.href} class="nav-item">
 						{#if item.icon}
@@ -69,9 +69,9 @@
 		{isCollapsed ? '→' : '←'}
 	</button>
 
-	{#if footer}
+	{#if props.footer}
 		<div class="sidebar-footer">
-			{@render footer()}
+			{@render props.footer()}
 		</div>
 	{/if}
 </aside>

@@ -104,19 +104,18 @@
 		readOnly?: boolean;
 	}
 
-	let {
-		blocks = $bindable([]),
-		contentId = '',
-		postTitle = '',
-		postSlug = '',
-		metaDescription = '',
-		focusKeyword = '',
-		onchange,
-		onsave,
-		onpublish,
-		autosaveInterval = 30000,
-		readOnly = false
-	}: Props = $props();
+	let props: Props = $props();
+	let blocks = $derived(props.blocks ?? []);
+	const contentId = $derived(props.contentId ?? '');
+	const postTitle = $derived(props.postTitle ?? '');
+	const postSlug = $derived(props.postSlug ?? '');
+	const metaDescription = $derived(props.metaDescription ?? '');
+	const focusKeyword = $derived(props.focusKeyword ?? '');
+	const onchange = $derived(props.onchange);
+	const onsave = $derived(props.onsave);
+	const onpublish = $derived(props.onpublish);
+	const autosaveInterval = $derived(props.autosaveInterval ?? 30000);
+	const readOnly = $derived(props.readOnly ?? false);
 
 	// ==========================================================================
 	// State

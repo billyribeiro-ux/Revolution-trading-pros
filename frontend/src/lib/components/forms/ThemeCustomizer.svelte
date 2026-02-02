@@ -7,7 +7,8 @@
 		onchange?: (theme: FormTheme) => void;
 	}
 
-	let { selectedTheme = $bindable(themes[0]), onchange }: Props = $props();
+	let props: Props = $props();
+	let selectedTheme = $state(props.selectedTheme ?? themes[0]);
 
 	let isCustomizing = $state(false);
 	let customTheme: FormTheme = $state({ ...selectedTheme });
@@ -16,7 +17,7 @@
 		selectedTheme = theme;
 		customTheme = { ...theme };
 		isCustomizing = false;
-		onchange?.(selectedTheme);
+		props.onchange?.(selectedTheme);
 	}
 
 	function enableCustomization() {
@@ -26,7 +27,7 @@
 
 	function applyCustomTheme() {
 		selectedTheme = { ...customTheme, id: 'custom', name: 'Custom Theme' };
-		onchange?.(selectedTheme);
+		props.onchange?.(selectedTheme);
 	}
 
 	function handleColorChange(property: keyof FormTheme['colors'], value: string) {

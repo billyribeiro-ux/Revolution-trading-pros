@@ -31,14 +31,15 @@
 		itemLabel?: string;
 	}
 
-	let {
-		currentPage,
-		totalPages,
-		totalItems,
-		itemsPerPage,
-		onPageChange,
-		itemLabel = 'items'
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let currentPage = $derived(props.currentPage);
+	let totalPages = $derived(props.totalPages);
+	let totalItems = $derived(props.totalItems);
+	let itemsPerPage = $derived(props.itemsPerPage);
+	let onPageChange = $derived(props.onPageChange);
+	let itemLabel = $derived(props.itemLabel ?? 'items');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE

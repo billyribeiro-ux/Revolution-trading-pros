@@ -23,7 +23,11 @@
 		activeFilter?: string;
 	}
 
-	let { categories, activeFilter = 'all' }: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let categories = $derived(props.categories);
+	let activeFilter = $derived(props.activeFilter ?? 'all');
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {

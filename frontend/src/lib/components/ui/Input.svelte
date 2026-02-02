@@ -16,22 +16,28 @@
 		onblur?: (e: FocusEvent) => void;
 	}
 
-	let {
-		type = 'text',
-		value = $bindable(''),
-		placeholder = '',
-		label = '',
-		error = '',
-		disabled = false,
-		required = false,
-		id = '',
-		min,
-		max,
-		step,
-		oninput,
-		onchange,
-		onblur
-	}: Props = $props();
+	let props: Props = $props();
+	let value = $state(props.value ?? '');
+	let type = $derived(props.type ?? 'text');
+	let placeholder = $derived(props.placeholder ?? '');
+	let label = $derived(props.label ?? '');
+	let error = $derived(props.error ?? '');
+	let disabled = $derived(props.disabled ?? false);
+	let required = $derived(props.required ?? false);
+	let id = $derived(props.id ?? '');
+	let min = $derived(props.min);
+	let max = $derived(props.max);
+	let step = $derived(props.step);
+	let oninput = $derived(props.oninput);
+	let onchange = $derived(props.onchange);
+	let onblur = $derived(props.onblur);
+
+	// Sync with external value changes
+	$effect(() => {
+		if (props.value !== undefined && props.value !== value) {
+			value = props.value;
+		}
+	});
 </script>
 
 <div class="w-full">

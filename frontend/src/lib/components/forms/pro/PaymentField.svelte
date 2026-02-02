@@ -17,47 +17,47 @@
 		onchange?: (value: PaymentItem[] | PaymentItem | null) => void;
 	}
 
-	let { field, value = null, currency = 'USD', error, onchange }: Props = $props();
+	let props: Props = $props();
 
-	const paymentType = $derived(field.attributes?.payment_type || 'single');
-	const items = $derived<PaymentItem[]>((field.options as PaymentItem[]) || []);
-	const allowQuantity = $derived(field.attributes?.allow_quantity || false);
+	const paymentType = $derived(props.field.attributes?.payment_type || 'single');
+	const items = $derived<PaymentItem[]>((props.field.options as PaymentItem[]) || []);
+	const allowQuantity = $derived(props.field.attributes?.allow_quantity || false);
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
-			currency: currency
+			currency: props.currency ?? 'USD'
 		}).format(amount);
 	}
 
 	function handleSingleSelect(item: PaymentItem) {
-		onchange?.(item);
+		props.onchange?.(item);
 	}
 
 	function handleMultiSelect(item: PaymentItem, checked: boolean) {
-		const currentItems = Array.isArray(value) ? value : [];
+		const currentItems = Array.isArray(props.value) ? value : [];
 		if (checked) {
-			onchange?.([...currentItems, { ...item, quantity: 1 }]);
+			props.onchange?.([...currentItems, { ...item, quantity: 1 }]);
 		} else {
-			onchange?.(currentItems.filter((i) => i.id !== item.id));
+			props.onchange?.(currentItems.filter((i) => i.id !== item.id));
 		}
 	}
 
 	function handleQuantityChange(itemId: string, quantity: number) {
-		if (!Array.isArray(value)) return;
+		if (!Array.isArray(props.value)) return;
 		const updatedItems = value.map((i) => (i.id === itemId ? { ...i, quantity } : i));
-		onchange?.(updatedItems);
+		props.onchange?.(updatedItems);
 	}
 
 	function isSelected(itemId: string): boolean {
-		if (Array.isArray(value)) {
+		if (Array.isArray(props.value)) {
 			return value.some((i) => i.id === itemId);
 		}
-		return value?.id === itemId;
+		return props.value?.id === itemId;
 	}
 
 	function getQuantity(itemId: string): number {
-		if (Array.isArray(value)) {
+		if (Array.isArray(props.value)) {
 			const item = value.find((i) => i.id === itemId);
 			return item?.quantity || 1;
 		}
@@ -65,23 +65,23 @@
 	}
 
 	function calculateTotal(): number {
-		if (Array.isArray(value)) {
+		if (Array.isArray(props.value)) {
 			return value.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
 		}
-		return value?.price || 0;
+		return props.value?.price || 0;
 	}
 </script>
 
 <div class="payment-field">
-	<label class="field-label" for="payment-field-{field.name}">
-		{field.label}
-		{#if field.required}
+	<label class="field-label" for="payment-field-{props.field.name}">
+		{props.field.label}
+		{#if props.field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if field.help_text}
-		<p class="field-help">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
 	<div class="payment-items" class:single={paymentType === 'single'}>
@@ -114,7 +114,7 @@
 					<input
 						id="payment-item-{item.id}"
 						type="radio"
-						name={field.name}
+						name={props.field.name}
 						checked={isSelected(item.id)}
 						onchange={() => handleSingleSelect(item)}
 					/>

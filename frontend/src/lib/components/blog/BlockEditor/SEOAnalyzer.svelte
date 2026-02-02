@@ -87,15 +87,14 @@
 		onAnalysisComplete?: (analysis: SEOAnalysis) => void;
 	}
 
-	let {
-		title,
-		content,
-		contentBlocks = [],
-		metaDescription = '',
-		focusKeyword = '',
-		slug = '',
-		onAnalysisComplete
-	}: Props = $props();
+	let props: Props = $props();
+	const title = $derived(props.title);
+	const content = $derived(props.content);
+	const contentBlocks = $derived(props.contentBlocks ?? []);
+	const metaDescription = $derived(props.metaDescription ?? '');
+	const focusKeyword = $derived(props.focusKeyword ?? '');
+	const slug = $derived(props.slug ?? '');
+	const onAnalysisComplete = $derived(props.onAnalysisComplete);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

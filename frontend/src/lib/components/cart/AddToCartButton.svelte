@@ -20,18 +20,16 @@
 		onAdd?: (productId: string, quantity: number) => void;
 	}
 
-	const {
-		productId,
-		productName = 'Product',
-		price,
-		quantity = 1,
-		disabled = false,
-		loading = false,
-		variant = 'primary',
-		size = 'md',
-		fullWidth = false,
-		onAdd
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived values with defaults
+	let productName = $derived(props.productName ?? 'Product');
+	let quantity = $derived(props.quantity ?? 1);
+	let disabled = $derived(props.disabled ?? false);
+	let loading = $derived(props.loading ?? false);
+	let variant = $derived(props.variant ?? 'primary');
+	let size = $derived(props.size ?? 'md');
+	let fullWidth = $derived(props.fullWidth ?? false);
 
 	let isAdding = $state(false);
 
@@ -40,7 +38,7 @@
 
 		isAdding = true;
 		try {
-			onAdd?.(productId, quantity);
+			props.onAdd?.(props.productId, quantity);
 		} finally {
 			setTimeout(() => {
 				isAdding = false;
@@ -64,8 +62,8 @@
 	{:else}
 		<span class="cart-icon">🛒</span>
 		<span>Add to Cart</span>
-		{#if price}
-			<span class="price">${price.toFixed(2)}</span>
+		{#if props.price}
+			<span class="price">${props.price.toFixed(2)}</span>
 		{/if}
 	{/if}
 </button>

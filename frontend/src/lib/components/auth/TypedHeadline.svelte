@@ -20,14 +20,13 @@
 		className?: string;
 	}
 
-	let {
-		strings = ['Welcome Back, Trader', 'Ready to Trade?', 'Access Your Dashboard'],
-		typeSpeed = 50,
-		backSpeed = 30,
-		backDelay = 2000,
-		loop = true,
-		className = ''
-	}: Props = $props();
+	let props: Props = $props();
+	const strings = $derived(props.strings ?? ['Welcome Back, Trader', 'Ready to Trade?', 'Access Your Dashboard']);
+	const typeSpeed = $derived(props.typeSpeed ?? 50);
+	const backSpeed = $derived(props.backSpeed ?? 30);
+	const backDelay = $derived(props.backDelay ?? 2000);
+	const loop = $derived(props.loop ?? true);
+	const className = $derived(props.className ?? '');
 
 	let elementRef: HTMLSpanElement;
 	let typed: Typed;

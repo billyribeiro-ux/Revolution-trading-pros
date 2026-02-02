@@ -3,12 +3,21 @@
 	import CircleIcon from "@lucide/svelte/icons/circle";
 	import { cn, type WithoutChild } from "$lib/utils.js";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children: childrenProp,
-		...restProps
-	}: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
+	let props: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let className = $derived(props.class);
+	let childrenProp = $derived(props.children);
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, class: __, children: ___, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <DropdownMenuPrimitive.RadioItem

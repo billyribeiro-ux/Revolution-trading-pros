@@ -56,15 +56,16 @@
 		emptyMessage?: string;
 	}
 
-	let {
-		videos,
-		currentPage,
-		totalPages,
-		basePath = '/learning-center',
-		showDate = false,
-		showDuration = false,
-		emptyMessage = 'No videos found'
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let videos = $derived(props.videos);
+	let currentPage = $derived(props.currentPage);
+	let totalPages = $derived(props.totalPages);
+	let basePath = $derived(props.basePath ?? '/learning-center');
+	let showDate = $derived(props.showDate ?? false);
+	let showDuration = $derived(props.showDuration ?? false);
+	let emptyMessage = $derived(props.emptyMessage ?? 'No videos found');
 
 	// Navigate to page
 	function goToPage(pageNum: number) {

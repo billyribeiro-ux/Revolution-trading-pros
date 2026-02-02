@@ -127,7 +127,11 @@
 		onclose: () => void;
 	}
 
-	let { isOpen, contentId, oninsert, onclose }: Props = $props();
+	let props: Props = $props();
+	const isOpen = $derived(props.isOpen);
+	const contentId = $derived(props.contentId);
+	const oninsert = $derived(props.oninsert);
+	const onclose = $derived(props.onclose);
 
 	// ==========================================================================
 	// State

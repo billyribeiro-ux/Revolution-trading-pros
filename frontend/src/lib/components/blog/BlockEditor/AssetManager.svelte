@@ -82,14 +82,13 @@
 		initialFolder?: string | null;
 	}
 
-	let {
-		isOpen,
-		onClose,
-		onSelect,
-		allowMultiple = false,
-		acceptTypes = ['image', 'video', 'audio', 'document'],
-		initialFolder = null
-	}: Props = $props();
+	let props: Props = $props();
+	const isOpen = $derived(props.isOpen);
+	const onClose = $derived(props.onClose);
+	const onSelect = $derived(props.onSelect);
+	const allowMultiple = $derived(props.allowMultiple ?? false);
+	const acceptTypes = $derived(props.acceptTypes ?? ['image', 'video', 'audio', 'document']);
+	const initialFolder = $derived(props.initialFolder ?? null);
 
 	const dispatch = createEventDispatcher();
 

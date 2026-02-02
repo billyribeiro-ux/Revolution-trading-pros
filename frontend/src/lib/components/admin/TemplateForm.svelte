@@ -9,7 +9,12 @@
 		onsaved?: (detail: { id: number }) => void;
 	}
 
-	let { template = null, isEdit = false, onsaved }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const template = $derived(props.template ?? null);
+	const isEdit = $derived(props.isEdit ?? false);
+	const onsaved = $derived(props.onsaved);
 
 	// Form fields
 	let name = $state('');

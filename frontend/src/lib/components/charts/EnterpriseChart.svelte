@@ -32,18 +32,19 @@
 		className?: string;
 	}
 
-	const {
-		type = 'line',
-		series,
-		height = 300,
-		width = '100%',
-		title,
-		loading = false,
-		className = ''
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived values with defaults
+	let type = $derived(props.type ?? 'line');
+	let series = $derived(props.series);
+	let height = $derived(props.height ?? 300);
+	let width = $derived(props.width ?? '100%');
+	let title = $derived(props.title);
+	let loading = $derived(props.loading ?? false);
+	let className = $derived(props.className ?? '');
 
 	let containerRef = $state<HTMLDivElement | null>(null);
-	let chartInstance: unknown = null;
+	let chartInstance = $state<unknown>(null);
 
 	onMount(() => {
 		if (browser && containerRef) {

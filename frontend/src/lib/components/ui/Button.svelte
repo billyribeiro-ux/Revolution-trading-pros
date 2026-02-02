@@ -27,18 +27,16 @@
 		children?: Snippet;
 	}
 
-	let {
-		variant = 'primary',
-		size = 'md',
-		disabled = false,
-		loading = false,
-		type = 'button',
-		fullWidth = false,
-		class: className = '',
-		loadingText,
-		onclick,
-		children
-	}: ButtonProps = $props();
+	let props: ButtonProps = $props();
+	let variant = $derived(props.variant ?? 'primary');
+	let size = $derived(props.size ?? 'md');
+	let disabled = $derived(props.disabled ?? false);
+	let loading = $derived(props.loading ?? false);
+	let type = $derived(props.type ?? 'button');
+	let fullWidth = $derived(props.fullWidth ?? false);
+	let className = $derived(props.class ?? '');
+	let loadingText = $derived(props.loadingText);
+	let onclick = $derived(props.onclick);
 
 	const variants: Record<string, string> = {
 		primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 disabled:bg-blue-300',
@@ -107,7 +105,7 @@
 		{/if}
 	{/if}
 	<span class:opacity-0={loading && !loadingText} class:sr-only={loading && loadingText}>
-		{@render children?.()}
+		{@render props.children?.()}
 	</span>
 	{#if loading && loadingText}
 		<span aria-hidden="true">{loadingText}</span>

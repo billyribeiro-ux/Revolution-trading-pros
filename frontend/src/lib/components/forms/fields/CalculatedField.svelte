@@ -21,16 +21,16 @@
 		onchange?: (value: any) => void;
 	}
 
-	let { field, formData, onchange }: Props = $props();
+	let props: Props = $props();
 
 	// Configuration from field attributes
-	const formula = $derived(field.attributes?.['formula'] ?? '');
-	const format = $derived(field.attributes?.['format'] ?? 'number');
-	const decimals = $derived(field.attributes?.['decimals'] ?? 2);
-	const prefix = $derived(field.attributes?.['prefix'] ?? '');
-	const suffix = $derived(field.attributes?.['suffix'] ?? '');
-	const currency = $derived(field.attributes?.['currency'] ?? 'USD');
-	const showFormula = $derived(field.attributes?.['show_formula'] ?? false);
+	const formula = $derived(props.field.attributes?.['formula'] ?? '');
+	const format = $derived(props.field.attributes?.['format'] ?? 'number');
+	const decimals = $derived(props.field.attributes?.['decimals'] ?? 2);
+	const prefix = $derived(props.field.attributes?.['prefix'] ?? '');
+	const suffix = $derived(props.field.attributes?.['suffix'] ?? '');
+	const currency = $derived(props.field.attributes?.['currency'] ?? 'USD');
+	const showFormula = $derived(props.field.attributes?.['show_formula'] ?? false);
 
 	let calculatedValue = $state<number | null>(null);
 	let displayValue = $state<string>('—');
@@ -67,7 +67,7 @@
 			expression = expression.replace(
 				/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g,
 				(_: string, fieldName: string) => {
-					const value = formData[fieldName];
+					const value = props.formData[fieldName];
 
 					if (value === undefined || value === null || value === '') {
 						return '0';
@@ -91,7 +91,7 @@
 			if (typeof result === 'number' && !isNaN(result)) {
 				calculatedValue = result;
 				displayValue = formatValue(result);
-				onchange?.(result);
+				props.onchange?.(result);
 			} else {
 				error = 'Invalid calculation result';
 				displayValue = '—';
@@ -248,21 +248,21 @@
 </script>
 
 <div class="calculated-field">
-	<label class="field-label" for={field.name}>
-		{field.label}
-		{#if field.required}
+	<label class="field-label" for={props.field.name}>
+		{props.field.label}
+		{#if props.field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if field.help_text}
-		<p class="field-help">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
 	<div
 		class="calculated-display"
 		class:has-error={!!error}
-		id={field.name}
+		id={props.field.name}
 		role="status"
 		aria-live="polite"
 	>
@@ -284,7 +284,7 @@
 	{/if}
 
 	<!-- Hidden input for form submission -->
-	<input type="hidden" name={field.name} value={calculatedValue ?? ''} />
+	<input type="hidden" name={props.field.name} value={calculatedValue ?? ''} />
 </div>
 
 <style>

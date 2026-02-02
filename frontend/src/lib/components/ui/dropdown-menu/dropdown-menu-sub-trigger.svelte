@@ -3,15 +3,25 @@
 	import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
 	import { cn } from "$lib/utils.js";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		inset,
-		children,
-		...restProps
-	}: DropdownMenuPrimitive.SubTriggerProps & {
+	type SubTriggerProps = DropdownMenuPrimitive.SubTriggerProps & {
 		inset?: boolean;
-	} = $props();
+	};
+
+	let props: SubTriggerProps = $props();
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let className = $derived(props.class);
+	let inset = $derived(props.inset);
+
+	$effect(() => {
+		if (props.ref !== undefined && props.ref !== ref) {
+			ref = props.ref;
+		}
+	});
+
+	let restProps = $derived.by(() => {
+		const { ref: _, class: __, inset: ___, children: ____, ...rest } = props;
+		return rest;
+	});
 </script>
 
 <DropdownMenuPrimitive.SubTrigger
@@ -24,6 +34,6 @@
 	)}
 	{...restProps}
 >
-	{@render children?.()}
+	{@render props.children?.()}
 	<ChevronRightIcon class="ms-auto size-4" />
 </DropdownMenuPrimitive.SubTrigger>

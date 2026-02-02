@@ -22,7 +22,14 @@
 		onClose?: () => void;
 	}
 
-	let { resourceType = 'video', resourceId, resourceTitle, onScheduled, onClose }: Props = $props();
+	let props: Props = $props();
+
+	// Destructure with defaults for internal use
+	const resourceType = $derived(props.resourceType ?? 'video');
+	const resourceId = $derived(props.resourceId);
+	const resourceTitle = $derived(props.resourceTitle);
+	const onScheduled = $derived(props.onScheduled);
+	const onClose = $derived(props.onClose);
 
 	let jobs = $state<ScheduledJob[]>([]);
 	let isLoading = $state(true);

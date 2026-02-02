@@ -33,14 +33,12 @@
 		children?: import('svelte').Snippet;
 	}
 
-	let {
-		text,
-		position = 'auto',
-		delay = 200,
-		disabled = false,
-		class: className = '',
-		children
-	}: Props = $props();
+	let props: Props = $props();
+	let text = $derived(props.text);
+	let position = $derived(props.position ?? 'auto');
+	let delay = $derived(props.delay ?? 200);
+	let disabled = $derived(props.disabled ?? false);
+	let className = $derived(props.class ?? '');
 
 	let isVisible = $state(false);
 	let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -190,8 +188,8 @@
 	onblur={hideTooltip}
 	aria-describedby={isVisible ? 'tooltip-content' : undefined}
 >
-	{#if children}
-		{@render children()}
+	{#if props.children}
+		{@render props.children()}
 	{/if}
 </div>
 

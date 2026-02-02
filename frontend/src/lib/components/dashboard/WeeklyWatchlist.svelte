@@ -41,7 +41,13 @@
 		className?: string;
 	}
 
-	let { data = null, roomSlug, href, className = '' }: Props = $props();
+	let props: Props = $props();
+
+	// Derived props with defaults
+	let data = $derived(props.data ?? null);
+	let roomSlug = $derived(props.roomSlug);
+	let href = $derived(props.href);
+	let className = $derived(props.className ?? '');
 
 	// Client-side state (only used if no SSR data)
 	let clientData = $state<WatchlistData | null>(null);

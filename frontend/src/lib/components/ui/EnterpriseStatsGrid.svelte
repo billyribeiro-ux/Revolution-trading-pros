@@ -36,13 +36,12 @@
 		onStatClick?: ((stat: StatItem) => void) | null;
 	}
 
-	let {
-		stats = [],
-		loading = false,
-		columns = 4,
-		staggerDelay = 0.1,
-		onStatClick = null
-	}: Props = $props();
+	let props: Props = $props();
+	let stats = $derived(props.stats ?? []);
+	let loading = $derived(props.loading ?? false);
+	let columns = $derived(props.columns ?? 4);
+	let staggerDelay = $derived(props.staggerDelay ?? 0.1);
+	let onStatClick = $derived(props.onStatClick ?? null);
 
 	let gridCols = $derived(
 		{

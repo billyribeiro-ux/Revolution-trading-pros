@@ -8,7 +8,10 @@
 		children?: Snippet;
 	}
 
-	let { padding = true, hover = false, class: className = '', children }: Props = $props();
+	let props: Props = $props();
+	let padding = $derived(props.padding ?? true);
+	let hover = $derived(props.hover ?? false);
+	let className = $derived(props.class ?? '');
 </script>
 
 <div
@@ -17,5 +20,5 @@
     {hover ? 'hover:shadow-md transition-shadow duration-200' : ''}
     {className}"
 >
-	{@render children?.()}
+	{@render props.children?.()}
 </div>

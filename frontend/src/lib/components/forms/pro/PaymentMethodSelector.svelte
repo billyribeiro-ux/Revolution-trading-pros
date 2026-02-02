@@ -63,12 +63,12 @@
 		}
 	];
 
-	let { field, value = '', error, availableMethods = defaultMethods, onchange }: Props = $props();
+	let props: Props = $props();
 
-	const enabledMethods = $derived(availableMethods.filter((m) => m.enabled));
+	const enabledMethods = $derived((props.availableMethods ?? defaultMethods).filter((m) => m.enabled));
 
 	function handleSelect(methodId: string) {
-		onchange?.(methodId);
+		props.onchange?.(methodId);
 	}
 
 	function getMethodIcon(iconType: string): string {
@@ -87,16 +87,16 @@
 <div class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]">
 	<label
 		class="text-sm sm:text-base font-medium text-gray-700"
-		for="payment-method-{field.name}"
+		for="payment-method-{props.field.name}"
 	>
-		{field.label || 'Payment Method'}
-		{#if field.required}
+		{props.field.label || 'Payment Method'}
+		{#if props.field.required}
 			<span class="text-red-600 ml-1">*</span>
 		{/if}
 	</label>
 
-	{#if field.help_text}
-		<p class="text-xs sm:text-sm text-gray-500 m-0">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="text-xs sm:text-sm text-gray-500 m-0">{props.field.help_text}</p>
 	{/if}
 
 	<!-- Payment Methods List - Touch-friendly buttons -->
@@ -105,8 +105,8 @@
 			<button
 				type="button"
 				class="flex items-center gap-3 sm:gap-4 w-full min-h-[56px] sm:min-h-[64px] md:min-h-[72px] p-3 sm:p-4 border-2 rounded-lg bg-white cursor-pointer transition-all duration-200 text-left touch-manipulation active:scale-[0.98] hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-				class:border-blue-600={value === method.id}
-				class:bg-blue-50={value === method.id}
+				class:border-blue-600={(props.value ?? '') === method.id}
+				class:bg-blue-50={(props.value ?? '') === method.id}
 				class:border-gray-200={value !== method.id}
 				onclick={() => handleSelect(method.id)}
 			>
@@ -114,9 +114,9 @@
 				<input
 					id="payment-method-{method.id}"
 					type="radio"
-					name={field.name}
+					name={props.field.name}
 					value={method.id}
-					checked={value === method.id}
+					checked={(props.value ?? '') === method.id}
 					class="sr-only"
 					onchange={() => handleSelect(method.id)}
 				/>
@@ -124,11 +124,11 @@
 				<!-- Custom radio indicator -->
 				<span
 					class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
-					class:border-blue-600={value === method.id}
-					class:bg-blue-600={value === method.id}
+					class:border-blue-600={(props.value ?? '') === method.id}
+					class:bg-blue-600={(props.value ?? '') === method.id}
 					class:border-gray-300={value !== method.id}
 				>
-					{#if value === method.id}
+					{#if (props.value ?? '') === method.id}
 						<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></span>
 					{/if}
 				</span>
@@ -159,7 +159,7 @@
 				</div>
 
 				<!-- Checkmark for selected -->
-				{#if value === method.id}
+				{#if (props.value ?? '') === method.id}
 					<span class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center">
 						<svg
 							class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
@@ -177,7 +177,7 @@
 	</div>
 
 	<!-- Payment method specific info - Responsive cards -->
-	{#if value === 'stripe'}
+	{#if (props.value ?? '') === 'stripe'}
 		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-500">
 			<!-- Card Icons - Responsive grid -->
 			<div class="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -205,7 +205,7 @@
 				<span>Secured by Stripe. Your card details are encrypted.</span>
 			</p>
 		</div>
-	{:else if value === 'paypal'}
+	{:else if (props.value ?? '') === 'paypal'}
 		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-amber-500">
 			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
 				<svg
@@ -223,9 +223,9 @@
 	{/if}
 
 	<!-- Error Messages -->
-	{#if error && error.length > 0}
+	{#if props.error && error.length > 0}
 		<div class="mt-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
-			{#each error as err}
+			{#each props.error as err}
 				<p class="text-xs sm:text-sm text-red-600 m-0">{err}</p>
 			{/each}
 		</div>

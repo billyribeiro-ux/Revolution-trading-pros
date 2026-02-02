@@ -8,15 +8,15 @@
 		onchange?: (value: boolean) => void;
 	}
 
-	let { field, value = false, error, onchange }: Props = $props();
+	let props: Props = $props();
 
-	const onLabel = $derived(field.attributes?.on_label || 'Yes');
-	const offLabel = $derived(field.attributes?.off_label || 'No');
-	const showLabels = $derived(field.attributes?.show_labels !== false);
-	const size = $derived<'sm' | 'md' | 'lg'>(field.attributes?.size || 'md');
+	const onLabel = $derived(props.field.attributes?.on_label || 'Yes');
+	const offLabel = $derived(props.field.attributes?.off_label || 'No');
+	const showLabels = $derived(props.field.attributes?.show_labels !== false);
+	const size = $derived<'sm' | 'md' | 'lg'>(props.field.attributes?.size || 'md');
 
 	function handleToggle() {
-		onchange?.(!value);
+		props.onchange?.(!(props.value ?? false));
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -28,20 +28,20 @@
 </script>
 
 <div class="toggle-field">
-	<label for="toggle-{field.name}" class="field-label">
-		{field.label}
-		{#if field.required}
+	<label for="toggle-{props.field.name}" class="field-label">
+		{props.field.label}
+		{#if props.field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if field.help_text}
-		<p class="field-help">{field.help_text}</p>
+	{#if props.field.help_text}
+		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
 	<div class="toggle-wrapper">
 		{#if showLabels}
-			<span class="toggle-label off" class:active={!value}>{offLabel}</span>
+			<span class="toggle-label off" class:active={!(props.value ?? false)}>{offLabel}</span>
 		{/if}
 
 		<button
@@ -50,7 +50,7 @@
 			class:active={value}
 			role="switch"
 			aria-checked={value}
-			aria-label="{field.label} toggle"
+			aria-label="{props.field.label} toggle"
 			onclick={handleToggle}
 			onkeydown={handleKeyDown}
 		>
@@ -64,7 +64,7 @@
 		{/if}
 	</div>
 
-	<input id="toggle-{field.name}" type="hidden" name={field.name} value={value ? '1' : '0'} />
+	<input id="toggle-{props.field.name}" type="hidden" name={props.field.name} value={value ? '1' : '0'} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

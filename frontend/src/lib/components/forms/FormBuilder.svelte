@@ -10,7 +10,7 @@
 		oncancel?: () => void;
 	}
 
-	let { form = null, isEditing = false, onsave, oncancel }: Props = $props();
+	let props: Props = $props();
 
 	let formData: Partial<Form> = $state({
 		title: '',
@@ -32,7 +32,7 @@
 
 	// Sync with prop changes
 	$effect(() => {
-		if (form) {
+		if (props.form) {
 			formData = {
 				title: '',
 				description: '',
@@ -41,14 +41,14 @@
 					submit_text: 'Submit',
 					send_email: false,
 					email_to: '',
-					...form.settings
+					...props.form.settings
 				},
 				styles: {},
 				status: 'draft',
 				fields: [],
-				...form
+				...props.form
 			};
-			fields = form.fields || [];
+			fields = props.form.fields || [];
 		}
 	});
 	let availableFieldTypes: { type: string; label: string; icon?: string }[] = $state([]);
@@ -182,13 +182,13 @@
 				fields: fields.map(({ id, created_at, updated_at, ...field }) => field)
 			};
 
-			if (isEditing && form?.id) {
+			if (props.isEditing && form?.id) {
 				await updateForm(form.id, dataToSave);
 			} else {
 				await createForm(dataToSave);
 			}
 
-			onsave?.();
+			props.onsave?.();
 		} catch (err) {
 			saveError = err instanceof Error ? err.message : 'Failed to save form';
 		} finally {
@@ -197,14 +197,14 @@
 	}
 
 	function handleCancel() {
-		oncancel?.();
+		props.oncancel?.();
 	}
 </script>
 
 <div class="form-builder">
 	{#if !showFieldEditor}
 		<div class="builder-header">
-			<h2>{isEditing ? 'Edit Form' : 'Create New Form'}</h2>
+			<h2>{props.isEditing ? 'Edit Form' : 'Create New Form'}</h2>
 		</div>
 
 		<div class="form-settings">

@@ -22,7 +22,7 @@
 		heroContent?: Snippet;
 	}
 
-	let { children, heroContent }: Props = $props();
+	let props: Props = $props();
 
 	// Mouse position for spotlight effect
 	let mouseX = $state(50);
@@ -66,15 +66,15 @@
 
 	<!-- Hero Panel (Desktop/Tablet) -->
 	<div class="hero-panel">
-		{#if heroContent}
-			{@render heroContent()}
+		{#if props.heroContent}
+			{@render props.heroContent()}
 		{/if}
 	</div>
 
 	<!-- Form Panel -->
 	<div class="form-panel">
 		<div class="form-container">
-			{@render children()}
+			{@render props.children()}
 		</div>
 	</div>
 </div>

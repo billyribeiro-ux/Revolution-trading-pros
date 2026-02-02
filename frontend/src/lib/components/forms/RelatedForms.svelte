@@ -30,7 +30,7 @@
 		relation_type?: string;
 	}
 
-	let { formId, limit = 5, showTrending = false }: Props = $props();
+	let props: Props = $props();
 
 	// State
 	let relatedForms = $state<RelatedForm[]>([]);
@@ -42,7 +42,7 @@
 	async function fetchRelatedForms() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${formId}/related?limit=${limit}`, {
+			const response = await fetch(`/api/forms/${props.formId}/related?limit=${props.limit ?? 5}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -58,7 +58,7 @@
 	async function fetchTrendingForms() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/trending?limit=${limit}`, {
+			const response = await fetch(`/api/forms/trending?limit=${props.limit ?? 5}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 

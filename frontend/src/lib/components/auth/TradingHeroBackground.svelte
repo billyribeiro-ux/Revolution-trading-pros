@@ -27,7 +27,10 @@
 		animated?: boolean;
 	}
 
-	let { showTickers = true, showTestimonials = true, animated = true }: Props = $props();
+	let props: Props = $props();
+	const showTickers = $derived(props.showTickers ?? true);
+	const showTestimonials = $derived(props.showTestimonials ?? true);
+	const animated = $derived(props.animated ?? true);
 
 	// Refs - Svelte 5 pattern: use $state for bind:this refs
 	let containerRef = $state<HTMLElement | null>(null);

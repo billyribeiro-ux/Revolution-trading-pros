@@ -165,7 +165,11 @@
 		onUpdate: (updates: Partial<Block>) => void;
 	}
 
-	let { block, isSelected = false, isEditing = true, onUpdate }: Props = $props();
+	let props: Props = $props();
+	const block = $derived(props.block);
+	const isSelected = $derived(props.isSelected ?? false);
+	const isEditing = $derived(props.isEditing ?? true);
+	const onUpdate = $derived(props.onUpdate);
 
 	// ==========================================================================
 	// State

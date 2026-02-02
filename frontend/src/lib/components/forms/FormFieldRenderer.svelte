@@ -10,7 +10,7 @@
 		onchange?: (value: any) => void;
 	}
 
-	let { field, value = '', error, onchange }: Props = $props();
+	let props: Props = $props();
 
 	// ICT 7 Fix: Signature canvas state
 	let signatureCanvas: HTMLCanvasElement | null = null;
@@ -21,13 +21,13 @@
 
 	// Initialize signature canvas when field type is signature
 	onMount(() => {
-		if (field.field_type === 'signature') {
+		if (props.props.field.field_type === 'signature') {
 			initSignatureCanvas();
 		}
 	});
 
 	function initSignatureCanvas() {
-		signatureCanvas = document.getElementById(`field-${field.name}`) as HTMLCanvasElement;
+		signatureCanvas = document.getElementById(`field-${props.props.field.name}`) as HTMLCanvasElement;
 		if (!signatureCanvas) return;
 
 		signatureCtx = signatureCanvas.getContext('2d');
@@ -51,12 +51,12 @@
 		signatureCanvas.addEventListener('touchend', stopDrawing);
 
 		// Load existing value if any
-		if (value && typeof value === 'string' && value.startsWith('data:image')) {
+		if (props.value && typeof props.value === 'string' && props.value.startsWith('data:image')) {
 			const img = new Image();
 			img.onload = () => {
 				signatureCtx?.drawImage(img, 0, 0);
 			};
-			img.src = value;
+			img.src = props.value;
 		}
 	}
 
@@ -119,14 +119,14 @@
 			isDrawing = false;
 			// Save signature as base64 data URL
 			const dataUrl = signatureCanvas.toDataURL('image/png');
-			onchange?.(dataUrl);
+			props.props.onchange?.(dataUrl);
 		}
 	}
 
 	function clearSignature() {
 		if (!signatureCtx || !signatureCanvas) return;
 		signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
-		onchange?.('');
+		props.props.onchange?.('');
 	}
 
 	function handleChange(event: Event) {
@@ -136,9 +136,9 @@
 
 		if (target instanceof HTMLInputElement) {
 			if (target.type === 'checkbox') {
-				if (field.field_type === 'checkbox') {
+				if (props.props.field.field_type === 'checkbox') {
 					// Multiple checkboxes - array
-					const currentValues = Array.isArray(value) ? value : [];
+					const currentValues = Array.isArray(props.value) ? props.value : [];
 					if (target.checked) {
 						newValue = [...currentValues, target.value];
 					} else {
@@ -159,179 +159,179 @@
 			newValue = target.value;
 		}
 
-		onchange?.(newValue);
+		props.props.onchange?.(newValue);
 	}
 
 	function handleCheckboxChange(optionValue: string, checked: boolean) {
-		const currentValues = Array.isArray(value) ? value : [];
+		const currentValues = Array.isArray(props.value) ? props.value : [];
 		const newValue = checked
 			? [...currentValues, optionValue]
 			: currentValues.filter((v: string) => v !== optionValue);
 
-		onchange?.(newValue);
+		props.props.onchange?.(newValue);
 	}
 
 	function isChecked(optionValue: string): boolean {
-		return Array.isArray(value) && value.includes(optionValue);
+		return Array.isArray(props.value) && props.value.includes(optionValue);
 	}
 
 	function getInputClasses(): string {
 		const baseClasses = 'form-input';
-		const errorClass = error && error.length > 0 ? 'input-error' : '';
+		const errorClass = props.error && props.error.length > 0 ? 'input-error' : '';
 		return `${baseClasses} ${errorClass}`.trim();
 	}
 </script>
 
 <div class="form-field">
-	{#if field.field_type === 'heading'}
-		<h3 class="field-heading">{field.label}</h3>
-	{:else if field.field_type === 'divider'}
+	{#if props.field.field_type === 'heading'}
+		<h3 class="field-heading">{props.field.label}</h3>
+	{:else if props.field.field_type === 'divider'}
 		<hr class="field-divider" />
-	{:else if field.field_type === 'html'}
+	{:else if props.field.field_type === 'html'}
 		<div class="field-html">
-			{@html sanitizeFormContent(field.placeholder || '')}
+			{@html sanitizeFormContent(props.field.placeholder || '')}
 		</div>
 	{:else}
-		<label class="field-label" for={`field-${field.name}`}>
-			{field.label}
-			{#if field.required}
+		<label class="field-label" for={`field-${props.field.name}`}>
+			{props.field.label}
+			{#if props.field.required}
 				<span class="required">*</span>
 			{/if}
 		</label>
 
-		{#if field.help_text}
-			<div class="field-help">{field.help_text}</div>
+		{#if props.field.help_text}
+			<div class="field-help">{props.field.help_text}</div>
 		{/if}
 
 		<!-- Text Input -->
-		{#if field.field_type === 'text'}
+		{#if props.field.field_type === 'text'}
 			<input
 				type="text"
-				id={`field-${field.name}`}
-				name={field.name}
-				placeholder={field.placeholder || ''}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				placeholder={props.field.placeholder || ''}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Email -->
-		{:else if field.field_type === 'email'}
+		{:else if props.field.field_type === 'email'}
 			<input
 				type="email"
-				id={`field-${field.name}`}
-				name={field.name}
-				placeholder={field.placeholder || ''}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				placeholder={props.field.placeholder || ''}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Number -->
-		{:else if field.field_type === 'number'}
+		{:else if props.field.field_type === 'number'}
 			<input
 				type="number"
-				id={`field-${field.name}`}
-				name={field.name}
-				placeholder={field.placeholder || ''}
-				value={value || ''}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				placeholder={props.field.placeholder || ''}
+				value={props.value || ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				min={field.validation?.min}
-				max={field.validation?.max}
-				step={typeof field.validation?.step === 'number' ||
-				typeof field.validation?.step === 'string'
-					? field.validation.step
+				min={props.field.validation?.min}
+				max={props.field.validation?.max}
+				step={typeof props.field.validation?.step === 'number' ||
+				typeof props.field.validation?.step === 'string'
+					? props.field.validation.step
 					: 'any'}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Phone -->
-		{:else if field.field_type === 'tel'}
+		{:else if props.field.field_type === 'tel'}
 			<input
 				type="tel"
-				id={`field-${field.name}`}
-				name={field.name}
-				placeholder={field.placeholder || ''}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				placeholder={props.field.placeholder || ''}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- URL -->
-		{:else if field.field_type === 'url'}
+		{:else if props.field.field_type === 'url'}
 			<input
 				type="url"
-				id={`field-${field.name}`}
-				name={field.name}
-				placeholder={field.placeholder || ''}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				placeholder={props.field.placeholder || ''}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Textarea -->
-		{:else if field.field_type === 'textarea'}
+		{:else if props.field.field_type === 'textarea'}
 			<textarea
-				id={`field-${field.name}`}
-				name={field.name}
-				placeholder={field.placeholder || ''}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				placeholder={props.field.placeholder || ''}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				rows={typeof field.attributes?.['rows'] === 'number'
-					? field.attributes['rows']
-					: typeof field.attributes?.['rows'] === 'string'
-						? parseInt(field.attributes['rows'], 10)
+				rows={typeof props.field.attributes?.['rows'] === 'number'
+					? props.field.attributes['rows']
+					: typeof props.field.attributes?.['rows'] === 'string'
+						? parseInt(props.field.attributes['rows'], 10)
 						: 5}
-				minlength={field.validation?.min_length}
-				maxlength={field.validation?.max_length}
-				{...(field.attributes as Record<string, any>) || {}}
+				minlength={props.field.validation?.min_length}
+				maxlength={props.field.validation?.max_length}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			></textarea>
 
 			<!-- Select Dropdown -->
-		{:else if field.field_type === 'select'}
+		{:else if props.field.field_type === 'select'}
 			<select
-				id={`field-${field.name}`}
-				name={field.name}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			>
 				<option value="">-- Select --</option>
-				{#if field.options}
-					{#each field.options as option}
+				{#if props.field.options}
+					{#each props.field.options as option}
 						<option value={option}>{option}</option>
 					{/each}
 				{/if}
 			</select>
 
 			<!-- Radio Buttons -->
-		{:else if field.field_type === 'radio'}
+		{:else if props.field.field_type === 'radio'}
 			<div class="radio-group">
-				{#if field.options}
-					{#each field.options as option}
+				{#if props.field.options}
+					{#each props.field.options as option}
 						<label class="radio-label">
 							<input
 								type="radio"
-								name={field.name}
+								name={props.field.name}
 								value={option}
-								checked={value === option}
-								required={field.required}
+								checked={props.value === option}
+								required={props.field.required}
 								onchange={handleChange}
-								{...(field.attributes as Record<string, any>) || {}}
+								{...(props.field.attributes as Record<string, any>) || {}}
 							/>
 							<span>{option}</span>
 						</label>
@@ -340,10 +340,10 @@
 			</div>
 
 			<!-- Checkboxes -->
-		{:else if field.field_type === 'checkbox'}
+		{:else if props.field.field_type === 'checkbox'}
 			<div class="checkbox-group">
-				{#if field.options}
-					{#each field.options as option}
+				{#if props.field.options}
+					{#each props.field.options as option}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						<label class="checkbox-label">
@@ -353,7 +353,7 @@
 								checked={isChecked(optionValue)}
 								onchange={(e: Event) =>
 									handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
-								{...(field.attributes as Record<string, any>) || {}}
+								{...(props.field.attributes as Record<string, any>) || {}}
 							/>
 							<span>{optionLabel}</span>
 						</label>
@@ -362,115 +362,115 @@
 			</div>
 
 			<!-- File Upload -->
-		{:else if field.field_type === 'file'}
+		{:else if props.field.field_type === 'file'}
 			<input
 				type="file"
-				id={`field-${field.name}`}
-				name={field.name}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				required={props.field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				accept={typeof field.validation?.accept === 'string' ? field.validation.accept : undefined}
-				{...(field.attributes as Record<string, any>) || {}}
+				accept={typeof props.field.validation?.accept === 'string' ? props.field.validation.accept : undefined}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
-			{#if field.validation?.max_size}
-				<small class="field-help">Maximum file size: {field.validation.max_size}</small>
+			{#if props.field.validation?.max_size}
+				<small class="field-help">Maximum file size: {props.field.validation.max_size}</small>
 			{/if}
 
 			<!-- Date -->
-		{:else if field.field_type === 'date'}
+		{:else if props.field.field_type === 'date'}
 			<input
 				type="date"
-				id={`field-${field.name}`}
-				name={field.name}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				min={field.validation?.min}
-				max={field.validation?.max}
-				{...(field.attributes as Record<string, any>) || {}}
+				min={props.field.validation?.min}
+				max={props.field.validation?.max}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Time -->
-		{:else if field.field_type === 'time'}
+		{:else if props.field.field_type === 'time'}
 			<input
 				type="time"
-				id={`field-${field.name}`}
-				name={field.name}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Date & Time -->
-		{:else if field.field_type === 'datetime'}
+		{:else if props.field.field_type === 'datetime'}
 			<input
 				type="datetime-local"
-				id={`field-${field.name}`}
-				name={field.name}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Range Slider -->
-		{:else if field.field_type === 'range'}
+		{:else if props.field.field_type === 'range'}
 			<div class="range-wrapper">
 				<input
 					type="range"
-					id={`field-${field.name}`}
-					name={field.name}
-					value={value || field.validation?.min || 0}
-					required={field.required}
+					id={`field-${props.field.name}`}
+					name={props.field.name}
+					value={props.value || props.field.validation?.min || 0}
+					required={props.field.required}
 					class="form-range"
 					oninput={handleChange}
-					min={field.validation?.min || 0}
-					max={field.validation?.max || 100}
-					step={typeof field.validation?.step === 'number' ||
-					typeof field.validation?.step === 'string'
-						? field.validation.step
+					min={props.field.validation?.min || 0}
+					max={props.field.validation?.max || 100}
+					step={typeof props.field.validation?.step === 'number' ||
+					typeof props.field.validation?.step === 'string'
+						? props.field.validation.step
 						: 1}
-					{...(field.attributes as Record<string, any>) || {}}
+					{...(props.field.attributes as Record<string, any>) || {}}
 				/>
-				<output class="range-value">{value || field.validation?.min || 0}</output>
+				<output class="range-value">{value || props.field.validation?.min || 0}</output>
 			</div>
 
 			<!-- Color Picker -->
-		{:else if field.field_type === 'color'}
+		{:else if props.field.field_type === 'color'}
 			<input
 				type="color"
-				id={`field-${field.name}`}
-				name={field.name}
-				{value}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				value={props.value ?? ''}
+				required={props.field.required}
 				class="form-color"
 				oninput={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Hidden Field -->
-		{:else if field.field_type === 'hidden'}
+		{:else if props.field.field_type === 'hidden'}
 			<input
 				type="hidden"
-				name={field.name}
-				{value}
-				{...(field.attributes as Record<string, any>) || {}}
+				name={props.field.name}
+				value={props.value ?? ''}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Rating (Stars) -->
-		{:else if field.field_type === 'rating'}
+		{:else if props.field.field_type === 'rating'}
 			<div class="rating-wrapper">
-				{#each Array(field.validation?.max || 5) as _, i}
+				{#each Array(props.field.validation?.max || 5) as _, i}
 					<button
 						type="button"
 						class="star-button"
 						class:active={value > i}
-						onclick={() => onchange?.(i + 1)}
+						onclick={() => props.onchange?.(i + 1)}
 						aria-label={`Rate ${i + 1} stars`}
 					>
 						★
@@ -479,10 +479,10 @@
 			</div>
 
 			<!-- Signature Pad - ICT 7 Fix: Full canvas drawing support -->
-		{:else if field.field_type === 'signature'}
+		{:else if props.field.field_type === 'signature'}
 			<div class="signature-wrapper">
 				<canvas
-					id={`field-${field.name}`}
+					id={`field-${props.field.name}`}
 					class="signature-canvas"
 					width="400"
 					height="150"
@@ -499,104 +499,104 @@
 			</div>
 
 			<!-- ICT 7 Fix: Address Field - Complete multi-part address input -->
-		{:else if field.field_type === 'address'}
+		{:else if props.field.field_type === 'address'}
 			{@const addressValue = (typeof value === 'object' && value !== null) ? value : {}}
 			<div class="address-wrapper">
 				<div class="address-fields">
 					<div class="address-row full-width">
-						<label class="address-sub-label" for={`${field.name}-address1`}>Address Line 1</label>
+						<label class="address-sub-label" for={`${props.field.name}-address1`}>Address Line 1</label>
 						<input
 							type="text"
-							id={`${field.name}-address1`}
-							name={`${field.name}[address_line_1]`}
+							id={`${props.field.name}-address1`}
+							name={`${props.field.name}[address_line_1]`}
 							placeholder="Street address"
 							value={addressValue.address_line_1 || ''}
 							class={getInputClasses()}
-							required={field.required}
+							required={props.field.required}
 							oninput={(e: Event) => {
 								const newVal = { ...addressValue, address_line_1: (e.target as HTMLInputElement).value };
-								onchange?.(newVal);
+								props.onchange?.(newVal);
 							}}
 						/>
 					</div>
-					{#if field.attributes?.show_address_2 !== false}
+					{#if props.field.attributes?.show_address_2 !== false}
 						<div class="address-row full-width">
-							<label class="address-sub-label" for={`${field.name}-address2`}>Address Line 2</label>
+							<label class="address-sub-label" for={`${props.field.name}-address2`}>Address Line 2</label>
 							<input
 								type="text"
-								id={`${field.name}-address2`}
-								name={`${field.name}[address_line_2]`}
+								id={`${props.field.name}-address2`}
+								name={`${props.field.name}[address_line_2]`}
 								placeholder="Apartment, suite, unit, etc. (optional)"
 								value={addressValue.address_line_2 || ''}
 								class={getInputClasses()}
 								oninput={(e: Event) => {
 									const newVal = { ...addressValue, address_line_2: (e.target as HTMLInputElement).value };
-									onchange?.(newVal);
+									props.onchange?.(newVal);
 								}}
 							/>
 						</div>
 					{/if}
 					<div class="address-row-group">
 						<div class="address-row city">
-							<label class="address-sub-label" for={`${field.name}-city`}>City</label>
+							<label class="address-sub-label" for={`${props.field.name}-city`}>City</label>
 							<input
 								type="text"
-								id={`${field.name}-city`}
-								name={`${field.name}[city]`}
+								id={`${props.field.name}-city`}
+								name={`${props.field.name}[city]`}
 								placeholder="City"
 								value={addressValue.city || ''}
 								class={getInputClasses()}
-								required={field.required}
+								required={props.field.required}
 								oninput={(e: Event) => {
 									const newVal = { ...addressValue, city: (e.target as HTMLInputElement).value };
-									onchange?.(newVal);
+									props.onchange?.(newVal);
 								}}
 							/>
 						</div>
 						<div class="address-row state">
-							<label class="address-sub-label" for={`${field.name}-state`}>State/Province</label>
+							<label class="address-sub-label" for={`${props.field.name}-state`}>State/Province</label>
 							<input
 								type="text"
-								id={`${field.name}-state`}
-								name={`${field.name}[state]`}
+								id={`${props.field.name}-state`}
+								name={`${props.field.name}[state]`}
 								placeholder="State"
 								value={addressValue.state || ''}
 								class={getInputClasses()}
-								required={field.required}
+								required={props.field.required}
 								oninput={(e: Event) => {
 									const newVal = { ...addressValue, state: (e.target as HTMLInputElement).value };
-									onchange?.(newVal);
+									props.onchange?.(newVal);
 								}}
 							/>
 						</div>
 						<div class="address-row zip">
-							<label class="address-sub-label" for={`${field.name}-zip`}>ZIP/Postal Code</label>
+							<label class="address-sub-label" for={`${props.field.name}-zip`}>ZIP/Postal Code</label>
 							<input
 								type="text"
-								id={`${field.name}-zip`}
-								name={`${field.name}[zip]`}
+								id={`${props.field.name}-zip`}
+								name={`${props.field.name}[zip]`}
 								placeholder="ZIP Code"
 								value={addressValue.zip || ''}
 								class={getInputClasses()}
-								required={field.required}
+								required={props.field.required}
 								oninput={(e: Event) => {
 									const newVal = { ...addressValue, zip: (e.target as HTMLInputElement).value };
-									onchange?.(newVal);
+									props.onchange?.(newVal);
 								}}
 							/>
 						</div>
 					</div>
-					{#if field.attributes?.show_country !== false}
+					{#if props.field.attributes?.show_country !== false}
 						<div class="address-row full-width">
-							<label class="address-sub-label" for={`${field.name}-country`}>Country</label>
+							<label class="address-sub-label" for={`${props.field.name}-country`}>Country</label>
 							<select
-								id={`${field.name}-country`}
-								name={`${field.name}[country]`}
+								id={`${props.field.name}-country`}
+								name={`${props.field.name}[country]`}
 								value={addressValue.country || 'US'}
 								class={getInputClasses()}
 								onchange={(e: Event) => {
 									const newVal = { ...addressValue, country: (e.target as HTMLSelectElement).value };
-									onchange?.(newVal);
+									props.onchange?.(newVal);
 								}}
 							>
 								<option value="US">United States</option>
@@ -622,44 +622,44 @@
 			</div>
 
 			<!-- ICT 7 Fix: Phone Field with International Support -->
-		{:else if field.field_type === 'phone'}
+		{:else if props.field.field_type === 'phone'}
 			<div class="phone-wrapper">
 				<input
 					type="tel"
-					id={`field-${field.name}`}
-					name={field.name}
-					placeholder={field.placeholder || '+1 (555) 123-4567'}
-					{value}
-					required={field.required}
+					id={`field-${props.field.name}`}
+					name={props.field.name}
+					placeholder={props.field.placeholder || '+1 (555) 123-4567'}
+					value={props.value ?? ''}
+					required={props.field.required}
 					class={getInputClasses()}
-					pattern={field.validation?.pattern || '[0-9+\\-\\s\\(\\)]+'}
+					pattern={props.field.validation?.pattern || '[0-9+\\-\\s\\(\\)]+'}
 					oninput={handleChange}
-					{...(field.attributes as Record<string, any>) || {}}
+					{...(props.field.attributes as Record<string, any>) || {}}
 				/>
-				{#if field.help_text}
-					<small class="phone-help">{field.help_text}</small>
+				{#if props.field.help_text}
+					<small class="phone-help">{props.field.help_text}</small>
 				{/if}
 			</div>
 
 			<!-- Newsletter Subscribe Checkbox -->
-		{:else if field.field_type === 'newsletter_subscribe'}
+		{:else if props.field.field_type === 'newsletter_subscribe'}
 			<div class="newsletter-subscribe-wrapper">
 				<label class="newsletter-checkbox-label">
 					<input
 						type="checkbox"
-						id={`field-${field.name}`}
-						name={field.name}
-						checked={value === true || value === '1' || value === 'yes' || value === 'on'}
-						onchange={(e: Event) => onchange?.((e.currentTarget as HTMLInputElement).checked)}
-						{...(field.attributes as Record<string, any>) || {}}
+						id={`field-${props.field.name}`}
+						name={props.field.name}
+						checked={props.value === true || value === '1' || value === 'yes' || value === 'on'}
+						onchange={(e: Event) => props.onchange?.((e.currentTarget as HTMLInputElement).checked)}
+						{...(props.field.attributes as Record<string, any>) || {}}
 					/>
 					<span class="newsletter-checkbox-text">
-						{field.options?.checkbox_label || 'Yes, I want to receive newsletters'}
+						{props.field.options?.checkbox_label || 'Yes, I want to receive newsletters'}
 					</span>
 				</label>
-				{#if field.options?.show_privacy_link !== false}
+				{#if props.field.options?.show_privacy_link !== false}
 					<a
-						href={field.options?.privacy_url || '/privacy-policy'}
+						href={props.field.options?.privacy_url || '/privacy-policy'}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="privacy-link"
@@ -670,10 +670,10 @@
 			</div>
 
 			<!-- Newsletter Categories Multi-Select -->
-		{:else if field.field_type === 'newsletter_categories'}
+		{:else if props.field.field_type === 'newsletter_categories'}
 			<div class="newsletter-categories-wrapper">
-				{#if field.options && Array.isArray(field.options)}
-					{#each field.options as option}
+				{#if props.field.options && Array.isArray(props.field.options)}
+					{#each props.field.options as option}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						{@const optionDescription = typeof option === 'object' ? option.description : ''}
@@ -704,34 +704,34 @@
 						</label>
 					{/each}
 				{/if}
-				{#if field.attributes?.['min_selections'] || field.attributes?.['max_selections']}
+				{#if props.field.attributes?.['min_selections'] || props.field.attributes?.['max_selections']}
 					<small class="category-hint">
-						{#if field.attributes['min_selections'] && field.attributes['max_selections']}
-							Select between {field.attributes['min_selections']} and {field.attributes[
+						{#if props.field.attributes['min_selections'] && props.field.attributes['max_selections']}
+							Select between {props.field.attributes['min_selections']} and {props.field.attributes[
 								'max_selections'
 							]} topics
-						{:else if field.attributes['min_selections']}
-							Select at least {field.attributes['min_selections']} topic(s)
-						{:else if field.attributes['max_selections']}
-							Select up to {field.attributes['max_selections']} topics
+						{:else if props.field.attributes['min_selections']}
+							Select at least {props.field.attributes['min_selections']} topic(s)
+						{:else if props.field.attributes['max_selections']}
+							Select up to {props.field.attributes['max_selections']} topics
 						{/if}
 					</small>
 				{/if}
 			</div>
 
 			<!-- Newsletter Frequency Select -->
-		{:else if field.field_type === 'newsletter_frequency'}
+		{:else if props.field.field_type === 'newsletter_frequency'}
 			<select
-				id={`field-${field.name}`}
-				name={field.name}
-				value={value || field.default_value || 'weekly'}
-				required={field.required}
+				id={`field-${props.field.name}`}
+				name={props.field.name}
+				value={props.value || props.field.default_value || 'weekly'}
+				required={props.field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				{...(field.attributes as Record<string, any>) || {}}
+				{...(props.field.attributes as Record<string, any>) || {}}
 			>
-				{#if field.options && Array.isArray(field.options)}
-					{#each field.options as option}
+				{#if props.field.options && Array.isArray(props.field.options)}
+					{#each props.field.options as option}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						<option value={optionValue}>{optionLabel}</option>
@@ -745,9 +745,9 @@
 			</select>
 		{/if}
 
-		{#if error && error.length > 0}
+		{#if props.error && error.length > 0}
 			<div class="field-error">
-				{#each error as err}
+				{#each props.error as err}
 					<p>{err}</p>
 				{/each}
 			</div>

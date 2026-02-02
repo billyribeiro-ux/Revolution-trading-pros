@@ -25,20 +25,26 @@
 		compact?: boolean;
 	}
 
-	let {
-		plans,
-		selectedPlanId = $bindable(),
-		onSelect,
-		loading = false,
-		compact = false
-	}: Props = $props();
+	let props: Props = $props();
+
+	// Derived values with defaults
+	let loading = $derived(props.loading ?? false);
+	let compact = $derived(props.compact ?? false);
+
+	// Local state for bindable selectedPlanId
+	let selectedPlanId = $state(props.selectedPlanId);
+
+	// Sync local state when prop changes
+	$effect(() => {
+		selectedPlanId = props.selectedPlanId;
+	});
 
 	// Derived
-	let sortedPlans = $derived(sortPlansByBillingCycle(plans));
+	let sortedPlans = $derived(sortPlansByBillingCycle(props.plans));
 
 	function handleSelect(plan: SubscriptionPlan) {
 		selectedPlanId = plan.id;
-		onSelect?.(plan);
+		props.onSelect?.(plan);
 	}
 
 	function getBillingLabel(cycle: string): string {
