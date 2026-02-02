@@ -49,7 +49,8 @@
 		IconSeo,
 		IconStack2,
 		IconKeyboard,
-		IconHistory
+		IconHistory,
+		IconCalendar
 	} from '$lib/icons';
 
 	import type { Block, BlockType, EditorState, SEOAnalysis, Revision, DropAction } from './types';
@@ -81,6 +82,7 @@
 	import SEOAnalyzer from './SEOAnalyzer.svelte';
 	import RevisionHistory from './RevisionHistory.svelte';
 	import KeyboardShortcuts from './KeyboardShortcuts.svelte';
+	import SchedulingPanel from './SchedulingPanel.svelte';
 
 	// ==========================================================================
 	// Props
@@ -88,6 +90,7 @@
 
 	interface Props {
 		blocks?: Block[];
+		contentId?: string;
 		postTitle?: string;
 		postSlug?: string;
 		postExcerpt?: string;
@@ -103,6 +106,7 @@
 
 	let {
 		blocks = $bindable([]),
+		contentId = '',
 		postTitle = '',
 		postSlug = '',
 		metaDescription = '',
@@ -212,6 +216,7 @@
 	let searchQuery = $state('');
 	let showKeyboardHelp = $state(false);
 	let showRevisions = $state(false);
+	let showScheduling = $state(false);
 	let isSaving = $state(false);
 	let saveError = $state<string | null>(null);
 
@@ -1512,6 +1517,15 @@
 				<button
 					type="button"
 					class="toolbar-btn"
+					onclick={() => (showScheduling = true)}
+					title="Schedule Content"
+					aria-label="Schedule content publish/unpublish"
+				>
+					<IconCalendar size={18} aria-hidden="true" />
+				</button>
+				<button
+					type="button"
+					class="toolbar-btn"
 					onclick={() => (showRevisions = true)}
 					title="Revision History"
 					aria-label="View revision history"
@@ -1977,6 +1991,19 @@
 			pushToHistory();
 			editorState.blocks = revision.blocks;
 			showRevisions = false;
+		}}
+	/>
+{/if}
+
+<!-- Scheduling Panel Modal -->
+{#if showScheduling}
+	<SchedulingPanel
+		{contentId}
+		contentTitle={postTitle}
+		isOpen={showScheduling}
+		onClose={() => (showScheduling = false)}
+		onScheduleCreated={(schedule) => {
+			console.log('Schedule created:', schedule);
 		}}
 	/>
 {/if}

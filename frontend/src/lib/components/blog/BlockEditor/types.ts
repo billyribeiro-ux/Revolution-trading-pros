@@ -90,6 +90,17 @@ export interface BlockContent {
 	mediaAlt?: string;
 	mediaCaption?: string;
 
+	// Gallery content
+	galleryImages?: Array<{ url: string; alt?: string; caption?: string }>;
+
+	// File content
+	fileUrl?: string;
+	fileName?: string;
+	fileSize?: number;
+
+	// GIF content
+	giphySearch?: string;
+
 	// Nested content
 	children?: Block[];
 	items?: BlockItem[];
@@ -127,6 +138,9 @@ export interface BlockContent {
 	aiPrompt?: string;
 	aiModel?: string;
 	aiOutput?: string;
+	aiSummary?: string;
+	sourceText?: string;
+	translatedText?: string;
 }
 
 export interface BlockItem {
@@ -238,6 +252,10 @@ export interface BlockSettings {
 	imageWidth?: number;
 	imageHeight?: number;
 	objectFit?: 'cover' | 'contain' | 'fill' | 'none';
+
+	// Gallery specific
+	galleryLayout?: 'grid' | 'masonry' | 'carousel';
+	galleryColumns?: number;
 	focalPoint?: { x: number; y: number };
 	imageFilter?: string;
 
@@ -276,6 +294,11 @@ export interface BlockSettings {
 	positionRight?: string;
 	positionBottom?: string;
 	positionLeft?: string;
+
+	// AI Block settings
+	summaryLength?: 'short' | 'medium' | 'long';
+	sourceLanguage?: string;
+	targetLanguage?: string;
 }
 
 export interface AnimationSettings {

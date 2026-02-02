@@ -55,9 +55,12 @@
 	import IconTemplate from '@tabler/icons-svelte/icons/template';
 	import IconX from '@tabler/icons-svelte/icons/x';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
+	import IconStarFilled from '@tabler/icons-svelte/icons/star-filled';
 
-	import type { BlockType } from './types';
+	import type { BlockType, BlockContent, BlockSettings } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
+	import PresetPicker from './PresetPicker.svelte';
 
 	// ==========================================================================
 	// Props
@@ -67,11 +70,13 @@
 		searchQuery?: string;
 		isModal?: boolean;
 		position?: { x: number; y: number } | null;
-		oninsert: (type: BlockType) => void;
+		/** Show preset picker after block type selection */
+		showPresets?: boolean;
+		oninsert: (type: BlockType, presetData?: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }) => void;
 		onclose?: () => void;
 	}
 
-	let { searchQuery = '', isModal = false, position = null, oninsert, onclose }: Props = $props();
+	let { searchQuery = '', isModal = false, position = null, showPresets = true, oninsert, onclose }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -80,6 +85,15 @@
 	let localSearch = $derived(searchQuery);
 	let activeCategory = $state<string | null>(null);
 	let hoveredBlock = $state<BlockType | null>(null);
+
+	// Preset picker state
+	let selectedBlockType = $state<BlockType | null>(null);
+	let showPresetPicker = $state(false);
+
+	// Block types that have presets (loaded from API)
+	let blockTypesWithPresets = $state<Set<string>>(new Set([
+		'button', 'heading', 'callout', 'quote', 'card', 'separator', 'riskDisclaimer'
+	]));
 
 	// ==========================================================================
 	// Icon Mapping
@@ -160,64 +174,110 @@
 	// ==========================================================================
 
 	function handleBlockClick(type: BlockType) {
-		oninsert(type);
+		// Check if this block type has presets and we should show the preset picker
+		if (showPresets && blockTypesWithPresets.has(type)) {
+			selectedBlockType = type;
+			showPresetPicker = true;
+		} else {
+			// Insert directly without preset
+			oninsert(type);
+			onclose?.();
+		}
+	}
+
+	function handlePresetApply(event: CustomEvent<{ content: Partial<BlockContent>; settings: Partial<BlockSettings> }>) {
+		if (selectedBlockType) {
+			oninsert(selectedBlockType, event.detail);
+			showPresetPicker = false;
+			selectedBlockType = null;
+			onclose?.();
+		}
+	}
+
+	function handlePresetClose() {
+		showPresetPicker = false;
+		selectedBlockType = null;
+	}
+
+	function handleBackToBlocks() {
+		showPresetPicker = false;
+		selectedBlockType = null;
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
-			onclose?.();
+			if (showPresetPicker) {
+				handlePresetClose();
+			} else {
+				onclose?.();
+			}
 		}
 	}
 
 	function getCategoryColor(categoryId: string): string {
 		return BLOCK_CATEGORIES.find((c) => c.id === categoryId)?.color || '#6b7280';
 	}
+
+	function hasPresets(type: string): boolean {
+		return blockTypesWithPresets.has(type);
+	}
 </script>
 
 {#if isModal}
-	<!-- Modal Overlay -->
-	<div
-		class="inserter-overlay"
-		onclick={onclose}
-		onkeydown={handleKeydown}
-		role="button"
-		tabindex="0"
-		transition:fade={{ duration: 150 }}
-	>
+	<!-- Preset Picker Modal (shown after block type selection) -->
+	{#if showPresetPicker && selectedBlockType}
+		<PresetPicker
+			blockType={selectedBlockType}
+			isModal={true}
+			position={null}
+			showSaveOption={false}
+			on:apply={handlePresetApply}
+			on:close={handlePresetClose}
+		/>
+	{:else}
+		<!-- Block Inserter Modal -->
 		<div
-			class="inserter-modal"
-			class:positioned={position}
-			style:left={position ? `${position.x}px` : 'auto'}
-			style:top={position ? `${position.y}px` : 'auto'}
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-			aria-label="Insert block"
-			tabindex="-1"
-			transition:scale={{ duration: 200, start: 0.95 }}
+			class="inserter-overlay"
+			onclick={onclose}
+			onkeydown={handleKeydown}
+			role="button"
+			tabindex="0"
+			transition:fade={{ duration: 150 }}
 		>
-			<div class="inserter-header">
-				<div class="search-box">
-					<IconSearch size={18} />
-					<input
-						type="text"
-						placeholder="Search blocks..."
-						bind:value={localSearch}
-						aria-label="Search blocks"
-					/>
-					{#if localSearch}
-						<button type="button" class="clear-search" onclick={() => (localSearch = '')}>
-							<IconX size={16} />
-						</button>
-					{/if}
+			<div
+				class="inserter-modal"
+				class:positioned={position}
+				style:left={position ? `${position.x}px` : 'auto'}
+				style:top={position ? `${position.y}px` : 'auto'}
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				role="dialog"
+				aria-modal="true"
+				aria-label="Insert block"
+				tabindex="-1"
+				transition:scale={{ duration: 200, start: 0.95 }}
+			>
+				<div class="inserter-header">
+					<div class="search-box">
+						<IconSearch size={18} />
+						<input
+							type="text"
+							placeholder="Search blocks..."
+							bind:value={localSearch}
+							aria-label="Search blocks"
+						/>
+						{#if localSearch}
+							<button type="button" class="clear-search" onclick={() => (localSearch = '')}>
+								<IconX size={16} />
+							</button>
+						{/if}
+					</div>
+					<button type="button" class="close-btn" onclick={onclose}>
+						<IconX size={20} />
+					</button>
 				</div>
-				<button type="button" class="close-btn" onclick={onclose}>
-					<IconX size={20} />
-				</button>
-			</div>
 
-			<div class="inserter-content">
+				<div class="inserter-content">
 				{#if displayMode === 'search' && filteredBlocks()}
 					<!-- Search Results -->
 					<div class="search-results">
@@ -233,6 +293,7 @@
 									<button
 										type="button"
 										class="block-item"
+										class:has-presets={hasPresets(type)}
 										onclick={() => handleBlockClick(type)}
 										onmouseenter={() => (hoveredBlock = type)}
 										onmouseleave={() => (hoveredBlock = null)}
@@ -245,6 +306,11 @@
 											<Icon size={24} />
 										</div>
 										<span class="block-name">{def.name}</span>
+										{#if hasPresets(type)}
+											<span class="presets-badge" title="Has presets available">
+												<IconTemplate size={12} />
+											</span>
+										{/if}
 									</button>
 								{/each}
 							</div>
@@ -277,6 +343,7 @@
 											<button
 												type="button"
 												class="block-item"
+												class:has-presets={hasPresets(type)}
 												onclick={() => handleBlockClick(type)}
 												onmouseenter={() => (hoveredBlock = type)}
 												onmouseleave={() => (hoveredBlock = null)}
@@ -292,6 +359,12 @@
 													<span class="block-name">{def.name}</span>
 													<span class="block-desc">{def.description}</span>
 												</div>
+												{#if hasPresets(type)}
+													<span class="presets-badge inline" title="Has presets available">
+														<IconTemplate size={14} />
+														Presets
+													</span>
+												{/if}
 											</button>
 										{/each}
 									</div>
@@ -317,6 +390,7 @@
 			{/if}
 		</div>
 	</div>
+	{/if}
 {:else}
 	<!-- Inline Inserter (Sidebar) -->
 	<div class="inserter-inline">
@@ -333,11 +407,15 @@
 						<button
 							type="button"
 							class="block-btn"
+							class:has-presets={hasPresets(type)}
 							onclick={() => handleBlockClick(type)}
-							title={def.description}
+							title={hasPresets(type) ? `${def.description} - Has presets available` : def.description}
 						>
 							<Icon size={18} />
 							<span>{def.name}</span>
+							{#if hasPresets(type)}
+								<IconTemplate size={14} class="preset-icon" />
+							{/if}
 						</button>
 					{/each}
 				</div>
@@ -651,5 +729,65 @@
 
 	.block-btn span {
 		flex: 1;
+	}
+
+	/* Preset Badges */
+	.presets-badge {
+		position: absolute;
+		top: 0.375rem;
+		right: 0.375rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.125rem;
+		background: linear-gradient(135deg, #8b5cf6, #6366f1);
+		border-radius: 4px;
+		color: white;
+	}
+
+	.presets-badge.inline {
+		position: static;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.6875rem;
+		font-weight: 500;
+		border-radius: 6px;
+		margin-left: auto;
+		flex-shrink: 0;
+	}
+
+	.block-item {
+		position: relative;
+	}
+
+	.block-item.has-presets {
+		border: 1px solid transparent;
+	}
+
+	.block-item.has-presets:hover {
+		border-color: rgba(139, 92, 246, 0.3);
+		background: rgba(139, 92, 246, 0.05);
+	}
+
+	.blocks-grid .block-item.has-presets .presets-badge {
+		top: 0.25rem;
+		right: 0.25rem;
+	}
+
+	.block-btn.has-presets {
+		background: linear-gradient(135deg, #f5f5f5, rgba(139, 92, 246, 0.08));
+		border: 1px solid rgba(139, 92, 246, 0.2);
+	}
+
+	.block-btn.has-presets:hover {
+		background: linear-gradient(135deg, #e5e5e5, rgba(139, 92, 246, 0.15));
+		border-color: rgba(139, 92, 246, 0.3);
+	}
+
+	.block-btn :global(.preset-icon) {
+		color: #8b5cf6;
+		flex-shrink: 0;
 	}
 </style>
