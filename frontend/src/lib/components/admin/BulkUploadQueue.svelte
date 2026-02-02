@@ -5,13 +5,13 @@
 	 */
 
 	import { bulkUploadApi, type BatchStatus, type UploadQueueItem } from '$lib/api/video-advanced';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconLoader from '@tabler/icons-svelte/icons/loader-2';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconFile from '@tabler/icons-svelte/icons/file';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconLoader from '@tabler/icons-svelte-runes/icons/loader-2';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconFile from '@tabler/icons-svelte-runes/icons/file';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 
 	interface Props {
 		contentType?: string;

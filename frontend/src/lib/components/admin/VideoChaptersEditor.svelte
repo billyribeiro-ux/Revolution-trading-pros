@@ -10,12 +10,12 @@
 		parseTimeToSeconds,
 		type VideoChapter
 	} from '$lib/api/video-advanced';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 
 	interface Props {
 		videoId: number;

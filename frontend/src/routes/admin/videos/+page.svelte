@@ -18,30 +18,30 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconLink from '@tabler/icons-svelte/icons/link';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconUser from '@tabler/icons-svelte/icons/user';
-	import IconBuilding from '@tabler/icons-svelte/icons/building';
-	import IconTag from '@tabler/icons-svelte/icons/tag';
-	import IconTags from '@tabler/icons-svelte/icons/tags';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
-	import IconFileUpload from '@tabler/icons-svelte/icons/file-upload';
-	import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconUser from '@tabler/icons-svelte-runes/icons/user';
+	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
+	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
+	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
+	import IconFileUpload from '@tabler/icons-svelte-runes/icons/file-upload';
+	import IconProgressCheck from '@tabler/icons-svelte-runes/icons/progress-check';
 	import {
 		tradingRoomApi,
 		type TradingRoom,
@@ -58,11 +58,11 @@
 		type AnalyticsDashboard,
 		type BatchStatus
 	} from '$lib/api/video-advanced';
-	import IconCode from '@tabler/icons-svelte/icons/code';
-	import IconCheckbox from '@tabler/icons-svelte/icons/checkbox';
-	import IconSquare from '@tabler/icons-svelte/icons/square';
-	import IconStar from '@tabler/icons-svelte/icons/star';
-	import IconStarOff from '@tabler/icons-svelte/icons/star-off';
+	import IconCode from '@tabler/icons-svelte-runes/icons/code';
+	import IconCheckbox from '@tabler/icons-svelte-runes/icons/checkbox';
+	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)

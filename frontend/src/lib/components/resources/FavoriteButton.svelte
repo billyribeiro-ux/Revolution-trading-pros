@@ -9,26 +9,42 @@
   - Accessible design
 -->
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { addFavorite, removeFavorite, checkFavorite } from '$lib/api/room-resources';
 
-	export let resourceId: number;
-	export let initialFavorited: boolean | undefined = undefined;
-	export let size: 'sm' | 'md' | 'lg' = 'md';
-	export let showLabel = false;
+	interface Props {
+		resourceId: number;
+		initialFavorited?: boolean;
+		size?: 'sm' | 'md' | 'lg';
+		showLabel?: boolean;
+		onChange?: (favorited: boolean) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		change: { favorited: boolean };
-	}>();
+	const { resourceId, initialFavorited, size = 'md', showLabel = false, onChange }: Props = $props();
 
-	let isFavorited = initialFavorited ?? false;
-	let loading = initialFavorited === undefined;
-	let updating = false;
+	let isFavorited = $state(initialFavorited ?? false);
+	let loading = $state(initialFavorited === undefined);
+	let updating = $state(false);
+
+	// Size classes
+	const sizeClasses = $derived({
+		sm: 'h-6 w-6 p-1',
+		md: 'h-8 w-8 p-1.5',
+		lg: 'h-10 w-10 p-2'
+	}[size]);
+
+	const iconSize = $derived({
+		sm: 'h-4 w-4',
+		md: 'h-5 w-5',
+		lg: 'h-6 w-6'
+	}[size]);
 
 	// Check initial state if not provided
-	$: if (initialFavorited === undefined && typeof window !== 'undefined') {
-		loadFavoriteState();
-	}
+	onMount(() => {
+		if (initialFavorited === undefined) {
+			loadFavoriteState();
+		}
+	});
 
 	async function loadFavoriteState() {
 		loading = true;
@@ -57,7 +73,7 @@
 			} else {
 				await removeFavorite(resourceId);
 			}
-			dispatch('change', { favorited: isFavorited });
+			onChange?.(isFavorited);
 		} catch (e) {
 			// Revert on error
 			isFavorited = previousState;
@@ -66,19 +82,6 @@
 			updating = false;
 		}
 	}
-
-	// Size classes
-	$: sizeClasses = {
-		sm: 'h-6 w-6 p-1',
-		md: 'h-8 w-8 p-1.5',
-		lg: 'h-10 w-10 p-2'
-	}[size];
-
-	$: iconSize = {
-		sm: 'h-4 w-4',
-		md: 'h-5 w-5',
-		lg: 'h-6 w-6'
-	}[size];
 </script>
 
 <button
@@ -86,7 +89,7 @@
 	class="favorite-button inline-flex items-center gap-1.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-not-allowed disabled:opacity-50 {sizeClasses} {isFavorited
 		? 'text-amber-500 hover:text-amber-600'
 		: 'text-gray-400 hover:text-amber-500'}"
-	on:click|stopPropagation={toggleFavorite}
+	onclick={(e: MouseEvent) => { e.stopPropagation(); toggleFavorite(); }}
 	disabled={loading || updating}
 	aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
 	aria-pressed={isFavorited}

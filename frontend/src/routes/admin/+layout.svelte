@@ -15,11 +15,11 @@
 	import { unreadCount } from '$lib/stores/notifications.svelte';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
 
-	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconCommand from '@tabler/icons-svelte/icons/command';
+	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
+	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
+	import IconCommand from '@tabler/icons-svelte-runes/icons/command';
 
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';

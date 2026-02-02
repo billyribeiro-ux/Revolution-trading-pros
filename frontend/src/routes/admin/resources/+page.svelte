@@ -21,28 +21,28 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	import IconPhoto from '@tabler/icons-svelte/icons/photo';
-	import IconTable from '@tabler/icons-svelte/icons/table';
-	import IconFile from '@tabler/icons-svelte/icons/file';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconLink from '@tabler/icons-svelte/icons/link';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconStar from '@tabler/icons-svelte/icons/star';
-	import IconStarFilled from '@tabler/icons-svelte/icons/star-filled';
-	import IconPin from '@tabler/icons-svelte/icons/pin';
-	import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconTable from '@tabler/icons-svelte-runes/icons/table';
+	import IconFile from '@tabler/icons-svelte-runes/icons/file';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
+	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
+	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import {
 		roomResourcesApi,
 		type RoomResource,
@@ -57,7 +57,7 @@
 		getUploadLimits
 	} from '$lib/api/room-resources';
 	import { ResourceAnalytics } from '$lib/components/resources';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 
 	// ═══════════════════════════════════════════════════════════════════════════

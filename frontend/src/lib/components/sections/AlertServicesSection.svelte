@@ -2,13 +2,13 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconTarget from '@tabler/icons-svelte/icons/target';
-	import IconArrowUpRight from '@tabler/icons-svelte/icons/arrow-up-right';
-	import IconAntenna from '@tabler/icons-svelte/icons/antenna';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right';
+	import IconAntenna from '@tabler/icons-svelte-runes/icons/antenna';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 
 	// --- Data Configuration ---
 	const signals = [

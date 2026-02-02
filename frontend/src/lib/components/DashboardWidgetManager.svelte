@@ -24,28 +24,28 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets.svelte';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
-	import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
-	import IconList from '@tabler/icons-svelte/icons/list';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconCaretUp from '@tabler/icons-svelte/icons/caret-up';
-	import IconCaretDown from '@tabler/icons-svelte/icons/caret-down';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconWorld from '@tabler/icons-svelte/icons/world';
-	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
-	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEyeCheck from '@tabler/icons-svelte/icons/eye-check';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
+	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconCaretUp from '@tabler/icons-svelte-runes/icons/caret-up';
+	import IconCaretDown from '@tabler/icons-svelte-runes/icons/caret-down';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
+	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
+	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
+	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconEyeCheck from '@tabler/icons-svelte-runes/icons/eye-check';
+	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 
 	interface Props {
 		isOpen?: boolean;

@@ -13,15 +13,15 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import IconWebhook from '@tabler/icons-svelte/icons/webhook';
-	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconKey from '@tabler/icons-svelte/icons/key';
-	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
+	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconKey from '@tabler/icons-svelte-runes/icons/key';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { WebhookEvent } from '$lib/crm/types';
