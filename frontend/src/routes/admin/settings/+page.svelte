@@ -18,7 +18,7 @@
 	 * - Beautiful animations and transitions
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast.svelte';
@@ -702,14 +702,18 @@
 		return 'text-red-400';
 	}
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with cleanup
+	$effect(() => {
+		if (!browser) return;
+
 		fetchServices();
 		// Auto-refresh every 30 seconds
 		refreshInterval = setInterval(fetchServices, 30000);
-	});
 
-	onDestroy(() => {
-		if (refreshInterval) clearInterval(refreshInterval);
+		// Cleanup on destroy
+		return () => {
+			if (refreshInterval) clearInterval(refreshInterval);
+		};
 	});
 </script>
 

@@ -20,7 +20,8 @@
 		data: ArchivePageData;
 	}
 
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 </script>
 
 <svelte:head>

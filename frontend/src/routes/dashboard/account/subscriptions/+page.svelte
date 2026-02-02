@@ -12,7 +12,8 @@
 		subscriptions: Subscription[];
 	}
 
-	let { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	const subscriptions = $derived(data.subscriptions || []);
 

@@ -17,7 +17,7 @@
 	 * @version 4.0.0 - December 2025 - Real API Integration
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
@@ -934,13 +934,19 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		// Load rooms and traders first
-		await loadRoomsAndTraders();
-		// Then load videos for selected room
-		if (selectedRoom) {
-			await loadVideos();
-		}
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
+		const init = async () => {
+			// Load rooms and traders first
+			await loadRoomsAndTraders();
+			// Then load videos for selected room
+			if (selectedRoom) {
+				await loadVideos();
+			}
+		};
+		init();
 	});
 
 	// Load videos when selected room changes

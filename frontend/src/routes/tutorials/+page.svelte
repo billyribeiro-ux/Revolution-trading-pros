@@ -22,12 +22,12 @@
 		data: PageData;
 	}
 
-	let { data }: Props = $props();
+	let props: Props = $props();
 
 	// Derived state
-	let tosTutorials = $derived(data.tosTutorials ?? []);
-	let tradestationTutorials = $derived(data.tradestationTutorials ?? []);
-	let pagination = $derived(data.tosPagination);
+	let tosTutorials = $derived(props.data.tosTutorials ?? []);
+	let tradestationTutorials = $derived(props.data.tradestationTutorials ?? []);
+	let pagination = $derived(props.data.tosPagination);
 
 	// Generate pagination URL
 	function getPageUrl(page: number): string {

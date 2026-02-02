@@ -9,20 +9,23 @@
   - Recent uploads
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { ResourceAnalytics } from '$lib/api/room-resources';
 	import { getResourceAnalytics } from '$lib/api/room-resources';
 
-	export let roomId: number | undefined = undefined;
-	export let initialData: ResourceAnalytics | undefined = undefined;
+	interface Props {
+		roomId?: number;
+		initialData?: ResourceAnalytics;
+	}
 
-	let analytics: ResourceAnalytics | null = initialData ?? null;
-	let loading = !initialData;
-	let error = '';
+	let { roomId = undefined, initialData = undefined }: Props = $props();
 
-	onMount(async () => {
+	let analytics: ResourceAnalytics | null = $state(initialData ?? null);
+	let loading = $state(!initialData);
+	let error = $state('');
+
+	$effect(() => {
 		if (!initialData) {
-			await loadAnalytics();
+			loadAnalytics();
 		}
 	});
 
@@ -98,7 +101,7 @@
 			<p class="mt-2 text-red-600 dark:text-red-400">{error}</p>
 			<button
 				class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-				on:click={loadAnalytics}
+				onclick={loadAnalytics}
 			>
 				Retry
 			</button>

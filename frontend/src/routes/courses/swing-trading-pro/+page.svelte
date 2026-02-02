@@ -113,8 +113,8 @@
 		{ icon: IconBolt, title: 'Lifetime updates', description: 'Forever access' }
 	];
 
-	let heroVisible = false;
-	let modulesVisible: boolean[] = new Array(modules.length).fill(false);
+	let heroVisible = $state(false);
+	let modulesVisible = $state<boolean[]>(new Array(modules.length).fill(false));
 
 	onMount(() => {
 		if (!browser) return;

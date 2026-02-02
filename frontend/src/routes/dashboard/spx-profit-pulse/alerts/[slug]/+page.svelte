@@ -12,7 +12,8 @@
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// SSR data from +page.server.ts
-	let { data } = $props();
+	let props = $props();
+	let data = $derived(props.data);
 
 	const alert = $derived(data.alert);
 

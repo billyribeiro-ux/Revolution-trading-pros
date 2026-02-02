@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconPlus,
 		IconSearch,
@@ -15,9 +15,12 @@
 	let loading = $state(false);
 	let searchQuery = $state('');
 
-	onMount(() => {
-		loadKeywords();
-		loadStats();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) {
+			loadKeywords();
+			loadStats();
+		}
 	});
 
 	async function loadKeywords() {

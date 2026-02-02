@@ -13,7 +13,8 @@
 	import TraderNav from '$lib/components/traders/TraderNav.svelte';
 	import type { Snippet } from 'svelte';
 
-	let { children }: { children: Snippet } = $props();
+	let props: { children: Snippet } = $props();
+	let children = $derived(props.children);
 
 	let trader = $derived(getTraderBySlug($page.params.slug ?? ''));
 	let currentPath = $derived.by(() => {

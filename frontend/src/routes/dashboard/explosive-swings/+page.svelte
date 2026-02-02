@@ -43,7 +43,8 @@
 		documents: RoomResource[];
 		roomId: number;
 	}
-	const { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 	
 	// ICT 7: Local error state for user feedback
 	let saveAlertError = $state<string | null>(null);

@@ -17,7 +17,8 @@
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Server-loaded data
-	let { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	// Reactive state from server data
 	const displayedVideos = $derived(data.videos || []);

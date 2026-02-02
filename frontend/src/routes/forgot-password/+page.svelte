@@ -1,17 +1,22 @@
 <script lang="ts">
+	/**
+	 * Forgot Password Page - Svelte 5 January 2026
+	 * @version 2.0.0
+	 */
 	import { forgotPassword } from '$lib/api/auth';
 	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
-	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
-	let email = '';
-	let errors: Record<string, string[]> = {};
-	let generalError = '';
-	let successMessage = '';
-	let isLoading = false;
-	let isVisible = false;
+	// Svelte 5 state runes
+	let email = $state('');
+	let errors = $state<Record<string, string[]>>({});
+	let generalError = $state('');
+	let successMessage = $state('');
+	let isLoading = $state(false);
+	let isVisible = $state(false);
 
-	onMount(() => {
+	// Svelte 5 effect for initialization
+	$effect(() => {
 		isVisible = true;
 	});
 

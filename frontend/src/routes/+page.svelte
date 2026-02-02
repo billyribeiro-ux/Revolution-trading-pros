@@ -26,15 +26,18 @@
 	// ICT 11+ CORB Fix: Use same-origin endpoints
 	const API_URL = '';
 
-	let { data }: { data: any } = $props();
+	interface Props {
+		data: any;
+	}
+	let props: Props = $props();
 
 	// Posts state - use SSR data or fetch client-side
 	let posts = $state<any[]>([]);
 
 	// Sync posts with data.posts reactively
 	$effect(() => {
-		if (data.posts && data.posts.length > 0) {
-			posts = data.posts;
+		if (props.data.posts && props.data.posts.length > 0) {
+			posts = props.data.posts;
 		}
 	});
 

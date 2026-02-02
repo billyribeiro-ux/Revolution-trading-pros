@@ -32,7 +32,8 @@
 	}
 
 	// Server-side data
-	let { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	// Reactive state from server data
 	let videos = $derived(data.videos || []);

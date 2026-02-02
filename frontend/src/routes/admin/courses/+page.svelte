@@ -8,7 +8,7 @@
 	 * Includes enterprise CourseDetailDrawer, CourseFormModal, and ModuleFormModal.
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { CourseCard } from '$lib/components/courses';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -254,7 +254,10 @@
 		}
 	};
 
-	onMount(fetchCourses);
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) fetchCourses();
+	});
 </script>
 
 <svelte:head>

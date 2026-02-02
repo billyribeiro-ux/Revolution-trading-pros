@@ -8,7 +8,7 @@
 	import '$lib/styles/main.css';
 	import '$lib/styles/admin-responsive.css';
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
@@ -32,8 +32,11 @@
 
 	import type { Snippet } from 'svelte';
 
-	// Props
-	let { children }: { children: Snippet } = $props();
+	// Props (Svelte 5 - no destructuring)
+	interface Props {
+		children: Snippet;
+	}
+	let props: Props = $props();
 
 	// State
 	let isSidebarOpen = $state(false);
@@ -143,7 +146,7 @@
 			</button>
 
 			<div class="header-title">
-				<h1>{formatPageTitle($page.url.pathname)}</h1>
+				<h1>{formatPageTitle(page.url.pathname)}</h1>
 			</div>
 
 			<div class="header-actions">
@@ -205,7 +208,7 @@
 
 		<!-- Content -->
 		<main id="main-content" class="admin-content">
-			{@render children()}
+			{@render props.children()}
 		</main>
 	</div>
 </div>

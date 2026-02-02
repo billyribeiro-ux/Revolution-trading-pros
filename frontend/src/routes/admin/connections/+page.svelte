@@ -8,7 +8,7 @@
 	 * @level L11 Principal Engineer - Premium UX
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
@@ -265,27 +265,33 @@
 		return iconMap[service.key] || service.name.charAt(0).toUpperCase();
 	}
 
-	onMount(async () => {
-		await fetchConnections();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
 
-		const urlParams = page.url.searchParams;
-		const connectServiceKey = urlParams.get('connect');
-		if (connectServiceKey) {
-			const serviceToConnect = connections.find((s) => s.key === connectServiceKey);
-			if (serviceToConnect) {
-				openConnectModal(serviceToConnect);
-			}
-		}
+		const init = async () => {
+			await fetchConnections();
 
-		const categoryParam = urlParams.get('category');
-		if (categoryParam) {
-			const matchingCategory = Object.keys(categories).find(
-				(cat) => cat.toLowerCase() === categoryParam.toLowerCase()
-			);
-			if (matchingCategory) {
-				selectedCategory = matchingCategory;
+			const urlParams = page.url.searchParams;
+			const connectServiceKey = urlParams.get('connect');
+			if (connectServiceKey) {
+				const serviceToConnect = connections.find((s) => s.key === connectServiceKey);
+				if (serviceToConnect) {
+					openConnectModal(serviceToConnect);
+				}
 			}
-		}
+
+			const categoryParam = urlParams.get('category');
+			if (categoryParam) {
+				const matchingCategory = Object.keys(categories).find(
+					(cat) => cat.toLowerCase() === categoryParam.toLowerCase()
+				);
+				if (matchingCategory) {
+					selectedCategory = matchingCategory;
+				}
+			}
+		};
+		init();
 	});
 </script>
 

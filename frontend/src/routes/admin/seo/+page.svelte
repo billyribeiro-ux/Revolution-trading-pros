@@ -12,7 +12,7 @@
 	 * @version 2.0.0 - Enterprise Edition
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, fly } from 'svelte/transition';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
@@ -254,21 +254,20 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
 		// Built-in SEO - always available (like RankMath Pro)
 		// External connections are optional enhancements
 		isLoading = false;
 
 		// Load SEO data from built-in system
-		await loadSeoData();
+		loadSeoData();
 
 		setTimeout(() => {
 			metricsSpring.set(1);
 		}, 100);
-	});
-
-	onDestroy(() => {
-		// Cleanup if needed
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════

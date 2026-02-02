@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
 	import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
@@ -25,7 +25,7 @@
 
 	async function loadPost(): Promise<void> {
 		try {
-			const response = await fetch(`/api/posts/${$page.params.slug}`);
+			const response = await fetch(`/api/posts/${page.params.slug}`);
 			if (!response.ok) throw new Error('Failed to load post');
 
 			const data = await response.json();
@@ -40,7 +40,7 @@
 		isSaving = true;
 
 		try {
-			const response = await fetch(`/api/posts/${$page.params.slug}`, {
+			const response = await fetch(`/api/posts/${page.params.slug}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

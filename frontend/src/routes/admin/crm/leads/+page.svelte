@@ -26,7 +26,7 @@
 	 * @version 1.0.0 (January 2026)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconUsers,
 		IconUserPlus,
@@ -562,15 +562,21 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await connections.load();
-		connectionLoading = false;
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
 
-		if ($isCrmConnected) {
-			await loadData();
-		} else {
-			isLoading = false;
-		}
+		const init = async () => {
+			await connections.load();
+			connectionLoading = false;
+
+			if ($isCrmConnected) {
+				await loadData();
+			} else {
+				isLoading = false;
+			}
+		};
+		init();
 	});
 </script>
 

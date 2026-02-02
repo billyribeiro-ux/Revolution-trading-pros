@@ -37,7 +37,8 @@
 		order: Order;
 	}
 
-	let { data }: { data: PageData } = $props();
+	let props: { data: PageData } = $props();
+	let data = $derived(props.data);
 
 	const order = $derived(data.order);
 

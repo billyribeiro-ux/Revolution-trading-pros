@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
@@ -95,8 +95,9 @@
 	// Favorite boards
 	let favoriteBoards = $derived.by(() => boards.filter((b) => b.is_favorite && !b.is_archived));
 
-	onMount(async () => {
-		await loadData();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadData();
 	});
 
 	async function loadData() {

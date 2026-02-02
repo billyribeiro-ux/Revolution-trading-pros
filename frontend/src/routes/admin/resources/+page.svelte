@@ -20,7 +20,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconFileText from '@tabler/icons-svelte/icons/file-text';
 	import IconPhoto from '@tabler/icons-svelte/icons/photo';
@@ -762,11 +762,17 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await loadRoomsAndTraders();
-		if (selectedRoom) {
-			await loadResources();
-		}
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
+		const init = async () => {
+			await loadRoomsAndTraders();
+			if (selectedRoom) {
+				await loadResources();
+			}
+		};
+		init();
 	});
 
 	// ICT 7: Track previous room to prevent duplicate API calls

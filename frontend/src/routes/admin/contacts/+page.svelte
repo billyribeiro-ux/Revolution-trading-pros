@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
@@ -29,8 +29,9 @@
 		{ value: 'unqualified', label: 'Unqualified' }
 	];
 
-	onMount(async () => {
-		await loadContacts();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadContacts();
 	});
 
 	async function loadContacts() {

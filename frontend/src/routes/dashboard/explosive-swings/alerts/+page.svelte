@@ -20,7 +20,8 @@
 		};
 	}
 
-	let { data }: Props = $props();
+	let props: Props = $props();
+	let data = $derived(props.data);
 
 	// Svelte 5 $state for filter state
 	let selectedFilter = $state('all');

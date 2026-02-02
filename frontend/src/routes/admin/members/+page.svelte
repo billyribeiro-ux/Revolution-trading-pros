@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
@@ -91,21 +91,27 @@
 	}
 
 	// Initialize - Use Promise.allSettled to prevent stuck loading if one API fails
-	onMount(async () => {
-		initError = '';
-		const results = await Promise.allSettled([
-			membersStore.loadMembers(),
-			membersStore.loadStats(),
-			membersStore.loadServices(),
-			emailStore.loadTemplates()
-		]);
+	// Svelte 5: $effect for initialization
+	$effect(() => {
+		if (!browser) return;
 
-		// Check for critical failures
-		const [membersResult] = results;
-		if (membersResult.status === 'rejected') {
-			initError = 'Failed to load members. Please refresh the page.';
-			console.error('Members load error:', membersResult.reason);
-		}
+		const init = async () => {
+			initError = '';
+			const results = await Promise.allSettled([
+				membersStore.loadMembers(),
+				membersStore.loadStats(),
+				membersStore.loadServices(),
+				emailStore.loadTemplates()
+			]);
+
+			// Check for critical failures
+			const [membersResult] = results;
+			if (membersResult.status === 'rejected') {
+				initError = 'Failed to load members. Please refresh the page.';
+				console.error('Members load error:', membersResult.reason);
+			}
+		};
+		init();
 	});
 
 	// Handlers

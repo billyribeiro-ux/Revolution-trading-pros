@@ -33,9 +33,12 @@
 	import { trackPageView } from '$lib/consent/vendors/ga4';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PROPS - Svelte 5 $props() Pattern
+	// PROPS - Svelte 5 $props() Pattern (no destructuring)
 	// ═══════════════════════════════════════════════════════════════════════════
-	let { children }: { children: Snippet } = $props();
+	interface Props {
+		children: Snippet;
+	}
+	let props: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 $state() Pattern
@@ -125,7 +128,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 {#if isAdminArea || isEmbedArea}
 	<!-- Admin/Embed: Own layouts, no shared chrome -->
-	{@render children()}
+	{@render props.children()}
 {:else}
 	<!-- Dashboard + Marketing: Shared layout with NavBar -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
@@ -139,7 +142,7 @@
 		<NavBar />
 
 		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip">
-			{@render children()}
+			{@render props.children()}
 		</main>
 
 		<!-- Consent UI: Re-enable when consent system is ready -->

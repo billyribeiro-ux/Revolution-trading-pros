@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Reset Password Page - Svelte 5 January 2026
+	 * @version 2.0.0
+	 */
 	import { goto } from '$app/navigation';
 	import { resetPassword } from '$lib/api/auth';
 	import {
@@ -9,22 +13,26 @@
 		IconEye,
 		IconEyeOff
 	} from '$lib/icons';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
-	let email = '';
-	let password = '';
-	let password_confirmation = '';
-	let token = '';
-	let showPassword = false;
-	let showConfirmPassword = false;
-	let errors: Record<string, string[]> = {};
-	let generalError = '';
-	let successMessage = '';
-	let isLoading = false;
-	let isVisible = false;
+	// Svelte 5 state runes
+	let email = $state('');
+	let password = $state('');
+	let password_confirmation = $state('');
+	let token = $state('');
+	let showPassword = $state(false);
+	let showConfirmPassword = $state(false);
+	let errors = $state<Record<string, string[]>>({});
+	let generalError = $state('');
+	let successMessage = $state('');
+	let isLoading = $state(false);
+	let isVisible = $state(false);
 
-	onMount(() => {
+	// Svelte 5 effect for initialization
+	$effect(() => {
+		if (!browser) return;
+
 		isVisible = true;
 		// Get token and email from URL parameters
 		const urlParams = new URLSearchParams(window.location.search);

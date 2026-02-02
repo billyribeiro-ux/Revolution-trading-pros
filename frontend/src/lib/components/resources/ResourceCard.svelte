@@ -11,28 +11,37 @@
   - Version indicator
 -->
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { formatResourceForDisplay, trackDownload, trackAccess } from '$lib/api/room-resources';
 	import FavoriteButton from './FavoriteButton.svelte';
 
-	export let resource: RoomResource;
-	export let showAccessLevel = true;
-	export let showVersion = false;
-	export let showFavorite = true;
-	export let compact = false;
+	interface Props {
+		resource: RoomResource;
+		showAccessLevel?: boolean;
+		showVersion?: boolean;
+		showFavorite?: boolean;
+		compact?: boolean;
+		onClick?: (resource: RoomResource) => void;
+		onDownload?: (resource: RoomResource) => void;
+		onPreview?: (resource: RoomResource) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		click: { resource: RoomResource };
-		download: { resource: RoomResource };
-		preview: { resource: RoomResource };
-	}>();
+	let {
+		resource,
+		showAccessLevel = true,
+		showVersion = false,
+		showFavorite = true,
+		compact = false,
+		onClick,
+		onDownload,
+		onPreview
+	}: Props = $props();
 
-	$: displayInfo = formatResourceForDisplay(resource);
-	$: isVideo = resource.resource_type === 'video';
-	$: isPremium = resource.access_level !== 'free';
-	$: formattedSize = resource.formatted_size || '';
-	$: hasVersion = (resource.version ?? 1) > 1;
+	let displayInfo = $derived(formatResourceForDisplay(resource));
+	let isVideo = $derived(resource.resource_type === 'video');
+	let isPremium = $derived(resource.access_level !== 'free');
+	let formattedSize = $derived(resource.formatted_size || '');
+	let hasVersion = $derived((resource.version ?? 1) > 1);
 
 	// Default thumbnail based on resource type
 	function getDefaultThumbnail(type: string): string {
@@ -48,18 +57,20 @@
 		return defaults[type] || defaults.other;
 	}
 
-	async function handleDownload() {
+	async function handleDownload(event: MouseEvent) {
+		event.stopPropagation();
 		// Track download
 		try {
 			await trackDownload(resource.id);
 		} catch (e) {
 			// Silent fail for tracking
 		}
-		dispatch('download', { resource });
+		onDownload?.(resource);
 	}
 
-	function handlePreview() {
-		dispatch('preview', { resource });
+	function handlePreview(event: MouseEvent) {
+		event.stopPropagation();
+		onPreview?.(resource);
 	}
 
 	async function handleCardClick() {
@@ -69,7 +80,7 @@
 		} catch (e) {
 			// Silent fail for tracking
 		}
-		dispatch('click', { resource });
+		onClick?.(resource);
 	}
 
 	// Get appropriate icon for resource type
@@ -101,12 +112,12 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <article
 	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
 	class:compact
-	on:click={handleCardClick}
+	onclick={handleCardClick}
 >
 	<!-- Thumbnail / Preview -->
 	<div class="thumbnail-container relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
@@ -157,7 +168,7 @@
 			<div class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
 				<button
 					class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform hover:scale-110"
-					on:click|stopPropagation={handlePreview}
+					onclick={handlePreview}
 					aria-label="Play video"
 				>
 					<svg class="h-8 w-8 pl-1" fill="currentColor" viewBox="0 0 24 24">
@@ -244,7 +255,7 @@
 		<!-- Action button -->
 		<button
 			class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-			on:click|stopPropagation={isVideo ? handlePreview : handleDownload}
+			onclick={isVideo ? handlePreview : handleDownload}
 		>
 			{displayInfo.actionLabel}
 		</button>

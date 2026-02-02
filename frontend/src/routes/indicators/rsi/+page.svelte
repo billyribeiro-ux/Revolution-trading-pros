@@ -16,8 +16,8 @@
 		IconTarget
 	} from '$lib/icons';
 
-	let heroVisible = false;
-	let sectionsVisible: boolean[] = [false, false, false];
+	let heroVisible = $state(false);
+	let sectionsVisible = $state<boolean[]>([false, false, false]);
 
 	onMount(() => {
 		if (!browser) return;

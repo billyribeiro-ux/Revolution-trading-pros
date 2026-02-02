@@ -13,7 +13,8 @@
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	// SSR data from +page.server.ts
-	let { data } = $props();
+	let props = $props();
+	let data = $derived(props.data);
 
 	// Transform SSR alerts to LatestUpdates format
 	const latestUpdatesItems = $derived(

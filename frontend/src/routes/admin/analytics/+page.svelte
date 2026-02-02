@@ -10,7 +10,7 @@
 	 * - KPIs, funnels, cohorts, attribution
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
@@ -131,27 +131,34 @@
 		loadDashboard();
 	}
 
-	onMount(async () => {
+	// Svelte 5: Initialize on mount with cleanup
+	$effect(() => {
+		if (!browser) return;
+
 		// Subscribe to analytics connection status
 		unsubscribe = isAnalyticsConnected.subscribe((connected) => {
 			isConnected = connected;
 		});
 
 		// Load connection status
-		connectionsLoading = true;
-		await connections.load();
-		connectionsLoading = false;
+		const initDashboard = async () => {
+			connectionsLoading = true;
+			await connections.load();
+			connectionsLoading = false;
 
-		// Load dashboard if connected
-		if (isConnected) {
-			loadDashboard();
-		}
-	});
+			// Load dashboard if connected
+			if (isConnected) {
+				loadDashboard();
+			}
+		};
+		initDashboard();
 
-	onDestroy(() => {
-		if (unsubscribe !== null) {
-			unsubscribe();
-		}
+		// Cleanup on destroy
+		return () => {
+			if (unsubscribe !== null) {
+				unsubscribe();
+			}
+		};
 	});
 
 	// Format time series data

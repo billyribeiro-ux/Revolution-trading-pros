@@ -6,8 +6,11 @@
 	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
-	// Svelte 5: Props with children snippet
-	let { children }: { children: Snippet } = $props();
+	// Svelte 5: Props - no destructuring
+	interface Props {
+		children: Snippet;
+	}
+	let props: Props = $props();
 
 	const navItems = [
 		{ href: '/admin/analytics', label: 'Dashboard', icon: '📊' },
@@ -44,5 +47,5 @@
 		</div>
 	</div>
 
-	{@render children()}
+	{@render props.children()}
 </div>

@@ -26,7 +26,7 @@
 	 * @version 1.0.0 (January 2026)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import {
 		IconCrown,
@@ -431,8 +431,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		loadData();
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (browser) loadData();
 	});
 </script>
 

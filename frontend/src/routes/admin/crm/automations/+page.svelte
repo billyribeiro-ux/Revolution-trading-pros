@@ -15,7 +15,8 @@
 -->
 
 <script lang="ts">
-	import { onMount, untrack } from 'svelte';
+	import { untrack } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconRoute from '@tabler/icons-svelte/icons/route';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
@@ -484,9 +485,15 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await loadFunnels();
-		isInitialized = true;
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
+
+		const init = async () => {
+			await loadFunnels();
+			isInitialized = true;
+		};
+		init();
 	});
 </script>
 

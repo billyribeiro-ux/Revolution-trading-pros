@@ -5,7 +5,7 @@
 	 * Create, schedule, and manage custom analytics reports
 	 * with multiple visualization options.
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { analyticsApi } from '$lib/api/analytics';
 	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -140,17 +140,23 @@
 		});
 	}
 
-	onMount(async () => {
-		// Load connection status first
-		await connections.load();
-		connectionLoading = false;
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
 
-		// Only load data if analytics is connected
-		if ($isAnalyticsConnected) {
-			await loadReports();
-		} else {
-			loading = false;
-		}
+		const init = async () => {
+			// Load connection status first
+			await connections.load();
+			connectionLoading = false;
+
+			// Only load data if analytics is connected
+			if ($isAnalyticsConnected) {
+				await loadReports();
+			} else {
+				loading = false;
+			}
+		};
+		init();
 	});
 
 	const filteredReports = $derived(
