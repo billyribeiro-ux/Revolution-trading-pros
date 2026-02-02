@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { RoomResource, ResourceListQuery, ContentType, ResourceType } from '$lib/api/room-resources';
+	import type { RoomResource, ResourceListQuery, ContentType, ResourceType, AccessLevel } from '$lib/api/room-resources';
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
 
@@ -19,7 +19,7 @@
 	export let contentType: ContentType | undefined = undefined;
 	export let resourceType: ResourceType | undefined = undefined;
 	export let section: string | undefined = undefined;
-	export let accessLevel: string | undefined = undefined;
+	export let accessLevel: AccessLevel | undefined = undefined;
 	export let courseId: number | undefined = undefined;
 	export let lessonId: number | undefined = undefined;
 	export let showSearch = true;
@@ -46,7 +46,7 @@
 	let searchQuery = '';
 	let selectedType: ResourceType | '' = resourceType ?? '';
 	let selectedSection = section ?? '';
-	let selectedAccessLevel = accessLevel ?? '';
+	let selectedAccessLevel: AccessLevel | '' = accessLevel ?? '';
 
 	// Resource type options
 	const resourceTypes: { value: ResourceType | ''; label: string }[] = [
@@ -90,7 +90,7 @@
 			content_type: contentType,
 			resource_type: selectedType || undefined,
 			search: searchQuery || undefined,
-			access_level: selectedAccessLevel || undefined
+			access_level: selectedAccessLevel ? (selectedAccessLevel as AccessLevel) : undefined
 		};
 
 		// Add section filter if specified

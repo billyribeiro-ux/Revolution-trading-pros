@@ -64,6 +64,7 @@
 		first_name?: string;
 		last_name?: string;
 		full_name?: string;
+		name?: string;
 		phone?: string;
 		company?: string;
 		job_title?: string;
@@ -71,8 +72,11 @@
 		source?: string;
 		score?: number;
 		tags?: string[] | { id: string; name: string }[];
+		lists?: { id: string; name: string }[];
+		lifecycle_stage?: string;
 		custom_fields?: Record<string, unknown>;
 		last_contacted_at?: string;
+		last_activity_at?: string;
 		created_at: string;
 		updated_at: string;
 	}
@@ -491,17 +495,17 @@
 										</span>
 									</td>
 									<td>
-										{#if contact.lists?.length > 0}
+										{#if contact.lists && contact.lists.length > 0}
 											<span class="count-badge">{contact.lists.length}</span>
 										{:else}
 											<span class="text-muted">-</span>
 										{/if}
 									</td>
 									<td>
-										{#if contact.tags?.length > 0}
+										{#if contact.tags && contact.tags.length > 0}
 											<div class="tags-preview">
-												{#each (contact.tags || []).slice(0, 2) as tag}
-													<span class="tag-pill">{tag.name || tag}</span>
+												{#each contact.tags.slice(0, 2) as tag}
+													<span class="tag-pill">{typeof tag === 'string' ? tag : tag.name}</span>
 												{/each}
 												{#if contact.tags.length > 2}
 													<span class="tag-more">+{contact.tags.length - 2}</span>
