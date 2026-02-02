@@ -786,11 +786,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 16px;
+		padding: var(--space-2);
 		background: rgba(0, 0, 0, 0.6);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		animation: fadeIn 0.2s ease;
+		overscroll-behavior: contain;
 	}
 
 	@keyframes fadeIn {
@@ -804,8 +805,9 @@
 	.modal-container {
 		position: relative;
 		width: 100%;
-		max-width: 1400px;
-		max-height: calc(100vh - 32px);
+		max-width: 1200px;
+		max-height: calc(100vh - var(--space-4));
+		max-height: calc(100dvh - var(--space-4));
 		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
 		border-radius: 16px;
 		box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
@@ -813,6 +815,7 @@
 		flex-direction: column;
 		overflow: hidden;
 		animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		overscroll-behavior: contain;
 	}
 
 	@keyframes slideUp {
@@ -849,8 +852,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 40px;
-		height: 40px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		background: rgba(255, 255, 255, 0.15);
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 10px;
@@ -985,11 +988,12 @@
 	.form-group input,
 	.form-group textarea {
 		width: 100%;
-		padding: 10px 12px;
+		padding: var(--space-1-5) var(--space-2);
+		min-height: var(--touch-target-min);
 		background: rgba(255, 255, 255, 0.95);
 		border: 2px solid transparent;
 		border-radius: 8px;
-		font-size: 14px;
+		font-size: var(--text-base);
 		color: #333;
 		transition: all 0.2s ease;
 	}
@@ -1390,10 +1394,11 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
-		padding: 12px 24px;
+		gap: var(--space-1);
+		padding: var(--space-1-5) var(--space-3);
+		min-height: var(--touch-target-min);
 		border-radius: 10px;
-		font-size: 15px;
+		font-size: var(--text-base);
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -1466,12 +1471,97 @@
 	   RESPONSIVE BREAKPOINTS
 	   ═══════════════════════════════════════════════════════════════════════════════════ */
 
-	/* Tablet (768px - 1023px) */
-	@media (max-width: 1023px) {
-		.modal-container {
-			max-height: calc(100vh - 24px);
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile-first using design tokens
+	   ═══════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile: Bottom sheet style modal */
+	@media (max-width: 767px) {
+		.modal-backdrop {
+			padding: var(--space-1);
+			align-items: flex-end;
 		}
 
+		.modal-container {
+			max-height: calc(100vh - var(--space-2));
+			max-height: calc(100dvh - var(--space-2));
+			border-radius: 16px 16px 0 0;
+		}
+
+		.modal-header {
+			padding: var(--space-2);
+		}
+
+		.modal-header h2 {
+			font-size: var(--text-lg);
+		}
+
+		.panel-header {
+			padding: var(--space-2);
+			flex-wrap: wrap;
+			gap: var(--space-1);
+		}
+
+		.panel-header h3 {
+			font-size: var(--text-sm);
+		}
+
+		.panel-actions {
+			width: 100%;
+			justify-content: space-between;
+		}
+
+		.panel-content {
+			padding: var(--space-2);
+			max-height: 250px;
+		}
+
+		.trade-sheet {
+			font-size: var(--text-xs);
+		}
+
+		.trade-sheet th,
+		.trade-sheet td {
+			padding: var(--space-1) var(--space-0-5);
+		}
+
+		.cell-input {
+			padding: var(--space-1);
+			font-size: var(--text-xs);
+		}
+
+		.cell-input--ticker {
+			width: 60px;
+		}
+
+		.cell-input--price {
+			width: 55px;
+		}
+
+		.modal-footer {
+			padding: var(--space-2);
+			flex-direction: column;
+			gap: var(--space-2);
+		}
+
+		.footer-info {
+			align-items: center;
+			text-align: center;
+		}
+
+		.footer-actions {
+			width: 100%;
+			flex-direction: column;
+			gap: var(--space-1);
+		}
+
+		.footer-actions .btn {
+			width: 100%;
+		}
+	}
+
+	/* Tablet (768px - 1023px) */
+	@media (min-width: 768px) and (max-width: 1023px) {
 		.modal-body {
 			grid-template-columns: 1fr;
 		}
@@ -1491,7 +1581,7 @@
 
 		.modal-footer {
 			flex-direction: column;
-			gap: 16px;
+			gap: var(--space-2);
 			text-align: center;
 		}
 
@@ -1502,87 +1592,6 @@
 		.footer-actions {
 			width: 100%;
 			justify-content: center;
-		}
-	}
-
-	/* Mobile (< 768px) */
-	@media (max-width: 767px) {
-		.modal-backdrop {
-			padding: 8px;
-			align-items: flex-end;
-		}
-
-		.modal-container {
-			max-height: calc(100vh - 16px);
-			border-radius: 16px 16px 0 0;
-		}
-
-		.modal-header {
-			padding: 16px 20px;
-		}
-
-		.modal-header h2 {
-			font-size: 17px;
-		}
-
-		.panel-header {
-			padding: 14px 16px;
-			flex-wrap: wrap;
-			gap: 10px;
-		}
-
-		.panel-header h3 {
-			font-size: 14px;
-		}
-
-		.panel-actions {
-			width: 100%;
-			justify-content: space-between;
-		}
-
-		.panel-content {
-			padding: 16px;
-			max-height: 250px;
-		}
-
-		.trade-sheet {
-			font-size: 12px;
-		}
-
-		.trade-sheet th,
-		.trade-sheet td {
-			padding: 8px 4px;
-		}
-
-		.cell-input {
-			padding: 6px 8px;
-			font-size: 12px;
-		}
-
-		.cell-input--ticker {
-			width: 60px;
-		}
-
-		.cell-input--price {
-			width: 55px;
-		}
-
-		.modal-footer {
-			padding: 14px 20px;
-		}
-
-		.btn {
-			padding: 10px 18px;
-			font-size: 14px;
-		}
-
-		.footer-actions {
-			flex-direction: column;
-			gap: 10px;
-		}
-
-		.footer-actions .btn {
-			width: 100%;
 		}
 	}
 

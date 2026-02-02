@@ -21,16 +21,16 @@
 <script lang="ts">
 	import { fade, slide, fly } from 'svelte/transition';
 	import {
-		IconLayoutNavbar,
-		IconLayoutBottombar,
+		IconLayoutRows,
+		IconLayoutGrid,
 		IconClick,
 		IconForms,
 		IconMenu2,
-		IconLayoutSidebar,
+		IconLayoutKanban,
 		IconFlag,
-		IconWindowMaximize,
+		IconMaximize,
 		IconId,
-		IconSection,
+		IconLayoutDashboard,
 		IconSearch,
 		IconPlus,
 		IconEdit,
@@ -38,7 +38,6 @@
 		IconCopy,
 		IconHistory,
 		IconLink,
-		IconLinkOff,
 		IconRefresh,
 		IconCheck,
 		IconX,
@@ -167,18 +166,18 @@
 
 	const categoryConfig: Record<
 		ComponentCategory,
-		{ label: string; icon: typeof IconLayoutNavbar; color: string }
+		{ label: string; icon: typeof IconLayoutRows; color: string }
 	> = {
-		header: { label: 'Headers', icon: IconLayoutNavbar, color: '#3b82f6' },
-		footer: { label: 'Footers', icon: IconLayoutBottombar, color: '#10b981' },
+		header: { label: 'Headers', icon: IconLayoutRows, color: '#3b82f6' },
+		footer: { label: 'Footers', icon: IconLayoutRows, color: '#10b981' },
 		cta: { label: 'CTAs', icon: IconClick, color: '#f59e0b' },
 		form: { label: 'Forms', icon: IconForms, color: '#8b5cf6' },
 		navigation: { label: 'Navigation', icon: IconMenu2, color: '#ec4899' },
-		sidebar: { label: 'Sidebars', icon: IconLayoutSidebar, color: '#06b6d4' },
+		sidebar: { label: 'Sidebars', icon: IconLayoutKanban, color: '#06b6d4' },
 		banner: { label: 'Banners', icon: IconFlag, color: '#ef4444' },
-		modal: { label: 'Modals', icon: IconWindowMaximize, color: '#84cc16' },
+		modal: { label: 'Modals', icon: IconMaximize, color: '#84cc16' },
 		card: { label: 'Cards', icon: IconId, color: '#f97316' },
-		section: { label: 'Sections', icon: IconSection, color: '#64748b' }
+		section: { label: 'Sections', icon: IconLayoutDashboard, color: '#64748b' }
 	};
 
 	// ==========================================================================
@@ -538,7 +537,7 @@
 			<!-- Header -->
 			<div class="library-header">
 				<div class="header-title">
-					<IconSection size={24} />
+					<IconLayoutDashboard size={24} />
 					<div>
 						<h2>Global Components</h2>
 						<span class="subtitle">Reusable headers, footers, CTAs & more</span>
@@ -639,7 +638,7 @@
 						</div>
 					{:else if filteredComponents().length === 0}
 						<div class="empty-state">
-							<IconSection size={48} />
+							<IconLayoutDashboard size={48} />
 							<h3>No components found</h3>
 							<p>Create your first global component to get started.</p>
 							<button type="button" class="btn-create" onclick={openCreateModal}>
@@ -697,7 +696,7 @@
 										<button
 											type="button"
 											class="action-btn primary"
-											onclick|stopPropagation={() => handleInsert(component)}
+											onclick={(e) => { e.stopPropagation(); handleInsert(component); }}
 											title="Insert into editor"
 										>
 											<IconPlus size={16} />
@@ -705,7 +704,7 @@
 										<button
 											type="button"
 											class="action-btn"
-											onclick|stopPropagation={() => openEditModal(component)}
+											onclick={(e) => { e.stopPropagation(); openEditModal(component); }}
 											title="Edit"
 										>
 											<IconEdit size={16} />
@@ -713,7 +712,7 @@
 										<button
 											type="button"
 											class="action-btn"
-											onclick|stopPropagation={() => handleDuplicate(component)}
+											onclick={(e) => { e.stopPropagation(); handleDuplicate(component); }}
 											title="Duplicate"
 										>
 											<IconCopy size={16} />
@@ -840,7 +839,7 @@
 															{/if}
 														{:else}
 															<span class="status-badge detached">
-																<IconLinkOff size={12} />
+																<IconLink size={12} />
 																Detached
 															</span>
 														{/if}
@@ -920,7 +919,7 @@
 				</button>
 			</div>
 
-			<form class="modal-body" onsubmit|preventDefault={handleSubmitForm}>
+			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); handleSubmitForm(); }}>
 				<div class="form-group">
 					<label for="comp-name">Name *</label>
 					<input

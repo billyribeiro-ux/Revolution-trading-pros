@@ -16,7 +16,8 @@
 
 	import { onMount } from 'svelte';
 	import type { Block, BlockSettings } from './types';
-	import { getApiBaseUrl, getAuthToken } from '$lib/api/config';
+	import { API_BASE_URL } from '$lib/api/config';
+  import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
 		block: Block;
@@ -52,7 +53,7 @@
 		loadingDatasources = true;
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`${getApiBaseUrl()}/cms/datasources?limit=100`, {
+			const response = await fetch(`${API_BASE_URL}/cms/datasources?limit=100`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Content-Type': 'application/json'
@@ -77,7 +78,7 @@
 		loadingEntries = { ...loadingEntries, [slug]: true };
 		try {
 			// Use public API endpoint for fetching entries
-			const response = await fetch(`${getApiBaseUrl()}/cms/datasources/public/${slug}`);
+			const response = await fetch(`${API_BASE_URL}/cms/datasources/public/${slug}`);
 
 			if (response.ok) {
 				const data = await response.json();

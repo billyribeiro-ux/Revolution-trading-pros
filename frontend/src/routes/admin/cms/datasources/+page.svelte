@@ -31,7 +31,8 @@
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconLock from '@tabler/icons-svelte/icons/lock';
 	import IconWorld from '@tabler/icons-svelte/icons/world';
-	import { getApiBaseUrl, getAuthToken } from '$lib/api/config';
+	import { API_BASE_URL } from '$lib/api/config';
+	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	// Types
 	interface Datasource {
@@ -148,7 +149,7 @@
 		try {
 			const token = getAuthToken();
 			const response = await fetch(
-				`${getApiBaseUrl()}/cms/datasources?limit=${pagination.limit}&offset=${pagination.offset}`,
+				`${API_BASE_URL}/cms/datasources?limit=${pagination.limit}&offset=${pagination.offset}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -176,7 +177,7 @@
 		isLoading = true;
 		try {
 			const token = getAuthToken();
-			const url = `${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/entries?dimension=${selectedDimension}&limit=${entriesPagination.limit}&offset=${entriesPagination.offset}`;
+			const url = `${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries?dimension=${selectedDimension}&limit=${entriesPagination.limit}&offset=${entriesPagination.offset}`;
 
 			if (entrySearchQuery) {
 				// Add search parameter
@@ -208,8 +209,8 @@
 			const token = getAuthToken();
 			const method = editingDatasource ? 'PUT' : 'POST';
 			const url = editingDatasource
-				? `${getApiBaseUrl()}/cms/datasources/${editingDatasource.id}`
-				: `${getApiBaseUrl()}/cms/datasources`;
+				? `${API_BASE_URL}/cms/datasources/${editingDatasource.id}`
+				: `${API_BASE_URL}/cms/datasources`;
 
 			const response = await fetch(url, {
 				method,
@@ -258,7 +259,7 @@
 
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`${getApiBaseUrl()}/cms/datasources/${id}`, {
+			const response = await fetch(`${API_BASE_URL}/cms/datasources/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -277,7 +278,7 @@
 	async function duplicateDatasource(id: string) {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`${getApiBaseUrl()}/cms/datasources/${id}/duplicate`, {
+			const response = await fetch(`${API_BASE_URL}/cms/datasources/${id}/duplicate`, {
 				method: 'POST',
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -301,8 +302,8 @@
 			const token = getAuthToken();
 			const method = editingEntry ? 'PUT' : 'POST';
 			const url = editingEntry
-				? `${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/entries/${editingEntry.id}`
-				: `${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/entries`;
+				? `${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries/${editingEntry.id}`
+				: `${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries`;
 
 			const response = await fetch(url, {
 				method,
@@ -344,7 +345,7 @@
 		try {
 			const token = getAuthToken();
 			const response = await fetch(
-				`${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/entries/${entryId}`,
+				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries/${entryId}`,
 				{
 					method: 'DELETE',
 					headers: {
@@ -368,7 +369,7 @@
 		try {
 			const token = getAuthToken();
 			const response = await fetch(
-				`${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/entries/reorder`,
+				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/entries/reorder`,
 				{
 					method: 'PUT',
 					headers: {
@@ -398,7 +399,7 @@
 		try {
 			const token = getAuthToken();
 			const response = await fetch(
-				`${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/export`,
+				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/export`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`
@@ -434,7 +435,7 @@
 			formData.append('file', importFile);
 
 			const response = await fetch(
-				`${getApiBaseUrl()}/cms/datasources/${selectedDatasource.id}/import`,
+				`${API_BASE_URL}/cms/datasources/${selectedDatasource.id}/import`,
 				{
 					method: 'POST',
 					headers: {

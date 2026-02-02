@@ -120,6 +120,7 @@
 		width: number | null;
 		height: number | null;
 		blurhash: string | null;
+		created_at: string | null;
 	}
 
 	// Derived state
@@ -191,13 +192,15 @@
 	function handleAssetSelect(asset: any) {
 		// Convert asset to UploadResult format
 		const result: UploadResult = {
+			id: asset.id,
 			url: asset.cdn_url,
 			filename: asset.filename,
+			mimeType: asset.mime_type || 'image/jpeg',
 			size: asset.file_size,
 			width: asset.width,
 			height: asset.height,
 			blurhash: asset.blurhash,
-			thumbnailUrl: asset.thumbnail_url
+			createdAt: asset.created_at || new Date().toISOString()
 		};
 
 		onUpload(result);
@@ -208,13 +211,15 @@
 
 	function handleRecentAssetClick(asset: RecentAsset) {
 		const result: UploadResult = {
+			id: parseInt(asset.id) || 0,
 			url: asset.cdn_url,
 			filename: asset.filename,
+			mimeType: asset.mime_type || 'image/jpeg',
 			size: 0,
-			width: asset.width || undefined,
-			height: asset.height || undefined,
+			width: asset.width || 0,
+			height: asset.height || 0,
 			blurhash: asset.blurhash || undefined,
-			thumbnailUrl: asset.thumbnail_url || undefined
+			createdAt: asset.created_at || new Date().toISOString()
 		};
 
 		onUpload(result);

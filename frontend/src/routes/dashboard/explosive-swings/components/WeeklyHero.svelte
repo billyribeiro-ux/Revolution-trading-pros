@@ -610,8 +610,8 @@
 
 	.hero-content {
 		position: relative;
-		padding: 40px 48px;
-		min-height: 360px;
+		padding: var(--space-2);
+		min-height: auto;
 		overflow: hidden;
 	}
 
@@ -661,14 +661,15 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO LAYOUT - 50/50 Split Desktop
+	   VIDEO LAYOUT - Mobile stacked, desktop side-by-side
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-layout {
 		display: flex;
-		gap: 48px;
+		gap: var(--space-3);
 		align-items: center;
 		position: relative;
 		z-index: 1;
+		flex-direction: column;
 	}
 
 	.video-layout.playing {
@@ -684,12 +685,12 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO PLAYER CONTAINER - 50% width, max 640px
+	   VIDEO PLAYER CONTAINER - Full width on mobile, 50% on desktop
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-player-container {
 		position: relative;
-		flex: 0 0 50%;
-		max-width: 640px;
+		width: 100%;
+		max-width: none;
 		aspect-ratio: 16 / 9;
 		border-radius: 12px;
 		overflow: hidden;
@@ -745,13 +746,13 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PLAY BUTTON - Frosted Glass Vibrancy (CRITICAL - Must be visible)
+	   PLAY BUTTON - Frosted Glass with responsive sizing
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.play-btn {
 		position: relative;
 		z-index: 2;
-		width: 80px;
-		height: 80px;
+		width: 64px;
+		height: 64px;
 		border-radius: 50%;
 		cursor: pointer;
 
@@ -798,8 +799,8 @@
 	}
 
 	.play-btn svg {
-		width: 36px;
-		height: 36px;
+		width: 28px;
+		height: 28px;
 		color: var(--color-bg-card);
 		margin-left: 4px; /* Optical center adjustment */
 		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
@@ -1086,14 +1087,17 @@
 	.trade-sheet-wrapper {
 		background: var(--color-bg-card);
 		border-radius: 16px;
-		overflow: hidden;
+		overflow-x: auto;
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
 	}
 
 	.trade-sheet {
 		width: 100%;
+		min-width: 900px;
 		border-collapse: collapse;
-		font-size: 14px;
+		font-size: var(--text-sm);
 	}
 
 	.trade-sheet thead {
@@ -1331,13 +1335,58 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE BREAKPOINTS - Apple ICT 7 Standard (8pt Grid)
+	   RESPONSIVE BREAKPOINTS - Mobile-first using design tokens
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Ultra-wide Screens (1920px+) */
-	@media (min-width: 1920px) {
+	/* Tablet (768px+) - Side by side layout */
+	@media (min-width: 768px) {
 		.hero-content {
-			padding: 64px 80px;
+			padding: var(--space-4);
+			min-height: 300px;
+		}
+
+		.video-layout {
+			flex-direction: row;
+			gap: var(--space-4);
+		}
+
+		.video-player-container {
+			flex: 0 0 50%;
+			max-width: 640px;
+		}
+
+		.play-btn {
+			width: 80px;
+			height: 80px;
+		}
+
+		.play-btn svg {
+			width: 36px;
+			height: 36px;
+		}
+	}
+
+	/* Desktop (1024px+) */
+	@media (min-width: 1024px) {
+		.hero-content {
+			padding: var(--space-5);
+			min-height: 360px;
+		}
+
+		.video-layout {
+			gap: var(--space-6);
+		}
+
+		.trade-sheet {
+			font-size: var(--text-base);
+			min-width: 100%;
+		}
+	}
+
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.hero-content {
+			padding: var(--space-6);
 		}
 
 		.video-section,
@@ -1346,197 +1395,10 @@
 		}
 	}
 
-	/* Large Desktop (1440px+) */
-	@media (min-width: 1440px) and (max-width: 1919px) {
+	/* Ultra-wide Screens (1920px+) */
+	@media (min-width: 1920px) {
 		.hero-content {
-			padding: 56px 64px;
-		}
-	}
-
-	/* Desktop (1280px - 1439px) */
-	@media (min-width: 1280px) and (max-width: 1439px) {
-		.hero-content {
-			padding: 48px 56px;
-		}
-	}
-
-	/* Small Desktop (1024px - 1279px) */
-	@media (min-width: 1024px) and (max-width: 1279px) {
-		.hero-content {
-			padding: 40px 48px;
-		}
-
-		.video-info h2 {
-			font-size: 24px;
-		}
-	}
-
-	/* Tablet (768px - 1023px) */
-	@media (min-width: 768px) and (max-width: 1023px) {
-		.hero-content {
-			padding: 32px 24px;
-		}
-
-		.video-layout {
-			flex-direction: column;
-			gap: 32px;
-		}
-
-		.video-player-container {
-			flex: none;
-			width: 100%;
-			max-width: 560px;
-			margin: 0 auto;
-		}
-
-		.video-info {
-			width: 100%;
-			text-align: center;
-		}
-
-		.video-player-container.playing {
-			width: 90%;
-			max-width: 800px;
-		}
-
-		.trade-sheet-wrapper {
-			overflow-x: auto;
-		}
-
-		.trade-sheet {
-			min-width: 900px;
-		}
-	}
-
-	/* Mobile (< 768px) */
-	@media (max-width: 767px) {
-		.hero-collapse-toggle {
-			padding: 14px 16px;
-		}
-
-		.hero-header-compact h1 {
-			font-size: 15px;
-		}
-
-		.hero-tabs-bar {
-			flex-direction: column;
-			padding: 0 16px 16px;
-		}
-
-		.hero-tab {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.hero-content {
-			padding: 24px 16px;
-		}
-
-		.video-layout {
-			flex-direction: column;
-			gap: 24px;
-		}
-
-		.video-player-container {
-			flex: none;
-			width: 100%;
-			max-width: none;
-		}
-
-		.video-info {
-			width: 100%;
-			text-align: center;
-		}
-
-		.video-info h2 {
-			font-size: 22px;
-		}
-
-		.video-actions {
-			flex-direction: column;
-		}
-
-		.watch-btn,
-		.admin-upload-btn {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.video-player-container.playing {
-			width: 95%;
-		}
-
-		.video-layout.expanded {
-			padding: 12px;
-		}
-
-		.play-btn {
-			width: 64px;
-			height: 64px;
-		}
-
-		.play-btn svg {
-			width: 28px;
-			height: 28px;
-		}
-
-		.entries-header h2 {
-			font-size: 22px;
-		}
-
-		.entries-title-row {
-			flex-direction: column;
-			gap: 12px;
-		}
-
-		.admin-add-btn {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.trade-sheet-wrapper {
-			overflow-x: auto;
-		}
-
-		.trade-sheet {
-			min-width: 900px;
-		}
-	}
-
-	/* Small Mobile (< 480px) */
-	@media (max-width: 479px) {
-		.hero-header-compact h1 {
-			font-size: 14px;
-		}
-
-		.collapse-indicator span {
-			display: none;
-		}
-
-		.video-info h2 {
-			font-size: 20px;
-		}
-
-		.video-info .published-date {
-			font-size: 13px;
-		}
-
-		.entries-header h2 {
-			font-size: 20px;
-		}
-
-		.entries-header p {
-			font-size: 13px;
-		}
-
-		.play-btn {
-			width: 56px;
-			height: 56px;
-		}
-
-		.play-btn svg {
-			width: 24px;
-			height: 24px;
+			padding: var(--space-8);
 		}
 	}
 

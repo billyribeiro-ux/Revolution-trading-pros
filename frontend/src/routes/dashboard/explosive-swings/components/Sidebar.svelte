@@ -84,10 +84,11 @@
 		top: 80px;
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		gap: var(--space-3);
 		max-height: calc(100vh - 100px);
+		max-height: calc(100dvh - 100px);
 		overflow-y: auto;
-		padding-bottom: 20px;
+		padding-bottom: var(--space-3);
 		contain: layout style;
 		scrollbar-width: thin;
 		scrollbar-color: var(--color-border-strong) transparent;
@@ -115,9 +116,9 @@
 		border: 1px solid var(--color-border-default);
 		border-top: 3px solid var(--color-watching);
 		border-radius: 14px;
-		padding: 22px;
+		padding: var(--card-padding-sm);
 		text-align: center;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+		box-shadow: var(--shadow-sm);
 		transition: all 0.2s ease-out;
 	}
 
@@ -127,16 +128,16 @@
 	}
 
 	.help-title {
-		font-size: 16px;
+		font-size: var(--text-base);
 		font-weight: 700;
 		color: var(--color-bg-card);
-		margin: 0 0 8px 0;
+		margin: 0 0 var(--space-1) 0;
 	}
 
 	.help-text {
-		font-size: 14px;
+		font-size: var(--text-sm);
 		color: rgba(255, 255, 255, 0.85);
-		margin: 0 0 16px 0;
+		margin: 0 0 var(--space-2) 0;
 		line-height: 1.5;
 	}
 
@@ -144,8 +145,9 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 11px 22px;
-		font-size: 14px;
+		padding: var(--space-1-5) var(--space-3);
+		min-height: var(--touch-target-min);
+		font-size: var(--text-sm);
 		font-weight: 600;
 		color: var(--color-brand-primary);
 		background: var(--color-bg-card);
@@ -173,14 +175,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 10px;
-		padding: 14px 20px;
+		gap: var(--space-1);
+		padding: var(--space-2);
+		min-height: var(--touch-target-min);
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
 		border-radius: 12px;
 		color: var(--color-text-secondary);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: var(--text-sm);
 		font-weight: 600;
 		transition: all 0.2s ease-out;
 	}
@@ -196,25 +199,12 @@
 		outline-offset: 2px;
 	}
 
-	/* Large Desktop (1440px+) */
-	@media (min-width: 1440px) {
-		.sidebar {
-			gap: 24px;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile-first (min-width)
+	   ═══════════════════════════════════════════════════════════════════════ */
 
-		.help-card {
-			padding: 26px;
-		}
-	}
-
-	/* Ultra-wide (1920px+) */
-	@media (min-width: 1920px) {
-		.sidebar {
-			gap: 28px;
-		}
-	}
-
-	@media (max-width: 1024px) {
+	/* Mobile: Not sticky, full height */
+	@media (max-width: 1023px) {
 		.sidebar {
 			position: static;
 			max-height: none;
@@ -222,23 +212,39 @@
 		}
 	}
 
-	@media (max-width: 640px) {
-		.sidebar {
-			gap: 16px;
-			padding-bottom: 16px;
-		}
-
+	/* Tablet (768px+) */
+	@media (min-width: 768px) {
 		.help-card {
-			padding: 18px;
-			border-radius: 12px;
+			padding: var(--card-padding-md);
 		}
 
 		.help-title {
-			font-size: 15px;
+			font-size: var(--text-lg);
 		}
 
 		.help-text {
-			font-size: 13px;
+			font-size: var(--text-base);
+		}
+	}
+
+	/* Desktop (1024px+) */
+	@media (min-width: 1024px) {
+		.help-card {
+			padding: var(--card-padding-lg);
+		}
+	}
+
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.sidebar {
+			gap: var(--space-3);
+		}
+	}
+
+	/* Ultra-wide (1920px+) */
+	@media (min-width: 1920px) {
+		.sidebar {
+			gap: var(--space-4);
 		}
 	}
 </style>

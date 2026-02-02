@@ -262,15 +262,15 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════
-	   CARD BASE
+	   CARD BASE - Responsive padding with design tokens
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.alert-card {
 		position: relative;
 		border: 1px solid var(--color-border-default);
 		border-left-width: 3px;
 		border-radius: 10px;
-		padding: 14px 16px;
-		margin-bottom: 12px;
+		padding: var(--card-padding-sm);
+		margin-bottom: var(--space-2);
 		transition: all 0.2s ease-out;
 	}
 
@@ -387,7 +387,7 @@
 	}
 
 	.ticker {
-		font-size: 14px;
+		font-size: var(--text-base);
 		font-weight: 700;
 		color: var(--color-text-primary);
 		letter-spacing: 0.02em;
@@ -398,16 +398,17 @@
 		color: var(--color-text-muted);
 	}
 
-	/* Notes Toggle */
+	/* Notes Toggle - Touch target compliant */
 	.notes-toggle {
 		display: flex;
 		align-items: center;
-		gap: 4px;
-		padding: 5px 10px;
+		gap: var(--space-0-5);
+		padding: var(--space-1) var(--space-1-5);
+		min-height: var(--touch-target-min);
 		background: var(--color-bg-subtle);
 		border: 1px solid var(--color-border-default);
 		border-radius: 6px;
-		font-size: 11px;
+		font-size: var(--text-xs);
 		font-weight: 600;
 		color: var(--color-text-muted);
 		cursor: pointer;
@@ -437,20 +438,20 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   CONTENT
+	   CONTENT - Fluid typography
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.alert-title {
-		font-size: 14px;
+		font-size: var(--text-base);
 		font-weight: 600;
 		color: var(--color-text-primary);
-		margin: 0 0 6px 0;
+		margin: 0 0 var(--space-1) 0;
 		line-height: 1.35;
 	}
 
 	.alert-description {
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-text-tertiary);
-		margin: 0 0 12px 0;
+		margin: 0 0 var(--space-2) 0;
 		line-height: 1.5;
 	}
 
@@ -532,25 +533,26 @@
 		color: var(--color-text-muted);
 	}
 
-	/* TOS String */
+	/* TOS String - Responsive sizing */
 	.tos-container {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 8px;
+		gap: var(--space-1);
 		background: var(--color-text-primary);
 		border-radius: 6px;
-		padding: 8px 10px;
-		margin-bottom: 12px;
+		padding: var(--space-1) var(--space-1-5);
+		margin-bottom: var(--space-2);
 	}
 
 	.tos-string {
 		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		color: var(--color-text-muted);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		flex: 1;
 	}
 
 	.tos-copy {
@@ -591,9 +593,10 @@
 	.action-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 5px;
-		padding: 6px 10px;
-		font-size: 12px;
+		gap: var(--space-1);
+		padding: var(--space-1) var(--space-1-5);
+		min-height: var(--touch-target-min);
+		font-size: var(--text-sm);
 		font-weight: 600;
 		border-radius: 6px;
 		cursor: pointer;
@@ -733,36 +736,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE BREAKPOINTS - Mobile-first (min-width)
 	   ═══════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 640px) {
+
+	/* Tablet (768px+) */
+	@media (min-width: 768px) {
 		.alert-card {
-			padding: 16px;
+			padding: var(--card-padding-md);
 		}
 
-		.alert-header {
-			flex-direction: column;
-			align-items: flex-start;
+		.alert-description {
+			font-size: var(--text-base);
+			line-height: 1.6;
+		}
+	}
+
+	/* Desktop (1024px+) */
+	@media (min-width: 1024px) {
+		.alert-card {
+			padding: var(--card-padding-lg);
+			margin-bottom: var(--space-3);
 		}
 
-		.notes-toggle {
-			align-self: flex-end;
-			margin-top: -32px;
+		.ticker {
+			font-size: var(--text-lg);
 		}
 
-		.price-info {
-			flex-direction: column;
-			gap: 12px;
-		}
-
-		.actions-row {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
-		.admin-actions {
-			margin-left: 0;
-			justify-content: flex-end;
+		.tos-string {
+			font-size: var(--text-base);
+			white-space: normal;
+			word-break: break-all;
 		}
 	}
 </style>

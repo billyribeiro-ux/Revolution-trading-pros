@@ -206,13 +206,13 @@
 </section>
 
 <style>
-	/* COMPACT CONTAINER */
+	/* COMPACT CONTAINER - Responsive padding with design tokens */
 	.performance-summary {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
 		border-radius: var(--radius-lg);
-		padding: var(--space-4);
-		margin: var(--space-4) var(--space-6);
+		padding: var(--card-padding-sm);
+		margin: var(--space-2);
 		box-shadow: var(--shadow-sm);
 	}
 
@@ -235,7 +235,7 @@
 	}
 
 	.summary-title {
-		font-size: var(--text-lg);
+		font-size: var(--text-base);
 		font-weight: var(--font-bold);
 		color: var(--color-text-primary);
 		margin: 0;
@@ -412,23 +412,24 @@
 		flex-shrink: 0;
 	}
 
-	/* ACTIVE POSITIONS - Compact Grid */
+	/* ACTIVE POSITIONS - Responsive Grid */
 	.active-section {
-		margin-bottom: var(--space-2);
+		margin-bottom: var(--space-1);
 	}
 
 	.section-header-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--space-2);
+		gap: var(--space-1);
 		margin-bottom: var(--space-2);
 	}
 
+	/* Mobile: 1 column, Tablet: 2 columns, Desktop: 3 columns */
 	.positions-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: var(--space-3);
+		grid-template-columns: 1fr;
+		gap: var(--space-2);
 	}
 
 	.add-trade-btn {
@@ -574,54 +575,50 @@
 		max-width: 240px;
 	}
 
-	/* RESPONSIVE */
-	@media (max-width: 1024px) {
-		.performance-summary {
-			margin: var(--space-2) var(--space-2);
-			padding: var(--space-2);
-		}
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile-first (min-width)
+	   ═══════════════════════════════════════════════════════════════════════ */
 
+	/* Tablet (640px+) - 2 column positions grid */
+	@media (min-width: 640px) {
 		.positions-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 640px) {
+	/* Tablet (768px+) */
+	@media (min-width: 768px) {
 		.performance-summary {
-			margin: var(--space-1) var(--space-1);
-			padding: var(--space-2);
-			border-radius: var(--radius-md);
-		}
-
-		.summary-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--space-1);
-		}
-
-		.win-rate-container {
-			align-items: flex-start;
-		}
-
-		.section-header {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.avg-metrics {
-			width: 100%;
-		}
-
-		.positions-grid {
-			grid-template-columns: 1fr;
+			margin: var(--space-3);
+			padding: var(--card-padding-md);
 		}
 
 		.summary-title {
 			font-size: var(--text-lg);
 		}
+	}
 
-		.win-rate-value {
-			font-size: var(--text-2xl);
+	/* Desktop (1024px+) - 3 column positions grid */
+	@media (min-width: 1024px) {
+		.performance-summary {
+			margin: var(--space-3);
+			padding: var(--card-padding-lg);
+		}
+
+		.positions-grid {
+			grid-template-columns: repeat(3, 1fr);
+			gap: var(--space-3);
+		}
+
+		.summary-title {
+			font-size: var(--text-xl);
+		}
+	}
+
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.performance-summary {
+			margin: var(--space-4);
 		}
 	}
 </style>

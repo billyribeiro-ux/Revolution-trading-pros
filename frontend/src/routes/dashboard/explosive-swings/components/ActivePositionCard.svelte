@@ -234,8 +234,8 @@
 		border: 1px solid var(--color-border-default);
 		border-left: 3px solid var(--color-border-strong);
 		border-radius: 8px;
-		padding: 12px 14px;
-		font-size: 13px;
+		padding: var(--space-2);
+		font-size: var(--text-sm);
 	}
 	.card.profit {
 		border-left-color: var(--color-profit);
@@ -265,21 +265,21 @@
 		letter-spacing: 0.05em;
 	}
 
-	/* Row 1 */
+	/* Row 1 - Responsive typography */
 	.row-main {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-bottom: 6px;
+		gap: var(--space-1);
+		margin-bottom: var(--space-0-5);
 		padding-right: 28px; /* Space for menu trigger */
 	}
 	.ticker {
 		font-weight: 700;
-		font-size: 15px;
+		font-size: var(--text-lg);
 		color: var(--color-text-primary);
 	}
 	.status {
-		font-size: 10px;
+		font-size: var(--text-xs);
 		font-weight: 600;
 		text-transform: uppercase;
 		padding: 2px 6px;
@@ -290,7 +290,7 @@
 	.pnl {
 		margin-left: auto;
 		font-weight: 700;
-		font-size: 14px;
+		font-size: var(--text-base);
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-muted);
 	}
@@ -301,15 +301,15 @@
 		color: var(--color-loss);
 	}
 
-	/* Row 2 */
+	/* Row 2 - Prices */
 	.row-prices {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		font-size: 12px;
+		gap: var(--space-0-5);
+		font-size: var(--text-sm);
 		color: var(--color-text-secondary);
 		font-variant-numeric: tabular-nums;
-		margin-bottom: 2px;
+		margin-bottom: var(--space-0-5);
 	}
 	.sep {
 		color: var(--color-border-strong);
@@ -321,12 +321,12 @@
 		color: var(--color-profit);
 	}
 
-	/* Row 3 */
+	/* Row 3 - Progress bar */
 	.row-progress {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-top: 8px;
+		gap: var(--space-1);
+		margin-top: var(--space-1);
 	}
 	.bar {
 		flex: 1;
@@ -460,76 +460,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - Mobile font scaling
+	   RESPONSIVE BREAKPOINTS - Mobile-first (min-width)
 	   ═══════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 640px) {
-		.card {
-			padding: 10px 12px;
-			font-size: 12px;
-		}
 
-		.ticker {
-			font-size: 16px;
-		}
-
-		.status {
-			font-size: 9px;
-			padding: 2px 5px;
-		}
-
-		.pnl {
-			font-size: 15px;
-		}
-
-		.row-prices {
-			font-size: 13px;
-			flex-wrap: wrap;
-			gap: 4px;
-		}
-
-		.pct {
-			font-size: 12px;
-		}
-
-		.menu-trigger {
-			width: 32px;
-			height: 32px;
-		}
-
-		.menu-trigger svg {
-			width: 20px;
-			height: 20px;
-		}
-
-		.menu-dropdown {
-			min-width: 180px;
-		}
-
-		.menu-item {
-			padding: 12px 14px;
-			font-size: 14px;
-		}
+	/* Menu trigger touch target */
+	.menu-trigger {
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
 	}
 
-	@media (max-width: 400px) {
+	/* Desktop (1024px+) - Larger typography and thicker progress bar */
+	@media (min-width: 1024px) {
 		.card {
-			padding: 8px 10px;
+			padding: var(--space-3);
+			font-size: var(--text-base);
 		}
 
 		.ticker {
-			font-size: 17px;
+			font-size: var(--text-xl);
 		}
 
 		.pnl {
-			font-size: 16px;
+			font-size: var(--text-lg);
 		}
 
 		.row-prices {
-			font-size: 14px;
+			font-size: var(--text-base);
 		}
 
-		.row-main {
-			gap: 6px;
+		.bar {
+			height: 6px;
 		}
 	}
 </style>

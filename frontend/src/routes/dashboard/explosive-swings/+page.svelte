@@ -397,24 +397,30 @@
 	.page {
 		background: var(--color-bg-page);
 		min-height: 100vh;
+		min-height: 100dvh;
 	}
 
-	/* ICT 7 Fix: Mobile-first grid - single column by default */
+	/* ═══════════════════════════════════════════════════════════════════════
+	   MAIN GRID - Mobile-first responsive layout
+	   Uses CSS custom property for sidebar width from design-tokens.css
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.main-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 16px;
-		padding: 16px;
-		max-width: 1400px;
+		gap: var(--space-2);
+		padding: var(--space-2);
+		max-width: 1600px;
 		margin: 0 auto;
 	}
 
-	/* ICT 7 Fix: Mobile-first padding */
+	/* ═══════════════════════════════════════════════════════════════════════
+	   ALERTS SECTION - Card container with responsive padding
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.alerts-section {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
 		border-radius: 12px;
-		padding: 16px;
+		padding: var(--card-padding-sm);
 		box-shadow: var(--shadow-sm);
 	}
 
@@ -422,31 +428,34 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 16px;
+		margin-bottom: var(--space-2);
+		flex-wrap: wrap;
+		gap: var(--space-1);
 	}
 
 	.section-header h2 {
-		font-size: 18px;
+		font-size: var(--text-lg);
 		font-weight: 700;
 		margin: 0;
 		color: var(--color-text-primary);
 	}
 
-	/* ICT 7+ Phase 3: Header layout and connection status */
+	/* Header layout and connection status */
 	.header-left {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: var(--space-1-5);
+		flex-wrap: wrap;
 	}
 
 	.connection-status {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		font-size: 12px;
+		font-size: var(--text-xs);
 		font-weight: 500;
 		color: var(--color-text-tertiary);
-		padding: 4px 10px;
+		padding: var(--space-0-5) var(--space-1);
 		background: var(--color-bg-subtle);
 		border-radius: 9999px;
 	}
@@ -488,9 +497,10 @@
 	}
 
 	.admin-btn {
-		font-size: 13px;
+		font-size: var(--text-sm);
 		font-weight: 600;
-		padding: 8px 14px;
+		padding: var(--space-1) var(--space-2);
+		min-height: var(--touch-target-min);
 		background: var(--color-brand-secondary);
 		color: white;
 		border: none;
@@ -506,8 +516,8 @@
 	.alerts-list {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
-		margin-bottom: 16px;
+		gap: var(--space-1-5);
+		margin-bottom: var(--space-2);
 	}
 
 	.alert-skeleton {
@@ -525,13 +535,14 @@
 
 	.empty-state {
 		text-align: center;
-		padding: 40px 20px;
+		padding: var(--space-5) var(--space-3);
 		color: var(--color-text-tertiary);
 	}
 
 	.empty-state button {
-		margin-top: 12px;
-		padding: 8px 16px;
+		margin-top: var(--space-1-5);
+		padding: var(--space-1) var(--space-2);
+		min-height: var(--touch-target-min);
 		background: var(--color-brand-primary);
 		color: white;
 		border: none;
@@ -543,36 +554,43 @@
 		background: var(--color-loss-bg);
 		border: 1px solid var(--color-loss-border);
 		border-radius: 8px;
-		padding: 12px 16px;
-		margin-bottom: 16px;
+		padding: var(--space-1-5) var(--space-2);
+		margin-bottom: var(--space-2);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: var(--space-1);
+		flex-wrap: wrap;
 	}
 
 	.error-banner p {
 		margin: 0;
 		color: var(--color-loss);
-		font-size: 14px;
+		font-size: var(--text-sm);
 	}
 
 	.error-banner button {
-		padding: 6px 12px;
+		padding: 6px var(--space-1-5);
+		min-height: var(--touch-target-min);
 		background: var(--color-loss);
 		color: white;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
-		font-size: 13px;
+		font-size: var(--text-sm);
 	}
 
 	.view-all {
 		display: block;
 		text-align: center;
-		padding: 12px;
+		padding: var(--space-1-5);
+		min-height: var(--touch-target-min);
 		color: var(--color-brand-primary);
 		font-weight: 600;
 		text-decoration: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.view-all:hover {
@@ -588,27 +606,44 @@
 		}
 	}
 
-	/* ICT 7 Fix: Mobile-first responsive design (min-width breakpoints) */
-	/* Base styles are mobile (single column) */
-	
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS - Mobile-first (min-width)
+	   ═══════════════════════════════════════════════════════════════════════ */
+
+	/* Tablet (768px+) */
 	@media (min-width: 768px) {
 		.main-grid {
-			padding: 20px;
-			gap: 20px;
+			padding: var(--space-3);
+			gap: var(--space-3);
 		}
+
 		.alerts-section {
-			padding: 18px;
+			padding: var(--card-padding-md);
+		}
+
+		.section-header h2 {
+			font-size: var(--text-xl);
 		}
 	}
-	
+
+	/* Desktop - Sidebar appears (1024px+) */
 	@media (min-width: 1024px) {
 		.main-grid {
-			grid-template-columns: 1fr 340px;
-			padding: 24px;
-			gap: 24px;
+			grid-template-columns: 1fr var(--sidebar-width);
+			padding: var(--space-3);
+			gap: var(--space-3);
 		}
+
 		.alerts-section {
-			padding: 20px;
+			padding: var(--card-padding-lg);
+		}
+	}
+
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.main-grid {
+			gap: var(--space-4);
+			padding: var(--space-4);
 		}
 	}
 </style>

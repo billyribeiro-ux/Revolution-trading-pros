@@ -141,6 +141,72 @@ export interface BlockContent {
 	aiSummary?: string;
 	sourceText?: string;
 	translatedText?: string;
+
+	// Reusable/Global component content
+	reusableComponentId?: string;
+	reusableComponentName?: string;
+	reusableSyncedVersion?: number;
+	reusableIsSynced?: boolean;
+	reusableDetachedFrom?: string;
+
+	// Ticker block data
+	tickerData?: {
+		tickers: Array<{
+			symbol: string;
+			price: number;
+			change: number;
+			changePercent: number;
+		}>;
+		multiRow?: boolean;
+	};
+
+	// Alert block data
+	alertData?: {
+		symbol?: string;
+		direction?: 'above' | 'below';
+		targetPrice?: number;
+		entryPrice?: number;
+		exitPrice?: number;
+	};
+
+	// Trading idea block data
+	ideaData?: {
+		symbol?: string;
+		direction?: 'long' | 'short';
+		entryPrice?: number;
+		stopLoss?: number;
+		takeProfit?: number;
+		confidence?: number;
+		timestamp?: string;
+	};
+
+	// Interactive blocks
+	accordionItems?: Array<{
+		id: string;
+		title: string;
+		content: string;
+		open?: boolean;
+	}>;
+	tabItems?: Array<{
+		id: string;
+		label: string;
+		content: string;
+	}>;
+	tocHeadings?: Array<{
+		id: string;
+		text: string;
+		level: number;
+	}>;
+	buttonItems?: Array<{
+		id: string;
+		text: string;
+		url: string;
+		variant?: string;
+		target?: '_blank' | '_self';
+		style?: string;
+		newTab?: boolean;
+		icon?: string;
+	}>;
 }
 
 export interface BlockItem {
@@ -197,6 +263,22 @@ export interface BlockSettings {
 
 	// Animation
 	animation?: AnimationSettings;
+
+	// Interactive block settings
+	allowMultiple?: boolean;
+	iconStyle?: string;
+	tabLayout?: string;
+	defaultOpen?: boolean;
+	buttonLayout?: string;
+	buttonGap?: string;
+	buttonAlign?: string;
+
+	// Datasource settings
+	optionSource?: 'static' | 'datasource';
+	datasourceSlug?: string;
+	staticOptions?: string;
+	datasourceDimension?: string;
+	datasourceIncludeEmpty?: boolean;
 	animationDuration?: string;
 	animationDelay?: string;
 

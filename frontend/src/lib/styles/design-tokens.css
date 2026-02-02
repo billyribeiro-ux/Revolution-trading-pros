@@ -90,15 +90,18 @@
 	--font-heading: 'Montserrat', var(--font-sans);
 	--font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 
-	/* Font Sizes */
-	--text-xs: 0.75rem; /* 12px - badges, fine print */
-	--text-sm: 0.8125rem; /* 13px - labels, captions */
-	--text-base: 0.9375rem; /* 15px - body text */
-	--text-lg: 1.125rem; /* 18px - subheadings */
-	--text-xl: 1.375rem; /* 22px - section titles */
-	--text-2xl: 1.75rem; /* 28px - card heroes */
-	--text-3xl: 2.1875rem; /* 35px - page KPIs */
-	--text-4xl: 2.75rem; /* 44px - dashboard hero */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FLUID TYPOGRAPHY - Scales proportionally with viewport
+	   Uses clamp() for smooth responsive scaling between breakpoints
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	--text-xs: clamp(10px, 0.625rem + 0.1vw, 12px);
+	--text-sm: clamp(12px, 0.75rem + 0.2vw, 14px);
+	--text-base: clamp(14px, 0.875rem + 0.3vw, 16px);
+	--text-lg: clamp(16px, 1rem + 0.4vw, 20px);
+	--text-xl: clamp(18px, 1.125rem + 0.5vw, 24px);
+	--text-2xl: clamp(22px, 1.375rem + 0.6vw, 28px);
+	--text-3xl: clamp(26px, 1.625rem + 0.8vw, 36px);
+	--text-4xl: clamp(32px, 2rem + 1vw, 48px);
 
 	/* Font Weights */
 	--font-normal: 400;
@@ -123,26 +126,49 @@
 	--tracking-widest: 0.1em;
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-     SPACING SCALE - 4px Base Unit
+     SPACING SCALE - Strict 8pt Grid System
+     Base unit: 8px for consistency and visual rhythm
      ═══════════════════════════════════════════════════════════════════════════ */
 
 	--space-0: 0;
-	--space-1: 0.25rem; /* 4px */
-	--space-2: 0.5rem; /* 8px */
-	--space-3: 0.75rem; /* 12px */
-	--space-4: 1rem; /* 16px */
-	--space-5: 1.25rem; /* 20px */
-	--space-6: 1.5rem; /* 24px */
-	--space-8: 2rem; /* 32px */
-	--space-10: 2.5rem; /* 40px */
-	--space-12: 3rem; /* 48px */
-	--space-16: 4rem; /* 64px */
+	--space-0-5: 4px;   /* 0.25rem - Sub-spacing for internal component use only */
+	--space-1: 8px;    /* 0.5rem */
+	--space-1-5: 12px; /* 0.75rem - Sub-spacing for internal component use only */
+	--space-2: 16px;   /* 1rem */
+	--space-3: 24px;   /* 1.5rem */
+	--space-4: 32px;   /* 2rem */
+	--space-5: 40px;   /* 2.5rem */
+	--space-6: 48px;   /* 3rem */
+	--space-7: 56px;   /* 3.5rem */
+	--space-8: 64px;   /* 4rem */
+	--space-10: 80px;  /* 5rem */
+	--space-12: 96px;  /* 6rem */
+	--space-16: 128px; /* 8rem */
 
-	/* Component-specific spacing */
-	--space-card-padding: var(--space-6);
-	--space-card-padding-mobile: var(--space-4);
-	--space-section-gap: var(--space-8);
-	--space-grid-gap: var(--space-5);
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE CARD PADDING - Scales with viewport
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	--card-padding-sm: var(--space-2);   /* Mobile: 16px */
+	--card-padding-md: var(--space-2);   /* Tablet: 18px (override in media query) */
+	--card-padding-lg: var(--space-3);   /* Desktop: 24px */
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE SIDEBAR WIDTH
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	--sidebar-width: 340px;  /* Default (1024-1279px) */
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   INTERACTIVE ELEMENTS - WCAG 2.2 Touch Targets
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	--touch-target-min: 44px;  /* WCAG minimum touch target */
+	--button-padding-mobile: 12px 20px;
+	--button-padding-desktop: 14px 28px;
+
+	/* Component-specific spacing (legacy, prefer direct --space-* usage) */
+	--space-card-padding: var(--space-3);
+	--space-card-padding-mobile: var(--space-2);
+	--space-section-gap: var(--space-4);
+	--space-grid-gap: var(--space-3);
 
 	/* ═══════════════════════════════════════════════════════════════════════════
      BORDER RADIUS - Consistent Curves
@@ -256,4 +282,31 @@
 
 .tabular-nums {
 	font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES - Tablet (768px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+	:root {
+		--card-padding-md: 18px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES - Desktop (1280px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1280px) {
+	:root {
+		--sidebar-width: 380px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES - Large Desktop (1440px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1440px) {
+	:root {
+		--sidebar-width: 420px;
+	}
 }
