@@ -75,6 +75,11 @@
 		if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}k`;
 		return `$${value.toFixed(0)}`;
 	}
+
+	// ICT 7: Type-safe stage value calculation
+	function getStageValue(stage: Stage): number {
+		return crmStore.dealsByStage[stage.id]?.reduce((sum, d) => sum + d.amount, 0) ?? 0;
+	}
 </script>
 
 <svelte:head>
@@ -190,7 +195,7 @@
 								</p>
 							</div>
 							<span class="rounded-full bg-slate-800/80 px-2 py-1 text-[11px] text-slate-300">
-								{formatCurrency(stage.total_value ?? 0)}
+								{formatCurrency(getStageValue(stage))}
 							</span>
 						</div>
 
@@ -210,7 +215,10 @@
 										</p>
 										<div class="mt-2 flex items-center justify-between text-[11px] text-slate-400">
 											<span>{formatCurrency(deal.amount)}</span>
-											<span>{deal.probability}%</span>
+											<span class="flex items-center gap-1">
+												{deal.probability}%
+												<IconArrowRight size={12} class="text-sky-400" />
+											</span>
 										</div>
 									</button>
 								{/each}

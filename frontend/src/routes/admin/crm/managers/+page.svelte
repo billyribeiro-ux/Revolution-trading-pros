@@ -12,15 +12,15 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
-	import IconUser from '@tabler/icons-svelte/icons/user';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
+	import IconUser from '@tabler/icons-svelte-runes/icons/user';
+	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ManagerRole, ManagerUser } from '$lib/crm/types';
 

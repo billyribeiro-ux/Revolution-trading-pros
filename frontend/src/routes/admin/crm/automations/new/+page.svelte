@@ -13,24 +13,24 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import IconShare from '@tabler/icons-svelte/icons/share';
-	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconUserPlus from '@tabler/icons-svelte/icons/user-plus';
-	import IconTag from '@tabler/icons-svelte/icons/tag';
-	import IconList from '@tabler/icons-svelte/icons/list';
-	import IconForms from '@tabler/icons-svelte/icons/forms';
-	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
-	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
-	import IconLogin from '@tabler/icons-svelte/icons/login';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconLink from '@tabler/icons-svelte/icons/link';
-	import IconCode from '@tabler/icons-svelte/icons/code';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import IconShare from '@tabler/icons-svelte-runes/icons/share';
+	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
+	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconForms from '@tabler/icons-svelte-runes/icons/forms';
+	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconLogin from '@tabler/icons-svelte-runes/icons/login';
+	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconCode from '@tabler/icons-svelte-runes/icons/code';
+	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import { crmAPI } from '$lib/api/crm';
 	import type { TriggerType, FunnelStatus } from '$lib/crm/types';
 

@@ -3,10 +3,10 @@
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	// Using the direct path imports as requested in your snippet
-	import IconSitemap from '@tabler/icons-svelte/icons/sitemap';
-	import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
-	import IconDatabase from '@tabler/icons-svelte/icons/database';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
+	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
+	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 
 	const features = [
 		{

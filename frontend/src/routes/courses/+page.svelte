@@ -8,19 +8,19 @@
 	let gsapInstance: typeof import('gsap').gsap | null = null;
 
 	// --- ICONS ---
-	import IconSchool from '@tabler/icons-svelte/icons/school';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconBrain from '@tabler/icons-svelte/icons/brain';
-	import IconShield from '@tabler/icons-svelte/icons/shield';
-	import IconRocket from '@tabler/icons-svelte/icons/rocket';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
+	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
+	import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Assumed existing component based on your snippet
 	import SEOHead from '$lib/components/SEOHead.svelte';

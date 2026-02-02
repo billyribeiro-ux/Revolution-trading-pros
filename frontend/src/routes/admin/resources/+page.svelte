@@ -57,7 +57,7 @@
 		getUploadLimits
 	} from '$lib/api/room-resources';
 	import { ResourceAnalytics } from '$lib/components/resources';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 
 	// ═══════════════════════════════════════════════════════════════════════════

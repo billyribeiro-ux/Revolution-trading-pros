@@ -12,21 +12,21 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconFile from '@tabler/icons-svelte/icons/file';
-	import IconFileSpreadsheet from '@tabler/icons-svelte/icons/file-spreadsheet';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconTags from '@tabler/icons-svelte/icons/tags';
-	import IconListDetails from '@tabler/icons-svelte/icons/list-details';
-	import IconMailForward from '@tabler/icons-svelte/icons/mail-forward';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconRoute from '@tabler/icons-svelte/icons/route';
-	import IconTemplate from '@tabler/icons-svelte/icons/template';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconFile from '@tabler/icons-svelte-runes/icons/file';
+	import IconFileSpreadsheet from '@tabler/icons-svelte-runes/icons/file-spreadsheet';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
+	import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
+	import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
+	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ImportJob, ExportJob } from '$lib/crm/types';
 

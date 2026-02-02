@@ -123,7 +123,7 @@
 		onSelect(component);
 	}
 
-	function toggleFavorite(component: ComponentInfo, event: MouseEvent) {
+	function toggleFavorite(component: ComponentInfo, event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
 
 		if (favorites.has(component.relativePath)) {
@@ -234,6 +234,7 @@
 										class="favorite-btn"
 										class:active={favorites.has(component.relativePath)}
 										onclick={(e) => toggleFavorite(component, e)}
+										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFavorite(component, e); } }}
 										role="button"
 										tabindex="0"
 										aria-label={favorites.has(component.relativePath)

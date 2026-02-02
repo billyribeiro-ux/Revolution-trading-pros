@@ -1,11 +1,15 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import Anthropic from '@anthropic-ai/sdk';
-import { ANTHROPIC_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
-const anthropic = new Anthropic({
-    apiKey: ANTHROPIC_API_KEY
-});
+function getAnthropicClient() {
+    const apiKey = env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+        throw new Error('ANTHROPIC_API_KEY is not configured');
+    }
+    return new Anthropic({ apiKey });
+}
 
 interface GenerateRequest {
     prompt: string;
@@ -30,6 +34,7 @@ Generate content that is:
 
 ${body.context ? `Context: ${body.context}` : ''}`;
 
+        const anthropic = getAnthropicClient();
         const response = await anthropic.messages.create({
             model: 'claude-sonnet-4-20250514',
             max_tokens: body.maxTokens || 1024,

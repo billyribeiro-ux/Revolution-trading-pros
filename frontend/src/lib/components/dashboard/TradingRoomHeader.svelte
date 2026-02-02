@@ -27,15 +27,10 @@
 		startHereUrl: string;
 		pageTitle?: string;
 		tradingRooms?: TradingRoom[];
+		showTradingRoomControls?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let roomName = $derived(props.roomName);
-	let startHereUrl = $derived(props.startHereUrl);
-	let pageTitle = $derived(props.pageTitle);
-	let tradingRooms = $derived(props.tradingRooms ?? []);
+	let { roomName, startHereUrl, pageTitle, tradingRooms = [], showTradingRoomControls = true }: Props = $props();
 
 	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
 	let displayTitle = $derived(pageTitle || `${roomName} Dashboard`);
@@ -106,50 +101,52 @@
 		<h1 class="dashboard__page-title">{displayTitle}</h1>
 		<a href={startHereUrl} class="btn btn-xs btn-default"> New? Start Here </a>
 	</div>
-	<div class="dashboard__header-right">
-		<div class="dropdown" class:is-open={isDropdownOpen}>
-			<button
-				class="btn btn-orange btn-tradingroom"
-				onclick={toggleDropdown}
-				aria-expanded={isDropdownOpen}
-				aria-haspopup="true"
-				type="button"
-			>
-				<strong>Enter the Trading Room</strong>
-				<span class="dropdown-arrow">
-					<RtpIcon name="chevron-down" size={14} />
-				</span>
-			</button>
+	{#if showTradingRoomControls}
+		<div class="dashboard__header-right">
+			<div class="dropdown" class:is-open={isDropdownOpen}>
+				<button
+					class="btn btn-orange btn-tradingroom"
+					onclick={toggleDropdown}
+					aria-expanded={isDropdownOpen}
+					aria-haspopup="true"
+					type="button"
+				>
+					<strong>Enter the Trading Room</strong>
+					<span class="dropdown-arrow">
+						<RtpIcon name="chevron-down" size={14} />
+					</span>
+				</button>
 
-			{#if isDropdownOpen}
-				<div class="dropdown-menu" role="menu">
-					{#each displayRooms as room}
-						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
-							<span class="dropdown-item__icon">
-								<RtpIcon name={room.icon} size={20} />
-							</span>
-							<span class="dropdown-item__text">{room.name}</span>
-						</a>
-					{/each}
-				</div>
-			{/if}
-		</div>
+				{#if isDropdownOpen}
+					<div class="dropdown-menu" role="menu">
+						{#each displayRooms as room}
+							<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
+								<span class="dropdown-item__icon">
+									<RtpIcon name={room.icon} size={20} />
+								</span>
+								<span class="dropdown-item__text">{room.name}</span>
+							</a>
+						{/each}
+					</div>
+				{/if}
+			</div>
 
-		<!-- Trading Room Rules - Legal Compliance -->
-		<div class="trading-room-rules">
-			<a
-				href="/trading-room-rules.pdf"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="trading-room-rules__link"
-			>
-				Trading Room Rules
-			</a>
-			<p class="trading-room-rules__disclaimer">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</p>
+			<!-- Trading Room Rules - Legal Compliance -->
+			<div class="trading-room-rules">
+				<a
+					href="/trading-room-rules.pdf"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="trading-room-rules__link"
+				>
+					Trading Room Rules
+				</a>
+				<p class="trading-room-rules__disclaimer">
+					By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+				</p>
+			</div>
 		</div>
-	</div>
+	{/if}
 </header>
 
 <style>

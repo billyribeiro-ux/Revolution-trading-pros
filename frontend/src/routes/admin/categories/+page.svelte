@@ -15,24 +15,24 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
-	import IconFolder from '@tabler/icons-svelte/icons/folder';
-	import IconFolderPlus from '@tabler/icons-svelte/icons/folder-plus';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconGitMerge from '@tabler/icons-svelte/icons/git-merge';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
+	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconGitMerge from '@tabler/icons-svelte-runes/icons/git-merge';
+	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
+	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
 	import { categoriesApi, AdminApiError, type Category } from '$lib/api/admin';
 
 	// ═══════════════════════════════════════════════════════════════════════════
