@@ -11,35 +11,35 @@
   - Access control indication
 -->
 <script lang="ts">
-	import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import type { RoomResource } from '$lib/api/room-resources';
-	import { trackDownload, getResource } from '$lib/api/room-resources';
+	import { trackDownload } from '$lib/api/room-resources';
 
-	export let resource: RoomResource;
-	export let open = false;
-	export let showVersionHistory = false;
+	interface Props {
+		resource: RoomResource;
+		open?: boolean;
+		showVersionHistory?: boolean;
+		onClose?: () => void;
+		onDownload?: (resource: RoomResource) => void;
+		onVersionSelect?: (resource: RoomResource) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		close: void;
-		download: { resource: RoomResource };
-		versionSelect: { resource: RoomResource };
-	}>();
+	let { resource, open = $bindable(false), showVersionHistory = false, onClose, onDownload, onVersionSelect }: Props = $props();
 
-	let loading = false;
-	let downloading = false;
-	let versions: RoomResource[] = [];
-	let loadingVersions = false;
-	let imageZoom = 1;
-	let imagePosition = { x: 0, y: 0 };
-	let dragging = false;
-	let startPos = { x: 0, y: 0 };
+	let downloading = $state(false);
+	let versions = $state<RoomResource[]>([]);
+	let loadingVersions = $state(false);
+	let imageZoom = $state(1);
+	let imagePosition = $state({ x: 0, y: 0 });
+	let dragging = $state(false);
+	let startPos = $state({ x: 0, y: 0 });
 
-	$: isVideo = resource.resource_type === 'video';
-	$: isPdf = resource.resource_type === 'pdf';
-	$: isImage = resource.resource_type === 'image';
-	$: isDocument = resource.resource_type === 'document' || resource.resource_type === 'spreadsheet';
-	$: canPreview = isVideo || isPdf || isImage;
-	$: isPremium = resource.access_level !== 'free';
+	const isVideo = $derived(resource.resource_type === 'video');
+	const isPdf = $derived(resource.resource_type === 'pdf');
+	const isImage = $derived(resource.resource_type === 'image');
+	const isDocument = $derived(resource.resource_type === 'document' || resource.resource_type === 'spreadsheet');
+	const canPreview = $derived(isVideo || isPdf || isImage);
+	const isPremium = $derived(resource.access_level !== 'free');
 
 	// Load version history if requested
 	async function loadVersionHistory() {
@@ -59,9 +59,11 @@
 		}
 	}
 
-	$: if (open && showVersionHistory) {
-		loadVersionHistory();
-	}
+	$effect(() => {
+		if (open && showVersionHistory) {
+			loadVersionHistory();
+		}
+	});
 
 	// Handle download
 	async function handleDownload() {
@@ -85,7 +87,7 @@
 				window.open(resource.file_url, '_blank');
 			}
 
-			dispatch('download', { resource });
+			onDownload?.(resource);
 		} catch (e) {
 			console.error('Download failed:', e);
 		} finally {
@@ -96,7 +98,7 @@
 	// Close modal
 	function handleClose() {
 		open = false;
-		dispatch('close');
+		onClose?.();
 	}
 
 	// Handle keyboard events

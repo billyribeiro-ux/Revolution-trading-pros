@@ -76,14 +76,7 @@ export default defineConfig({
             './src/lib/components/cms/blocks/advanced/ButtonBlock.svelte'
           ],
           'collaboration': [
-            './src/lib/collaboration/yjs-provider.ts',
-            './src/lib/collaboration/ot-engine.ts',
-            './src/lib/collaboration/presence-system.ts'
-          ],
-          'ai-features': [
-            './src/lib/ai/layout-engine.ts',
-            './src/lib/ai/content-completion.ts',
-            './src/lib/ai/alt-text-generator.ts'
+            './src/lib/collaboration/yjs-provider.ts'
           ]
         }
       }

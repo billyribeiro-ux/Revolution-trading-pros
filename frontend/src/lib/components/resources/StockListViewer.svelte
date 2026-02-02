@@ -10,32 +10,32 @@
   - Responsive design
 -->
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { StockList, StockSymbol } from '$lib/api/room-resources';
 
-	export let stockList: StockList;
-	export let showHeader = true;
-	export let showExport = true;
-	export let compact = false;
+	interface Props {
+		stockList: StockList;
+		showHeader?: boolean;
+		showExport?: boolean;
+		compact?: boolean;
+		onSymbolClick?: (symbol: StockSymbol) => void;
+		onExport?: (format: 'csv' | 'json') => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		symbolClick: { symbol: StockSymbol };
-		export: { format: 'csv' | 'json' };
-	}>();
+	const { stockList, showHeader = true, showExport = true, compact = false, onSymbolClick, onExport }: Props = $props();
 
-	let sortColumn: keyof StockSymbol = 'symbol';
-	let sortDirection: 'asc' | 'desc' = 'asc';
-	let searchQuery = '';
+	let sortColumn = $state<keyof StockSymbol>('symbol');
+	let sortDirection = $state<'asc' | 'desc'>('asc');
+	let searchQuery = $state('');
 
 	// Parse symbols if needed
-	$: symbols = Array.isArray(stockList.symbols)
+	const symbols = $derived(Array.isArray(stockList.symbols)
 		? stockList.symbols
 		: typeof stockList.symbols === 'string'
 			? JSON.parse(stockList.symbols)
-			: [];
+			: []);
 
 	// Filter and sort symbols
-	$: filteredSymbols = symbols
+	const filteredSymbols = $derived(symbols
 		.filter((s: StockSymbol) => {
 			if (!searchQuery) return true;
 			const query = searchQuery.toLowerCase();
@@ -50,7 +50,7 @@
 			const bVal = b[sortColumn] ?? '';
 			const comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
 			return sortDirection === 'asc' ? comparison : -comparison;
-		});
+		}));
 
 	function handleSort(column: keyof StockSymbol) {
 		if (sortColumn === column) {
@@ -62,7 +62,7 @@
 	}
 
 	function handleExport(format: 'csv' | 'json') {
-		dispatch('export', { format });
+		onExport?.(format);
 
 		if (format === 'csv') {
 			const headers = ['Symbol', 'Name', 'Sector', 'Entry Price', 'Price Target', 'Stop Loss', 'Notes'];
@@ -94,7 +94,7 @@
 	}
 
 	function handleSymbolClick(symbol: StockSymbol) {
-		dispatch('symbolClick', { symbol });
+		onSymbolClick?.(symbol);
 	}
 
 	function formatDate(dateStr?: string): string {
@@ -152,13 +152,13 @@
 					<div class="flex items-center gap-2">
 						<button
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-							on:click={() => handleExport('csv')}
+							onclick={() => handleExport('csv')}
 						>
 							Export CSV
 						</button>
 						<button
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-							on:click={() => handleExport('json')}
+							onclick={() => handleExport('json')}
 						>
 							Export JSON
 						</button>
@@ -189,7 +189,7 @@
 			<thead class="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
 				<tr>
 					<th class="px-4 py-3">
-						<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" on:click={() => handleSort('symbol')}>
+						<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onclick={() => handleSort('symbol')}>
 							Symbol
 							{#if sortColumn === 'symbol'}
 								<svg class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +199,7 @@
 						</button>
 					</th>
 					<th class="px-4 py-3">
-						<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" on:click={() => handleSort('name')}>
+						<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onclick={() => handleSort('name')}>
 							Name
 							{#if sortColumn === 'name'}
 								<svg class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@
 					</th>
 					{#if !compact}
 						<th class="hidden px-4 py-3 lg:table-cell">
-							<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" on:click={() => handleSort('sector')}>
+							<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onclick={() => handleSort('sector')}>
 								Sector
 							</button>
 						</th>
@@ -227,7 +227,7 @@
 				{#each filteredSymbols as symbol (symbol.symbol)}
 					<tr
 						class="cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
-						on:click={() => handleSymbolClick(symbol)}
+						onclick={() => handleSymbolClick(symbol)}
 					>
 						<td class="px-4 py-3">
 							<span class="font-semibold text-blue-600 dark:text-blue-400">{symbol.symbol}</span>

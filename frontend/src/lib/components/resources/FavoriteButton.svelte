@@ -22,8 +22,10 @@
 
 	const { resourceId, initialFavorited, size = 'md', showLabel = false, onChange }: Props = $props();
 
+	// Capture initial values to avoid state_referenced_locally warnings
+	const hasInitialValue = initialFavorited !== undefined;
 	let isFavorited = $state(initialFavorited ?? false);
-	let loading = $state(initialFavorited === undefined);
+	let loading = $state(!hasInitialValue);
 	let updating = $state(false);
 
 	// Size classes

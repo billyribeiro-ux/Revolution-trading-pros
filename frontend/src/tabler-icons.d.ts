@@ -1,8 +1,8 @@
 /**
- * Type declarations for @tabler/icons-svelte
+ * Type declarations for @tabler/icons-svelte-runes
  * The package has incomplete TS definitions - this fixes all icon imports
  */
-declare module '@tabler/icons-svelte' {
+declare module '@tabler/icons-svelte-runes' {
 	import type { SvelteComponent } from 'svelte';
 
 	interface IconProps {
