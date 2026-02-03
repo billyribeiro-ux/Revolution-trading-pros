@@ -67,7 +67,6 @@
 	import CalloutBlock from '../../cms/blocks/advanced/CalloutBlock.svelte';
 	import ButtonBlock from '../../cms/blocks/advanced/ButtonBlock.svelte';
 	import HtmlBlock from '../../cms/blocks/advanced/HtmlBlock.svelte';
-	import AdvancedSpacerBlock from '../../cms/blocks/advanced/SpacerBlock.svelte';
 
 	// ============================================
 	// TRADING BLOCKS

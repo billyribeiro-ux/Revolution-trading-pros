@@ -14,14 +14,11 @@
 	import {
 		IconChartCandle,
 		IconPhoto,
-		IconSettings,
 		IconAlertCircle,
 		IconLoader2,
 		IconRefresh,
 		IconExternalLink,
-		IconMaximize,
-		IconSunHigh,
-		IconMoon
+		IconMaximize
 	} from '$lib/icons';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';

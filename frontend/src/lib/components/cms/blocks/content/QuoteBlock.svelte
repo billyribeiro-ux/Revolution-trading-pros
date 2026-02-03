@@ -98,7 +98,6 @@
 	<figure
 		class="quote-block quote-block--pullquote"
 		class:quote-block--selected={props.isSelected}
-		role="figure"
 	>
 		<!-- Decorative Quote Icon -->
 		<div class="quote-block__icon" aria-hidden="true">
