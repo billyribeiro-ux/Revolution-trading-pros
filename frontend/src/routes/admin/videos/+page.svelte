@@ -1435,13 +1435,14 @@
 										<button class="btn-icon" title="Edit" onclick={() => openEditModal(video)}>
 											<IconEdit size={16} />
 										</button>
-										<button class="btn-icon" title="Preview">
-											<IconPlayerPlay size={16} />
+										<button class="btn-icon" title="Fetch Duration" onclick={() => fetchVideoDuration(video.id)}>
+											<IconRefresh size={16} />
 										</button>
 										<button
 											class="btn-icon danger"
 											title="Delete"
 											onclick={() => deleteVideo(video)}
+											disabled={isDeleting}
 										>
 											<IconTrash size={16} />
 										</button>
@@ -1452,6 +1453,19 @@
 					</tbody>
 				</table>
 			</div>
+
+			<!-- Pagination Info -->
+			{#if totalVideos > 0}
+				<div class="pagination-info">
+					<span>Showing {videos.length} of {totalVideos} videos</span>
+					{#if totalPages > 1}
+						<span class="page-indicator">Page {currentPage} of {totalPages}</span>
+					{/if}
+					{#if bunnyUploadBatchId}
+						<span class="batch-info">Batch: {bunnyUploadBatchId}</span>
+					{/if}
+				</div>
+			{/if}
 		{/if}
 	</div>
 	<!-- End admin-page-container -->

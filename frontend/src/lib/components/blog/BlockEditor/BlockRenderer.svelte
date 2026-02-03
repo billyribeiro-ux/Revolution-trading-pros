@@ -19,11 +19,9 @@
 		IconGripVertical,
 		IconChevronDown,
 		IconChevronRight,
-		IconChevronUp,
 		IconMinus,
 		IconListTree,
 		IconExternalLink,
-		IconToggleRight,
 		IconBrandX,
 		IconBrandFacebook,
 		IconBrandLinkedin,
@@ -175,9 +173,9 @@
 	// State
 	// ==========================================================================
 
-	// Used in bind:this directives for paragraph and heading blocks (lines 133, 165)
-	// Prefixed with _ to indicate intentional: used in template, not in script
-	let _editableRef = $state<HTMLElement | undefined>(undefined);
+	// Used in bind:this directives for paragraph and heading blocks
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let editableRef = $state<HTMLElement | undefined>(undefined);
 
 	// Countdown timer state
 	let countdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -217,9 +215,6 @@
 	let gifPlaying = $state<boolean>(true);
 	let lightboxOpen = $state<boolean>(false);
 	let lightboxIndex = $state<number>(0);
-
-	// Error boundary state
-	let renderError = $state<Error | null>(null);
 
 	// P0 Security: Sanitized HTML content
 	let sanitizedHTML = $derived(
@@ -498,9 +493,7 @@
 			lightboxOpen = false;
 		}
 
-		// P0: Reset error state
-		renderError = null;
-	});
+		});
 
 	// ==========================================================================
 	// Content Update
@@ -773,7 +766,7 @@
 	<!-- Paragraph Block -->
 	{:else if block.type === 'paragraph'}
 		<p
-			bind:this={_editableRef}
+			bind:this={editableRef}
 			contenteditable={isEditing}
 			class="editable-content"
 			class:placeholder={!block.content.text}
@@ -806,7 +799,7 @@
 			{/if}
 			<svelte:element
 				this={`h${level}`}
-				bind:this={_editableRef}
+				bind:this={editableRef}
 				contenteditable={isEditing}
 				class="editable-content heading-{level}"
 				class:placeholder={!block.content.text}

@@ -151,6 +151,14 @@ export const membersStore = {
 		return membersState.selectedMember;
 	},
 
+	get services() {
+		return membersState.services;
+	},
+
+	get pagination() {
+		return membersState.pagination;
+	},
+
 	/**
 	 * Load members with current filters
 	 * ICT 7 Grade: API client handles request deduplication automatically

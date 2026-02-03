@@ -194,7 +194,6 @@
 
 	// ICT 7: Bulk operations state
 	let selectedResources = $state<Set<number>>(new Set());
-	let selectAllChecked = $state(false);
 	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>('publish');
 	let bulkAccessLevel = $state<AccessLevel>('premium');
 
@@ -565,7 +564,6 @@
 						showSuccess(`Deleted ${deleteResult.deleted_count} resources`);
 						selectedResources.clear();
 						selectedResources = new Set(selectedResources);
-						selectAllChecked = false;
 						await loadResources();
 					}
 					showBulkModal = false;
@@ -578,7 +576,6 @@
 				showSuccess(`Updated ${result.updated_count} resources`);
 				selectedResources.clear();
 				selectedResources = new Set(selectedResources);
-				selectAllChecked = false;
 				await loadResources();
 			}
 		} catch (err) {

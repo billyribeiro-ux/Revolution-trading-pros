@@ -27,8 +27,16 @@
 		onChange
 	}: Props = $props();
 
-	let isFavorited = $state(initialFavorited ?? false);
-	let loading = $state(initialFavorited === undefined);
+	let isFavorited = $state(false);
+	let loading = $state(true);
+
+	// Sync with prop when provided
+	$effect(() => {
+		if (initialFavorited !== undefined) {
+			isFavorited = initialFavorited;
+			loading = false;
+		}
+	});
 	let updating = $state(false);
 
 	// Check initial state if not provided

@@ -264,11 +264,11 @@
 		}
 	}
 
-	function handleMemberSaved(member: Member, temporaryPassword?: string) {
+	function handleMemberSaved(savedMember: Member, temporaryPassword?: string) {
 		if (temporaryPassword) {
-			toastStore.success(`Member created! Temporary password: ${temporaryPassword}`);
+			toastStore.success(`Member ${savedMember.name} created! Temporary password: ${temporaryPassword}`);
 		} else {
-			toastStore.success('Member saved successfully');
+			toastStore.success(`Member ${savedMember.name} saved successfully`);
 		}
 		showCreateModal = false;
 		showEditModal = false;
@@ -300,11 +300,14 @@
 		}
 	}
 
-	function getMemberActions(member: Member) {
+	function getMemberActions(targetMember: Member) {
+		// Check if member is inactive (churned or never subscribed)
+		const isInactive = targetMember.status === 'churned' || targetMember.status === 'never_subscribed';
 		return [
 			{ id: 'view', label: 'View Details', icon: IconExternalLink },
 			{ id: 'edit', label: 'Edit Member', icon: IconEdit },
 			{ id: 'email', label: 'Send Email', icon: IconMail },
+			{ id: isInactive ? 'activate' : 'suspend', label: isInactive ? 'Activate' : 'Suspend', icon: isInactive ? IconPlayerPlay : IconBan },
 			{
 				id: 'delete',
 				label: 'Delete Member',
@@ -406,14 +409,18 @@
 			<h1>Members Command Center</h1>
 			<p class="subtitle">Comprehensive member management and analytics</p>
 			<div class="header-actions">
+				<button class="btn-secondary" onclick={handleRefresh} title="Refresh data">
+					<IconRefresh size={18} />
+					Refresh
+				</button>
 				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
 					<IconUpload size={18} />
 					Import
 				</button>
 				<div class="export-dropdown">
-					<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
+					<button class="btn-secondary" onclick={() => handleExportAdvanced(exportFormat)} disabled={exporting}>
 						<IconDownload size={18} />
-						{exporting ? 'Exporting...' : 'Export'}
+						{exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}`}
 					</button>
 					<div class="export-options">
 						<button onclick={() => handleExportAdvanced('csv')} disabled={exporting}>
