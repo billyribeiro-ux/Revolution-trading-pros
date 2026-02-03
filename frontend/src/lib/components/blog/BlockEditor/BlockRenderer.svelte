@@ -1496,7 +1496,8 @@
 			{#if block.content.fileUrl}
 				{@const fileName = block.content.fileName || 'Download'}
 				{@const fileSize = block.content.fileSize || 0}
-				<a href={block.content.fileUrl} download={fileName} class="file-download-card" target="_blank" rel="noopener noreferrer"><div class="file-icon"><IconFile size={32} /></div><div class="file-info"><span class="file-name">{fileName}</span>{#if fileSize > 0}<span class="file-size">{formatFileSize(fileSize)}</span>{/if}</div><div class="file-download-icon"><IconDownload size={24} /></div></a>
+				{@const fileType = getFileIcon(fileName)}
+				<a href={block.content.fileUrl} download={fileName} class="file-download-card file-type-{fileType}" target="_blank" rel="noopener noreferrer"><div class="file-icon"><IconFile size={32} /></div><div class="file-info"><span class="file-name">{fileName}</span>{#if fileSize > 0}<span class="file-size">{formatFileSize(fileSize)}</span>{/if}</div><div class="file-download-icon"><IconDownload size={24} /></div></a>
 				{#if isEditing}<div class="file-edit-controls"><input type="text" placeholder="File name" value={block.content.fileName || ''} onchange={(e: Event) => updateContent({ fileName: (e.target as HTMLInputElement).value })} /></div>{/if}
 			{:else if isEditing}<div class="file-placeholder"><IconFile size={48} /><span>Add file URL</span><input type="url" placeholder="https://example.com/file.pdf" onchange={(e: Event) => { const url = (e.target as HTMLInputElement).value; updateContent({ fileUrl: url, fileName: url.split('/').pop() || 'file' }); }} /><span>or</span><input type="file" onchange={(e: Event) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) updateContent({ fileUrl: URL.createObjectURL(file), fileName: file.name, fileSize: file.size }); }} /></div>{/if}
 		</div>

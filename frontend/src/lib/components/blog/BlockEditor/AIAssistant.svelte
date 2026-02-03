@@ -252,6 +252,7 @@
 			input_text: prompt,
 			...(blockId && { block_id: blockId }),
 			...(contentId && { content_id: contentId }),
+			...(editorState && { context: { blockCount: editorState.blocks?.length ?? 0 } }),
 			options
 		};
 	}

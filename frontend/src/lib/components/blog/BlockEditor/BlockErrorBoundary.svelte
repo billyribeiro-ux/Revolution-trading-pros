@@ -196,6 +196,14 @@
 		// Attempt recovery
 		const recoveredBlock = recoverBlock(block);
 
+		// Log recovery attempt with ErrorType context for debugging
+		// ErrorType values: RENDER_ERROR, VALIDATION_ERROR, SAVE_ERROR, NETWORK_ERROR, AI_ERROR, MEDIA_ERROR, UNKNOWN_ERROR
+		const errorTypeLabel = errorType ?? ErrorType.UNKNOWN_ERROR;
+		console.debug(`[BlockErrorBoundary] Recovery attempted for block ${block.id}`, {
+			errorType: errorTypeLabel,
+			recoveredBlock: recoveredBlock ? recoveredBlock.id : null
+		});
+
 		// Clear error state
 		hasError = false;
 		error = null;
