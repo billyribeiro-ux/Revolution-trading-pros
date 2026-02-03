@@ -14,6 +14,9 @@
 	import { IconCheck, IconX, IconAlertCircle, IconInfoCircle, IconLoader } from '$lib/icons';
 	import { toasts, removeToast, type ToastType } from '$lib/stores/toast.svelte';
 
+	// Local derived from getter
+	const toastList = $derived(toasts.value);
+
 	const icons: Record<ToastType, typeof IconCheck> = {
 		success: IconCheck,
 		error: IconX,
@@ -41,7 +44,7 @@
 
 <!-- Screen reader live region - announces new toasts -->
 <div class="fixed top-4 right-4 z-50 space-y-2" role="region" aria-label="Notifications">
-	{#each $toasts as toast (toast.id)}
+	{#each toastList as toast (toast.id)}
 		{@const IconComponent = icons[toast.type]}
 		<div
 			class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 shadow-lg

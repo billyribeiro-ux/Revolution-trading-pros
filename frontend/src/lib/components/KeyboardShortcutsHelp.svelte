@@ -21,18 +21,22 @@
 
 	let { isOpen = $bindable(false), onclose }: Props = $props();
 
+	// Local derived from getters
+	const shortcuts = $derived(keyboard.shortcuts);
+	const isHelpOpen = $derived(keyboard.isHelpOpen);
+
 	let groupedShortcuts = $derived(
-		$keyboard.shortcuts
-			.filter((s) => s.enabled)
+		shortcuts
+			.filter((s) => s.enabled !== false)
 			.reduce(
-				(acc, shortcut) => {
+				(acc: Record<string, typeof shortcuts>, shortcut: (typeof shortcuts)[0]) => {
 					if (!acc[shortcut.category]) {
 						acc[shortcut.category] = [];
 					}
 					acc[shortcut.category]?.push(shortcut);
 					return acc;
 				},
-				{} as Record<string, typeof $keyboard.shortcuts>
+				{} as Record<string, typeof shortcuts>
 			)
 	);
 
@@ -50,8 +54,8 @@
 
 	// Sync with store
 	$effect(() => {
-		if ($keyboard.isHelpOpen !== isOpen) {
-			isOpen = $keyboard.isHelpOpen;
+		if (isHelpOpen !== isOpen) {
+			isOpen = isHelpOpen;
 		}
 	});
 </script>

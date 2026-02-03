@@ -24,12 +24,13 @@
 
 	let serviceId = $derived(Number(page.params.id));
 
-	// Store state
-	let service = $derived($serviceMembersStore.service);
-	let stats = $derived($serviceMembersStore.stats);
-	let members = $derived($serviceMembersStore.members);
-	let pagination = $derived($serviceMembersStore.pagination);
-	let loading = $derived($serviceMembersStore.loading);
+	// Store state (local derived from getters)
+	let service = $derived(serviceMembersStore.service);
+	let stats = $derived(serviceMembersStore.stats);
+	let members = $derived(serviceMembersStore.members);
+	let pagination = $derived(serviceMembersStore.pagination);
+	let loading = $derived(serviceMembersStore.loading);
+	let emailPresetTemplates = $derived(emailStore.presetTemplates);
 
 	// Local state
 	let searchQuery = $state('');
@@ -385,7 +386,7 @@
 				<div class="template-selector">
 					<span class="selector-label">Quick Templates</span>
 					<div class="template-buttons">
-						{#each $emailStore.presetTemplates as template}
+						{#each emailPresetTemplates as template}
 							<button class="template-btn" onclick={() => applyTemplate(template)}>
 								{template.name}
 							</button>

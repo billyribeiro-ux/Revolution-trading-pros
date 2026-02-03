@@ -23,11 +23,12 @@
 		IconRefresh
 	} from '$lib/icons';
 
-	// Store state
-	let members = $derived($churnedStore.members);
-	let stats = $derived($churnedStore.stats);
-	let pagination = $derived($churnedStore.pagination);
-	let loading = $derived($churnedStore.loading);
+	// Store state (local derived from getters)
+	let members = $derived(churnedStore.members);
+	let stats = $derived(churnedStore.stats);
+	let pagination = $derived(churnedStore.pagination);
+	let loading = $derived(churnedStore.loading);
+	let presetTemplates = $derived(emailStore.presetTemplates);
 
 	// Local state
 	let searchQuery = $state('');
@@ -107,7 +108,7 @@
 		campaignType = type;
 
 		// Apply preset template based on campaign type
-		const presets = $emailStore.presetTemplates;
+		const presets = presetTemplates;
 		let template;
 
 		switch (type) {
@@ -526,7 +527,7 @@
 							class:active={campaignType === 'free_trial'}
 							onclick={() => {
 								campaignType = 'free_trial';
-								const t = $emailStore.presetTemplates.find((t) => t.id === 'winback_30_free');
+								const t = presetTemplates.find((t) => t.id === 'winback_30_free');
 								if (t) applyTemplate(t);
 							}}
 						>
@@ -537,7 +538,7 @@
 							class:active={campaignType === 'promo'}
 							onclick={() => {
 								campaignType = 'promo';
-								const t = $emailStore.presetTemplates.find((t) => t.id === 'winback_discount');
+								const t = presetTemplates.find((t) => t.id === 'winback_discount');
 								if (t) applyTemplate(t);
 							}}
 						>
@@ -548,7 +549,7 @@
 							class:active={campaignType === 'winback'}
 							onclick={() => {
 								campaignType = 'winback';
-								const t = $emailStore.presetTemplates.find((t) => t.id === 'winback_missed');
+								const t = presetTemplates.find((t) => t.id === 'winback_missed');
 								if (t) applyTemplate(t);
 							}}
 						>

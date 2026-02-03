@@ -26,6 +26,9 @@
 	let isDragging = $state(false);
 	let fileInput: HTMLInputElement;
 
+	// Local derived from getter
+	const uploads = $derived(uploadStore.uploads);
+
 	function handleDragOver(e: DragEvent) {
 		e.preventDefault();
 		isDragging = true;
@@ -106,10 +109,10 @@
 	</div>
 
 	<!-- Upload Progress -->
-	{#if $uploadStore.uploads.size > 0}
+	{#if uploads.size > 0}
 		<div class="upload-list">
-			<h4 class="upload-list-title">Uploading {$uploadStore.uploads.size} file(s)</h4>
-			{#each Array.from($uploadStore.uploads.entries()) as [id, upload]}
+			<h4 class="upload-list-title">Uploading {uploads.size} file(s)</h4>
+			{#each Array.from(uploads.entries()) as [id, upload]}
 				<div class="upload-item">
 					<div class="upload-item-info">
 						<div class="upload-item-icon">

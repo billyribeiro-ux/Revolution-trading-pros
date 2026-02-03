@@ -58,6 +58,12 @@
 	let draggedWidget = $state<DashboardWidget | null>(null);
 	let dragOverIndex = $state<number | null>(null);
 
+	// Local derived from getters
+	const visibleWidgets = $derived(getVisibleWidgets());
+	const hiddenWidgets = $derived(getHiddenWidgets());
+	const widgetLayout = $derived(getWidgetLayout());
+	const autoRefreshEnabled = $derived(getAutoRefreshEnabled());
+
 	const iconMap: Record<string, typeof IconChartLine> = {
 		'chart-line': IconChartLine,
 		world: IconWorld,
@@ -111,7 +117,7 @@
 
 	function handleDragEnd() {
 		if (draggedWidget && dragOverIndex !== null) {
-			const fromIndex = $getVisibleWidgets.findIndex((w) => w.id === draggedWidget!.id);
+			const fromIndex = visibleWidgets.findIndex((w) => w.id === draggedWidget!.id);
 			if (fromIndex !== -1 && fromIndex !== dragOverIndex) {
 				widgetStore.reorderWidgets(fromIndex, dragOverIndex);
 			}
@@ -165,7 +171,7 @@
 					onclick={() => (activeTab = 'visible')}
 				>
 					<IconEye size={16} />
-					Visible ({$getVisibleWidgets.length})
+					Visible ({visibleWidgets.length})
 				</button>
 				<button
 					class="tab"
@@ -173,7 +179,7 @@
 					onclick={() => (activeTab = 'hidden')}
 				>
 					<IconEyeOff size={16} />
-					Hidden ({$getHiddenWidgets.length})
+					Hidden ({hiddenWidgets.length})
 				</button>
 				<button
 					class="tab"
@@ -192,7 +198,7 @@
 						<p class="helper-text">
 							Drag to reorder widgets. Click the size button to cycle sizes.
 						</p>
-						{#each $getVisibleWidgets as widget, index (widget.id)}
+						{#each visibleWidgets as widget, index (widget.id)}
 							{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 							<div
 								class="widget-item"
@@ -238,7 +244,7 @@
 									<button
 										class="move-btn"
 										onclick={() => widgetStore.moveWidget(widget.id, 'down')}
-										disabled={index === $getVisibleWidgets.length - 1}
+										disabled={index === visibleWidgets.length - 1}
 									>
 										<IconCaretDown size={16} />
 									</button>
@@ -255,7 +261,7 @@
 					</div>
 				{:else if activeTab === 'hidden'}
 					<div class="widget-list" in:fade={{ duration: 150 }}>
-						{#if $getHiddenWidgets.length === 0}
+						{#if hiddenWidgets.length === 0}
 							<div class="empty-state">
 								<IconEye size={48} />
 								<h3>All widgets visible</h3>
@@ -263,7 +269,7 @@
 							</div>
 						{:else}
 							<p class="helper-text">Click the eye icon to show a widget on your dashboard.</p>
-							{#each $getHiddenWidgets as widget (widget.id)}
+							{#each hiddenWidgets as widget (widget.id)}
 								{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 								<div class="widget-item hidden-item">
 									<div
@@ -298,7 +304,7 @@
 							<div class="layout-options">
 								<button
 									class="layout-btn"
-									class:active={$getWidgetLayout === 'grid'}
+									class:active={widgetLayout === 'grid'}
 									onclick={() => widgetStore.setLayout('grid')}
 									aria-label="Grid layout"
 								>
@@ -307,7 +313,7 @@
 								</button>
 								<button
 									class="layout-btn"
-									class:active={$getWidgetLayout === 'list'}
+									class:active={widgetLayout === 'list'}
 									onclick={() => widgetStore.setLayout('list')}
 									aria-label="List layout"
 								>
@@ -324,7 +330,7 @@
 								<span class="toggle-description"> Automatically refresh widget data </span>
 								<button
 									class="toggle-switch"
-									class:active={$getAutoRefreshEnabled}
+									class:active={autoRefreshEnabled}
 									onclick={() => widgetStore.toggleAutoRefresh()}
 									aria-label="Toggle auto refresh"
 								>

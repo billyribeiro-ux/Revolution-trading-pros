@@ -835,7 +835,7 @@
 				<div class="template-selector">
 					<span class="template-label">Quick Templates</span>
 					<div class="template-buttons">
-						{#each $emailStore.presetTemplates as template}
+						{#each emailStore.presetTemplates as template}
 							<button class="template-btn" onclick={() => applyTemplate(template)}>
 								{template.name}
 							</button>

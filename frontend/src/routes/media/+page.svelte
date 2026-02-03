@@ -28,7 +28,7 @@
 		IconSparkles
 	} from '$lib/icons';
 
-	let showUploadModal = false;
+	let showUploadModal = $state(false);
 	// TODO: Implement CreateFolderModal component
 	// let showCreateFolderModal = false;
 	let searchQuery = $state('');

@@ -17,6 +17,9 @@
 	import type { Toast } from '$lib/stores/toast.svelte';
 	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
 
+	// Local derived from getter
+	const toastList = $derived(toasts.value);
+
 	function getIcon(type: Toast['type']) {
 		switch (type) {
 			case 'success':
@@ -34,7 +37,7 @@
 </script>
 
 <div class="toast-container" aria-live="polite" aria-label="Notifications">
-	{#each $toasts as toast, index (toast.id)}
+	{#each toastList as toast, index (toast.id)}
 		{@const IconComponent = getIcon(toast.type)}
 		<div
 			class="toast toast-{toast.type}"

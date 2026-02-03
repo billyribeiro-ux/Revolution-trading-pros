@@ -99,7 +99,7 @@
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
-	import { getCartItemCount, getHasCartItems } from '$lib/stores/cart.svelte';
+	import { getCartItemCount } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -255,8 +255,8 @@
 	let isRTL = $state(false);
 
 	// Element references
-	let navbarRef = $state<HTMLElement | null>(null);
-	let hamburgerRef = $state<HTMLButtonElement | null>(null);
+	let _navbarRef = $state<HTMLElement | null>(null);
+	let _hamburgerRef = $state<HTMLButtonElement | null>(null);
 	let mobileCloseRef = $state<HTMLButtonElement | null>(null);
 	let mobilePanelRef = $state<HTMLElement | null>(null);
 	let scrollSentinelRef = $state<HTMLDivElement | null>(null);
@@ -274,7 +274,6 @@
 	const isMobileMenuOpen = $derived(mobileMenuState === 'open' || mobileMenuState === 'opening');
 
 	const cartItemCount = $derived(getCartItemCount());
-	const hasCartItems = $derived(getHasCartItems());
 
 	const cartAriaLabel = $derived.by(() => {
 		const count = cartItemCount;
@@ -641,7 +640,7 @@
      MAIN NAVBAR
      ═══════════════════════════════════════════════════════════════════════════ -->
 <header
-	bind:this={navbarRef}
+	bind:this={_navbarRef}
 	class="navbar"
 	class:scrolled={isScrolled}
 	class:sticky
@@ -803,11 +802,11 @@
 				{@render actions()}
 			{:else}
 				<!-- Cart - Only show if items in cart -->
-				{#if getHasCartItems}
+				{#if cartItemCount > 0}
 					<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
 						<IconShoppingCart size={22} aria-hidden="true" />
-						{#if getCartItemCount > 0}
-							<span class="cart-badge" aria-hidden="true">{getCartItemCount}</span>
+						{#if cartItemCount > 0}
+							<span class="cart-badge" aria-hidden="true">{cartItemCount}</span>
 						{/if}
 					</a>
 				{/if}
@@ -822,7 +821,7 @@
 
 		<!-- ICT11+ Fix: Hamburger outside actions container to prevent layout shift -->
 		<button
-			bind:this={hamburgerRef}
+			bind:this={_hamburgerRef}
 			class="hamburger"
 			onclick={toggleMobileMenu}
 			aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
@@ -982,7 +981,7 @@
 
 		<!-- Footer -->
 		<div class="mobile-footer">
-			{#if getHasCartItems}
+			{#if cartItemCount > 0}
 				<a
 					href="/cart"
 					class="mobile-cart"
@@ -991,8 +990,8 @@
 				>
 					<IconShoppingCart size={20} aria-hidden="true" />
 					<span>Cart</span>
-					{#if getCartItemCount > 0}
-						<span class="mobile-badge" aria-hidden="true">{getCartItemCount}</span>
+					{#if cartItemCount > 0}
+						<span class="mobile-badge" aria-hidden="true">{cartItemCount}</span>
 					{/if}
 				</a>
 			{/if}

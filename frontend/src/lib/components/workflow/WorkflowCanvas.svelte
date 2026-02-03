@@ -18,13 +18,20 @@
 	let connectionStart: number | null = $state(null);
 	let mousePos = $state({ x: 0, y: 0 });
 
+	// Local derived from getters
+	const pan = $derived(workflowCanvas.pan);
+	const zoom = $derived(workflowCanvas.zoom);
+	const nodes = $derived(workflowCanvas.nodes);
+	const edges = $derived(workflowCanvas.edges);
+	const selectedNode = $derived(workflowCanvas.selectedNode);
+
 	function handleCanvasMouseDown(e: MouseEvent) {
 		if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
 			// Middle mouse or Shift+Left mouse for panning
 			isPanning = true;
 			startPan = {
-				x: e.clientX - $workflowCanvas.pan.x,
-				y: e.clientY - $workflowCanvas.pan.y
+				x: e.clientX - pan.x,
+				y: e.clientY - pan.y
 			};
 			e.preventDefault();
 		} else {
@@ -56,7 +63,7 @@
 	function handleWheel(e: WheelEvent) {
 		e.preventDefault();
 		const delta = e.deltaY > 0 ? -0.1 : 0.1;
-		workflowCanvas.setZoom($workflowCanvas.zoom + delta);
+		workflowCanvas.setZoom(zoom + delta);
 	}
 
 	function handleNodeDrop(e: DragEvent) {
@@ -66,8 +73,8 @@
 		if (!nodeType) return;
 
 		const rect = canvasElement.getBoundingClientRect();
-		const x = (e.clientX - rect.left - $workflowCanvas.pan.x) / $workflowCanvas.zoom;
-		const y = (e.clientY - rect.top - $workflowCanvas.pan.y) / $workflowCanvas.zoom;
+		const x = (e.clientX - rect.left - pan.x) / zoom;
+		const y = (e.clientY - rect.top - pan.y) / zoom;
 
 		// Create new node
 		const newNode = {
@@ -77,7 +84,7 @@
 			config: {},
 			position_x: Math.round(x),
 			position_y: Math.round(y),
-			order: $workflowCanvas.nodes.length,
+			order: nodes.length,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		};
@@ -144,21 +151,20 @@
 	<div
 		class="canvas-content"
 		style="
-      transform: translate({$workflowCanvas.pan.x}px, {$workflowCanvas.pan
-			.y}px) scale({$workflowCanvas.zoom});
+      transform: translate({pan.x}px, {pan.y}px) scale({zoom});
       transform-origin: 0 0;
     "
 	>
 		<!-- Render edges first (behind nodes) -->
-		{#each $workflowCanvas.edges as edge (edge.id)}
-			<WorkflowEdge {edge} nodes={$workflowCanvas.nodes} />
+		{#each edges as edge (edge.id)}
+			<WorkflowEdge {edge} {nodes} />
 		{/each}
 
 		<!-- Render nodes -->
-		{#each $workflowCanvas.nodes as node (node.id)}
+		{#each nodes as node (node.id)}
 			<WorkflowNode
 				{node}
-				selected={$workflowCanvas.selectedNode?.id === node.id}
+				selected={selectedNode?.id === node.id}
 				onselect={() => workflowCanvas.selectNode(node)}
 				onmove={(pos) => workflowCanvas.moveNode(node.id, pos)}
 				ondelete={() => workflowCanvas.deleteNode(node.id)}
@@ -169,14 +175,14 @@
 
 		<!-- Connection line while dragging -->
 		{#if isConnecting && connectionStart !== null}
-			{@const startNode = $workflowCanvas.nodes.find((n) => n.id === connectionStart)}
+			{@const startNode = nodes.find((n) => n.id === connectionStart)}
 			{#if startNode}
 				<svg class="connection-line">
 					<line
 						x1={startNode.position_x + 100}
 						y1={startNode.position_y + 40}
-						x2={(mousePos.x - $workflowCanvas.pan.x) / $workflowCanvas.zoom}
-						y2={(mousePos.y - $workflowCanvas.pan.y) / $workflowCanvas.zoom}
+						x2={(mousePos.x - pan.x) / zoom}
+						y2={(mousePos.y - pan.y) / zoom}
 						stroke="#3b82f6"
 						stroke-width="2"
 						stroke-dasharray="5,5"
@@ -188,7 +194,7 @@
 
 	<!-- Canvas controls -->
 	<div class="canvas-controls">
-		<button onclick={() => workflowCanvas.setZoom($workflowCanvas.zoom + 0.1)} aria-label="Zoom in">
+		<button onclick={() => workflowCanvas.setZoom(zoom + 0.1)} aria-label="Zoom in">
 			<svg
 				width="20"
 				height="20"
@@ -201,7 +207,7 @@
 			</svg>
 		</button>
 		<button
-			onclick={() => workflowCanvas.setZoom($workflowCanvas.zoom - 0.1)}
+			onclick={() => workflowCanvas.setZoom(zoom - 0.1)}
 			aria-label="Zoom out"
 		>
 			<svg
@@ -216,7 +222,7 @@
 			</svg>
 		</button>
 		<button onclick={() => workflowCanvas.setZoom(1)} aria-label="Reset zoom"> Reset </button>
-		<span class="zoom-level">{Math.round($workflowCanvas.zoom * 100)}%</span>
+		<span class="zoom-level">{Math.round(zoom * 100)}%</span>
 	</div>
 </div>
 

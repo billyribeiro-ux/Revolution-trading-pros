@@ -110,7 +110,7 @@
 	// Reactive Statements (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let currentPopup = $derived($activePopup);
+	let currentPopup = $derived(activePopup.value);
 
 	// Derived values
 	const formValid = $derived(validateForm());

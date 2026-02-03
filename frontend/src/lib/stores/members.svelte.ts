@@ -286,6 +286,10 @@ export const churnedStore = {
 		return churnedState.loading;
 	},
 
+	get pagination() {
+		return churnedState.pagination;
+	},
+
 	/**
 	 * Load churned members
 	 */
@@ -361,6 +365,14 @@ export const serviceMembersStore = {
 		return serviceMembersState.loading;
 	},
 
+	get stats() {
+		return serviceMembersState.stats;
+	},
+
+	get pagination() {
+		return serviceMembersState.pagination;
+	},
+
 	/**
 	 * Load members for a specific service
 	 */
@@ -412,6 +424,10 @@ export const emailStore = {
 
 	get sending() {
 		return memberEmailState.sending;
+	},
+
+	get presetTemplates() {
+		return memberEmailState.presetTemplates;
 	},
 
 	/**
