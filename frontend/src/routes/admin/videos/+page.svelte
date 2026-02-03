@@ -1420,6 +1420,13 @@
 									<div class="action-buttons">
 										<button
 											class="btn-icon"
+											title="Preview Video"
+											onclick={() => window.open(video.video_url, '_blank')}
+										>
+											<IconPlayerPlay size={16} />
+										</button>
+										<button
+											class="btn-icon"
 											title="Embed Code"
 											onclick={() => showEmbedCode(video)}
 										>

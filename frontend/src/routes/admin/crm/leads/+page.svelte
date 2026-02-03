@@ -702,6 +702,9 @@
 						</div>
 					{/if}
 
+					<button class="btn-view-toggle" onclick={() => _viewMode = _viewMode === 'list' ? 'kanban' : 'list'} title="Toggle view mode">
+						{#if _viewMode === 'list'}List{:else}Kanban{/if}
+					</button>
 					<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
 						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 					</button>

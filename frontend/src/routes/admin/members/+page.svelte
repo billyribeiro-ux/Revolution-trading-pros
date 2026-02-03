@@ -614,9 +614,9 @@
 					</button>
 				{/if}
 
-				<button class="btn-export" onclick={() => goto('/admin/members/export')}>
+				<button class="btn-export" onclick={handleExport}>
 					<IconDownload size={18} />
-					Export
+					Export CSV
 				</button>
 			</div>
 		</div>
