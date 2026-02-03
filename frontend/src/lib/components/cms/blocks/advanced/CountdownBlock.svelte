@@ -48,7 +48,9 @@
 	// Derived Values
 	// =========================================================================
 
-	let countdownState = $derived<CountdownState>(stateManager.getCountdownState(props.blockId));
+	// State manager syncs countdown state globally - accessed via stateManager methods
+	// @ts-ignore - Reactive binding used by state manager
+	let _countdownState = $derived<CountdownState>(stateManager.getCountdownState(props.blockId));
 	let targetDate = $derived(props.block.content.countdownTarget || '');
 	let title = $derived(props.block.content.countdownTitle || 'Offer Ends In');
 	let expiredMessage = $derived(

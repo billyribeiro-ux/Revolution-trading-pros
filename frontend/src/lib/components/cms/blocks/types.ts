@@ -101,6 +101,7 @@ export interface BlockContent {
 
   // Gallery
   galleryImages?: Array<{
+    id?: string;
     url: string;
     alt: string;
     caption?: string;
@@ -117,7 +118,7 @@ export interface BlockContent {
 
   // Embed
   embedUrl?: string;
-  embedType?: 'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'spotify' | 'custom';
+  embedType?: 'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'tiktok' | 'soundcloud' | 'spotify' | 'custom';
 
   // Trading
   symbol?: string;

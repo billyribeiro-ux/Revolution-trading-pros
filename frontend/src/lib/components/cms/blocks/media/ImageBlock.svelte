@@ -86,10 +86,9 @@
 
 	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 	const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-	const OBJECT_FIT_OPTIONS: Array<{ value: 'cover' | 'contain' | 'fill'; label: string }> = [
+	const OBJECT_FIT_OPTIONS: Array<{ value: 'cover' | 'contain'; label: string }> = [
 		{ value: 'cover', label: 'Cover' },
-		{ value: 'contain', label: 'Contain' },
-		{ value: 'fill', label: 'Fill' }
+		{ value: 'contain', label: 'Contain' }
 	];
 
 	// ==========================================================================
@@ -242,7 +241,7 @@
 		document.execCommand('insertText', false, text.slice(0, 1000));
 	}
 
-	function handleObjectFitChange(fit: 'cover' | 'contain' | 'fill'): void {
+	function handleObjectFitChange(fit: 'cover' | 'contain'): void {
 		updateSettings({ objectFit: fit });
 		showObjectFitControls = false;
 	}

@@ -106,7 +106,7 @@
 		document.execCommand('insertText', false, text);
 	}
 
-	function handleButtonClick(e: MouseEvent, url: string): void {
+	function handleButtonClick(e: MouseEvent, _url: string): void {
 		if (props.isEditing) {
 			e.preventDefault();
 		}
@@ -116,7 +116,6 @@
 <section
 	class="cta-block {textAlignClass}"
 	style={containerStyle}
-	role="region"
 	aria-label="Call to action"
 >
 	<div class="cta-content">

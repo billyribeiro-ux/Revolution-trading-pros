@@ -32,7 +32,7 @@
 	}
 
 	let buttons = $derived<ButtonItem[]>(
-		(props.block.content.buttonItems?.map(item => ({
+		(props.block.content.buttonItems?.map((item: { id: string; text: string; url: string; style?: string; newTab?: boolean }) => ({
 			id: item.id,
 			text: item.text,
 			url: item.url,

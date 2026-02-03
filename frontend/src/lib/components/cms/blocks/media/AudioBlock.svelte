@@ -14,7 +14,6 @@
 		IconVolume,
 		IconVolumeOff,
 		IconWaveSine,
-		IconFile,
 		IconAlertCircle,
 		IconUpload
 	} from '$lib/icons';

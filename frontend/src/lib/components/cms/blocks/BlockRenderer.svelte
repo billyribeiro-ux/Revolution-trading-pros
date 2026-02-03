@@ -127,8 +127,7 @@
 </script>
 
 {#if BlockComponent}
-    <svelte:component
-        this={BlockComponent}
+    <BlockComponent
         block={props.block}
         blockId={props.blockId}
         isSelected={props.isSelected}

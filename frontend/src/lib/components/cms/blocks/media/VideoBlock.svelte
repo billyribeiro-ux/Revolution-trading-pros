@@ -315,7 +315,7 @@
 		</div>
 
 		<!-- Caption -->
-		{#if mediaCaption || isEditing}
+		{#if mediaCaption || props.isEditing}
 			<figcaption
 				contenteditable={props.isEditing}
 				class="video-caption"

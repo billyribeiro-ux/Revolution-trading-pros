@@ -67,7 +67,7 @@
 		// Advanced blocks
 		card: () => import('./advanced/CardBlock.svelte'),
 		testimonial: () => import('./advanced/TestimonialBlock.svelte'),
-		cta: () => import('./advanced/CTABlock.svelte'),
+		cta: () => import('./advanced/CtaBlock.svelte'),
 		countdown: () => import('./advanced/CountdownBlock.svelte'),
 		socialShare: () => import('./advanced/SocialShareBlock.svelte'),
 		author: () => import('./advanced/AuthorBlock.svelte'),
