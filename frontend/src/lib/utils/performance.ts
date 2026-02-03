@@ -815,26 +815,35 @@ export async function preloadImages(
 
 type CleanupCallback = (heldValue: any) => void;
 
+// Check if FinalizationRegistry is available (not in Cloudflare Workers)
+const hasFinalizationRegistry = typeof FinalizationRegistry !== 'undefined';
+const hasWeakRef = typeof WeakRef !== 'undefined';
+
 /**
  * Memory manager using WeakRef and FinalizationRegistry for automatic cleanup
+ * Falls back to simple Map-based storage when these APIs are unavailable (e.g., Cloudflare Workers)
  */
 export class MemoryManager<T extends object> {
-  private registry: FinalizationRegistry<any>;
+  private registry: FinalizationRegistry<any> | null = null;
   private refs: Map<string, WeakRef<T>> = new Map();
+  private strongRefs: Map<string, T> = new Map(); // Fallback for environments without WeakRef
   private cleanupCallbacks: Map<string, CleanupCallback> = new Map();
 
   constructor() {
     // FinalizationRegistry calls cleanup when objects are garbage collected
-    this.registry = new FinalizationRegistry((heldValue: { key: string; value: any }) => {
-      this.refs.delete(heldValue.key);
+    // Only create if available (not in Cloudflare Workers)
+    if (hasFinalizationRegistry) {
+      this.registry = new FinalizationRegistry((heldValue: { key: string; value: any }) => {
+        this.refs.delete(heldValue.key);
 
-      // Call custom cleanup if registered
-      const cleanup = this.cleanupCallbacks.get(heldValue.key);
-      if (cleanup) {
-        cleanup(heldValue.value);
-        this.cleanupCallbacks.delete(heldValue.key);
-      }
-    });
+        // Call custom cleanup if registered
+        const cleanup = this.cleanupCallbacks.get(heldValue.key);
+        if (cleanup) {
+          cleanup(heldValue.value);
+          this.cleanupCallbacks.delete(heldValue.key);
+        }
+      });
+    }
   }
 
   /**
@@ -842,17 +851,24 @@ export class MemoryManager<T extends object> {
    */
   register(key: string, object: T, heldValue?: any, cleanup?: CleanupCallback): void {
     // Clean up existing ref if present
-    const existingRef = this.refs.get(key);
-    if (existingRef) {
-      this.unregister(key);
+    if (hasWeakRef) {
+      const existingRef = this.refs.get(key);
+      if (existingRef) {
+        this.unregister(key);
+      }
+
+      // Create weak reference
+      const ref = new WeakRef(object);
+      this.refs.set(key, ref);
+
+      // Register with finalization registry if available
+      if (this.registry) {
+        this.registry.register(object, { key, value: heldValue || key }, object);
+      }
+    } else {
+      // Fallback: use strong reference (no automatic GC cleanup)
+      this.strongRefs.set(key, object);
     }
-
-    // Create weak reference
-    const ref = new WeakRef(object);
-    this.refs.set(key, ref);
-
-    // Register with finalization registry
-    this.registry.register(object, { key, value: heldValue || key }, object);
 
     // Store cleanup callback if provided
     if (cleanup) {
@@ -864,31 +880,45 @@ export class MemoryManager<T extends object> {
    * Get a registered object (may return undefined if garbage collected)
    */
   get(key: string): T | undefined {
-    const ref = this.refs.get(key);
-    return ref?.deref();
+    if (hasWeakRef) {
+      const ref = this.refs.get(key);
+      return ref?.deref();
+    } else {
+      return this.strongRefs.get(key);
+    }
   }
 
   /**
    * Check if an object is still alive
    */
   has(key: string): boolean {
-    const ref = this.refs.get(key);
-    return ref !== undefined && ref.deref() !== undefined;
+    if (hasWeakRef) {
+      const ref = this.refs.get(key);
+      return ref !== undefined && ref.deref() !== undefined;
+    } else {
+      return this.strongRefs.has(key);
+    }
   }
 
   /**
    * Manually unregister an object
    */
   unregister(key: string): boolean {
-    const ref = this.refs.get(key);
-    if (!ref) return false;
+    if (hasWeakRef) {
+      const ref = this.refs.get(key);
+      if (!ref) return false;
 
-    const object = ref.deref();
-    if (object) {
-      this.registry.unregister(object);
+      const object = ref.deref();
+      if (object && this.registry) {
+        this.registry.unregister(object);
+      }
+
+      this.refs.delete(key);
+    } else {
+      if (!this.strongRefs.has(key)) return false;
+      this.strongRefs.delete(key);
     }
 
-    this.refs.delete(key);
     this.cleanupCallbacks.delete(key);
     return true;
   }
@@ -897,32 +927,44 @@ export class MemoryManager<T extends object> {
    * Get all active keys
    */
   keys(): string[] {
-    const activeKeys: string[] = [];
-    for (const [key, ref] of this.refs.entries()) {
-      if (ref.deref() !== undefined) {
-        activeKeys.push(key);
+    if (hasWeakRef) {
+      const activeKeys: string[] = [];
+      for (const [key, ref] of this.refs.entries()) {
+        if (ref.deref() !== undefined) {
+          activeKeys.push(key);
+        }
       }
+      return activeKeys;
+    } else {
+      return Array.from(this.strongRefs.keys());
     }
-    return activeKeys;
   }
 
   /**
    * Get count of alive references
    */
   size(): number {
-    let count = 0;
-    for (const ref of this.refs.values()) {
-      if (ref.deref() !== undefined) {
-        count++;
+    if (hasWeakRef) {
+      let count = 0;
+      for (const ref of this.refs.values()) {
+        if (ref.deref() !== undefined) {
+          count++;
+        }
       }
+      return count;
+    } else {
+      return this.strongRefs.size;
     }
-    return count;
   }
 
   /**
    * Clean up dead references (optional manual cleanup)
    */
   prune(): number {
+    if (!hasWeakRef) {
+      return 0; // No pruning needed for strong refs
+    }
+
     let pruned = 0;
     for (const [key, ref] of this.refs.entries()) {
       if (ref.deref() === undefined) {
@@ -938,13 +980,17 @@ export class MemoryManager<T extends object> {
    * Clear all references
    */
   clear(): void {
-    for (const [key, ref] of this.refs.entries()) {
-      const object = ref.deref();
-      if (object) {
-        this.registry.unregister(object);
+    if (hasWeakRef) {
+      for (const [_key, ref] of this.refs.entries()) {
+        const object = ref.deref();
+        if (object && this.registry) {
+          this.registry.unregister(object);
+        }
       }
+      this.refs.clear();
+    } else {
+      this.strongRefs.clear();
     }
-    this.refs.clear();
     this.cleanupCallbacks.clear();
   }
 }
