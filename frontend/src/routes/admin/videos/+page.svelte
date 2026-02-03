@@ -20,15 +20,10 @@
 	import { browser } from '$app/environment';
 	import {
 		IconVideo,
-		IconUpload,
 		IconSearch,
-		IconFilter,
 		IconPlayerPlay,
 		IconEdit,
 		IconTrash,
-		IconEye,
-		IconClock,
-		IconCalendar,
 		IconRefresh,
 		IconPlus,
 		IconLink,
@@ -37,7 +32,6 @@
 		IconChartBar,
 		IconUser,
 		IconBuilding,
-		IconTag,
 		IconTags,
 		IconAlertCircle,
 		IconCloudUpload,
@@ -55,7 +49,6 @@
 		videoOpsApi,
 		bulkOpsApi,
 		embedApi,
-		transcodingApi,
 		type AnalyticsDashboard,
 		type BatchStatus
 	} from '$lib/api/video-advanced';
@@ -128,8 +121,8 @@
 
 	// Pagination
 	let currentPage = $state(1);
-	let totalPages = $state(1);
-	let totalVideos = $state(0);
+	let _totalPages = $state(1);
+	let _totalVideos = $state(0);
 
 	// Filters
 	let searchQuery = $state('');
@@ -143,7 +136,7 @@
 	let editingVideo = $state<Video | null>(null);
 	let replacingVideo = $state<Video | null>(null);
 	let isSaving = $state(false);
-	let isDeleting = $state(false);
+	let _isDeleting = $state(false);
 	let newVideoUrl = $state('');
 
 	// Form state
@@ -164,7 +157,7 @@
 	// Bunny.net Direct Upload State
 	let showBunnyUploadModal = $state(false);
 	let bunnyUploadFiles = $state<File[]>([]);
-	let bunnyUploadBatchId = $state<string | null>(null);
+	let _bunnyUploadBatchId = $state<string | null>(null);
 	let bunnyUploadStatus = $state<BatchStatus | null>(null);
 	let isUploadingToBunny = $state(false);
 	let bunnyUploadProgress = $state(0);
@@ -260,8 +253,8 @@
 					...video,
 					categories: video.tags || []
 				}));
-				totalPages = response.data.last_page;
-				totalVideos = response.data.total;
+				_totalPages = response.data.last_page;
+				_totalVideos = response.data.total;
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load videos';
@@ -407,7 +400,7 @@
 	async function deleteVideo(video: Video) {
 		if (!confirm(`Are you sure you want to delete "${video.title}"?`)) return;
 
-		isDeleting = true;
+		_isDeleting = true;
 		error = '';
 
 		try {
@@ -420,7 +413,7 @@
 			error = err instanceof Error ? err.message : 'Failed to delete video';
 			console.error('Error deleting video:', err);
 		} finally {
-			isDeleting = false;
+			_isDeleting = false;
 		}
 	}
 
@@ -447,7 +440,7 @@
 
 	function openBunnyUploadModal() {
 		bunnyUploadFiles = [];
-		bunnyUploadBatchId = null;
+		_bunnyUploadBatchId = null;
 		bunnyUploadStatus = null;
 		bunnyUploadProgress = 0;
 		showBunnyUploadModal = true;
@@ -508,7 +501,7 @@
 			});
 
 			if (response.success && response.data) {
-				bunnyUploadBatchId = response.data.batch_id;
+				_bunnyUploadBatchId = response.data.batch_id;
 
 				// Upload each file to its respective Bunny upload URL
 				for (let i = 0; i < response.data.uploads.length; i++) {
@@ -627,7 +620,7 @@
 		}
 	}
 
-	async function fetchVideoDuration(videoId: number) {
+	async function _fetchVideoDuration(videoId: number) {
 		try {
 			const response = await videoOpsApi.fetchDuration(videoId);
 			if (response.success && response.data) {
@@ -1817,7 +1810,7 @@
 					aria-label="Drop video files here or click to select"
 				>
 					{#if bunnyUploadFiles.length === 0}
-						<IconFileUpload size={48} />
+						<IconCloudUpload size={48} />
 						<p>Drag and drop video files here</p>
 						<p class="text-muted">or</p>
 						<label class="btn-secondary">

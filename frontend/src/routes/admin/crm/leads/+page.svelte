@@ -39,7 +39,6 @@
 		IconTrendingUp,
 		IconRefresh,
 		IconBuilding,
-		IconCalendar,
 		IconCheck,
 		IconX,
 		IconChevronDown,
@@ -47,9 +46,7 @@
 		IconFlame,
 		IconStar,
 		IconStarFilled,
-		IconArrowRight,
-		IconDownload,
-		IconUpload
+		IconArrowRight
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
@@ -127,7 +124,7 @@
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let selectedLeads = $state<Set<string>>(new Set());
 	let showFilters = $state(false);
-	let viewMode = $state<'list' | 'kanban'>('list');
+	let _viewMode = $state<'list' | 'kanban'>('list');
 
 	// Modal states
 	let showAddModal = $state(false);

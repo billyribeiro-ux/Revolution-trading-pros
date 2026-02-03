@@ -27,13 +27,10 @@
 		IconPhoto,
 		IconTable,
 		IconFile,
-		IconUpload,
 		IconSearch,
-		IconFilter,
 		IconEdit,
 		IconTrash,
 		IconEye,
-		IconDownload,
 		IconRefresh,
 		IconPlus,
 		IconLink,
@@ -55,11 +52,8 @@
 		type AccessLevel,
 		type BulkUpdateFields,
 		bulkUpdateResources,
-		bulkDeleteResources,
-		getUploadLimits
+		bulkDeleteResources
 	} from '$lib/api/room-resources';
-	import { ResourceAnalytics } from '$lib/components/resources';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -181,8 +175,6 @@
 
 	// Pagination
 	let currentPage = $state(1);
-	let totalPages = $state(1);
-	let totalResources = $state(0);
 
 	// Filters
 	let searchQuery = $state('');
@@ -457,19 +449,13 @@
 
 			if (response?.success && response.data) {
 				resources = response.data;
-				totalPages = response.meta?.last_page || 1;
-				totalResources = response.meta?.total || 0;
 			} else {
 				// API returned but no data - show empty state
 				resources = [];
-				totalPages = 1;
-				totalResources = 0;
 			}
 		} catch {
 			// ICT 7: CORB or API failure - show empty state, don't crash
 			resources = [];
-			totalPages = 1;
-			totalResources = 0;
 			// Don't set error - just show empty state
 		} finally {
 			isLoading = false;
@@ -536,27 +522,6 @@
 			access_level: resource.access_level || 'premium' // ICT 7: Include access level
 		};
 		showEditModal = true;
-	}
-
-	// ICT 7: Bulk selection functions
-	function toggleResourceSelection(id: number) {
-		if (selectedResources.has(id)) {
-			selectedResources.delete(id);
-		} else {
-			selectedResources.add(id);
-		}
-		selectedResources = new Set(selectedResources); // Trigger reactivity
-		selectAllChecked = selectedResources.size === filteredResources.length;
-	}
-
-	function toggleSelectAll() {
-		if (selectAllChecked) {
-			selectedResources.clear();
-		} else {
-			filteredResources.forEach(r => selectedResources.add(r.id));
-		}
-		selectedResources = new Set(selectedResources);
-		selectAllChecked = !selectAllChecked;
 	}
 
 	function openBulkModal() {
