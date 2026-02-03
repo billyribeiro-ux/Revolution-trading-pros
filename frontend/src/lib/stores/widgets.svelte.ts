@@ -341,18 +341,18 @@ export const widgetStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const visibleWidgets = $derived(
-	widgetConfig.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order)
-);
+export function getVisibleWidgets() {
+	return widgetConfig.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order);
+}
 
-export const hiddenWidgets = $derived(
-	widgetConfig.widgets.filter((w) => !w.visible).sort((a, b) => a.order - b.order)
-);
+export function getHiddenWidgets() {
+	return widgetConfig.widgets.filter((w) => !w.visible).sort((a, b) => a.order - b.order);
+}
 
-export const widgetsByCategory = $derived.by(() => {
+export function getWidgetsByCategory() {
 	const categories: Record<string, DashboardWidget[]> = {
 		analytics: [],
 		content: [],
@@ -368,7 +368,7 @@ export const widgetsByCategory = $derived.by(() => {
 	}
 
 	return categories;
-});
+}
 
-export const widgetLayout = $derived(widgetConfig.layout);
-export const autoRefreshEnabled = $derived(widgetConfig.autoRefresh);
+export function getWidgetLayout() { return widgetConfig.layout; }
+export function getAutoRefreshEnabled() { return widgetConfig.autoRefresh; }

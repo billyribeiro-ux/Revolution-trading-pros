@@ -16,7 +16,7 @@
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
-		props.formId: number;
+		formId: number;
 	}
 
 	interface Collaborator {
@@ -36,7 +36,7 @@
 		created_at: string;
 	}
 
-	let props: Props = $props();
+	let { formId }: Props = $props();
 
 	// State
 	let collaborators = $state<Collaborator[]>([]);
@@ -59,7 +59,7 @@
 	async function fetchCollaborators() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/collaborators`, {
+			const response = await fetch(`/api/forms/${formId}/collaborators`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -75,7 +75,7 @@
 	async function fetchActiveUsers() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/presence`, {
+			const response = await fetch(`/api/forms/${formId}/presence`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -91,7 +91,7 @@
 	async function fetchActivities() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/activity`, {
+			const response = await fetch(`/api/forms/${formId}/activity`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -110,7 +110,7 @@
 		inviting = true;
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/collaborators`, {
+			const response = await fetch(`/api/forms/${formId}/collaborators`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -137,7 +137,7 @@
 	async function updateRole(userId: number, newRole: string) {
 		try {
 			const token = getAuthToken();
-			await fetch(`/api/forms/${props.formId}/collaborators/${userId}`, {
+			await fetch(`/api/forms/${formId}/collaborators/${userId}`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json',
@@ -158,7 +158,7 @@
 
 		try {
 			const token = getAuthToken();
-			await fetch(`/api/forms/${props.formId}/collaborators/${userId}`, {
+			await fetch(`/api/forms/${formId}/collaborators/${userId}`, {
 				method: 'DELETE',
 				headers: { Authorization: `Bearer ${token}` }
 			});

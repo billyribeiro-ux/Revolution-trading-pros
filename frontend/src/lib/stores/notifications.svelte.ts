@@ -315,22 +315,25 @@ export const notificationStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const notifications = $derived(notificationState.notifications);
+export function getNotifications(): Notification[] {
+	return notificationState.notifications;
+}
 
-export const unreadNotifications = $derived(
-	notificationState.notifications.filter((n) => !n.read && !n.dismissed)
-);
+export function getUnreadNotifications(): Notification[] {
+	return notificationState.notifications.filter((n) => !n.read && !n.dismissed);
+}
 
-export const unreadCount = $derived(
-	notificationState.notifications.filter((n) => !n.read && !n.dismissed).length
-);
+export function getUnreadCount(): number {
+	return notificationState.notifications.filter((n) => !n.read && !n.dismissed).length;
+}
 
-export const hasNewNotificationsFlag = $derived(notificationState.hasNewNotifications);
+export function getHasNewNotifications(): boolean {
+	return notificationState.hasNewNotifications;
+}
 
-// Notification by priority
-export const urgentNotifications = $derived(
-	notificationState.notifications.filter((n) => n.priority === 'urgent' && !n.dismissed)
-);
+export function getUrgentNotifications(): Notification[] {
+	return notificationState.notifications.filter((n) => n.priority === 'urgent' && !n.dismissed);
+}

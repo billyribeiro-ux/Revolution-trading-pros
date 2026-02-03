@@ -7,7 +7,7 @@
 	 * with real-time progress monitoring.
 	 */
 	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 
@@ -138,7 +138,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if ($isAnalyticsConnected) {
+			if (getIsAnalyticsConnected) {
 				await loadGoals();
 			} else {
 				loading = false;
@@ -190,7 +190,7 @@
 					<p class="text-sm text-slate-400">Track and measure your conversion objectives</p>
 				</div>
 			</div>
-			{#if $isAnalyticsConnected}
+			{#if getIsAnalyticsConnected}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<button
@@ -213,7 +213,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !$isAnalyticsConnected}
+		{:else if !getIsAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Stats Grid -->

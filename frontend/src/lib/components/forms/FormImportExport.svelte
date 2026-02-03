@@ -15,12 +15,12 @@
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
-		props.formId?: number;
+		formId?: number;
 		formTitle?: string;
-		props.onImportComplete?: (result: any) => void;
+		onImportComplete?: (result: any) => void;
 	}
 
-	let props: Props = $props();
+	let { formId, formTitle, onImportComplete }: Props = $props();
 
 	// State
 	let activeTab = $state<'export' | 'import'>('export');
@@ -60,7 +60,7 @@
 
 	// Export form/submissions
 	async function handleExport() {
-		if (!props.formId && exportType !== 'template') return;
+		if (!formId && exportType !== 'template') return;
 
 		exporting = true;
 
@@ -75,7 +75,7 @@
 			if (dateFrom) params.append('date_from', dateFrom);
 			if (dateTo) params.append('date_to', dateTo);
 
-			const response = await fetch(`/api/forms/${props.formId}/export?${params}`, {
+			const response = await fetch(`/api/forms/${formId}/export?${params}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -128,7 +128,7 @@
 					success: true,
 					message: `Successfully imported form with ${data.fields_created || 0} fields`
 				};
-				props.onImportComplete?.(data);
+				onImportComplete?.(data);
 			} else {
 				importResult = {
 					success: false,
@@ -148,14 +148,14 @@
 
 	// Save as template
 	async function saveAsTemplate() {
-		if (!props.formId) return;
+		if (!formId) return;
 
 		const templateName = prompt('Enter template name:');
 		if (!templateName) return;
 
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/export?format=template`, {
+			const response = await fetch(`/api/forms/${formId}/export?format=template`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -269,7 +269,7 @@
 				{/if}
 
 				<!-- Export Button -->
-				<button class="btn-primary" onclick={handleExport} disabled={exporting || !props.formId}>
+				<button class="btn-primary" onclick={handleExport} disabled={exporting || !formId}>
 					{#if exporting}
 						<span class="spinner"></span>
 						Exporting...
@@ -283,7 +283,7 @@
 				</button>
 
 				<!-- Save as Template -->
-				{#if props.formId}
+				{#if formId}
 					<div class="template-section">
 						<p class="template-hint">Save this form as a reusable template</p>
 						<button class="btn-secondary" onclick={saveAsTemplate}> Save as Template </button>

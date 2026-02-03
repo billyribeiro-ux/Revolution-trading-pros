@@ -18,30 +18,31 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconLink from '@tabler/icons-svelte/icons/link';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconUser from '@tabler/icons-svelte/icons/user';
-	import IconBuilding from '@tabler/icons-svelte/icons/building';
-	import IconTag from '@tabler/icons-svelte/icons/tag';
-	import IconTags from '@tabler/icons-svelte/icons/tags';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
-	import IconFileUpload from '@tabler/icons-svelte/icons/file-upload';
-	import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
+	import {
+		IconVideo,
+		IconUpload,
+		IconSearch,
+		IconFilter,
+		IconPlayerPlay,
+		IconEdit,
+		IconTrash,
+		IconEye,
+		IconClock,
+		IconCalendar,
+		IconRefresh,
+		IconPlus,
+		IconLink,
+		IconCheck,
+		IconX,
+		IconChartBar,
+		IconUser,
+		IconBuilding,
+		IconTag,
+		IconTags,
+		IconAlertCircle,
+		IconCloudUpload,
+		IconProgressCheck
+	} from '$lib/icons';
 	import {
 		tradingRoomApi,
 		type TradingRoom,

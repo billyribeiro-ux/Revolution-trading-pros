@@ -17,8 +17,8 @@
 	import { quintOut } from 'svelte/easing';
 	import {
 		notificationStore,
-		notifications,
-		unreadCount,
+		getNotifications,
+		getUnreadCount,
 		type Notification
 	} from '$lib/stores/notifications.svelte';
 	import {
@@ -43,11 +43,15 @@
 
 	let activeFilter = $state<'all' | 'unread'>('all');
 
+	// Local derived values from getter functions
+	const notifications = $derived(getNotifications());
+	const unreadCount = $derived(getUnreadCount());
+
 	// Derived filtered notifications
 	let filteredNotifications = $derived(
 		activeFilter === 'unread'
-			? $notifications.filter((n) => !n.read && !n.dismissed)
-			: $notifications.filter((n) => !n.dismissed)
+			? notifications.filter((n) => !n.read && !n.dismissed)
+			: notifications.filter((n) => !n.dismissed)
 	);
 
 	function groupByDate(notifs: Notification[]) {
@@ -164,8 +168,8 @@
 				<div class="header-left">
 					<IconBell size={20} />
 					<h2>Notifications</h2>
-					{#if $unreadCount > 0}
-						<span class="unread-badge">{$unreadCount}</span>
+					{#if unreadCount > 0}
+						<span class="unread-badge">{unreadCount}</span>
 					{/if}
 				</div>
 				<button class="close-btn" onclick={close}>
@@ -188,14 +192,14 @@
 					onclick={() => (activeFilter = 'unread')}
 				>
 					Unread
-					{#if $unreadCount > 0}
-						<span class="tab-count">{$unreadCount}</span>
+					{#if unreadCount > 0}
+						<span class="tab-count">{unreadCount}</span>
 					{/if}
 				</button>
 			</div>
 
 			<!-- Actions Bar -->
-			{#if $unreadCount > 0}
+			{#if unreadCount > 0}
 				<div class="actions-bar" in:fade={{ duration: 150 }}>
 					<button class="action-btn" onclick={() => notificationStore.markAllAsRead()}>
 						<IconCheck size={16} />

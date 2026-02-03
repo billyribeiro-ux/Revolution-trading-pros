@@ -7,7 +7,7 @@
 	 * cohort-based retention matrices.
 	 */
 	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import CohortMatrix from '$lib/components/analytics/CohortMatrix.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
@@ -109,7 +109,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if ($isAnalyticsConnected) {
+			if (getIsAnalyticsConnected) {
 				await loadCohorts();
 			} else {
 				loading = false;
@@ -167,7 +167,7 @@
 					<p class="text-sm text-slate-400">Analyze user retention patterns over time</p>
 				</div>
 			</div>
-			{#if $isAnalyticsConnected}
+			{#if getIsAnalyticsConnected}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<select
@@ -199,7 +199,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !$isAnalyticsConnected}
+		{:else if !getIsAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else if loading}
 			<div class="flex items-center justify-center py-20">

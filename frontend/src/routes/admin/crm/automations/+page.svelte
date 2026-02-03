@@ -17,27 +17,29 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
-	import IconRoute from '@tabler/icons-svelte/icons/route';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconShare from '@tabler/icons-svelte/icons/share';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconUserPlus from '@tabler/icons-svelte/icons/user-plus';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
+	import {
+		IconRoute,
+		IconPlus,
+		IconSearch,
+		IconEdit,
+		IconTrash,
+		IconEye,
+		IconPlayerPlay,
+		IconPlayerPause,
+		IconCopy,
+		IconRefresh,
+		IconUsers,
+		IconChartBar,
+		IconDownload,
+		IconUpload,
+		IconBolt,
+		IconShare,
+		IconX,
+		IconCheck,
+		IconAlertCircle,
+		IconUserPlus,
+		IconFilter
+	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 

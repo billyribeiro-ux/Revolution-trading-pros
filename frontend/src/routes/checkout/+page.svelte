@@ -15,7 +15,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { user, isAuthenticated } from '$lib/stores/auth.svelte';
-	import { cartStore, cartTotal } from '$lib/stores/cart.svelte';
+	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
@@ -87,12 +87,12 @@
 	let discountAmount = $derived(
 		appliedCoupon
 			? appliedCoupon.type === 'percentage'
-				? ($cartTotal * appliedCoupon.discount) / 100
+				? (getCartTotal() * appliedCoupon.discount) / 100
 				: appliedCoupon.discount
 			: 0
 	);
 
-	let finalTotal = $derived(Math.max(0, $cartTotal - discountAmount));
+	let finalTotal = $derived(Math.max(0, getCartTotal() - discountAmount));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
@@ -100,7 +100,7 @@
 
 	onMount(() => {
 		// Redirect to cart if empty
-		if ($cartStore.items.length === 0) {
+		if (cartStore.items.length === 0) {
 			goto('/cart');
 			return;
 		}
@@ -192,7 +192,7 @@
 		couponError = '';
 
 		try {
-			const result = await validateCoupon(couponCode.trim().toUpperCase(), $cartTotal);
+			const result = await validateCoupon(couponCode.trim().toUpperCase(), getCartTotal());
 
 			if (result.valid) {
 				appliedCoupon = {
@@ -618,7 +618,7 @@
 						<!-- Products - with thumbnails -->
 						<div class="checkout-cart-contents">
 							<div class="checkout-cart-products">
-								{#each $cartStore.items as item (item.id + (item.interval || ''))}
+								{#each cartStore.items as item (item.id + (item.interval || ''))}
 									<div class="product">
 										<div
 											class="product-image"
@@ -650,7 +650,7 @@
 								<tbody>
 									<tr class="cart-subtotal">
 										<th>Subtotal</th>
-										<td>{formatPrice($cartTotal)}</td>
+										<td>{formatPrice(getCartTotal())}</td>
 									</tr>
 
 									{#if appliedCoupon && discountAmount > 0}
@@ -678,13 +678,13 @@
 							</div>
 
 							<!-- Recurring totals for subscriptions -->
-							{#if $cartStore.items.some((i) => i.interval)}
+							{#if cartStore.items.some((i) => i.interval)}
 								<table class="cart-table recurring-table">
 									<tbody>
 										<tr class="recurring-totals-header">
 											<th colspan="2">Recurring Totals</th>
 										</tr>
-										{#each $cartStore.items.filter((i) => i.interval) as item}
+										{#each cartStore.items.filter((i) => i.interval) as item}
 											<tr class="recurring-total">
 												<td colspan="2">
 													{formatPrice(item.price)}

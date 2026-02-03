@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { emailStore, isLoading } from '$lib/stores/email.svelte';
+	import { emailStore, getIsEmailLoading } from '$lib/stores/email.svelte';
 	import {
 		IconMail,
 		IconSend,
@@ -73,7 +73,7 @@
 	</div>
 
 	<!-- Stats Overview -->
-	{#if $emailStore.analytics}
+	{#if emailStore.analytics}
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon bg-blue-500/20">
@@ -81,7 +81,7 @@
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Emails Sent</div>
-					<div class="stat-value">{formatNumber($emailStore?.analytics?.emails_sent || 0)}</div>
+					<div class="stat-value">{formatNumber(emailStore?.analytics?.emails_sent || 0)}</div>
 					<div class="stat-change positive">+12.5% vs last month</div>
 				</div>
 			</div>
@@ -92,7 +92,7 @@
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Open Rate</div>
-					<div class="stat-value">{formatPercent($emailStore.analytics.average_open_rate)}</div>
+					<div class="stat-value">{formatPercent(emailStore.analytics.average_open_rate)}</div>
 					<div class="stat-change positive">+2.3% vs last month</div>
 				</div>
 			</div>
@@ -103,7 +103,7 @@
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Click Rate</div>
-					<div class="stat-value">{formatPercent($emailStore.analytics.average_click_rate)}</div>
+					<div class="stat-value">{formatPercent(emailStore.analytics.average_click_rate)}</div>
 					<div class="stat-change positive">+1.8% vs last month</div>
 				</div>
 			</div>
@@ -114,7 +114,7 @@
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Active Campaigns</div>
-					<div class="stat-value">{$emailStore.analytics.campaigns}</div>
+					<div class="stat-value">{emailStore.analytics.campaigns}</div>
 					<div class="stat-change">Running now</div>
 				</div>
 			</div>
@@ -167,7 +167,7 @@
 
 	<!-- Content -->
 	<div class="tab-content">
-		{#if $isLoading}
+		{#if getIsEmailLoading}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="text-gray-400 mt-4">Loading...</p>
@@ -182,9 +182,9 @@
 					</button>
 				</div>
 
-				{#if $emailStore.campaigns.length > 0}
+				{#if emailStore.campaigns.length > 0}
 					<div class="campaigns-grid">
-						{#each $emailStore.campaigns as campaign}
+						{#each emailStore.campaigns as campaign}
 							<div class="campaign-card">
 								<div class="campaign-header">
 									<div class="campaign-status" class:active={campaign.status === 'sending'}>
@@ -243,9 +243,9 @@
 					</button>
 				</div>
 
-				{#if $emailStore.sequences.length > 0}
+				{#if emailStore.sequences.length > 0}
 					<div class="sequences-grid">
-						{#each $emailStore.sequences as sequence}
+						{#each emailStore.sequences as sequence}
 							<div class="sequence-card">
 								<div class="sequence-header">
 									<h3 class="sequence-name">{sequence.name}</h3>
@@ -296,9 +296,9 @@
 					</button>
 				</div>
 
-				{#if $emailStore.templates.length > 0}
+				{#if emailStore.templates.length > 0}
 					<div class="templates-grid">
-						{#each $emailStore.templates as template}
+						{#each emailStore.templates as template}
 							<div class="template-card">
 								{#if template.thumbnail}
 									<img src={template.thumbnail} alt={template.name} class="template-thumbnail" />

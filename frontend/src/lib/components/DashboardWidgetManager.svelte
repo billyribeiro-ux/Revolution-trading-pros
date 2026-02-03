@@ -17,10 +17,10 @@
 	import { flip } from 'svelte/animate';
 	import {
 		widgetStore,
-		visibleWidgets,
-		hiddenWidgets,
-		widgetLayout,
-		autoRefreshEnabled,
+		getVisibleWidgets,
+		getHiddenWidgets,
+		getWidgetLayout,
+		getAutoRefreshEnabled,
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets.svelte';
@@ -111,7 +111,7 @@
 
 	function handleDragEnd() {
 		if (draggedWidget && dragOverIndex !== null) {
-			const fromIndex = $visibleWidgets.findIndex((w) => w.id === draggedWidget!.id);
+			const fromIndex = $getVisibleWidgets.findIndex((w) => w.id === draggedWidget!.id);
 			if (fromIndex !== -1 && fromIndex !== dragOverIndex) {
 				widgetStore.reorderWidgets(fromIndex, dragOverIndex);
 			}
@@ -165,7 +165,7 @@
 					onclick={() => (activeTab = 'visible')}
 				>
 					<IconEye size={16} />
-					Visible ({$visibleWidgets.length})
+					Visible ({$getVisibleWidgets.length})
 				</button>
 				<button
 					class="tab"
@@ -173,7 +173,7 @@
 					onclick={() => (activeTab = 'hidden')}
 				>
 					<IconEyeOff size={16} />
-					Hidden ({$hiddenWidgets.length})
+					Hidden ({$getHiddenWidgets.length})
 				</button>
 				<button
 					class="tab"
@@ -192,7 +192,7 @@
 						<p class="helper-text">
 							Drag to reorder widgets. Click the size button to cycle sizes.
 						</p>
-						{#each $visibleWidgets as widget, index (widget.id)}
+						{#each $getVisibleWidgets as widget, index (widget.id)}
 							{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 							<div
 								class="widget-item"
@@ -238,7 +238,7 @@
 									<button
 										class="move-btn"
 										onclick={() => widgetStore.moveWidget(widget.id, 'down')}
-										disabled={index === $visibleWidgets.length - 1}
+										disabled={index === $getVisibleWidgets.length - 1}
 									>
 										<IconCaretDown size={16} />
 									</button>
@@ -255,7 +255,7 @@
 					</div>
 				{:else if activeTab === 'hidden'}
 					<div class="widget-list" in:fade={{ duration: 150 }}>
-						{#if $hiddenWidgets.length === 0}
+						{#if $getHiddenWidgets.length === 0}
 							<div class="empty-state">
 								<IconEye size={48} />
 								<h3>All widgets visible</h3>
@@ -263,7 +263,7 @@
 							</div>
 						{:else}
 							<p class="helper-text">Click the eye icon to show a widget on your dashboard.</p>
-							{#each $hiddenWidgets as widget (widget.id)}
+							{#each $getHiddenWidgets as widget (widget.id)}
 								{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 								<div class="widget-item hidden-item">
 									<div
@@ -298,7 +298,7 @@
 							<div class="layout-options">
 								<button
 									class="layout-btn"
-									class:active={$widgetLayout === 'grid'}
+									class:active={$getWidgetLayout === 'grid'}
 									onclick={() => widgetStore.setLayout('grid')}
 									aria-label="Grid layout"
 								>
@@ -307,7 +307,7 @@
 								</button>
 								<button
 									class="layout-btn"
-									class:active={$widgetLayout === 'list'}
+									class:active={$getWidgetLayout === 'list'}
 									onclick={() => widgetStore.setLayout('list')}
 									aria-label="List layout"
 								>
@@ -324,7 +324,7 @@
 								<span class="toggle-description"> Automatically refresh widget data </span>
 								<button
 									class="toggle-switch"
-									class:active={$autoRefreshEnabled}
+									class:active={$getAutoRefreshEnabled}
 									onclick={() => widgetStore.toggleAutoRefresh()}
 									aria-label="Toggle auto refresh"
 								>

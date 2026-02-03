@@ -16,7 +16,7 @@
 		IconClick
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
-	import { connections, isBehaviorConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsBehaviorConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
@@ -84,7 +84,7 @@
 			connectionLoading = false;
 
 			// Only load data if behavior tracking is connected
-			if ($isBehaviorConnected) {
+			if (getIsBehaviorConnected) {
 				await loadData();
 			} else {
 				isLoading = false;
@@ -111,7 +111,7 @@
 		<header class="page-header">
 			<h1>Behavior Tracking</h1>
 			<p class="subtitle">Analyze user interactions, clicks, scrolls, and session recordings</p>
-			{#if $isBehaviorConnected}
+			{#if getIsBehaviorConnected}
 				<div class="header-actions">
 					<div class="period-selector">
 						<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}
@@ -134,7 +134,7 @@
 		<!-- Connection Check -->
 		{#if connectionLoading}
 			<SkeletonLoader variant="dashboard" />
-		{:else if !$isBehaviorConnected}
+		{:else if !getIsBehaviorConnected}
 			<ApiNotConnected
 				serviceName="Behavior Analytics"
 				description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."

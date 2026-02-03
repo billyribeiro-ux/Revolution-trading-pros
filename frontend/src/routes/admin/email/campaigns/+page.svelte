@@ -16,7 +16,7 @@
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { connections, isEmailConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import {
@@ -126,7 +126,7 @@
 		connectionLoading = false;
 
 		// Only load data if email is connected
-		if ($isEmailConnected) {
+		if (getIsEmailConnected) {
 			await Promise.all([loadCampaigns(), loadStats(), loadTemplates(), loadSegments()]);
 		} else {
 			loading = false;
@@ -372,7 +372,7 @@
 				</div>
 			</div>
 
-			{#if $isEmailConnected}
+			{#if getIsEmailConnected}
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={loadCampaigns}>
 						<IconRefresh size={18} />
@@ -390,7 +390,7 @@
 	<!-- Connection Check -->
 	{#if connectionLoading}
 		<SkeletonLoader variant="dashboard" />
-	{:else if !$isEmailConnected}
+	{:else if !getIsEmailConnected}
 		<ApiNotConnected
 			serviceName="Email Marketing"
 			description="Connect an email marketing service to create and manage email campaigns, track opens, clicks, and subscriber engagement."

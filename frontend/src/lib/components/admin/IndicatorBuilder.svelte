@@ -52,9 +52,13 @@
 	let props: Props = $props();
 
 	// Destructure for internal use
-	const indicatorId = $derived(props.indicatorId);
+	const propsIndicatorId = $derived(props.indicatorId);
 	const onSave = $derived(props.onSave);
 	const onClose = $derived(props.onClose);
+
+	// Local mutable indicatorId (for newly created indicators)
+	let localIndicatorId = $state<number | undefined>(undefined);
+	let indicatorId = $derived(localIndicatorId ?? propsIndicatorId);
 
 	let indicator = $state<Indicator | null>(null);
 	let platforms = $state<Platform[]>([]);
@@ -205,7 +209,7 @@
 			// Create new indicator
 			const result = await indicatorsApi.create(formData);
 			if (result.success && result.data?.indicator) {
-				indicatorId = result.data.indicator.id;
+				localIndicatorId = result.data.indicator.id;
 				await loadData();
 				editMode = false;
 				onSave?.(indicator!);

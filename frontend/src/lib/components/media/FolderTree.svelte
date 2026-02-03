@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { mediaStore as _mediaStore, currentFolders } from '$lib/stores/media.svelte';
+	import { mediaStore as _mediaStore, getCurrentFolders } from '$lib/stores/media.svelte';
 	import type { MediaFolder } from '$lib/api/media';
 	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
 
@@ -27,7 +27,8 @@
 	type FolderNode = MediaFolder & { children: FolderNode[] };
 
 	// Build folder tree structure
-	let folderTree = $derived(buildFolderTree($currentFolders));
+	const currentFolders = $derived(getCurrentFolders());
+	let folderTree = $derived(buildFolderTree(currentFolders));
 
 	function buildFolderTree(folders: MediaFolder[]): FolderNode[] {
 		const tree: FolderNode[] = [];

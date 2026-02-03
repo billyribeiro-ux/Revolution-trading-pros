@@ -733,25 +733,25 @@ export const emailStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const activeCampaigns = $derived(
-	emailState.campaigns.filter((c) => c.status === 'sending' || c.status === 'sent')
-);
+export function getActiveCampaigns() {
+	return emailState.campaigns.filter((c) => c.status === 'sending' || c.status === 'sent');
+}
 
-export const draftCampaigns = $derived(
-	emailState.campaigns.filter((c) => c.status === 'draft')
-);
+export function getDraftCampaigns() {
+	return emailState.campaigns.filter((c) => c.status === 'draft');
+}
 
-export const activeSequences = $derived(
-	emailState.sequences.filter((s) => s.status === 'active')
-);
+export function getActiveSequences() {
+	return emailState.sequences.filter((s) => s.status === 'active');
+}
 
-export const activeAutomations = $derived(
-	emailState.automations.filter((a) => a.status === 'active')
-);
+export function getActiveAutomations() {
+	return emailState.automations.filter((a) => a.status === 'active');
+}
 
-export const isEmailLoading = $derived(emailState.isLoading);
+export function getIsEmailLoading() { return emailState.isLoading; }
 
-export const hasEmailError = $derived(emailState.error !== null);
+export function getHasEmailError() { return emailState.error !== null; }

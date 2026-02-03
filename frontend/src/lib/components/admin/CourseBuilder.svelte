@@ -48,9 +48,13 @@
 	let props: Props = $props();
 
 	// Destructure for internal use
-	const courseId = $derived(props.courseId);
+	const propsCourseId = $derived(props.courseId);
 	const onSave = $derived(props.onSave);
 	const onClose = $derived(props.onClose);
+
+	// Local mutable courseId (for newly created courses)
+	let localCourseId = $state<number | undefined>(undefined);
+	let courseId = $derived(localCourseId ?? propsCourseId);
 
 	let course = $state<Course | null>(null);
 	let isLoading = $state(true);
@@ -158,7 +162,7 @@
 			// Create new course
 			const result = await coursesApi.create(formData);
 			if (result.success && result.data?.course) {
-				courseId = result.data.course.id;
+				localCourseId = result.data.course.id;
 				await loadCourse();
 				editMode = false;
 				onSave?.(course!);

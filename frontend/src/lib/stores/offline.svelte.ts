@@ -255,10 +255,10 @@ export const offlineStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const isOnline = $derived(offlineState.isOnline);
-export const hasPendingActions = $derived(offlineState.pendingActions.length > 0);
-export const pendingActionsCount = $derived(offlineState.pendingActions.length);
-export const isSyncing = $derived(offlineState.syncInProgress);
+export function getIsOnline() { return offlineState.isOnline; }
+export function getHasPendingActions() { return offlineState.pendingActions.length > 0; }
+export function getPendingActionsCount() { return offlineState.pendingActions.length; }
+export function getIsSyncing() { return offlineState.syncInProgress; }

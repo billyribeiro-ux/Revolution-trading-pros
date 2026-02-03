@@ -21,8 +21,8 @@
 	} from '$lib/icons';
 	import {
 		notificationStore,
-		notifications,
-		unreadCount,
+		getNotifications,
+		getUnreadCount,
 		type Notification,
 		type NotificationType
 	} from '$lib/stores/notifications.svelte';
@@ -39,6 +39,10 @@
 	let isOpen = $state(false);
 	let bellRef: HTMLButtonElement | null = $state(null);
 	let panelRef: HTMLDivElement | null = $state(null);
+
+	// Local derived from getters
+	const notifications = $derived(getNotifications());
+	const unreadCount = $derived(getUnreadCount());
 
 	const iconMap: Record<NotificationType, typeof IconInfoCircle> = {
 		info: IconInfoCircle,
@@ -154,12 +158,12 @@
 		<IconBell size={24} class="text-slate-400 hover:text-white transition-colors" />
 
 		<!-- Unread Badge -->
-		{#if $unreadCount > 0}
+		{#if unreadCount > 0}
 			<span
 				class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 flex items-center justify-center
 					bg-red-500 text-white text-xs font-bold rounded-full animate-pulse"
 			>
-				{$unreadCount > 99 ? '99+' : $unreadCount}
+				{unreadCount > 99 ? '99+' : unreadCount}
 			</span>
 		{/if}
 	</button>
@@ -178,7 +182,7 @@
 			>
 				<h3 class="font-semibold text-white">Notifications</h3>
 				<div class="flex items-center gap-2">
-					{#if $unreadCount > 0}
+					{#if unreadCount > 0}
 						<button
 							onclick={() => notificationStore.markAllAsRead()}
 							class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
@@ -198,13 +202,13 @@
 
 			<!-- Notification List -->
 			<div class="overflow-y-auto max-h-[calc(70vh-60px)]">
-				{#if $notifications.length === 0}
+				{#if notifications.length === 0}
 					<div class="flex flex-col items-center justify-center py-12 text-slate-500">
 						<IconBell size={48} class="opacity-50 mb-3" />
 						<p class="text-sm">No notifications yet</p>
 					</div>
 				{:else}
-					{#each $notifications.filter((n) => !n.dismissed) as notification (notification.id)}
+					{#each notifications.filter((n) => !n.dismissed) as notification (notification.id)}
 						{@const NotifIcon = iconMap[notification.type]}
 						<div
 							transition:fade={{ duration: 150 }}
@@ -283,7 +287,7 @@
 			</div>
 
 			<!-- Footer -->
-			{#if $notifications.length > 0}
+			{#if notifications.length > 0}
 				<div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/50">
 					<button
 						onclick={() => notificationStore.clear()}

@@ -21,13 +21,13 @@
 	import { backOut, cubicOut } from 'svelte/easing';
 	import {
 		connections,
-		isAnalyticsConnected,
-		isSeoConnected,
-		isEmailConnected,
-		isPaymentConnected,
-		isCrmConnected,
-		isFormsConnected,
-		isBehaviorConnected,
+		getIsAnalyticsConnected,
+		getIsSeoConnected,
+		getIsEmailConnected,
+		getIsPaymentConnected,
+		getIsCrmConnected,
+		getIsFormsConnected,
+		getIsBehaviorConnected,
 		FEATURE_SERVICES,
 		type ServiceKey
 	} from '$lib/stores/connections.svelte';
@@ -215,19 +215,19 @@
 		if (feature) {
 			switch (feature) {
 				case 'analytics':
-					return $isAnalyticsConnected;
+					return getIsAnalyticsConnected();
 				case 'seo':
-					return $isSeoConnected;
+					return getIsSeoConnected();
 				case 'email':
-					return $isEmailConnected;
+					return getIsEmailConnected();
 				case 'payment':
-					return $isPaymentConnected;
+					return getIsPaymentConnected();
 				case 'crm':
-					return $isCrmConnected;
+					return getIsCrmConnected();
 				case 'forms':
-					return $isFormsConnected;
+					return getIsFormsConnected();
 				case 'behavior':
-					return $isBehaviorConnected;
+					return getIsBehaviorConnected();
 				default:
 					return connections.isFeatureConnected(feature as keyof typeof FEATURE_SERVICES);
 			}

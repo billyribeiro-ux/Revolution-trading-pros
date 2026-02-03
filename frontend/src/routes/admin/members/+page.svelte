@@ -42,11 +42,11 @@
 	import ActionsDropdown from '$lib/components/admin/ActionsDropdown.svelte';
 
 	// Reactive state from stores
-	let members = $derived($membersStore.members);
-	let stats = $derived($membersStore.stats);
-	let services = $derived($membersStore.services);
-	let pagination = $derived($membersStore.pagination);
-	let loading = $derived($membersStore.loading);
+	let members = $derived(membersStore.members);
+	let stats = $derived(membersStore.stats);
+	let services = $derived(membersStore.services);
+	let pagination = $derived(membersStore.pagination);
+	let loading = $derived(membersStore.loading);
 
 	// Local state
 	let searchQuery = $state('');

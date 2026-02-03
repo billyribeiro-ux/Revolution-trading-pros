@@ -12,7 +12,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { cartStore, cartTotal } from '$lib/stores/cart.svelte';
+	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { login, register } from '$lib/api/auth';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
@@ -46,7 +46,7 @@
 	// DERIVED
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let hasSubscriptions = $derived($cartStore.items.some((i) => i.interval));
+	let hasSubscriptions = $derived(cartStore.items.some((i) => i.interval));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
@@ -363,7 +363,7 @@
 									<div class="checkout-cart-contents">
 										<!-- Products -->
 										<div class="checkout-cart-products">
-											{#each $cartStore.items as item (item.id + (item.interval || ''))}
+											{#each cartStore.items as item (item.id + (item.interval || ''))}
 												<div class="product">
 													<div
 														class="product-image"
@@ -411,7 +411,7 @@
 											<div>Total</div>
 											<div class="checkout-order-total-price">
 												<span class="rtp-price-amount amount">
-													<bdi><span class="rtp-price-currency">$</span>{$cartTotal.toFixed(2)}</bdi
+													<bdi><span class="rtp-price-currency">$</span>{getCartTotal().toFixed(2)}</bdi
 													>
 												</span>
 											</div>
@@ -425,7 +425,7 @@
 														<tr class="rtp-recurring-totals">
 															<th colspan="2">Recurring Totals</th>
 														</tr>
-														{#each $cartStore.items.filter((i) => i.interval) as item}
+														{#each cartStore.items.filter((i) => i.interval) as item}
 															<tr class="rtp-cart-subtotal rtp-recurring-total">
 																<td colspan="2">
 																	<span class="rtp-price-amount amount">

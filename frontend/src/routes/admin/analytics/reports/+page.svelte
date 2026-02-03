@@ -7,7 +7,7 @@
 	 */
 	import { browser } from '$app/environment';
 	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	interface Report {
@@ -150,7 +150,7 @@
 			connectionLoading = false;
 
 			// Only load data if analytics is connected
-			if ($isAnalyticsConnected) {
+			if (getIsAnalyticsConnected) {
 				await loadReports();
 			} else {
 				loading = false;
@@ -190,7 +190,7 @@
 				<h1 class="text-2xl font-bold text-white">Reports</h1>
 				<p class="text-sm text-slate-400 mt-1">Create and manage custom analytics reports</p>
 			</div>
-			{#if $isAnalyticsConnected}
+			{#if getIsAnalyticsConnected}
 				<button
 					onclick={() => (showCreateModal = true)}
 					class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg"
@@ -210,7 +210,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !$isAnalyticsConnected}
+		{:else if !getIsAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Filters -->

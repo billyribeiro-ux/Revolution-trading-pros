@@ -12,10 +12,10 @@
 	} from '$lib/api/forms';
 
 	interface Props {
-		props.formId: number;
+		formId: number;
 	}
 
-	let props: Props = $props();
+	let { formId }: Props = $props();
 
 	let submissions: FormSubmission[] = $state([]);
 	let stats: any = $state(null);
@@ -36,8 +36,8 @@
 
 		try {
 			const [submissionsData, statsData] = await Promise.all([
-				getSubmissions(props.formId, currentPage, 20, statusFilter || undefined),
-				getSubmissionStats(props.formId)
+				getSubmissions(formId, currentPage, 20, statusFilter || undefined),
+				getSubmissionStats(formId)
 			]);
 
 			submissions = submissionsData.submissions;
@@ -55,7 +55,7 @@
 		newStatus: FormSubmission['status']
 	) {
 		try {
-			await updateSubmissionStatus(props.formId, Number(submission.submission_id), newStatus);
+			await updateSubmissionStatus(formId, Number(submission.submission_id), newStatus);
 			await loadData();
 		} catch (err) {
 			alert(err instanceof Error ? err.message : 'Failed to update status');
@@ -66,7 +66,7 @@
 		if (!confirm('Delete this submission?')) return;
 
 		try {
-			await deleteSubmission(props.formId, Number(submission.submission_id));
+			await deleteSubmission(formId, Number(submission.submission_id));
 			await loadData();
 		} catch (err) {
 			alert(err instanceof Error ? err.message : 'Failed to delete submission');
@@ -78,7 +78,7 @@
 
 		try {
 			await bulkUpdateSubmissionStatus(
-				props.formId,
+				formId,
 				Array.from(selectedSubmissions).map(Number),
 				newStatus
 			);
@@ -94,7 +94,7 @@
 		if (!confirm(`Delete ${selectedSubmissions.size} submissions?`)) return;
 
 		try {
-			await bulkDeleteSubmissions(props.formId, Array.from(selectedSubmissions).map(Number));
+			await bulkDeleteSubmissions(formId, Array.from(selectedSubmissions).map(Number));
 			selectedSubmissions.clear();
 			await loadData();
 		} catch (err) {
@@ -104,12 +104,12 @@
 
 	async function handleExport() {
 		try {
-			const csv = await exportSubmissions(props.formId);
+			const csv = await exportSubmissions(formId);
 			const blob = new Blob([csv], { type: 'text/csv' });
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = `form-submissions-${props.formId}-${Date.now()}.csv`;
+			a.download = `form-submissions-${formId}-${Date.now()}.csv`;
 			a.click();
 			window.URL.revokeObjectURL(url);
 		} catch (err) {

@@ -10,9 +10,8 @@
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 
-	let forecastPeriod = 'this_month';
-	let forecast: { commit: number; best_case: number; pipeline: number; worst_case: number } | null =
-		null;
+	let forecastPeriod = $state('this_month');
+	let forecast = $state<{ commit: number; best_case: number; pipeline: number; worst_case: number } | null>(null);
 
 	onMount(async () => {
 		await loadPipelinesAndDeals();

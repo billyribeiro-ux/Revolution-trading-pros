@@ -10,9 +10,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import {
 		analyticsStore,
-		dashboard,
-		isLoading,
-		selectedPeriod
+		getDashboard,
+		getIsAnalyticsLoading,
+		getAnalyticsSelectedPeriod
 	} from '$lib/stores/analytics.svelte';
 	import {
 		KpiGrid,
@@ -37,8 +37,13 @@
 	let selectedTab: 'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue' =
 		'overview';
 
+	// Local derived from getters
+	const dashboard = $derived(getDashboard());
+	const isLoading = $derived(getIsAnalyticsLoading());
+	const selectedPeriod = $derived(getAnalyticsSelectedPeriod());
+
 	onMount(() => {
-		analyticsStore.loadDashboard($selectedPeriod);
+		analyticsStore.loadDashboard(selectedPeriod);
 		analyticsStore.startRealtimeUpdates(10000);
 	});
 
@@ -72,7 +77,7 @@
 			</div>
 
 			<div class="header-actions">
-				<PeriodSelector value={$selectedPeriod} onchange={handlePeriodChange} />
+				<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 			</div>
 		</div>
 	</div>
@@ -136,12 +141,12 @@
 
 	<!-- Content -->
 	<div class="dashboard-content">
-		{#if $isLoading}
+		{#if isLoading}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="text-gray-400 mt-4">Loading analytics data...</p>
 			</div>
-		{:else if $dashboard}
+		{:else if dashboard}
 			<!-- Overview Tab -->
 			{#if selectedTab === 'overview'}
 				<div class="overview-grid">
@@ -149,13 +154,13 @@
 					<div class="section">
 						<div class="section-header">
 							<h2 class="section-title">Key Performance Indicators</h2>
-							<p class="section-subtitle">Primary metrics for {$selectedPeriod}</p>
+							<p class="section-subtitle">Primary metrics for {selectedPeriod}</p>
 						</div>
-						<KpiGrid kpis={$dashboard.kpis} />
+						<KpiGrid kpis={dashboard.kpis} />
 					</div>
 
 					<!-- Anomalies & Alerts -->
-					{#if $dashboard.anomalies && ($dashboard.anomalies.anomalies_count > 0 || $dashboard.anomalies.alerts_triggered > 0)}
+					{#if dashboard.anomalies && (dashboard.anomalies.anomalies_count > 0 || dashboard.anomalies.alerts_triggered > 0)}
 						<div class="section anomaly-section">
 							<div class="section-header">
 								<div class="flex items-center gap-2">
@@ -165,15 +170,15 @@
 							</div>
 							<div class="anomaly-grid">
 								<div class="anomaly-card">
-									<div class="anomaly-value">{$dashboard.anomalies.anomalies_count}</div>
+									<div class="anomaly-value">{dashboard.anomalies.anomalies_count}</div>
 									<div class="anomaly-label">Anomalies Detected</div>
 								</div>
 								<div class="anomaly-card">
-									<div class="anomaly-value">{$dashboard.anomalies.alerts_triggered}</div>
+									<div class="anomaly-value">{dashboard.anomalies.alerts_triggered}</div>
 									<div class="anomaly-label">Alerts Triggered</div>
 								</div>
 								<div class="anomaly-card critical">
-									<div class="anomaly-value">{$dashboard.anomalies.critical_count}</div>
+									<div class="anomaly-value">{dashboard.anomalies.critical_count}</div>
 									<div class="anomaly-label">Critical Issues</div>
 								</div>
 							</div>
@@ -181,23 +186,23 @@
 					{/if}
 
 					<!-- Time Series Charts -->
-					{#if $dashboard.time_series}
+					{#if dashboard.time_series}
 						<div class="section">
 							<div class="section-header">
 								<h2 class="section-title">Trends</h2>
 							</div>
 							<div class="charts-grid">
-								{#if $dashboard.time_series.revenue}
+								{#if dashboard.time_series.revenue}
 									<TimeSeriesChart
-										data={$dashboard.time_series.revenue}
+										data={dashboard.time_series.revenue}
 										title="Revenue Trend"
 										color="#fbbf24"
 										formatValue={(v) => '$' + v.toLocaleString()}
 									/>
 								{/if}
-								{#if $dashboard.time_series.users}
+								{#if dashboard.time_series.users}
 									<TimeSeriesChart
-										data={$dashboard.time_series.users}
+										data={dashboard.time_series.users}
 										title="User Growth"
 										color="#60a5fa"
 										formatValue={(v) => v.toLocaleString()}
@@ -208,14 +213,14 @@
 					{/if}
 
 					<!-- Quick Funnels -->
-					{#if $dashboard.funnels && $dashboard.funnels.length > 0}
+					{#if dashboard.funnels && dashboard.funnels.length > 0}
 						<div class="section">
 							<div class="section-header">
 								<h2 class="section-title">Top Funnels</h2>
 								<a href="/analytics/funnels" class="view-all-link">View All →</a>
 							</div>
 							<div class="funnels-grid">
-								{#each $dashboard.funnels.slice(0, 2) as funnel}
+								{#each dashboard.funnels.slice(0, 2) as funnel}
 									<FunnelChart steps={funnel.steps} title={funnel.name} />
 								{/each}
 							</div>
@@ -235,9 +240,9 @@
 						</button>
 					</div>
 
-					{#if $dashboard.funnels && $dashboard.funnels.length > 0}
+					{#if dashboard.funnels && dashboard.funnels.length > 0}
 						<div class="funnels-list">
-							{#each $dashboard.funnels as funnel}
+							{#each dashboard.funnels as funnel}
 								<FunnelChart steps={funnel.steps} title={funnel.name} />
 							{/each}
 						</div>
@@ -263,9 +268,9 @@
 						</button>
 					</div>
 
-					{#if $dashboard.cohorts && $dashboard.cohorts.length > 0}
+					{#if dashboard.cohorts && dashboard.cohorts.length > 0}
 						<div class="cohorts-list">
-							{#each $dashboard.cohorts as cohort}
+							{#each dashboard.cohorts as cohort}
 								{@const transformedData = cohort.retention_matrix.map((row) => ({
 									cohort_date: row.cohort,
 									cohort_size: row.size,
@@ -311,8 +316,8 @@
 						</select>
 					</div>
 
-					{#if $dashboard.attribution}
-						<AttributionChart channels={$dashboard.attribution.channels} />
+					{#if dashboard.attribution}
+						<AttributionChart channels={dashboard.attribution.channels} />
 					{:else}
 						<div class="empty-state">
 							<IconTrendingUp size={64} class="text-gray-600" />
@@ -334,11 +339,11 @@
 
 					<div class="behavior-grid">
 						<!-- Top Pages -->
-						{#if $dashboard.top_pages}
+						{#if dashboard.top_pages}
 							<div class="behavior-card">
 								<h3 class="card-title">Top Pages</h3>
 								<div class="page-list">
-									{#each $dashboard.top_pages as page}
+									{#each dashboard.top_pages as page}
 										<div class="page-item">
 											<span class="page-path">{page.page_path}</span>
 											<span class="page-views">{page.views.toLocaleString()} views</span>
@@ -349,11 +354,11 @@
 						{/if}
 
 						<!-- Top Events -->
-						{#if $dashboard.top_events}
+						{#if dashboard.top_events}
 							<div class="behavior-card">
 								<h3 class="card-title">Top Events</h3>
 								<div class="event-list">
-									{#each $dashboard.top_events as event}
+									{#each dashboard.top_events as event}
 										<div class="event-item">
 											<span class="event-name">{event.event_name}</span>
 											<span class="event-count">{event.count.toLocaleString()}</span>
@@ -376,7 +381,7 @@
 					<div class="revenue-grid">
 						<!-- Revenue KPIs -->
 						<div class="revenue-kpis">
-							{#each $dashboard.kpis.filter((k) => k.category === 'revenue') as kpi}
+							{#each dashboard.kpis.filter((k) => k.category === 'revenue') as kpi}
 								<div class="revenue-kpi-card">
 									<div class="kpi-label">{kpi.name}</div>
 									<div class="kpi-value">{kpi.formatted_value}</div>
@@ -392,10 +397,10 @@
 						</div>
 
 						<!-- Revenue Chart -->
-						{#if $dashboard.time_series?.revenue}
+						{#if dashboard.time_series?.revenue}
 							<div class="revenue-chart">
 								<TimeSeriesChart
-									data={$dashboard.time_series.revenue}
+									data={dashboard.time_series.revenue}
 									title="Revenue Over Time"
 									color="#10b981"
 									formatValue={(v) => '$' + v.toLocaleString()}

@@ -15,9 +15,9 @@
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
-		props.formId?: number;
-		props.onFieldsGenerated?: (fields: any[]) => void;
-		props.onFormGenerated?: (form: any) => void;
+		formId?: number;
+		onFieldsGenerated?: (fields: any[]) => void;
+		onFormGenerated?: (form: any) => void;
 	}
 
 	interface Suggestion {
@@ -33,7 +33,7 @@
 		recommendations: { category: string; priority: string; suggestion: string; impact: string }[];
 	}
 
-	let props: Props = $props();
+	let { formId, onFieldsGenerated, onFormGenerated }: Props = $props();
 
 	// State
 	let prompt = $state('');
@@ -80,7 +80,7 @@
 			if (response.ok) {
 				const data = await response.json();
 				generatedFields = data.form?.fields || [];
-				props.onFormGenerated?.(data.form);
+				onFormGenerated?.(data.form);
 			} else {
 				const errData = await response.json();
 				error = errData.message || 'Failed to generate form';
@@ -95,14 +95,14 @@
 
 	// Get field suggestions
 	async function getSuggestions() {
-		if (!props.formId) return;
+		if (!formId) return;
 
 		isGenerating = true;
 		error = '';
 
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/ai/suggest`, {
+			const response = await fetch(`/api/forms/${formId}/ai/suggest`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -119,14 +119,14 @@
 
 	// Analyze form
 	async function analyzeForm() {
-		if (!props.formId) return;
+		if (!formId) return;
 
 		isAnalyzing = true;
 		error = '';
 
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/ai/analyze`, {
+			const response = await fetch(`/api/forms/${formId}/ai/analyze`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -149,7 +149,7 @@
 			name: suggestion.name,
 			required: false
 		};
-		props.onFieldsGenerated?.([field]);
+		onFieldsGenerated?.([field]);
 
 		// Remove from suggestions
 		suggestions = suggestions.filter((s) => s.name !== suggestion.name);
@@ -193,7 +193,7 @@
 		>
 			Generate
 		</button>
-		{#if props.formId}
+		{#if formId}
 			<button
 				class="tab"
 				class:active={activeTab === 'suggest'}
@@ -267,7 +267,7 @@
 						<button
 							class="btn-apply"
 							onclick={() => {
-								props.onFieldsGenerated?.(generatedFields);
+								onFieldsGenerated?.(generatedFields);
 								generatedFields = [];
 							}}
 						>

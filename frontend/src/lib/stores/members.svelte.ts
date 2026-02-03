@@ -501,21 +501,21 @@ export const emailStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const activeMembersCount = $derived(
-	membersState.stats?.subscriptions?.active ?? 0
-);
+export function getActiveMembersCount(): number {
+	return membersState.stats?.subscriptions?.active ?? 0;
+}
 
-export const totalMembersCount = $derived(
-	membersState.stats?.overview?.total_members ?? 0
-);
+export function getTotalMembersCount(): number {
+	return membersState.stats?.overview?.total_members ?? 0;
+}
 
-export const monthlyRecurringRevenue = $derived(
-	membersState.stats?.revenue?.mrr ?? 0
-);
+export function getMonthlyRecurringRevenue(): number {
+	return membersState.stats?.revenue?.mrr ?? 0;
+}
 
-export const churnRate = $derived(
-	membersState.stats?.subscriptions?.churn_rate ?? 0
-);
+export function getChurnRate(): number {
+	return membersState.stats?.subscriptions?.churn_rate ?? 0;
+}

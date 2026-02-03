@@ -50,7 +50,7 @@
 		IconTarget
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
-	import { connections, isCrmConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
@@ -279,7 +279,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if ($isCrmConnected) {
+			if (getIsCrmConnected()) {
 				await loadData();
 			} else {
 				isLoading = false;
@@ -321,7 +321,7 @@
 		<!-- Connection Check -->
 		{#if connectionLoading}
 			<SkeletonLoader variant="dashboard" />
-		{:else if !$isCrmConnected}
+		{:else if !getIsCrmConnected()}
 			<ApiNotConnected
 				serviceName="CRM"
 				description="Connect to manage contacts, track deals, and streamline customer relationships."

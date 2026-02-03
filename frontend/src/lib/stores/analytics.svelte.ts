@@ -363,19 +363,19 @@ export const eventTracker = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const dashboard = $derived(analyticsState.dashboard);
-export const realtime = $derived(analyticsState.realtime);
-export const isAnalyticsLoading = $derived(analyticsState.isLoading);
-export const analyticsSelectedPeriod = $derived(analyticsState.selectedPeriod);
+export function getDashboard() { return analyticsState.dashboard; }
+export function getRealtime() { return analyticsState.realtime; }
+export function getIsAnalyticsLoading() { return analyticsState.isLoading; }
+export function getAnalyticsSelectedPeriod() { return analyticsState.selectedPeriod; }
 
 // KPI helpers
-export const primaryKpis = $derived(
-	analyticsState.dashboard?.kpis?.filter((kpi) => kpi.is_primary) || []
-);
+export function getPrimaryKpis() {
+	return analyticsState.dashboard?.kpis?.filter((kpi) => kpi.is_primary) || [];
+}
 
-export const anomalyKpis = $derived(
-	analyticsState.dashboard?.kpis?.filter((kpi) => kpi.is_anomaly) || []
-);
+export function getAnomalyKpis() {
+	return analyticsState.dashboard?.kpis?.filter((kpi) => kpi.is_anomaly) || [];
+}

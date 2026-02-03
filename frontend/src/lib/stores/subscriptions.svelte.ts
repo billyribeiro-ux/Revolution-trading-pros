@@ -442,10 +442,10 @@ export const subscriptionStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const filteredSubscriptions = $derived.by(() => {
+export function getFilteredSubscriptions() {
 	let filtered = subscriptionState.subscriptions;
 	const filters = subscriptionState.filters;
 
@@ -480,10 +480,10 @@ export const filteredSubscriptions = $derived.by(() => {
 	}
 
 	return filtered;
-});
+}
 
-// Derived store for statistics
-export const subscriptionStats = $derived.by(() => {
+// Get subscription statistics
+export function getSubscriptionStats(): SubscriptionStats {
 	const subs = subscriptionState.subscriptions;
 
 	const activeCount = subs.filter((s) => s.status === 'active').length;
@@ -510,4 +510,4 @@ export const subscriptionStats = $derived.by(() => {
 	};
 
 	return stats;
-});
+}

@@ -250,20 +250,8 @@ export const cartStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (using $derived)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
-
-export const cartItemCount = $derived(
-	cartState.items.reduce((total, item) => total + item.quantity, 0)
-);
-
-export const cartTotal = $derived(
-	cartState.items.reduce((total, item) => total + item.price * item.quantity, 0)
-);
-
-export const hasCartItems = $derived(cartItemCount > 0);
-
-// Getter functions for reactive access in components
 export function getCartItemCount() {
 	return cartState.items.reduce((total, item) => total + item.quantity, 0);
 }

@@ -43,7 +43,7 @@
 		IconClock,
 		IconTarget
 	} from '$lib/icons';
-	import { connections, isSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
+	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
@@ -289,7 +289,7 @@
 
 	function handleRefresh() {
 		connections.load(true);
-		if ($isSeoConnected) {
+		if (getIsSeoConnected) {
 			loadSeoData();
 		}
 	}

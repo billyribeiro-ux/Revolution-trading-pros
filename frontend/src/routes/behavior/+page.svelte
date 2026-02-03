@@ -22,14 +22,14 @@
 	});
 
 	async function loadDashboard() {
-		$isLoading = true;
+		isLoading.set(true);
 		try {
 			const data = await behaviorAPI.getDashboard(selectedPeriod);
-			$dashboardData = data;
+			dashboardData.set(data);
 		} catch (error) {
 			console.error('Failed to load behavior dashboard:', error);
 		} finally {
-			$isLoading = false;
+			isLoading.set(false);
 		}
 	}
 
@@ -90,12 +90,12 @@
 	</div>
 
 	<!-- Content -->
-	{#if $isLoading}
+	{#if isLoading}
 		<div class="loading-state">
 			<div class="spinner"></div>
 			<p class="text-gray-400 mt-4">Loading behavior data...</p>
 		</div>
-	{:else if $dashboardData}
+	{:else if dashboardData}
 		<!-- Overview KPIs -->
 		<div class="kpi-grid">
 			<div class="kpi-card">
@@ -104,7 +104,7 @@
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Total Sessions</div>
-					<div class="kpi-value">{$dashboardData.overview.total_sessions.toLocaleString()}</div>
+					<div class="kpi-value">{dashboardData.overview.total_sessions.toLocaleString()}</div>
 				</div>
 			</div>
 
@@ -114,7 +114,7 @@
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Engagement</div>
-					<div class="kpi-value">{$dashboardData.overview.avg_engagement_score.toFixed(1)}%</div>
+					<div class="kpi-value">{dashboardData.overview.avg_engagement_score.toFixed(1)}%</div>
 				</div>
 			</div>
 
@@ -124,7 +124,7 @@
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Intent</div>
-					<div class="kpi-value">{$dashboardData.overview.avg_intent_score.toFixed(1)}%</div>
+					<div class="kpi-value">{dashboardData.overview.avg_intent_score.toFixed(1)}%</div>
 				</div>
 			</div>
 
@@ -134,7 +134,7 @@
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Friction</div>
-					<div class="kpi-value">{$dashboardData.overview.avg_friction_score.toFixed(1)}%</div>
+					<div class="kpi-value">{dashboardData.overview.avg_friction_score.toFixed(1)}%</div>
 				</div>
 			</div>
 
@@ -144,13 +144,13 @@
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">High Churn Risk</div>
-					<div class="kpi-value">{$dashboardData.overview.high_churn_risk_count}</div>
+					<div class="kpi-value">{dashboardData.overview.high_churn_risk_count}</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- Friction Heatmap -->
-		{#if $dashboardData.friction_heatmap && $dashboardData.friction_heatmap.length > 0}
+		{#if dashboardData.friction_heatmap && dashboardData.friction_heatmap.length > 0}
 			<div class="section">
 				<div class="section-header">
 					<h2 class="section-title">Friction Heatmap</h2>
@@ -158,7 +158,7 @@
 				</div>
 
 				<div class="friction-list">
-					{#each $dashboardData.friction_heatmap as item}
+					{#each dashboardData.friction_heatmap as item}
 						<div class="friction-item">
 							<div class="friction-info">
 								<div class="friction-url">{item.page_url}</div>
@@ -180,7 +180,7 @@
 		{/if}
 
 		<!-- Session Timeline -->
-		{#if $dashboardData.session_timeline && $dashboardData.session_timeline.length > 0}
+		{#if dashboardData.session_timeline && dashboardData.session_timeline.length > 0}
 			<div class="section">
 				<div class="section-header">
 					<h2 class="section-title">Session Activity</h2>
@@ -188,12 +188,12 @@
 				</div>
 
 				<div class="timeline-chart">
-					{#each $dashboardData.session_timeline as point}
+					{#each dashboardData.session_timeline as point}
 						<div class="timeline-bar">
 							<div
 								class="bar-fill"
 								style="height: {(point.sessions /
-									Math.max(...$dashboardData.session_timeline.map((p) => p.sessions))) *
+									Math.max(...dashboardData.session_timeline.map((p) => p.sessions))) *
 									100}%"
 								title="{point.sessions} sessions, {point.avg_engagement.toFixed(1)}% engagement"
 							></div>

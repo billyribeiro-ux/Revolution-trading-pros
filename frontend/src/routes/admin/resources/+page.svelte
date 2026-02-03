@@ -21,28 +21,30 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	import IconPhoto from '@tabler/icons-svelte/icons/photo';
-	import IconTable from '@tabler/icons-svelte/icons/table';
-	import IconFile from '@tabler/icons-svelte/icons/file';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconLink from '@tabler/icons-svelte/icons/link';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconStar from '@tabler/icons-svelte/icons/star';
-	import IconStarFilled from '@tabler/icons-svelte/icons/star-filled';
-	import IconPin from '@tabler/icons-svelte/icons/pin';
-	import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import {
+		IconVideo,
+		IconFileText,
+		IconPhoto,
+		IconTable,
+		IconFile,
+		IconUpload,
+		IconSearch,
+		IconFilter,
+		IconEdit,
+		IconTrash,
+		IconEye,
+		IconDownload,
+		IconRefresh,
+		IconPlus,
+		IconLink,
+		IconCheck,
+		IconX,
+		IconStar,
+		IconStarFilled,
+		IconPin,
+		IconPinFilled,
+		IconAlertCircle
+	} from '$lib/icons';
 	import {
 		roomResourcesApi,
 		type RoomResource,

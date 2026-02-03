@@ -16,7 +16,7 @@
 	import { quintOut } from 'svelte/easing';
 	import {
 		connections,
-		allConnectionStatuses,
+		getAllConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections.svelte';
 	import {
@@ -143,10 +143,12 @@
 		onclose?.();
 	}
 
+	const allConnectionStatuses = $derived(getAllConnectionStatuses());
+
 	let connectedCount = $derived(
-		Object.values($allConnectionStatuses).filter((s) => s === 'connected').length
+		Object.values(allConnectionStatuses).filter((s) => s === 'connected').length
 	);
-	let totalCount = $derived(Object.keys($allConnectionStatuses).length);
+	let totalCount = $derived(Object.keys(allConnectionStatuses).length);
 	let overallHealth = $derived(
 		connectedCount === totalCount ? 'healthy' : connectedCount > 0 ? 'partial' : 'unhealthy'
 	);
@@ -248,7 +250,7 @@
 			<div class="panel-content">
 				{#if activeTab === 'overview'}
 					<div class="services-list" in:fade={{ duration: 150 }}>
-						{#each Object.entries($allConnectionStatuses) as [service, status]}
+						{#each Object.entries(allConnectionStatuses) as [service, status]}
 							{@const metrics = mockMetrics[service] || {
 								responseTime: 0,
 								uptime: 0,
@@ -310,7 +312,7 @@
 					</div>
 				{:else}
 					<div class="metrics-view" in:fade={{ duration: 150 }}>
-						{#each Object.entries($allConnectionStatuses) as [service, status]}
+						{#each Object.entries(allConnectionStatuses) as [service, status]}
 							{@const metrics = mockMetrics[service] || {
 								responseTime: 0,
 								uptime: 0,

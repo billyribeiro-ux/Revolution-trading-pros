@@ -16,7 +16,7 @@
 		SubscriptionStatus,
 		SubscriptionStats
 	} from '$lib/stores/subscriptions.svelte';
-	import { connections, isPaymentConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsPaymentConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import SubscriptionDetailDrawer from '$lib/components/admin/SubscriptionDetailDrawer.svelte';
 	import SubscriptionFormModal from '$lib/components/admin/SubscriptionFormModal.svelte';
@@ -66,7 +66,7 @@
 			connectionLoading = false;
 
 			// Only load data if payment is connected
-			if ($isPaymentConnected) {
+			if (getIsPaymentConnected) {
 				await loadData();
 			} else {
 				loading = false;
@@ -149,7 +149,7 @@
 	}
 
 	// Filter and sort subscriptions
-	let filteredSubscriptions = $derived(
+	let getFilteredSubscriptions = $derived(
 		subscriptions
 			.filter((sub) => {
 				if (statusFilter !== 'all' && sub.status !== statusFilter) return false;
@@ -319,7 +319,7 @@
 		<header class="page-header">
 			<h1>Subscription Management</h1>
 			<p class="subtitle">Monitor and manage all customer subscriptions</p>
-			{#if $isPaymentConnected}
+			{#if getIsPaymentConnected}
 				<div class="header-actions">
 					<button class="btn-primary" onclick={openCreateModal}>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,7 +342,7 @@
 				<div class="spinner"></div>
 				<p>Checking connection...</p>
 			</div>
-		{:else if !$isPaymentConnected}
+		{:else if !getIsPaymentConnected}
 			<ServiceConnectionStatus feature="payment" variant="card" showFeatures={true} />
 		{:else}
 			{#if error}
@@ -621,14 +621,14 @@
 										</div>
 									</td>
 								</tr>
-							{:else if filteredSubscriptions.length === 0}
+							{:else if getFilteredSubscriptions.length === 0}
 								<tr>
 									<td colspan="7" class="px-6 py-12 text-center text-slate-400">
 										No subscriptions found
 									</td>
 								</tr>
 							{:else}
-								{#each filteredSubscriptions as subscription}
+								{#each getFilteredSubscriptions as subscription}
 									<tr
 										class="hover:bg-slate-700/30 transition-colors cursor-pointer"
 										onclick={() => openSubscriptionDetail(subscription)}

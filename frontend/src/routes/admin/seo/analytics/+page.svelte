@@ -7,7 +7,7 @@
 		IconRefresh,
 		IconCalendar
 	} from '$lib/icons';
-	import { connections, isSeoConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsSeoConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	let connectionLoading = $state(true);
@@ -27,7 +27,7 @@
 		connectionLoading = false;
 
 		// Only load data if SEO is connected
-		if ($isSeoConnected) {
+		if (getIsSeoConnected) {
 			loadData();
 		}
 	});
@@ -107,7 +107,7 @@
 			<h1>SEO Analytics</h1>
 			<p>Track search performance and insights</p>
 		</div>
-		{#if $isSeoConnected}
+		{#if getIsSeoConnected}
 			<button class="btn-secondary" onclick={loadData} disabled={loading}>
 				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 				Refresh
@@ -121,7 +121,7 @@
 			<div class="spinner"></div>
 			<p>Loading...</p>
 		</div>
-	{:else if !$isSeoConnected}
+	{:else if !getIsSeoConnected}
 		<ServiceConnectionStatus feature="seo" variant="card" showFeatures={true} />
 	{:else}
 		<div class="date-range-picker">

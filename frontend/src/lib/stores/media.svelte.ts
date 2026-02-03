@@ -428,24 +428,24 @@ export const uploadStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const currentFiles = $derived(mediaState.files);
-export const currentFolders = $derived(mediaState.folders);
-export const selectedFilesSet = $derived(mediaState.selectedFiles);
-export const selectedCount = $derived(mediaState.selectedFiles.size);
-export const hasSelection = $derived(mediaState.selectedFiles.size > 0);
-export const currentViewMode = $derived(mediaState.viewMode);
-export const isMediaLoading = $derived(mediaState.isLoading);
+export function getCurrentFiles() { return mediaState.files; }
+export function getCurrentFolders() { return mediaState.folders; }
+export function getSelectedFilesSet() { return mediaState.selectedFiles; }
+export function getSelectedCount() { return mediaState.selectedFiles.size; }
+export function getHasSelection() { return mediaState.selectedFiles.size > 0; }
+export function getCurrentViewMode() { return mediaState.viewMode; }
+export function getIsMediaLoading() { return mediaState.isLoading; }
 
-// Upload derived values
-export const activeUploads = $derived(Array.from(uploadState.uploads.values()));
-export const uploadCount = $derived(uploadState.uploads.size);
-export const isCurrentlyUploading = $derived(uploadState.isUploading);
-export const uploadProgress = $derived.by(() => {
+// Upload getters
+export function getActiveUploads() { return Array.from(uploadState.uploads.values()); }
+export function getUploadCount() { return uploadState.uploads.size; }
+export function getIsCurrentlyUploading() { return uploadState.isUploading; }
+export function getUploadProgress() {
 	const uploads = Array.from(uploadState.uploads.values());
 	if (uploads.length === 0) return 0;
 	const total = uploads.reduce((sum, u) => sum + u.progress, 0);
 	return total / uploads.length;
-});
+}

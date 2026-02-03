@@ -14,7 +14,7 @@
 
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
-	import { connections, isEmailConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -170,7 +170,7 @@
 	</div>
 
 	<!-- Connection Status Banner -->
-	{#if !connectionLoading && !$isEmailConnected}
+	{#if !connectionLoading && !getIsEmailConnected}
 		<ServiceConnectionStatus feature="email" variant="banner" />
 	{/if}
 

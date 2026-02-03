@@ -99,7 +99,7 @@
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
-	import { cartItemCount, hasCartItems } from '$lib/stores/cart.svelte';
+	import { getCartItemCount, getHasCartItems } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -273,8 +273,11 @@
 	const currentPath = $derived(page?.url?.pathname ?? '/');
 	const isMobileMenuOpen = $derived(mobileMenuState === 'open' || mobileMenuState === 'opening');
 
+	const cartItemCount = $derived(getCartItemCount());
+	const hasCartItems = $derived(getHasCartItems());
+
 	const cartAriaLabel = $derived.by(() => {
-		const count = $cartItemCount;
+		const count = cartItemCount;
 		if (count === 0) return 'Shopping cart is empty';
 		if (count === 1) return 'Shopping cart with 1 item';
 		return `Shopping cart with ${count} items`;
@@ -800,11 +803,11 @@
 				{@render actions()}
 			{:else}
 				<!-- Cart - Only show if items in cart -->
-				{#if $hasCartItems}
+				{#if getHasCartItems}
 					<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
 						<IconShoppingCart size={22} aria-hidden="true" />
-						{#if $cartItemCount > 0}
-							<span class="cart-badge" aria-hidden="true">{$cartItemCount}</span>
+						{#if getCartItemCount > 0}
+							<span class="cart-badge" aria-hidden="true">{getCartItemCount}</span>
 						{/if}
 					</a>
 				{/if}
@@ -979,7 +982,7 @@
 
 		<!-- Footer -->
 		<div class="mobile-footer">
-			{#if $hasCartItems}
+			{#if getHasCartItems}
 				<a
 					href="/cart"
 					class="mobile-cart"
@@ -988,8 +991,8 @@
 				>
 					<IconShoppingCart size={20} aria-hidden="true" />
 					<span>Cart</span>
-					{#if $cartItemCount > 0}
-						<span class="mobile-badge" aria-hidden="true">{$cartItemCount}</span>
+					{#if getCartItemCount > 0}
+						<span class="mobile-badge" aria-hidden="true">{getCartItemCount}</span>
 					{/if}
 				</a>
 			{/if}

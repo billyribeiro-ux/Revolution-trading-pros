@@ -16,7 +16,7 @@
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
 	import {
 		connections,
-		isAnalyticsConnected,
+		getIsAnalyticsConnected,
 		FEATURE_SERVICES,
 		SERVICE_KEYS
 	} from '$lib/stores/connections.svelte';
@@ -136,7 +136,7 @@
 		if (!browser) return;
 
 		// Subscribe to analytics connection status
-		unsubscribe = isAnalyticsConnected.subscribe((connected) => {
+		unsubscribe = getIsAnalyticsConnected.subscribe((connected) => {
 			isConnected = connected;
 		});
 

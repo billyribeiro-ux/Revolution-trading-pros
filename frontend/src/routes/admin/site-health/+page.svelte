@@ -48,9 +48,9 @@
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import {
 		connections,
-		connectedCount,
-		overallHealth,
-		servicesWithErrors
+		getConnectedCount,
+		getOverallHealth,
+		getServicesWithErrors
 	} from '$lib/stores/connections.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
@@ -114,6 +114,11 @@
 	let activeTab = $state<'overview' | 'performance' | 'security' | 'database' | 'server'>(
 		'overview'
 	);
+
+	// Local derived from getters
+	const connectedCount = $derived(getConnectedCount());
+	const overallHealth = $derived(getOverallHealth());
+	const servicesWithErrors = $derived(getServicesWithErrors());
 
 	// Animated score display
 	const scoreDisplay = tweened(0, { duration: 1500, easing: cubicOut });
@@ -355,18 +360,18 @@
 			<div class="header-actions">
 				<!-- API Connections Status -->
 				<div class="connections-status">
-					<div class="connection-indicator" class:healthy={$connectedCount > 0}>
-						{#if $connectedCount > 0}
+					<div class="connection-indicator" class:healthy={connectedCount > 0}>
+						{#if connectedCount > 0}
 							<IconPlugConnected size={14} />
 						{:else}
 							<IconPlugConnectedX size={14} />
 						{/if}
-						<span>{$connectedCount} APIs Connected</span>
+						<span>{connectedCount} APIs Connected</span>
 					</div>
-					{#if $servicesWithErrors.length > 0}
+					{#if servicesWithErrors.length > 0}
 						<div class="error-indicator">
 							<IconAlertTriangle size={14} />
-							<span>{$servicesWithErrors.length} with issues</span>
+							<span>{servicesWithErrors.length} with issues</span>
 						</div>
 					{/if}
 				</div>
@@ -655,18 +660,18 @@
 									<IconApiApp size={20} />
 									<span>Connected APIs</span>
 								</div>
-								<div class="api-health-value">{$connectedCount}</div>
+								<div class="api-health-value">{connectedCount}</div>
 								<button class="api-health-action" onclick={() => goto('/admin/connections')}>
 									Manage Connections
 								</button>
 							</div>
-							<div class="api-health-card" class:has-errors={$servicesWithErrors.length > 0}>
+							<div class="api-health-card" class:has-errors={servicesWithErrors.length > 0}>
 								<div class="api-health-header">
 									<IconAlertTriangle size={20} />
 									<span>Connection Issues</span>
 								</div>
-								<div class="api-health-value">{$servicesWithErrors.length}</div>
-								{#if $servicesWithErrors.length > 0}
+								<div class="api-health-value">{servicesWithErrors.length}</div>
+								{#if servicesWithErrors.length > 0}
 									<button
 										class="api-health-action error"
 										onclick={() => goto('/admin/connections')}
@@ -682,11 +687,11 @@
 									<IconHeartbeat size={20} />
 									<span>Overall API Health</span>
 								</div>
-								<div class="api-health-value">{$overallHealth}%</div>
+								<div class="api-health-value">{overallHealth}%</div>
 								<div class="api-health-bar">
 									<div
 										class="api-health-progress"
-										style="width: {$overallHealth}%; background: {getScoreColor($overallHealth)}"
+										style="width: {overallHealth}%; background: {getScoreColor(overallHealth)}"
 									></div>
 								</div>
 							</div>

@@ -12,19 +12,25 @@
 	import { quintOut } from 'svelte/easing';
 	import {
 		offlineStore,
-		isOnline,
-		hasPendingActions,
-		pendingActionsCount,
-		isSyncing
+		getIsOnline,
+		getHasPendingActions,
+		getPendingActionsCount,
+		getIsSyncing
 	} from '$lib/stores/offline.svelte';
 	import { IconWifi, IconUpload, IconLoader, IconCheck, IconX, IconRefresh } from '$lib/icons';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);
 
+	// Local derived from getters
+	const isOnline = $derived(getIsOnline());
+	const hasPendingActions = $derived(getHasPendingActions());
+	const pendingActionsCount = $derived(getPendingActionsCount());
+	const isSyncing = $derived(getIsSyncing());
+
 	// Show "back online" notification briefly
 	$effect(() => {
-		if ($isOnline && $hasPendingActions) {
+		if (isOnline && hasPendingActions) {
 			justCameOnline = true;
 			setTimeout(() => {
 				justCameOnline = false;
@@ -33,7 +39,7 @@
 	});
 </script>
 
-{#if !$isOnline}
+{#if !isOnline}
 	<div
 		class="offline-banner"
 		in:fly={{ y: -50, duration: 300, easing: quintOut }}
@@ -47,10 +53,10 @@
 				<span class="banner-title">You're offline</span>
 				<span class="banner-subtitle">Changes will sync when you're back online</span>
 			</div>
-			{#if $hasPendingActions}
+			{#if hasPendingActions}
 				<div class="pending-badge">
 					<IconUpload size={14} />
-					{$pendingActionsCount} pending
+					{pendingActionsCount} pending
 				</div>
 			{/if}
 		</div>
@@ -66,12 +72,12 @@
 				<IconWifi size={18} />
 			</div>
 			<span class="banner-title">Back online</span>
-			{#if $isSyncing}
+			{#if isSyncing}
 				<div class="syncing-indicator">
 					<IconLoader size={14} class="spinning" />
 					Syncing...
 				</div>
-			{:else if $hasPendingActions}
+			{:else if hasPendingActions}
 				<button class="sync-btn" onclick={() => offlineStore.sync()}>
 					<IconRefresh size={14} />
 					Sync now
@@ -87,18 +93,18 @@
 {/if}
 
 <!-- Floating sync indicator when online with pending actions -->
-{#if $isOnline && $hasPendingActions && !justCameOnline}
+{#if isOnline && hasPendingActions && !justCameOnline}
 	<button
 		class="sync-float-btn"
 		onclick={() => (showDetails = !showDetails)}
 		in:fly={{ y: 20, duration: 200 }}
 	>
-		{#if $isSyncing}
+		{#if isSyncing}
 			<IconLoader size={18} class="spinning" />
 		{:else}
 			<IconUpload size={18} />
 		{/if}
-		<span>{$pendingActionsCount}</span>
+		<span>{pendingActionsCount}</span>
 	</button>
 
 	{#if showDetails}
@@ -110,9 +116,9 @@
 				</button>
 			</div>
 			<div class="details-content">
-				<p>{$pendingActionsCount} changes waiting to sync</p>
-				<button class="sync-all-btn" onclick={() => offlineStore.sync()} disabled={$isSyncing}>
-					{#if $isSyncing}
+				<p>{pendingActionsCount} changes waiting to sync</p>
+				<button class="sync-all-btn" onclick={() => offlineStore.sync()} disabled={isSyncing}>
+					{#if isSyncing}
 						<IconLoader size={14} class="spinning" />
 						Syncing...
 					{:else}

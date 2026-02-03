@@ -7,7 +7,7 @@
 	 * filtering, grouping, and visualization capabilities.
 	 */
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 
@@ -94,7 +94,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if ($isAnalyticsConnected) {
+			if (getIsAnalyticsConnected) {
 				await loadEvents();
 			} else {
 				loading = false;
@@ -142,7 +142,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !$isAnalyticsConnected}
+		{:else if !getIsAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Filters - Glass morphism card -->

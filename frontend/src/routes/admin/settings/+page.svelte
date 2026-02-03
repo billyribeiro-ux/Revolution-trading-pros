@@ -24,8 +24,8 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		connections,
-		isAnalyticsConnected,
-		isSeoConnected
+		getIsAnalyticsConnected,
+		getIsSeoConnected
 	} from '$lib/stores/connections.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 

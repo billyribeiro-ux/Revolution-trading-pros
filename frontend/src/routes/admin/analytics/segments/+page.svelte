@@ -7,7 +7,7 @@
 	 * based on behavior, attributes, and rules.
 	 */
 	import { analyticsApi, type Segment } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
+	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	// Svelte 5 Runes - State
@@ -122,7 +122,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if ($isAnalyticsConnected) {
+			if (getIsAnalyticsConnected) {
 				await loadSegments();
 			} else {
 				loading = false;
@@ -166,7 +166,7 @@
 					<p class="text-sm text-slate-400">Create and manage audience segments</p>
 				</div>
 			</div>
-			{#if $isAnalyticsConnected}
+			{#if getIsAnalyticsConnected}
 				<div class="flex items-center gap-3">
 					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">
 						<button
@@ -222,7 +222,7 @@
 					></div>
 				</div>
 			</div>
-		{:else if !$isAnalyticsConnected}
+		{:else if !getIsAnalyticsConnected}
 			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
 		{:else}
 			<!-- Stats Grid -->

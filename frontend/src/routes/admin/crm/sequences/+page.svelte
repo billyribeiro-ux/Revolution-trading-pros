@@ -17,25 +17,27 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconMailForward from '@tabler/icons-svelte/icons/mail-forward';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconSend from '@tabler/icons-svelte/icons/send';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import {
+		IconMail,
+		IconMailForward,
+		IconPlus,
+		IconSearch,
+		IconFilter,
+		IconEdit,
+		IconTrash,
+		IconEye,
+		IconPlayerPlay,
+		IconPlayerPause,
+		IconCopy,
+		IconRefresh,
+		IconUsers,
+		IconChartBar,
+		IconClock,
+		IconX,
+		IconSend,
+		IconCheck,
+		IconAlertCircle
+	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 

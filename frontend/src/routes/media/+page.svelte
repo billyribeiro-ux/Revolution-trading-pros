@@ -10,10 +10,10 @@
 	import { onMount } from 'svelte';
 	import {
 		mediaStore,
-		currentFiles,
-		selectedCount,
-		viewMode,
-		isLoading
+		getCurrentFiles,
+		getSelectedCount,
+		getCurrentViewMode,
+		getIsMediaLoading
 	} from '$lib/stores/media.svelte';
 	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
 	import FolderTree from '$lib/components/media/FolderTree.svelte';
@@ -31,8 +31,14 @@
 	let showUploadModal = false;
 	// TODO: Implement CreateFolderModal component
 	// let showCreateFolderModal = false;
-	let searchQuery = '';
-	let selectedFileType = 'all';
+	let searchQuery = $state('');
+	let selectedFileType = $state('all');
+
+	// Local derived from getters
+	const viewMode = $derived(getCurrentViewMode());
+	const isLoading = $derived(getIsMediaLoading());
+	const currentFiles = $derived(getCurrentFiles());
+	const selectedCount = $derived(getSelectedCount());
 
 	onMount(() => {
 		mediaStore.initialize();
@@ -68,7 +74,7 @@
 	}
 
 	async function handleBulkDelete() {
-		if (!confirm(`Delete ${$selectedCount} file(s)?`)) return;
+		if (!confirm(`Delete ${selectedCount} file(s)?`)) return;
 
 		try {
 			await mediaStore.bulkDelete(false);
@@ -106,7 +112,7 @@
 		<!-- Sidebar -->
 		<aside class="sidebar">
 			<FolderTree
-				currentFolderId={$mediaStore.currentFolder}
+				currentFolderId={mediaStore.currentFolder}
 				onFolderSelect={handleFolderSelect}
 				onCreateFolder={() => {
 					// TODO: Implement CreateFolderModal
@@ -120,7 +126,7 @@
 			<!-- Upload Dropzone -->
 			{#if showUploadModal}
 				<div class="upload-section">
-					<UploadDropzone folderId={$mediaStore.currentFolder} />
+					<UploadDropzone folderId={mediaStore.currentFolder} />
 				</div>
 			{/if}
 
@@ -163,7 +169,7 @@
 					<div class="view-toggle">
 						<button
 							class="view-btn"
-							class:active={$viewMode === 'grid'}
+							class:active={viewMode === 'grid'}
 							onclick={() => mediaStore.setViewMode('grid')}
 							aria-label="Grid view"
 						>
@@ -171,7 +177,7 @@
 						</button>
 						<button
 							class="view-btn"
-							class:active={$viewMode === 'list'}
+							class:active={viewMode === 'list'}
 							onclick={() => mediaStore.setViewMode('list')}
 							aria-label="List view"
 						>
@@ -180,9 +186,9 @@
 					</div>
 
 					<!-- Bulk Actions -->
-					{#if $selectedCount > 0}
+					{#if selectedCount > 0}
 						<div class="bulk-actions">
-							<span class="selected-count">{$selectedCount} selected</span>
+							<span class="selected-count">{selectedCount} selected</span>
 							<button class="bulk-btn" onclick={handleBulkDelete}>
 								<IconTrash size={18} />
 								Delete
@@ -194,18 +200,18 @@
 			</div>
 
 			<!-- Files Grid/List -->
-			{#if $isLoading}
+			{#if isLoading}
 				<div class="loading-state">
 					<div class="spinner"></div>
 					<p class="text-gray-400 mt-4">Loading files...</p>
 				</div>
-			{:else if $currentFiles.length > 0}
-				{#if $viewMode === 'grid'}
+			{:else if currentFiles.length > 0}
+				{#if viewMode === 'grid'}
 					<div class="files-grid">
-						{#each $currentFiles as file}
+						{#each currentFiles as file}
 							<div
 								class="file-card"
-								class:selected={$mediaStore.selectedFiles.has(file.id)}
+								class:selected={mediaStore.selectedFiles.has(file.id)}
 								onclick={() => mediaStore.toggleFileSelection(file.id)}
 								role="button"
 								tabindex="0"
@@ -256,15 +262,15 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each $currentFiles as file}
+								{#each currentFiles as file}
 									<tr
-										class:selected={$mediaStore.selectedFiles.has(file.id)}
+										class:selected={mediaStore.selectedFiles.has(file.id)}
 										onclick={() => mediaStore.toggleFileSelection(file.id)}
 									>
 										<td>
 											<input
 												id="page-checkbox" name="page-checkbox" type="checkbox"
-												checked={$mediaStore.selectedFiles.has(file.id)}
+												checked={mediaStore.selectedFiles.has(file.id)}
 												onchange={() => mediaStore.toggleFileSelection(file.id)}
 											/>
 										</td>
@@ -296,22 +302,22 @@
 				{/if}
 
 				<!-- Pagination -->
-				{#if $mediaStore.pagination.total_pages > 1}
+				{#if mediaStore.pagination.total_pages > 1}
 					<div class="pagination">
 						<button
 							class="page-btn"
-							disabled={$mediaStore.pagination.page === 1}
-							onclick={() => mediaStore.loadFiles($mediaStore.pagination.page - 1)}
+							disabled={mediaStore.pagination.page === 1}
+							onclick={() => mediaStore.loadFiles(mediaStore.pagination.page - 1)}
 						>
 							Previous
 						</button>
 						<span class="page-info">
-							Page {$mediaStore.pagination.page} of {$mediaStore.pagination.total_pages}
+							Page {mediaStore.pagination.page} of {mediaStore.pagination.total_pages}
 						</span>
 						<button
 							class="page-btn"
-							disabled={$mediaStore.pagination.page === $mediaStore.pagination.total_pages}
-							onclick={() => mediaStore.loadFiles($mediaStore.pagination.page + 1)}
+							disabled={mediaStore.pagination.page === mediaStore.pagination.total_pages}
+							onclick={() => mediaStore.loadFiles(mediaStore.pagination.page + 1)}
 						>
 							Next
 						</button>

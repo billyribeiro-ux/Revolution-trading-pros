@@ -390,108 +390,108 @@ export const connections = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Derived Values (Svelte 5 Runes)
+// Connection Check Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Check if analytics is connected
  */
-export const isAnalyticsConnected = $derived.by(() => {
+export function getIsAnalyticsConnected(): boolean {
 	const analyticsServices = FEATURE_SERVICES['analytics'];
 	return analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if SEO tools are connected
  */
-export const isSeoConnected = $derived.by(() => {
+export function getIsSeoConnected(): boolean {
 	const seoServices = FEATURE_SERVICES['seo'];
 	return seoServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if email is connected
  */
-export const isEmailConnected = $derived.by(() => {
+export function getIsEmailConnected(): boolean {
 	const emailServices = FEATURE_SERVICES['email'];
 	return emailServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if payment is connected
  */
-export const isPaymentConnected = $derived.by(() => {
+export function getIsPaymentConnected(): boolean {
 	const paymentServices = FEATURE_SERVICES['payment'];
 	return paymentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if CRM is connected
  */
-export const isCrmConnected = $derived.by(() => {
+export function getIsCrmConnected(): boolean {
 	const crmServices = FEATURE_SERVICES['crm'];
 	return crmServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if Fluent ecosystem is connected (any Fluent product)
  */
-export const isFluentConnected = $derived.by(() => {
+export function getIsFluentConnected(): boolean {
 	const fluentServices = FEATURE_SERVICES['fluent'];
 	return fluentServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if Forms is connected (FluentForms Pro)
  */
-export const isFormsConnected = $derived.by(() => {
+export function getIsFormsConnected(): boolean {
 	const formsServices = FEATURE_SERVICES['forms'];
 	return formsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Check if behavior tracking is connected
  */
-export const isBehaviorConnected = $derived.by(() => {
+export function getIsBehaviorConnected(): boolean {
 	const behaviorServices = FEATURE_SERVICES['behavior'];
 	return behaviorServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false;
-});
+}
 
 /**
  * Get all connection statuses (for connection health panel)
  */
-export const allConnectionStatuses = $derived.by(() => {
+export function getAllConnectionStatuses(): Record<string, ConnectionState> {
 	const statuses: Record<string, ConnectionState> = {};
 	for (const [key, conn] of Object.entries(connectionsState.connections)) {
 		statuses[key] = conn.status;
 	}
 	return statuses;
-});
+}
 
 /**
  * Get all connected services count
  */
-export const connectedCount = $derived(
-	Object.values(connectionsState.connections).filter((c) => c.isConnected).length
-);
+export function getConnectedCount(): number {
+	return Object.values(connectionsState.connections).filter((c) => c.isConnected).length;
+}
 
 /**
  * Get services with errors
  */
-export const servicesWithErrors = $derived(
-	Object.values(connectionsState.connections).filter((c) => c.status === 'error')
-);
+export function getServicesWithErrors(): ConnectionStatus[] {
+	return Object.values(connectionsState.connections).filter((c) => c.status === 'error');
+}
 
 /**
  * Overall connection health
  */
-export const overallHealth = $derived.by(() => {
+export function getOverallHealth(): number {
 	const connected = Object.values(connectionsState.connections).filter((c) => c.isConnected);
 	if (connected.length === 0) return 0;
 
 	const totalHealth = connected.reduce((sum, c) => sum + c.healthScore, 0);
 	return Math.round(totalHealth / connected.length);
-});
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Export

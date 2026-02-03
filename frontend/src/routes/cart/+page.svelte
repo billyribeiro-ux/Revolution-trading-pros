@@ -7,7 +7,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart.svelte';
+	import { cartStore, getCartItemCount, getCartTotal } from '$lib/stores/cart.svelte';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
@@ -32,17 +32,20 @@
 	// DERIVED
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	const cartItemCount = $derived(getCartItemCount());
+	const cartTotal = $derived(getCartTotal());
+
 	let discountAmount = $derived(
 		appliedCoupon
 			? appliedCoupon.type === 'percentage'
-				? ($cartTotal * appliedCoupon.discount) / 100
+				? (cartTotal * appliedCoupon.discount) / 100
 				: appliedCoupon.discount
 			: 0
 	);
 
-	let finalTotal = $derived(Math.max(0, $cartTotal - discountAmount));
+	let finalTotal = $derived(Math.max(0, cartTotal - discountAmount));
 
-	let hasSubscriptions = $derived($cartStore.items.some((i) => i.interval));
+	let hasSubscriptions = $derived(cartStore.items.some((i) => i.interval));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
@@ -82,7 +85,7 @@
 		couponError = '';
 
 		try {
-			const result = await validateCoupon(couponCode.trim().toUpperCase(), $cartTotal);
+			const result = await validateCoupon(couponCode.trim().toUpperCase(), getCartTotal);
 
 			if (result.valid) {
 				appliedCoupon = {
@@ -133,7 +136,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <!-- Show NonMemberCheckout for unauthenticated users with items in cart -->
-{#if !$isAuthenticated && $cartStore.items.length > 0}
+{#if !$isAuthenticated && cartStore.items.length > 0}
 	<NonMemberCheckout />
 {:else}
 	<div class="rtp-cart rtp-page">
@@ -146,12 +149,12 @@
 				</a>
 				<h1 class="page-title">CART</h1>
 				<p class="cart-count">
-					{$cartItemCount}
-					{$cartItemCount === 1 ? 'item' : 'items'} in your cart
+					{getCartItemCount}
+					{getCartItemCount === 1 ? 'item' : 'items'} in your cart
 				</p>
 			</header>
 
-			{#if $cartStore.items.length === 0}
+			{#if cartStore.items.length === 0}
 				<!-- Empty Cart State -->
 				<div class="cart-empty">
 					<div class="card">
@@ -179,7 +182,7 @@
 							<div class="col-xs-12 col-sm-7 col-md-8">
 								<div class="products" data-products-view="list">
 									<div class="flex-grid">
-										{#each $cartStore.items as item (item.id + (item.interval || ''))}
+										{#each cartStore.items as item (item.id + (item.interval || ''))}
 											<article class="product flex-grid-item cart_item">
 												<div class="card">
 													<figure class="card-media">
@@ -260,7 +263,7 @@
 													<div>Total</div>
 													<div class="order-total-price">
 														{#if appliedCoupon && discountAmount > 0}
-															<span class="original-price">{formatPrice($cartTotal)}</span>
+															<span class="original-price">{formatPrice(getCartTotal)}</span>
 														{/if}
 														{formatPrice(finalTotal)}
 													</div>
@@ -285,7 +288,7 @@
 																<tr class="recurring-totals">
 																	<th colspan="2">Recurring Totals</th>
 																</tr>
-																{#each $cartStore.items.filter((i) => i.interval) as item}
+																{#each cartStore.items.filter((i) => i.interval) as item}
 																	<tr class="cart-subtotal recurring-total">
 																		<th rowspan="1">Subtotal</th>
 																		<td data-title="Subtotal">

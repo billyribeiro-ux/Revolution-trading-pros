@@ -12,7 +12,7 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
-	import { unreadCount } from '$lib/stores/notifications.svelte';
+	import { getUnreadCount } from '$lib/stores/notifications.svelte';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
 
 	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
@@ -37,6 +37,9 @@
 		children: Snippet;
 	}
 	let props: Props = $props();
+
+	// Local derived from getters
+	const unreadCount = $derived(getUnreadCount());
 
 	// State
 	let isSidebarOpen = $state(false);
@@ -172,8 +175,8 @@
 					aria-label="Open notifications"
 				>
 					<IconBell size={18} />
-					{#if $unreadCount > 0}
-						<span class="notification-badge">{$unreadCount > 9 ? '9+' : $unreadCount}</span>
+					{#if unreadCount > 0}
+						<span class="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
 					{/if}
 				</button>
 

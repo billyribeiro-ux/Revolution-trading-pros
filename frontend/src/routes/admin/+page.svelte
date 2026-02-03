@@ -48,8 +48,8 @@
 	import { browser } from '$app/environment';
 	import {
 		connections,
-		isAnalyticsConnected,
-		isSeoConnected
+		getIsAnalyticsConnected,
+		getIsSeoConnected
 	} from '$lib/stores/connections.svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
