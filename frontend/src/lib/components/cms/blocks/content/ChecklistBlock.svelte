@@ -211,7 +211,6 @@
 	 * Handles keyboard navigation and actions within items
 	 */
 	function handleItemKeyDown(e: KeyboardEvent, id: string, index: number): void {
-		const target = e.target as HTMLElement;
 		const item = items.find((i) => i.id === id);
 
 		switch (e.key) {

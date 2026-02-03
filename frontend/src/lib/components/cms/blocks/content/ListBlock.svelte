@@ -23,9 +23,6 @@
 
 	let props: Props = $props();
 
-	// Track focused item for keyboard navigation
-	let focusedItemIndex = $state<number | null>(null);
-
 	// Derived state
 	const isChecklist = $derived(props.block.type === 'checklist');
 	const listType = $derived(props.block.content.listType || 'bullet');
@@ -54,7 +51,6 @@
 
 		// Focus the new item after render
 		requestAnimationFrame(() => {
-			focusedItemIndex = index + 1;
 			const newItem = document.querySelector(
 				`[data-list-item-index="${index + 1}"]`
 			) as HTMLElement;

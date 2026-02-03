@@ -12,8 +12,8 @@
 -->
 
 <script lang="ts">
-	import { IconQuote, IconColorPicker } from '$lib/icons';
-	import type { Block, BlockContent } from '../types';
+	import { IconColorPicker } from '$lib/icons';
+	import type { Block } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
 	// =========================================================================
@@ -197,7 +197,6 @@
 	class:border-left-bar={borderStyle === 'left-bar'}
 	class:border-top-bottom={borderStyle === 'top-bottom'}
 	class:border-none={borderStyle === 'none'}
-	role="figure"
 	aria-labelledby={captionId}
 	style:--accent-color={accentColor}
 >
@@ -369,7 +368,7 @@
 								class:selected={accentColor === color}
 								style:background-color={color}
 								onclick={() => setAccentColor(color)}
-								aria-selected={accentColor === color}
+								aria-pressed={accentColor === color}
 								title={color}
 							>
 								<span class="sr-only">Select color {color}</span>
