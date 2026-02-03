@@ -7,6 +7,8 @@
 -->
 
 <script lang="ts">
+	// Self-import for recursive rendering (replaces deprecated svelte:self)
+	import BlockRenderer from './BlockRenderer.svelte';
 	import {
 		IconPhoto,
 		IconVideo,
@@ -754,8 +756,7 @@
 	{#if hasBlockComponent(block.type)}
 		{@const BlockComponent = getBlockComponent(block.type)}
 		{#if BlockComponent}
-			<svelte:component
-				this={BlockComponent}
+			<BlockComponent
 				{block}
 				{isSelected}
 				{isEditing}
@@ -1207,7 +1208,7 @@
 				{:else if reusableComponentData && reusableComponentData.length > 0}
 					<div class="reusable-blocks">
 						{#each reusableComponentData as childBlock (childBlock.id)}
-							<svelte:self block={childBlock} isSelected={false} isEditing={false} onUpdate={() => {}} />
+							<BlockRenderer block={childBlock} isSelected={false} isEditing={false} onUpdate={() => {}} />
 						{/each}
 					</div>
 				{:else}
@@ -1353,7 +1354,7 @@
 
 	<!-- Card Block -->
 	{:else if block.type === 'card'}
-		<article class="card-block" role="article">
+		<article class="card-block">
 			{#if isEditing && isSelected}
 				<div class="card-edit-fields">
 					<label class="edit-field"><span>Image URL</span><input type="url" value={block.content.mediaUrl || ''} placeholder="https://example.com/image.jpg" oninput={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /></label>
@@ -1370,7 +1371,7 @@
 
 	<!-- Testimonial Block -->
 	{:else if block.type === 'testimonial'}
-		<figure class="testimonial-block" role="figure">
+		<figure class="testimonial-block">
 			{#if isEditing && isSelected}<div class="testimonial-edit-fields"><label class="edit-field"><span>Author Photo URL</span><input type="url" value={block.content.mediaUrl || ''} placeholder="https://example.com/photo.jpg" oninput={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /></label></div>{/if}
 			<div class="testimonial-quote-icon"><IconQuote size={32} /></div>
 			<blockquote contenteditable={isEditing} class="testimonial-quote editable-content" class:placeholder={!block.content.text} oninput={handleTextInput} onpaste={handlePaste} data-placeholder="Write the testimonial quote...">{block.content.text || ''}</blockquote>
@@ -1385,7 +1386,7 @@
 
 	<!-- CTA Block -->
 	{:else if block.type === 'cta'}
-		<section class="cta-block" class:cta-dark={block.settings.backgroundColor === 'dark'} class:cta-gradient={block.settings.backgroundColor === 'gradient'} role="region" aria-label="Call to action">
+		<section class="cta-block" class:cta-dark={block.settings.backgroundColor === 'dark'} class:cta-gradient={block.settings.backgroundColor === 'gradient'} aria-label="Call to action">
 			{#if isEditing && isSelected}<div class="cta-edit-fields"><label class="edit-field"><span>Background Style</span><select value={block.settings.backgroundColor || 'light'} onchange={(e: Event) => onUpdate({ settings: { ...block.settings, backgroundColor: (e.target as HTMLSelectElement).value } })}><option value="light">Light</option><option value="dark">Dark</option><option value="gradient">Gradient</option></select></label><label class="edit-field"><span>Primary Button URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://example.com" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>Secondary Button URL</span><input type="url" value={block.settings.secondaryLinkUrl || ''} placeholder="https://example.com" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, secondaryLinkUrl: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
 			<h2 contenteditable={isEditing} class="cta-heading editable-content" class:placeholder={!block.content.text} oninput={handleTextInput} onpaste={handlePaste} data-placeholder="Compelling Headline">{block.content.text || ''}</h2>
 			<p contenteditable={isEditing} class="cta-description editable-content" class:placeholder={!block.content.html} oninput={(e: Event) => updateContent({ html: (e.target as HTMLElement).textContent || '' })} onpaste={handlePaste} data-placeholder="Supporting text that encourages action...">{block.content.html || ''}</p>
@@ -1426,7 +1427,7 @@
 
 	<!-- Author Block -->
 	{:else if block.type === 'author'}
-		<aside class="author-block" role="complementary" aria-label="About the author">
+		<aside class="author-block" aria-label="About the author">
 			{#if isEditing && isSelected}<div class="author-edit-fields"><label class="edit-field"><span>Author Photo URL</span><input type="url" value={block.content.mediaUrl || ''} placeholder="https://example.com/photo.jpg" oninput={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /></label><label class="edit-field"><span>Twitter URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://twitter.com/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>LinkedIn URL</span><input type="url" value={block.settings.secondaryLinkUrl || ''} placeholder="https://linkedin.com/in/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, secondaryLinkUrl: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
 			<div class="author-avatar">{#if block.content.mediaUrl}<img src={block.content.mediaUrl} alt="Author photo" />{:else}<IconUser size={48} />{/if}</div>
 			<div class="author-info">
@@ -1470,7 +1471,7 @@
 				<div class="gallery-grid">{#each images as image, index}<div class="gallery-item"><button type="button" class="gallery-image-btn" onclick={() => !isEditing && openLightbox(index)} aria-label="View image {index + 1}"><img src={image.url} alt={image.alt || 'Gallery image'} loading="lazy" />{#if !isEditing}<div class="gallery-overlay"><IconMaximize size={24} /></div>{/if}</button>{#if isEditing}<div class="gallery-item-controls"><input type="text" placeholder="Image URL" value={image.url} onchange={(e: Event) => updateGalleryImage(index, 'url', (e.target as HTMLInputElement).value)} /><input type="text" placeholder="Alt text" value={image.alt || ''} onchange={(e: Event) => updateGalleryImage(index, 'alt', (e.target as HTMLInputElement).value)} /><button type="button" onclick={() => removeGalleryImage(index)} aria-label="Remove"><IconX size={16} /></button></div>{/if}</div>{/each}</div>
 			{:else if isEditing}<div class="gallery-placeholder"><IconLayoutGrid size={48} /><span>Add images to gallery</span></div>{/if}
 			{#if isEditing}<button type="button" class="gallery-add-btn" onclick={addGalleryImage}><IconPlus size={16} />Add Image</button>{/if}
-			{#if lightboxOpen && images.length > 0}<div class="lightbox-overlay" role="dialog" onclick={closeLightbox}><div class="lightbox-content" onclick={(e: MouseEvent) => e.stopPropagation()}><button type="button" class="lightbox-close" onclick={closeLightbox}><IconX size={24} /></button><button type="button" class="lightbox-nav lightbox-prev" onclick={prevImage}><IconChevronDown size={32} style="transform: rotate(90deg)" /></button><img src={images[lightboxIndex]?.url} alt={images[lightboxIndex]?.alt || 'Image'} class="lightbox-image" /><button type="button" class="lightbox-nav lightbox-next" onclick={nextImage}><IconChevronDown size={32} style="transform: rotate(-90deg)" /></button><div class="lightbox-counter">{lightboxIndex + 1} / {images.length}</div></div></div>{/if}
+			{#if lightboxOpen && images.length > 0}<div class="lightbox-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={closeLightbox} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeLightbox()}><div class="lightbox-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}><button type="button" class="lightbox-close" onclick={closeLightbox}><IconX size={24} /></button><button type="button" class="lightbox-nav lightbox-prev" onclick={prevImage}><IconChevronDown size={32} style="transform: rotate(90deg)" /></button><img src={images[lightboxIndex]?.url} alt={images[lightboxIndex]?.alt || 'Image'} class="lightbox-image" /><button type="button" class="lightbox-nav lightbox-next" onclick={nextImage}><IconChevronDown size={32} style="transform: rotate(-90deg)" /></button><div class="lightbox-counter">{lightboxIndex + 1} / {images.length}</div></div></div>{/if}
 		</div>
 
 	<!-- Audio Block -->
