@@ -121,8 +121,8 @@
 
 	// Pagination
 	let currentPage = $state(1);
-	let _totalPages = $state(1);
-	let _totalVideos = $state(0);
+	let totalPages = $state(1);
+	let totalVideos = $state(0);
 
 	// Filters
 	let searchQuery = $state('');
@@ -136,7 +136,7 @@
 	let editingVideo = $state<Video | null>(null);
 	let replacingVideo = $state<Video | null>(null);
 	let isSaving = $state(false);
-	let _isDeleting = $state(false);
+	let isDeleting = $state(false);
 	let newVideoUrl = $state('');
 
 	// Form state
@@ -157,7 +157,7 @@
 	// Bunny.net Direct Upload State
 	let showBunnyUploadModal = $state(false);
 	let bunnyUploadFiles = $state<File[]>([]);
-	let _bunnyUploadBatchId = $state<string | null>(null);
+	let bunnyUploadBatchId = $state<string | null>(null);
 	let bunnyUploadStatus = $state<BatchStatus | null>(null);
 	let isUploadingToBunny = $state(false);
 	let bunnyUploadProgress = $state(0);
@@ -253,8 +253,8 @@
 					...video,
 					categories: video.tags || []
 				}));
-				_totalPages = response.data.last_page;
-				_totalVideos = response.data.total;
+				totalPages = response.data.last_page;
+				totalVideos = response.data.total;
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load videos';
@@ -400,7 +400,7 @@
 	async function deleteVideo(video: Video) {
 		if (!confirm(`Are you sure you want to delete "${video.title}"?`)) return;
 
-		_isDeleting = true;
+		isDeleting = true;
 		error = '';
 
 		try {
@@ -413,7 +413,7 @@
 			error = err instanceof Error ? err.message : 'Failed to delete video';
 			console.error('Error deleting video:', err);
 		} finally {
-			_isDeleting = false;
+			isDeleting = false;
 		}
 	}
 
@@ -440,7 +440,7 @@
 
 	function openBunnyUploadModal() {
 		bunnyUploadFiles = [];
-		_bunnyUploadBatchId = null;
+		bunnyUploadBatchId = null;
 		bunnyUploadStatus = null;
 		bunnyUploadProgress = 0;
 		showBunnyUploadModal = true;
@@ -501,7 +501,7 @@
 			});
 
 			if (response.success && response.data) {
-				_bunnyUploadBatchId = response.data.batch_id;
+				bunnyUploadBatchId = response.data.batch_id;
 
 				// Upload each file to its respective Bunny upload URL
 				for (let i = 0; i < response.data.uploads.length; i++) {
@@ -620,7 +620,7 @@
 		}
 	}
 
-	async function _fetchVideoDuration(videoId: number) {
+	async function fetchVideoDuration(videoId: number) {
 		try {
 			const response = await videoOpsApi.fetchDuration(videoId);
 			if (response.success && response.data) {

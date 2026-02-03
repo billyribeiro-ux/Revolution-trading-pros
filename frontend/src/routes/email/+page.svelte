@@ -167,7 +167,7 @@
 
 	<!-- Content -->
 	<div class="tab-content">
-		{#if getIsEmailLoading}
+		{#if getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="text-gray-400 mt-4">Loading...</p>

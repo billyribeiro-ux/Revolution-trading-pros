@@ -102,6 +102,14 @@ export const mediaStore = {
 		return mediaState.viewMode;
 	},
 
+	get currentFolder() {
+		return mediaState.currentFolder;
+	},
+
+	get pagination() {
+		return mediaState.pagination;
+	},
+
 	// ───────────────────────────────────────────────────────────────────
 	// Load Files
 	// ───────────────────────────────────────────────────────────────────

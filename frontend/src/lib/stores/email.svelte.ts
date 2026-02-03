@@ -103,6 +103,10 @@ export const emailStore = {
 		return emailState.error;
 	},
 
+	get analytics() {
+		return emailState.analytics;
+	},
+
 	// ═══════════════════════════════════════════════════════════════════════
 	// Campaign Methods
 	// ═══════════════════════════════════════════════════════════════════════

@@ -85,7 +85,7 @@
 		couponError = '';
 
 		try {
-			const result = await validateCoupon(couponCode.trim().toUpperCase(), getCartTotal);
+			const result = await validateCoupon(couponCode.trim().toUpperCase(), getCartTotal());
 
 			if (result.valid) {
 				appliedCoupon = {
@@ -149,8 +149,8 @@
 				</a>
 				<h1 class="page-title">CART</h1>
 				<p class="cart-count">
-					{getCartItemCount}
-					{getCartItemCount === 1 ? 'item' : 'items'} in your cart
+					{cartItemCount}
+					{cartItemCount === 1 ? 'item' : 'items'} in your cart
 				</p>
 			</header>
 
@@ -263,7 +263,7 @@
 													<div>Total</div>
 													<div class="order-total-price">
 														{#if appliedCoupon && discountAmount > 0}
-															<span class="original-price">{formatPrice(getCartTotal)}</span>
+															<span class="original-price">{formatPrice(cartTotal)}</span>
 														{/if}
 														{formatPrice(finalTotal)}
 													</div>
