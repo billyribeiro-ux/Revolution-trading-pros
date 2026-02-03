@@ -28,12 +28,15 @@
 		onSelect
 	}: Props = $props();
 
-	let items = $state<RecentlyAccessed[]>(initialData ?? []);
-	let loading = $state(!initialData);
+	let items = $state<RecentlyAccessed[]>([]);
+	let loading = $state(true);
 	let error = $state('');
 
 	$effect(() => {
-		if (!initialData) {
+		if (initialData) {
+			items = initialData;
+			loading = false;
+		} else {
 			loadRecentlyAccessed();
 		}
 	});

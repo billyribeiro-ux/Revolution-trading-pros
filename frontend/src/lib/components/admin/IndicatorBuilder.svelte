@@ -15,16 +15,11 @@
 		platformsApi,
 		indicatorVideosApi,
 		platformFilesApi,
-		documentationApi,
 		tradingViewAccessApi,
 		type Indicator,
 		type Platform,
-		type PlatformFile,
-		type IndicatorVideo,
-		type Documentation,
 		type TradingViewAccess,
 		type CreateIndicatorRequest,
-		formatFileSize,
 		validateTradingViewUsername
 	} from '$lib/api/indicators-enhanced';
 
@@ -36,9 +31,7 @@
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
 	import IconBook from '@tabler/icons-svelte-runes/icons/book';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconBrandTradingview from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';

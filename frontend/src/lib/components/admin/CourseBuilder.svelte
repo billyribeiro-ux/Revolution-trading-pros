@@ -15,11 +15,7 @@
 		coursesApi,
 		sectionsApi,
 		lessonsApi,
-		resourcesApi,
-		liveSessionsApi,
 		type Course,
-		type CourseSection,
-		type CourseLesson,
 		type CreateCourseRequest,
 		type CreateSectionRequest,
 		type CreateLessonRequest

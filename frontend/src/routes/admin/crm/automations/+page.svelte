@@ -18,7 +18,6 @@
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
-		IconRoute,
 		IconPlus,
 		IconSearch,
 		IconEdit,
@@ -37,8 +36,7 @@
 		IconX,
 		IconCheck,
 		IconAlertCircle,
-		IconUserPlus,
-		IconFilter
+		IconUserPlus
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
@@ -459,10 +457,10 @@
 
 	// Auto-refresh when filters change (after initial load)
 	$effect(() => {
-		// Track the reactive dependencies
-		const currentSearch = searchQuery;
-		const currentStatus = selectedStatus;
-		const currentTrigger = selectedTrigger;
+		// Access reactive values to track them
+		searchQuery;
+		selectedStatus;
+		selectedTrigger;
 
 		// Only reload if already initialized (skip the initial load)
 		if (isInitialized) {

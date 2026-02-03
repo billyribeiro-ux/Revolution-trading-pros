@@ -39,23 +39,8 @@
 
 	let displayInfo = $derived(formatResourceForDisplay(resource));
 	let isVideo = $derived(resource.resource_type === 'video');
-	let isPremium = $derived(resource.access_level !== 'free');
 	let formattedSize = $derived(resource.formatted_size || '');
 	let hasVersion = $derived((resource.version ?? 1) > 1);
-
-	// Default thumbnail based on resource type
-	function getDefaultThumbnail(type: string): string {
-		const defaults: Record<string, string> = {
-			video: '/images/placeholders/video-thumbnail.svg',
-			pdf: '/images/placeholders/pdf-thumbnail.svg',
-			document: '/images/placeholders/document-thumbnail.svg',
-			image: '/images/placeholders/image-thumbnail.svg',
-			spreadsheet: '/images/placeholders/spreadsheet-thumbnail.svg',
-			archive: '/images/placeholders/archive-thumbnail.svg',
-			other: '/images/placeholders/file-thumbnail.svg'
-		};
-		return defaults[type] || defaults.other;
-	}
 
 	async function handleDownload(event: MouseEvent) {
 		event.stopPropagation();

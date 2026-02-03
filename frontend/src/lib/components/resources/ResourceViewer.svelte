@@ -43,8 +43,6 @@
 	let isVideo = $derived(resource.resource_type === 'video');
 	let isPdf = $derived(resource.resource_type === 'pdf');
 	let isImage = $derived(resource.resource_type === 'image');
-	let isDocument = $derived(resource.resource_type === 'document' || resource.resource_type === 'spreadsheet');
-	let canPreview = $derived(isVideo || isPdf || isImage);
 	let isPremium = $derived(resource.access_level !== 'free');
 
 	// Load version history if requested
@@ -173,12 +171,11 @@
 
 	// Lifecycle - keyboard event handling
 	$effect(() => {
-		if (open) {
-			document.addEventListener('keydown', handleKeydown);
-			return () => {
-				document.removeEventListener('keydown', handleKeydown);
-			};
-		}
+		if (!open) return;
+		document.addEventListener('keydown', handleKeydown);
+		return () => {
+			document.removeEventListener('keydown', handleKeydown);
+		};
 	});
 </script>
 

@@ -19,12 +19,15 @@
 
 	let { roomId = undefined, initialData = undefined }: Props = $props();
 
-	let analytics: ResourceAnalytics | null = $state(initialData ?? null);
-	let loading = $state(!initialData);
+	let analytics: ResourceAnalytics | null = $state(null);
+	let loading = $state(true);
 	let error = $state('');
 
 	$effect(() => {
-		if (!initialData) {
+		if (initialData) {
+			analytics = initialData;
+			loading = false;
+		} else {
 			loadAnalytics();
 		}
 	});

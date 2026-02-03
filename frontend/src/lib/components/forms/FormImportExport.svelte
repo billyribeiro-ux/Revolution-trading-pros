@@ -20,7 +20,7 @@
 		onImportComplete?: (result: any) => void;
 	}
 
-	let { formId, formTitle, onImportComplete }: Props = $props();
+	let { formId, formTitle: _formTitle, onImportComplete }: Props = $props();
 
 	// State
 	let activeTab = $state<'export' | 'import'>('export');
