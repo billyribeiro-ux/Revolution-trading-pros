@@ -316,6 +316,7 @@
 
 		<!-- Caption -->
 		{#if mediaCaption || props.isEditing}
+			<!-- svelte-ignore a11y_figcaption_parent -->
 			<figcaption
 				contenteditable={props.isEditing}
 				class="video-caption"

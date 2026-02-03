@@ -115,7 +115,7 @@
 		document.execCommand('insertText', false, text);
 	}
 
-	function handleCardClick(e: MouseEvent, post: RelatedPost): void {
+	function handleCardClick(e: MouseEvent, _post: RelatedPost): void {
 		if (props.isEditing) {
 			e.preventDefault();
 		}
@@ -132,7 +132,6 @@
 
 <section
 	class="related-posts-block"
-	role="region"
 	aria-label="Related articles"
 >
 	<!-- Section Header -->
@@ -472,6 +471,7 @@
 		line-height: 1.4;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
@@ -483,6 +483,7 @@
 		color: #64748b;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		flex: 1;

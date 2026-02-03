@@ -9,7 +9,7 @@
 <script lang="ts">
 	import { IconGif, IconSearch, IconLoader2, IconX } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {
@@ -22,7 +22,6 @@
 	}
 
 	let props: Props = $props();
-	const stateManager = getBlockStateManager();
 
 	let searchQuery = $state('');
 	let searchResults = $state<Array<{ id: string; url: string; preview: string; title: string }>>([]);

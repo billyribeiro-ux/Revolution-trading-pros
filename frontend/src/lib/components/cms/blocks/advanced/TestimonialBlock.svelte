@@ -226,7 +226,7 @@
 	}
 </script>
 
-<figure class="testimonial-block" role="figure" aria-label="Testimonial">
+<figure class="testimonial-block" aria-label="Testimonial">
 	<!-- Quote Icon -->
 	<div class="testimonial-block__quote-icon" aria-hidden="true">
 		<IconQuote size={32} />
@@ -271,6 +271,7 @@
 	<!-- Quote Text -->
 	<blockquote class="testimonial-block__quote">
 		{#if props.isEditing}
+			<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 			<p
 				contenteditable="true"
 				class="testimonial-block__quote-text"
@@ -354,10 +355,11 @@
 			{/if}
 		</div>
 	</figcaption>
+</figure>
 
-	<!-- Settings Panel (Edit Mode) -->
-	{#if props.isEditing && props.isSelected}
-		<div class="testimonial-block__settings">
+<!-- Settings Panel (Edit Mode) - Outside figure to fix figcaption position -->
+{#if props.isEditing && props.isSelected}
+	<div class="testimonial-block__settings">
 			<!-- Show Photo Toggle -->
 			<label class="testimonial-block__setting">
 				<input
@@ -441,7 +443,6 @@
 			{/if}
 		</div>
 	{/if}
-</figure>
 
 <style>
 	/* ==========================================================================

@@ -8,8 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconUser, IconLink, IconUpload, IconX, IconPlus
-	} from '$lib/icons';
+	import { IconUser, IconLink, IconX, IconPlus } from '$lib/icons';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -304,6 +303,7 @@
 
 			<!-- Author Name -->
 			{#if props.isEditing}
+				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 				<h3
 					contenteditable="true"
 					class="author-block__name"
@@ -320,6 +320,7 @@
 			<!-- Author Title -->
 			{#if title || props.isEditing}
 				{#if props.isEditing}
+					<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 					<p
 						contenteditable="true"
 						class="author-block__title"
@@ -338,6 +339,7 @@
 
 		<!-- Author Bio -->
 		{#if props.isEditing}
+			<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 			<p
 				contenteditable="true"
 				class="author-block__bio"
