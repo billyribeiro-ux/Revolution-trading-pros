@@ -176,8 +176,8 @@
 	// ==========================================================================
 
 	// Used in bind:this directives for paragraph and heading blocks
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let editableRef = $state<HTMLElement | undefined>(undefined);
+	// Underscore prefix suppresses 'never read' - Svelte reads it via bind:this
+	let _editableRef = $state<HTMLElement | undefined>(undefined);
 
 	// Countdown timer state
 	let countdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -767,7 +767,7 @@
 	<!-- Paragraph Block -->
 	{:else if block.type === 'paragraph'}
 		<p
-			bind:this={editableRef}
+			bind:this={_editableRef}
 			contenteditable={isEditing}
 			class="editable-content"
 			class:placeholder={!block.content.text}
@@ -800,7 +800,7 @@
 			{/if}
 			<svelte:element
 				this={`h${level}`}
-				bind:this={editableRef}
+				bind:this={_editableRef}
 				contenteditable={isEditing}
 				class="editable-content heading-{level}"
 				class:placeholder={!block.content.text}
@@ -1376,7 +1376,7 @@
 			<div class="testimonial-quote-icon"><IconQuote size={32} /></div>
 			<blockquote contenteditable={isEditing} class="testimonial-quote editable-content" class:placeholder={!block.content.text} oninput={handleTextInput} onpaste={handlePaste} data-placeholder="Write the testimonial quote...">{block.content.text || ''}</blockquote>
 			<figcaption class="testimonial-author">
-				<div class="testimonial-avatar">{#if block.content.mediaUrl}<img src={block.content.mediaUrl} alt="Author photo" />{:else}<IconUser size={24} />{/if}</div>
+				<div class="testimonial-avatar">{#if block.content.mediaUrl}<img src={block.content.mediaUrl} alt="" />{:else}<IconUser size={24} />{/if}</div>
 				<div class="testimonial-info">
 					<span contenteditable={isEditing} class="testimonial-name editable-content" class:placeholder={!block.content.html} oninput={(e: Event) => updateContent({ html: (e.target as HTMLElement).textContent || '' })} data-placeholder="Author Name">{block.content.html || ''}</span>
 					<span contenteditable={isEditing} class="testimonial-title editable-content" class:placeholder={!block.content.code} oninput={(e: Event) => updateContent({ code: (e.target as HTMLElement).textContent || '' })} data-placeholder="Title, Company">{block.content.code || ''}</span>
@@ -1429,7 +1429,7 @@
 	{:else if block.type === 'author'}
 		<aside class="author-block" aria-label="About the author">
 			{#if isEditing && isSelected}<div class="author-edit-fields"><label class="edit-field"><span>Author Photo URL</span><input type="url" value={block.content.mediaUrl || ''} placeholder="https://example.com/photo.jpg" oninput={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /></label><label class="edit-field"><span>Twitter URL</span><input type="url" value={block.settings.linkUrl || ''} placeholder="https://twitter.com/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, linkUrl: (e.target as HTMLInputElement).value } })} /></label><label class="edit-field"><span>LinkedIn URL</span><input type="url" value={block.settings.secondaryLinkUrl || ''} placeholder="https://linkedin.com/in/username" oninput={(e: Event) => onUpdate({ settings: { ...block.settings, secondaryLinkUrl: (e.target as HTMLInputElement).value } })} /></label></div>{/if}
-			<div class="author-avatar">{#if block.content.mediaUrl}<img src={block.content.mediaUrl} alt="Author photo" />{:else}<IconUser size={48} />{/if}</div>
+			<div class="author-avatar">{#if block.content.mediaUrl}<img src={block.content.mediaUrl} alt="" />{:else}<IconUser size={48} />{/if}</div>
 			<div class="author-info">
 				<span class="author-label">Written by</span>
 				<h4 contenteditable={isEditing} class="author-name editable-content" class:placeholder={!block.content.text} oninput={handleTextInput} onpaste={handlePaste} data-placeholder="Author Name">{block.content.text || ''}</h4>
@@ -1471,7 +1471,7 @@
 				<div class="gallery-grid">{#each images as image, index}<div class="gallery-item"><button type="button" class="gallery-image-btn" onclick={() => !isEditing && openLightbox(index)} aria-label="View image {index + 1}"><img src={image.url} alt={image.alt || 'Gallery image'} loading="lazy" />{#if !isEditing}<div class="gallery-overlay"><IconMaximize size={24} /></div>{/if}</button>{#if isEditing}<div class="gallery-item-controls"><input type="text" placeholder="Image URL" value={image.url} onchange={(e: Event) => updateGalleryImage(index, 'url', (e.target as HTMLInputElement).value)} /><input type="text" placeholder="Alt text" value={image.alt || ''} onchange={(e: Event) => updateGalleryImage(index, 'alt', (e.target as HTMLInputElement).value)} /><button type="button" onclick={() => removeGalleryImage(index)} aria-label="Remove"><IconX size={16} /></button></div>{/if}</div>{/each}</div>
 			{:else if isEditing}<div class="gallery-placeholder"><IconLayoutGrid size={48} /><span>Add images to gallery</span></div>{/if}
 			{#if isEditing}<button type="button" class="gallery-add-btn" onclick={addGalleryImage}><IconPlus size={16} />Add Image</button>{/if}
-			{#if lightboxOpen && images.length > 0}<div class="lightbox-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={closeLightbox} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeLightbox()}><div class="lightbox-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}><button type="button" class="lightbox-close" onclick={closeLightbox}><IconX size={24} /></button><button type="button" class="lightbox-nav lightbox-prev" onclick={prevImage}><IconChevronDown size={32} style="transform: rotate(90deg)" /></button><img src={images[lightboxIndex]?.url} alt={images[lightboxIndex]?.alt || 'Image'} class="lightbox-image" /><button type="button" class="lightbox-nav lightbox-next" onclick={nextImage}><IconChevronDown size={32} style="transform: rotate(-90deg)" /></button><div class="lightbox-counter">{lightboxIndex + 1} / {images.length}</div></div></div>{/if}
+			{#if lightboxOpen && images.length > 0}<div class="lightbox-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={closeLightbox} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeLightbox()}><section class="lightbox-content" aria-label="Image viewer" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}><button type="button" class="lightbox-close" onclick={closeLightbox}><IconX size={24} /></button><button type="button" class="lightbox-nav lightbox-prev" onclick={prevImage}><IconChevronDown size={32} style="transform: rotate(90deg)" /></button><img src={images[lightboxIndex]?.url} alt={images[lightboxIndex]?.alt || 'Image'} class="lightbox-image" /><button type="button" class="lightbox-nav lightbox-next" onclick={nextImage}><IconChevronDown size={32} style="transform: rotate(-90deg)" /></button><div class="lightbox-counter">{lightboxIndex + 1} / {images.length}</div></section></div>{/if}
 		</div>
 
 	<!-- Audio Block -->
@@ -1479,7 +1479,7 @@
 		<div class="audio-block" role="region" aria-label="Audio player">
 			{#if block.content.mediaUrl}
 				<audio bind:this={audioRef} src={block.content.mediaUrl} ontimeupdate={handleAudioTimeUpdate} onended={() => audioPlaying = false} preload="metadata"></audio>
-				<div class="audio-player"><button type="button" class="audio-play-btn" onclick={toggleAudioPlay}>{#if audioPlaying}<IconPlayerPause size={24} />{:else}<IconPlayerPlay size={24} />{/if}</button><div class="audio-waveform"><IconWaveSine size={20} /></div><div class="audio-progress-container" onclick={handleAudioSeek}><div class="audio-progress-bar" style="width: {audioProgress}%"></div></div><div class="audio-time">{#if audioRef}{formatAudioTime(audioRef.currentTime)} / {formatAudioTime(audioRef.duration)}{:else}0:00{/if}</div><div class="audio-volume-container"><button type="button" class="audio-mute-btn" onclick={toggleAudioMute}>{#if audioMuted}<IconVolumeOff size={20} />{:else}<IconVolume size={20} />{/if}</button><input type="range" min="0" max="1" step="0.1" value={audioVolume} oninput={handleVolumeChange} class="audio-volume-slider" /></div></div>
+				<div class="audio-player"><button type="button" class="audio-play-btn" onclick={toggleAudioPlay}>{#if audioPlaying}<IconPlayerPause size={24} />{:else}<IconPlayerPlay size={24} />{/if}</button><div class="audio-waveform"><IconWaveSine size={20} /></div><button type="button" class="audio-progress-container" onclick={handleAudioSeek} aria-label="Seek audio"><div class="audio-progress-bar" style="width: {audioProgress}%"></div></button><div class="audio-time">{#if audioRef}{formatAudioTime(audioRef.currentTime)} / {formatAudioTime(audioRef.duration)}{:else}0:00{/if}</div><div class="audio-volume-container"><button type="button" class="audio-mute-btn" onclick={toggleAudioMute}>{#if audioMuted}<IconVolumeOff size={20} />{:else}<IconVolume size={20} />{/if}</button><input type="range" min="0" max="1" step="0.1" value={audioVolume} oninput={handleVolumeChange} class="audio-volume-slider" /></div></div>
 				{#if block.content.mediaCaption || isEditing}<p contenteditable={isEditing} class="audio-caption editable-content" class:placeholder={!block.content.mediaCaption} oninput={(e: Event) => updateContent({ mediaCaption: (e.target as HTMLElement).textContent || '' })} data-placeholder="Caption...">{block.content.mediaCaption || ''}</p>{/if}
 			{:else if isEditing}<div class="audio-placeholder"><IconWaveSine size={48} /><span>Add audio URL</span><input type="url" placeholder="https://example.com/audio.mp3" onchange={(e: Event) => updateContent({ mediaUrl: (e.target as HTMLInputElement).value })} /><span>or</span><input type="file" accept="audio/*" onchange={(e: Event) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) updateContent({ mediaUrl: URL.createObjectURL(file) }); }} /></div>{/if}
 		</div>
@@ -2792,7 +2792,7 @@
 	.related-post-content { padding: 1rem; }
 	.related-post-category { font-size: 0.75rem; font-weight: 500; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.05em; }
 	.related-post-title { margin: 0.375rem 0; font-size: 1rem; font-weight: 600; color: #1f2937; line-height: 1.3; }
-	.related-post-excerpt { margin: 0; font-size: 0.875rem; color: #6b7280; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+	.related-post-excerpt { margin: 0; font-size: 0.875rem; color: #6b7280; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 	.related-posts-note { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.75rem 1rem; background: #fef3c7; border-radius: 8px; font-size: 0.875rem; color: #92400e; }
 
 	/* Newsletter Block */
