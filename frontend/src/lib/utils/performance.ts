@@ -366,7 +366,7 @@ export function debounce<T extends (...args: any[]) => any>(
     lastThis = undefined;
     lastInvokeTime = time;
     result = fn.apply(thisArg, args);
-    return result;
+    return result as ReturnType<T>;
   };
 
   const shouldInvoke = (time: number): boolean => {
@@ -767,7 +767,7 @@ export function preloadImage(src: string): Promise<HTMLImageElement> {
     const img = new Image();
 
     img.onload = () => resolve(img);
-    img.onerror = (error) => reject(new Error(`Failed to preload image: ${src}`));
+    img.onerror = (_error) => reject(new Error(`Failed to preload image: ${src}`));
 
     // Start loading
     img.src = src;
@@ -1000,26 +1000,15 @@ export class MemoryManager<T extends object> {
 // ============================================================================
 
 // Type for requestIdleCallback which may not be available in all environments
-interface IdleDeadline {
-  didTimeout: boolean;
-  timeRemaining(): number;
-}
-
-type IdleCallback = (deadline: IdleDeadline) => void;
-
-declare global {
-  interface Window {
-    requestIdleCallback?: (callback: IdleCallback, options?: { timeout: number }) => number;
-    cancelIdleCallback?: (handle: number) => void;
-  }
-}
+// Using built-in IdleRequestCallback and IdleDeadline types from lib.dom.d.ts
+type IdleDeadlineCompat = IdleDeadline;
 
 /**
  * Schedule work during idle time using requestIdleCallback
  * Falls back to setTimeout if not available
  */
 export function scheduleIdleWork<T>(
-  work: (deadline: IdleDeadline) => T,
+  work: (deadline: IdleDeadlineCompat) => T,
   options?: { timeout?: number }
 ): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -1287,7 +1276,7 @@ export function initPerformanceMonitoring(): void {
   if (typeof window === 'undefined') return;
   
   // Start FPS monitoring
-  perfMonitor.startFpsMonitoring();
+  perfMonitor.startFPSMonitoring();
   
   // Log initialization
   console.debug('[Performance] Monitoring initialized');
@@ -1311,7 +1300,7 @@ export interface LegacyPerformanceMetric {
 /**
  * Report legacy performance metric (for backwards compatibility)
  */
-function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
+export function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
   if (import.meta.env.DEV) {
     console.log(`[Performance] ${metric.name}:`, {
       value: Math.round(metric.value),
@@ -1336,7 +1325,7 @@ function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
   }
 }
 
-function getRating(
+export function getRating(
   value: number,
   thresholds: [number, number]
 ): 'good' | 'needs-improvement' | 'poor' {
@@ -1365,7 +1354,6 @@ export function measureCustomMetric(name: string, startMark: string, endMark: st
 
 // Export types for external use
 export type {
-  IdleDeadline,
-  IdleCallback,
+  IdleDeadlineCompat,
   CleanupCallback
 };
