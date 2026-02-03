@@ -395,6 +395,7 @@
 			{/if}
 
 			<!-- Responsive Image -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 			<img
 				src={sanitizedURL}
 				srcset={srcset()}
@@ -436,6 +437,7 @@
 		{/if}
 
 		<!-- Caption -->
+		<!-- svelte-ignore a11y_figcaption_parent -->
 		{#if caption || props.isEditing}
 			<figcaption
 				id={captionId}
@@ -550,11 +552,13 @@
 
 <!-- Lightbox -->
 {#if isLightboxOpen && sanitizedURL}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="image-block__lightbox"
 		role="dialog"
 		aria-modal="true"
 		aria-label="Image lightbox"
+		tabindex="-1"
 		onclick={closeLightbox}
 		onkeydown={handleLightboxKeyDown}
 	>
@@ -566,6 +570,7 @@
 		>
 			<IconX size={24} aria-hidden="true" />
 		</button>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 		<img
 			src={sanitizedURL}
 			alt={imageAlt}

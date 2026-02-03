@@ -420,13 +420,16 @@
 			<div
 				class="gallery-grid"
 				class:masonry={layout === 'masonry'}
+				role="list"
 				style={gridStyle}
 			>
 				{#each images as image, index (image.id)}
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
 						class="gallery-item"
 						class:dragging={draggedIndex === index}
 						class:drag-over={dragOverIndex === index}
+						role="listitem"
 						draggable={props.isEditing}
 						ondragstart={(e) => handleDragStart(e, index)}
 						ondragover={(e) => handleDragOver(e, index)}
@@ -485,9 +488,7 @@
 								class="gallery-item-button"
 								onclick={() => handleImageClick(index)}
 								onkeydown={(e) => handleImageKeyDown(e, index)}
-								role="button"
 								aria-label="View {image.alt || 'image'} in lightbox"
-								tabindex="0"
 							>
 								<img
 									src={sanitizeURL(image.url)}
@@ -585,7 +586,8 @@
 		<div class="gallery-controls">
 			<!-- Add Image Form -->
 			{#if showAddForm}
-				<div class="gallery-add-form" onkeydown={handleAddFormKeyDown}>
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="gallery-add-form" role="form" onkeydown={handleAddFormKeyDown}>
 					<div class="add-form-header">
 						<span>Add New Image</span>
 						<button
@@ -696,6 +698,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-label="Image lightbox"
+		tabindex="-1"
 	>
 		<div class="lightbox-content">
 			<!-- Close Button -->
