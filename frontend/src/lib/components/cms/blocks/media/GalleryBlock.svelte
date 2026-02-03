@@ -586,8 +586,8 @@
 		<div class="gallery-controls">
 			<!-- Add Image Form -->
 			{#if showAddForm}
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="gallery-add-form" role="form" onkeydown={handleAddFormKeyDown}>
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<form class="gallery-add-form" onsubmit={(e) => { e.preventDefault(); addImage(); }} onkeydown={handleAddFormKeyDown}>
 					<div class="add-form-header">
 						<span>Add New Image</span>
 						<button
@@ -631,7 +631,7 @@
 						<IconPlus size={16} />
 						Add Image
 					</button>
-				</div>
+				</form>
 			{:else if images.length > 0}
 				<button type="button" class="gallery-add-btn" onclick={() => (showAddForm = true)}>
 					<IconPlus size={16} />
