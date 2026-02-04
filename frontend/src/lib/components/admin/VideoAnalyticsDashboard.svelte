@@ -10,16 +10,16 @@
 		type AnalyticsDashboard,
 		type VideoAnalytics
 	} from '$lib/api/video-advanced';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
-	import IconDeviceMobile from '@tabler/icons-svelte/icons/device-mobile';
-	import IconDeviceTablet from '@tabler/icons-svelte/icons/device-tablet';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconDeviceDesktop from '@tabler/icons-svelte-runes/icons/device-desktop';
+	import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
+	import IconDeviceTablet from '@tabler/icons-svelte-runes/icons/device-tablet';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	interface Props {
 		videoId?: number;

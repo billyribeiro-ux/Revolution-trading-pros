@@ -11,13 +11,13 @@
 
 	import { browser } from '$app/environment';
 	import { scale } from 'svelte/transition';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconPlugOff from '@tabler/icons-svelte/icons/plug-off';
+	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
+	import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconPlugOff from '@tabler/icons-svelte-runes/icons/plug-off';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface RateLimitInfo {

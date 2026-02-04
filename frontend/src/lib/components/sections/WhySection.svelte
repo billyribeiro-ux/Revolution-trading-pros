@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconSitemap from '@tabler/icons-svelte/icons/sitemap';
-	import IconShield from '@tabler/icons-svelte/icons/shield';
-	import IconCpu from '@tabler/icons-svelte/icons/cpu';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconBuilding from '@tabler/icons-svelte/icons/building';
+	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
+	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
+	import IconCpu from '@tabler/icons-svelte-runes/icons/cpu';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
 
 	const features = [
 		{

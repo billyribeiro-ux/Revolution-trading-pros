@@ -52,11 +52,11 @@
 		type AnalyticsDashboard,
 		type BatchStatus
 	} from '$lib/api/video-advanced';
-	import IconCode from '@tabler/icons-svelte/icons/code';
-	import IconCheckbox from '@tabler/icons-svelte/icons/checkbox';
-	import IconSquare from '@tabler/icons-svelte/icons/square';
-	import IconStar from '@tabler/icons-svelte/icons/star';
-	import IconStarOff from '@tabler/icons-svelte/icons/star-off';
+	import IconCode from '@tabler/icons-svelte-runes/icons/code';
+	import IconCheckbox from '@tabler/icons-svelte-runes/icons/checkbox';
+	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)

@@ -13,25 +13,25 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import IconShare from '@tabler/icons-svelte/icons/share';
-	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconTag from '@tabler/icons-svelte/icons/tag';
-	import IconList from '@tabler/icons-svelte/icons/list';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import IconShare from '@tabler/icons-svelte-runes/icons/share';
+	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
+	import IconList from '@tabler/icons-svelte-runes/icons/list';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import { crmAPI } from '$lib/api/crm';
 	import type {
 		AutomationFunnel,

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconQuote from '@tabler/icons-svelte/icons/quote';
-	import IconCircleCheckFilled from '@tabler/icons-svelte/icons/circle-check-filled';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconUserCircle from '@tabler/icons-svelte/icons/user-circle';
-	import IconChartDots from '@tabler/icons-svelte/icons/chart-dots';
-	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
+	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
+	import IconChartDots from '@tabler/icons-svelte-runes/icons/chart-dots';
+	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 
 	// --- Institutional Client Data ---
 	const reviews = [

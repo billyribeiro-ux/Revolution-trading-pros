@@ -13,19 +13,19 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconCalendarEvent from '@tabler/icons-svelte/icons/calendar-event';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { crmAPI } from '$lib/api/crm';
 	import type {
 		RecurringCampaign,

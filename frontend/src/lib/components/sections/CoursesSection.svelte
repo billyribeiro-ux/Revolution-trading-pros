@@ -8,18 +8,18 @@
 	import { cubicOut } from 'svelte/easing';
 
 	// Tabler Icons (Preserving sub-path imports for tree-shaking)
-	import IconSchool from '@tabler/icons-svelte/icons/school';
-	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconBrain from '@tabler/icons-svelte/icons/brain';
-	import IconShield from '@tabler/icons-svelte/icons/shield';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play-filled';
-	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
-	import IconFlame from '@tabler/icons-svelte/icons/flame';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
+	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
+	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play-filled';
+	import IconCertificate from '@tabler/icons-svelte-runes/icons/certificate';
+	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 
 	// ============================================================================
 	// COURSE DATA

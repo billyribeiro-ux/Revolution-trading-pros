@@ -18,15 +18,15 @@
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
-	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
-	import IconLock from '@tabler/icons-svelte/icons/lock';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconTicket from '@tabler/icons-svelte/icons/ticket';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconLoader from '@tabler/icons-svelte/icons/loader';
+	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

@@ -14,12 +14,12 @@
 	import { tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut, backOut } from 'svelte/easing';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconWaveSine from '@tabler/icons-svelte/icons/wave-sine';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconSparkles from '@tabler/icons-svelte/icons/sparkles';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconWaveSine from '@tabler/icons-svelte-runes/icons/wave-sine';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
 
 	// ============================================================================
 	// INDICATOR DATA

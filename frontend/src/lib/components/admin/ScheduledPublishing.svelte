@@ -6,13 +6,13 @@
 
 	import { browser } from '$app/environment';
 	import { scheduledApi, type ScheduledJob } from '$lib/api/video-advanced';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 
 	interface Props {
 		resourceType?: 'video' | 'series';

@@ -14,16 +14,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { ROOMS, type Room } from '$lib/config/rooms';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconTable from '@tabler/icons-svelte/icons/table';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconFlame from '@tabler/icons-svelte/icons/flame';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconTargetArrow from '@tabler/icons-svelte/icons/target-arrow';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconSchool from '@tabler/icons-svelte/icons/school';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconTable from '@tabler/icons-svelte-runes/icons/table';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconTargetArrow from '@tabler/icons-svelte-runes/icons/target-arrow';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Runes

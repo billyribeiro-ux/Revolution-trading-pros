@@ -9,18 +9,18 @@
 	// GSAP imported dynamically in $effect to avoid SSR issues
 
 	// Icons
-	import IconBuildingBank from '@tabler/icons-svelte/icons/building-bank';
-	import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
-	import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
-	import IconScale from '@tabler/icons-svelte/icons/scale';
-	import IconId from '@tabler/icons-svelte/icons/id';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconBroadcast from '@tabler/icons-svelte/icons/broadcast';
-	import IconSchool from '@tabler/icons-svelte/icons/school';
-	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
+	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
+	import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
+	import IconScale from '@tabler/icons-svelte-runes/icons/scale';
+	import IconId from '@tabler/icons-svelte-runes/icons/id';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
+	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
+	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
