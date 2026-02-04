@@ -45,6 +45,13 @@
 	let currentPage = $derived(meta.current_page);
 	let totalPages = $derived(meta.last_page);
 
+	// Category options matching WordPress SPX reference - using WordPress category IDs
+	const categories = [
+		{ id: '2929', label: 'Charting/Indicators/Tools' },
+		{ id: '329', label: 'Member Webinar' },
+		{ id: '528', label: 'Methodology' },
+		{ id: '529', label: 'Trade Setups & Strategies' }
+	];
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {

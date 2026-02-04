@@ -57,6 +57,7 @@ import IconBold from '@tabler/icons-svelte-runes/icons/bold';
 import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 import IconBook from '@tabler/icons-svelte-runes/icons/book';
 import IconBookmark from '@tabler/icons-svelte-runes/icons/bookmark';
+import IconBookmarkFilled from '@tabler/icons-svelte-runes/icons/bookmark-filled';
 import IconBox from '@tabler/icons-svelte-runes/icons/box';
 import IconBrackets from '@tabler/icons-svelte-runes/icons/brackets';
 import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
@@ -90,6 +91,7 @@ import IconBrandTwitter from '@tabler/icons-svelte-runes/icons/brand-twitter';
 import IconBrandVimeo from '@tabler/icons-svelte-runes/icons/brand-vimeo';
 import IconBrandX from '@tabler/icons-svelte-runes/icons/brand-x';
 import IconBrandYoutube from '@tabler/icons-svelte-runes/icons/brand-youtube';
+import IconBrandTradingview from '@tabler/icons-svelte-runes/icons/brand-tradingview';
 import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
 
 // Calendar/Clock Icons
@@ -118,6 +120,7 @@ import IconChartRadar from '@tabler/icons-svelte-runes/icons/chart-radar';
 
 // Check/Status Icons
 import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+import IconCheckbox from '@tabler/icons-svelte-runes/icons/checkbox';
 import IconChecklist from '@tabler/icons-svelte-runes/icons/checklist';
 import IconCheckupList from '@tabler/icons-svelte-runes/icons/checkup-list';
 
@@ -170,14 +173,19 @@ import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 // Edit Icons
 import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 import IconError404 from '@tabler/icons-svelte-runes/icons/error-404';
+import IconExclamationCircle from '@tabler/icons-svelte-runes/icons/exclamation-circle';
 import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
 
 // Eye Icons
 import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+import IconEyeCheck from '@tabler/icons-svelte-runes/icons/eye-check';
 import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
 
 // File Icons
 import IconFile from '@tabler/icons-svelte-runes/icons/file';
+import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code';
+import IconFileDiff from '@tabler/icons-svelte-runes/icons/file-diff';
+import IconFileDownload from '@tabler/icons-svelte-runes/icons/file-download';
 import IconFileAnalytics from '@tabler/icons-svelte-runes/icons/file-analytics';
 import IconFileDescription from '@tabler/icons-svelte-runes/icons/file-description';
 import IconFileExport from '@tabler/icons-svelte-runes/icons/file-export';
@@ -202,6 +210,7 @@ import IconForms from '@tabler/icons-svelte-runes/icons/forms';
 import IconGauge from '@tabler/icons-svelte-runes/icons/gauge';
 import IconGif from '@tabler/icons-svelte-runes/icons/gif';
 import IconGift from '@tabler/icons-svelte-runes/icons/gift';
+import IconGitMerge from '@tabler/icons-svelte-runes/icons/git-merge';
 import IconGridDots from '@tabler/icons-svelte-runes/icons/grid-dots';
 import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 
@@ -233,9 +242,11 @@ import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconLayout2 from '@tabler/icons-svelte-runes/icons/layout-2';
 import IconLayoutDashboard from '@tabler/icons-svelte-runes/icons/layout-dashboard';
+import IconLayoutDistributeHorizontal from '@tabler/icons-svelte-runes/icons/layout-distribute-horizontal';
 import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
 import IconLayoutGridAdd from '@tabler/icons-svelte-runes/icons/layout-grid-add';
 import IconLayoutKanban from '@tabler/icons-svelte-runes/icons/layout-kanban';
+import IconLayoutNavbarCollapse from '@tabler/icons-svelte-runes/icons/layout-navbar-collapse';
 import IconLayoutRows from '@tabler/icons-svelte-runes/icons/layout-rows';
 import IconLeaf from '@tabler/icons-svelte-runes/icons/leaf';
 import IconLink from '@tabler/icons-svelte-runes/icons/link';
@@ -246,6 +257,7 @@ import IconListCheck from '@tabler/icons-svelte-runes/icons/list-check';
 import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
 import IconListNumbers from '@tabler/icons-svelte-runes/icons/list-numbers';
 import IconListTree from '@tabler/icons-svelte-runes/icons/list-tree';
+import IconLive from '@tabler/icons-svelte-runes/icons/live';
 import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
 import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 import IconLocation from '@tabler/icons-svelte-runes/icons/location';
@@ -260,6 +272,7 @@ import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
 import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
 import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
+import IconMailOpen from '@tabler/icons-svelte-runes/icons/mail-open';
 import IconMailOpened from '@tabler/icons-svelte-runes/icons/mail-opened';
 
 // Map Icons
@@ -329,9 +342,6 @@ import IconRadar2 from '@tabler/icons-svelte-runes/icons/radar-2';
 // Rotate Icons
 import IconRotate from '@tabler/icons-svelte-runes/icons/rotate';
 import IconRotateClockwise from '@tabler/icons-svelte-runes/icons/rotate-clockwise';
-
-// Diff Icons
-import IconFileDiff from '@tabler/icons-svelte-runes/icons/file-diff';
 import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
 
 // Receipt Icons
@@ -387,6 +397,7 @@ import IconStack2 from '@tabler/icons-svelte-runes/icons/stack-2';
 // Star Icons
 import IconStar from '@tabler/icons-svelte-runes/icons/star';
 import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
+import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
 import IconStrikethrough from '@tabler/icons-svelte-runes/icons/strikethrough';
 import IconSubtask from '@tabler/icons-svelte-runes/icons/subtask';
 import IconSunHigh from '@tabler/icons-svelte-runes/icons/sun-high';
@@ -531,6 +542,7 @@ export {
 	IconBolt,
 	IconBook,
 	IconBookmark,
+	IconBookmarkFilled,
 	IconBox,
 	IconBrackets,
 	IconBrain,
@@ -558,6 +570,7 @@ export {
 	IconBrandReddit,
 	IconBrandTelegram,
 	IconBrandTiktok,
+	IconBrandTradingview,
 	IconBrandTrello,
 	IconBrandTwitter,
 	IconBrandVimeo,
@@ -588,6 +601,7 @@ export {
 	IconChartRadar,
 	// Check/Status Icons
 	IconCheck,
+	IconCheckbox,
 	IconChecklist,
 	IconChecklist as IconChecks,
 	IconCheckupList,
@@ -638,14 +652,19 @@ export {
 	// Edit Icons
 	IconEdit,
 	IconError404,
+	IconExclamationCircle,
 	IconExternalLink,
 	// Eye Icons
 	IconEye,
+	IconEyeCheck,
 	IconEyeOff,
 	// File Icons
 	IconFile,
 	IconFileAnalytics,
+	IconFileCode,
 	IconFileDescription,
+	IconFileDiff,
+	IconFileDownload,
 	IconFileExport,
 	IconFileSpreadsheet,
 	IconFileText,
@@ -667,6 +686,7 @@ export {
 	IconGauge,
 	IconGif,
 	IconGift,
+	IconGitMerge,
 	IconGridDots,
 	IconGripVertical,
 	// Heading Icons
@@ -694,9 +714,11 @@ export {
 	IconLanguage,
 	IconLayout2,
 	IconLayoutDashboard,
+	IconLayoutDistributeHorizontal,
 	IconLayoutGrid,
 	IconLayoutGridAdd,
 	IconLayoutKanban,
+	IconLayoutNavbarCollapse,
 	IconLayoutRows,
 	IconLeaf,
 	IconLink,
@@ -706,6 +728,7 @@ export {
 	IconListDetails,
 	IconListNumbers,
 	IconListTree,
+	IconLive,
 	IconLoader,
 	IconLoader2,
 	IconLocation,
@@ -719,6 +742,7 @@ export {
 	IconMailCheck,
 	IconMailFast,
 	IconMailForward,
+	IconMailOpen,
 	IconMailOpened,
 	// Map Icons
 	IconMap,
@@ -780,8 +804,6 @@ export {
 	// Rotate Icons
 	IconRotate,
 	IconRotateClockwise,
-	// Diff Icons
-	IconFileDiff,
 	IconQuote,
 	// Receipt Icons
 	IconReceipt,
@@ -831,6 +853,7 @@ export {
 	// Star Icons
 	IconStar,
 	IconStarFilled,
+	IconStarOff,
 	IconStrikethrough,
 	IconSubtask,
 	IconSunHigh,
