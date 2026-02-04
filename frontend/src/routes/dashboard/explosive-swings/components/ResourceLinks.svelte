@@ -498,7 +498,7 @@
 	}
 
 	/* Card variant - Mobile */
-	.card-style .resource-links {
+	.resource-links.card-style {
 		padding: 1.25rem;
 	}
 
@@ -567,7 +567,7 @@
 			font-size: 0.75rem;
 		}
 
-		.card-style .resource-links {
+		.resource-links.card-style {
 			padding: 1.5rem;
 		}
 
