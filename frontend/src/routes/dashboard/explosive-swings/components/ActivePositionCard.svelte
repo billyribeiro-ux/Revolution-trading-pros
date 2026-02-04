@@ -232,9 +232,9 @@
 		position: relative;
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
-		border-left: 3px solid var(--color-border-strong);
-		border-radius: 8px;
-		padding: 10px;
+		border-left: 2px solid var(--color-border-strong);
+		border-radius: 6px;
+		padding: 8px;
 		font-size: var(--text-sm);
 	}
 	.card.profit {
@@ -253,14 +253,14 @@
 	/* Updated Badge */
 	.updated-badge {
 		position: absolute;
-		top: -7px;
-		left: 10px;
+		top: -6px;
+		left: 8px;
 		background: var(--color-brand-primary);
 		color: white;
-		font-size: 8px;
+		font-size: 7px;
 		font-weight: 700;
-		padding: 2px 5px;
-		border-radius: 3px;
+		padding: 1px 4px;
+		border-radius: 2px;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -269,22 +269,22 @@
 	.row-main {
 		display: flex;
 		align-items: center;
-		gap: 5px;
-		margin-bottom: 5px;
-		padding-right: 28px; /* Space for menu trigger */
+		gap: 4px;
+		margin-bottom: 4px;
+		padding-right: 24px; /* Space for menu trigger */
 	}
 	.ticker {
 		font-weight: 700;
-		font-size: 1rem;
+		font-size: 0.9375rem;
 		color: var(--color-text-primary);
 		line-height: 1;
 	}
 	.status {
-		font-size: 9px;
+		font-size: 8px;
 		font-weight: 600;
 		text-transform: uppercase;
-		padding: 2px 5px;
-		border-radius: 3px;
+		padding: 2px 4px;
+		border-radius: 2px;
 		background: var(--color-bg-subtle);
 		color: var(--color-text-tertiary);
 		letter-spacing: 0.02em;
@@ -292,7 +292,7 @@
 	.pnl {
 		margin-left: auto;
 		font-weight: 700;
-		font-size: 14px;
+		font-size: 13px;
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-muted);
 	}
@@ -307,11 +307,11 @@
 	.row-prices {
 		display: flex;
 		align-items: center;
-		gap: 5px;
-		font-size: 11px;
+		gap: 4px;
+		font-size: 10px;
 		color: var(--color-text-secondary);
 		font-variant-numeric: tabular-nums;
-		margin-bottom: 5px;
+		margin-bottom: 4px;
 	}
 	.sep {
 		color: var(--color-border-strong);
@@ -327,12 +327,12 @@
 	.row-progress {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		margin-top: 6px;
+		gap: 5px;
+		margin-top: 5px;
 	}
 	.bar {
 		flex: 1;
-		height: 4px;
+		height: 3px;
 		background: var(--color-bg-muted);
 		border-radius: 2px;
 		overflow: hidden;
@@ -347,7 +347,7 @@
 		background: var(--color-profit);
 	}
 	.pct {
-		font-size: 11px;
+		font-size: 10px;
 		font-weight: 600;
 		color: var(--color-text-muted);
 		font-variant-numeric: tabular-nums;
