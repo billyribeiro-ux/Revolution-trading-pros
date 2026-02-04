@@ -92,7 +92,7 @@
 	let pendingDeleteModuleId = $state<number | null>(null);
 	let pendingDeleteDownloadId = $state<number | null>(null);
 	let pendingDeleteLesson = $state<{ id: string; moduleId?: number } | null>(null);
-	let _errorMessage = $state('');
+	let errorMessage = $state('');
 
 	const fetchCourse = async () => {
 		loading = true;

@@ -884,7 +884,7 @@ export class ApiClient implements Disposable {
 	): Promise<ApiError> {
 		const body = data as Record<string, unknown> | null;
 		const message = (body?.message as string) ?? (body?.error as string) ?? response.statusText;
-		const code = this.mapStatusToCode(response.status);
+		const _code = this.mapStatusToCode(response.status);
 
 		const retryAfter = response.headers.get('Retry-After');
 		const parsedRetryAfter = retryAfter ? parseInt(retryAfter, 10) : undefined;

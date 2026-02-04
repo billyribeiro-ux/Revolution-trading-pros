@@ -71,8 +71,8 @@ const ANALYTICS_INTERVAL = 60000; // 1 minute
 // WebSocket Feature Flag - Set VITE_WS_ENABLED=true in .env to enable real-time updates
 // Backend: Laravel Reverb WebSocket server with coupon channels implemented
 // WebSocket disabled by default - enable via VITE_WS_ENABLED=true
-const WS_ENABLED = browser ? import.meta.env['VITE_WS_ENABLED'] === 'true' : false;
-const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || '' : '';
+const _WS_ENABLED = browser ? import.meta.env['VITE_WS_ENABLED'] === 'true' : false;
+const _WS_URL = browser ? import.meta.env['VITE_WS_URL'] || '' : '';
 const WS_RECONNECT_DELAY = 1000; // Start with 1 second
 const WS_MAX_RECONNECT_DELAY = 30000; // Max 30 seconds
 const WS_RECONNECT_BACKOFF = 1.5; // Exponential backoff multiplier
@@ -864,7 +864,7 @@ class CouponManagementService {
 			} catch (error) {
 				console.error('[CouponService] Failed to send queued message:', error);
 				// Re-queue the message
-				this.wsMessageQueue.unshift(message);
+				if (message) this.wsMessageQueue.unshift(message);
 				break;
 			}
 		}

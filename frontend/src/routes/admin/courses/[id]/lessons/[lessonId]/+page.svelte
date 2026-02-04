@@ -63,7 +63,7 @@
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
-	let _errorMessage = $state('');
+	let errorMessage = $state('');
 
 	// Delete confirmation modal state
 	let showDeleteLessonModal = $state(false);

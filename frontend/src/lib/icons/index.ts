@@ -256,7 +256,7 @@ import IconListCheck from '@tabler/icons-svelte-runes/icons/list-check';
 import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
 import IconListNumbers from '@tabler/icons-svelte-runes/icons/list-numbers';
 import IconListTree from '@tabler/icons-svelte-runes/icons/list-tree';
-import IconLive from '@tabler/icons-svelte-runes/icons/live';
+import IconLive from '@tabler/icons-svelte-runes/icons/live-photo';
 import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
 import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 import IconLocation from '@tabler/icons-svelte-runes/icons/location';
@@ -271,8 +271,9 @@ import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
 import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
 import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
-import IconMailOpen from '@tabler/icons-svelte-runes/icons/mail-open';
 import IconMailOpened from '@tabler/icons-svelte-runes/icons/mail-opened';
+// IconMailOpen is an alias for IconMailOpened
+const IconMailOpen = IconMailOpened;
 
 // Map Icons
 import IconMap from '@tabler/icons-svelte-runes/icons/map';

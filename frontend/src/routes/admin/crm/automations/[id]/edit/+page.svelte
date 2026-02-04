@@ -12,10 +12,8 @@
 -->
 
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import IconShare from '@tabler/icons-svelte-runes/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';

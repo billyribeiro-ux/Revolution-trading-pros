@@ -52,7 +52,6 @@
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconMailOpen from '@tabler/icons-svelte-runes/icons/mail-opened';
 	import IconClick from '@tabler/icons-svelte-runes/icons/click';
 	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
@@ -60,7 +59,6 @@
 	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconDotsVertical from '@tabler/icons-svelte-runes/icons/dots-vertical';
 	import { api } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
