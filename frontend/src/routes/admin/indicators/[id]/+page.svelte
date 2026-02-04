@@ -1292,23 +1292,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteFileModal}
-	title="Delete File"
-	message="Are you sure you want to delete this file?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteFile}
-	onCancel={() => { showDeleteFileModal = false; pendingDeleteFileId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteVideoModal}
-	title="Delete Video"
-	message="Are you sure you want to delete this video?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteVideo}
-	onCancel={() => { showDeleteVideoModal = false; pendingDeleteVideoId = null; }}
-/>

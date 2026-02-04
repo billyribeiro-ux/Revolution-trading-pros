@@ -6,7 +6,6 @@
 
 	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
 	interface IndicatorListItem {
@@ -30,8 +29,6 @@
 	let search = $state('');
 	let statusFilter = $state('');
 	let deleting = $state<string | null>(null);
-	let showDeleteModal = $state(false);
-	let pendingDelete = $state<{ id: number; name: string } | null>(null);
 
 	const fetchIndicators = async () => {
 		loading = true;
@@ -58,16 +55,8 @@
 	};
 
 	// ICT 7 FIX: id is number, not string
-	const deleteIndicator = (id: number, name: string) => {
-		pendingDelete = { id, name };
-		showDeleteModal = true;
-	};
-
-	const confirmDeleteIndicator = async () => {
-		if (!pendingDelete) return;
-		showDeleteModal = false;
-		const { id } = pendingDelete;
-		pendingDelete = null;
+	const deleteIndicator = async (id: number, name: string) => {
+		if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
 		deleting = id.toString();
 		try {
 			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
@@ -888,13 +877,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Indicator"
-	message={pendingDelete ? `Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteIndicator}
-	onCancel={() => { showDeleteModal = false; pendingDelete = null; }}
-/>

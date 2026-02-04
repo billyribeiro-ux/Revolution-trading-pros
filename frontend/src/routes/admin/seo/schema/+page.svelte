@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let schemas = $state<any[]>([]);
 	let templates = $state<any>({});
 	let loading = $state(false);
 	let showPreview = $state<any>(null);
-	let showDeleteModal = $state(false);
-	let pendingDeleteId = $state<number | null>(null);
 
 	const schemaTypes = [
 		'Article',
@@ -56,16 +53,9 @@
 		}
 	}
 
-	function deleteSchema(id: number) {
-		pendingDeleteId = id;
-		showDeleteModal = true;
-	}
+	async function deleteSchema(id: number) {
+		if (!confirm('Delete this schema?')) return;
 
-	async function confirmDeleteSchema() {
-		if (!pendingDeleteId) return;
-		showDeleteModal = false;
-		const id = pendingDeleteId;
-		pendingDeleteId = null;
 		try {
 			await fetch(`/api/seo/schema/${id}`, { method: 'DELETE' });
 			loadSchemas();
@@ -514,13 +504,3 @@
 		font-family: 'Courier New', monospace;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Schema"
-	message="Delete this schema?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteSchema}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

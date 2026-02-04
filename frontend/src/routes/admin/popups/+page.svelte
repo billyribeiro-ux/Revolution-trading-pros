@@ -567,13 +567,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Popup"
-	message="Are you sure you want to delete this popup?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeletePopup}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

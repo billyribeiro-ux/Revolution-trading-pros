@@ -464,13 +464,3 @@
 		margin-bottom: 1.5rem;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Template"
-	message="Delete this template? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTemplate}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

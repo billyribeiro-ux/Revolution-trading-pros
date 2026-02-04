@@ -771,13 +771,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showResetModal}
-	title="Reset Settings"
-	message="Reset all settings to defaults?"
-	confirmText="Reset"
-	variant="warning"
-	onConfirm={confirmResetSettings}
-	onCancel={() => { showResetModal = false; }}
-/>

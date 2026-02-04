@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
 	import { IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes
@@ -13,8 +12,6 @@
 	let coupons = $state<Coupon[]>([]);
 	let error = $state('');
 	let searchQuery = $state('');
-	let showDeleteModal = $state(false);
-	let pendingDeleteId = $state<number | null>(null);
 	let filterStatus = $state<'all' | 'active' | 'inactive'>('all');
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -83,25 +80,19 @@
 		}
 	}
 
-	function deleteCoupon(id: number) {
-		pendingDeleteId = id;
-		showDeleteModal = true;
-	}
+	async function deleteCoupon(id: number) {
+		if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.'))
+			return;
 
-	async function confirmDeleteCoupon() {
-		if (!pendingDeleteId) return;
-		showDeleteModal = false;
-		const id = pendingDeleteId;
-		pendingDeleteId = null;
 		deleting = id;
 		try {
 			await couponsApi.delete(id);
 			coupons = coupons.filter((c) => c.id !== id);
 		} catch (err) {
 			if (err instanceof AdminApiError) {
-				error = `Failed to delete coupon: ${err.message}`;
+				alert(`Failed to delete coupon: ${err.message}`);
 			} else {
-				error = 'Failed to delete coupon. Please try again.';
+				alert('Failed to delete coupon. Please try again.');
 			}
 			console.error('Delete coupon error:', err);
 		} finally {
@@ -832,13 +823,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Coupon"
-	message="Are you sure you want to delete this coupon? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCoupon}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>
