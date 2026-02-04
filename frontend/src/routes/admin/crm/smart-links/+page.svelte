@@ -32,6 +32,7 @@
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Reactive state using Svelte 5 runes
 	let smartLinks = $state<SmartLink[]>([]);
@@ -41,6 +42,10 @@
 	let filterActive = $state<boolean | 'all'>('all');
 	let copySuccess = $state<string | null>(null);
 	let togglingId = $state<string | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Debounced search query for API calls
 	let debouncedSearch = $state('');
@@ -122,9 +127,16 @@
 	}
 
 	// Delete smart link with confirmation
-	async function deleteSmartLink(id: string) {
-		if (!confirm('Are you sure you want to delete this smart link? This action cannot be undone.'))
-			return;
+	function deleteSmartLink(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteSmartLink() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await crmAPI.deleteSmartLink(id);
@@ -841,3 +853,13 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Smart Link"
+	message="Are you sure you want to delete this smart link? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSmartLink}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

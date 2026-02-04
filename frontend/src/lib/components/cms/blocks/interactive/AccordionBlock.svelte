@@ -2,14 +2,30 @@
 /**
  * Accordion Block Component
  * ═══════════════════════════════════════════════════════════════════════════
- * Collapsible accordion with multiple items and keyboard navigation
+ * ICT Level 7 - Collapsible accordion with keyboard navigation
+ * 
+ * Features:
+ * - Full ARIA compliance (WAI-ARIA Accordion Pattern)
+ * - Keyboard navigation (Arrow keys, Home, End)
+ * - SSR-safe contenteditable handling
+ * - Error boundary integration
+ * - Proper cleanup on unmount
  */
 -->
 
 <script lang="ts">
+	import { untrack } from 'svelte';
+	import type { Action } from 'svelte/action';
+	import { browser } from '$app/environment';
 	import { IconChevronDown, IconPlus, IconMinus, IconX } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
+
+	interface AccordionItem {
+		id: string;
+		title: string;
+		content: string;
+	}
 
 	interface Props {
 		block: Block;
@@ -20,37 +36,67 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	const {
+		block,
+		blockId,
+		isSelected,
+		isEditing,
+		onUpdate,
+		onError
+	}: Props = $props();
+
 	const stateManager = getBlockStateManager();
 
-	let openItems = $derived(stateManager.getAccordionState(props.blockId));
-	let allowMultiple = $derived(props.block.settings.allowMultiple || false);
-	let iconStyle = $derived((props.block.settings.iconStyle as 'chevron' | 'plusminus') || 'chevron');
-
-	let items = $derived(
-		props.block.content.accordionItems || [
-			{ id: 'acc_1', title: 'Section 1', content: 'Content for section 1' }
-		]
+	const openItems = $derived(stateManager.getAccordionState(blockId));
+	const allowMultiple = $derived(Boolean(block.settings.allowMultiple));
+	const iconStyle = $derived<'chevron' | 'plusminus'>(
+		(block.settings.iconStyle as 'chevron' | 'plusminus') ?? 'chevron'
 	);
 
+	const DEFAULT_ITEM: AccordionItem = { id: 'acc_1', title: 'Section 1', content: 'Content for section 1' };
+	const items = $derived<AccordionItem[]>(block.content.accordionItems ?? [DEFAULT_ITEM]);
+
+	let editableRefs = $state<Map<string, HTMLElement>>(new Map());
+
+	$effect(() => {
+		return () => {
+			editableRefs.clear();
+		};
+	});
+
+	function safeExecute<T>(fn: () => T, fallback: T): T {
+		try {
+			return fn();
+		} catch (error) {
+			onError?.(error instanceof Error ? error : new Error(String(error)));
+			return fallback;
+		}
+	}
+
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		safeExecute(() => {
+			onUpdate({ content: { ...block.content, ...updates } });
+		}, undefined);
 	}
 
 	function toggleItem(itemId: string): void {
-		stateManager.toggleAccordionItem(props.blockId, itemId, allowMultiple);
+		untrack(() => {
+			stateManager.toggleAccordionItem(blockId, itemId, allowMultiple);
+		});
 	}
 
 	function updateItem(index: number, field: 'title' | 'content', value: string): void {
-		const newItems = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+		const newItems = items.map((item, i) =>
+			i === index ? { ...item, [field]: value } : item
+		);
 		updateContent({ accordionItems: newItems });
 	}
 
 	function addItem(): void {
-		const newItems = [
+		const newItems: AccordionItem[] = [
 			...items,
 			{
-				id: `acc_${Date.now()}`,
+				id: `acc_${crypto.randomUUID()}`,
 				title: `Section ${items.length + 1}`,
 				content: ''
 			}
@@ -59,91 +105,116 @@
 	}
 
 	function removeItem(index: number): void {
-		if (items.length > 1) {
-			const newItems = items.filter((_, i) => i !== index);
-			updateContent({ accordionItems: newItems });
-		}
+		if (items.length <= 1) return;
+		const newItems = items.filter((_, i) => i !== index);
+		updateContent({ accordionItems: newItems });
+	}
+
+	function focusButton(itemId: string | undefined): void {
+		if (!browser || !itemId) return;
+		const el = document.getElementById(`accordion-btn-${blockId}-${itemId}`);
+		el?.focus();
 	}
 
 	function handleKeyDown(e: KeyboardEvent, index: number): void {
-		if (e.key === 'ArrowDown') {
+		const keyActions: Record<string, () => void> = {
+			ArrowDown: () => focusButton(items[index + 1]?.id),
+			ArrowUp: () => focusButton(items[index - 1]?.id),
+			Home: () => focusButton(items[0]?.id),
+			End: () => focusButton(items[items.length - 1]?.id)
+		};
+
+		const action = keyActions[e.key];
+		if (action) {
 			e.preventDefault();
-			const next = items[index + 1];
-			if (next) {
-				document.getElementById(`accordion-btn-${props.blockId}-${next.id}`)?.focus();
-			}
-		} else if (e.key === 'ArrowUp') {
-			e.preventDefault();
-			const prev = items[index - 1];
-			if (prev) {
-				document.getElementById(`accordion-btn-${props.blockId}-${prev.id}`)?.focus();
-			}
-		} else if (e.key === 'Home') {
-			e.preventDefault();
-			document.getElementById(`accordion-btn-${props.blockId}-${items[0].id}`)?.focus();
-		} else if (e.key === 'End') {
-			e.preventDefault();
-			document.getElementById(`accordion-btn-${props.blockId}-${items[items.length - 1].id}`)?.focus();
+			action();
 		}
 	}
 
-	function handlePaste(e: ClipboardEvent): void {
+	function handlePaste(e: ClipboardEvent, target: HTMLElement): void {
 		e.preventDefault();
-		const text = e.clipboardData?.getData('text/plain') || '';
-		document.execCommand('insertText', false, text);
+		const text = e.clipboardData?.getData('text/plain') ?? '';
+		const selection = window.getSelection();
+		if (!selection?.rangeCount) return;
+
+		const range = selection.getRangeAt(0);
+		range.deleteContents();
+		range.insertNode(document.createTextNode(text));
+		range.collapse(false);
+		selection.removeAllRanges();
+		selection.addRange(range);
+
+		target.dispatchEvent(new Event('input', { bubbles: true }));
 	}
+
+	function handleEditableInput(e: Event, index: number, field: 'title' | 'content'): void {
+		const target = e.target as HTMLElement | null;
+		if (!target) return;
+		updateItem(index, field, target.textContent ?? '');
+	}
+
+	const editableAction: Action<HTMLElement, string> = (el, key) => {
+		if (key) editableRefs.set(key, el);
+		return {
+			destroy() {
+				if (key) editableRefs.delete(key);
+			}
+		};
+	};
 </script>
 
 <div class="accordion-block" role="region" aria-label="Accordion">
 	{#each items as item, index (item.id)}
 		{@const isOpen = openItems.has(item.id)}
+		{@const titleKey = `title-${item.id}`}
+		{@const contentKey = `content-${item.id}`}
 		<div class="accordion-item" class:open={isOpen}>
-			<button
-				type="button"
-				class="accordion-header"
-				id="accordion-btn-{props.blockId}-{item.id}"
-				aria-expanded={isOpen}
-				aria-controls="accordion-panel-{props.blockId}-{item.id}"
-				onclick={() => toggleItem(item.id)}
-				onkeydown={(e) => handleKeyDown(e, index)}
-			>
-				{#if props.isEditing}
-					<span
-						contenteditable="true"
-						class="accordion-title editable-content"
-						role="textbox"
-						aria-label="Section title"
-						onclick={(e) => e.stopPropagation()}
-						oninput={(e) => updateItem(index, 'title', (e.target as HTMLElement).textContent || '')}
-						onpaste={handlePaste}
-					>
-						{item.title}
-					</span>
-				{:else}
-					<span class="accordion-title">{item.title}</span>
-				{/if}
-
-				<span class="accordion-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
-					{#if iconStyle === 'plusminus'}
-						{#if isOpen}
-							<IconMinus size={18} />
-						{:else}
-							<IconPlus size={18} />
-						{/if}
+			<div class="accordion-header-wrapper">
+				<button
+					type="button"
+					class="accordion-header"
+					id="accordion-btn-{blockId}-{item.id}"
+					aria-expanded={isOpen}
+					aria-controls="accordion-panel-{blockId}-{item.id}"
+					onclick={() => toggleItem(item.id)}
+					onkeydown={(e) => handleKeyDown(e, index)}
+				>
+					{#if isEditing && browser}
+						<span
+							use:editableAction={titleKey}
+							contenteditable="true"
+							class="accordion-title editable-content"
+							role="textbox"
+							tabindex={0}
+							aria-label="Edit section title: {item.title}"
+							onclick={(e) => e.stopPropagation()}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) => handleEditableInput(e, index, 'title')}
+							onpaste={(e) => handlePaste(e, e.currentTarget)}
+						>{item.title}</span>
 					{:else}
-						<IconChevronDown size={18} />
+						<span class="accordion-title">{item.title}</span>
 					{/if}
-				</span>
 
-				{#if props.isEditing && items.length > 1}
+					<span class="accordion-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
+						{#if iconStyle === 'plusminus'}
+							{#if isOpen}
+								<IconMinus size={18} />
+							{:else}
+								<IconPlus size={18} />
+							{/if}
+						{:else}
+							<IconChevronDown size={18} />
+						{/if}
+					</span>
+				</button>
+
+				{#if isEditing && items.length > 1}
 					<button
 						type="button"
 						class="remove-item-btn"
-						onclick={(e) => {
-							e.stopPropagation();
-							removeItem(index);
-						}}
-						aria-label="Remove section"
+						onclick={() => removeItem(index)}
+						aria-label="Remove section: {item.title}"
 					>
 						<IconX size={14} />
 					</button>
@@ -151,23 +222,22 @@
 			</button>
 
 			<div
-				id="accordion-panel-{props.blockId}-{item.id}"
+				id="accordion-panel-{blockId}-{item.id}"
 				class="accordion-panel"
 				role="region"
-				aria-labelledby="accordion-btn-{props.blockId}-{item.id}"
+				aria-labelledby="accordion-btn-{blockId}-{item.id}"
 				hidden={!isOpen}
 			>
-				{#if props.isEditing}
+				{#if isEditing && browser}
 					<div
+						use:editableAction={contentKey}
 						contenteditable="true"
 						class="accordion-content editable-content"
 						role="textbox"
-						aria-label="Section content"
-						oninput={(e) => updateItem(index, 'content', (e.target as HTMLElement).textContent || '')}
-						onpaste={handlePaste}
-					>
-						{item.content}
-					</div>
+						aria-label="Edit section content"
+						oninput={(e) => handleEditableInput(e, index, 'content')}
+						onpaste={(e) => handlePaste(e, e.currentTarget)}
+					>{item.content}</div>
 				{:else}
 					<div class="accordion-content">{item.content}</div>
 				{/if}
@@ -175,22 +245,22 @@
 		</div>
 	{/each}
 
-	{#if props.isEditing}
+	{#if isEditing}
 		<button type="button" class="add-item-btn" onclick={addItem}>
 			<IconPlus size={14} aria-hidden="true" />
 			Add Section
 		</button>
 
-		{#if props.isSelected}
-			<div class="accordion-settings">
+		{#if isSelected}
+			<div class="accordion-settings" role="group" aria-label="Accordion settings">
 				<label class="setting-checkbox">
 					<input
 						type="checkbox"
 						checked={allowMultiple}
 						onchange={(e) =>
-							props.onUpdate({
+							onUpdate({
 								settings: {
-									...props.block.settings,
+									...block.settings,
 									allowMultiple: (e.target as HTMLInputElement).checked
 								}
 							})}
@@ -198,17 +268,17 @@
 					<span>Allow multiple sections open</span>
 				</label>
 
-				<div class="setting-radio">
-					<span class="setting-label">Icon style:</span>
+				<fieldset class="setting-radio">
+					<legend class="setting-label">Icon style:</legend>
 					<label>
 						<input
 							type="radio"
-							name="icon-style-{props.blockId}"
+							name="icon-style-{blockId}"
 							value="chevron"
 							checked={iconStyle === 'chevron'}
 							onchange={() =>
-								props.onUpdate({
-									settings: { ...props.block.settings, iconStyle: 'chevron' }
+								onUpdate({
+									settings: { ...block.settings, iconStyle: 'chevron' }
 								})}
 						/>
 						<span>Chevron</span>
@@ -216,17 +286,17 @@
 					<label>
 						<input
 							type="radio"
-							name="icon-style-{props.blockId}"
+							name="icon-style-{blockId}"
 							value="plusminus"
 							checked={iconStyle === 'plusminus'}
 							onchange={() =>
-								props.onUpdate({
-									settings: { ...props.block.settings, iconStyle: 'plusminus' }
+								onUpdate({
+									settings: { ...block.settings, iconStyle: 'plusminus' }
 								})}
 						/>
 						<span>Plus/Minus</span>
 					</label>
-				</div>
+				</fieldset>
 			</div>
 		{/if}
 	{/if}
@@ -247,6 +317,17 @@
 		border-bottom: none;
 	}
 
+	.accordion-header-wrapper {
+		display: flex;
+		align-items: center;
+		background: #f9fafb;
+		transition: background 0.15s;
+	}
+
+	.accordion-header-wrapper:hover {
+		background: #f3f4f6;
+	}
+
 	.accordion-header {
 		display: flex;
 		align-items: center;
@@ -254,19 +335,14 @@
 		gap: 1rem;
 		width: 100%;
 		padding: 1.25rem 1.5rem;
-		background: #f9fafb;
+		background: transparent;
 		border: none;
 		cursor: pointer;
 		font-size: 1rem;
 		font-weight: 500;
 		color: #1f2937;
 		text-align: left;
-		transition: background 0.15s;
 		position: relative;
-	}
-
-	.accordion-header:hover {
-		background: #f3f4f6;
 	}
 
 	.accordion-header:focus-visible {
@@ -407,6 +483,18 @@
 		gap: 0.375rem;
 	}
 
+	.setting-radio legend {
+		font-weight: 500;
+		width: 100%;
+		margin-bottom: 0.5rem;
+	}
+
+	fieldset.setting-radio {
+		border: none;
+		padding: 0;
+		margin: 0;
+	}
+
 	/* Dark Mode */
 	:global(.dark) .accordion-block {
 		border-color: #374151;
@@ -416,13 +504,16 @@
 		border-color: #374151;
 	}
 
-	:global(.dark) .accordion-header {
+	:global(.dark) .accordion-header-wrapper {
 		background: #1e293b;
-		color: #f9fafb;
 	}
 
-	:global(.dark) .accordion-header:hover {
+	:global(.dark) .accordion-header-wrapper:hover {
 		background: #334155;
+	}
+
+	:global(.dark) .accordion-header {
+		color: #f9fafb;
 	}
 
 	:global(.dark) .accordion-content {

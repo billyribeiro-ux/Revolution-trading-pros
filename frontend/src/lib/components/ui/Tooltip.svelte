@@ -83,7 +83,7 @@
 		if (position === 'auto') {
 			const spaceRight = viewportWidth - triggerRect.right;
 			const spaceLeft = triggerRect.left;
-			const spaceTop = triggerRect.top;
+			const _spaceTop = triggerRect.top;
 			const spaceBottom = viewportHeight - triggerRect.bottom;
 
 			if (spaceRight >= tooltipRect.width + gap) {

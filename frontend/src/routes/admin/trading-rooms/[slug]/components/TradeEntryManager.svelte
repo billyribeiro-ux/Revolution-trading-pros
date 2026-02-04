@@ -25,6 +25,7 @@
 	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
 	import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -48,6 +49,10 @@
 	let editingEntry = $state<TradePlanEntry | null>(null);
 	let isSaving = $state(false);
 	let showQuickAdd = $state(false);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// Form state
 	let form = $state({
@@ -169,8 +174,16 @@
 		}
 	}
 
-	async function deleteEntry(id: number) {
-		if (!confirm('Delete this trade plan entry?')) return;
+	function deleteEntry(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteEntry() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await tradePlanApi.delete(id);
@@ -1018,3 +1031,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Trade Entry"
+	message="Delete this trade plan entry?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteEntry}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

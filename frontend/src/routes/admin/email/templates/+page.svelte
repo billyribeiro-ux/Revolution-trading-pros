@@ -16,6 +16,7 @@
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
@@ -25,6 +26,8 @@
 	let loading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
@@ -97,8 +100,16 @@
 	// Actions
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	async function deleteTemplate(id: number) {
-		if (!confirm('Delete this template? This action cannot be undone.')) return;
+	function deleteTemplate(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteTemplate() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await emailTemplatesApi.delete(id);
 			templates = templates.filter((t) => t.id !== id);
@@ -453,3 +464,13 @@
 		margin-bottom: 1.5rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Template"
+	message="Delete this template? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

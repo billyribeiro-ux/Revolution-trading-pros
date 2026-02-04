@@ -4,6 +4,12 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   preprocess: vitePreprocess(),
+  dynamicCompileOptions({ filename }) {
+    if (filename.includes('node_modules')) {
+      return { runes: false };
+    }
+    return { runes: true };
+  },
   kit: {
     adapter: adapter({
       routes: {
@@ -85,7 +91,6 @@ const config = {
     }
   },
   compilerOptions: {
-    runes: true
   }
 };
 

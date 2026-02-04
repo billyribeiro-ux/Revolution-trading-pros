@@ -29,6 +29,7 @@
 	import AddTradeModal from './components/AddTradeModal.svelte';
 	import UpdatePositionModal from './components/UpdatePositionModal.svelte';
 	import InvalidatePositionModal from './components/InvalidatePositionModal.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Types
 	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
@@ -48,6 +49,8 @@
 	
 	// ICT 7: Local error state for user feedback
 	let saveAlertError = $state<string | null>(null);
+	let showDeleteAlertModal = $state(false);
+	let pendingDeleteAlertId = $state<number | null>(null);
 
 	// Initialize state module (named 'ps' to avoid conflict with $state rune)
 	const ps = createPageState();
@@ -150,13 +153,20 @@
 		}
 	}
 
-	async function handleDeleteAlert(alertId: number) {
-		if (!confirm('Are you sure you want to delete this alert?')) return;
-		const response = await fetch(`/api/alerts/${ps.ROOM_SLUG}/${alertId}`, {
+	function handleDeleteAlert(alertId: number) {
+		pendingDeleteAlertId = alertId;
+		showDeleteAlertModal = true;
+	}
+
+	async function confirmDeleteAlert() {
+		if (!pendingDeleteAlertId) return;
+		showDeleteAlertModal = false;
+		const response = await fetch(`/api/alerts/${ps.ROOM_SLUG}/${pendingDeleteAlertId}`, {
 			method: 'DELETE',
 			credentials: 'include'
 		});
 		if (response.ok) await ps.fetchAlerts();
+		pendingDeleteAlertId = null;
 	}
 
 	onMount(() => {
@@ -762,3 +772,17 @@
 		}
 	}
 </style>
+
+<!-- Delete Alert Confirmation Modal -->
+<ConfirmationModal
+	isOpen={showDeleteAlertModal}
+	title="Delete Alert"
+	message="Are you sure you want to delete this alert? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAlert}
+	onCancel={() => {
+		showDeleteAlertModal = false;
+		pendingDeleteAlertId = null;
+	}}
+/>

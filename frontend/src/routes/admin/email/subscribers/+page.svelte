@@ -14,6 +14,7 @@
 		IconUserPlus
 	} from '$lib/icons';
 	import { emailApi, type EmailSubscriber } from '$lib/api/email';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State
 	let loading = $state(true);
@@ -28,6 +29,9 @@
 
 	// Modal states
 	let showAddModal = $state(false);
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// New subscriber form
 	let newSubscriber = $state({
@@ -106,9 +110,16 @@
 		}
 	}
 
-	async function handleDeleteSubscriber(id: string) {
-		if (!confirm('Are you sure you want to delete this subscriber?')) return;
+	function handleDeleteSubscriber(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeleteSubscriber() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await emailApi.deleteSubscriber(id);
 			toastStore.success('Subscriber deleted');
@@ -141,10 +152,13 @@
 		}
 	}
 
-	async function handleBulkDelete() {
+	function handleBulkDelete() {
 		if (selectedSubscribers.size === 0) return;
-		if (!confirm(`Delete ${selectedSubscribers.size} selected subscribers?`)) return;
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 		try {
 			for (const id of selectedSubscribers) {
 				await emailApi.deleteSubscriber(id);
@@ -1073,3 +1087,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Subscriber"
+	message="Are you sure you want to delete this subscriber? This cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSubscriber}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Subscribers"
+	message={`Delete ${selectedSubscribers.size} selected subscribers? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>

@@ -54,7 +54,6 @@
 	let searchQuery = $state('');
 	let selectedIndex = $state(0);
 	let inputRef = $state<HTMLInputElement | null>(null);
-	let recentSearches = $state<string[]>([]);
 
 	// Navigation items
 	const navigationItems = [
@@ -292,12 +291,7 @@
 		const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]') as string[];
 		const updated = [query, ...recent.filter((s) => s !== query)].slice(0, 5);
 		localStorage.setItem('recentSearches', JSON.stringify(updated));
-		recentSearches = updated;
-	}
-
-	function loadRecentSearches() {
-		if (!browser) return;
-		recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+		// TODO: When UI displays recent searches, add state tracking here
 	}
 
 	function close() {
@@ -327,8 +321,8 @@
 		}
 	});
 
-	onMount(() => {
-		loadRecentSearches();
+	// Initialize global keyboard shortcut
+	$effect(() => {
 		if (browser) {
 			window.addEventListener('keydown', handleGlobalKeydown);
 		}

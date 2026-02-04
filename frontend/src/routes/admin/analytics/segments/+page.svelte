@@ -9,6 +9,7 @@
 	import { analyticsApi, type Segment } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Svelte 5 Runes - State
 	let segments = $state<Segment[]>([]);
@@ -18,6 +19,10 @@
 	let selectedSegment = $state<Segment | null>(null);
 	let showCreateModal = $state(false);
 	let viewMode = $state<'grid' | 'list'>('grid');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteKey = $state<string | null>(null);
 
 	// New segment form
 	let newSegment = $state({
@@ -103,8 +108,17 @@
 		}
 	}
 
-	async function deleteSegment(key: string) {
-		if (!confirm('Are you sure you want to delete this segment?')) return;
+	function deleteSegment(key: string) {
+		pendingDeleteKey = key;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteSegment() {
+		if (!pendingDeleteKey) return;
+		showDeleteModal = false;
+		const key = pendingDeleteKey;
+		pendingDeleteKey = null;
+
 		try {
 			await analyticsApi.deleteSegment(key);
 			loadSegments();
@@ -112,7 +126,7 @@
 				selectedSegment = null;
 			}
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to delete segment');
+			error = e instanceof Error ? e.message : 'Failed to delete segment';
 		}
 	}
 
@@ -122,7 +136,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadSegments();
 			} else {
 				loading = false;
@@ -166,7 +180,7 @@
 					<p class="text-sm text-slate-400">Create and manage audience segments</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected}
+			{#if getIsAnalyticsConnected()}
 				<div class="flex items-center gap-3">
 					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">
 						<button
@@ -660,3 +674,13 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Segment"
+	message="Are you sure you want to delete this segment?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSegment}
+	onCancel={() => { showDeleteModal = false; pendingDeleteKey = null; }}
+/>

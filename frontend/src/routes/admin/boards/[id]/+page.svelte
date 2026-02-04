@@ -35,6 +35,7 @@
 		IconPlayerStop,
 		IconSubtask
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Get board ID from URL
 	const boardId = $derived(page.params['id'] ?? '');
@@ -80,6 +81,9 @@
 	// Timer state
 	let activeTimer = $state<{ taskId: string; startedAt: Date } | null>(null);
 	let timerDisplay = $state('00:00:00');
+
+	// Delete confirmation modal state
+	let showDeleteTaskModal = $state(false);
 
 	// Filtered tasks by stage
 	let tasksByStage = $derived.by(() => {
@@ -236,8 +240,14 @@
 		}
 	}
 
-	async function deleteTask() {
-		if (!selectedTask || !confirm('Delete this task?')) return;
+	function deleteTask() {
+		if (!selectedTask) return;
+		showDeleteTaskModal = true;
+	}
+
+	async function confirmDeleteTask() {
+		if (!selectedTask) return;
+		showDeleteTaskModal = false;
 
 		try {
 			await boardsAPI.deleteTask(boardId, selectedTask.id);
@@ -1181,3 +1191,13 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteTaskModal}
+	title="Delete Task"
+	message="Delete this task?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTask}
+	onCancel={() => { showDeleteTaskModal = false; }}
+/>

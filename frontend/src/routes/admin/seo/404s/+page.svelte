@@ -4,6 +4,7 @@
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type Error404 } from '$lib/api/seo';
 	import { IconAlertCircle, IconTrash } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let errors = $state<Error404[]>([]);
@@ -14,6 +15,10 @@
 		unresolved: 0,
 		total_hits: 0
 	});
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteResolvedOnly = $state(true);
 
 	// Svelte 5: Initialize on mount
 	$effect(() => {
@@ -47,12 +52,14 @@
 		}
 	}
 
-	async function handleBulkDelete(resolvedOnly: boolean = true) {
-		const message = resolvedOnly
-			? 'Delete all resolved 404 errors?'
-			: 'Delete all 404 errors? This action cannot be undone.';
+	function handleBulkDelete(resolvedOnly: boolean = true) {
+		pendingDeleteResolvedOnly = resolvedOnly;
+		showDeleteModal = true;
+	}
 
-		if (!confirm(message)) return;
+	async function confirmBulkDelete() {
+		showDeleteModal = false;
+		const resolvedOnly = pendingDeleteResolvedOnly;
 
 		try {
 			await seoApi.bulkDelete404s(resolvedOnly);
@@ -164,3 +171,13 @@
 		</Card>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete 404 Errors"
+	message={pendingDeleteResolvedOnly ? 'Delete all resolved 404 errors?' : 'Delete all 404 errors? This action cannot be undone.'}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => { showDeleteModal = false; }}
+/>

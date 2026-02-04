@@ -20,12 +20,17 @@
 		type ReportTemplate,
 		type ReportFrequency
 	} from '$lib/seo';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);
 	let reports = $state<any[]>([]);
 	let showAddModal = $state(false);
 	let editingTemplate = $state<ReportTemplate | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Form state
 	let formData = $state({
@@ -162,9 +167,17 @@
 	}
 
 	function deleteTemplate(id: string) {
-		if (confirm('Delete this report template?')) {
-			reportTemplates.remove(id);
-		}
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	function confirmDeleteTemplate() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
+
+		reportTemplates.remove(id);
 	}
 
 	function toggleTemplate(id: string) {
@@ -800,3 +813,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Report Template"
+	message="Delete this report template?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

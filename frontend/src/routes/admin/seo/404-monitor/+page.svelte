@@ -8,6 +8,7 @@
 		IconAlertTriangle
 	} from '$lib/icons';
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let logs: any[] = $state([]);
 	let stats: any = $state(null);
@@ -16,6 +17,10 @@
 	let selectedIds: number[] = $state([]);
 	let showCreateRedirect = $state(false);
 	let selected404: any = $state(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteIds = $state<number[]>([]);
 
 	const sortOptions = [
 		{ value: 'hits', label: 'Most Hits' },
@@ -66,8 +71,16 @@
 		}
 	}
 
-	async function deleteLogs(ids: number[]) {
-		if (!confirm(`Delete ${ids.length} log(s)?`)) return;
+	function deleteLogs(ids: number[]) {
+		pendingDeleteIds = ids;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteLogs() {
+		if (!pendingDeleteIds.length) return;
+		showDeleteModal = false;
+		const ids = pendingDeleteIds;
+		pendingDeleteIds = [];
 
 		try {
 			await fetch('/api/seo/404-logs/bulk-delete', {
@@ -535,3 +548,13 @@
 		color: #999;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete 404 Logs"
+	message={`Delete ${pendingDeleteIds.length} log(s)?`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLogs}
+	onCancel={() => { showDeleteModal = false; pendingDeleteIds = []; }}
+/>

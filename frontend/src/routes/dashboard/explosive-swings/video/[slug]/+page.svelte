@@ -101,6 +101,7 @@
 <TradingRoomHeader
 	roomName="Explosive Swings"
 	startHereUrl="/dashboard/explosive-swings/start-here"
+	showTradingRoomControls={false}
 />
 
 <div class="video-page">

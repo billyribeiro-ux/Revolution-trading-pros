@@ -40,6 +40,7 @@
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -71,6 +72,10 @@
 
 	// Action States
 	let actionInProgress = $state<string | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Sequences' },
@@ -122,9 +127,16 @@
 		}
 	}
 
-	async function deleteSequence(id: string) {
-		if (!confirm('Are you sure you want to delete this sequence? This action cannot be undone.'))
-			return;
+	function deleteSequence(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteSequence() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		actionInProgress = id;
 		try {
@@ -1298,3 +1310,13 @@
 		animation: spin 0.8s linear infinite;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Sequence"
+	message="Are you sure you want to delete this sequence? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSequence}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

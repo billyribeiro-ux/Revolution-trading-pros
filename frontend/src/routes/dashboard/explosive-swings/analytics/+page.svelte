@@ -21,7 +21,6 @@
 	import MonthlyReturnsChart from './components/MonthlyReturnsChart.svelte';
 	import DrawdownChart from './components/DrawdownChart.svelte';
 	import SetupBreakdown from './components/SetupBreakdown.svelte';
-	import DateRangePicker from './components/DateRangePicker.svelte';
 	import TickerPerformanceTable from './components/TickerPerformanceTable.svelte';
 
 	const analytics = createAnalyticsState();
@@ -51,6 +50,7 @@
 <TradingRoomHeader
 	roomName="Explosive Swings"
 	startHereUrl="/dashboard/explosive-swings/start-here"
+	showTradingRoomControls={false}
 />
 
 <div class="analytics-page">

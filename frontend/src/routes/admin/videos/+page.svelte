@@ -57,6 +57,7 @@
 	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
 	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -138,6 +139,11 @@
 	let isSaving = $state(false);
 	let isDeleting = $state(false);
 	let newVideoUrl = $state('');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteVideo = $state<Video | null>(null);
 
 	// Form state
 	let formData = $state({
@@ -397,8 +403,16 @@
 		}
 	}
 
-	async function deleteVideo(video: Video) {
-		if (!confirm(`Are you sure you want to delete "${video.title}"?`)) return;
+	function deleteVideo(video: Video) {
+		pendingDeleteVideo = video;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteVideo() {
+		if (!pendingDeleteVideo) return;
+		showDeleteModal = false;
+		const video = pendingDeleteVideo;
+		pendingDeleteVideo = null;
 
 		isDeleting = true;
 		error = '';
@@ -707,10 +721,13 @@
 		}
 	}
 
-	async function bulkDelete() {
+	function bulkDelete() {
 		if (selectedVideoIds.size === 0) return;
-		if (!confirm(`Are you sure you want to delete ${selectedVideoIds.size} video(s)? This cannot be undone.`)) return;
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 		isBulkActionLoading = true;
 		error = '';
 
@@ -3529,3 +3546,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Video"
+	message={pendingDeleteVideo ? `Are you sure you want to delete "${pendingDeleteVideo.title}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteVideo}
+	onCancel={() => { showDeleteModal = false; pendingDeleteVideo = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Videos"
+	message={`Are you sure you want to delete ${selectedVideoIds.size} video(s)? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>

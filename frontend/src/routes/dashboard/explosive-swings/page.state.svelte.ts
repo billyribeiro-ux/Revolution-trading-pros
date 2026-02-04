@@ -571,15 +571,10 @@ export function createPageState() {
 	}
 
 	/**
-	 * Delete a position with user confirmation
-	 * @description ICT 7 Fix: Added confirmation dialog to prevent accidental deletions
+	 * Delete a position (confirmation handled by UI component)
+	 * @description Called after user confirms deletion via ConfirmationModal
 	 */
 	async function deletePosition(position: ActivePosition): Promise<void> {
-		// ICT 7 Fix: Add confirmation dialog like handleDeleteAlert
-		if (!confirm(`Are you sure you want to delete the ${position.ticker} position? This action cannot be undone.`)) {
-			return;
-		}
-		
 		try {
 			const response = await fetch(`/api/admin/trades/${position.id}`, {
 				method: 'DELETE',

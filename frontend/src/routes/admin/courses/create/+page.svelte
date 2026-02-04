@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { browser } from '$app/environment';
+	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import {
 		IconPhoto,
@@ -39,6 +39,7 @@
 	} from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
@@ -234,8 +235,22 @@
 		setTimeout(() => addLesson(newModule.id), 100);
 	}
 
+	// Delete confirmation modal state
+	let showRemoveModuleModal = $state(false);
+	let showLoadDraftModal = $state(false);
+	let pendingRemoveModuleId = $state<string | null>(null);
+	let pendingDraft = $state<{ course: any; date: Date } | null>(null);
+
 	function removeModule(moduleId: string) {
-		if (!confirm('Remove this module and all its lessons? This cannot be undone.')) return;
+		pendingRemoveModuleId = moduleId;
+		showRemoveModuleModal = true;
+	}
+
+	function confirmRemoveModule() {
+		if (!pendingRemoveModuleId) return;
+		showRemoveModuleModal = false;
+		const moduleId = pendingRemoveModuleId;
+		pendingRemoveModuleId = null;
 
 		course.modules = course.modules.filter((m) => m.id !== moduleId);
 		expandedModules.delete(moduleId);
@@ -1273,14 +1288,20 @@
 				const draft = JSON.parse(draftStr);
 				const date = new Date(draftDate);
 
-				if (confirm(`Load draft from ${date.toLocaleString()}?`)) {
-					course = draft.course || draft;
-					validateAll();
-				}
+				pendingDraft = { course: draft.course || draft, date };
+				showLoadDraftModal = true;
 			} catch (e) {
 				console.error('Failed to load draft:', e);
 			}
 		}
+	}
+
+	function confirmLoadDraft() {
+		if (!pendingDraft) return;
+		showLoadDraftModal = false;
+		course = pendingDraft.course;
+		pendingDraft = null;
+		validateAll();
 	}
 
 	async function saveCourse() {
@@ -4671,3 +4692,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showRemoveModuleModal}
+	title="Remove Module"
+	message="Remove this module and all its lessons? This cannot be undone."
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveModule}
+	onCancel={() => { showRemoveModuleModal = false; pendingRemoveModuleId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showLoadDraftModal}
+	title="Load Draft"
+	message={pendingDraft ? `Load draft from ${pendingDraft.date.toLocaleString()}?` : ''}
+	confirmText="Load"
+	variant="warning"
+	onConfirm={confirmLoadDraft}
+	onCancel={() => { showLoadDraftModal = false; pendingDraft = null; }}
+/>

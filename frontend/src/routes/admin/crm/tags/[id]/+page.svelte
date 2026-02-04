@@ -29,6 +29,7 @@
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag, Contact } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Get tag ID from route params
 	let tagId = $derived(page.params.id ?? '');
@@ -43,6 +44,10 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let perPage = $state(20);
+
+	// Remove tag confirmation modal state
+	let showRemoveTagModal = $state(false);
+	let pendingRemoveContactId = $state<string | null>(null);
 
 	// Computed contacts count
 	let contactsCount = $state(0);
@@ -92,8 +97,16 @@
 		}
 	}
 
-	async function removeTagFromContact(contactId: string) {
-		if (!confirm('Remove this tag from the contact?')) return;
+	function removeTagFromContact(contactId: string) {
+		pendingRemoveContactId = contactId;
+		showRemoveTagModal = true;
+	}
+
+	async function confirmRemoveTagFromContact() {
+		if (!pendingRemoveContactId) return;
+		showRemoveTagModal = false;
+		const contactId = pendingRemoveContactId;
+		pendingRemoveContactId = null;
 
 		try {
 			await crmAPI.removeTagFromContacts(tagId, [contactId]);
@@ -741,3 +754,13 @@
 		border-width: 2px;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showRemoveTagModal}
+	title="Remove Tag"
+	message="Remove this tag from the contact?"
+	confirmText="Remove"
+	variant="warning"
+	onConfirm={confirmRemoveTagFromContact}
+	onCancel={() => { showRemoveTagModal = false; pendingRemoveContactId = null; }}
+/>

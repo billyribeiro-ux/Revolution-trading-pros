@@ -431,7 +431,7 @@
 			});
 
 			// Execute login with comprehensive error handling in auth service
-			const user = await login({ email, password, remember: rememberMe });
+			await login({ email, password, remember: rememberMe });
 
 			console.log('[LoginForm:ICT11] Authentication successful', {
 				userId: user?.id,

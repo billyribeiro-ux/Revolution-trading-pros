@@ -8,6 +8,7 @@
 		IconTrash,
 		IconEdit
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let videos = $state<any[]>([]);
@@ -21,6 +22,10 @@
 	let loading = $state(false);
 	let showAddModal = $state(false);
 	let newVideoUrl = $state('');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// Computed
 	let sitemapUrl = $derived(
@@ -131,10 +136,18 @@
 		showAddModal = false;
 	}
 
-	async function removeVideo(id: number) {
-		if (confirm('Remove this video from the sitemap?')) {
-			videos = videos.filter((v) => v.id !== id);
-		}
+	function removeVideo(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	function confirmRemoveVideo() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
+
+		videos = videos.filter((v) => v.id !== id);
 	}
 </script>
 
@@ -809,3 +822,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Remove Video"
+	message="Remove this video from the sitemap?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveVideo}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

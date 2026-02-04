@@ -12,8 +12,6 @@
  * - Enrollments & Progress
  */
 
-import { browser } from '$app/environment';
-
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '';
 

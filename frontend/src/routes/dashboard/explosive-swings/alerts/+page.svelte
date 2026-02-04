@@ -8,7 +8,8 @@
 	 * @version 1.1.0
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
-	import { IconFilter, IconSearch } from '$lib/icons';
+	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import { IconSearch } from '$lib/icons';
 	import type { RoomAlert } from '$lib/types/trading';
 
 	// Props interface for SSR data - Svelte 5 best practice
@@ -29,10 +30,6 @@
 
 	// SSR error state (derived to stay reactive with props)
 	const errorMessage = $derived(data.error ?? '');
-
-	// Pagination for future client-side navigation
-	const paginationTotal = $derived(data.total ?? 0);
-	let pagination = $state({ limit: 50, offset: 0 });
 
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -238,12 +235,12 @@
 	<title>Alerts Archive | Explosive Swings | Revolution Trading Pros</title>
 </svelte:head>
 
-<!-- Dashboard Header -->
-<header class="dashboard__header">
-	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Alerts Archive</h1>
-	</div>
-</header>
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
+	pageTitle="Alerts Archive"
+	showTradingRoomControls={false}
+/>
 
 <!-- Dashboard Content -->
 <div class="dashboard__content">
@@ -361,44 +358,6 @@
 </div>
 
 <style>
-	.dashboard__header {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		background-color: #fff;
-		border-bottom: 1px solid #dbdbdb;
-		border-right: 1px solid #dbdbdb;
-		padding: 20px;
-	}
-
-	@media (min-width: 1024px) {
-		.dashboard__header {
-			padding: 30px;
-		}
-	}
-
-	@media (min-width: 1440px) {
-		.dashboard__header {
-			padding: 30px 40px;
-		}
-	}
-
-	.dashboard__header-left {
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		flex: 1;
-		gap: 15px;
-	}
-
-	.dashboard__page-title {
-		margin: 0;
-		color: #333;
-		font-size: 28px;
-		font-weight: 700;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
 	.dashboard__content {
 		display: flex;
 		flex-flow: row nowrap;

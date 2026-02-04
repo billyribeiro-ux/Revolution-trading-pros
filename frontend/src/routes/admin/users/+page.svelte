@@ -2,10 +2,13 @@
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let loading = $state(true);
 	let users = $state<any[]>([]);
 	let error = $state('');
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// Load users on mount
 	$effect(() => {
@@ -37,13 +40,21 @@
 		}
 	}
 
-	async function deleteUser(id: number) {
-		if (!confirm('Are you sure you want to delete this user?')) return;
+	function deleteUser(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteUser() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await usersApi.delete(id);
 			await loadUsers();
 		} catch (err) {
-			alert('Failed to delete user');
+			error = 'Failed to delete user';
 			console.error(err);
 		}
 	}
@@ -526,3 +537,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete User"
+	message="Are you sure you want to delete this user? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteUser}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

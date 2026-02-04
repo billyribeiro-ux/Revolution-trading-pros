@@ -20,24 +20,27 @@
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+		import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+		import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { crmAPI } from '$lib/api/crm';
 	import type {
 		RecurringCampaign,
 		RecurringCampaignFilters,
 		RecurringCampaignStatus
 	} from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let campaigns = $state<RecurringCampaign[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state<RecurringCampaignStatus | 'all'>('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state({
 		total: 0,
@@ -88,8 +91,16 @@
 		}
 	}
 
-	async function deleteCampaign(id: string) {
-		if (!confirm('Are you sure you want to delete this recurring campaign?')) return;
+	function deleteCampaign(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteCampaign() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await crmAPI.deleteRecurringCampaign(id);
@@ -673,3 +684,13 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Recurring Campaign"
+	message="Are you sure you want to delete this recurring campaign?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCampaign}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

@@ -22,12 +22,20 @@
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ManagerRole, ManagerUser } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { browser } from '$app/environment';
 
 	let roles = $state<ManagerRole[]>([]);
 	let managers = $state<ManagerUser[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let activeTab = $state<'managers' | 'roles'>('managers');
+
+	// Delete confirmation modal state
+	let showDeleteRoleModal = $state(false);
+	let showRemoveManagerModal = $state(false);
+	let pendingDeleteRoleId = $state<string | null>(null);
+	let pendingRemoveManagerId = $state<string | null>(null);
 
 	let stats = $state({
 		totalManagers: 0,
@@ -58,12 +66,16 @@
 		}
 	}
 
-	async function deleteRole(id: string) {
-		if (
-			!confirm('Are you sure you want to delete this role? Users with this role will lose access.')
-		)
-			return;
+	function deleteRole(id: string) {
+		pendingDeleteRoleId = id;
+		showDeleteRoleModal = true;
+	}
 
+	async function confirmDeleteRole() {
+		if (!pendingDeleteRoleId) return;
+		showDeleteRoleModal = false;
+		const id = pendingDeleteRoleId;
+		pendingDeleteRoleId = null;
 		try {
 			await crmAPI.deleteManagerRole(id);
 			await loadData();
@@ -72,9 +84,16 @@
 		}
 	}
 
-	async function removeManager(id: string) {
-		if (!confirm('Are you sure you want to remove this manager?')) return;
+	function removeManager(id: string) {
+		pendingRemoveManagerId = id;
+		showRemoveManagerModal = true;
+	}
 
+	async function confirmRemoveManager() {
+		if (!pendingRemoveManagerId) return;
+		showRemoveManagerModal = false;
+		const id = pendingRemoveManagerId;
+		pendingRemoveManagerId = null;
 		try {
 			await crmAPI.removeManager(id);
 			await loadData();
@@ -728,3 +747,23 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteRoleModal}
+	title="Delete Role"
+	message="Are you sure you want to delete this role? Users with this role will lose access."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteRole}
+	onCancel={() => { showDeleteRoleModal = false; pendingDeleteRoleId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showRemoveManagerModal}
+	title="Remove Manager"
+	message="Are you sure you want to remove this manager?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveManager}
+	onCancel={() => { showRemoveManagerModal = false; pendingRemoveManagerId = null; }}
+/>

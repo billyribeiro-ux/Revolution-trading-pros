@@ -13,21 +13,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let carts = $state<AbandonedCart[]>([]);
 	let isLoading = $state(true);
@@ -36,6 +33,11 @@
 	let statusFilter = $state<AbandonedCartStatus | ''>('');
 	let haveAutomation = $state(false);
 	let selectedCarts = $state<string[]>([]);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state<AbandonedCartStats | null>(null);
 
@@ -65,9 +67,16 @@
 		}
 	}
 
-	async function deleteCart(id: string) {
-		if (!confirm('Are you sure you want to delete this cart?')) return;
+	function deleteCart(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeleteCart() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await crmAPI.deleteAbandonedCart(id);
 			await loadCarts();
@@ -76,10 +85,13 @@
 		}
 	}
 
-	async function bulkDelete() {
+	function bulkDelete() {
 		if (selectedCarts.length === 0) return;
-		if (!confirm(`Are you sure you want to delete ${selectedCarts.length} carts?`)) return;
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 		try {
 			await crmAPI.bulkDeleteAbandonedCarts(selectedCarts);
 			selectedCarts = [];
@@ -813,3 +825,23 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Cart"
+	message="Are you sure you want to delete this cart?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCart}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Carts"
+	message={`Are you sure you want to delete ${selectedCarts.length} carts?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>

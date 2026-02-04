@@ -17,7 +17,6 @@
 		DEFAULT_TEMPLATE_ID
 	} from '$lib/consent/templates/registry';
 	import {
-		activeTemplate,
 		allTemplates,
 		initializeTemplateStore,
 		setActiveTemplate,
@@ -35,6 +34,7 @@
 	import TemplateEditor from '$lib/consent/templates/TemplateEditor.svelte';
 	import BannerRenderer from '$lib/consent/templates/BannerRenderer.svelte';
 	import type { BannerTemplate } from '$lib/consent/templates/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State
 	let selectedCategory = $state('all');
@@ -45,6 +45,10 @@
 	let showImportModal = $state(false);
 	let importJson = $state('');
 	let notification = $state('');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteTemplate = $state<BannerTemplate | null>(null);
 	const importPlaceholder = '{"activeConfig": {...}, "customTemplates": [...]}';
 
 	// Get categories
@@ -88,10 +92,18 @@
 	}
 
 	function handleDeleteTemplate(template: BannerTemplate) {
-		if (confirm(`Are you sure you want to delete "${template.name}"?`)) {
-			deleteCustomTemplate(template.id);
-			showNotification(`"${template.name}" deleted`);
-		}
+		pendingDeleteTemplate = template;
+		showDeleteModal = true;
+	}
+
+	function confirmDeleteTemplate() {
+		if (!pendingDeleteTemplate) return;
+		showDeleteModal = false;
+		const template = pendingDeleteTemplate;
+		pendingDeleteTemplate = null;
+
+		deleteCustomTemplate(template.id);
+		showNotification(`"${template.name}" deleted`);
 	}
 
 	function handleCreateNew() {
@@ -113,7 +125,7 @@
 		// Svelte 5: Callback props receive the value directly (no CustomEvent wrapper)
 
 		if (isCreatingNew) {
-			const newId = saveAsCustomTemplate(template.name);
+			const _newId = saveAsCustomTemplate(template.name);
 			showNotification(`"${template.name}" created successfully`);
 		} else {
 			// Update existing custom template or save customization
@@ -677,3 +689,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Template"
+	message={pendingDeleteTemplate ? `Are you sure you want to delete "${pendingDeleteTemplate.name}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={() => { showDeleteModal = false; pendingDeleteTemplate = null; }}
+/>

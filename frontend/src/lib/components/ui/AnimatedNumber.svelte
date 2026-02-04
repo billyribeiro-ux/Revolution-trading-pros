@@ -37,7 +37,7 @@
 	let easing = $derived(props.easing ?? 'power2.out');
 
 	let displayValue = $state(0);
-	let element: HTMLSpanElement;
+	let _element: HTMLSpanElement;
 	let tween: gsap.core.Tween | null = null;
 
 	function formatValue(val: number): string {
@@ -122,7 +122,7 @@
 </script>
 
 <span
-	bind:this={element}
+	bind:this={_element}
 	class="animated-number tabular-nums"
 	aria-live="polite"
 	aria-atomic="true"

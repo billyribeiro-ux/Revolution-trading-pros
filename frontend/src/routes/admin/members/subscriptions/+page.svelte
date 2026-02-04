@@ -25,6 +25,7 @@
 		IconX,
 		IconCreditCard
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getSubscriptions,
 		cancelSubscription,
@@ -46,6 +47,12 @@
 	let intervalFilter = $state<string>('');
 	let showFilters = $state(false);
 	let exporting = $state(false);
+	let showPauseModal = $state(false);
+	let pendingPauseSub = $state<EnhancedSubscription | null>(null);
+
+	// Cancel confirmation modal state
+	let showCancelModal = $state(false);
+	let pendingCancelSub = $state<EnhancedSubscription | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
@@ -130,8 +137,16 @@
 	// Actions
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	async function handlePause(sub: EnhancedSubscription) {
-		if (!confirm(`Pause subscription for ${sub.customer?.name || sub.customer?.email}?`)) return;
+	function handlePause(sub: EnhancedSubscription) {
+		pendingPauseSub = sub;
+		showPauseModal = true;
+	}
+
+	async function confirmPause() {
+		if (!pendingPauseSub) return;
+		showPauseModal = false;
+		const sub = pendingPauseSub;
+		pendingPauseSub = null;
 		try {
 			await pauseSubscription(sub.id, 'Admin paused');
 			toastStore.success('Subscription paused successfully');
@@ -153,13 +168,17 @@
 		}
 	}
 
-	async function handleCancel(sub: EnhancedSubscription) {
-		if (
-			!confirm(
-				`Cancel subscription for ${sub.customer?.name || sub.customer?.email}? This cannot be undone.`
-			)
-		)
-			return;
+	function handleCancel(sub: EnhancedSubscription) {
+		pendingCancelSub = sub;
+		showCancelModal = true;
+	}
+
+	async function confirmCancel() {
+		if (!pendingCancelSub) return;
+		showCancelModal = false;
+		const sub = pendingCancelSub;
+		pendingCancelSub = null;
+
 		try {
 			await cancelSubscription(sub.id, 'Admin cancelled', true);
 			toastStore.success('Subscription cancelled successfully');
@@ -1019,3 +1038,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showPauseModal}
+	title="Pause Subscription"
+	message={pendingPauseSub ? `Pause subscription for ${pendingPauseSub.customer?.name || pendingPauseSub.customer?.email}?` : ''}
+	confirmText="Pause"
+	variant="warning"
+	onConfirm={confirmPause}
+	onCancel={() => { showPauseModal = false; pendingPauseSub = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showCancelModal}
+	title="Cancel Subscription"
+	message={pendingCancelSub ? `Cancel subscription for ${pendingCancelSub.customer?.name || pendingCancelSub.customer?.email}? This cannot be undone.` : ''}
+	confirmText="Cancel Subscription"
+	variant="danger"
+	onConfirm={confirmCancel}
+	onCancel={() => { showCancelModal = false; pendingCancelSub = null; }}
+/>

@@ -44,7 +44,6 @@
 	// Pagination derived values
 	let currentPage = $derived(meta.current_page);
 	let totalPages = $derived(meta.last_page);
-	let totalItems = $derived(meta.total);
 
 	// Category options matching WordPress SPX reference - using WordPress category IDs
 	const categories = [
@@ -119,11 +118,6 @@
 		}
 
 		return range;
-	}
-
-	function getCategoryLabel(categoryId: string): string {
-		const category = categories.find((c) => c.id === categoryId);
-		return category?.label || categoryId;
 	}
 </script>
 

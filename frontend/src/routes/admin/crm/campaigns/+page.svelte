@@ -27,9 +27,7 @@
 		IconSearch,
 		IconEdit,
 		IconTrash,
-		IconEye,
 		IconRefresh,
-		IconUsers,
 		IconChartBar,
 		IconCopy,
 		IconSend,
@@ -39,6 +37,7 @@
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -70,6 +69,10 @@
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state<string>('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state({
 		total: 0,
@@ -130,8 +133,16 @@
 		}
 	}
 
-	async function deleteCampaign(id: string) {
-		if (!confirm('Are you sure you want to delete this campaign?')) return;
+	function deleteCampaign(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteCampaign() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await api.delete(`/api/admin/crm/campaigns/${id}`);
@@ -793,3 +804,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Campaign"
+	message="Are you sure you want to delete this campaign?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCampaign}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

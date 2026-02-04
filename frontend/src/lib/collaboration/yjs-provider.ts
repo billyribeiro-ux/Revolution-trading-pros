@@ -20,7 +20,7 @@ export class CollaborationProvider {
 	private ydoc: Y.Doc;
 	private provider: WebsocketProvider | null = null;
 	private blocksArray: Y.Array<Block>;
-	private metaMap: Y.Map<any>;
+	private metaMap: Y.Map<unknown>;
 	private connected = false;
 
 	constructor(documentId: string, wsUrl?: string) {
@@ -166,12 +166,12 @@ export class CollaborationProvider {
 	}
 
 	// Document metadata
-	setMeta(key: string, value: any): void {
+	setMeta(key: string, value: unknown): void {
 		this.metaMap.set(key, value);
 	}
 
-	getMeta(key: string): any {
-		return this.metaMap.get(key);
+	getMeta<T = unknown>(key: string): T | undefined {
+		return this.metaMap.get(key) as T | undefined;
 	}
 
 	// Undo/Redo with Y.js UndoManager

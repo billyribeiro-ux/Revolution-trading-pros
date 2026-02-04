@@ -16,6 +16,7 @@
 	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import { crmAPI } from '$lib/api/crm';
+        import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import type { SystemLog, LogLevel, LogCategory } from '$lib/crm/types';
 
 	let logs = $state<SystemLog[]>([]);
@@ -24,6 +25,9 @@
 	let searchQuery = $state('');
 	let levelFilter = $state<LogLevel | ''>('');
 	let categoryFilter = $state<LogCategory | ''>('');
+
+        // Clear logs confirmation modal state
+        let showClearLogsModal = $state(false);
 
 	let stats = $state({
 		total: 0,
@@ -54,20 +58,23 @@
 		}
 	}
 
-	async function clearLogs() {
-		if (!confirm('Are you sure you want to clear system logs? This action cannot be undone.'))
-			return;
+        function clearLogs() {
+                showClearLogsModal = true;
+        }
 
-		try {
-			await crmAPI.clearSystemLogs({
-				level: levelFilter || undefined,
-				category: categoryFilter || undefined
-			});
-			await loadLogs();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to clear logs';
-		}
-	}
+        async function confirmClearLogs() {
+                showClearLogsModal = false;
+
+                try {
+                        await crmAPI.clearSystemLogs({
+                                level: levelFilter || undefined,
+                                category: categoryFilter || undefined
+                        });
+                        await loadLogs();
+                } catch (err) {
+                        error = err instanceof Error ? err.message : 'Failed to clear logs';
+                }
+        }
 
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -634,3 +641,13 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showClearLogsModal}
+	title="Clear System Logs"
+	message="Are you sure you want to clear system logs? This action cannot be undone."
+	confirmText="Clear Logs"
+	variant="danger"
+	onConfirm={confirmClearLogs}
+	onCancel={() => { showClearLogsModal = false; }}
+/>

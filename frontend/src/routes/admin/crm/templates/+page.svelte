@@ -36,6 +36,7 @@
 	import IconFileExport from '@tabler/icons-svelte-runes/icons/file-export';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -69,6 +70,11 @@
 
 	// Bulk operation state
 	let isBulkDeleting = $state(false);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Stats derived from templates
 	let stats = $derived({
@@ -184,11 +190,16 @@
 		}
 	}
 
-	async function deleteTemplate(id: string) {
-		if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
-			return;
-		}
+	function deleteTemplate(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeleteTemplate() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await crmAPI.deleteEmailTemplate(id);
 			showToast('success', 'Template deleted successfully');
@@ -210,14 +221,13 @@
 		}
 	}
 
-	async function bulkDeleteTemplates() {
+	function bulkDeleteTemplates() {
 		if (selectedCount === 0) return;
+		showBulkDeleteModal = true;
+	}
 
-		const confirmed = confirm(
-			`Are you sure you want to delete ${selectedCount} template${selectedCount > 1 ? 's' : ''}? This action cannot be undone.`
-		);
-
-		if (!confirmed) return;
+	async function confirmBulkDeleteTemplates() {
+		showBulkDeleteModal = false;
 
 		isBulkDeleting = true;
 		let successCount = 0;
@@ -1824,3 +1834,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Template"
+	message="Are you sure you want to delete this template? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Templates"
+	message={`Are you sure you want to delete ${selectedCount} template${selectedCount > 1 ? 's' : ''}? This action cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDeleteTemplates}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>

@@ -5,6 +5,7 @@
 	 */
 	import type { ActivePosition } from '../types';
 	import { formatPercent, formatPrice } from '../utils/formatters';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		position: ActivePosition;
@@ -18,6 +19,7 @@
 	const { position, isAdmin = false, onUpdate, onInvalidate, onClose, onDelete }: Props = $props();
 
 	let menuOpen = $state(false);
+	let showDeleteModal = $state(false);
 
 	const isProfit = $derived(position.unrealizedPercent !== null && position.unrealizedPercent >= 0);
 	const statusClass = $derived(
@@ -56,9 +58,12 @@
 	function handleDelete(e: MouseEvent) {
 		e.stopPropagation();
 		menuOpen = false;
-		if (confirm(`Are you sure you want to delete ${position.ticker}? This cannot be undone.`)) {
-			onDelete?.(position);
-		}
+		showDeleteModal = true;
+	}
+
+	function confirmDelete() {
+		showDeleteModal = false;
+		onDelete?.(position);
 	}
 
 	function handleClickOutside() {
@@ -473,3 +478,14 @@
 		min-height: var(--touch-target-min);
 	}
 </style>
+
+<!-- Delete Confirmation Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Position"
+	message="Are you sure you want to delete {position.ticker}? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => (showDeleteModal = false)}
+/>

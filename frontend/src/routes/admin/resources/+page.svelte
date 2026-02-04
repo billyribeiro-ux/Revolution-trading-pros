@@ -55,6 +55,7 @@
 		bulkDeleteResources
 	} from '$lib/api/room-resources';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & CONSTANTS
@@ -646,8 +647,20 @@
 		}
 	}
 
-	async function deleteResource(resource: RoomResource) {
-		if (!confirm(`Delete "${resource.title}"? This action cannot be undone.`)) return;
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteResource = $state<RoomResource | null>(null);
+
+	function deleteResource(resource: RoomResource) {
+		pendingDeleteResource = resource;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteResource() {
+		if (!pendingDeleteResource) return;
+		showDeleteModal = false;
+		const resource = pendingDeleteResource;
+		pendingDeleteResource = null;
 
 		try {
 			const response = await roomResourcesApi.delete(resource.id);
@@ -2456,3 +2469,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Resource"
+	message={pendingDeleteResource ? `Delete "${pendingDeleteResource.title}"? This action cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteResource}
+	onCancel={() => { showDeleteModal = false; pendingDeleteResource = null; }}
+/>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// API URL
 	const API_BASE = '/api/admin/invoice-settings';
@@ -47,8 +48,13 @@
 	let previewHtml = $state('');
 	let showPreviewModal = $state(false);
 
-	onMount(async () => {
-		await loadSettings();
+	// Reset confirmation modal state
+	let showResetModal = $state(false);
+
+	$effect(() => {
+		if (browser) {
+			loadSettings();
+		}
 	});
 
 	async function loadSettings() {
@@ -154,8 +160,12 @@
 		window.open(`${API_BASE}/preview`, '_blank');
 	}
 
-	async function resetToDefaults() {
-		if (!confirm('Are you sure you want to reset all settings to defaults?')) return;
+	function resetToDefaults() {
+		showResetModal = true;
+	}
+
+	async function confirmResetToDefaults() {
+		showResetModal = false;
 
 		try {
 			const response = await fetch(`${API_BASE}/reset`, { method: 'POST' });
@@ -995,3 +1005,13 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showResetModal}
+	title="Reset Settings"
+	message="Are you sure you want to reset all settings to defaults?"
+	confirmText="Reset"
+	variant="warning"
+	onConfirm={confirmResetToDefaults}
+	onCancel={() => { showResetModal = false; }}
+/>

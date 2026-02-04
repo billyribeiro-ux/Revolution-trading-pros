@@ -17,7 +17,6 @@
  */
 
 import { browser } from '$app/environment';
-import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

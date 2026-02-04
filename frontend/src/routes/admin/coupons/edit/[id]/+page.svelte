@@ -18,7 +18,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '$lib/api/admin';
 	import {
 		IconTicket,
@@ -28,6 +28,7 @@
 		IconAlertCircle,
 		IconTrash
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions
@@ -87,6 +88,9 @@
 		stackable: false
 	});
 
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Derived State - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -114,7 +118,7 @@
 					: 'Custom Discount'
 	);
 
-	let hasErrors = $derived(errors.some((e) => e.severity === 'error'));
+	let _hasErrors = $derived(errors.some((e) => e.severity === 'error'));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect
@@ -234,11 +238,12 @@
 		}
 	}
 
-	async function handleDelete() {
-		if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) {
-			return;
-		}
+	function handleDelete() {
+		showDeleteModal = true;
+	}
 
+	async function confirmDelete() {
+		showDeleteModal = false;
 		deleting = true;
 		try {
 			await couponsApi.delete(couponId);
@@ -1029,3 +1034,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Coupon"
+	message="Are you sure you want to delete this coupon? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => { showDeleteModal = false; }}
+/>

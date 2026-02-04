@@ -31,9 +31,9 @@
 
 import { onDestroy, untrack } from 'svelte';
 import { browser } from '$app/environment';
-import { getApiClient, type RequestOptions, type ApiResponse } from './client';
+import { getApiClient, type RequestOptions } from './client';
 import { type ApiError, isApiError, isRetryableError } from './errors';
-import { getCache, type CacheConfig, type CachedResponse } from './cache';
+import { getCache, type CacheConfig } from './cache';
 
 // =============================================================================
 // TYPE DEFINITIONS

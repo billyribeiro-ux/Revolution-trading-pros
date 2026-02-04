@@ -9,11 +9,14 @@
 		IconTrash,
 		IconRefresh
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let keywords: any[] = $state([]);
 	let stats: any = $state(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// Svelte 5: Initialize on mount
 	$effect(() => {
@@ -45,9 +48,16 @@
 		}
 	}
 
-	async function deleteKeyword(id: number) {
-		if (!confirm('Delete this keyword?')) return;
+	function deleteKeyword(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeleteKeyword() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await fetch(`/api/seo/keywords/${id}`, { method: 'DELETE' });
 			loadKeywords();
@@ -638,3 +648,13 @@
 		border-width: 0;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Keyword"
+	message="Delete this keyword?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteKeyword}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>

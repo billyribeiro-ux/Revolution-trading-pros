@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { WS_URL } from '$lib/api/config';
 	import {
 		IconPlus,
 		IconSearch,
@@ -34,6 +33,7 @@
 		IconMenu2,
 		IconLayoutGrid
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PREDEFINED BLOG CATEGORIES (same system as videos)
@@ -99,6 +99,11 @@
 	let analyticsPost = $state<any>(null);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 	let notifications = $state<any[]>([]);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Status' },
@@ -276,14 +281,17 @@
 		selectAll = selectedPosts.size === posts.length;
 	}
 
-	async function bulkDelete() {
+	function bulkDelete() {
 		if (selectedPosts.size === 0) {
 			showNotification('warning', 'No posts selected');
 			return;
 		}
+		showBulkDeleteModal = true;
+	}
 
-		if (!confirm(`Delete ${selectedPosts.size} posts? This cannot be undone.`)) return;
-
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
+		const count = selectedPosts.size;
 		try {
 			await adminFetch('/api/admin/posts/bulk-delete', {
 				method: 'POST',
@@ -293,7 +301,7 @@
 			loadStats();
 			selectedPosts.clear();
 			selectAll = false;
-			showNotification('success', `Deleted ${selectedPosts.size} posts`);
+			showNotification('success', `Deleted ${count} posts`);
 		} catch (error) {
 			console.error('Failed to bulk delete:', error);
 			showNotification('error', 'Failed to delete posts');
@@ -326,9 +334,16 @@
 	// Individual Post Actions
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async function deletePost(id: number) {
-		if (!confirm('Are you sure you want to delete this post?')) return;
+	function deletePost(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeletePost() {
+		if (pendingDeleteId === null) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await adminFetch(`/api/admin/posts/${id}`, { method: 'DELETE' });
 			loadPosts();
@@ -611,7 +626,7 @@
 
 	$effect(() => {
 		// Track filter values to detect changes (this creates proper dependencies)
-		const currentFilters = {
+		const _currentFilters = {
 			search: searchQuery,
 			status: statusFilter,
 			category: categoryFilter,
@@ -3008,3 +3023,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Post"
+	message="Are you sure you want to delete this post?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeletePost}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Posts"
+	message={`Delete ${selectedPosts.size} posts? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>

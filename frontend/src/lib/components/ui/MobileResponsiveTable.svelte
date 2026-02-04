@@ -87,7 +87,7 @@
 	});
 
 	let isMobile = $state(false);
-	let tableRef: HTMLDivElement;
+	let _tableRef: HTMLDivElement;
 
 	function handleSort(column: Column) {
 		if (!column.sortable) return;
@@ -178,7 +178,7 @@
 	let isAllSelected = $derived(data.length > 0 && selectedIds.length === data.length);
 </script>
 
-<div class="mobile-responsive-table" bind:this={tableRef}>
+<div class="mobile-responsive-table" bind:this={_tableRef}>
 	<!-- Header with export -->
 	{#if exportable}
 		<div class="flex justify-end mb-4">

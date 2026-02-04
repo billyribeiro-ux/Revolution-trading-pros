@@ -14,7 +14,8 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
-	import { getRoomById, type Room } from '$lib/config/rooms';
+	import type { PageData } from './$types';
+	import { getRoomById } from '$lib/config/rooms';
 	import {
 		tradePlanApi,
 		alertsApi,
@@ -48,10 +49,10 @@
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
 	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+		import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -60,10 +61,16 @@
 	type Tab = 'trade-plan' | 'alerts' | 'weekly-video' | 'trades' | 'video-library';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
+	// PAGE DATA FROM LOAD FUNCTION (SSR)
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	const { data }: { data: PageData } = $props();
+
+	// ═══════════════════════════════════════════════════════════════════════════════
 	// ROUTE DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	const slug = $derived(page.params.slug ?? '');
+	const slug = $derived(data.slug ?? page.params.slug ?? '');
 	const room = $derived(getRoomById(slug));
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -74,12 +81,22 @@
 	let successMessage = $state('');
 	let errorMessage = $state('');
 
+	// Delete confirmation modal state
+	let showDeleteTradePlanModal = $state(false);
+	let showDeleteAlertModal = $state(false);
+	let showDeleteTradeModal = $state(false);
+	let showDeleteVideoModal = $state(false);
+	let pendingDeleteTradePlan = $state<TradePlanEntry | null>(null);
+	let pendingDeleteAlert = $state<RoomAlert | null>(null);
+	let pendingDeleteTrade = $state<RoomTrade | null>(null);
+	let pendingDeleteVideoId = $state<number | null>(null);
+
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE PLAN STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let tradePlanEntries = $state<TradePlanEntry[]>([]);
-	let isLoadingTradePlan = $state(true);
+	let tradePlanEntries = $state<TradePlanEntry[]>(data.initialData?.tradePlan ?? []);
+	let isLoadingTradePlan = $state(false);
 	let showTradePlanModal = $state(false);
 	let editingTradePlan = $state<TradePlanEntry | null>(null);
 	let isSavingTradePlan = $state(false);
@@ -102,8 +119,8 @@
 	// ALERTS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let alerts = $state<RoomAlert[]>([]);
-	let isLoadingAlerts = $state(true);
+	let alerts = $state<RoomAlert[]>(data.initialData?.alerts ?? []);
+	let isLoadingAlerts = $state(false);
 	let showAlertModal = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
 	let isSavingAlert = $state(false);
@@ -137,9 +154,9 @@
 	// WEEKLY VIDEO STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let currentVideo = $state<WeeklyVideo | null>(null);
+	let currentVideo = $state<WeeklyVideo | null>(data.initialData?.weeklyVideo ?? null);
 	let archivedVideos = $state<WeeklyVideo[]>([]);
-	let isLoadingVideo = $state(true);
+	let isLoadingVideo = $state(false);
 	let showVideoModal = $state(false);
 	let isSavingVideo = $state(false);
 
@@ -158,15 +175,15 @@
 	// ROOM STATS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let roomStats = $state<RoomStats | null>(null);
-	let isLoadingStats = $state(true);
+	let roomStats = $state<RoomStats | null>(data.initialData?.roomStats ?? null);
+	let isLoadingStats = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE TRACKER STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let trades = $state<RoomTrade[]>([]);
-	let isLoadingTrades = $state(true);
+	let trades = $state<RoomTrade[]>(data.initialData?.trades ?? []);
+	let isLoadingTrades = $state(false);
 	let tradeFilter = $state<TradeStatus | 'all'>('all');
 	let showCloseTradeModal = $state(false);
 	let closingTrade = $state<RoomTrade | null>(null);
@@ -182,14 +199,14 @@
 	// VIDEO LIBRARY STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let videoResources = $state<RoomResource[]>([]);
-	let isLoadingVideos = $state(true);
+	let videoResources = $state<RoomResource[]>(data.initialData?.videoResources ?? []);
+	let isLoadingVideos = $state(false);
 	let videoFilter = $state<string>('all');
-	let showVideoResourceModal = $state(false);
-	let editingVideoResource = $state<RoomResource | null>(null);
-	let isSavingVideoResource = $state(false);
+	let _showVideoResourceModal = $state(false);
+	let _editingVideoResource = $state<RoomResource | null>(null);
+	let _isSavingVideoResource = $state(false);
 
-	let videoResourceForm = $state({
+	let _videoResourceForm = $state({
 		title: '',
 		description: '',
 		video_url: '',
@@ -221,12 +238,12 @@
 	const alertsCount = $derived(alerts.length);
 
 	/** Whether any data is currently loading */
-	const isLoadingAny = $derived(
+	const _isLoadingAny = $derived(
 		isLoadingTradePlan || isLoadingAlerts || isLoadingVideo || isLoadingStats
 	);
 
 	/** Whether a save operation is in progress */
-	const isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
+	const _isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
 
 	/** Trade plan form validation */
 	const isTradePlanFormValid = $derived(
@@ -294,17 +311,25 @@
 	// DATA FETCHING
 	// ═══════════════════════════════════════════════════════════════════════════════
 
+	// SSR data is already loaded from +page.server.ts
+	// Only refresh on client when slug changes (navigation)
 	$effect(() => {
-		if (!browser || !slug) return;
-
-		untrack(() => {
-			loadTradePlan();
-			loadAlerts();
-			loadWeeklyVideo();
-			loadRoomStats();
-			loadTrades();
-			loadVideoResources();
-		});
+		if (!browser) return;
+		
+		// Track slug changes for client-side navigation
+		const currentSlug = slug;
+		
+		// Only reload if navigating to a different room
+		if (currentSlug && data.slug !== currentSlug) {
+			untrack(() => {
+				loadTradePlan();
+				loadAlerts();
+				loadWeeklyVideo();
+				loadRoomStats();
+				loadTrades();
+				loadVideoResources();
+			});
+		}
 	});
 
 	async function loadTradePlan() {
@@ -459,9 +484,16 @@
 		}
 	}
 
-	async function deleteTradePlan(entry: TradePlanEntry) {
-		if (!confirm(`Delete ${entry.ticker} from trade plan?`)) return;
+	function deleteTradePlan(entry: TradePlanEntry) {
+		pendingDeleteTradePlan = entry;
+		showDeleteTradePlanModal = true;
+	}
 
+	async function confirmDeleteTradePlan() {
+		if (!pendingDeleteTradePlan) return;
+		showDeleteTradePlanModal = false;
+		const entry = pendingDeleteTradePlan;
+		pendingDeleteTradePlan = null;
 		try {
 			await tradePlanApi.delete(entry.id);
 			successMessage = 'Trade plan entry deleted';
@@ -554,9 +586,16 @@
 		}
 	}
 
-	async function deleteAlert(alert: RoomAlert) {
-		if (!confirm(`Delete alert "${alert.title}"?`)) return;
+	function deleteAlert(alert: RoomAlert) {
+		pendingDeleteAlert = alert;
+		showDeleteAlertModal = true;
+	}
 
+	async function confirmDeleteAlert() {
+		if (!pendingDeleteAlert) return;
+		showDeleteAlertModal = false;
+		const alert = pendingDeleteAlert;
+		pendingDeleteAlert = null;
 		try {
 			await alertsApi.delete(alert.id);
 			successMessage = 'Alert deleted';
@@ -672,15 +711,36 @@
 		}
 	}
 
-	async function deleteTrade(trade: RoomTrade) {
-		if (!confirm(`Delete trade ${trade.ticker}? This cannot be undone.`)) return;
+	function deleteTrade(trade: RoomTrade) {
+		pendingDeleteTrade = trade;
+		showDeleteTradeModal = true;
+	}
 
+	async function confirmDeleteTrade() {
+		if (!pendingDeleteTrade) return;
+		showDeleteTradeModal = false;
+		const trade = pendingDeleteTrade;
+		pendingDeleteTrade = null;
 		try {
 			await tradesApi.delete(trade.id);
 			successMessage = 'Trade deleted';
 			await loadTrades();
 		} catch (err: any) {
 			errorMessage = err.message || 'Failed to delete trade';
+		}
+	}
+
+	async function confirmDeleteVideo() {
+		if (pendingDeleteVideoId === null) return;
+		showDeleteVideoModal = false;
+		const videoId = pendingDeleteVideoId;
+		pendingDeleteVideoId = null;
+		try {
+			await roomResourcesApi.delete(videoId);
+			successMessage = 'Video deleted';
+			await loadVideoResources();
+		} catch (err: any) {
+			errorMessage = err.message || 'Failed to delete video';
 		}
 	}
 
@@ -1385,9 +1445,8 @@
 								<button
 									class="icon-btn danger"
 									onclick={() => {
-										if (confirm('Delete this video?')) {
-											roomResourcesApi.delete(video.id).then(() => loadVideoResources());
-										}
+										pendingDeleteVideoId = video.id;
+										showDeleteVideoModal = true;
 									}}
 									title="Delete"
 								>
@@ -1406,8 +1465,13 @@
      TRADE PLAN MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showTradePlanModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showTradePlanModal = false)} role="presentation">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={() => (showTradePlanModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showTradePlanModal = false)}
+		aria-hidden="true"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1547,8 +1611,13 @@
      ALERT MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showAlertModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showAlertModal = false)} role="presentation">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={() => (showAlertModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showAlertModal = false)}
+		aria-hidden="true"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1772,8 +1841,13 @@
      WEEKLY VIDEO MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showVideoModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showVideoModal = false)} role="presentation">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={() => (showVideoModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showVideoModal = false)}
+		aria-hidden="true"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1878,8 +1952,13 @@
      CLOSE TRADE MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showCloseTradeModal && closingTrade}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showCloseTradeModal = false)} role="presentation">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={() => (showCloseTradeModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
+		aria-hidden="true"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -2617,8 +2696,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 1000;
-		padding: 20px;
+		z-index: var(--z-modal, 400);
+		padding: var(--space-2, 20px);
+		isolation: isolate;
 	}
 
 	.modal {
@@ -3073,3 +3153,43 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteTradePlanModal}
+	title="Delete Trade Plan Entry"
+	message={pendingDeleteTradePlan ? `Delete ${pendingDeleteTradePlan.ticker} from trade plan?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTradePlan}
+	onCancel={() => { showDeleteTradePlanModal = false; pendingDeleteTradePlan = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteAlertModal}
+	title="Delete Alert"
+	message={pendingDeleteAlert ? `Delete alert "${pendingDeleteAlert.title}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAlert}
+	onCancel={() => { showDeleteAlertModal = false; pendingDeleteAlert = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteTradeModal}
+	title="Delete Trade"
+	message={pendingDeleteTrade ? `Delete trade ${pendingDeleteTrade.ticker}? This cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTrade}
+	onCancel={() => { showDeleteTradeModal = false; pendingDeleteTrade = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteVideoModal}
+	title="Delete Video"
+	message="Delete this video?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteVideo}
+	onCancel={() => { showDeleteVideoModal = false; pendingDeleteVideoId = null; }}
+/>

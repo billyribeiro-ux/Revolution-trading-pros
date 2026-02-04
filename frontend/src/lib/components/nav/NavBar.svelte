@@ -49,7 +49,7 @@
 		readonly label: string;
 		readonly href?: string;
 		readonly submenu?: readonly NavSubMenuItem[];
-		readonly icon?: typeof import('@tabler/icons-svelte-runes').IconHome;
+		readonly icon?: typeof import('@tabler/icons-svelte').IconHome;
 		readonly badge?: string | number;
 	}
 
@@ -60,7 +60,7 @@
 		readonly href: string;
 		readonly label: string;
 		readonly description?: string;
-		readonly icon?: typeof import('@tabler/icons-svelte-runes').IconHome;
+		readonly icon?: typeof import('@tabler/icons-svelte').IconHome;
 	}
 
 	/**
@@ -254,9 +254,9 @@
 	let prefersHighContrast = $state(false);
 	let isRTL = $state(false);
 
-	// Element references
-	let _navbarRef = $state<HTMLElement | null>(null);
-	let _hamburgerRef = $state<HTMLButtonElement | null>(null);
+	// Element references (used in bind:this directives below)
+	let navbarRef = $state<HTMLElement | null>(null);
+	let hamburgerRef = $state<HTMLButtonElement | null>(null);
 	let mobileCloseRef = $state<HTMLButtonElement | null>(null);
 	let mobilePanelRef = $state<HTMLElement | null>(null);
 	let scrollSentinelRef = $state<HTMLDivElement | null>(null);
@@ -640,7 +640,7 @@
      MAIN NAVBAR
      ═══════════════════════════════════════════════════════════════════════════ -->
 <header
-	bind:this={_navbarRef}
+	bind:this={navbarRef}
 	class="navbar"
 	class:scrolled={isScrolled}
 	class:sticky
@@ -821,7 +821,7 @@
 
 		<!-- ICT11+ Fix: Hamburger outside actions container to prevent layout shift -->
 		<button
-			bind:this={_hamburgerRef}
+			bind:this={hamburgerRef}
 			class="hamburger"
 			onclick={toggleMobileMenu}
 			aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}

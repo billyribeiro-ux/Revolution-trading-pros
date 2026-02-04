@@ -42,43 +42,7 @@
 	// Pagination derived values
 	let currentPage = $derived(meta.current_page);
 	let totalPages = $derived(meta.last_page);
-	let totalItems = $derived(meta.total);
 
-	// Category options matching WordPress exactly - using WordPress category IDs
-	const categories = [
-		{ id: '529', label: 'Trade Setups & Strategies' },
-		{ id: '528', label: 'Methodology' },
-		{ id: '329', label: 'Member Webinar' },
-		{ id: '2932', label: 'Trade & Money Management/Trading Plan' },
-		{ id: '531', label: 'Indicators' },
-		{ id: '3260', label: 'Options' },
-		{ id: '469', label: 'foundation' },
-		{ id: '527', label: 'Fundamentals' },
-		{ id: '522', label: 'Simpler Tech' },
-		{ id: '2929', label: 'Charting/Indicators/Tools' },
-		{ id: '530', label: 'Charting' },
-		{ id: '3515', label: 'Drama Free Daytrades' },
-		{ id: '3516', label: 'Quick Hits Daytrades' },
-		{ id: '537', label: 'Psychology' },
-		{ id: '775', label: 'Trading Platform' },
-		{ id: '3055', label: 'Calls' },
-		{ id: '447', label: 'ThinkorSwim' },
-		{ id: '446', label: 'TradeStation' },
-		{ id: '776', label: 'Charting Software' },
-		{ id: '772', label: 'Trading Computer' },
-		{ id: '3057', label: 'Calls Puts Credit Spreads' },
-		{ id: '3056', label: 'Puts' },
-		{ id: '3514', label: 'Profit Recycling' },
-		{ id: '791', label: 'Trade Strategies' },
-		{ id: '774', label: 'Website Support' },
-		{ id: '2927', label: 'Options Strategies (Level 2 & 3)' },
-		{ id: '457', label: 'Crypto' },
-		{ id: '2931', label: 'Fibonacci & Options Trading' },
-		{ id: '2928', label: 'Pricing/Volatility' },
-		{ id: '459', label: 'Crypto Indicators & Trading' },
-		{ id: '771', label: 'Browser Support' },
-		{ id: '2930', label: 'Earnings & Options Expiration' }
-	];
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
@@ -144,11 +108,6 @@
 		}
 
 		return range;
-	}
-
-	function getCategoryLabel(categoryId: string): string {
-		const category = categories.find((c) => c.id === categoryId);
-		return category?.label || categoryId;
 	}
 </script>
 

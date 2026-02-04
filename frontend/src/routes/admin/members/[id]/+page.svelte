@@ -32,6 +32,7 @@
 		IconExternalLink,
 		IconFileText
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let memberId = $derived(Number(page.params.id));
 
@@ -84,6 +85,10 @@
 	let availablePlans = $state<Array<{ id: number; name: string; slug: string }>>([]);
 	let selectedPlanId = $state<number | null>(null);
 	let grantExpiresAt = $state('');
+
+	// Revoke confirmation modal state
+	let showRevokeModal = $state(false);
+	let pendingRevokeSubId = $state<number | null>(null);
 
 	// Email history (mock)
 	let emailHistory = $state<
@@ -421,8 +426,17 @@
 	}
 
 	// Revoke membership
-	async function handleRevoke(subId: number) {
-		if (!confirm('Are you sure you want to revoke this membership?')) return;
+	function handleRevoke(subId: number) {
+		pendingRevokeSubId = subId;
+		showRevokeModal = true;
+	}
+
+	async function confirmRevoke() {
+		if (!pendingRevokeSubId) return;
+		showRevokeModal = false;
+		const subId = pendingRevokeSubId;
+		pendingRevokeSubId = null;
+
 		try {
 			const response = await fetch(`/api/admin/user-memberships/${subId}`, {
 				method: 'DELETE'
@@ -2218,3 +2232,13 @@
 		color: #64748b;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showRevokeModal}
+	title="Revoke Membership"
+	message="Are you sure you want to revoke this membership?"
+	confirmText="Revoke"
+	variant="danger"
+	onConfirm={confirmRevoke}
+	onCancel={() => { showRevokeModal = false; pendingRevokeSubId = null; }}
+/>
