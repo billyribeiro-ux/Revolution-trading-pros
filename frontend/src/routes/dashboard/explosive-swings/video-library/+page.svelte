@@ -7,7 +7,7 @@
 	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// TYPE DEFINITIONS
@@ -110,8 +110,7 @@
 		}
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		fetchVideos();
 	});
 

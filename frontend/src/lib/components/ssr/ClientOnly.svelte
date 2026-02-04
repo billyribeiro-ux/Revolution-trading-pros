@@ -6,7 +6,7 @@
 	 * @version 1.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -18,10 +18,8 @@
 
 	let mounted = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			mounted = true;
-		}
+	onMount(() => {
+		mounted = true;
 	});
 </script>
 

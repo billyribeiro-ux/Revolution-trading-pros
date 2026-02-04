@@ -6,7 +6,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface TradingRoom {
 		name: string;
@@ -62,9 +62,7 @@
 	}
 
 	// Add click outside listener on mount
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		const handleClick = (event: MouseEvent) => {
 			if (isOpen) {
 				handleClickOutside(event);

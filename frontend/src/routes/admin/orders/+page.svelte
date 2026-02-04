@@ -448,17 +448,16 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showDetailModal = false)}
-		onkeydown={(e) => (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') && (showDetailModal = false)}
-		role="button"
-		tabindex="0"
-		aria-label="Close modal"
+		onkeydown={(e) => e.key === 'Escape' && (showDetailModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
 	>
 		<div
 			class="modal-content"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
+			role="document"
 		>
 			<div class="modal-header">
 				<h2>Order #{selectedOrder.order_number}</h2>

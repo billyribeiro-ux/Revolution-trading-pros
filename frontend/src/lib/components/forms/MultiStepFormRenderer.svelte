@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
@@ -117,9 +117,7 @@
 	}
 
 	// Initialize form
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		steps = parseSteps();
 
 		// Initialize form data with default values
@@ -141,7 +139,6 @@
 
 	// Save progress to localStorage
 	function saveProgress() {
-		if (!browser) return;
 		if (!enableSaveProgress || !form.slug) return;
 
 		const progressData = {
@@ -160,7 +157,6 @@
 
 	// Restore progress from localStorage
 	function restoreProgress() {
-		if (!browser) return;
 		if (!form.slug) return;
 
 		try {
@@ -186,7 +182,6 @@
 
 	// Clear saved progress
 	function clearProgress() {
-		if (!browser) return;
 		if (form.slug) {
 			localStorage.removeItem(`form_progress_${form.slug}`);
 		}

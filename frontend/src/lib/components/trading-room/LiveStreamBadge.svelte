@@ -13,6 +13,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -140,9 +141,7 @@
 	// LIFECYCLE
 	// ===============================================================================
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// First check schedule, then connect WebSocket for real-time updates
 		checkSchedule();
 
@@ -156,11 +155,14 @@
 
 		return () => {
 			clearInterval(scheduleInterval);
-			if (ws) {
-				ws.close();
-				ws = null;
-			}
 		};
+	});
+
+	onDestroy(() => {
+		if (ws) {
+			ws.close();
+			ws = null;
+		}
 	});
 </script>
 

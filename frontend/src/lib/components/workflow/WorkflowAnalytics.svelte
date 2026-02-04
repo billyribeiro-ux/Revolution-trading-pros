@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { WorkflowAnalytics } from '$lib/types/workflow';
 
 	interface Props {
@@ -13,7 +13,6 @@
 	let timeRange: '7d' | '30d' | '90d' = $state('30d');
 
 	async function loadAnalytics() {
-		if (!browser) return;
 		isLoading = true;
 		try {
 			const token = localStorage.getItem('access_token');
@@ -89,8 +88,12 @@
 		return `${(ms / 1000).toFixed(1)}s`;
 	}
 
+	onMount(() => {
+		loadAnalytics();
+	});
+
 	$effect(() => {
-		if (browser && timeRange) {
+		if (timeRange) {
 			loadAnalytics();
 		}
 	});

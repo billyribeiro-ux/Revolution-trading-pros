@@ -126,69 +126,48 @@
 <div class="tabs-block" class:vertical={orientation === 'vertical'} role="region" aria-label="Tabbed content">
 	<div class="tabs-list" role="tablist" aria-orientation={orientation}>
 		{#each tabs as tab, index (tab.id)}
-			<div class="tab-wrapper">
+			<button
+				type="button"
+				id="tab-btn-{props.blockId}-{tab.id}"
+				class="tab-button"
+				class:active={activeTab === tab.id}
+				role="tab"
+				aria-selected={activeTab === tab.id}
+				aria-controls="tab-panel-{props.blockId}-{tab.id}"
+				tabindex={activeTab === tab.id ? 0 : -1}
+				onclick={() => setActiveTab(tab.id)}
+				onkeydown={(e) => handleKeyDown(e, index)}
+			>
 				{#if props.isEditing}
-					<!-- When editing, separate the editable label from the tab selection button -->
-					<div
-						class="tab-button editing"
-						class:active={activeTab === tab.id}
+					<span
+						contenteditable="true"
+						class="tab-label editable-content"
+						role="textbox"
+						aria-label="Tab label"
+						onclick={(e) => e.stopPropagation()}
+						oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
+						onpaste={handlePaste}
 					>
-						<span
-							contenteditable="true"
-							class="tab-label editable-content"
-							role="textbox"
-							aria-label="Tab label"
-							oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
-							onpaste={handlePaste}
-						>
-							{tab.label}
-						</span>
-						<button
-							type="button"
-							id="tab-btn-{props.blockId}-{tab.id}"
-							class="tab-select-btn"
-							role="tab"
-							aria-selected={activeTab === tab.id}
-							aria-controls="tab-panel-{props.blockId}-{tab.id}"
-							aria-label="Select {tab.label} tab"
-							tabindex={activeTab === tab.id ? 0 : -1}
-							onclick={() => setActiveTab(tab.id)}
-							onkeydown={(e) => handleKeyDown(e, index)}
-						>
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-								<polyline points="9 18 15 12 9 6"></polyline>
-							</svg>
-						</button>
-					</div>
+						{tab.label}
+					</span>
 				{:else}
-					<!-- When not editing, use a single button for the entire tab -->
-					<button
-						type="button"
-						id="tab-btn-{props.blockId}-{tab.id}"
-						class="tab-button"
-						class:active={activeTab === tab.id}
-						role="tab"
-						aria-selected={activeTab === tab.id}
-						aria-controls="tab-panel-{props.blockId}-{tab.id}"
-						tabindex={activeTab === tab.id ? 0 : -1}
-						onclick={() => setActiveTab(tab.id)}
-						onkeydown={(e) => handleKeyDown(e, index)}
-					>
-						<span class="tab-label">{tab.label}</span>
-					</button>
+					<span class="tab-label">{tab.label}</span>
 				{/if}
 
 				{#if props.isEditing && tabs.length > 1}
 					<button
 						type="button"
 						class="remove-tab-btn"
-						onclick={() => removeTab(index)}
+						onclick={(e) => {
+							e.stopPropagation();
+							removeTab(index);
+						}}
 						aria-label="Remove tab"
 					>
 						<IconX size={12} />
 					</button>
 				{/if}
-			</div>
+			</button>
 		{/each}
 
 		{#if props.isEditing}
@@ -291,12 +270,6 @@
 		min-width: 160px;
 	}
 
-	.tab-wrapper {
-		display: flex;
-		align-items: center;
-		position: relative;
-	}
-
 	.tab-button {
 		display: flex;
 		align-items: center;
@@ -342,40 +315,6 @@
 		z-index: 1;
 	}
 
-	/* Editing mode: tab is a div with separate select button */
-	.tab-button.editing {
-		cursor: default;
-		padding-right: 0.5rem;
-	}
-
-	.tab-select-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.375rem;
-		background: transparent;
-		border: none;
-		border-radius: 4px;
-		color: #9ca3af;
-		cursor: pointer;
-		transition: all 0.15s;
-		flex-shrink: 0;
-	}
-
-	.tab-select-btn:hover {
-		background: rgba(59, 130, 246, 0.1);
-		color: #3b82f6;
-	}
-
-	.tab-select-btn:focus-visible {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
-	}
-
-	.tab-button.editing.active .tab-select-btn {
-		color: #3b82f6;
-	}
-
 	.tab-label {
 		outline: none;
 	}
@@ -385,7 +324,6 @@
 		align-items: center;
 		justify-content: center;
 		padding: 0.25rem;
-		margin-right: 0.25rem;
 		background: transparent;
 		border: none;
 		border-radius: 4px;
@@ -395,7 +333,7 @@
 		transition: all 0.15s;
 	}
 
-	.tab-wrapper:hover .remove-tab-btn {
+	.tab-button:hover .remove-tab-btn {
 		opacity: 1;
 	}
 
@@ -575,19 +513,6 @@
 	:global(.dark) .remove-tab-btn:hover {
 		background: #450a0a;
 		color: #fca5a5;
-	}
-
-	:global(.dark) .tab-select-btn {
-		color: #64748b;
-	}
-
-	:global(.dark) .tab-select-btn:hover {
-		background: rgba(96, 165, 250, 0.1);
-		color: #60a5fa;
-	}
-
-	:global(.dark) .tab-button.editing.active .tab-select-btn {
-		color: #60a5fa;
 	}
 
 	/* Mobile */

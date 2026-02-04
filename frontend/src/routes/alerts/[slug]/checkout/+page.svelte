@@ -11,7 +11,7 @@
 	 * Example: /alerts/explosive-swings/checkout
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { getPlansByRoom, planToCartItem, type SubscriptionPlan } from '$lib/api/plans';
@@ -30,10 +30,8 @@
 	let selectedPlanId = $state<number | undefined>(undefined);
 	let selectedPlan = $derived(plans.find((p) => p.id === selectedPlanId));
 
-	$effect(() => {
-		if (browser) {
-			loadPlans();
-		}
+	onMount(async () => {
+		await loadPlans();
 	});
 
 	async function loadPlans() {

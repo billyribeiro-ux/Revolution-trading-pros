@@ -69,8 +69,7 @@
 
 	let courseId = $state('');
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		const pathParts = window.location.pathname.split('/');
 		courseId = pathParts[pathParts.length - 1];
 		fetchCourse();

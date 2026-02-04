@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconMapPin,
 		IconPlus,
@@ -58,19 +58,17 @@
 		withSchema: locationList.length // All have schema support
 	});
 
-	$effect(() => {
-		if (browser) {
-			const unsubscribe = locations.subscribe((locs) => {
-				locationList = locs;
-			});
+	onMount(() => {
+		const unsubscribe = locations.subscribe((locs) => {
+			locationList = locs;
+		});
 
-			// Add sample locations if empty
-			if (locationList.length === 0) {
-				addSampleLocations();
-			}
-
-			return () => unsubscribe();
+		// Add sample locations if empty
+		if (locationList.length === 0) {
+			addSampleLocations();
 		}
+
+		return () => unsubscribe();
 	});
 
 	function addSampleLocations() {

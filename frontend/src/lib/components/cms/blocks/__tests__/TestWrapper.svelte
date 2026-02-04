@@ -8,6 +8,7 @@
 
 <script lang="ts">
 	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

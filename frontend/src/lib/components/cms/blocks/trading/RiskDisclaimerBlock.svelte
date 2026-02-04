@@ -25,7 +25,7 @@
 	} from '$lib/icons';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props Interface
@@ -163,8 +163,7 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		// Check if acknowledgment was previously stored (e.g., in sessionStorage)
 		const storageKey = `risk-ack-${props.blockId}`;
 		const wasAcknowledged = sessionStorage.getItem(storageKey);

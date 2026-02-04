@@ -14,7 +14,7 @@
 	 * @author Revolution Trading Pros
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { Block, BlockSettings } from './types';
 	import { API_BASE_URL } from '$lib/api/config';
   import { getAuthToken } from '$lib/stores/auth.svelte';
@@ -97,10 +97,8 @@
 	}
 
 	// Load datasources when panel mounts
-	$effect(() => {
-		if (browser) {
-			fetchDatasources();
-		}
+	onMount(() => {
+		fetchDatasources();
 	});
 
 	// Wrapper to update settings

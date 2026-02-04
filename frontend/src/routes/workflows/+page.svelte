@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { workflowApi } from '$lib/api/workflow';
 	import type { Workflow } from '$lib/types/workflow';
@@ -44,10 +44,8 @@
 		})
 	);
 
-	$effect(() => {
-		if (browser) {
-			loadWorkflows();
-		}
+	onMount(() => {
+		loadWorkflows();
 	});
 </script>
 

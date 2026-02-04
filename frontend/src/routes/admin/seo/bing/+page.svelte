@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconWorld as IconBrandBing,
@@ -36,10 +36,8 @@
 	let batchUrls = $state('');
 	let showBatchModal = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			loadData();
-		}
+	onMount(async () => {
+		await loadData();
 	});
 
 	async function loadData() {

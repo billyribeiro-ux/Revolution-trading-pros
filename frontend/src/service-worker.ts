@@ -253,9 +253,7 @@ sw.addEventListener('fetch', (event) => {
 
 					// Cache the fresh response
 					const responseClone = response.clone();
-					caches.open(CACHE_NAME)
-						.then((cache) => cache.put(event.request, responseClone))
-						.catch((err) => console.error('Cache put failed:', err));
+					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
 
 					return response;
 				});
@@ -271,9 +269,7 @@ sw.addEventListener('fetch', (event) => {
 				// Cache successful responses
 				if (response.ok) {
 					const responseClone = response.clone();
-					caches.open(CACHE_NAME)
-						.then((cache) => cache.put(event.request, responseClone))
-						.catch((err) => console.error('Cache put failed:', err));
+					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
 				}
 				return response;
 			})

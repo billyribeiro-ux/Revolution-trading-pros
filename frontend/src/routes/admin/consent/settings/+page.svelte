@@ -15,6 +15,7 @@
 	 *
 	 * @version 2.0.0 - December 2025
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -72,7 +73,7 @@
 	}
 
 	// State
-	let settings = $state<ConsentSettings>({
+	let settings: ConsentSettings = {
 		consent_enabled: true,
 		test_mode: false,
 		expire_days: 365,
@@ -105,13 +106,13 @@
 		proof_consent_enabled: true,
 		proof_retention_days: 365,
 		proof_auto_delete: true
-	});
+	};
 
-	let activeTab = $state('general');
-	let loading = $state(true);
-	let saving = $state(false);
-	let notification = $state('');
-	let notificationType = $state<'success' | 'error'>('success');
+	let activeTab = 'general';
+	let loading = true;
+	let saving = false;
+	let notification = '';
+	let notificationType: 'success' | 'error' = 'success';
 
 	// Tabs configuration
 	const tabs = [
@@ -199,9 +200,9 @@
 		}
 	];
 
-	$effect(() => {
+	onMount(async () => {
 		if (browser) {
-			loadSettings();
+			await loadSettings();
 		}
 	});
 

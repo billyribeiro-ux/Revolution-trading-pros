@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconChartLine,
@@ -115,7 +116,7 @@
 	let heroVisible = $state(false);
 	let modulesVisible = $state<boolean[]>(new Array(modules.length).fill(false));
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		const heroObserver = new IntersectionObserver(

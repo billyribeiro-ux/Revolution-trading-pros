@@ -15,6 +15,7 @@
  */
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -66,9 +67,9 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(async () => {
 		if (!browser || !userId) return;
-		fetchHistory();
+		await fetchHistory();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════

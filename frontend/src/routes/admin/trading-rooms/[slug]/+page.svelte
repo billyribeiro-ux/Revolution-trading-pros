@@ -1475,7 +1475,6 @@
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="trade-plan-modal-title"
@@ -1622,7 +1621,6 @@
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="alert-modal-title"
@@ -1853,7 +1851,6 @@
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="video-modal-title"
@@ -1965,7 +1962,6 @@
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="close-trade-modal-title"

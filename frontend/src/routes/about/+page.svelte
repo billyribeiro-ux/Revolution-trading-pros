@@ -3,10 +3,11 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, draw } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	// GSAP imported dynamically in $effect to avoid SSR issues
+	// GSAP imported dynamically in onMount to avoid SSR issues
 
 	// Icons
 	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
@@ -47,7 +48,7 @@
 		});
 	};
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;

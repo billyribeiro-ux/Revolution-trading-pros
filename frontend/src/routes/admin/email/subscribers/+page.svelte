@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
@@ -49,11 +49,9 @@
 		bounced: 0
 	});
 
-	$effect(() => {
-		if (browser) {
-			loadSubscribers();
-			loadStats();
-		}
+	onMount(async () => {
+		await loadSubscribers();
+		await loadStats();
 	});
 
 	async function loadSubscribers() {

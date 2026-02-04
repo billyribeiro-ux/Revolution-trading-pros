@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconSearch,
 		IconArrowForward,
@@ -17,7 +17,6 @@
 	let selectedIds: number[] = $state([]);
 	let showCreateRedirect = $state(false);
 	let selected404: any = $state(null);
-	let initialized = $state(false);
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -30,12 +29,9 @@
 	];
 	let sortBy = $state('hits');
 
-	$effect(() => {
-		if (browser && !initialized) {
-			initialized = true;
-			loadLogs();
-			loadStats();
-		}
+	onMount(() => {
+		loadLogs();
+		loadStats();
 	});
 
 	async function loadLogs() {

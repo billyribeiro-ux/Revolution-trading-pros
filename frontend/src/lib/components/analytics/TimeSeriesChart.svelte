@@ -5,7 +5,7 @@
 	 * Displays time series data with support for multiple metrics,
 	 * tooltips, and responsive design.
 	 */
-	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 
 	interface DataPoint {
 		date: string;
@@ -123,13 +123,13 @@
 		hoveredIndex = null;
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		handleResize();
 		window.addEventListener('resize', handleResize);
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('resize', handleResize);
 	});
 </script>
 

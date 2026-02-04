@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -13,7 +14,7 @@
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;

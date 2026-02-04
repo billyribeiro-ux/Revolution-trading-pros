@@ -21,6 +21,7 @@ async function fetchPosts(fetch: typeof globalThis.fetch) {
 		const timeoutId = setTimeout(() => controller.abort(), 5000); // Increased timeout
 
 		const url = `${PRODUCTION_API_URL}/api/posts?per_page=6`;
+		console.log('[SSR] Fetching posts from:', url);
 
 		const response = await fetch(url, {
 			signal: controller.signal,
@@ -32,12 +33,15 @@ async function fetchPosts(fetch: typeof globalThis.fetch) {
 		clearTimeout(timeoutId);
 
 		if (!response.ok) {
+			console.log('[SSR] Posts fetch failed:', response.status);
 			return [];
 		}
 
 		const data = await response.json();
+		console.log('[SSR] Posts fetched:', data.data?.length || 0);
 		return data.data || [];
-	} catch {
+	} catch (e) {
+		console.log('[SSR] Posts fetch error:', e);
 		return [];
 	}
 }

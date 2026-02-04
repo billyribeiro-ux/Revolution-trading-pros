@@ -12,7 +12,7 @@
 	 * @version 4.0.0 (WordPress-style / December 2025)
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { user, isAuthenticated } from '$lib/stores/auth.svelte';
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
@@ -98,9 +98,7 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Redirect to cart if empty
 		if (cartStore.items.length === 0) {
 			goto('/cart');

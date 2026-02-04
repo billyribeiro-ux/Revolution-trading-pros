@@ -132,10 +132,8 @@
 		})
 	);
 
-	$effect(() => {
-		if (browser) {
-			loadLogs();
-		}
+	onMount(() => {
+		loadLogs();
 	});
 </script>
 

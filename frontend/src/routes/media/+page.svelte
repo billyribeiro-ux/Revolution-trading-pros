@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		mediaStore,
 		getCurrentFiles,
@@ -45,8 +45,7 @@
 	const currentFiles = $derived(getCurrentFiles());
 	const selectedCount = $derived(getSelectedCount());
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		mediaStore.initialize();
 	});
 

@@ -9,6 +9,7 @@
 	 * Auto-generated GDPR-compliant cookie declaration page
 	 * that lists all cookies used on the site with full transparency.
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { scanCookies, openPreferencesModal, consentStore, getVendorInfo } from '$lib/consent';
 	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '$lib/consent/i18n';
@@ -22,8 +23,8 @@
 	import type { CookieScanResult } from '$lib/consent';
 	import type { SupportedLanguage } from '$lib/consent/i18n';
 
-	let cookieScan = $state<CookieScanResult | null>(null);
-	let vendorList = $state<ReturnType<typeof getVendorInfo>>([]);
+	let cookieScan: CookieScanResult | null = null;
+	let vendorList: ReturnType<typeof getVendorInfo> = [];
 	let versionInfo = getVersionInfo();
 
 	const languageNames: Record<SupportedLanguage, string> = {
@@ -55,7 +56,7 @@
 		ko: '한국어'
 	};
 
-	$effect(() => {
+	onMount(() => {
 		if (browser) {
 			// Scan current cookies
 			cookieScan = scanCookies();

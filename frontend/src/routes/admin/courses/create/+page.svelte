@@ -187,9 +187,7 @@
 	// Lifecycle Hooks & Initialization
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Initialize with starter module
 		if (course.modules.length === 0) {
 			addModule();

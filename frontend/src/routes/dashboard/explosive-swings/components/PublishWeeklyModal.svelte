@@ -27,6 +27,7 @@
 	/>
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { weeklyVideoApi, tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
 
 	// ═══════════════════════════════════════════════════════════════════════════════════

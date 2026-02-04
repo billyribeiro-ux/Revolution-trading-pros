@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import FormBuilder from '$lib/components/forms/FormBuilder.svelte';
@@ -23,24 +23,20 @@
 
 	let formId = $derived(parseInt(page.params['id']!));
 
-	$effect(() => {
-		if (!browser) return;
-
-		(async () => {
-			try {
-				form = await getForm(formId);
-				// Load theme from form settings if available
-				if (form?.settings?.theme) {
-					selectedTheme = form.settings.theme;
-				} else {
-					selectedTheme = themes[0] ?? null; // Default theme
-				}
-			} catch (err) {
-				error = err instanceof Error ? err.message : 'Failed to load form';
-			} finally {
-				loading = false;
+	onMount(async () => {
+		try {
+			form = await getForm(formId);
+			// Load theme from form settings if available
+			if (form?.settings?.theme) {
+				selectedTheme = form.settings.theme;
+			} else {
+				selectedTheme = themes[0] ?? null; // Default theme
 			}
-		})();
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to load form';
+		} finally {
+			loading = false;
+		}
 	});
 
 	function handleSave() {

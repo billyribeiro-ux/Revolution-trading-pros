@@ -8,6 +8,7 @@
 	 * @level L8 Principal Engineer
 	 * @security XSS protection via DOMPurify sanitization
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 	import ExportButton from './ExportButton.svelte';
@@ -156,13 +157,9 @@
 	// Debounced resize handler for performance
 	const debouncedCheckMobile = debounce(checkMobile, 100);
 
-	// Setup resize listener for mobile detection
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		checkMobile();
 		window.addEventListener('resize', debouncedCheckMobile);
-
 		return () => window.removeEventListener('resize', debouncedCheckMobile);
 	});
 

@@ -7,7 +7,7 @@
 	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	const ROOM_SLUG = 'small-account-mentorship';
@@ -69,9 +69,7 @@
 		}
 	}
 
-	// Svelte 5: $effect replaces onMount for browser-only initialization
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		fetchFavorites();
 	});
 </script>

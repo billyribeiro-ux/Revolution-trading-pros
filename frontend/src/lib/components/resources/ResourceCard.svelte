@@ -97,14 +97,12 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <article
 	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
 	class:compact
 	onclick={handleCardClick}
-	onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), handleCardClick())}
-	role="button"
-	tabindex="0"
-	aria-label="View resource: {resource.title}"
 >
 	<!-- Thumbnail / Preview -->
 	<div class="thumbnail-container relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">

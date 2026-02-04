@@ -94,14 +94,6 @@
 		position?: { x: number; y: number } | null;
 		/** Show save as preset option */
 		showSaveOption?: boolean;
-		/** Callback when a preset is selected */
-		onSelect?: (data: { preset: FullPreset }) => void;
-		/** Callback when a preset is applied */
-		onApply?: (data: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }) => void;
-		/** Callback when the picker is closed */
-		onClose?: () => void;
-		/** Callback to save current block as preset */
-		onSaveAsPreset?: (data: { block: Block }) => void;
 	}
 
 	let props: Props = $props();
@@ -110,6 +102,17 @@
 	const isModal = $derived(props.isModal ?? false);
 	const position = $derived(props.position ?? null);
 	const showSaveOption = $derived(props.showSaveOption ?? true);
+
+	// ==========================================================================
+	// Events
+	// ==========================================================================
+
+	const dispatch = createEventDispatcher<{
+		select: { preset: FullPreset };
+		apply: { content: Partial<BlockContent>; settings: Partial<BlockSettings> };
+		close: void;
+		saveAsPreset: { block: Block };
+	}>();
 
 	// ==========================================================================
 	// State
@@ -238,8 +241,8 @@
 			credentials: 'include'
 		}).catch(console.error);
 
-		props.onSelect?.({ preset: fullPreset });
-		props.onApply?.({
+		dispatch('select', { preset: fullPreset });
+		dispatch('apply', {
 			content: fullPreset.preset_data.content,
 			settings: fullPreset.preset_data.settings
 		});
@@ -300,13 +303,13 @@
 			if (showSaveModal) {
 				showSaveModal = false;
 			} else {
-				props.onClose?.();
+				dispatch('close');
 			}
 		}
 	}
 
 	function handleBlankOption() {
-		props.onApply?.({ content: {}, settings: {} });
+		dispatch('apply', { content: {}, settings: {} });
 	}
 
 	function handleSaveAsPreset() {
@@ -321,9 +324,12 @@
 	// Lifecycle
 	// ==========================================================================
 
-	// Load presets on mount and when block type changes
+	onMount(() => {
+		loadPresets();
+	});
+
+	// Reload when block type changes
 	$effect(() => {
-		if (!browser) return;
 		if (blockType) {
 			loadPresets();
 		}
@@ -334,7 +340,7 @@
 	<!-- Modal Overlay -->
 	<div
 		class="preset-overlay"
-		onclick={() => props.onClose?.()}
+		onclick={() => dispatch('close')}
 		onkeydown={handleKeydown}
 		role="button"
 		tabindex="0"
@@ -358,7 +364,7 @@
 					<IconTemplate size={20} />
 					<span>Presets for <strong>{blockType}</strong></span>
 				</div>
-				<button type="button" class="close-btn" onclick={() => props.onClose?.()}>
+				<button type="button" class="close-btn" onclick={() => dispatch('close')}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -400,7 +406,6 @@
 					</button>
 					{#each allCategories() as cat}
 						{@const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.custom}
-						{@const Icon = config.icon}
 						<button
 							type="button"
 							class="category-tab"
@@ -408,7 +413,7 @@
 							style:--tab-color={config.color}
 							onclick={() => (selectedCategory = cat)}
 						>
-							<Icon size={14} />
+							<svelte:component this={config.icon} size={14} />
 							{config.name}
 						</button>
 					{/each}
@@ -448,11 +453,10 @@
 					<!-- Presets by Category -->
 					{#each filteredCategories() as category}
 						{@const config = CATEGORY_CONFIG[category.category] || CATEGORY_CONFIG.custom}
-						{@const Icon = config.icon}
 						<div class="category-section" transition:fly={{ y: -10, duration: 200 }}>
 							<div class="category-header" style:--cat-color={config.color}>
 								<span class="category-dot"></span>
-								<Icon size={16} />
+								<svelte:component this={config.icon} size={16} />
 								<span class="category-name">{config.name}</span>
 								<span class="category-count">{category.presets.length}</span>
 							</div>

@@ -8,7 +8,7 @@
 	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
-	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 	import type { MonthlyPerformance } from '../analytics.state.svelte';
 
 	interface Props {
@@ -81,15 +81,13 @@
 		}
 	}
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		handleResize();
 		window.addEventListener('resize', handleResize);
+	});
 
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
+	onDestroy(() => {
+		window.removeEventListener('resize', handleResize);
 	});
 </script>
 

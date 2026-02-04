@@ -116,9 +116,7 @@ function recordFailure(): void {
 	circuitBreaker.lastFailure = Date.now();
 	if (circuitBreaker.failures >= circuitBreaker.threshold) {
 		circuitBreaker.isOpen = true;
-		if (import.meta.env.DEV) {
-			console.warn('[API Proxy] Circuit breaker OPEN - too many failures');
-		}
+		console.warn('[API Proxy] Circuit breaker OPEN - too many failures');
 	}
 }
 
@@ -212,9 +210,7 @@ async function proxyRequest(
 	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 		if (attempt > 0) {
 			const delay = calculateBackoff(attempt - 1);
-			if (import.meta.env.DEV) {
-				console.log(`[API Proxy] Retry ${attempt}/${MAX_RETRIES} for ${path} after ${delay}ms`);
-			}
+			console.log(`[API Proxy] Retry ${attempt}/${MAX_RETRIES} for ${path} after ${delay}ms`);
 			await sleep(delay);
 		}
 
@@ -237,7 +233,7 @@ async function proxyRequest(
 				recordSuccess();
 
 				const duration = Date.now() - startTime;
-				if (duration > 5000 && import.meta.env.DEV) {
+				if (duration > 5000) {
 					console.warn(`[API Proxy] Slow request: ${path} took ${duration}ms`);
 				}
 
@@ -278,14 +274,10 @@ async function proxyRequest(
 			// Timeout or network error
 			if (lastError.name === 'AbortError') {
 				lastStatus = 504;
-				if (import.meta.env.DEV) {
-					console.error(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
-				}
+				console.error(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
 			} else {
 				lastStatus = 502;
-				if (import.meta.env.DEV) {
-					console.error(`[API Proxy] Network error for ${path}:`, lastError.message);
-				}
+				console.error(`[API Proxy] Network error for ${path}:`, lastError.message);
 			}
 		}
 	}
@@ -293,12 +285,10 @@ async function proxyRequest(
 	// All retries exhausted
 	recordFailure();
 	const duration = Date.now() - startTime;
-	if (import.meta.env.DEV) {
-		console.error(
-			`[API Proxy] Failed after ${MAX_RETRIES} retries: ${path} (${duration}ms)`,
-			lastError?.message
-		);
-	}
+	console.error(
+		`[API Proxy] Failed after ${MAX_RETRIES} retries: ${path} (${duration}ms)`,
+		lastError?.message
+	);
 
 	return createErrorResponse(
 		lastError?.name === 'AbortError' ? 'Request timeout' : 'Backend unavailable',

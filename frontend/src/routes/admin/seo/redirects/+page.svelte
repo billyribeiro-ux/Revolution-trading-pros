@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconPlus,
 		IconSearch,
@@ -29,12 +29,9 @@
 	const filterTypes = ['all', '301', '302', '307', '308', '410'];
 	let activeFilter = $state('all');
 
-	$effect(() => {
-		if (browser && !initialized) {
-			initialized = true;
-			loadRedirects();
-			loadStats();
-		}
+	onMount(() => {
+		loadRedirects();
+		loadStats();
 	});
 
 	async function loadRedirects() {

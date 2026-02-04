@@ -247,7 +247,8 @@
 					</div>
 
 					<div class="form-group">
-						<span class="field-label">Auto-Generated Slug</span>
+						<!-- svelte-ignore a11y_label_has_associated_control -->
+						<label>Auto-Generated Slug</label>
 						<div class="preview-field">
 							<code>{slug || 'Will be generated...'}</code>
 						</div>
@@ -255,7 +256,8 @@
 					</div>
 
 					<div class="form-group">
-						<span class="field-label">Auto-Generated Title</span>
+						<!-- svelte-ignore a11y_label_has_associated_control -->
+						<label>Auto-Generated Title</label>
 						<div class="preview-field">
 							{title || 'Will be generated...'}
 						</div>
@@ -628,15 +630,10 @@
 		flex: 1;
 	}
 
-	.form-group label,
-	.form-group .field-label {
+	.form-group label {
 		font-size: 0.8rem;
 		font-weight: 500;
 		color: #94a3b8;
-	}
-
-	.form-group .field-label {
-		display: block;
 	}
 
 	.required {

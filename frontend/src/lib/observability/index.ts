@@ -139,16 +139,16 @@ import type { AnalyticsConfig } from './adapters';
 /**
  * Initialize the complete analytics system.
  *
- * Call this once in your root layout using $effect:
+ * Call this once in your root layout's onMount:
  * ```svelte
  * <script>
- *   import { initializeAnalytics, destroyAnalytics } from '$lib/observability';
+ *   import { onMount } from 'svelte';
+ *   import { initializeAnalytics } from '$lib/observability';
  *
- *   $effect(() => {
- *     initializeAnalytics({
+ *   onMount(async () => {
+ *     await initializeAnalytics({
  *       consent: { analytics: true, marketing: false }
  *     });
- *     return () => destroyAnalytics();
  *   });
  * </script>
  * ```

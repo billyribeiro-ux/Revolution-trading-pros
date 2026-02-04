@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconCircleCheck,
 		IconAlertTriangle,
@@ -97,13 +97,8 @@
 		}
 	}
 
-	$effect(() => {
-		if (browser) {
-			analyze();
-			return () => {
-				clearTimeout(debounceTimer);
-			};
-		}
+	onMount(() => {
+		analyze();
 	});
 </script>
 

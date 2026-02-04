@@ -1,27 +1,23 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import TemplateForm from '$lib/components/admin/TemplateForm.svelte';
 	import { page } from '$app/state';
 
-	let loading = $state(true);
-	let error = $state('');
-	let template: Record<string, unknown> | null = $state(null);
+	let loading = true;
+	let error = '';
+	let template: Record<string, unknown> | null = null;
 
 	const id = page.params['id']!;
 
-	$effect(() => {
-		if (!browser) return;
-
-		(async () => {
-			try {
-				template = await apiFetch(`/admin/email/templates/${id}`);
-			} catch (e) {
-				error = (e as Error).message;
-			} finally {
-				loading = false;
-			}
-		})();
+	onMount(async () => {
+		try {
+			template = await apiFetch(`/admin/email/templates/${id}`);
+		} catch (e) {
+			error = (e as Error).message;
+		} finally {
+			loading = false;
+		}
 	});
 </script>
 

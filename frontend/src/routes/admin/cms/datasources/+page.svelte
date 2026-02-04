@@ -630,10 +630,8 @@
 	});
 
 	// Lifecycle
-	$effect(() => {
-		if (browser) {
-			fetchDatasources();
-		}
+	onMount(() => {
+		fetchDatasources();
 	});
 </script>
 

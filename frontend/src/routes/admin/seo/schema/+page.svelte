@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -29,11 +29,9 @@
 		'WebPage'
 	];
 
-	$effect(() => {
-		if (browser) {
-			loadSchemas();
-			loadTemplates();
-		}
+	onMount(() => {
+		loadSchemas();
+		loadTemplates();
 	});
 
 	async function loadSchemas() {

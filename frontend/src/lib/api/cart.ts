@@ -96,7 +96,7 @@ export interface EnhancedCartItem extends CartItem {
 
 	// Customization
 	variants?: ProductVariant[];
-	customization?: Record<string, string | number | boolean>;
+	customization?: Record<string, any>;
 	giftWrap?: boolean;
 	giftMessage?: string;
 
@@ -268,7 +268,7 @@ export interface CheckoutSession {
 	requiresShipping?: boolean;
 
 	// Metadata
-	metadata?: Record<string, string | number | boolean>;
+	metadata?: Record<string, any>;
 	returnUrl?: string;
 	cancelUrl?: string;
 
@@ -376,42 +376,7 @@ export interface FunnelStep {
 export interface AnalyticsEvent {
 	type: string;
 	timestamp: string;
-	data?: Record<string, unknown>;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Additional Type Definitions for Type Safety
-// ═══════════════════════════════════════════════════════════════════════════
-
-/**
- * Inventory status response from the server
- */
-export interface InventoryStatus {
-	status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'backorder';
-	available: number;
-}
-
-/**
- * Payment details for processing payments
- */
-export interface PaymentDetails {
-	paymentMethodId?: string;
-	cardToken?: string;
-	saveCard?: boolean;
-	billingAddress?: Address;
-	// Provider-specific fields
-	stripePaymentIntentId?: string;
-	paypalOrderId?: string;
-	walletType?: 'apple_pay' | 'google_pay';
-}
-
-/**
- * Cart item for sync operations
- */
-export interface CartSyncItem {
-	id: string;
-	quantity?: number;
-	savedForLater?: boolean;
+	data?: Record<string, any>;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -821,7 +786,7 @@ class CheckoutCartService {
 		}
 	}
 
-	private updateInventory(inventory: Record<string, InventoryStatus>): void {
+	private updateInventory(inventory: Record<string, any>): void {
 		this.cart.update((cart) => {
 			cart.items.forEach((item) => {
 				const stock = inventory[item.id];
@@ -960,9 +925,8 @@ class CheckoutCartService {
 			this.resetAbandonmentTimer();
 
 			this.showNotification(`${item.name} added to cart`, 'success');
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'Failed to add item to cart';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1133,9 +1097,8 @@ class CheckoutCartService {
 
 			this.trackEvent('apply_coupon', { code, discount: result.discount });
 			this.showNotification(`Coupon ${code} applied!`, 'success');
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'Failed to apply coupon';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1198,9 +1161,8 @@ class CheckoutCartService {
 			});
 
 			return session;
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'Failed to create checkout session';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1210,7 +1172,7 @@ class CheckoutCartService {
 	/**
 	 * Process payment
 	 */
-	async processPayment(paymentDetails: PaymentDetails): Promise<{ success: boolean; orderId?: string }> {
+	async processPayment(paymentDetails: any): Promise<{ success: boolean; orderId?: string }> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -1255,10 +1217,9 @@ class CheckoutCartService {
 			}
 
 			return result;
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'Payment processing failed';
-			this.error.set(message);
-			this.trackEvent('payment_failed', { error: message });
+		} catch (error: any) {
+			this.error.set(error.message);
+			this.trackEvent('payment_failed', { error: error.message });
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1386,10 +1347,7 @@ class CheckoutCartService {
 		});
 	}
 
-	private async syncItemWithServer(
-		action: string,
-		item: Partial<EnhancedCartItem> | CartSyncItem
-	): Promise<void> {
+	private async syncItemWithServer(action: string, item: any): Promise<void> {
 		try {
 			await fetch(`${API_URL}/cart/${action}`, {
 				method: 'POST',
@@ -1438,7 +1396,7 @@ class CheckoutCartService {
 		// Implement actual notification system
 	}
 
-	private trackEvent(event: string, data?: Record<string, unknown>): void {
+	private trackEvent(event: string, data?: any): void {
 		// Buffer analytics events
 		this.analyticsBuffer.push({
 			type: event,
@@ -1447,8 +1405,8 @@ class CheckoutCartService {
 		});
 
 		// Send to analytics
-		if (browser && window.gtag) {
-			window.gtag('event', event, data);
+		if (browser && 'gtag' in window) {
+			(window as any).gtag('event', event, data);
 		}
 
 		// Flush buffer periodically
@@ -1557,10 +1515,10 @@ export const clearCart = () => checkoutService.clearCart();
 
 export const applyCoupon = (code: string) => checkoutService.applyCoupon(code);
 
-export const createCheckoutSession = (options?: { provider?: PaymentProvider; express?: boolean }) =>
+export const createCheckoutSession = (options?: any) =>
 	checkoutService.createCheckoutSession(options);
 
-export const processPayment = (paymentDetails: PaymentDetails) =>
+export const processPayment = (paymentDetails: any) =>
 	checkoutService.processPayment(paymentDetails);
 
 export const calculateShipping = (address: Address) => checkoutService.calculateShipping(address);

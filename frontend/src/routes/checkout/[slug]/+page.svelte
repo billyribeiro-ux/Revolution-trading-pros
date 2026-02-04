@@ -13,7 +13,7 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { cartStore } from '$lib/stores/cart.svelte';
@@ -26,21 +26,19 @@
 	let error = $state<string | null>(null);
 	let isLoading = $state(true);
 
-	$effect(() => {
-		if (browser) {
-			if (!product) {
-				error = `Product "${slug}" not found. Please check the URL or contact support.`;
-				isLoading = false;
-				return;
-			}
-
-			// Clear cart and add this product (direct checkout flow)
-			cartStore.clearCart();
-			cartStore.addItem(productToCartItem(product));
-
-			// Redirect to main checkout page
-			goto('/checkout', { replaceState: true });
+	onMount(() => {
+		if (!product) {
+			error = `Product "${slug}" not found. Please check the URL or contact support.`;
+			isLoading = false;
+			return;
 		}
+
+		// Clear cart and add this product (direct checkout flow)
+		cartStore.clearCart();
+		cartStore.addItem(productToCartItem(product));
+
+		// Redirect to main checkout page
+		goto('/checkout', { replaceState: true });
 	});
 </script>
 

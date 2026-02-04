@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { scheduledApi, type ScheduledJob } from '$lib/api/video-advanced';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
@@ -41,7 +41,7 @@
 	let scheduledDate = $state(getTomorrowDate());
 	let scheduledTime = $state('09:00');
 	let selectedAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature'>('publish');
-	let timezone = $state('');
+	let timezone = $state(Intl.DateTimeFormat().resolvedOptions().timeZone);
 	let notifyOnPublish = $state(false);
 
 	const actions = [
@@ -65,12 +65,7 @@
 		'UTC'
 	];
 
-	// Initialize on mount
-	$effect(() => {
-		if (!browser) return;
-
-		// Set timezone client-side only to avoid hydration mismatch
-		timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	onMount(() => {
 		loadJobs();
 	});
 

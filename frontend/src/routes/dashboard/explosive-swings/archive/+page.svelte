@@ -6,7 +6,7 @@
 	 *
 	 * Layout matches watchlist card design for consistency
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import { ROOM_SLUG } from '../constants';
 
@@ -72,12 +72,14 @@
 		}
 	}
 
-	// Fetch on mount and refetch when year changes
+	onMount(() => {
+		fetchArchivedWeeks();
+	});
+
+	// Refetch when year changes
 	$effect(() => {
-		if (browser) {
-			selectedYear; // track dependency
-			fetchArchivedWeeks();
-		}
+		selectedYear; // track dependency
+		fetchArchivedWeeks();
 	});
 
 	function formatWeekDate(dateStr: string): string {

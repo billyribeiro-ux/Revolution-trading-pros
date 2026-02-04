@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 	import {
 		analyticsStore,
 		getDashboard,
@@ -41,16 +41,13 @@
 	const isLoading = $derived(getIsAnalyticsLoading());
 	const selectedPeriod = $derived(getAnalyticsSelectedPeriod());
 
-	// Svelte 5: $effect with browser guard and cleanup function
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		analyticsStore.loadDashboard(selectedPeriod);
 		analyticsStore.startRealtimeUpdates(10000);
+	});
 
-		return () => {
-			analyticsStore.stopRealtimeUpdates();
-		};
+	onDestroy(() => {
+		analyticsStore.stopRealtimeUpdates();
 	});
 
 	function handlePeriodChange(period: string) {

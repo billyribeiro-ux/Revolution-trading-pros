@@ -7,6 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import {
@@ -35,11 +36,11 @@
 		if (!browser) return;
 
 		// Auth guard - redirect if not authenticated (user interaction: page load)
-		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
 			goto('/login?redirect=/account/sessions', { replaceState: true });
 			return;
 		}
-		loadSessions();
+		await loadSessions();
 	});
 
 	async function loadSessions() {

@@ -52,6 +52,7 @@
 -->
 
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 
@@ -446,8 +447,7 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Initialize player and setup event listeners
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		// Initialize player based on platform
@@ -465,10 +465,10 @@
 		if (trackAnalytics) {
 			trackEvent('view', { url, platform });
 		}
+	});
 
-		return () => {
-			cleanup();
-		};
+	onDestroy(() => {
+		cleanup();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

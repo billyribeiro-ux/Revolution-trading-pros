@@ -12,7 +12,7 @@
 	@version 2.0.0 - February 2026
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import CourseCard from '$lib/components/courses/CourseCard.svelte';
 
 	interface EnrolledCourse {
@@ -47,30 +47,22 @@
 	const itemsPerPage = 12;
 
 	// Fetch enrolled courses on mount
-	$effect(() => {
-		if (!browser) return;
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/my/courses');
+			const data = await response.json();
 
-		(async () => {
-			try {
-				const response = await fetch('/api/my/courses');
-				const data = await response.json();
-
-				if (data.success) {
-					enrolledCourses = data.data || [];
-				} else {
-					error = data.error || 'Failed to load courses';
-				}
-			} catch (e) {
-				console.error('Failed to fetch enrolled courses:', e);
-				error = 'Failed to load your courses. Please try again.';
-			} finally {
-				loading = false;
+			if (data.success) {
+				enrolledCourses = data.data || [];
+			} else {
+				error = data.error || 'Failed to load courses';
 			}
-		})();
-
-		return () => {
-			// Cleanup if needed
-		};
+		} catch (e) {
+			console.error('Failed to fetch enrolled courses:', e);
+			error = 'Failed to load your courses. Please try again.';
+		} finally {
+			loading = false;
+		}
 	});
 
 	// Resume course function

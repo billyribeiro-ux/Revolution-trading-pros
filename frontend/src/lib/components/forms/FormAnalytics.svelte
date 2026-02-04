@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { Form } from '$lib/api/forms';
 	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';
 
@@ -14,10 +14,8 @@
 	let submissionTrend: any[] = $state([]);
 	let fieldAnalytics: any[] = $state([]);
 
-	$effect(() => {
-		if (browser) {
-			loadAnalytics();
-		}
+	onMount(async () => {
+		await loadAnalytics();
 	});
 
 	async function loadAnalytics() {

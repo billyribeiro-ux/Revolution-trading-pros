@@ -219,7 +219,7 @@
 						<IconX size={14} />
 					</button>
 				{/if}
-			</div>
+			</button>
 
 			<div
 				id="accordion-panel-{blockId}-{item.id}"
@@ -333,7 +333,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-		flex: 1;
+		width: 100%;
 		padding: 1.25rem 1.5rem;
 		background: transparent;
 		border: none;
@@ -349,35 +349,6 @@
 		outline: 2px solid #3b82f6;
 		outline-offset: -2px;
 		z-index: 1;
-	}
-
-	/* Editing mode: header is a div with separate toggle button */
-	.accordion-header.editing {
-		cursor: default;
-	}
-
-	.accordion-toggle-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.5rem;
-		background: transparent;
-		border: none;
-		border-radius: 4px;
-		color: #6b7280;
-		cursor: pointer;
-		transition: all 0.15s;
-		flex-shrink: 0;
-	}
-
-	.accordion-toggle-btn:hover {
-		background: rgba(59, 130, 246, 0.1);
-		color: #3b82f6;
-	}
-
-	.accordion-toggle-btn:focus-visible {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
 	}
 
 	.accordion-title {
@@ -401,7 +372,6 @@
 		align-items: center;
 		justify-content: center;
 		padding: 0.375rem;
-		margin-right: 0.5rem;
 		background: transparent;
 		border: none;
 		border-radius: 4px;
@@ -412,7 +382,7 @@
 		opacity: 0;
 	}
 
-	.accordion-header-wrapper:hover .remove-item-btn {
+	.accordion-header:hover .remove-item-btn {
 		opacity: 1;
 	}
 
@@ -574,15 +544,6 @@
 	:global(.dark) .remove-item-btn:hover {
 		background: #450a0a;
 		color: #fca5a5;
-	}
-
-	:global(.dark) .accordion-toggle-btn {
-		color: #94a3b8;
-	}
-
-	:global(.dark) .accordion-toggle-btn:hover {
-		background: rgba(96, 165, 250, 0.1);
-		color: #60a5fa;
 	}
 
 	/* Mobile */

@@ -27,9 +27,9 @@
 	 * @version 1.0.0 (January 2026)
 	 */
 
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
@@ -334,10 +334,8 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (browser) {
-			loadDeal();
-		}
+	onMount(() => {
+		loadDeal();
 	});
 </script>
 

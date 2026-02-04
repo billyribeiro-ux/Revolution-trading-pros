@@ -13,7 +13,7 @@
 <script lang="ts">
 	import { IconSparkles, IconTrophy } from '$lib/icons';
 	import { getBlockStateManager, type BlockId, type CountdownState } from '$lib/stores/blockState.svelte';
-	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 	import type { Block, BlockContent } from '../types';
 
 	// =========================================================================
@@ -124,10 +124,7 @@
 	// Lifecycle
 	// =========================================================================
 
-	// Initialize countdown and watch for target date changes
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Initial calculation
 		calculateTimeLeft();
 
@@ -136,17 +133,26 @@
 
 		// Register with state manager
 		stateManager.startCountdown(props.blockId, targetDate);
+	});
 
-		return () => {
-			// Clear local interval
-			if (intervalId) {
-				clearInterval(intervalId);
-				intervalId = null;
-			}
+	onDestroy(() => {
+		// Clear local interval
+		if (intervalId) {
+			clearInterval(intervalId);
+			intervalId = null;
+		}
 
-			// Cleanup state manager resources
-			stateManager.cleanup(props.blockId);
-		};
+		// Cleanup state manager resources
+		stateManager.cleanup(props.blockId);
+	});
+
+	// Watch for target date changes
+	$effect(() => {
+		if (targetDate) {
+			calculateTimeLeft();
+			// Restart the countdown in state manager with new target
+			stateManager.startCountdown(props.blockId, targetDate);
+		}
 	});
 </script>
 

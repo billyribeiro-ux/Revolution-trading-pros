@@ -170,10 +170,8 @@
 		}
 	}
 
-	$effect(() => {
-		if (browser) {
-			loadJobs();
-		}
+	onMount(() => {
+		loadJobs();
 	});
 </script>
 

@@ -10,7 +10,7 @@
 	import { IconTrendingUp, IconTrendingDown, IconPlus, IconX, IconChartLine } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		block: Block;
@@ -75,12 +75,12 @@
 		});
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		if (!props.isEditing) {
 			const interval = setInterval(simulatePriceUpdate, 3000);
 			return () => clearInterval(interval);
 		}
+		return () => {};
 	});
 
 	function formatPrice(price: number): string {

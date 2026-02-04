@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -21,14 +21,11 @@
 	let messageType: 'success' | 'error' = $state('success');
 	let testing = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			// Load connection status
-			connections.load().then(() => {
-				connectionLoading = false;
-				loadSettings();
-			});
-		}
+	onMount(async () => {
+		// Load connection status
+		await connections.load();
+		connectionLoading = false;
+		await loadSettings();
 	});
 
 	async function loadSettings() {

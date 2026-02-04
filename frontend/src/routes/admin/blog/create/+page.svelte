@@ -118,11 +118,9 @@
 	let uploadError = $state('');
 	let isFullscreen = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			loadTags();
-			generateSlug();
-		}
+	onMount(() => {
+		loadTags();
+		generateSlug();
 	});
 
 	async function loadTags() {

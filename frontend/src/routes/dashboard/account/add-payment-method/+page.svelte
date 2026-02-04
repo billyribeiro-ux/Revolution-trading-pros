@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface PageData {
 		user: {
@@ -24,10 +24,7 @@
 	let setAsDefault = $state(true);
 	let stripeLoaded = $state(false);
 
-	// Svelte 5: $effect replaces onMount for browser-only initialization
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(async () => {
 		// Load Stripe.js
 		const script = document.createElement('script');
 		script.src = 'https://js.stripe.com/v3/';
