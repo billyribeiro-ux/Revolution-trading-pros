@@ -12,6 +12,7 @@
 		IconChartLine
 	} from '$lib/icons';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let redirects: any[] = $state([]);
 	let stats: any = $state(null);
@@ -21,6 +22,9 @@
 	let editingRedirect: any = $state(null);
 	let selectedIds: number[] = $state([]);
 	let initialized = $state(false);
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	const filterTypes = ['all', '301', '302', '307', '308', '410'];
 	let activeFilter = $state('all');
@@ -65,9 +69,16 @@
 		showEditor = true;
 	}
 
-	async function deleteRedirect(id: number) {
-		if (!confirm('Are you sure you want to delete this redirect?')) return;
+	function deleteRedirect(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDelete() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await fetch(`/api/seo/redirects/${id}`, { method: 'DELETE' });
 			loadRedirects();
@@ -95,9 +106,12 @@
 		}
 	}
 
-	async function bulkDelete() {
-		if (!confirm(`Delete ${selectedIds.length} redirects?`)) return;
+	function bulkDelete() {
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 		try {
 			await fetch('/api/seo/redirects/bulk-delete', {
 				method: 'POST',
