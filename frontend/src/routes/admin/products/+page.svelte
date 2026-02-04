@@ -7,6 +7,7 @@
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		IconPlus,
 		IconEdit,
@@ -26,6 +27,8 @@
 	let selectedType = $state('all');
 	let searchQuery = $state('');
 	let deleting = $state<number | null>(null);
+	let showDeleteModal = $state(false);
+	let pendingDelete = $state<{ id: number; name: string } | null>(null);
 
 	// Product type configuration
 	const productTypes = [
@@ -90,9 +93,16 @@
 	}
 
 	// Delete product with confirmation
-	async function deleteProduct(id: number, name: string) {
-		if (!confirm(`Delete "${name}"? This action cannot be undone.`)) return;
+	function deleteProduct(id: number, name: string) {
+		pendingDelete = { id, name };
+		showDeleteModal = true;
+	}
 
+	async function confirmDeleteProduct() {
+		if (!pendingDelete) return;
+		showDeleteModal = false;
+		const { id, name } = pendingDelete;
+		pendingDelete = null;
 		deleting = id;
 		try {
 			await productsApi.delete(id);
@@ -693,3 +703,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Product"
+	message={pendingDelete ? `Delete "${pendingDelete.name}"? This action cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteProduct}
+	onCancel={() => { showDeleteModal = false; pendingDelete = null; }}
+/>
