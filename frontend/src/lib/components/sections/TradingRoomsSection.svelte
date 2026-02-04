@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-	import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right';
-	import IconTerminal from '@tabler/icons-svelte-runes/icons/terminal';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconBuilding from '@tabler/icons-svelte/icons/building';
+	import IconArrowUpRight from '@tabler/icons-svelte/icons/arrow-up-right';
+	import IconTerminal from '@tabler/icons-svelte/icons/terminal';
 
 	// --- Data Configuration ---
 	const products = [

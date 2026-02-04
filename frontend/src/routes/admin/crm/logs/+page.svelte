@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconActivityHeartbeat from '@tabler/icons-svelte-runes/icons/activity-heartbeat';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-	import IconBug from '@tabler/icons-svelte-runes/icons/bug';
-	import IconExclamationCircle from '@tabler/icons-svelte-runes/icons/exclamation-circle';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconApi from '@tabler/icons-svelte-runes/icons/api';
-	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
+	import IconActivityHeartbeat from '@tabler/icons-svelte/icons/activity-heartbeat';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconBug from '@tabler/icons-svelte/icons/bug';
+	import IconExclamationCircle from '@tabler/icons-svelte/icons/exclamation-circle';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconRoute from '@tabler/icons-svelte/icons/route';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconApi from '@tabler/icons-svelte/icons/api';
+	import IconWebhook from '@tabler/icons-svelte/icons/webhook';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import { crmAPI } from '$lib/api/crm';
 	import type { SystemLog, LogLevel, LogCategory } from '$lib/crm/types';
 

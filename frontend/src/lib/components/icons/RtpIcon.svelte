@@ -15,103 +15,103 @@
 -->
 <script lang="ts">
 	// Core icons for dashboard - using Tabler Icons
-	import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
-	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
+	import IconDashboard from '@tabler/icons-svelte/icons/dashboard';
+	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
 
 	// Education & Courses
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconBook from '@tabler/icons-svelte-runes/icons/book';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
 
 	// Charts & Trading
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconTrendingDown from '@tabler/icons-svelte/icons/trending-down';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
 
 	// Trading Specific
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
-	import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
-	import IconCrown from '@tabler/icons-svelte-runes/icons/crown';
-	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
-	import IconAward from '@tabler/icons-svelte-runes/icons/award';
+	import IconTarget from '@tabler/icons-svelte/icons/target';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconFlame from '@tabler/icons-svelte/icons/flame';
+	import IconRocket from '@tabler/icons-svelte/icons/rocket';
+	import IconCrown from '@tabler/icons-svelte/icons/crown';
+	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
+	import IconAward from '@tabler/icons-svelte/icons/award';
 
 	// Lists & Tools
-	import IconListCheck from '@tabler/icons-svelte-runes/icons/list-check';
-	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
-	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconListCheck from '@tabler/icons-svelte/icons/list-check';
+	import IconClipboard from '@tabler/icons-svelte/icons/clipboard';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
 
 	// Account & Settings
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconLogout from '@tabler/icons-svelte-runes/icons/logout';
-	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
-	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
+	import IconUser from '@tabler/icons-svelte/icons/user';
+	import IconUserCircle from '@tabler/icons-svelte/icons/user-circle';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconLogout from '@tabler/icons-svelte/icons/logout';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconShield from '@tabler/icons-svelte/icons/shield';
 
 	// Support & Communication
-	import IconHeadset from '@tabler/icons-svelte-runes/icons/headset';
-	import IconHelp from '@tabler/icons-svelte-runes/icons/help';
-	import IconMessage from '@tabler/icons-svelte-runes/icons/message';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconPhone from '@tabler/icons-svelte-runes/icons/phone';
-	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-	import IconMapPin from '@tabler/icons-svelte-runes/icons/map-pin';
+	import IconHeadset from '@tabler/icons-svelte/icons/headset';
+	import IconHelp from '@tabler/icons-svelte/icons/help';
+	import IconMessage from '@tabler/icons-svelte/icons/message';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconPhone from '@tabler/icons-svelte/icons/phone';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconMapPin from '@tabler/icons-svelte/icons/map-pin';
 
 	// Commerce
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
-	import IconCoin from '@tabler/icons-svelte-runes/icons/coin';
-	import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
+	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconCoin from '@tabler/icons-svelte/icons/coin';
+	import IconReceipt from '@tabler/icons-svelte/icons/receipt';
 
 	// Status & Feedback
-	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-	import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconHeart from '@tabler/icons-svelte/icons/heart';
+	import IconStar from '@tabler/icons-svelte/icons/star';
 
 	// Actions
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconMinus from '@tabler/icons-svelte-runes/icons/minus';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconFilter from '@tabler/icons-svelte/icons/filter';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconMinus from '@tabler/icons-svelte/icons/minus';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
 
 	// Media
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
-	import IconVolume from '@tabler/icons-svelte-runes/icons/volume';
-	import IconVolumeOff from '@tabler/icons-svelte-runes/icons/volume-off';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
+	import IconVolume from '@tabler/icons-svelte/icons/volume';
+	import IconVolumeOff from '@tabler/icons-svelte/icons/volume-off';
 
 	// Business
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
+	import IconBuilding from '@tabler/icons-svelte/icons/building';
 
 	// Additional Navigation & Layout
-	import IconLayoutDashboard from '@tabler/icons-svelte-runes/icons/layout-dashboard';
-	import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
 
 	// Time
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ICON MAPPING - RTP names to Tabler components

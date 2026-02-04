@@ -17,7 +17,7 @@ declare module '$app/stores' {
 	export const updated: Readable<any>;
 }
 
-declare module '@tabler/icons-svelte-runes' {
+declare module '@tabler/icons-svelte' {
 	// Export all icons as Svelte components with a generic props interface
 	export const IconEdit: typeof import('svelte').SvelteComponentTyped<any>;
 	export const IconTrash: typeof import('svelte').SvelteComponentTyped<any>;

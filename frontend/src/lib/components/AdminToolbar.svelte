@@ -46,17 +46,17 @@
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
 	// Individual Tabler icon imports (Svelte 5 compatible)
-	import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
-	import IconForms from '@tabler/icons-svelte-runes/icons/forms';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconLogout from '@tabler/icons-svelte-runes/icons/logout';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+	import IconDashboard from '@tabler/icons-svelte/icons/dashboard';
+	import IconForms from '@tabler/icons-svelte/icons/forms';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconLogout from '@tabler/icons-svelte/icons/logout';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
 
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)

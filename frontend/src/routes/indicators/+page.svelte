@@ -7,24 +7,24 @@
 	import { browser } from '$app/environment';
 
 	// Icons
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import IconWaveSine from '@tabler/icons-svelte-runes/icons/wave-sine';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconChevronUp from '@tabler/icons-svelte-runes/icons/chevron-up';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconTrendingDown from '@tabler/icons-svelte/icons/trending-down';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconTarget from '@tabler/icons-svelte/icons/target';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconWaveSine from '@tabler/icons-svelte/icons/wave-sine';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 

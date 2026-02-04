@@ -26,16 +26,16 @@
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ROOMS, ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconDots from '@tabler/icons-svelte-runes/icons/dots';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconDots from '@tabler/icons-svelte/icons/dots';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

@@ -16,20 +16,20 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconToggleLeft from '@tabler/icons-svelte-runes/icons/toggle-left';
-	import IconToggleRight from '@tabler/icons-svelte-runes/icons/toggle-right';
+	import IconWebhook from '@tabler/icons-svelte/icons/webhook';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconToggleLeft from '@tabler/icons-svelte/icons/toggle-left';
+	import IconToggleRight from '@tabler/icons-svelte/icons/toggle-right';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook } from '$lib/crm/types';
 

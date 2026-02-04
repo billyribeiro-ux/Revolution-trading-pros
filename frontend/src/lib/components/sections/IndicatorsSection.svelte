@@ -14,12 +14,12 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut, backOut } from 'svelte/easing';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconWaveSine from '@tabler/icons-svelte-runes/icons/wave-sine';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconWaveSine from '@tabler/icons-svelte/icons/wave-sine';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconSparkles from '@tabler/icons-svelte/icons/sparkles';
 
 	// ============================================================================
 	// INDICATOR DATA
@@ -390,7 +390,7 @@
 
 <section
 	bind:this={sectionRef}
-	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"
+	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
 >
 	<!-- Ambient Background -->
 	<div class="absolute inset-0 pointer-events-none">
@@ -405,7 +405,7 @@
 
 		<!-- Grid pattern - larger on mobile for performance -->
 		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] sm:bg-[size:64px_64px]"
+			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[32px_32px] sm:bg-size-[64px_64px]"
 		></div>
 
 		<!-- Radial fade -->
@@ -525,7 +525,7 @@
 							<div class="flex items-start gap-3 sm:gap-4">
 								<!-- Icon -->
 								<div
-									class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br {indicator.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+									class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br {indicator.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
 								>
 									<IconComponent class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
 								</div>
@@ -554,7 +554,7 @@
 
 								<!-- Arrow -->
 								<div
-									class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:translate-x-1 transition-all duration-300"
+									class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:translate-x-1 transition-all duration-300"
 								>
 									<IconArrowRight
 										class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 group-hover:text-blue-400"
@@ -568,7 +568,7 @@
 					<div class="pt-4 sm:pt-6 text-center sm:text-left">
 						<a
 							href="/indicators"
-							class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
+							class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-linear-to-r from-blue-600 to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
 						>
 							<span class="text-sm sm:text-base">Explore All Indicators</span>
 							<IconArrowRight

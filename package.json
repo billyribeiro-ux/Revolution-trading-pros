@@ -14,5 +14,9 @@
     "lint": "npm run lint --workspace=frontend",
     "format": "npm run format --workspace=frontend",
     "test": "npm run test --workspace=frontend"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.72.1",
+    "@tabler/icons-svelte": "^3.36.1"
   }
 }

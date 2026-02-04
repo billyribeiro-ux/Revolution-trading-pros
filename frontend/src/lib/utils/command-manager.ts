@@ -4,6 +4,8 @@
  * Command pattern for reversible operations
  */
 
+import type { Block } from '$lib/components/cms/blocks/types';
+
 export interface Command {
 	execute(): void;
 	undo(): void;
@@ -123,9 +125,9 @@ export class UpdateBlockCommand implements Command {
 
 	constructor(
 		private blockId: string,
-		private oldValue: any,
-		private newValue: any,
-		private updateFn: (id: string, value: any) => void
+		private oldValue: Partial<Block>,
+		private newValue: Partial<Block>,
+		private updateFn: (id: string, value: Partial<Block>) => void
 	) {
 		this.description = `Update block ${blockId}`;
 	}
@@ -144,9 +146,9 @@ export class AddBlockCommand implements Command {
 	timestamp = Date.now();
 
 	constructor(
-		private block: any,
+		private block: Block,
 		private index: number,
-		private addFn: (block: any, index: number) => void,
+		private addFn: (block: Block, index: number) => void,
 		private removeFn: (id: string) => void
 	) {
 		this.description = `Add ${block.type} block`;
@@ -166,9 +168,9 @@ export class RemoveBlockCommand implements Command {
 	timestamp = Date.now();
 
 	constructor(
-		private block: any,
+		private block: Block,
 		private index: number,
-		private addFn: (block: any, index: number) => void,
+		private addFn: (block: Block, index: number) => void,
 		private removeFn: (id: string) => void
 	) {
 		this.description = `Remove ${block.type} block`;

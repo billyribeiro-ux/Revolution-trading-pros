@@ -23,18 +23,18 @@
 		validateTradingViewUsername
 	} from '$lib/api/indicators-enhanced';
 
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconBook from '@tabler/icons-svelte-runes/icons/book';
-	import IconBrandTradingview from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconBrandTradingview from '@tabler/icons-svelte/icons/chart-line';
+	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 
 	interface Props {
 		indicatorId?: number;
