@@ -234,7 +234,7 @@
 		border: 1px solid var(--color-border-default);
 		border-left: 3px solid var(--color-border-strong);
 		border-radius: 8px;
-		padding: 12px;
+		padding: 10px;
 		font-size: var(--text-sm);
 	}
 	.card.profit {
@@ -253,14 +253,14 @@
 	/* Updated Badge */
 	.updated-badge {
 		position: absolute;
-		top: -8px;
-		left: 12px;
+		top: -7px;
+		left: 10px;
 		background: var(--color-brand-primary);
 		color: white;
-		font-size: 9px;
+		font-size: 8px;
 		font-weight: 700;
-		padding: 2px 6px;
-		border-radius: 4px;
+		padding: 2px 5px;
+		border-radius: 3px;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -269,22 +269,22 @@
 	.row-main {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		margin-bottom: 6px;
+		gap: 5px;
+		margin-bottom: 5px;
 		padding-right: 28px; /* Space for menu trigger */
 	}
 	.ticker {
 		font-weight: 700;
-		font-size: 1.125rem;
+		font-size: 1rem;
 		color: var(--color-text-primary);
 		line-height: 1;
 	}
 	.status {
-		font-size: 10px;
+		font-size: 9px;
 		font-weight: 600;
 		text-transform: uppercase;
-		padding: 3px 6px;
-		border-radius: 4px;
+		padding: 2px 5px;
+		border-radius: 3px;
 		background: var(--color-bg-subtle);
 		color: var(--color-text-tertiary);
 		letter-spacing: 0.02em;
@@ -292,7 +292,7 @@
 	.pnl {
 		margin-left: auto;
 		font-weight: 700;
-		font-size: 15px;
+		font-size: 14px;
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-muted);
 	}
@@ -307,11 +307,11 @@
 	.row-prices {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		font-size: 12px;
+		gap: 5px;
+		font-size: 11px;
 		color: var(--color-text-secondary);
 		font-variant-numeric: tabular-nums;
-		margin-bottom: 6px;
+		margin-bottom: 5px;
 	}
 	.sep {
 		color: var(--color-border-strong);
@@ -327,27 +327,27 @@
 	.row-progress {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-top: 8px;
+		gap: 6px;
+		margin-top: 6px;
 	}
 	.bar {
 		flex: 1;
-		height: 5px;
+		height: 4px;
 		background: var(--color-bg-muted);
-		border-radius: 3px;
+		border-radius: 2px;
 		overflow: hidden;
 	}
 	.fill {
 		height: 100%;
 		background: var(--color-loss);
-		border-radius: 3px;
+		border-radius: 2px;
 		transition: width 0.3s ease;
 	}
 	.fill.profit {
 		background: var(--color-profit);
 	}
 	.pct {
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 600;
 		color: var(--color-text-muted);
 		font-variant-numeric: tabular-nums;
