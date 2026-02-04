@@ -16,6 +16,7 @@
 	import CourseFormModal from '$lib/components/admin/CourseFormModal.svelte';
 	import ModuleFormModal from '$lib/components/admin/ModuleFormModal.svelte';
 	import type { Course as APICourse, CourseModule } from '$lib/api/courses';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Course {
 		id: string;
@@ -45,6 +46,8 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let total = $state(0);
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// QuickCreate Modal State
 	let showQuickCreate = $state(false);
@@ -170,9 +173,16 @@
 		fetchCourses();
 	};
 
-	const handleDelete = async (courseId: string) => {
-		if (!confirm('Are you sure you want to delete this course? This action cannot be undone.'))
-			return;
+	const handleDelete = (courseId: string) => {
+		pendingDeleteId = courseId;
+		showDeleteModal = true;
+	};
+
+	const confirmDelete = async () => {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const courseId = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
@@ -181,10 +191,10 @@
 				courses = courses.filter((c) => c.id !== courseId);
 				total -= 1;
 			} else {
-				alert(data.error || 'Failed to delete course');
+				error = data.error || 'Failed to delete course';
 			}
 		} catch {
-			alert('Failed to delete course');
+			error = 'Failed to delete course';
 		}
 	};
 
@@ -1339,3 +1349,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Course"
+	message="Are you sure you want to delete this course? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
