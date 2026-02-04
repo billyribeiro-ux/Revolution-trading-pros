@@ -8,6 +8,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ICT 7: Match actual backend schema
 	interface Indicator {
@@ -95,6 +96,12 @@
 		thumbnail_url: ''
 	});
 	let addingVideo = $state(false);
+
+	// Delete confirmation modal state
+	let showDeleteFileModal = $state(false);
+	let showDeleteVideoModal = $state(false);
+	let pendingDeleteFileId = $state<number | null>(null);
+	let pendingDeleteVideoId = $state<number | null>(null);
 
 	// Platform options
 	const platformOptions = [
@@ -252,8 +259,16 @@
 	};
 
 	// ICT 7: Delete file
-	const deleteFile = async (fileId: number) => {
-		if (!confirm('Are you sure you want to delete this file?')) return;
+	const deleteFile = (fileId: number) => {
+		pendingDeleteFileId = fileId;
+		showDeleteFileModal = true;
+	};
+
+	const confirmDeleteFile = async () => {
+		if (pendingDeleteFileId === null) return;
+		showDeleteFileModal = false;
+		const fileId = pendingDeleteFileId;
+		pendingDeleteFileId = null;
 
 		try {
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, {
@@ -325,8 +340,16 @@
 	};
 
 	// ICT 7: Delete video
-	const deleteVideo = async (videoId: number) => {
-		if (!confirm('Are you sure you want to delete this video?')) return;
+	const deleteVideo = (videoId: number) => {
+		pendingDeleteVideoId = videoId;
+		showDeleteVideoModal = true;
+	};
+
+	const confirmDeleteVideo = async () => {
+		if (pendingDeleteVideoId === null) return;
+		showDeleteVideoModal = false;
+		const videoId = pendingDeleteVideoId;
+		pendingDeleteVideoId = null;
 
 		try {
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, {
@@ -1285,3 +1308,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteFileModal}
+	title="Delete File"
+	message="Are you sure you want to delete this file?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteFile}
+	onCancel={() => { showDeleteFileModal = false; pendingDeleteFileId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteVideoModal}
+	title="Delete Video"
+	message="Are you sure you want to delete this video?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteVideo}
+	onCancel={() => { showDeleteVideoModal = false; pendingDeleteVideoId = null; }}
+/>
