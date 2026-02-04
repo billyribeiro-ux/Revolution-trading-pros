@@ -17,6 +17,10 @@
 	 */
 	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+
+	// Reset confirmation modal state
+	let showResetModal = $state(false);
 
 	// Types
 	interface ConsentSettings {
@@ -230,11 +234,12 @@
 		saving = false;
 	}
 
-	async function resetSettings() {
-		if (!confirm('Are you sure you want to reset all settings to defaults?')) {
-			return;
-		}
+	function resetSettings() {
+		showResetModal = true;
+	}
 
+	async function confirmResetSettings() {
+		showResetModal = false;
 		saving = true;
 		try {
 			const data = await adminFetch('/api/admin/consent/settings/reset', { method: 'POST' });
@@ -1408,3 +1413,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showResetModal}
+	title="Reset Settings"
+	message="Are you sure you want to reset all settings to defaults?"
+	confirmText="Reset"
+	variant="warning"
+	onConfirm={confirmResetSettings}
+	onCancel={() => { showResetModal = false; }}
+/>
