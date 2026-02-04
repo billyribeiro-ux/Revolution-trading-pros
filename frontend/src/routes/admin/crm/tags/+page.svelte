@@ -26,6 +26,7 @@
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let tags = $state<ContactTag[]>([]);
 	let isLoading = $state(true);
@@ -47,6 +48,10 @@
 		description: '',
 		color: '#6366f1'
 	});
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Predefined color palette
 	const colorPalette = [
@@ -149,9 +154,16 @@
 		}
 	}
 
-	async function deleteTag(id: string) {
-		if (!confirm('Are you sure you want to delete this tag? It will be removed from all contacts.'))
-			return;
+	function deleteTag(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteTag() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await crmAPI.deleteContactTag(id);
@@ -911,3 +923,13 @@
 		animation: spin 0.8s linear infinite;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Tag"
+	message="Are you sure you want to delete this tag? It will be removed from all contacts."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTag}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
