@@ -17,7 +17,7 @@
 	 * - Supports both light and dark themes
 	 */
 
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import {
 		downloadAlertsCsv,
 		downloadTradesCsv,
@@ -63,7 +63,6 @@
 	let isOpen = $state(false);
 	let isExporting = $state(false);
 	let exportType = $state<'alerts' | 'trades' | 'report' | null>(null);
-	let showFilters = $state(false);
 	let buttonRef: HTMLButtonElement | undefined = $state();
 
 	// Filter state - initialized empty, synced via $effect below
@@ -98,13 +97,11 @@
 	function toggle() {
 		if (!disabled) {
 			isOpen = !isOpen;
-			showFilters = false;
 		}
 	}
 
 	function close() {
 		isOpen = false;
-		showFilters = false;
 	}
 
 	function handleClickOutside(event: MouseEvent) {
