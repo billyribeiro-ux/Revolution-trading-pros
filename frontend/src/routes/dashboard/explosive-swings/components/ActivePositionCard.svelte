@@ -472,28 +472,4 @@
 		min-width: var(--touch-target-min);
 		min-height: var(--touch-target-min);
 	}
-
-	/* Desktop (1024px+) - Larger typography and thicker progress bar */
-	@media (min-width: 1024px) {
-		.card {
-			padding: var(--space-3);
-			font-size: var(--text-base);
-		}
-
-		.ticker {
-			font-size: var(--text-xl);
-		}
-
-		.pnl {
-			font-size: var(--text-lg);
-		}
-
-		.row-prices {
-			font-size: var(--text-base);
-		}
-
-		.bar {
-			height: 6px;
-		}
-	}
 </style>
