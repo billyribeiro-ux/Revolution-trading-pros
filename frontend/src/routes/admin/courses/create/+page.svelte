@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import {
@@ -186,9 +186,7 @@
 	// Lifecycle Hooks & Initialization
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Initialize with starter module
 		if (course.modules.length === 0) {
 			addModule();

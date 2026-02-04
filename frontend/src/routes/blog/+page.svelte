@@ -6,8 +6,7 @@
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
 	import { preloadData } from '$app/navigation';
-	import { untrack } from 'svelte';
-	import { browser } from '$app/environment';
+	import { untrack, onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
@@ -189,18 +188,14 @@
 	}
 
 	// ============================================================================
-	// Lifecycle - Use $effect for one-time data loading with cleanup
+	// Lifecycle - Use onMount for one-time data loading (prevents infinite loops)
 	// ============================================================================
 
-	// Svelte 5: $effect with browser guard and cleanup function
-	// Using untrack to prevent effect_update_depth_exceeded when async functions modify state
-	$effect(() => {
-		if (!browser) return;
-
-		// Use untrack to prevent re-triggering when loadPosts modifies state
-		untrack(() => {
-			loadPosts();
-		});
+	// ICT11+ Fix: Use onMount instead of $effect to prevent effect_update_depth_exceeded
+	// $effect tracks reactive state changes and can cause infinite loops when async
+	// functions modify state. onMount runs once and doesn't re-trigger on state changes.
+	onMount(() => {
+		loadPosts();
 
 		return () => {
 			// Cleanup: abort any pending requests on unmount

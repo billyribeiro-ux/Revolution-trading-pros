@@ -12,7 +12,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -232,10 +232,8 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (browser) {
-			loadFunnel();
-		}
+	onMount(() => {
+		loadFunnel();
 	});
 </script>
 

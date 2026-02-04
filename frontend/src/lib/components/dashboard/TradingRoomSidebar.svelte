@@ -19,6 +19,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -386,8 +387,7 @@
 		return date.toLocaleString('en-US', options);
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		loadSchedule();
 	});
 </script>

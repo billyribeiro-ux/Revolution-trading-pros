@@ -97,28 +97,6 @@ export interface BillingRecord {
 	invoiceUrl?: string;
 }
 
-/**
- * API Product/Membership Plan Item
- * Represents items from /api/admin/membership-plans or /api/products endpoints
- */
-interface ApiProductItem {
-	id: string | number;
-	name?: string;
-	title?: string;
-	slug?: string;
-	price?: number;
-	price_monthly?: number;
-	description?: string;
-	metadata?: {
-		icon?: string;
-		[key: string]: string | number | boolean | undefined;
-	};
-	features?: string[] | {
-		icon?: string;
-		[key: string]: string | number | boolean | undefined;
-	};
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // HTTP UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -266,13 +244,11 @@ export async function getUserMemberships(options?: {
 	// If no token AND no user in store, we're truly not authenticated
 	// But if we have a user (from server sync), try the API with cookies
 	if (!token && !storeUser) {
-		if (import.meta.env.DEV) {
-			console.log('[UserMemberships] No auth token or user - not authenticated');
-		}
+		console.log('[UserMemberships] No auth token or user - not authenticated');
 		return categorizeMemberships([]);
 	}
 
-	if (!token && import.meta.env.DEV) {
+	if (!token) {
 		console.log('[UserMemberships] No in-memory token - will use cookies for auth');
 	}
 
@@ -282,9 +258,7 @@ export async function getUserMemberships(options?: {
 		storeUser && (isDeveloperEmail(storeUser.email) || isSuperadminEmail(storeUser.email));
 
 	if (isDeveloper) {
-		if (import.meta.env.DEV) {
-			console.log('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
-		}
+		console.log('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
 		// Skip cache to always get latest products
 		return await getDeveloperMemberships();
 	}
@@ -432,9 +406,7 @@ export async function preloadMembershipData(): Promise<void> {
  * @returns UserMembershipsResponse with all available memberships
  */
 async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
-	if (import.meta.env.DEV) {
-		console.log('[Developer] Fetching all available memberships for developer access...');
-	}
+	console.log('[Developer] 🔓 Fetching all available memberships for developer access...');
 
 	try {
 		// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
@@ -447,11 +419,9 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 		// STRATEGY 2: Fallback to products proxy endpoint
 		if (!response.ok || (await response.clone().json()).plans?.length === 0) {
-			if (import.meta.env.DEV) {
-				console.warn(
-					'[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...'
-				);
-			}
+			console.warn(
+				'[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...'
+			);
 			response = await fetch('/api/products?product_type=membership&per_page=100', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
@@ -465,9 +435,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			!response.ok ||
 			(!responseData.data?.length && !responseData.products?.length && !responseData.plans?.length)
 		) {
-			if (import.meta.env.DEV) {
-				console.log('[Developer] API returned no products, using mock data');
-			}
+			console.log('[Developer] API returned no products, using mock data');
 			// STRATEGY 3: Return mock data for development
 			return getDeveloperMockMemberships();
 		}
@@ -475,19 +443,15 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 		const data = await response.json();
 		const products = data.data || data || [];
 
-		if (import.meta.env.DEV) {
-			console.log(`[Developer] Fetched ${products.length} products from API`);
-		}
+		console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
 
 		if (products.length === 0) {
-			if (import.meta.env.DEV) {
-				console.warn('[Developer] No products returned from API, using mock data');
-			}
+			console.warn('[Developer] ⚠️ No products returned from API, using mock data');
 			return getDeveloperMockMemberships();
 		}
 
 		// Transform membership plans/products into active memberships for developer
-		const memberships: UserMembership[] = products.map((item: ApiProductItem) => {
+		const memberships: UserMembership[] = products.map((item: any) => {
 			// Handle both membership_plans and products structures
 			const name = item.name || item.title || 'Unnamed Membership';
 			const slug = item.slug || `membership-${item.id}`;
@@ -515,14 +479,11 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 			// Extract icon from metadata if available
 			let icon = getDefaultIcon(membershipType);
-			if (item.metadata && typeof item.metadata === 'object' && item.metadata.icon) {
-				icon = item.metadata.icon;
-			} else if (item.features && typeof item.features === 'object' && !Array.isArray(item.features) && item.features.icon) {
-				icon = item.features.icon;
+			if (item.metadata && typeof item.metadata === 'object') {
+				icon = item.metadata.icon || icon;
+			} else if (item.features && typeof item.features === 'object') {
+				icon = item.features.icon || icon;
 			}
-
-			// Extract features array if available
-			const featuresArray: string[] = Array.isArray(item.features) ? item.features : [];
 
 			return {
 				id: String(item.id),
@@ -537,32 +498,26 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 				price,
 				interval: 'monthly' as BillingInterval,
 				roomLabel: name,
-				features: featuresArray
+				features: Array.isArray(item.features) ? item.features : []
 			};
 		});
 
-		if (import.meta.env.DEV) {
-			console.log('[Developer] Membership breakdown:', {
-				total: memberships.length,
-				tradingRooms: memberships.filter((m) => m.type === 'trading-room').length,
-				courses: memberships.filter((m) => m.type === 'course').length,
-				indicators: memberships.filter((m) => m.type === 'indicator').length,
-				weeklyWatchlist: memberships.filter((m) => m.type === 'weekly-watchlist').length,
-				premiumReports: memberships.filter((m) => m.type === 'premium-report').length
-			});
-		}
+		console.log('[Developer] 📊 Membership breakdown:', {
+			total: memberships.length,
+			tradingRooms: memberships.filter((m) => m.type === 'trading-room').length,
+			courses: memberships.filter((m) => m.type === 'course').length,
+			indicators: memberships.filter((m) => m.type === 'indicator').length,
+			weeklyWatchlist: memberships.filter((m) => m.type === 'weekly-watchlist').length,
+			premiumReports: memberships.filter((m) => m.type === 'premium-report').length
+		});
 
 		const enhanced = enhanceMemberships(memberships);
 		const categorized = categorizeMemberships(enhanced);
 
-		if (import.meta.env.DEV) {
-			console.log('[Developer] Successfully loaded all memberships');
-		}
+		console.log('[Developer] ✅ Successfully loaded all memberships');
 		return categorized;
 	} catch (error) {
-		if (import.meta.env.DEV) {
-			console.error('[Developer] Critical error fetching memberships:', error);
-		}
+		console.error('[Developer] ❌ Critical error fetching memberships:', error);
 		// STRATEGY 3: Return mock data on error
 		return getDeveloperMockMemberships();
 	}
@@ -589,9 +544,7 @@ function getDefaultIcon(type: MembershipType): string {
  * Ensures developers always have access even if API is down
  */
 function getDeveloperMockMemberships(): UserMembershipsResponse {
-	if (import.meta.env.DEV) {
-		console.log('[Developer] Using mock membership data (API unavailable)');
-	}
+	console.log('[Developer] 🔧 Using mock membership data (API unavailable)');
 
 	const mockMemberships: UserMembership[] = [
 		// ═══════════════════════════════════════════════════════════════════════════

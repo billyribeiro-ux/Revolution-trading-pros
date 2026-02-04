@@ -9,6 +9,7 @@
 	 * - A/B test results
 	 * - Audit log viewer
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		getConsentAnalytics,
@@ -22,17 +23,17 @@
 	import { getVersionInfo } from '$lib/consent/versioning';
 	import type { ConsentAnalytics, ConsentAuditEntry } from '$lib/consent';
 
-	let analytics = $state<ConsentAnalytics | null>(null);
-	let auditLog = $state<ConsentAuditEntry[]>([]);
-	let auditStats = $state<ReturnType<typeof getAuditStats> | null>(null);
-	let cookieScan = $state<ReturnType<typeof scanCookies> | null>(null);
-	let abTestAnalytics = $state<ReturnType<typeof getABTestAnalytics>>([]);
-	let versionInfo = $state(getVersionInfo());
-	let insights = $state<string[]>([]);
+	let analytics: ConsentAnalytics | null = null;
+	let auditLog: ConsentAuditEntry[] = [];
+	let auditStats: ReturnType<typeof getAuditStats> | null = null;
+	let cookieScan: ReturnType<typeof scanCookies> | null = null;
+	let abTestAnalytics: ReturnType<typeof getABTestAnalytics> = [];
+	let versionInfo = getVersionInfo();
+	let insights: string[] = [];
 
-	let activeTab = $state<'overview' | 'audit' | 'cookies' | 'ab-tests'>('overview');
+	let activeTab: 'overview' | 'audit' | 'cookies' | 'ab-tests' = 'overview';
 
-	$effect(() => {
+	onMount(() => {
 		if (browser) {
 			loadData();
 		}

@@ -18,7 +18,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 
 	// Props
@@ -121,9 +121,7 @@
 	];
 
 	// Initialize with today's date/time + 1 hour
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		const now = new Date();
 		now.setHours(now.getHours() + 1);
 		now.setMinutes(0);

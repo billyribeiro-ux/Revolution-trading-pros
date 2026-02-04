@@ -10,7 +10,7 @@
 	 * - Real-time validation and auto-save
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
@@ -49,8 +49,7 @@
 	let courseId = $state('');
 	let lessonId = $state('');
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		const pathParts = window.location.pathname.split('/');
 		// URL: /admin/courses/[id]/lessons/[lessonId]
 		lessonId = pathParts[pathParts.length - 1];

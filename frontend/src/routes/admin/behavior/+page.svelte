@@ -20,25 +20,25 @@
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
-	let isLoading = $state(true);
-	let connectionLoading = $state(true);
-	let error = $state('');
-	let selectedPeriod = $state('7d');
+	let isLoading = true;
+	let connectionLoading = true;
+	let error = '';
+	let selectedPeriod = '7d';
 
 	// Behavior metrics
-	let metrics = $state({
+	let metrics = {
 		totalSessions: 0,
 		avgSessionDuration: '0s',
 		pagesPerSession: 0,
 		scrollDepth: 0,
 		clickRate: 0,
 		heatmapViews: 0
-	});
+	};
 
 	// Top interactions
-	let topClicks = $state<{ element: string; count: number; page: string }[]>([]);
-	let topScrolls = $state<{ page: string; avgDepth: number; views: number }[]>([]);
-	let recordings = $state<{ id: string; duration: string; pages: number; date: string }[]>([]);
+	let topClicks: { element: string; count: number; page: string }[] = [];
+	let topScrolls: { page: string; avgDepth: number; views: number }[] = [];
+	let recordings: { id: string; duration: string; pages: number; date: string }[] = [];
 
 	async function loadData() {
 		isLoading = true;

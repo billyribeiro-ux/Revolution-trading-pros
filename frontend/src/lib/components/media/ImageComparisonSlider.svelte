@@ -6,7 +6,7 @@
 	 * Drag the handle or use keyboard to compare.
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		beforeSrc: string;
@@ -107,9 +107,7 @@
 		}
 	}
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Preload images
 		const img1 = new Image();
 		const img2 = new Image();

@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -87,10 +87,8 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
-	$effect(() => {
-		if (browser) {
-			loadData();
-		}
+	onMount(() => {
+		loadData();
 	});
 </script>
 

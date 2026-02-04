@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	/**
@@ -294,24 +295,22 @@
 	}
 
 	// Initialize on mount
-	$effect(() => {
+	onMount(async () => {
 		if (!browser) return;
 
-		(async () => {
-			consentId = getConsentId();
+		consentId = getConsentId();
 
-			await loadConsentConfig();
+		await loadConsentConfig();
 
-			// Show banner if consent hasn't been given
-			if (!hasStoredConsent()) {
-				showBanner = true;
-			} else {
-				// Apply stored consents
-				applyConsentChanges();
-			}
+		// Show banner if consent hasn't been given
+		if (!hasStoredConsent()) {
+			showBanner = true;
+		} else {
+			// Apply stored consents
+			applyConsentChanges();
+		}
 
-			isLoading = false;
-		})();
+		isLoading = false;
 	});
 
 	// Derived classes

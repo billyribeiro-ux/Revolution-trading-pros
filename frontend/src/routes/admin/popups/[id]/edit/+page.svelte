@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Card, Button, Input, Select } from '$lib/components/ui';
@@ -96,10 +96,8 @@
 		{ value: 'flip', label: '🔃 Flip In' }
 	];
 
-	// Svelte 5: Initialize on mount with browser guard
-	$effect(() => {
-		if (!browser) return;
-		loadPopup();
+	onMount(async () => {
+		await loadPopup();
 	});
 
 	async function loadPopup() {

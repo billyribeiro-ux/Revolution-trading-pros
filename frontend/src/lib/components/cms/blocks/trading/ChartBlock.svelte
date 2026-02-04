@@ -22,7 +22,7 @@
 	} from '$lib/icons';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props Interface
@@ -138,9 +138,7 @@
 	// Lifecycle & Theme Detection
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Detect system theme
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 		systemTheme = mediaQuery.matches ? 'dark' : 'light';

@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -188,10 +188,8 @@
 	// LIFECYCLE
 	// =====================================================
 
-	$effect(() => {
-		if (browser) {
-			loadWebhooks();
-		}
+	onMount(() => {
+		loadWebhooks();
 	});
 </script>
 

@@ -65,18 +65,6 @@ export interface VideoPlaylistItem {
 	duration?: number;
 }
 
-export interface VideoEventData {
-	playbackRate?: number;
-	previousQuality?: string;
-	newQuality?: string;
-	errorCode?: string;
-	errorMessage?: string;
-	seekFrom?: number;
-	seekTo?: number;
-	milestone?: number;
-	[key: string]: string | number | boolean | undefined;
-}
-
 export interface VideoAnalytic {
 	id: number;
 	video_id: number;
@@ -89,7 +77,7 @@ export interface VideoAnalytic {
 	interactions: number;
 	quality?: string;
 	buffer_events: number;
-	event_data?: VideoEventData;
+	event_data?: Record<string, any>;
 	ip_address?: string;
 	user_agent?: string;
 	referrer?: string;
@@ -113,38 +101,6 @@ export interface VideoHeatmap {
 	progress_milestones: Record<number, number>;
 }
 
-export interface PaginationMeta {
-	current_page: number;
-	from: number;
-	last_page: number;
-	per_page: number;
-	to: number;
-	total: number;
-}
-
-export interface VideoTrackingEvent {
-	session_id: string;
-	event_type:
-		| 'view'
-		| 'play'
-		| 'pause'
-		| 'complete'
-		| 'progress'
-		| 'seek'
-		| 'error'
-		| 'quality_change'
-		| 'speed_change'
-		| 'fullscreen_enter'
-		| 'fullscreen_exit';
-	timestamp_seconds?: number;
-	watch_time?: number;
-	completion_rate?: number;
-	interactions?: number;
-	quality?: string;
-	buffer_events?: number;
-	event_data?: VideoEventData;
-}
-
 /**
  * Get all videos
  */
@@ -154,7 +110,7 @@ export async function getVideos(params?: {
 	per_page?: number;
 	page?: number;
 }) {
-	return apiClient.get<{ data: Video[]; meta: PaginationMeta }>('/videos', { params });
+	return apiClient.get<{ data: Video[]; meta: any }>('/videos', { params });
 }
 
 /**
@@ -195,7 +151,31 @@ export async function deleteVideo(id: number) {
 /**
  * Track a video analytics event
  */
-export async function trackVideoEvent(videoId: number, data: VideoTrackingEvent) {
+export async function trackVideoEvent(
+	videoId: number,
+	data: {
+		session_id: string;
+		event_type:
+			| 'view'
+			| 'play'
+			| 'pause'
+			| 'complete'
+			| 'progress'
+			| 'seek'
+			| 'error'
+			| 'quality_change'
+			| 'speed_change'
+			| 'fullscreen_enter'
+			| 'fullscreen_exit';
+		timestamp_seconds?: number;
+		watch_time?: number;
+		completion_rate?: number;
+		interactions?: number;
+		quality?: string;
+		buffer_events?: number;
+		event_data?: Record<string, any>;
+	}
+) {
 	return apiClient.post<{ message: string; analytic: VideoAnalytic }>(
 		`/videos/${videoId}/track`,
 		data
@@ -217,7 +197,7 @@ export async function getVideoAnalytics(
 	}
 ) {
 	return apiClient.get<{
-		analytics: { data: VideoAnalytic[]; meta: PaginationMeta };
+		analytics: { data: VideoAnalytic[]; meta: any };
 		stats: VideoStats;
 	}>(`/admin/videos/${videoId}/analytics`, { params });
 }
@@ -237,21 +217,6 @@ export function generateSessionId(): string {
 }
 
 /**
- * Queued event for batch processing
- */
-interface QueuedEvent {
-	session_id: string;
-	event_type: string;
-	timestamp_seconds?: number;
-	watch_time?: number;
-	completion_rate?: number;
-	interactions?: number;
-	quality?: string;
-	buffer_events?: number;
-	event_data?: VideoEventData;
-}
-
-/**
  * Video tracking helper class
  */
 export class VideoTracker {
@@ -259,7 +224,7 @@ export class VideoTracker {
 	private sessionId: string;
 	private watchStartTime: number = 0;
 	private totalWatchTime: number = 0;
-	private eventQueue: QueuedEvent[] = [];
+	private eventQueue: any[] = [];
 	private flushInterval: number | null = null;
 
 	constructor(videoId: number, sessionId?: string) {
@@ -280,10 +245,10 @@ export class VideoTracker {
 			interactions?: number;
 			quality?: string;
 			buffer_events?: number;
-			event_data?: VideoEventData;
+			event_data?: Record<string, any>;
 		}
 	) {
-		const event: QueuedEvent = {
+		const event = {
 			session_id: this.sessionId,
 			event_type: eventType,
 			...data
@@ -335,9 +300,11 @@ export class VideoTracker {
 		this.eventQueue = [];
 
 		try {
-			// Send events in parallel for better performance
-			await Promise.all(events.map(event => trackVideoEvent(this.videoId, event as VideoTrackingEvent)));
-		} catch (error: unknown) {
+			// Send events in batch or individually
+			for (const event of events) {
+				await trackVideoEvent(this.videoId, event);
+			}
+		} catch (error) {
 			console.error('Failed to flush video analytics:', error);
 			// Re-queue failed events
 			this.eventQueue.unshift(...events);

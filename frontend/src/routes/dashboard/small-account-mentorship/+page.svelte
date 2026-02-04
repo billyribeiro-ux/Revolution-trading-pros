@@ -9,7 +9,7 @@
 	 * @version 3.0.0 - Unified Room Resources
 	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
@@ -118,10 +118,8 @@
 			: fallbackArticles
 	);
 
-	// Google Calendar integration - Svelte 5: $effect replaces onMount
-	$effect(() => {
-		if (!browser) return;
-
+	// Google Calendar integration
+	onMount(() => {
 		// Load Google Calendar API with error handling
 		const script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';

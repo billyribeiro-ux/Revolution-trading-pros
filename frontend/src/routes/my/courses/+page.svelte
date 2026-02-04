@@ -5,7 +5,7 @@
 	 * Displays enrolled courses with progress tracking
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
 
 	interface Course {
@@ -69,10 +69,7 @@
 		return { total: enrollments.length, inProgress, completed };
 	});
 
-	$effect(() => {
-		if (!browser) return;
-		fetchEnrollments();
-	});
+	onMount(fetchEnrollments);
 </script>
 
 <svelte:head>

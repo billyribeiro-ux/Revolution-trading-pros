@@ -11,7 +11,7 @@
 	 * ✓ Reduced motion support
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { tick } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut, backOut } from 'svelte/easing';
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
@@ -212,21 +212,20 @@
 	let rotationInterval: ReturnType<typeof setInterval> | null = null;
 	let resizeObserver: ResizeObserver | null = null;
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		// Trigger entrance animations when section scrolls into viewport
-		let visibilityObserver: IntersectionObserver | null = null;
 		queueMicrotask(() => {
 			if (sectionRef) {
-				visibilityObserver = new IntersectionObserver(
+				const visibilityObserver = new IntersectionObserver(
 					(entries) => {
 						if (entries[0]?.isIntersecting) {
 							isVisible = true;
-							visibilityObserver?.disconnect();
+							visibilityObserver.disconnect();
 						}
 					},
 					{ threshold: 0.1, rootMargin: '50px' }
@@ -277,16 +276,6 @@
 		return () => {
 			if (rotationInterval) clearInterval(rotationInterval);
 			resizeObserver?.disconnect();
-			visibilityObserver?.disconnect();
-			if (animationFrame) cancelAnimationFrame(animationFrame);
-			// Kill only ScrollTriggers associated with this section
-			if (scrollTriggerInstance && sectionRef) {
-				scrollTriggerInstance.getAll().forEach((st: any) => {
-					if (st.trigger === sectionRef || sectionRef?.contains(st.trigger)) {
-						st.kill();
-					}
-				});
-			}
 		};
 	});
 
@@ -360,6 +349,18 @@
 			console.debug('[IndicatorsSection] GSAP not available:', e);
 		}
 	}
+
+	onDestroy(() => {
+		if (animationFrame) cancelAnimationFrame(animationFrame);
+		// Kill only ScrollTriggers associated with this section
+		if (scrollTriggerInstance && sectionRef) {
+			scrollTriggerInstance.getAll().forEach((st: any) => {
+				if (st.trigger === sectionRef || sectionRef?.contains(st.trigger)) {
+					st.kill();
+				}
+			});
+		}
+	});
 
 	// ============================================================================
 	// TRANSITIONS

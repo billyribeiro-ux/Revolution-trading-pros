@@ -53,8 +53,11 @@ export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) =
 			});
 		}
 
+		console.log('[Set Session] Cookies set successfully');
+
 		return json({ success: true });
-	} catch {
+	} catch (error) {
+		console.error('[Set Session] Error:', error);
 		return json({ error: 'Failed to set session' }, { status: 500 });
 	}
 };

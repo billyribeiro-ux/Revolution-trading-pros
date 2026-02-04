@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
 
@@ -45,8 +45,7 @@
 		}
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		loadEvents();
 	});
 

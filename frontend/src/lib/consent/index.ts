@@ -27,10 +27,10 @@
  *        ConsentSettingsButton,
  *        initializeConsent
  *      } from '$lib/consent';
+ *      import { onMount } from 'svelte';
  *
- *      $effect(() => {
- *        const cleanup = initializeConsent();
- *        return cleanup;
+ *      onMount(() => {
+ *        initializeConsent();
  *      });
  *    </script>
  *

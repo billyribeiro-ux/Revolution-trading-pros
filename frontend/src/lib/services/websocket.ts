@@ -101,9 +101,7 @@ class WebSocketService {
 			this.ws = new WebSocket(this.url);
 
 			this.ws.onopen = () => {
-				if (import.meta.env.DEV) {
-					console.log('WebSocket connected');
-				}
+				console.log('WebSocket connected');
 				this.connected.set(true);
 				this.error.set(null);
 				this.reconnectAttempts = 0;
@@ -114,30 +112,22 @@ class WebSocketService {
 					const message: WebSocketMessage = JSON.parse(event.data);
 					this.handleMessage(message);
 				} catch (err) {
-					if (import.meta.env.DEV) {
-						console.error('Failed to parse WebSocket message:', err);
-					}
+					console.error('Failed to parse WebSocket message:', err);
 				}
 			};
 
 			this.ws.onerror = (event) => {
-				if (import.meta.env.DEV) {
-					console.error('WebSocket error:', event);
-				}
+				console.error('WebSocket error:', event);
 				this.error.set('WebSocket connection error');
 			};
 
 			this.ws.onclose = () => {
-				if (import.meta.env.DEV) {
-					console.log('WebSocket disconnected');
-				}
+				console.log('WebSocket disconnected');
 				this.connected.set(false);
 				this.attemptReconnect();
 			};
 		} catch (err) {
-			if (import.meta.env.DEV) {
-				console.error('Failed to create WebSocket:', err);
-			}
+			console.error('Failed to create WebSocket:', err);
 			this.error.set('Failed to connect to WebSocket');
 		}
 	}
@@ -436,9 +426,7 @@ class WebSocketService {
 
 		if (event === 'system:notification') {
 			// Handle system-wide notifications
-			if (import.meta.env.DEV) {
-				console.log('System notification:', message);
-			}
+			console.log('System notification:', message);
 		}
 	}
 
@@ -463,9 +451,7 @@ class WebSocketService {
 		this.reconnectAttempts++;
 		const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-		if (import.meta.env.DEV) {
-			console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
-		}
+		console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
 
 		setTimeout(() => {
 			this.connect();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import abandonedCartsApi, {
 		type AbandonedCart,
@@ -50,10 +50,8 @@
 	let discountPercent = $state(15);
 	let sending = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			loadDashboard();
-		}
+	onMount(async () => {
+		await loadDashboard();
 	});
 
 	async function loadDashboard() {

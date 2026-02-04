@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
 	import { behaviorAPI } from '$lib/api/behavior';
 	import {
@@ -21,8 +21,7 @@
 	let dashboard = $derived(dashboardData.value);
 	let loading = $derived(isLoading.value);
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		loadDashboard();
 	});
 

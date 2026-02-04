@@ -1055,11 +1055,14 @@ export function getAllShortcutDisplays(
  *
  * @example
  * ```typescript
- * // In a Svelte 5 component using $effect
+ * // In a Svelte component
+ * import { onMount, onDestroy } from 'svelte';
  * import { useKeyboardShortcuts } from '$lib/utils/keyboard-shortcuts';
  *
- * $effect(() => {
- *   const shortcuts = useKeyboardShortcuts({
+ * let shortcuts: ReturnType<typeof useKeyboardShortcuts>;
+ *
+ * onMount(() => {
+ *   shortcuts = useKeyboardShortcuts({
  *     handlers: {
  *       save: () => saveDocument(),
  *       bold: () => toggleBold(),
@@ -1069,8 +1072,10 @@ export function getAllShortcutDisplays(
  *       console.log(`Shortcut triggered: ${action}`);
  *     }
  *   });
+ * });
  *
- *   return () => shortcuts.destroy();
+ * onDestroy(() => {
+ *   shortcuts?.destroy();
  * });
  * ```
  *

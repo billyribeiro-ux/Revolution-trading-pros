@@ -3,61 +3,47 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { IconMail, IconUser, IconCheck } from '$lib/icons';
 
 	// Form state
-	let formData = $state({
+	let formData = {
 		name: '',
 		email: '',
 		message: ''
-	});
-	let formStatus = $state<'idle' | 'submitting' | 'success' | 'error'>('idle');
-	let formMessage = $state('');
-	let formErrors = $state<Record<string, string[]>>({});
+	};
+	let formStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
+	let formMessage = '';
+	let formErrors: Record<string, string[]> = {};
 
 	// Popup state
-	let showPopup = $state(false);
-	let popupEmail = $state('');
-	let popupStatus = $state<'idle' | 'submitting' | 'success' | 'error'>('idle');
-	let popupMessage = $state('');
+	let showPopup = false;
+	let popupEmail = '';
+	let popupStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
+	let popupMessage = '';
 
 	// Newsletter form
-	let newsletterEmail = $state('');
-	let newsletterStatus = $state<'idle' | 'submitting' | 'success' | 'error'>('idle');
-	let newsletterMessage = $state('');
+	let newsletterEmail = '';
+	let newsletterStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
+	let newsletterMessage = '';
 
 	// Load active popups on mount
-	// Svelte 5: $effect with browser guard and cleanup function
-	$effect(() => {
-		if (!browser) return;
-
-		let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-		popupsApi
-			.getActive('/test-backend')
-			.then((popups) => {
-				if (popups.length > 0) {
-					// Show popup after 3 seconds
-					timeoutId = setTimeout(() => {
-						showPopup = true;
-						recordPopupImpression(popups[0].id);
-					}, 3000);
-				}
-			})
-			.catch((error) => {
-				console.error('Error loading popups:', error);
-			});
-
-		return () => {
-			// Cleanup: clear timeout if component unmounts before popup shows
-			if (timeoutId) {
-				clearTimeout(timeoutId);
+	onMount(async () => {
+		try {
+			const popups = await popupsApi.getActive('/test-backend');
+			if (popups.length > 0) {
+				// Show popup after 3 seconds
+				setTimeout(() => {
+					showPopup = true;
+					recordPopupImpression(popups[0].id);
+				}, 3000);
 			}
-		};
+		} catch (error) {
+			console.error('Error loading popups:', error);
+		}
 	});
 
 	async function handleContactSubmit(e: Event) {

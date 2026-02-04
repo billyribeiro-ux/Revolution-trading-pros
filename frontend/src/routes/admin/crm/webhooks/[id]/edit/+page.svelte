@@ -23,7 +23,7 @@
 	import IconKey from '@tabler/icons-svelte-runes/icons/key';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook, WebhookEvent } from '$lib/crm/types';
 
@@ -263,10 +263,8 @@
 	// LIFECYCLE
 	// =====================================================
 
-	$effect(() => {
-		if (browser) {
-			loadWebhook();
-		}
+	onMount(() => {
+		loadWebhook();
 	});
 </script>
 

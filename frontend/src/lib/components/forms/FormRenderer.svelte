@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
@@ -24,9 +24,7 @@
 	let honeypotEmail = $state('');
 
 	// Initialize form data with default values and track form view
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		if (props.form.fields) {
 			props.form.fields.forEach((field) => {
 				if (field.default_value) {

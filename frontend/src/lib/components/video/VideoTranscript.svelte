@@ -17,6 +17,7 @@
  */
 -->
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -86,13 +87,13 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
+	onMount(async () => {
 		if (!browser) return;
 
 		if (propCues && propCues.length > 0) {
 			transcriptCues = propCues;
 		} else if (vttUrl) {
-			loadVTT();
+			await loadVTT();
 		}
 	});
 

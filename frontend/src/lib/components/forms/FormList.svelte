@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import type { Form } from '$lib/api/forms';
 	import {
 		getForms,
@@ -25,10 +25,8 @@
 	let totalPages = $state(1);
 	let statusFilter: string = $state('');
 
-	$effect(() => {
-		if (browser) {
-			loadForms();
-		}
+	onMount(() => {
+		loadForms();
 	});
 
 	async function loadForms() {

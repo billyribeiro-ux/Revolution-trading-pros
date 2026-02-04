@@ -6,6 +6,7 @@
 	 * @version 1.0.0
 	 * @author Revolution Trading Pros
 	 */
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 
 	type ChartType = 'line' | 'area' | 'bar' | 'candlestick' | 'pie' | 'donut';
@@ -45,18 +46,17 @@
 	let containerRef = $state<HTMLDivElement | null>(null);
 	let chartInstance = $state<unknown>(null);
 
-	// Initialize chart and cleanup on destroy
-	$effect(() => {
+	onMount(() => {
 		if (browser && containerRef) {
 			initChart();
 		}
+	});
 
-		return () => {
-			if (chartInstance) {
-				// Cleanup chart instance
-				chartInstance = null;
-			}
-		};
+	onDestroy(() => {
+		if (chartInstance) {
+			// Cleanup chart instance
+			chartInstance = null;
+		}
 	});
 
 	function initChart() {

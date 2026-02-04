@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -134,10 +134,8 @@
 		})
 	);
 
-	$effect(() => {
-		if (browser) {
-			loadCampaigns();
-		}
+	onMount(() => {
+		loadCampaigns();
 	});
 </script>
 

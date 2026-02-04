@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { workflowCanvas } from '$lib/stores/workflow.svelte';
 	import WorkflowNode from './WorkflowNode.svelte';
 	import WorkflowEdge from './WorkflowEdge.svelte';
@@ -124,8 +124,7 @@
 		connectionStart = null;
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		// Load workflow data
 		// workflowApi.getWorkflowNodes(workflowId).then(nodes => {
 		//   workflowApi.getWorkflowEdges(workflowId).then(edges => {

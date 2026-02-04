@@ -16,6 +16,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Mock data for weekly watchlist entries - in production this would come from API

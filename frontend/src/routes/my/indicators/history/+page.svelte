@@ -10,7 +10,7 @@
 	- Track download status
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface DownloadRecord {
 		id: number;
@@ -92,10 +92,7 @@
 		}
 	};
 
-	$effect(() => {
-		if (!browser) return;
-		fetchHistory();
-	});
+	onMount(fetchHistory);
 </script>
 
 <svelte:head>

@@ -12,7 +12,7 @@
 	 * @version 1.0.0 - December 2025
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	// Props
 	interface Props {
@@ -104,10 +104,8 @@
 		}
 	}
 
-	$effect(() => {
-		if (browser) {
-			loadFormData();
-		}
+	onMount(() => {
+		loadFormData();
 	});
 
 	// Drag and drop handlers

@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// Icons
@@ -266,7 +267,7 @@
 		]
 	};
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		let heroObserver: IntersectionObserver;

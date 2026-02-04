@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
@@ -118,11 +118,9 @@
 	let uploadError = $state('');
 	let isFullscreen = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			loadTags();
-			generateSlug();
-		}
+	onMount(() => {
+		loadTags();
+		generateSlug();
 	});
 
 	async function loadTags() {

@@ -77,7 +77,6 @@
 	let posts = $state<any[]>([]);
 	let stats = $state<any>(null);
 	let loading = $state(false);
-	let lastUpdatedTime = $state('');
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let categoryFilter = $state('all');
@@ -143,13 +142,6 @@
 			if (refreshInterval) clearInterval(refreshInterval);
 			document.removeEventListener('keydown', handleKeyboard);
 		};
-	});
-
-	// Update timestamp client-side only to avoid hydration mismatch
-	$effect(() => {
-		if (browser) {
-			lastUpdatedTime = new Date().toLocaleTimeString();
-		}
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -615,7 +607,7 @@
 	// ICT11+ Fix: Debounced effect to reload posts when filters change
 	// Previous implementation caused infinite loop by always evaluating to true
 	let filterDebounceTimer: ReturnType<typeof setTimeout> | undefined;
-	let isInitialMount = $state(true);
+	let isInitialMount = true;
 
 	$effect(() => {
 		// Track filter values to detect changes (this creates proper dependencies)
@@ -680,7 +672,7 @@
 		<header class="page-header">
 			<h1>Blog Posts</h1>
 			<p class="subtitle">
-				Create and manage blog posts • {posts.length} posts • Last updated: {lastUpdatedTime}
+				Create and manage blog posts • {posts.length} posts • Last updated: {new Date().toLocaleTimeString()}
 			</p>
 			<div class="header-actions">
 				<button

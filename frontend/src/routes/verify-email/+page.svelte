@@ -114,8 +114,9 @@
 			if (typeof window !== 'undefined' && (window as any).gtag) {
 				(window as any).gtag('event', eventName, properties);
 			}
-		} catch {
-			// Analytics tracking failed - non-critical
+			console.log(`[Analytics] ${eventName}`, properties);
+		} catch (error) {
+			console.error('Analytics tracking failed:', error);
 		}
 	}
 

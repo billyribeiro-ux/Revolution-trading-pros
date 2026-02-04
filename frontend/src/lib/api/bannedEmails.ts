@@ -125,19 +125,12 @@ export interface User {
 	role?: string;
 }
 
-export interface RiskFactorEvidence {
-	source: string;
-	timestamp: string;
-	details: string;
-	raw_data?: Record<string, string | number | boolean>;
-}
-
 export interface RiskFactor {
 	type: RiskFactorType;
 	score: number;
 	confidence: number;
 	description: string;
-	evidence?: RiskFactorEvidence;
+	evidence?: any;
 }
 
 export type RiskFactorType =
@@ -180,21 +173,13 @@ export interface DomainInfo {
 	abuse_reports: number;
 }
 
-export interface EnforcementActionDetails {
-	target_id?: string;
-	target_type?: string;
-	amount?: number;
-	reason?: string;
-	metadata?: Record<string, string | number | boolean>;
-}
-
 export interface EnforcementAction {
 	id: string;
 	type: ActionType;
 	status: 'pending' | 'completed' | 'failed' | 'reversed';
 	executed_at?: string;
 	executed_by?: string;
-	details?: EnforcementActionDetails;
+	details?: Record<string, any>;
 	reversal_reason?: string;
 }
 
@@ -300,18 +285,10 @@ export interface GeoHotspot {
 	trend: 'increasing' | 'stable' | 'decreasing';
 }
 
-export interface TimeSeriesMetadata {
-	label?: string;
-	category?: string;
-	count?: number;
-	percentage?: number;
-	notes?: string;
-}
-
 export interface TimeSeriesData {
 	date: string;
 	value: number;
-	metadata?: TimeSeriesMetadata;
+	metadata?: Record<string, any>;
 }
 
 export interface WhitelistEntry {
@@ -323,69 +300,12 @@ export interface WhitelistEntry {
 	created_at: string;
 }
 
-export interface ReviewEvidence {
-	type: 'pattern' | 'behavior' | 'report' | 'system';
-	description: string;
-	confidence: number;
-	timestamp: string;
-	source?: string;
-	data?: Record<string, string | number | boolean>;
-}
-
-export interface BannedEmailFilters {
-	search?: string;
-	dateFrom?: string;
-	dateTo?: string;
-	reason?: string;
-	riskLevel?: string;
-}
-
-export interface PatternDetectedData {
-	id: string;
-	email: string;
-	trigger: string;
-	risk_score: number;
-	evidence: ReviewEvidence[];
-	status: 'pending' | 'reviewing' | 'approved' | 'rejected';
-	assigned_to?: string;
-	created_at: string;
-}
-
-export interface PatternAnalysisResult {
-	pattern: PatternType;
-	frequency: number;
-	emails: string[];
-	confidence: number;
-}
-
-export interface TrackEventData {
-	email?: string;
-	reason?: string;
-	cascade?: boolean;
-	subscription_id?: string;
-	action?: string;
-	id?: number;
-	[key: string]: string | number | boolean | undefined;
-}
-
-interface CacheEntry<T> {
-	data: T;
-	expiry: number;
-}
-
-export interface EmailCheckResult {
-	banned: boolean;
-	record?: EnhancedBannedEmail;
-	risk_score?: number;
-	similar_banned?: string[];
-}
-
 export interface ReviewQueue {
 	id: string;
 	email: string;
 	trigger: string;
 	risk_score: number;
-	evidence: ReviewEvidence[];
+	evidence: any[];
 	status: 'pending' | 'reviewing' | 'approved' | 'rejected';
 	assigned_to?: string;
 	created_at: string;
@@ -398,7 +318,7 @@ export interface ReviewQueue {
 class BannedEmailManagementService {
 	private static instance: BannedEmailManagementService;
 	private wsConnection?: WebSocket;
-	private cache = new Map<string, CacheEntry<unknown>>();
+	private cache = new Map<string, { data: any; expiry: number }>();
 	private syncInterval?: number;
 	private patternEngine?: PatternDetectionEngine;
 
@@ -543,7 +463,7 @@ class BannedEmailManagementService {
 		this.bannedEmails.update((emails) => emails.filter((e) => e.id !== data.id));
 	}
 
-	private handlePatternDetected(data: PatternDetectedData): void {
+	private handlePatternDetected(data: any): void {
 		console.warn('[BannedEmailService] Pattern detected:', data);
 		this.reviewQueue.update((queue) => [...queue, data]);
 	}
@@ -637,9 +557,8 @@ class BannedEmailManagementService {
 
 			this.bannedEmails.set(enhanced);
 			return enhanced;
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'An unknown error occurred';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -649,10 +568,15 @@ class BannedEmailManagementService {
 	/**
 	 * Check if email is banned
 	 */
-	async checkEmail(email: string): Promise<EmailCheckResult> {
+	async checkEmail(email: string): Promise<{
+		banned: boolean;
+		record?: EnhancedBannedEmail;
+		risk_score?: number;
+		similar_banned?: string[];
+	}> {
 		// Quick cache check
 		const cacheKey = `check_${email}`;
-		const cached = this.getFromCache<EmailCheckResult>(cacheKey);
+		const cached = this.getFromCache(cacheKey);
 		if (cached) return cached;
 
 		try {
@@ -741,9 +665,8 @@ class BannedEmailManagementService {
 			});
 
 			return banned;
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'An unknown error occurred';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -791,9 +714,8 @@ class BannedEmailManagementService {
 			await this.loadBannedEmails();
 
 			return results;
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'An unknown error occurred';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -836,9 +758,8 @@ class BannedEmailManagementService {
 			});
 
 			return result;
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'An unknown error occurred';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -869,9 +790,8 @@ class BannedEmailManagementService {
 
 			// Track event
 			this.trackEvent('email_unbanned', { id, reason });
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : 'An unknown error occurred';
-			this.error.set(message);
+		} catch (error: any) {
+			this.error.set(error.message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1224,8 +1144,10 @@ class BannedEmailManagementService {
 			});
 		}
 
-		// Execute actions in parallel
-		await Promise.all(actions.map((action) => this.executeAction(action, email)));
+		// Execute actions
+		for (const action of actions) {
+			await this.executeAction(action, email);
+		}
 	}
 
 	private async executeAction(
@@ -1258,21 +1180,17 @@ class BannedEmailManagementService {
 			'/webhook/subscription-cancel'
 		];
 
-		const results = await Promise.allSettled(
-			webhooks.map((webhook) =>
-				fetch(webhook, {
+		for (const webhook of webhooks) {
+			try {
+				await fetch(webhook, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ email })
-				})
-			)
-		);
-
-		results.forEach((result, index) => {
-			if (result.status === 'rejected') {
-				console.error(`[BannedEmailService] Webhook failed: ${webhooks[index]}`, result.reason);
+				});
+			} catch (error) {
+				console.error(`[BannedEmailService] Webhook failed: ${webhook}`, error);
 			}
-		});
+		}
 	}
 
 	private chunkArray<T>(array: T[], size: number): T[][] {
@@ -1289,15 +1207,15 @@ class BannedEmailManagementService {
 		return getAuthToken() || '';
 	}
 
-	private getFromCache<T>(key: string): T | null {
+	private getFromCache(key: string): any {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data as T;
+			return cached.data;
 		}
 		return null;
 	}
 
-	private setCache<T>(key: string, data: T, ttl: number = CACHE_TTL): void {
+	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1311,9 +1229,9 @@ class BannedEmailManagementService {
 		console.log(`[${type.toUpperCase()}] ${message}`);
 	}
 
-	private trackEvent(event: string, data?: TrackEventData): void {
-		if (browser && 'gtag' in window && typeof window.gtag === 'function') {
-			window.gtag('event', event, data);
+	private trackEvent(event: string, data?: any): void {
+		if (browser && 'gtag' in window) {
+			(window as any).gtag('event', event, data);
 		}
 	}
 
@@ -1371,7 +1289,7 @@ class PatternDetectionEngine {
 		return [`${base}1@${domain}`, `${base}2@${domain}`, `${base}.test@${domain}`];
 	}
 
-	analyzePatterns(_emails: string[]): PatternAnalysisResult[] {
+	analyzePatterns(_emails: string[]): any[] {
 		// Analyze patterns across multiple emails
 		return [];
 	}
@@ -1397,8 +1315,7 @@ export const isLoading = bannedEmailService.isLoading;
 export const error = bannedEmailService.error;
 
 // Export methods
-export const getBannedEmails = (filters?: BannedEmailFilters) =>
-	bannedEmailService.loadBannedEmails(filters);
+export const getBannedEmails = (filters?: any) => bannedEmailService.loadBannedEmails(filters);
 export const checkEmailBanned = (email: string) => bannedEmailService.checkEmail(email);
 export const banEmail = (request: BanRequest) => bannedEmailService.banEmail(request);
 export const bulkBanEmails = (request: BulkBanRequest) => bannedEmailService.bulkBanEmails(request);

@@ -21,9 +21,8 @@
 -->
 
 <script lang="ts">
-	import { tick } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
@@ -249,9 +248,7 @@
 	// Lifecycle
 	// ==========================================================================
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Initialize history
 		editorState.history.present = [...blocks];
 
@@ -265,17 +262,17 @@
 
 		// Initial SEO analysis
 		runSEOAnalysis();
+	});
 
-		return () => {
-			if (autosaveTimer) clearInterval(autosaveTimer);
-			window.removeEventListener('keydown', handleGlobalKeydown);
-			// Clean up touch drag timer
-			if (touchDragState.longPressTimer) {
-				clearTimeout(touchDragState.longPressTimer);
-			}
-			// Clean up auto-scroll
-			stopAutoScroll();
-		};
+	onDestroy(() => {
+		if (autosaveTimer) clearInterval(autosaveTimer);
+		window.removeEventListener('keydown', handleGlobalKeydown);
+		// Clean up touch drag timer
+		if (touchDragState.longPressTimer) {
+			clearTimeout(touchDragState.longPressTimer);
+		}
+		// Clean up auto-scroll
+		stopAutoScroll();
 	});
 
 	// Watch for block changes

@@ -7,6 +7,7 @@
 	 *
 	 * @version 1.0.0
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import Typed from 'typed.js';
 
@@ -30,7 +31,7 @@
 	let elementRef: HTMLSpanElement;
 	let typed: Typed;
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser || !elementRef) return;
 
 		typed = new Typed(elementRef, {

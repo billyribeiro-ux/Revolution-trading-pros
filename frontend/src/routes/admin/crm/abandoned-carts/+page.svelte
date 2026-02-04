@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -158,12 +158,8 @@
 		})
 	);
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		loadCarts();
-		return () => {
-			// Cleanup if needed
-		};
 	});
 </script>
 

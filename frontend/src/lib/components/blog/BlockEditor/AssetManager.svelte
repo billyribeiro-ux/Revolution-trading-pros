@@ -18,8 +18,8 @@
 -->
 
 <script lang="ts">
+	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
-	import { browser } from '$app/environment';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 
@@ -89,6 +89,8 @@
 	const allowMultiple = $derived(props.allowMultiple ?? false);
 	const acceptTypes = $derived(props.acceptTypes ?? ['image', 'video', 'audio', 'document']);
 	const initialFolder = $derived(props.initialFolder ?? null);
+
+	const dispatch = createEventDispatcher();
 
 	// ============================================================================
 	// State
@@ -698,15 +700,11 @@
 		}
 	});
 
-	// Cleanup preview URLs on component destroy
-	$effect(() => {
-		if (!browser) return;
-
-		return () => {
-			uploadQueue.forEach(item => {
-				if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-			});
-		};
+	// Cleanup
+	onDestroy(() => {
+		uploadQueue.forEach(item => {
+			if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+		});
 	});
 
 	// Get child folders for current location
@@ -808,8 +806,8 @@
 									oninput={handleSearch}
 								/>
 								{#if searchQuery}
-									<button class="clear-search" onclick={() => { searchQuery = ''; fetchAssets(true); }} aria-label="Clear search">
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+									<button class="clear-search" onclick={() => { searchQuery = ''; fetchAssets(true); }}>
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<line x1="18" y1="6" x2="6" y2="18" />
 											<line x1="6" y1="6" x2="18" y2="18" />
 										</svg>

@@ -13,6 +13,7 @@
 	 *
 	 * @version 2.0.0
 	 */
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import TestimonialCarousel from './TestimonialCarousel.svelte';
 
@@ -252,7 +253,7 @@
 		}
 	}
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) return;
 
 		// Generate initial candles (sync)
@@ -305,7 +306,7 @@
 			}
 		})();
 
-		// Cleanup function
+		// Cleanup function (sync return)
 		return () => {
 			window.removeEventListener('resize', handleResize);
 			if (animationId) {
@@ -316,6 +317,16 @@
 				gsapContext.revert();
 			}
 		};
+	});
+
+	onDestroy(() => {
+		if (animationId) {
+			cancelAnimationFrame(animationId);
+		}
+		// Ensure GSAP cleanup on destroy
+		if (gsapContext) {
+			gsapContext.revert();
+		}
 	});
 </script>
 

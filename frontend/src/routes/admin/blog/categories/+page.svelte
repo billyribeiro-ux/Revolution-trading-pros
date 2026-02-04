@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import {
 		IconPlus,
@@ -71,10 +71,8 @@
 	let toastType = $state<'success' | 'error'>('success');
 	let showToast = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			loadData();
-		}
+	onMount(async () => {
+		await loadData();
 	});
 
 	async function loadData() {

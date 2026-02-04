@@ -5,7 +5,7 @@
 	 * Displays real-time metrics with auto-refresh and
 	 * animated counters.
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { analyticsApi, type RealTimeMetrics } from '$lib/api/analytics';
 
 	interface Props {
@@ -34,11 +34,11 @@
 		}
 	}
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		fetchMetrics();
 		interval = setInterval(fetchMetrics, refreshInterval);
 
+		// Cleanup function (Svelte 5 pattern)
 		return () => {
 			if (interval) clearInterval(interval);
 		};

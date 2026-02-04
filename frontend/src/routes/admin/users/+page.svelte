@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
@@ -8,9 +7,8 @@
 	let users = $state<any[]>([]);
 	let error = $state('');
 
-	// Load users on mount (Svelte 5 $effect with browser guard)
+	// Load users on mount
 	$effect(() => {
-		if (!browser) return;
 		loadUsers();
 	});
 

@@ -17,6 +17,7 @@
 	 */
 
 	import { fly } from 'svelte/transition';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { consentStore, showConsentBanner, openPreferencesModal } from '../store.svelte';
 	// Template store imported by BannerRenderer
@@ -30,6 +31,11 @@
 	}
 
 	let { position = 'bottom', useTemplates = true, class: className = '' }: Props = $props();
+
+	// ICT9+ Hydration-Safe: Initialize after mount
+	onMount(() => {
+		// Component mounted and ready
+	});
 
 	// Handle accept all
 	function handleAcceptAll(): void {

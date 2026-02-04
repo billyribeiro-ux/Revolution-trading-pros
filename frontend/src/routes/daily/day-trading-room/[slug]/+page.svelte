@@ -13,7 +13,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface DailyVideo {
 		id: number;
@@ -89,10 +89,7 @@
 		}
 	];
 
-	// Svelte 5: $effect replaces onMount for browser-only initialization
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Find current video
 		const videoIndex = allVideos.findIndex((v) => v.slug === slug);
 

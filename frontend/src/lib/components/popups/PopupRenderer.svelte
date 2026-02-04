@@ -16,6 +16,7 @@
 	 *
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { IconX } from '$lib/icons';
@@ -66,24 +67,26 @@
 		return () => unsubscribe();
 	});
 
-	$effect(() => {
+	onMount(async () => {
 		if (!browser) return;
 
 		// Load popups for current page
-		getActivePopups(window.location.pathname);
+		await getActivePopups(window.location.pathname);
 
 		// Set up event listeners
 		setupExitIntent();
 		setupScrollTrigger();
+	});
 
-		return () => {
-			// Clean up event listeners
-			cleanupFunctions.forEach((fn) => fn());
-			cleanupFunctions = [];
+	onDestroy(() => {
+		// Clean up event listeners
+		cleanupFunctions.forEach((fn) => fn());
+		cleanupFunctions = [];
 
-			// Restore body scroll
+		// Restore body scroll
+		if (browser) {
 			document.body.style.overflow = '';
-		};
+		}
 	});
 
 	function setupExitIntent() {

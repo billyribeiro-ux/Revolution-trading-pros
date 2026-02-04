@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	// Using the direct path imports as requested in your snippet
@@ -67,7 +68,7 @@
 	// Trigger entrance animations when section scrolls into viewport
 	let observer: IntersectionObserver | null = null;
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser) {
 			isVisible = true;
 			return;

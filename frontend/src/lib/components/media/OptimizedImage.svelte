@@ -13,7 +13,7 @@
   @version 2.0.0 - Svelte 5 Runes Migration
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 	import { decode } from 'blurhash';
 
 	// Props - Svelte 5 $props() pattern with interface
@@ -111,9 +111,7 @@
 	}
 
 	// Setup Intersection Observer for lazy loading
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		if (priority || loading === 'eager') {
 			isInView = true;
 			return;
@@ -137,10 +135,10 @@
 		if (containerRef) {
 			observer.observe(containerRef);
 		}
+	});
 
-		return () => {
-			observer?.disconnect();
-		};
+	onDestroy(() => {
+		observer?.disconnect();
 	});
 </script>
 

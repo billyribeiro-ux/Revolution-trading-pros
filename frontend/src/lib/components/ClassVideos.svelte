@@ -16,6 +16,7 @@
  */
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 
@@ -111,9 +112,7 @@
 		}
 	});
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		mounted = true;
 		viewportWidth = window.innerWidth;
 

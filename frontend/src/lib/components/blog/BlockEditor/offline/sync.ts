@@ -211,13 +211,7 @@ class SyncManager {
 
 		if (this.options.autoSyncOnOnline) {
 			// Delay slightly to allow network to stabilize
-			setTimeout(() => {
-				this.syncNow().catch((error) => {
-					if (import.meta.env.DEV) {
-						console.error('[SyncManager] Auto-sync on online failed:', error);
-					}
-				});
-			}, 1000);
+			setTimeout(() => this.syncNow(), 1000);
 		}
 	};
 
@@ -499,7 +493,7 @@ class SyncManager {
 
 		if (response.status === 409) {
 			// Conflict detected
-			const serverData = await response.json().catch(() => ({ data: undefined, version: undefined }));
+			const serverData = await response.json();
 			return {
 				conflict: true,
 				serverData: serverData.data,
@@ -512,7 +506,7 @@ class SyncManager {
 			throw new Error(errorData.message ?? `HTTP ${response.status}`);
 		}
 
-		const data = await response.json().catch(() => ({}));
+		const data = await response.json();
 		return { serverData: data.data ?? data };
 	}
 

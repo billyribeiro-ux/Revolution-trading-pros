@@ -11,7 +11,7 @@
 	- Mobile-first responsive design
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import ClassVideos from '$lib/components/ClassVideos.svelte';
 	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
@@ -55,13 +55,12 @@
 	let slug = $derived(data.slug);
 	let mounted = $state(false);
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		mounted = true;
 
 		// Track article view event
 		if (
+			typeof window !== 'undefined' &&
 			(window as unknown as { richpanel?: { track: (event: string, data: unknown) => void } })
 				.richpanel
 		) {
@@ -75,7 +74,10 @@
 		}
 
 		// Track with Google Analytics if available
-		if ((window as unknown as { gtag?: (...args: unknown[]) => void }).gtag) {
+		if (
+			typeof window !== 'undefined' &&
+			(window as unknown as { gtag?: (...args: unknown[]) => void }).gtag
+		) {
 			(window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'page_view', {
 				page_title: classData.title,
 				page_location: window.location.href,

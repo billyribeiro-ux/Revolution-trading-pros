@@ -22,6 +22,8 @@ export function initBehaviorTracking() {
 			trackIdleTime: true,
 			sampleRate: 1.0 // 100% sampling
 		});
+
+		console.log('[RevolutionBehavior-L8] Tracker initialized');
 	}
 
 	return tracker;

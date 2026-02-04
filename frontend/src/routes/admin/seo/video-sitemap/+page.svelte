@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconVideo,
 		IconRefresh,
@@ -28,10 +28,8 @@
 	);
 	let totalDuration = $derived(videos.reduce((acc, v) => acc + (v.duration || 0), 0));
 
-	$effect(() => {
-		if (browser) {
-			loadVideos();
-		}
+	onMount(async () => {
+		await loadVideos();
 	});
 
 	async function loadVideos() {

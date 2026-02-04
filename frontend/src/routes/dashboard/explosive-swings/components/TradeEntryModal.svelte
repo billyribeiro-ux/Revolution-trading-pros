@@ -10,6 +10,7 @@
 -->
 <script lang="ts">
 	import { tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		isOpen: boolean;

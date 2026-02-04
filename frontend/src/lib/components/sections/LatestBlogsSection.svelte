@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
@@ -33,14 +33,8 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	$effect(() => {
-		if (!browser) {
-			isVisible = true;
-			return;
-		}
-
+	onMount(() => {
 		// Use queueMicrotask to ensure binding is complete
-		let visibilityObserver: IntersectionObserver | null = null;
 		queueMicrotask(() => {
 			if (!containerRef) {
 				isVisible = true; // Fallback: show content
@@ -55,19 +49,17 @@
 				return;
 			}
 
-			visibilityObserver = new IntersectionObserver(
+			const visibilityObserver = new IntersectionObserver(
 				(entries) => {
 					if (entries[0]?.isIntersecting) {
 						isVisible = true;
-						visibilityObserver?.disconnect();
+						visibilityObserver.disconnect();
 					}
 				},
 				{ threshold: 0.1 }
 			);
 			visibilityObserver.observe(containerRef);
 		});
-
-		return () => visibilityObserver?.disconnect();
 	});
 
 	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {

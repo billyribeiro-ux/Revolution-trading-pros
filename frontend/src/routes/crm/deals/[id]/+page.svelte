@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
@@ -16,10 +16,8 @@
 
 	let dealId = $derived(page.params.id as string);
 
-	$effect(() => {
-		if (browser) {
-			loadDeal();
-		}
+	onMount(async () => {
+		await loadDeal();
 	});
 
 	async function loadDeal() {

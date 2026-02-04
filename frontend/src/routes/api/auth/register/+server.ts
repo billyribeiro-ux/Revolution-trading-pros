@@ -16,13 +16,11 @@ export const POST = async ({ request }: RequestEvent) => {
 		const body = await request.json();
 
 		// ICT 11+ Debug: Log request details (mask sensitive data)
-		if (import.meta.env.DEV) {
-			console.log('[Auth Proxy] Register request:', {
-				email: body.email,
-				hasPassword: !!body.password,
-				name: body.name
-			});
-		}
+		console.log('[Auth Proxy] Register request:', {
+			email: body.email,
+			hasPassword: !!body.password,
+			name: body.name
+		});
 
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/register`, {
@@ -40,27 +38,21 @@ export const POST = async ({ request }: RequestEvent) => {
 		try {
 			data = JSON.parse(responseText);
 		} catch {
-			if (import.meta.env.DEV) {
-				console.error('[Auth Proxy] Non-JSON response:', responseText);
-			}
+			console.error('[Auth Proxy] Non-JSON response:', responseText);
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
 		// ICT 11+ Debug: Log response for diagnosis
-		if (import.meta.env.DEV) {
-			console.log('[Auth Proxy] Register response:', {
-				status: response.status,
-				message: data.message,
-				error: data.error
-			});
-		}
+		console.log('[Auth Proxy] Register response:', {
+			status: response.status,
+			message: data.message,
+			error: data.error
+		});
 
 		// Return the response with proper status
 		return json(data, { status: response.status });
 	} catch (error) {
-		if (import.meta.env.DEV) {
-			console.error('[Auth Proxy] Register error:', error);
-		}
+		console.error('[Auth Proxy] Register error:', error);
 		return json({ error: 'Registration service unavailable' }, { status: 503 });
 	}
 };

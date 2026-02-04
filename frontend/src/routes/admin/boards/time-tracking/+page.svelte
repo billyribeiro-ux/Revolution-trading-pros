@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { TimeEntry, Board, TimeTrackingStats } from '$lib/boards/types';
 	import {
@@ -30,9 +30,8 @@
 	// Date presets
 	let datePreset = $state('this_week');
 
-	$effect(() => {
-		if (!browser) return;
-		loadData();
+	onMount(async () => {
+		await loadData();
 	});
 
 	async function loadData() {

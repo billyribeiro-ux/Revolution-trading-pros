@@ -14,7 +14,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -398,10 +398,8 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (browser) {
-			loadFunnel();
-		}
+	onMount(() => {
+		loadFunnel();
 	});
 </script>
 

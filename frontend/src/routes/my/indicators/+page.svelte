@@ -5,7 +5,7 @@
 	 * Shows user's owned indicators with download links
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface OwnedIndicator {
 		id: string;
@@ -47,10 +47,7 @@
 		});
 	};
 
-	$effect(() => {
-		if (!browser) return;
-		fetchMyIndicators();
-	});
+	onMount(fetchMyIndicators);
 </script>
 
 <svelte:head>

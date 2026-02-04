@@ -17,7 +17,7 @@
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { page } from '$app/stores';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	// Platform logo mapping
 	const platformLogos: Record<string, string> = {
@@ -231,11 +231,7 @@
 		}
 	};
 
-	$effect(() => {
-		if (browser) {
-			fetchIndicator();
-		}
-	});
+	onMount(fetchIndicator);
 </script>
 
 <svelte:head>

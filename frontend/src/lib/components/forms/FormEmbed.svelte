@@ -22,7 +22,7 @@
 	 * @see https://fluentforms.com/wordpress-form-shortcode/
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { previewForm, getFormById, submitForm, type Form as FormType } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
 
@@ -94,10 +94,8 @@
 	let submitMessage = $state('');
 	let visibleFields: Set<number> = $state(new Set());
 
-	$effect(() => {
-		if (browser) {
-			loadForm();
-		}
+	onMount(async () => {
+		await loadForm();
 	});
 
 	async function loadForm() {

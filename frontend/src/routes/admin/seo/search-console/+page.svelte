@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconBrandGoogle,
 		IconRefresh,
@@ -14,10 +14,8 @@
 	let loading = $state(false);
 	let importing = $state(false);
 
-	$effect(() => {
-		if (browser) {
-			checkStatus();
-		}
+	onMount(() => {
+		checkStatus();
 	});
 
 	async function checkStatus() {

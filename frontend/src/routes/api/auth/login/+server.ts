@@ -16,13 +16,11 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 		const body = await request.json();
 
 		// ICT 7 Debug: Log request details (mask password)
-		if (import.meta.env.DEV) {
-			console.log('[Auth Proxy] Login request:', {
-				email: body.email,
-				hasPassword: !!body.password,
-				passwordLength: body.password?.length || 0
-			});
-		}
+		console.log('[Auth Proxy] Login request:', {
+			email: body.email,
+			hasPassword: !!body.password,
+			passwordLength: body.password?.length || 0
+		});
 
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -40,21 +38,17 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 		try {
 			data = JSON.parse(responseText);
 		} catch {
-			if (import.meta.env.DEV) {
-				console.error('[Auth Proxy] Non-JSON response:', responseText);
-			}
+			console.error('[Auth Proxy] Non-JSON response:', responseText);
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
 		// ICT 7 Debug: Log full response for diagnosis
-		if (import.meta.env.DEV) {
-			console.log('[Auth Proxy] Backend response:', {
-				status: response.status,
-				error: data.error,
-				hasToken: !!data.token,
-				hasUser: !!data.user
-			});
-		}
+		console.log('[Auth Proxy] Backend response:', {
+			status: response.status,
+			error: data.error,
+			hasToken: !!data.token,
+			hasUser: !!data.user
+		});
 
 		// If successful, set httpOnly cookies for the tokens
 		if (response.ok && data.token) {
@@ -80,17 +74,13 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 				});
 			}
 
-			if (import.meta.env.DEV) {
-				console.log('[Auth Proxy] Cookies set successfully');
-			}
+			console.log('[Auth Proxy] Cookies set successfully');
 		}
 
 		// Return the response with proper status
 		return json(data, { status: response.status });
 	} catch (error) {
-		if (import.meta.env.DEV) {
-			console.error('[Auth Proxy] Error:', error);
-		}
+		console.error('[Auth Proxy] Error:', error);
 		return json({ error: 'Authentication service unavailable' }, { status: 503 });
 	}
 };

@@ -11,7 +11,7 @@
 	 *
 	 * @version 2.0.0 - Svelte 5 Runes
 	 */
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 
 	// Props - Svelte 5 syntax
@@ -124,9 +124,7 @@
 		return (bytes / 1024 / 1024).toFixed(2) + ' MB';
 	}
 
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		window.addEventListener('mouseup', handleMouseUp);
 		window.addEventListener('mousemove', handleMouseMove);
 		window.addEventListener('touchend', handleMouseUp);

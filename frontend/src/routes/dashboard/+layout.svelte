@@ -25,6 +25,7 @@
 	import '$lib/styles/main.css';
 	import '$lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
 
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores'; // FIXED: Use $app/stores for consistency with Admin Layout
 	import { browser } from '$app/environment';
@@ -479,9 +480,9 @@
 		})();
 	});
 
-	// Auth guard - Svelte 5 $effect() Pattern
-	// Reactively monitors auth state and redirects if user logs out
-	$effect(() => {
+	// Auth guard - check on mount (user interaction: page load)
+	// Moved from $effect() to prevent non-interactive history manipulation
+	onMount(() => {
 		if (!browser) return;
 
 		// If user logs out while on dashboard (client-side action), redirect to login

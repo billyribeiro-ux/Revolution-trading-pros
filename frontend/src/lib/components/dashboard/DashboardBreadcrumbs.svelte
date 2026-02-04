@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface BreadcrumbItem {
 		label: string;
@@ -154,8 +154,7 @@
 	});
 
 	// Fix Classes breadcrumb link on mount (matches WordPress implementation)
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		const classesLink = document.querySelector('a.breadcrumb-custom-post-type-classes');
 		if (classesLink) {
 			classesLink.setAttribute('href', '/dashboard/classes');

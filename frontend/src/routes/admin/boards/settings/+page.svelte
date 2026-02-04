@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
 	import {
@@ -50,9 +50,8 @@
 	let newStage = $state({ title: '', color: '#6b7280', auto_complete: false });
 	let newLabel = $state({ title: '', color: '#6b7280' });
 
-	$effect(() => {
-		if (!browser) return;
-		loadSettings();
+	onMount(async () => {
+		await loadSettings();
 	});
 
 	async function loadSettings() {

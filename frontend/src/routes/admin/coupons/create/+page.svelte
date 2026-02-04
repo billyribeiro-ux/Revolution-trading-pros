@@ -16,7 +16,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import {
@@ -161,10 +161,8 @@
 	}
 
 	// Load data on mount
-	$effect(() => {
-		if (browser) {
-			loadProductsAndPlans();
-		}
+	onMount(() => {
+		loadProductsAndPlans();
 	});
 
 	function toggleProduct(productId: number): void {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconMail,
 		IconPlus,
@@ -45,37 +45,35 @@
 		reportsGenerated: reports.length
 	});
 
-	$effect(() => {
-		if (browser) {
-			const unsubscribe = reportTemplates.subscribe((t) => {
-				templates = t;
-			});
+	onMount(() => {
+		const unsubscribe = reportTemplates.subscribe((t) => {
+			templates = t;
+		});
 
-			// Add sample template if empty
-			if (templates.length === 0) {
-				addSampleTemplate();
-			}
-
-			// Sample generated reports
-			reports = [
-				{
-					id: '1',
-					templateName: 'Weekly SEO Report',
-					generatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-					status: 'sent',
-					recipients: 2
-				},
-				{
-					id: '2',
-					templateName: 'Weekly SEO Report',
-					generatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-					status: 'sent',
-					recipients: 2
-				}
-			];
-
-			return () => unsubscribe();
+		// Add sample template if empty
+		if (templates.length === 0) {
+			addSampleTemplate();
 		}
+
+		// Sample generated reports
+		reports = [
+			{
+				id: '1',
+				templateName: 'Weekly SEO Report',
+				generatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+				status: 'sent',
+				recipients: 2
+			},
+			{
+				id: '2',
+				templateName: 'Weekly SEO Report',
+				generatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+				status: 'sent',
+				recipients: 2
+			}
+		];
+
+		return () => unsubscribe();
 	});
 
 	function addSampleTemplate() {

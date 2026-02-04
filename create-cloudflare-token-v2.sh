@@ -5,23 +5,9 @@ set -e
 echo "Creating Cloudflare API Token with full Pages permissions..."
 echo ""
 
-# SECURITY: Credentials must be set via environment variables
-# Export these before running the script:
-#   export CLOUDFLARE_EMAIL="your-email@example.com"
-#   export CLOUDFLARE_API_KEY="your-global-api-key"
-#   export CLOUDFLARE_ACCOUNT_ID="your-account-id"
-
-if [ -z "$CLOUDFLARE_EMAIL" ] || [ -z "$CLOUDFLARE_API_KEY" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-    echo "ERROR: Required environment variables are not set."
-    echo "Please set the following environment variables:"
-    echo "  CLOUDFLARE_EMAIL"
-    echo "  CLOUDFLARE_API_KEY"
-    echo "  CLOUDFLARE_ACCOUNT_ID"
-    exit 1
-fi
-
-CLOUDFLARE_GLOBAL_API_KEY="$CLOUDFLARE_API_KEY"
-ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"
+CLOUDFLARE_EMAIL='billy.ribeiro@icloud.com'
+CLOUDFLARE_GLOBAL_API_KEY='1831dcc715210d4453564fdbe74044e5c67f0'
+ACCOUNT_ID='9c72eb0d1b0b7891aca6532fe709cacc'
 
 # Create API token with all required permissions for Cloudflare Pages
 echo "Creating new API token with comprehensive permissions..."

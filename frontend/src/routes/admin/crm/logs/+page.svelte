@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconActivityHeartbeat from '@tabler/icons-svelte-runes/icons/activity-heartbeat';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
@@ -125,10 +125,8 @@
 		})
 	);
 
-	$effect(() => {
-		if (browser) {
-			loadLogs();
-		}
+	onMount(() => {
+		loadLogs();
 	});
 </script>
 

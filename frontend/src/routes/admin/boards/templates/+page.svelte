@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardTemplate } from '$lib/boards/types';
@@ -175,9 +175,8 @@
 		}
 	];
 
-	$effect(() => {
-		if (!browser) return;
-		loadTemplates();
+	onMount(async () => {
+		await loadTemplates();
 	});
 
 	async function loadTemplates() {

@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		IconBuilding,
 		IconPlus,
@@ -147,10 +147,8 @@
 		})
 	);
 
-	$effect(() => {
-		if (browser) {
-			loadCompanies();
-		}
+	onMount(() => {
+		loadCompanies();
 	});
 </script>
 

@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -345,8 +345,7 @@
 	// LIFECYCLE
 	// =====================================================
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		loadTemplates();
 	});
 </script>
@@ -355,7 +354,7 @@
 	<title>Email Templates - FluentCRM Pro</title>
 </svelte:head>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="admin-crm-templates" role="main" aria-label="Email Templates">
 	<!-- Animated Background -->

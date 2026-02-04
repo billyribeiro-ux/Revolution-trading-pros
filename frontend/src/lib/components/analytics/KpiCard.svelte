@@ -8,6 +8,7 @@
 	 *
 	 * @version 2.0.0 - Added animated numbers
 	 */
+	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import type { KpiValue } from '$lib/api/analytics';
@@ -35,7 +36,7 @@
 	let cardRef: HTMLDivElement;
 	let isVisible = $state(false);
 
-	$effect(() => {
+	onMount(() => {
 		if (!browser || !cardRef || !animateOnMount) {
 			isVisible = true;
 			return;

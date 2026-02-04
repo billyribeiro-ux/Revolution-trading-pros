@@ -5,7 +5,7 @@
 	 * Platform-specific downloads with secure URLs
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	interface Indicator {
 		id: string;
@@ -48,8 +48,7 @@
 	let error = $state('');
 	let slug = $state('');
 
-	$effect(() => {
-		if (!browser) return;
+	onMount(() => {
 		const pathParts = window.location.pathname.split('/');
 		slug = pathParts[pathParts.length - 1];
 		fetchIndicator();

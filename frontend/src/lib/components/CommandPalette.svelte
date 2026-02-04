@@ -13,6 +13,7 @@
 	 * @version 1.0.0
 	 */
 
+	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -326,18 +327,17 @@
 		}
 	});
 
-	// Initialize recent searches and global keyboard shortcut
-	$effect(() => {
+	onMount(() => {
 		loadRecentSearches();
 		if (browser) {
 			window.addEventListener('keydown', handleGlobalKeydown);
 		}
+	});
 
-		return () => {
-			if (browser) {
-				window.removeEventListener('keydown', handleGlobalKeydown);
-			}
-		};
+	onDestroy(() => {
+		if (browser) {
+			window.removeEventListener('keydown', handleGlobalKeydown);
+		}
 	});
 </script>
 

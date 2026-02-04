@@ -9,6 +9,7 @@
 	 * - Editing existing templates
 	 * - Setting active template
 	 */
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		BANNER_TEMPLATES,
@@ -64,7 +65,7 @@
 	// Active template ID
 	let activeTemplateId = $derived(getActiveTemplateConfig().templateId);
 
-	$effect(() => {
+	onMount(() => {
 		if (browser) {
 			initializeTemplateStore();
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { popupsApi } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
@@ -35,18 +36,18 @@
 	let rippleX = $state(0);
 	let rippleY = $state(0);
 
-	$effect(() => {
+	onMount(async () => {
 		if (!browser) return;
 
-		loadActivePopups();
+		await loadActivePopups();
 		setupTracking();
+	});
 
-		return () => {
-			if (timeInterval) clearInterval(timeInterval);
-			if (showTimeout) clearTimeout(showTimeout);
-			removeEventListeners();
-			restoreFocus();
-		};
+	onDestroy(() => {
+		if (timeInterval) clearInterval(timeInterval);
+		if (showTimeout) clearTimeout(showTimeout);
+		removeEventListeners();
+		restoreFocus();
 	});
 
 	async function loadActivePopups() {
