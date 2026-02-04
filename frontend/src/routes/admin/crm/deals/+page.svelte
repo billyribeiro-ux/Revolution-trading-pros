@@ -53,6 +53,7 @@
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage, DealFilters, DealForecast } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)
@@ -91,6 +92,10 @@
 	// Drag and drop state
 	let draggingDeal = $state<Deal | null>(null);
 	let dragOverStage = $state<string | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteDeal = $state<Deal | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE (Svelte 5 $derived)
@@ -227,9 +232,16 @@
 		}
 	}
 
-	async function deleteDeal(deal: Deal) {
-		if (!confirm(`Are you sure you want to delete "${deal.name}"? This action cannot be undone.`))
-			return;
+	function deleteDeal(deal: Deal) {
+		pendingDeleteDeal = deal;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteDeal() {
+		if (!pendingDeleteDeal) return;
+		showDeleteModal = false;
+		const deal = pendingDeleteDeal;
+		pendingDeleteDeal = null;
 
 		try {
 			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
@@ -1823,3 +1835,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Deal"
+	message={pendingDeleteDeal ? `Are you sure you want to delete "${pendingDeleteDeal.name}"? This action cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDeal}
+	onCancel={() => { showDeleteModal = false; pendingDeleteDeal = null; }}
+/>
