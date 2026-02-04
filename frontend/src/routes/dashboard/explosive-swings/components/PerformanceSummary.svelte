@@ -624,7 +624,7 @@
 
 		.positions-grid {
 			grid-template-columns: repeat(3, 1fr);
-			gap: var(--space-3);
+			gap: 12px;
 		}
 
 		.summary-title {
