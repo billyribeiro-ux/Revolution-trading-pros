@@ -255,9 +255,7 @@
 	let isRTL = $state(false);
 
 	// Element references (used in bind:this directives below)
-	// @ts-expect-error - TS doesn't recognize bind:this as a read
 	let navbarRef = $state<HTMLElement | null>(null);
-	// @ts-expect-error - TS doesn't recognize bind:this as a read
 	let hamburgerRef = $state<HTMLButtonElement | null>(null);
 	let mobileCloseRef = $state<HTMLButtonElement | null>(null);
 	let mobilePanelRef = $state<HTMLElement | null>(null);

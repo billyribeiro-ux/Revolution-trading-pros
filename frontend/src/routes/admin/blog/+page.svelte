@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { WS_URL } from '$lib/api/config';
 	import {
 		IconPlus,
 		IconSearch,
@@ -635,7 +634,7 @@
 
 	$effect(() => {
 		// Track filter values to detect changes (this creates proper dependencies)
-		const currentFilters = {
+		const _currentFilters = {
 			search: searchQuery,
 			status: statusFilter,
 			category: categoryFilter,

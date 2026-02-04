@@ -222,7 +222,7 @@
 		showDetailDrawer = true;
 	};
 
-	const openCreateCourseModal = () => {
+	const _openCreateCourseModal = () => {
 		selectedCourse = null;
 		formModalMode = 'create';
 		showFormModal = true;

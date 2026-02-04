@@ -56,9 +56,9 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
-import { API_BASE_URL, WS_URL, API_ENDPOINTS } from './config';
+import { API_BASE_URL, API_ENDPOINTS } from './config';
 
-const isDev = import.meta.env.DEV;
+const _isDev = import.meta.env.DEV;
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000; // Initial delay, exponential backoff

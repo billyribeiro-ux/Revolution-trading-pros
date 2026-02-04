@@ -13,7 +13,7 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -917,7 +917,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each filteredEntries as entry, index (entry.id)}
+								{#each filteredEntries as entry, _index (entry.id)}
 									<tr
 										draggable="true"
 										ondragstart={(e) => handleDragStart(e, entry.id)}

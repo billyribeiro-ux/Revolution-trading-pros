@@ -5,7 +5,6 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -93,7 +92,7 @@
 	let pendingDeleteModuleId = $state<number | null>(null);
 	let pendingDeleteDownloadId = $state<number | null>(null);
 	let pendingDeleteLesson = $state<{ id: string; moduleId?: number } | null>(null);
-	let errorMessage = $state('');
+	let _errorMessage = $state('');
 
 	const fetchCourse = async () => {
 		loading = true;

@@ -11,7 +11,6 @@
 		IconStar,
 		IconStarFilled,
 		IconArchive,
-		IconDots,
 		IconSearch,
 		IconClock,
 		IconChecks,
@@ -27,15 +26,14 @@
 		IconRefresh,
 		IconTrash,
 		IconCopy,
-		IconEdit,
 		IconEye
 	} from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);
 	let folders = $state<Folder[]>([]);
-	let recentActivity = $state<Activity[]>([]);
-	let myTasks = $state<Task[]>([]);
+	let _recentActivity = $state<Activity[]>([]);
+	let _myTasks = $state<Task[]>([]);
 	let overdueTasks = $state<Task[]>([]);
 	let tasksDueToday = $state<Task[]>([]);
 	let loading = $state(true);
@@ -222,7 +220,7 @@
 		});
 	}
 
-	function getActivityIcon(type: string): string {
+	function _getActivityIcon(type: string): string {
 		const icons: Record<string, string> = {
 			task_created: 'plus',
 			task_completed: 'check',

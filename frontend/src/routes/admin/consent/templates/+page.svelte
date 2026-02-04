@@ -16,7 +16,6 @@
 		DEFAULT_TEMPLATE_ID
 	} from '$lib/consent/templates/registry';
 	import {
-		activeTemplate,
 		allTemplates,
 		initializeTemplateStore,
 		setActiveTemplate,
@@ -125,7 +124,7 @@
 		// Svelte 5: Callback props receive the value directly (no CustomEvent wrapper)
 
 		if (isCreatingNew) {
-			const newId = saveAsCustomTemplate(template.name);
+			const _newId = saveAsCustomTemplate(template.name);
 			showNotification(`"${template.name}" created successfully`);
 		} else {
 			// Update existing custom template or save customization

@@ -18,7 +18,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '$lib/api/admin';
 	import {
 		IconTicket,
@@ -118,7 +118,7 @@
 					: 'Custom Discount'
 	);
 
-	let hasErrors = $derived(errors.some((e) => e.severity === 'error'));
+	let _hasErrors = $derived(errors.some((e) => e.severity === 'error'));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle - Svelte 5 $effect

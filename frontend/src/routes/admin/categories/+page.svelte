@@ -17,7 +17,6 @@
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
 	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';

@@ -136,7 +136,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadSegments();
 			} else {
 				loading = false;
@@ -180,7 +180,7 @@
 					<p class="text-sm text-slate-400">Create and manage audience segments</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected}
+			{#if getIsAnalyticsConnected()}
 				<div class="flex items-center gap-3">
 					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">
 						<button

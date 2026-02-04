@@ -11,21 +11,17 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';

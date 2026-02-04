@@ -482,7 +482,7 @@ class WebSocketService {
 
 // Create singleton instance - use wss:// in production to avoid Mixed Content errors
 // NOTE: Cloudflare Pages does NOT support WebSockets - only connect if WS URL is explicitly configured
-const wsProtocol = browser && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const _wsProtocol = browser && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const configuredWsUrl = browser ? import.meta.env['VITE_WS_URL'] : '';
 // Only use WebSocket if explicitly configured via environment variable
 const wsUrl = configuredWsUrl || '';

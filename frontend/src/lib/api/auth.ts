@@ -43,7 +43,7 @@ import { browser } from '$app/environment';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
-import { API_BASE_URL, API_ENDPOINTS } from './config';
+import { API_ENDPOINTS } from './config';
 const API_TIMEOUT = 30000; // 30 seconds
 
 // ICT 11+ CORB Fix: Auth endpoints that should use local proxy in browser context
