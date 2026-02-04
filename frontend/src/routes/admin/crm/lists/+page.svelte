@@ -17,10 +17,8 @@
 		IconSearch,
 		IconEdit,
 		IconTrash,
-		IconEye,
 		IconRefresh,
 		IconUsers,
-		IconMail,
 		IconWorld,
 		IconLock
 	} from '$lib/icons';

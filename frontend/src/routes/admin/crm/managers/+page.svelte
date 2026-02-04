@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -23,7 +23,6 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { ManagerRole, ManagerUser } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { browser } from '$app/environment';
 
 	let roles = $state<ManagerRole[]>([]);
 	let managers = $state<ManagerUser[]>([]);
