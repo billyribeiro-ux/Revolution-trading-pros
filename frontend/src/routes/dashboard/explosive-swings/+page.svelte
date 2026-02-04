@@ -318,14 +318,38 @@
 </div>
 
 <!-- Modals -->
+{#if saveAlertError}
+	<div class="modal-error-toast" role="alert" aria-live="assertive">
+		<div class="error-content">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+				<circle cx="12" cy="12" r="10"></circle>
+				<line x1="12" y1="8" x2="12" y2="12"></line>
+				<line x1="12" y1="16" x2="12.01" y2="16"></line>
+			</svg>
+			<p>{saveAlertError}</p>
+		</div>
+		<button 
+			class="error-dismiss" 
+			onclick={() => saveAlertError = null}
+			aria-label="Dismiss error"
+		>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</button>
+	</div>
+{/if}
+
 <TradeAlertModal
-	bind:isOpen={alertModalOpen}
+	isOpen={alertModalOpen}
 	roomSlug={ps.ROOM_SLUG}
 	editAlert={ps.editingAlert as any}
 	entryAlerts={ps.alerts.filter((a) => a.type === 'ENTRY') as any}
 	onClose={() => {
 		alertModalOpen = false;
 		ps.closeAlertModal();
+		saveAlertError = null;
 	}}
 	onSave={handleSaveAlert}
 />
@@ -397,7 +421,7 @@
 
 <style>
 	.page {
-		background: var(--color-bg-page);
+		background: #EFEFEF;
 		min-height: 100vh;
 		min-height: 100dvh;
 	}
@@ -646,6 +670,95 @@
 		.main-grid {
 			gap: var(--space-4);
 			padding: var(--space-4);
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   ERROR TOAST - Modal-level error feedback (ICT 7 Standards)
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.modal-error-toast {
+		position: fixed;
+		top: var(--space-4);
+		right: var(--space-4);
+		left: var(--space-4);
+		max-width: 500px;
+		margin: 0 auto;
+		z-index: 10001; /* Above modals */
+		background: var(--color-loss-bg);
+		border: 2px solid var(--color-loss-border);
+		border-radius: var(--radius-lg);
+		padding: var(--space-3);
+		box-shadow: var(--shadow-xl);
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--space-2);
+		animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	@keyframes slideInDown {
+		from {
+			opacity: 0;
+			transform: translateY(-20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.error-content {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-2);
+		flex: 1;
+	}
+
+	.error-content svg {
+		flex-shrink: 0;
+		color: var(--color-loss);
+		margin-top: 2px;
+	}
+
+	.error-content p {
+		margin: 0;
+		color: var(--color-loss);
+		font-size: var(--text-sm);
+		font-weight: var(--font-medium);
+		line-height: 1.5;
+	}
+
+	.error-dismiss {
+		flex-shrink: 0;
+		width: 32px;
+		height: 32px;
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-md);
+		color: var(--color-loss);
+		cursor: pointer;
+		transition: var(--transition-all);
+	}
+
+	.error-dismiss:hover {
+		background: var(--color-loss);
+		color: white;
+	}
+
+	.error-dismiss:focus-visible {
+		outline: 2px solid var(--color-loss);
+		outline-offset: 2px;
+	}
+
+	/* Tablet+ - Position in top-right corner */
+	@media (min-width: 768px) {
+		.modal-error-toast {
+			left: auto;
+			margin: 0;
 		}
 	}
 </style>
