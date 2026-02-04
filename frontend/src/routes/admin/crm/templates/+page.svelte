@@ -15,25 +15,25 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
-	import IconSquareCheck from '@tabler/icons-svelte-runes/icons/square-check';
-	import IconFileExport from '@tabler/icons-svelte-runes/icons/file-export';
+	import { onMount } from 'svelte';
+	import IconTemplate from '@tabler/icons-svelte/icons/template';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconFolder from '@tabler/icons-svelte/icons/folder';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconSquare from '@tabler/icons-svelte/icons/square';
+	import IconSquareCheck from '@tabler/icons-svelte/icons/square-check';
+	import IconFileExport from '@tabler/icons-svelte/icons/file-export';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
 

@@ -49,7 +49,7 @@
 		readonly label: string;
 		readonly href?: string;
 		readonly submenu?: readonly NavSubMenuItem[];
-		readonly icon?: typeof import('@tabler/icons-svelte-runes').IconHome;
+		readonly icon?: typeof import('@tabler/icons-svelte').IconHome;
 		readonly badge?: string | number;
 	}
 
@@ -60,7 +60,7 @@
 		readonly href: string;
 		readonly label: string;
 		readonly description?: string;
-		readonly icon?: typeof import('@tabler/icons-svelte-runes').IconHome;
+		readonly icon?: typeof import('@tabler/icons-svelte').IconHome;
 	}
 
 	/**

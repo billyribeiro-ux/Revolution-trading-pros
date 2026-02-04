@@ -16,11 +16,7 @@
     "test": "npm run test --workspace=frontend"
   },
   "dependencies": {
-    "@eslint/js": "^9.39.2",
-    "@typescript-eslint/eslint-plugin": "^8.54.0",
-    "@typescript-eslint/parser": "^8.54.0",
-    "eslint-plugin-svelte": "^3.14.0",
-    "globals": "^17.3.0",
-    "typescript-eslint": "^8.54.0"
+    "@anthropic-ai/sdk": "^0.72.1",
+    "@tabler/icons-svelte": "^3.36.1"
   }
 }

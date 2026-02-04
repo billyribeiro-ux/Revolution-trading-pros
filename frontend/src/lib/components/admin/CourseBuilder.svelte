@@ -21,19 +21,19 @@
 		type CreateLessonRequest
 	} from '$lib/api/courses-enhanced';
 
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconFile from '@tabler/icons-svelte/icons/file';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 
 	interface Props {
 		courseId?: number;

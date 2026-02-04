@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconNews from '@tabler/icons-svelte-runes/icons/news';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconNews from '@tabler/icons-svelte/icons/news';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
 	import type { Post } from '$lib/types/post';
 
 	// ─────────────────────────────────────────────────────────────────────────

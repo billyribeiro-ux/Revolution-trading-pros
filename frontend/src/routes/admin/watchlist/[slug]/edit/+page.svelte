@@ -26,10 +26,10 @@
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconDeviceFloppy from '@tabler/icons-svelte/icons/device-floppy';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
 
 	// Get slug from URL using Svelte 5 $derived
 	const slug = $derived(page.params.slug ?? '');

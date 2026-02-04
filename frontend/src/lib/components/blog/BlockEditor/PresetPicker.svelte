@@ -18,22 +18,22 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-	import { browser } from '$app/environment';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconBookmark from '@tabler/icons-svelte-runes/icons/bookmark';
-	import IconBookmarkFilled from '@tabler/icons-svelte-runes/icons/bookmark-filled';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
-	import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconBookmark from '@tabler/icons-svelte/icons/bookmark';
+	import IconBookmarkFilled from '@tabler/icons-svelte/icons/bookmark-filled';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconStarFilled from '@tabler/icons-svelte/icons/star-filled';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconTag from '@tabler/icons-svelte/icons/tag';
+	import IconPalette from '@tabler/icons-svelte/icons/palette';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconBriefcase from '@tabler/icons-svelte/icons/briefcase';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconDeviceFloppy from '@tabler/icons-svelte/icons/device-floppy';
+	import IconTemplate from '@tabler/icons-svelte/icons/template';
 
 	import type { Block, BlockContent, BlockSettings, BlockType } from './types';
 

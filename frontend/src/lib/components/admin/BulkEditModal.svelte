@@ -5,11 +5,11 @@
 	 */
 
 	import { videoOpsApi } from '$lib/api/video-advanced';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconMinus from '@tabler/icons-svelte-runes/icons/minus';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconMinus from '@tabler/icons-svelte/icons/minus';
 
 	interface Props {
 		selectedIds: number[];

@@ -23,15 +23,15 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
-	import IconLoader from '@tabler/icons-svelte-runes/icons/loader-2';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconPhoto from '@tabler/icons-svelte/icons/photo';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconFile from '@tabler/icons-svelte/icons/file';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
+	import IconLoader from '@tabler/icons-svelte/icons/loader-2';
 	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
