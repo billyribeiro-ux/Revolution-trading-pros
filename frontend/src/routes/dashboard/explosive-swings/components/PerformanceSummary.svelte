@@ -529,7 +529,7 @@
 
 	/* Skeleton for Position Cards */
 	.position-skeleton {
-		height: 220px;
+		height: 120px;
 		background: linear-gradient(
 			90deg,
 			var(--color-bg-subtle) 25%,
