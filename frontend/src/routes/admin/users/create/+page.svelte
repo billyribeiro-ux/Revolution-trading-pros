@@ -51,8 +51,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { fade, fly, slide, scale } from 'svelte/transition';
-	import { usersApi, teamsApi, departmentsApi, AdminApiError } from '$lib/api/admin';
+		import { usersApi, type AdminApiError } from '$lib/api/admin';
 	import {
 		IconCheck,
 		IconX,
