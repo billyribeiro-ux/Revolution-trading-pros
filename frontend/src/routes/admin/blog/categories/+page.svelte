@@ -25,6 +25,7 @@
 		IconCopy
 	} from '$lib/icons';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State
 	let categories = $state<Category[]>([]);
@@ -70,6 +71,14 @@
 	let toastMessage = $state('');
 	let toastType = $state<'success' | 'error'>('success');
 	let showToast = $state(false);
+
+	// Delete confirmation modal state
+	let showDeleteCategoryModal = $state(false);
+	let showDeleteTagModal = $state(false);
+	let showBulkDeleteCategoriesModal = $state(false);
+	let showBulkDeleteTagsModal = $state(false);
+	let pendingDeleteCategory = $state<Category | null>(null);
+	let pendingDeleteTag = $state<Tag | null>(null);
 
 	$effect(() => {
 		if (browser) {
@@ -254,13 +263,18 @@
 		}
 	}
 
-	async function deleteCategory(id: number) {
+	function deleteCategory(id: number) {
 		const category = categories.find((c) => c.id === id);
 		if (!category) return;
+		pendingDeleteCategory = category;
+		showDeleteCategoryModal = true;
+	}
 
-		if (!confirm(`Delete "${category.name}"? ${category.post_count} posts will not be deleted.`))
-			return;
-
+	async function confirmDeleteCategory() {
+		if (!pendingDeleteCategory) return;
+		showDeleteCategoryModal = false;
+		const id = pendingDeleteCategory.id;
+		pendingDeleteCategory = null;
 		try {
 			await categoriesApi.delete(id);
 			showToastMessage('Category deleted successfully', 'success');
@@ -275,12 +289,18 @@
 		}
 	}
 
-	async function deleteTag(id: number) {
+	function deleteTag(id: number) {
 		const tag = tags.find((t) => t.id === id);
 		if (!tag) return;
+		pendingDeleteTag = tag;
+		showDeleteTagModal = true;
+	}
 
-		if (!confirm(`Delete "${tag.name}"? ${tag.post_count} posts will not be deleted.`)) return;
-
+	async function confirmDeleteTag() {
+		if (!pendingDeleteTag) return;
+		showDeleteTagModal = false;
+		const id = pendingDeleteTag.id;
+		pendingDeleteTag = null;
 		try {
 			await tagsApi.delete(id);
 			showToastMessage('Tag deleted successfully', 'success');
@@ -296,10 +316,13 @@
 	}
 
 	// Bulk operations
-	async function bulkDeleteCategories() {
+	function bulkDeleteCategories() {
 		if (selectedCategories.size === 0) return;
-		if (!confirm(`Delete ${selectedCategories.size} categories?`)) return;
+		showBulkDeleteCategoriesModal = true;
+	}
 
+	async function confirmBulkDeleteCategories() {
+		showBulkDeleteCategoriesModal = false;
 		try {
 			await categoriesApi.bulkDelete(Array.from(selectedCategories));
 			showToastMessage('Categories deleted successfully', 'success');
@@ -313,10 +336,13 @@
 		}
 	}
 
-	async function bulkDeleteTags() {
+	function bulkDeleteTags() {
 		if (selectedTags.size === 0) return;
-		if (!confirm(`Delete ${selectedTags.size} tags?`)) return;
+		showBulkDeleteTagsModal = true;
+	}
 
+	async function confirmBulkDeleteTags() {
+		showBulkDeleteTagsModal = false;
 		try {
 			await tagsApi.bulkDelete(Array.from(selectedTags));
 			showToastMessage('Tags deleted successfully', 'success');
@@ -1370,3 +1396,43 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteCategoryModal}
+	title="Delete Category"
+	message={pendingDeleteCategory ? `Delete "${pendingDeleteCategory.name}"? ${pendingDeleteCategory.post_count} posts will not be deleted.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCategory}
+	onCancel={() => { showDeleteCategoryModal = false; pendingDeleteCategory = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteTagModal}
+	title="Delete Tag"
+	message={pendingDeleteTag ? `Delete "${pendingDeleteTag.name}"? ${pendingDeleteTag.post_count} posts will not be deleted.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTag}
+	onCancel={() => { showDeleteTagModal = false; pendingDeleteTag = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteCategoriesModal}
+	title="Delete Categories"
+	message={`Delete ${selectedCategories.size} selected categories?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDeleteCategories}
+	onCancel={() => (showBulkDeleteCategoriesModal = false)}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteTagsModal}
+	title="Delete Tags"
+	message={`Delete ${selectedTags.size} selected tags?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDeleteTags}
+	onCancel={() => (showBulkDeleteTagsModal = false)}
+/>
