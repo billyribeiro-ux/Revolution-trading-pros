@@ -91,7 +91,6 @@ import IconBrandTwitter from '@tabler/icons-svelte-runes/icons/brand-twitter';
 import IconBrandVimeo from '@tabler/icons-svelte-runes/icons/brand-vimeo';
 import IconBrandX from '@tabler/icons-svelte-runes/icons/brand-x';
 import IconBrandYoutube from '@tabler/icons-svelte-runes/icons/brand-youtube';
-import IconBrandTradingview from '@tabler/icons-svelte-runes/icons/brand-tradingview';
 import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
 
 // Calendar/Clock Icons
@@ -570,7 +569,6 @@ export {
 	IconBrandReddit,
 	IconBrandTelegram,
 	IconBrandTiktok,
-	IconBrandTradingview,
 	IconBrandTrello,
 	IconBrandTwitter,
 	IconBrandVimeo,
