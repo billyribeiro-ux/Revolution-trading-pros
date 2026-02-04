@@ -7,6 +7,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Module {
 		id: number;
@@ -85,6 +86,15 @@
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let activeTab = $state<'details' | 'content' | 'downloads' | 'settings'>('details');
 
+	// Delete confirmation modal state
+	let showDeleteModuleModal = $state(false);
+	let showDeleteDownloadModal = $state(false);
+	let showDeleteLessonModal = $state(false);
+	let pendingDeleteModuleId = $state<number | null>(null);
+	let pendingDeleteDownloadId = $state<number | null>(null);
+	let pendingDeleteLesson = $state<{ id: string; moduleId?: number } | null>(null);
+	let errorMessage = $state('');
+
 	const fetchCourse = async () => {
 		loading = true;
 		try {
@@ -157,14 +167,22 @@
 		}
 	};
 
-	const deleteModule = async (moduleId: number) => {
-		if (!confirm('Delete this module? Lessons will be unassigned.')) return;
+	const deleteModule = (moduleId: number) => {
+		pendingDeleteModuleId = moduleId;
+		showDeleteModuleModal = true;
+	};
+
+	const confirmDeleteModule = async () => {
+		if (pendingDeleteModuleId === null) return;
+		showDeleteModuleModal = false;
+		const moduleId = pendingDeleteModuleId;
+		pendingDeleteModuleId = null;
 		try {
 			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
 			await adminFetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
 			modules = modules.filter((m) => m.id !== moduleId);
 		} catch {
-			alert('Failed to delete module');
+			errorMessage = 'Failed to delete module';
 		}
 	};
 
@@ -254,8 +272,16 @@
 	};
 
 	// Delete download handler
-	const deleteDownload = async (downloadId: number) => {
-		if (!confirm('Delete this download?')) return;
+	const deleteDownload = (downloadId: number) => {
+		pendingDeleteDownloadId = downloadId;
+		showDeleteDownloadModal = true;
+	};
+
+	const confirmDeleteDownload = async () => {
+		if (pendingDeleteDownloadId === null) return;
+		showDeleteDownloadModal = false;
+		const downloadId = pendingDeleteDownloadId;
+		pendingDeleteDownloadId = null;
 		try {
 			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
 			await adminFetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, {
@@ -263,7 +289,7 @@
 			});
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			alert('Failed to delete download');
+			errorMessage = 'Failed to delete download';
 		}
 	};
 
@@ -275,8 +301,16 @@
 		return `${(bytes / 1048576).toFixed(1)} MB`;
 	};
 
-	const deleteLesson = async (lessonId: string, moduleId?: number) => {
-		if (!confirm('Delete this lesson?')) return;
+	const deleteLesson = (lessonId: string, moduleId?: number) => {
+		pendingDeleteLesson = { id: lessonId, moduleId };
+		showDeleteLessonModal = true;
+	};
+
+	const confirmDeleteLesson = async () => {
+		if (!pendingDeleteLesson) return;
+		showDeleteLessonModal = false;
+		const { id: lessonId, moduleId } = pendingDeleteLesson;
+		pendingDeleteLesson = null;
 		try {
 			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
 			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
@@ -288,7 +322,7 @@
 				unassignedLessons = unassignedLessons.filter((l) => l.id !== lessonId);
 			}
 		} catch {
-			alert('Failed to delete lesson');
+			errorMessage = 'Failed to delete lesson';
 		}
 	};
 </script>
@@ -1136,3 +1170,33 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModuleModal}
+	title="Delete Module"
+	message="Delete this module? Lessons will be unassigned."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteModule}
+	onCancel={() => { showDeleteModuleModal = false; pendingDeleteModuleId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteDownloadModal}
+	title="Delete Download"
+	message="Delete this download?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDownload}
+	onCancel={() => { showDeleteDownloadModal = false; pendingDeleteDownloadId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteLessonModal}
+	title="Delete Lesson"
+	message="Delete this lesson?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLesson}
+	onCancel={() => { showDeleteLessonModal = false; pendingDeleteLesson = null; }}
+/>
