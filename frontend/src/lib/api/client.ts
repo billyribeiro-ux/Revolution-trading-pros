@@ -34,8 +34,7 @@ import {
 	AuthenticationError,
 	RateLimitError,
 	ServerError,
-	UnknownError,
-	type ApiErrorCode
+	UnknownError
 } from './errors';
 import { RequestCache, type CacheConfig } from './cache';
 
@@ -884,7 +883,6 @@ export class ApiClient implements Disposable {
 	): Promise<ApiError> {
 		const body = data as Record<string, unknown> | null;
 		const message = (body?.message as string) ?? (body?.error as string) ?? response.statusText;
-		const _code = this.mapStatusToCode(response.status);
 
 		const retryAfter = response.headers.get('Retry-After');
 		const parsedRetryAfter = retryAfter ? parseInt(retryAfter, 10) : undefined;
@@ -902,21 +900,6 @@ export class ApiClient implements Disposable {
 				}
 				return new UnknownError(message, response.status, context.requestId);
 		}
-	}
-
-	private mapStatusToCode(status: number): ApiErrorCode {
-		const statusMap: Record<number, ApiErrorCode> = {
-			400: 'VALIDATION_ERROR',
-			401: 'AUTH_ERROR',
-			403: 'FORBIDDEN_ERROR',
-			404: 'NOT_FOUND_ERROR',
-			429: 'RATE_LIMIT_ERROR',
-			500: 'SERVER_ERROR',
-			502: 'SERVER_ERROR',
-			503: 'SERVICE_UNAVAILABLE',
-			504: 'TIMEOUT_ERROR'
-		};
-		return statusMap[status] ?? 'UNKNOWN_ERROR';
 	}
 
 	private delay(ms: number): Promise<void> {
