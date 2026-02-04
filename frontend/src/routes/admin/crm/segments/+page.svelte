@@ -38,6 +38,7 @@
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -71,6 +72,10 @@
 	let error = $state('');
 	let searchQuery = $state('');
 	let filterActive = $state<boolean | 'all'>('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state({
 		total: 0,
@@ -114,8 +119,16 @@
 		}
 	}
 
-	async function deleteSegment(id: string) {
-		if (!confirm('Are you sure you want to delete this segment?')) return;
+	function deleteSegment(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteSegment() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await api.delete(`/api/admin/crm/segments/${id}`);
@@ -765,3 +778,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Segment"
+	message="Are you sure you want to delete this segment?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSegment}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
