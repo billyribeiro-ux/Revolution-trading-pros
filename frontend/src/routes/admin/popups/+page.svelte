@@ -11,11 +11,14 @@
 		IconSettings
 	} from '$lib/icons';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import type { Popup } from '$lib/stores/popups.svelte';
 
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);
 	let selectedTab = $state<'active' | 'inactive' | 'all'>('all');
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Svelte 5: Initialize on mount
 	$effect(() => {
@@ -56,9 +59,16 @@
 		}
 	}
 
-	async function handleDelete(popupId: string) {
-		if (!confirm('Are you sure you want to delete this popup?')) return;
+	function handleDelete(popupId: string) {
+		pendingDeleteId = popupId;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeletePopup() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const popupId = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			await deletePopup(popupId);
 			await loadPopups();
@@ -557,3 +567,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Popup"
+	message="Are you sure you want to delete this popup?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeletePopup}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
