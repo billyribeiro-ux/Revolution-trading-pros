@@ -16,6 +16,7 @@
 		type ImageMetadata,
 		type ProcessedImage
 	} from '$lib/seo';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let images = $state<ProcessedImage[]>([]);
@@ -23,6 +24,9 @@
 	let loading = $state(false);
 	let processing = $state(false);
 	let activeTab = $state<'images' | 'settings'>('images');
+
+	// Reset confirmation modal state
+	let showResetModal = $state(false);
 
 	// Stats
 	let stats = $derived({
@@ -125,10 +129,13 @@
 	}
 
 	function resetSettings() {
-		if (confirm('Reset all settings to defaults?')) {
-			settings = defaultImageSeoSettings;
-			imageSeoSettings.reset();
-		}
+		showResetModal = true;
+	}
+
+	function confirmResetSettings() {
+		showResetModal = false;
+		settings = defaultImageSeoSettings;
+		imageSeoSettings.reset();
 	}
 
 	function getScoreColor(score: number): string {
@@ -766,3 +773,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showResetModal}
+	title="Reset Settings"
+	message="Reset all settings to defaults?"
+	confirmText="Reset"
+	variant="warning"
+	onConfirm={confirmResetSettings}
+	onCancel={() => { showResetModal = false; }}
+/>
