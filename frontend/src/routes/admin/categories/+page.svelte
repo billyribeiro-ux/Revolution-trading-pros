@@ -34,6 +34,7 @@
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
 	import { categoriesApi, AdminApiError, type Category } from '$lib/api/admin';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
@@ -198,16 +199,30 @@
 		}
 	}
 
-	async function deleteCategory(id: number) {
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteCategory = $state<Category | null>(null);
+	let deleteWarningMessage = $state('');
+
+	function deleteCategory(id: number) {
 		const category = categories.find((c) => c.id === id);
 		if (!category) return;
 
 		const hasChildren = categories.some((c) => c.parent_id === id);
-		const warningMsg = hasChildren
+		deleteWarningMessage = hasChildren
 			? `Delete "${category.name}"? This will also affect ${categories.filter((c) => c.parent_id === id).length} child categories.`
 			: `Delete "${category.name}"? ${category.post_count} associated posts will not be deleted.`;
 
-		if (!confirm(warningMsg)) return;
+		pendingDeleteCategory = category;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteCategory() {
+		if (!pendingDeleteCategory) return;
+		const id = pendingDeleteCategory.id;
+		showDeleteModal = false;
+		pendingDeleteCategory = null;
 
 		try {
 			await categoriesApi.delete(id);
@@ -225,9 +240,13 @@
 		}
 	}
 
-	async function bulkDelete() {
+	function bulkDelete() {
 		if (selectedIds.size === 0) return;
-		if (!confirm(`Delete ${selectedIds.size} categories? This action cannot be undone.`)) return;
+		showBulkDeleteModal = true;
+	}
+
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 
 		try {
 			await categoriesApi.bulkDelete(Array.from(selectedIds));
@@ -1720,3 +1739,25 @@
 		}
 	}
 </style>
+
+<!-- Delete Single Category Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Category"
+	message={deleteWarningMessage}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCategory}
+	onCancel={() => { showDeleteModal = false; pendingDeleteCategory = null; }}
+/>
+
+<!-- Bulk Delete Modal -->
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Categories"
+	message={`Delete ${selectedIds.size} categories? This action cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>

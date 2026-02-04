@@ -30,6 +30,7 @@
 	import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
 	import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
 	import { mediaApi, type MediaItem, type OptimizationStatistics } from '$lib/api/media';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -40,6 +41,11 @@
 	let items = $state<MediaItem[]>([]);
 	let selectedIds = $state(new Set<string>());
 	let focusedId = $state<string | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteItem = $state<MediaItem | null>(null);
 	let statistics = $state<OptimizationStatistics | null>(null);
 
 	// Pagination
@@ -313,8 +319,16 @@
 		}
 	}
 
-	async function handleDelete(item: MediaItem) {
-		if (!confirm(`Delete "${item.filename}"?`)) return;
+	function handleDelete(item: MediaItem) {
+		pendingDeleteItem = item;
+		showDeleteModal = true;
+	}
+
+	async function confirmDelete() {
+		if (!pendingDeleteItem) return;
+		const item = pendingDeleteItem;
+		showDeleteModal = false;
+		pendingDeleteItem = null;
 
 		try {
 			await mediaApi.delete(item.id);
@@ -467,10 +481,15 @@
 		}
 	}
 
-	async function bulkDelete() {
+	function bulkDelete() {
 		const ids = Array.from(selectedIds);
 		if (ids.length === 0) return;
-		if (!confirm(`Delete ${ids.length} selected items?`)) return;
+		showBulkDeleteModal = true;
+	}
+
+	async function confirmBulkDelete() {
+		const ids = Array.from(selectedIds);
+		showBulkDeleteModal = false;
 
 		try {
 			await mediaApi.bulkDelete(ids);
@@ -2902,3 +2921,25 @@
 		}
 	}
 </style>
+
+<!-- Delete Single Item Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete File"
+	message={pendingDeleteItem ? `Delete "${pendingDeleteItem.filename}"? This cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => { showDeleteModal = false; pendingDeleteItem = null; }}
+/>
+
+<!-- Bulk Delete Modal -->
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Selected Files"
+	message={`Delete ${selectedIds.size} selected file(s)? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
