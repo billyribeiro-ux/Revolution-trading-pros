@@ -16,12 +16,20 @@
 		type UserSession
 	} from '$lib/stores/auth.svelte';
 	import authService from '$lib/api/auth';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let sessions = $state<UserSession[]>([]);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+	let successMessage = $state<string | null>(null);
 	let revoking = $state<string | null>(null);
 	let revokingAll = $state(false);
+
+	// Confirmation modal state
+	let showRevokeCurrentModal = $state(false);
+	let showLogoutAllModal = $state(false);
+	let showLogoutOtherModal = $state(false);
+	let pendingSessionId = $state<string | null>(null);
 
 	$effect(() => {
 		if (!browser) return;
@@ -53,10 +61,17 @@
 
 		const session = sessions.find((s) => s.session_id === sessionId);
 		if (session?.is_current) {
-			// Revoking current session means logging out
-			if (!confirm('This will log you out. Are you sure?')) return;
+			// Revoking current session means logging out - show modal
+			pendingSessionId = sessionId;
+			showRevokeCurrentModal = true;
+			return;
 		}
 
+		await executeRevokeSession(sessionId);
+	}
+
+	async function executeRevokeSession(sessionId: string) {
+		const session = sessions.find((s) => s.session_id === sessionId);
 		revoking = sessionId;
 		try {
 			await authService.revokeSession(sessionId);
@@ -76,9 +91,11 @@
 
 	async function handleLogoutAllDevices() {
 		if (revokingAll) return;
+		showLogoutAllModal = true;
+	}
 
-		if (!confirm('This will log you out from all devices. Are you sure?')) return;
-
+	async function executeLogoutAllDevices() {
+		showLogoutAllModal = false;
 		revokingAll = true;
 		try {
 			await authService.logoutAllDevices(false);
@@ -92,14 +109,17 @@
 
 	async function handleLogoutOtherDevices() {
 		if (revokingAll) return;
+		showLogoutOtherModal = true;
+	}
 
-		if (!confirm('This will log you out from all other devices. Continue?')) return;
-
+	async function executeLogoutOtherDevices() {
+		showLogoutOtherModal = false;
 		revokingAll = true;
 		try {
 			const response = await authService.logoutAllDevices(true);
 			await loadSessions();
-			alert(`Logged out from ${response.revoked_count} device(s)`);
+			successMessage = `Successfully logged out from ${response.revoked_count} other device(s)`;
+			setTimeout(() => (successMessage = null), 5000);
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to logout from other devices';
 		} finally {
@@ -437,3 +457,43 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Confirmation Modals -->
+<ConfirmationModal
+	isOpen={showRevokeCurrentModal}
+	title="End Current Session"
+	message="This will log you out of the current session. Are you sure?"
+	confirmText="Log Out"
+	variant="warning"
+	onConfirm={async () => {
+		showRevokeCurrentModal = false;
+		if (pendingSessionId) {
+			await executeRevokeSession(pendingSessionId);
+			pendingSessionId = null;
+		}
+	}}
+	onCancel={() => {
+		showRevokeCurrentModal = false;
+		pendingSessionId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showLogoutAllModal}
+	title="Log Out All Devices"
+	message="This will log you out from all devices, including this one. Are you sure?"
+	confirmText="Log Out All"
+	variant="danger"
+	onConfirm={executeLogoutAllDevices}
+	onCancel={() => (showLogoutAllModal = false)}
+/>
+
+<ConfirmationModal
+	isOpen={showLogoutOtherModal}
+	title="Log Out Other Devices"
+	message="This will log you out from all other devices except this one. Continue?"
+	confirmText="Log Out Others"
+	variant="warning"
+	onConfirm={executeLogoutOtherDevices}
+	onCancel={() => (showLogoutOtherModal = false)}
+/>

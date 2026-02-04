@@ -11,6 +11,7 @@
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
@@ -25,6 +26,7 @@
 	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
+	let showClearCartModal = $state(false);
 	// CSRF token for form security (replaces WordPress nonce)
 	let csrfToken = $state(crypto.randomUUID());
 
@@ -121,9 +123,12 @@
 	}
 
 	function clearCart() {
-		if (confirm('Clear All Items?')) {
-			cartStore.clearCart();
-		}
+		showClearCartModal = true;
+	}
+
+	function confirmClearCart() {
+		cartStore.clearCart();
+		showClearCartModal = false;
 	}
 </script>
 
@@ -366,6 +371,17 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Clear Cart Confirmation Modal -->
+<ConfirmationModal
+	isOpen={showClearCartModal}
+	title="Clear Cart"
+	message="Are you sure you want to remove all items from your cart?"
+	confirmText="Clear All"
+	variant="warning"
+	onConfirm={confirmClearCart}
+	onCancel={() => (showClearCartModal = false)}
+/>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES - Revolution Trading Custom Cart System (EXACT MATCH)
