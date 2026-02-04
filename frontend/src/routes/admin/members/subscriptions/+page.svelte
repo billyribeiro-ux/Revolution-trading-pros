@@ -50,6 +50,10 @@
 	let showPauseModal = $state(false);
 	let pendingPauseSub = $state<EnhancedSubscription | null>(null);
 
+	// Cancel confirmation modal state
+	let showCancelModal = $state(false);
+	let pendingCancelSub = $state<EnhancedSubscription | null>(null);
+
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -164,13 +168,17 @@
 		}
 	}
 
-	async function handleCancel(sub: EnhancedSubscription) {
-		if (
-			!confirm(
-				`Cancel subscription for ${sub.customer?.name || sub.customer?.email}? This cannot be undone.`
-			)
-		)
-			return;
+	function handleCancel(sub: EnhancedSubscription) {
+		pendingCancelSub = sub;
+		showCancelModal = true;
+	}
+
+	async function confirmCancel() {
+		if (!pendingCancelSub) return;
+		showCancelModal = false;
+		const sub = pendingCancelSub;
+		pendingCancelSub = null;
+
 		try {
 			await cancelSubscription(sub.id, 'Admin cancelled', true);
 			toastStore.success('Subscription cancelled successfully');
@@ -1039,4 +1047,14 @@
 	variant="warning"
 	onConfirm={confirmPause}
 	onCancel={() => { showPauseModal = false; pendingPauseSub = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showCancelModal}
+	title="Cancel Subscription"
+	message={pendingCancelSub ? `Cancel subscription for ${pendingCancelSub.customer?.name || pendingCancelSub.customer?.email}? This cannot be undone.` : ''}
+	confirmText="Cancel Subscription"
+	variant="danger"
+	onConfirm={confirmCancel}
+	onCancel={() => { showCancelModal = false; pendingCancelSub = null; }}
 />
