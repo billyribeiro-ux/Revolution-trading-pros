@@ -18,6 +18,7 @@
 	import { goto } from '$app/navigation';
 	import { ROOMS, type Room } from '$lib/config/rooms';
 	import { AdminApiError } from '$lib/api/admin';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -103,6 +104,11 @@
 	// Bulk selection
 	let selectedIds = $state<Set<number>>(new Set());
 	let showBulkActions = $state(false);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
+	let pendingDeleteId = $state<number | null>(null);
 
 	// Filter state
 	let filterActive = $state<'all' | 'active' | 'inactive'>('all');
@@ -416,9 +422,16 @@
 		}
 	}
 
-	async function deleteSchedule(id: number) {
-		if (!confirm('Are you sure you want to delete this schedule?')) return;
+	function deleteSchedule(id: number) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
 
+	async function confirmDeleteSchedule() {
+		if (pendingDeleteId === null) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 		try {
 			const response = await fetch(`/api/admin/schedules/${id}`, {
 				method: 'DELETE',
@@ -478,9 +491,12 @@
 		}
 	}
 
-	async function bulkDelete() {
-		if (!confirm(`Delete ${selectedIds.size} selected schedules?`)) return;
+	function bulkDelete() {
+		showBulkDeleteModal = true;
+	}
 
+	async function confirmBulkDelete() {
+		showBulkDeleteModal = false;
 		try {
 			const response = await fetch('/api/admin/schedules/bulk-delete', {
 				method: 'POST',
@@ -1854,3 +1870,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Schedule"
+	message="Are you sure you want to delete this schedule?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSchedule}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Schedules"
+	message={`Delete ${selectedIds.size} selected schedules?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
