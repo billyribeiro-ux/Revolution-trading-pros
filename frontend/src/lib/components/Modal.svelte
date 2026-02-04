@@ -3,7 +3,6 @@
 	 * Modal Component - Accessible & Animated
 	 * Displays content in an overlay with backdrop
 	 */
-	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { IconX } from '$lib/icons';
 
@@ -16,7 +15,7 @@
 
 	let { isOpen = false, title = '', onClose = () => {}, children }: Props = $props();
 
-	let modalRef: HTMLDivElement | null = $state(null);
+	let _modalRef: HTMLDivElement | null = $state(null);
 
 	// Close on Escape key
 	function handleKeydown(event: KeyboardEvent) {
@@ -37,9 +36,7 @@
 		if (typeof document !== 'undefined') {
 			document.body.style.overflow = isOpen ? 'hidden' : '';
 		}
-	});
-
-	onMount(() => {
+		// Cleanup on unmount
 		return () => {
 			if (typeof document !== 'undefined') {
 				document.body.style.overflow = '';
