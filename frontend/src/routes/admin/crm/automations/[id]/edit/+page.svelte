@@ -35,6 +35,7 @@
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -49,6 +50,10 @@
 	let isSaving = $state(false);
 	let error = $state('');
 	let successMessage = $state('');
+
+	// Delete confirmation modal state
+	let showDeleteActionModal = $state(false);
+	let pendingDeleteActionId = $state<string | null>(null);
 
 	// Modal State
 	let showAddActionModal = $state(false);
@@ -218,8 +223,16 @@
 		}
 	}
 
-	async function deleteAction(actionId: string) {
-		if (!confirm('Are you sure you want to delete this action?')) return;
+	function deleteAction(actionId: string) {
+		pendingDeleteActionId = actionId;
+		showDeleteActionModal = true;
+	}
+
+	async function confirmDeleteAction() {
+		if (!pendingDeleteActionId) return;
+		showDeleteActionModal = false;
+		const actionId = pendingDeleteActionId;
+		pendingDeleteActionId = null;
 
 		try {
 			await crmAPI.deleteFunnelAction(funnelId, actionId);
@@ -1417,3 +1430,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteActionModal}
+	title="Delete Action"
+	message="Are you sure you want to delete this action?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAction}
+	onCancel={() => { showDeleteActionModal = false; pendingDeleteActionId = null; }}
+/>
