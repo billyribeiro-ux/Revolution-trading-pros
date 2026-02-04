@@ -48,6 +48,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
@@ -167,6 +168,9 @@
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 	let activeTab = $state<'overview' | 'emails' | 'notes' | 'activity'>('overview');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
 
 	// Modal states
 	let showAddTagModal = $state(false);
@@ -306,9 +310,12 @@
 		}
 	}
 
-	async function deleteContact() {
-		if (!confirm('Are you sure you want to delete this contact? This action cannot be undone.'))
-			return;
+	function deleteContact() {
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteContact() {
+		showDeleteModal = false;
 		try {
 			await api.delete(`/api/admin/crm/contacts/${contactId}`);
 			goto('/admin/crm');
@@ -2502,3 +2509,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Contact"
+	message="Are you sure you want to delete this contact? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteContact}
+	onCancel={() => { showDeleteModal = false; }}
+/>
