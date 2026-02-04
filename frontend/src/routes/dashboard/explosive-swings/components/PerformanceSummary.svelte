@@ -211,7 +211,7 @@
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
 		border-radius: var(--radius-lg);
-		padding: var(--card-padding-sm);
+		padding: 20px;
 		margin: var(--space-2);
 		box-shadow: var(--shadow-sm);
 	}
@@ -222,30 +222,32 @@
 		align-items: flex-start;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--space-3);
-		margin-bottom: var(--space-4);
-		padding-bottom: var(--space-3);
+		gap: 16px;
+		margin-bottom: 20px;
+		padding-bottom: 16px;
 		border-bottom: 1px solid var(--color-border-default);
 	}
 
 	.header-left {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 4px;
 	}
 
 	.summary-title {
-		font-size: var(--text-base);
+		font-size: 1.5rem;
 		font-weight: var(--font-bold);
 		color: var(--color-text-primary);
 		margin: 0;
 		letter-spacing: var(--tracking-tight);
 		font-family: var(--font-display);
+		line-height: 1.2;
 	}
 
 	.summary-subtitle {
-		font-size: var(--text-sm);
+		font-size: 0.875rem;
 		color: var(--color-text-tertiary);
+		line-height: 1.4;
 	}
 
 	/* Win Rate Badge - Compact */
@@ -253,21 +255,21 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
-		gap: 2px;
+		gap: 6px;
 	}
 
 	.win-rate-badge {
 		display: flex;
 		align-items: baseline;
-		gap: 6px;
+		gap: 8px;
 		background: var(--color-profit-bg);
 		border: 1px solid var(--color-profit-border);
-		padding: 6px 12px;
+		padding: 10px 16px;
 		border-radius: var(--radius-md);
 	}
 
 	.win-rate-value {
-		font-size: 20px;
+		font-size: 28px;
 		font-weight: var(--font-extrabold);
 		color: var(--color-profit);
 		font-variant-numeric: tabular-nums;
@@ -275,7 +277,7 @@
 	}
 
 	.win-rate-label {
-		font-size: 10px;
+		font-size: 11px;
 		font-weight: var(--font-semibold);
 		color: var(--color-profit-light);
 		text-transform: uppercase;
@@ -283,13 +285,14 @@
 	}
 
 	.win-rate-detail {
-		font-size: 11px;
+		font-size: 12px;
 		color: var(--color-text-tertiary);
+		font-weight: var(--font-medium);
 	}
 
 	/* COMPACT SECTIONS */
 	.closed-section {
-		margin-bottom: var(--space-5);
+		margin-bottom: 24px;
 	}
 
 	.section-header {
@@ -297,16 +300,16 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--space-3);
-		margin-bottom: var(--space-3);
+		gap: 16px;
+		margin-bottom: 14px;
 	}
 
 	.section-label {
-		font-size: 10px;
+		font-size: 11px;
 		font-weight: var(--font-bold);
 		color: var(--color-text-secondary);
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.08em;
 		margin: 0;
 	}
 
@@ -319,24 +322,24 @@
 	.avg-metrics {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 12px;
 		flex-wrap: wrap;
 	}
 
 	.metric {
 		display: flex;
 		align-items: center;
-		gap: 4px;
+		gap: 6px;
 	}
 
 	.metric-label {
-		font-size: 11px;
+		font-size: 12px;
 		color: var(--color-text-tertiary);
 		font-weight: var(--font-medium);
 	}
 
 	.metric-value {
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: var(--font-semibold);
 		font-variant-numeric: tabular-nums;
 	}
@@ -355,7 +358,8 @@
 
 	.metric-divider {
 		color: var(--color-border-default);
-		font-size: 11px;
+		font-size: 12px;
+		opacity: 0.5;
 	}
 
 	/* Ticker Pills Container - with scroll shadow affordance */
@@ -590,11 +594,21 @@
 	@media (min-width: 768px) {
 		.performance-summary {
 			margin: var(--space-3);
-			padding: var(--card-padding-md);
+			padding: 24px;
 		}
 
 		.summary-title {
-			font-size: var(--text-lg);
+			font-size: 1.625rem;
+		}
+
+		.win-rate-value {
+			font-size: 32px;
+		}
+
+		.summary-header {
+			gap: 20px;
+			margin-bottom: 24px;
+			padding-bottom: 20px;
 		}
 	}
 
@@ -602,7 +616,7 @@
 	@media (min-width: 1024px) {
 		.performance-summary {
 			margin: var(--space-3);
-			padding: var(--card-padding-lg);
+			padding: 28px;
 		}
 
 		.positions-grid {
@@ -611,7 +625,15 @@
 		}
 
 		.summary-title {
-			font-size: var(--text-xl);
+			font-size: 1.75rem;
+		}
+
+		.win-rate-value {
+			font-size: 36px;
+		}
+
+		.win-rate-badge {
+			padding: 12px 20px;
 		}
 	}
 
@@ -619,6 +641,11 @@
 	@media (min-width: 1440px) {
 		.performance-summary {
 			margin: var(--space-4);
+			padding: 32px;
+		}
+
+		.summary-title {
+			font-size: 2rem;
 		}
 	}
 </style>
