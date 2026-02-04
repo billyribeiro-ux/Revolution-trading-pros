@@ -15,7 +15,7 @@
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
 	import type { PageData } from './$types';
-	import { getRoomById, type Room } from '$lib/config/rooms';
+	import { getRoomById } from '$lib/config/rooms';
 	import {
 		tradePlanApi,
 		alertsApi,
@@ -49,8 +49,7 @@
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
 	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+		import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -203,11 +202,11 @@
 	let videoResources = $state<RoomResource[]>(data.initialData?.videoResources ?? []);
 	let isLoadingVideos = $state(false);
 	let videoFilter = $state<string>('all');
-	let showVideoResourceModal = $state(false);
-	let editingVideoResource = $state<RoomResource | null>(null);
-	let isSavingVideoResource = $state(false);
+	let _showVideoResourceModal = $state(false);
+	let _editingVideoResource = $state<RoomResource | null>(null);
+	let _isSavingVideoResource = $state(false);
 
-	let videoResourceForm = $state({
+	let _videoResourceForm = $state({
 		title: '',
 		description: '',
 		video_url: '',
@@ -239,12 +238,12 @@
 	const alertsCount = $derived(alerts.length);
 
 	/** Whether any data is currently loading */
-	const isLoadingAny = $derived(
+	const _isLoadingAny = $derived(
 		isLoadingTradePlan || isLoadingAlerts || isLoadingVideo || isLoadingStats
 	);
 
 	/** Whether a save operation is in progress */
-	const isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
+	const _isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
 
 	/** Trade plan form validation */
 	const isTradePlanFormValid = $derived(
@@ -1480,6 +1479,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="trade-plan-modal-title"
+			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="trade-plan-modal-title">{editingTradePlan ? 'Edit' : 'Add'} Trade Plan Entry</h2>
@@ -1626,6 +1626,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="alert-modal-title"
+			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="alert-modal-title">{editingAlert ? 'Edit' : 'Create'} Alert</h2>
@@ -1856,6 +1857,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="video-modal-title"
+			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="video-modal-title">Publish Weekly Video</h2>
@@ -1967,6 +1969,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="close-trade-modal-title"
+			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="close-trade-modal-title">Close Trade: {closingTrade.ticker}</h2>
