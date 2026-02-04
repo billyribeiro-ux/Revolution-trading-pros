@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface PaymentMethod {
 		id: string;
@@ -29,21 +30,33 @@
 	const paymentMethods = $derived(data.paymentMethods || []);
 	let isSubmitting = $state(false);
 
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showLinkedWarningModal = $state(false);
+	let pendingDeleteMethod = $state<PaymentMethod | null>(null);
+	let deleteFormElement = $state<HTMLFormElement | null>(null);
+
 	function confirmDelete(event: Event, method: PaymentMethod): boolean {
+		event.preventDefault();
+		
 		if (method.subscriptions && method.subscriptions.length > 0) {
-			event.preventDefault();
-			alert(
-				'That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again.'
-			);
+			showLinkedWarningModal = true;
 			return false;
 		}
 
-		const confirmed = confirm('Are you sure you want to delete this payment method?');
-		if (!confirmed) {
-			event.preventDefault();
-			return false;
+		pendingDeleteMethod = method;
+		deleteFormElement = (event.target as HTMLButtonElement).closest('form');
+		showDeleteModal = true;
+		return false;
+	}
+
+	function handleConfirmDelete() {
+		showDeleteModal = false;
+		if (deleteFormElement) {
+			deleteFormElement.submit();
 		}
-		return true;
+		pendingDeleteMethod = null;
+		deleteFormElement = null;
 	}
 
 	function formatExpiry(method: PaymentMethod): string {
@@ -482,3 +495,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Payment Method"
+	message="Are you sure you want to delete this payment method?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={handleConfirmDelete}
+	onCancel={() => { showDeleteModal = false; pendingDeleteMethod = null; deleteFormElement = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showLinkedWarningModal}
+	title="Cannot Delete Payment Method"
+	message="That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again."
+	confirmText="OK"
+	variant="warning"
+	onConfirm={() => { showLinkedWarningModal = false; }}
+	onCancel={() => { showLinkedWarningModal = false; }}
+/>

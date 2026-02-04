@@ -27,12 +27,17 @@
 		IconTrash,
 		IconSparkles
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let showUploadModal = $state(false);
 	// TODO: Implement CreateFolderModal component
 	// let showCreateFolderModal = false;
 	let searchQuery = $state('');
 	let selectedFileType = $state('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showDeleteErrorModal = $state(false);
 
 	// Local derived from getters
 	const viewMode = $derived(getCurrentViewMode());
@@ -74,13 +79,17 @@
 		}
 	}
 
-	async function handleBulkDelete() {
-		if (!confirm(`Delete ${selectedCount} file(s)?`)) return;
+	function handleBulkDelete() {
+		showDeleteModal = true;
+	}
+
+	async function confirmBulkDelete() {
+		showDeleteModal = false;
 
 		try {
 			await mediaStore.bulkDelete(false);
 		} catch (error) {
-			alert('Failed to delete files. Some files may be in use.');
+			showDeleteErrorModal = true;
 		}
 	}
 </script>
@@ -550,3 +559,23 @@
 		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Files"
+	message={`Delete ${selectedCount} file(s)?`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => { showDeleteModal = false; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteErrorModal}
+	title="Delete Failed"
+	message="Failed to delete files. Some files may be in use."
+	confirmText="OK"
+	variant="warning"
+	onConfirm={() => { showDeleteErrorModal = false; }}
+	onCancel={() => { showDeleteErrorModal = false; }}
+/>
