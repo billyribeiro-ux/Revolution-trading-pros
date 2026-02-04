@@ -33,6 +33,7 @@
 	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Types
 	interface Datasource {
@@ -94,6 +95,12 @@
 	let showImportModal = $state(false);
 	let editingDatasource = $state<Datasource | null>(null);
 	let editingEntry = $state<DatasourceEntry | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteDatasourceModal = $state(false);
+	let showDeleteEntryModal = $state(false);
+	let pendingDeleteDatasource = $state<Datasource | null>(null);
+	let pendingDeleteEntry = $state<DatasourceEntry | null>(null);
 
 	// Form data
 	let datasourceForm = $state({
@@ -254,9 +261,15 @@
 			return;
 		}
 
-		if (!confirm(`Delete datasource "${ds.name}"? This will also delete all ${ds.entry_count} entries.`))
-			return;
+		pendingDeleteDatasource = ds;
+		showDeleteDatasourceModal = true;
+	}
 
+	async function confirmDeleteDatasource() {
+		if (!pendingDeleteDatasource) return;
+		showDeleteDatasourceModal = false;
+		const id = pendingDeleteDatasource.id;
+		pendingDeleteDatasource = null;
 		try {
 			const token = getAuthToken();
 			const response = await fetch(`${API_BASE_URL}/cms/datasources/${id}`, {
@@ -336,12 +349,19 @@
 		}
 	}
 
-	async function deleteEntry(entryId: string) {
+	function deleteEntry(entryId: string) {
 		if (!selectedDatasource) return;
-
 		const entry = entries.find((e) => e.id === entryId);
-		if (!confirm(`Delete entry "${entry?.name}"?`)) return;
+		if (!entry) return;
+		pendingDeleteEntry = entry;
+		showDeleteEntryModal = true;
+	}
 
+	async function confirmDeleteEntry() {
+		if (!pendingDeleteEntry || !selectedDatasource) return;
+		showDeleteEntryModal = false;
+		const entryId = pendingDeleteEntry.id;
+		pendingDeleteEntry = null;
 		try {
 			const token = getAuthToken();
 			const response = await fetch(
@@ -2025,3 +2045,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteDatasourceModal}
+	title="Delete Datasource"
+	message={pendingDeleteDatasource ? `Delete datasource "${pendingDeleteDatasource.name}"? This will also delete all ${pendingDeleteDatasource.entry_count} entries.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDatasource}
+	onCancel={() => { showDeleteDatasourceModal = false; pendingDeleteDatasource = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteEntryModal}
+	title="Delete Entry"
+	message={pendingDeleteEntry ? `Delete entry "${pendingDeleteEntry.name}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteEntry}
+	onCancel={() => { showDeleteEntryModal = false; pendingDeleteEntry = null; }}
+/>
