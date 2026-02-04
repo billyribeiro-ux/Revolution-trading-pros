@@ -38,6 +38,7 @@
 		IconArrowLeft,
 		IconExternalLink
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getCampaigns,
 		getCampaignStats,
@@ -298,8 +299,22 @@
 		}
 	}
 
-	async function handleDeleteCampaign(id: number) {
-		if (!confirm('Delete this campaign?')) return;
+	// Modal state for campaign actions
+	let showDeleteModal = $state(false);
+	let showSendModal = $state(false);
+	let showCancelModal = $state(false);
+	let pendingCampaignId = $state<number | null>(null);
+
+	function handleDeleteCampaign(id: number) {
+		pendingCampaignId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteCampaign() {
+		if (!pendingCampaignId) return;
+		showDeleteModal = false;
+		const id = pendingCampaignId;
+		pendingCampaignId = null;
 		try {
 			await apiDeleteCampaign(id);
 			toastStore.success('Campaign deleted');
@@ -319,8 +334,16 @@
 		}
 	}
 
-	async function handleSendCampaign(id: number) {
-		if (!confirm('Send this campaign now?')) return;
+	function handleSendCampaign(id: number) {
+		pendingCampaignId = id;
+		showSendModal = true;
+	}
+
+	async function confirmSendCampaign() {
+		if (!pendingCampaignId) return;
+		showSendModal = false;
+		const id = pendingCampaignId;
+		pendingCampaignId = null;
 		try {
 			await sendCampaign(id);
 			toastStore.success('Campaign is being sent');
@@ -330,8 +353,16 @@
 		}
 	}
 
-	async function handleCancelCampaign(id: number) {
-		if (!confirm('Cancel this scheduled campaign?')) return;
+	function handleCancelCampaign(id: number) {
+		pendingCampaignId = id;
+		showCancelModal = true;
+	}
+
+	async function confirmCancelCampaign() {
+		if (!pendingCampaignId) return;
+		showCancelModal = false;
+		const id = pendingCampaignId;
+		pendingCampaignId = null;
 		try {
 			await cancelCampaign(id);
 			toastStore.success('Campaign cancelled');
@@ -1366,3 +1397,33 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Campaign"
+	message="Delete this campaign? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCampaign}
+	onCancel={() => { showDeleteModal = false; pendingCampaignId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showSendModal}
+	title="Send Campaign"
+	message="Send this campaign now? It will be delivered to all recipients."
+	confirmText="Send Now"
+	variant="info"
+	onConfirm={confirmSendCampaign}
+	onCancel={() => { showSendModal = false; pendingCampaignId = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showCancelModal}
+	title="Cancel Campaign"
+	message="Cancel this scheduled campaign? It will not be sent."
+	confirmText="Cancel Campaign"
+	variant="warning"
+	onConfirm={confirmCancelCampaign}
+	onCancel={() => { showCancelModal = false; pendingCampaignId = null; }}
+/>
