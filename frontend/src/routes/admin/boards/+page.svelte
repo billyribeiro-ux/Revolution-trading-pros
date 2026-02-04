@@ -32,8 +32,8 @@
 	// State
 	let boards = $state<Board[]>([]);
 	let folders = $state<Folder[]>([]);
-	let recentActivity = $state<Activity[]>([]);
-	let myTasks = $state<Task[]>([]);
+	let _recentActivity = $state<Activity[]>([]);
+	let _myTasks = $state<Task[]>([]);
 	let overdueTasks = $state<Task[]>([]);
 	let tasksDueToday = $state<Task[]>([]);
 	let loading = $state(true);
@@ -119,8 +119,8 @@
 			boards = boardsRes.data;
 			folders = foldersRes;
 			stats = statsRes;
-			recentActivity = statsRes.recent_activity || [];
-			myTasks = myTasksRes.data;
+			_recentActivity = statsRes.recent_activity || [];
+			_myTasks = myTasksRes.data;
 			overdueTasks = overdueRes;
 			tasksDueToday = todayRes;
 		} catch (error) {
@@ -220,7 +220,7 @@
 		});
 	}
 
-	function getActivityIcon(type: string): string {
+	function _getActivityIcon(type: string): string {
 		const icons: Record<string, string> = {
 			task_created: 'plus',
 			task_completed: 'check',

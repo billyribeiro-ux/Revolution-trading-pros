@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -20,12 +20,10 @@
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+		import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+		import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { crmAPI } from '$lib/api/crm';
 	import type {
 		RecurringCampaign,

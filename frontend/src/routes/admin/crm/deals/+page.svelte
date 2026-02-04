@@ -31,8 +31,7 @@
 	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
+		import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconLayoutKanban from '@tabler/icons-svelte-runes/icons/layout-kanban';
 	import IconList from '@tabler/icons-svelte-runes/icons/list';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
@@ -48,11 +47,10 @@
 	import IconUser from '@tabler/icons-svelte-runes/icons/user';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
+		import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import { crmAPI } from '$lib/api/crm';
-	import type { Deal, Pipeline, Stage, DealFilters, DealForecast } from '$lib/crm/types';
+	import type { Deal, Pipeline, Stage, DealForecast } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -62,7 +60,7 @@
 	let deals = $state<Deal[]>([]);
 	let pipelines = $state<Pipeline[]>([]);
 	let selectedPipeline = $state<Pipeline | null>(null);
-	let forecast = $state<DealForecast | null>(null);
+	let _forecast = $state<DealForecast | null>(null);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
