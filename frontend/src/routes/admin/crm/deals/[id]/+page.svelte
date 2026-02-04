@@ -48,6 +48,7 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
@@ -94,6 +95,9 @@
 	let selectedStage = $state<Stage | null>(null);
 	let stageChangeReason = $state('');
 	let processingAction = $state(false);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
 
 	// Toast notification state
 	let toastMessage = $state<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -230,10 +234,14 @@
 		}
 	}
 
-	async function deleteDeal() {
+	function deleteDeal() {
 		if (!deal) return;
-		if (!confirm(`Are you sure you want to delete "${deal.name}"? This action cannot be undone.`))
-			return;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteDeal() {
+		if (!deal) return;
+		showDeleteModal = false;
 
 		try {
 			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
@@ -2095,3 +2103,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Deal"
+	message={deal ? `Are you sure you want to delete "${deal.name}"? This action cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDeal}
+	onCancel={() => { showDeleteModal = false; }}
+/>
