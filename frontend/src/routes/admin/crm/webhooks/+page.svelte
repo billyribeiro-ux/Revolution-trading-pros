@@ -32,6 +32,7 @@
 	import IconToggleRight from '@tabler/icons-svelte-runes/icons/toggle-right';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -44,6 +45,10 @@
 	let statusFilter = $state<'all' | 'active' | 'inactive'>('all');
 	let testingWebhook = $state<string | null>(null);
 	let togglingWebhook = $state<string | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteWebhook = $state<{ id: string; name: string } | null>(null);
 
 	// Toast notifications state
 	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>(
@@ -97,13 +102,16 @@
 		}
 	}
 
-	async function deleteWebhook(id: string, name: string) {
-		if (
-			!confirm(
-				`Are you sure you want to delete the webhook "${name}"? This action cannot be undone.`
-			)
-		)
-			return;
+	function deleteWebhook(id: string, name: string) {
+		pendingDeleteWebhook = { id, name };
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteWebhook() {
+		if (!pendingDeleteWebhook) return;
+		showDeleteModal = false;
+		const { id, name } = pendingDeleteWebhook;
+		pendingDeleteWebhook = null;
 
 		try {
 			await crmAPI.deleteWebhook(id);
@@ -1041,3 +1049,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Webhook"
+	message={pendingDeleteWebhook ? `Are you sure you want to delete the webhook "${pendingDeleteWebhook.name}"? This action cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteWebhook}
+	onCancel={() => { showDeleteModal = false; pendingDeleteWebhook = null; }}
+/>
