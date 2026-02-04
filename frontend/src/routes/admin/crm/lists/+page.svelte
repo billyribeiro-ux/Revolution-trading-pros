@@ -26,12 +26,17 @@
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactList } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let lists = $state<ContactList[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
 	let filterPublic = $state<boolean | 'all'>('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state({
 		total: 0,
@@ -64,9 +69,16 @@
 		}
 	}
 
-	async function deleteList(id: string) {
-		if (!confirm('Are you sure you want to delete this list? Contacts will NOT be deleted.'))
-			return;
+	function deleteList(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteList() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await crmAPI.deleteContactList(id);
@@ -625,3 +637,13 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete List"
+	message="Are you sure you want to delete this list? Contacts will NOT be deleted."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteList}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
