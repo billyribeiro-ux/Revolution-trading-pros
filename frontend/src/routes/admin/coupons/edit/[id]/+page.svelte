@@ -28,6 +28,7 @@
 		IconAlertCircle,
 		IconTrash
 	} from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions
@@ -86,6 +87,9 @@
 		is_active: true,
 		stackable: false
 	});
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Derived State - Svelte 5 Runes
@@ -234,11 +238,12 @@
 		}
 	}
 
-	async function handleDelete() {
-		if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) {
-			return;
-		}
+	function handleDelete() {
+		showDeleteModal = true;
+	}
 
+	async function confirmDelete() {
+		showDeleteModal = false;
 		deleting = true;
 		try {
 			await couponsApi.delete(couponId);
@@ -1029,3 +1034,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Coupon"
+	message="Are you sure you want to delete this coupon? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => { showDeleteModal = false; }}
+/>
