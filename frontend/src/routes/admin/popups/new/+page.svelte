@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Card, Input, Select, Button } from '$lib/components/ui';
+	import { Card, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
