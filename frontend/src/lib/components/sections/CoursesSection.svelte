@@ -3,7 +3,7 @@
 	 * CoursesSection - Apple/Netflix Cinematic Design
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
 	 */
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 
@@ -134,20 +134,21 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		// Trigger entrance animations when section scrolls into viewport
+		let visibilityObserver: IntersectionObserver | null = null;
 		queueMicrotask(() => {
 			if (sectionRef) {
-				const visibilityObserver = new IntersectionObserver(
+				visibilityObserver = new IntersectionObserver(
 					(entries) => {
 						if (entries[0]?.isIntersecting) {
 							isVisible = true;
-							visibilityObserver.disconnect();
+							visibilityObserver?.disconnect();
 						}
 					},
 					{ threshold: 0.1, rootMargin: '50px' }
@@ -167,6 +168,7 @@
 			// ICT11+ Fix: Kill only ScrollTriggers scoped to this component
 			// Previously used killAll() which destroyed ALL ScrollTriggers globally,
 			// causing layout breaks when scrolling to bottom of page
+			visibilityObserver?.disconnect();
 			if (scrollTriggerInstance && (cardsRef || sectionRef)) {
 				scrollTriggerInstance.getAll().forEach((st: any) => {
 					if (

@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
@@ -145,8 +146,9 @@
 		return { original: `$${price.toFixed(2)}`, sale: null };
 	}
 
-	// Effect: Load products when type filter changes
+	// Effect: Load products when type filter changes (Svelte 5 $effect with browser guard)
 	$effect(() => {
+		if (!browser) return;
 		// Track selectedType for reactivity
 		const type = selectedType;
 		// Use untrack to avoid infinite loops when updating products

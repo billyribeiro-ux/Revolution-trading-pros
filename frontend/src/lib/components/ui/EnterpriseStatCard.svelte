@@ -7,7 +7,6 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
@@ -147,10 +146,10 @@
 		}
 	}
 
-	onMount(() => {
+	// Intersection observer for viewport-based animation
+	$effect(() => {
 		if (!browser || !cardRef) return;
 
-		// Intersection observer for viewport-based animation
 		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {

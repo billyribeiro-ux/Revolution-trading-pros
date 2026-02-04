@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { authStore, isAuthenticated } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import apiClient, { type Membership, type Product } from '$lib/api/client.svelte';
 
@@ -10,30 +9,38 @@
 	let loadingMemberships = $state(true);
 	let loadingProducts = $state(true);
 
-	onMount(async () => {
+	$effect(() => {
+		if (!browser) return;
+
 		// Auth guard - redirect if not authenticated (user interaction: page load)
-		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
 			goto('/login?redirect=/account', { replaceState: true });
 			return;
 		}
 
 		if ($authStore.user) {
-			try {
-				memberships = await apiClient.getMyMemberships();
-			} catch (error) {
-				console.error('Failed to load memberships:', error);
-			} finally {
-				loadingMemberships = false;
-			}
+			(async () => {
+				try {
+					memberships = await apiClient.getMyMemberships();
+				} catch (error) {
+					console.error('Failed to load memberships:', error);
+				} finally {
+					loadingMemberships = false;
+				}
 
-			try {
-				products = await apiClient.getMyProducts();
-			} catch (error) {
-				console.error('Failed to load products:', error);
-			} finally {
-				loadingProducts = false;
-			}
+				try {
+					products = await apiClient.getMyProducts();
+				} catch (error) {
+					console.error('Failed to load products:', error);
+				} finally {
+					loadingProducts = false;
+				}
+			})();
 		}
+
+		return () => {
+			// Cleanup if needed
+		};
 	});
 
 	async function handleLogout() {

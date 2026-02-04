@@ -237,8 +237,8 @@
 			isModal={true}
 			position={null}
 			showSaveOption={false}
-			on:apply={handlePresetApply}
-			on:close={handlePresetClose}
+			onApply={handlePresetApply}
+			onClose={handlePresetClose}
 		/>
 	{:else}
 		<!-- Block Inserter Modal -->

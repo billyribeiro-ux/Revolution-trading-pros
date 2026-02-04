@@ -14,7 +14,6 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	interface Props {
@@ -46,7 +45,7 @@
 	}
 
 	// Global error handler for uncaught errors within boundary
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		const handleGlobalError = (event: ErrorEvent) => {

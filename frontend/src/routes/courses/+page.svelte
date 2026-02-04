@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -312,7 +311,7 @@
 		animate();
 	}
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		mounted = true;
@@ -372,7 +371,7 @@
 	};
 </script>
 
-<svelte:window bind:scrollY bind:innerHeight bind:innerWidth />
+<svelte:window bind:scrollY bind:innerHeight bind:innerWidth onmousemove={handleMouseMove} />
 
 <SEOHead
 	title="Trading Courses & Mentorship | Revolution Trading Pros"
@@ -382,11 +381,7 @@
 	schemaType="Course"
 />
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white"
-	onmousemove={handleMouseMove}
->
+<div class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white">
 	<section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
 		<div class="absolute inset-0 z-0 opacity-40">
 			<canvas bind:this={canvasRef} width={innerWidth} height={innerHeight} class="w-full h-full"

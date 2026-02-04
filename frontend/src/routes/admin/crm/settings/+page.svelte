@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
@@ -118,8 +118,10 @@
 		}
 	];
 
-	onMount(() => {
-		loadSettings();
+	$effect(() => {
+		if (browser) {
+			loadSettings();
+		}
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconTrendingUp,
 		IconTrendingDown,
@@ -15,20 +15,25 @@
 	let topPages: any[] = $state([]);
 	let comparison: any = $state(null);
 	let loading = $state(false);
+	let initialized = $state(false);
 
 	let dateRange = {
 		start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
 		end: new Date().toISOString().split('T')[0]
 	};
 
-	onMount(async () => {
-		// Load connection status first
-		await connections.load();
-		connectionLoading = false;
+	$effect(() => {
+		if (browser && !initialized) {
+			initialized = true;
+			// Load connection status first
+			connections.load().then(() => {
+				connectionLoading = false;
 
-		// Only load data if SEO is connected
-		if (getIsSeoConnected) {
-			loadData();
+				// Only load data if SEO is connected
+				if (getIsSeoConnected) {
+					loadData();
+				}
+			});
 		}
 	});
 

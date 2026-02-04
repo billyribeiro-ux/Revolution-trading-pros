@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconShield,
@@ -13,8 +12,9 @@
 
 	let heroVisible = $state(false);
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
+
 		const heroObserver = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {

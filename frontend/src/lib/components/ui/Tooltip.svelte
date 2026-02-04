@@ -22,7 +22,6 @@
 -->
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount, onDestroy } from 'svelte';
 
 	interface Props {
 		text: string;
@@ -46,14 +45,18 @@
 	let tooltipElement: HTMLDivElement | null = null;
 
 	// Cleanup tooltip on destroy
-	onDestroy(() => {
-		if (tooltipElement && tooltipElement.parentNode) {
-			tooltipElement.parentNode.removeChild(tooltipElement);
-			tooltipElement = null;
-		}
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
+	$effect(() => {
+		if (!browser) return;
+
+		return () => {
+			if (tooltipElement && tooltipElement.parentNode) {
+				tooltipElement.parentNode.removeChild(tooltipElement);
+				tooltipElement = null;
+			}
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		};
 	});
 
 	function createAndPositionTooltip() {

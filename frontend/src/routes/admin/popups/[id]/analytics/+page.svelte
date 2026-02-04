@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Card, Button, Badge } from '$lib/components/ui';
@@ -60,8 +60,10 @@
 		};
 	}
 
-	onMount(async () => {
-		await loadAnalytics();
+	// Svelte 5: Initialize on mount with browser guard
+	$effect(() => {
+		if (!browser) return;
+		loadAnalytics();
 	});
 
 	async function loadAnalytics() {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { membersApi } from '$lib/api/members';
@@ -96,8 +96,10 @@
 		}>
 	>([]);
 
-	onMount(async () => {
-		await loadMember();
+	$effect(() => {
+		if (browser) {
+			loadMember();
+		}
 	});
 
 	async function loadMember() {

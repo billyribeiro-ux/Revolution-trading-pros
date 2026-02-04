@@ -25,11 +25,11 @@
 	} from '$lib/api/bing-seo';
 
 	// State
-	let loading = true;
-	let dashboard: PerformanceDashboard | null = null;
-	let coreWebVitals: CoreWebVitals | null = null;
-	let recommendations: OptimizationRecommendation[] = [];
-	let warmingCaches = false;
+	let loading = $state(true);
+	let dashboard: PerformanceDashboard | null = $state(null);
+	let coreWebVitals: CoreWebVitals | null = $state(null);
+	let recommendations: OptimizationRecommendation[] = $state([]);
+	let warmingCaches = $state(false);
 
 	// Svelte 5: Initialize on mount
 	$effect(() => {

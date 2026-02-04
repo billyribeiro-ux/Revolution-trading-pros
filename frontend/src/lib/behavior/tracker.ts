@@ -26,6 +26,19 @@ export class BehaviorTracker {
 	private lastScrollY: number = 0;
 	private lastScrollTime: number = 0;
 
+	// Bound event handler references (for cleanup)
+	private boundHandleVisibilityChange?: () => void;
+	private boundHandlePageExit?: () => void;
+	private boundHandleScroll?: () => void;
+	private boundHandleClick?: (event: MouseEvent) => void;
+	private boundHandleMouseOver?: (event: MouseEvent) => void;
+	private boundHandleMouseOut?: () => void;
+	private boundHandleFocus?: (event: FocusEvent) => void;
+	private boundHandleBlur?: (event: FocusEvent) => void;
+	private boundHandleFormSubmit?: (event: Event) => void;
+	private boundResetIdleTimer?: () => void;
+	private boundHandleExitIntent?: (event: MouseEvent) => void;
+
 	constructor(config: Partial<BehaviorTrackerConfig> = {}) {
 		this.config = {
 			apiEndpoint: '/api/behavior/events',
@@ -60,13 +73,11 @@ export class BehaviorTracker {
 	private init() {
 		// Check DNT
 		if (this.config.respectDNT && navigator.doNotTrack === '1') {
-			console.log('[BehaviorTracker] DNT enabled, tracking disabled');
 			return;
 		}
 
 		// Sample rate check
 		if (Math.random() > this.config.sampleRate) {
-			console.log('[BehaviorTracker] Session not sampled');
 			return;
 		}
 
@@ -75,41 +86,54 @@ export class BehaviorTracker {
 	}
 
 	private setupEventListeners() {
+		// Store bound handler references for cleanup
+		this.boundHandleVisibilityChange = this.handleVisibilityChange.bind(this);
+		this.boundHandlePageExit = this.handlePageExit.bind(this);
+		this.boundHandleScroll = this.handleScroll.bind(this);
+		this.boundHandleClick = this.handleClick.bind(this);
+		this.boundHandleMouseOver = this.handleMouseOver.bind(this);
+		this.boundHandleMouseOut = this.handleMouseOut.bind(this);
+		this.boundHandleFocus = this.handleFocus.bind(this);
+		this.boundHandleBlur = this.handleBlur.bind(this);
+		this.boundHandleFormSubmit = this.handleFormSubmit.bind(this);
+		this.boundResetIdleTimer = this.resetIdleTimer.bind(this);
+		this.boundHandleExitIntent = this.handleExitIntent.bind(this);
+
 		// Page visibility
-		document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-		window.addEventListener('beforeunload', this.handlePageExit.bind(this));
+		document.addEventListener('visibilitychange', this.boundHandleVisibilityChange);
+		window.addEventListener('beforeunload', this.boundHandlePageExit);
 
 		// Scroll tracking
 		if (this.config.trackScrollDepth) {
-			window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+			window.addEventListener('scroll', this.boundHandleScroll, { passive: true });
 		}
 
 		// Click tracking
-		document.addEventListener('click', this.handleClick.bind(this), true);
+		document.addEventListener('click', this.boundHandleClick, true);
 
 		// Hover tracking
 		if (this.config.trackHoverIntent) {
-			document.addEventListener('mouseover', this.handleMouseOver.bind(this), true);
-			document.addEventListener('mouseout', this.handleMouseOut.bind(this), true);
+			document.addEventListener('mouseover', this.boundHandleMouseOver, true);
+			document.addEventListener('mouseout', this.boundHandleMouseOut, true);
 		}
 
 		// Form tracking
 		if (this.config.trackFormBehavior) {
-			document.addEventListener('focus', this.handleFocus.bind(this), true);
-			document.addEventListener('blur', this.handleBlur.bind(this), true);
-			document.addEventListener('submit', this.handleFormSubmit.bind(this), true);
+			document.addEventListener('focus', this.boundHandleFocus, true);
+			document.addEventListener('blur', this.boundHandleBlur, true);
+			document.addEventListener('submit', this.boundHandleFormSubmit, true);
 		}
 
 		// Idle tracking
 		if (this.config.trackIdleTime) {
 			this.resetIdleTimer();
 			['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach((event) => {
-				document.addEventListener(event, this.resetIdleTimer.bind(this), { passive: true });
+				document.addEventListener(event, this.boundResetIdleTimer!, { passive: true });
 			});
 		}
 
 		// Exit intent
-		document.addEventListener('mouseout', this.handleExitIntent.bind(this));
+		document.addEventListener('mouseout', this.boundHandleExitIntent);
 	}
 
 	private trackPageView() {
@@ -524,5 +548,55 @@ export class BehaviorTracker {
 		this.flush();
 		if (this.bufferTimer) clearTimeout(this.bufferTimer);
 		if (this.idleTimer) clearTimeout(this.idleTimer);
+
+		// Remove all event listeners to prevent memory leaks
+		if (this.boundHandleVisibilityChange) {
+			document.removeEventListener('visibilitychange', this.boundHandleVisibilityChange);
+		}
+		if (this.boundHandlePageExit) {
+			window.removeEventListener('beforeunload', this.boundHandlePageExit);
+		}
+		if (this.boundHandleScroll) {
+			window.removeEventListener('scroll', this.boundHandleScroll);
+		}
+		if (this.boundHandleClick) {
+			document.removeEventListener('click', this.boundHandleClick, true);
+		}
+		if (this.boundHandleMouseOver) {
+			document.removeEventListener('mouseover', this.boundHandleMouseOver, true);
+		}
+		if (this.boundHandleMouseOut) {
+			document.removeEventListener('mouseout', this.boundHandleMouseOut, true);
+		}
+		if (this.boundHandleFocus) {
+			document.removeEventListener('focus', this.boundHandleFocus, true);
+		}
+		if (this.boundHandleBlur) {
+			document.removeEventListener('blur', this.boundHandleBlur, true);
+		}
+		if (this.boundHandleFormSubmit) {
+			document.removeEventListener('submit', this.boundHandleFormSubmit, true);
+		}
+		if (this.boundResetIdleTimer) {
+			['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach((event) => {
+				document.removeEventListener(event, this.boundResetIdleTimer!);
+			});
+		}
+		if (this.boundHandleExitIntent) {
+			document.removeEventListener('mouseout', this.boundHandleExitIntent);
+		}
+
+		// Clear bound handler references
+		this.boundHandleVisibilityChange = undefined;
+		this.boundHandlePageExit = undefined;
+		this.boundHandleScroll = undefined;
+		this.boundHandleClick = undefined;
+		this.boundHandleMouseOver = undefined;
+		this.boundHandleMouseOut = undefined;
+		this.boundHandleFocus = undefined;
+		this.boundHandleBlur = undefined;
+		this.boundHandleFormSubmit = undefined;
+		this.boundResetIdleTimer = undefined;
+		this.boundHandleExitIntent = undefined;
 	}
 }

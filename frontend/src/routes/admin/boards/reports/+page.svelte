@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, BoardReport, ReportPeriod } from '$lib/boards/types';
 	import {
@@ -21,8 +21,9 @@
 	let loading = $state(true);
 	let period = $state<ReportPeriod>('month');
 
-	onMount(async () => {
-		await loadBoards();
+	$effect(() => {
+		if (!browser) return;
+		loadBoards();
 	});
 
 	async function loadBoards() {

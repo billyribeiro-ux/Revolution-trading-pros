@@ -11,7 +11,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
@@ -99,13 +99,18 @@
 	}
 
 	// Initial load
-	onMount(async () => {
-		loading = true;
-		await Promise.all([
-			fetchRelatedForms(),
-			showTrending ? fetchTrendingForms() : Promise.resolve()
-		]);
-		loading = false;
+	$effect(() => {
+		if (!browser) return;
+
+		const load = async () => {
+			loading = true;
+			await Promise.all([
+				fetchRelatedForms(),
+				props.showTrending ? fetchTrendingForms() : Promise.resolve()
+			]);
+			loading = false;
+		};
+		load();
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconFileText,
 		IconPhoto,
@@ -55,8 +55,10 @@
 		{ id: 'analysis', label: 'Analysis', icon: IconEye }
 	];
 
-	onMount(() => {
-		loadMeta();
+	$effect(() => {
+		if (browser) {
+			loadMeta();
+		}
 	});
 
 	async function loadMeta() {

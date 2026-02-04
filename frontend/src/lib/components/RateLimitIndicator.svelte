@@ -9,7 +9,7 @@
 	 * @version 2.0.0 - Fixed misleading UX
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { scale } from 'svelte/transition';
 	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
 	import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
@@ -138,19 +138,23 @@
 		isOpen = false;
 	}
 
-	onMount(async () => {
+	$effect(() => {
+		if (!browser) return;
+
 		isLoading = true;
-		rateLimits = await fetchRateLimits();
-		isLoading = false;
+		fetchRateLimits().then((limits) => {
+			rateLimits = limits;
+			isLoading = false;
+		});
 
 		// Refresh every minute
 		refreshInterval = setInterval(async () => {
 			rateLimits = await fetchRateLimits();
 		}, 60000);
-	});
 
-	onDestroy(() => {
-		if (refreshInterval) clearInterval(refreshInterval);
+		return () => {
+			if (refreshInterval) clearInterval(refreshInterval);
+		};
 	});
 </script>
 

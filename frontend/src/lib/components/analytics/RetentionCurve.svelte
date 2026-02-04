@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface Cohort {
 		name: string;
@@ -24,7 +24,8 @@
 	let containerEl: HTMLDivElement;
 	let width = $state(600);
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		if (containerEl) {
 			width = containerEl.clientWidth;
 		}

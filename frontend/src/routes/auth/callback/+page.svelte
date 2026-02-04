@@ -14,7 +14,7 @@
 	 * @version 1.0.0 - January 2026
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { authStore } from '$lib/stores/auth.svelte';
@@ -24,108 +24,114 @@
 	let errorMessage = $state('');
 	let provider = $state('');
 
-	onMount(async () => {
-		try {
-			// Get OAuth parameters from URL
-			const params = page.url.searchParams;
-			provider = params.get('provider') || 'oauth';
-			const token = params.get('token');
-			const refreshToken = params.get('refresh_token');
-			const sessionId = params.get('session_id');
-			const expiresIn = params.get('expires_in');
-			const error = params.get('error');
+	$effect(() => {
+		if (!browser) return;
 
-			// Check for OAuth errors
-			if (error) {
-				status = 'error';
-				errorMessage = decodeURIComponent(error);
-				console.error('[OAuth Callback] Error from provider:', errorMessage);
-				// Redirect to login after delay
-				setTimeout(() => goto('/login?error=' + encodeURIComponent(errorMessage)), 2000);
-				return;
-			}
-
-			// Validate required parameters
-			if (!token || !sessionId) {
-				status = 'error';
-				errorMessage = 'Missing authentication parameters';
-				console.error('[OAuth Callback] Missing required parameters');
-				setTimeout(() => goto('/login?error=missing_params'), 2000);
-				return;
-			}
-
-			// ICT 7 SECURITY: Clear tokens from URL history immediately
-			// This prevents tokens from being stored in browser history
-			window.history.replaceState({}, '', '/auth/callback');
-
-			// Set session cookie via server endpoint
+		async function handleOAuthCallback() {
 			try {
-				const sessionResponse = await fetch('/api/auth/set-session', {
-					method: 'POST',
+				// Get OAuth parameters from URL
+				const params = page.url.searchParams;
+				provider = params.get('provider') || 'oauth';
+				const token = params.get('token');
+				const refreshToken = params.get('refresh_token');
+				const sessionId = params.get('session_id');
+				const expiresIn = params.get('expires_in');
+				const error = params.get('error');
+
+				// Check for OAuth errors
+				if (error) {
+					status = 'error';
+					errorMessage = decodeURIComponent(error);
+					console.error('[OAuth Callback] Error from provider:', errorMessage);
+					// Redirect to login after delay
+					setTimeout(() => goto('/login?error=' + encodeURIComponent(errorMessage)), 2000);
+					return;
+				}
+
+				// Validate required parameters
+				if (!token || !sessionId) {
+					status = 'error';
+					errorMessage = 'Missing authentication parameters';
+					console.error('[OAuth Callback] Missing required parameters');
+					setTimeout(() => goto('/login?error=missing_params'), 2000);
+					return;
+				}
+
+				// ICT 7 SECURITY: Clear tokens from URL history immediately
+				// This prevents tokens from being stored in browser history
+				window.history.replaceState({}, '', '/auth/callback');
+
+				// Set session cookie via server endpoint
+				try {
+					const sessionResponse = await fetch('/api/auth/set-session', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						credentials: 'include',
+						body: JSON.stringify({
+							access_token: token,
+							refresh_token: refreshToken,
+							expires_in: expiresIn ? parseInt(expiresIn, 10) : 3600
+						})
+					});
+
+					if (!sessionResponse.ok) {
+						console.warn('[OAuth Callback] Failed to set session cookie');
+					}
+				} catch (cookieError) {
+					console.warn('[OAuth Callback] Session cookie error:', cookieError);
+					// Continue anyway - tokens are in memory
+				}
+
+				// Fetch user data
+				const userResponse = await fetch('/api/auth/me', {
 					headers: {
-						'Content-Type': 'application/json'
+						Authorization: `Bearer ${token}`,
+						Accept: 'application/json'
 					},
-					credentials: 'include',
-					body: JSON.stringify({
-						access_token: token,
-						refresh_token: refreshToken,
-						expires_in: expiresIn ? parseInt(expiresIn, 10) : 3600
-					})
+					credentials: 'include'
 				});
 
-				if (!sessionResponse.ok) {
-					console.warn('[OAuth Callback] Failed to set session cookie');
+				if (!userResponse.ok) {
+					throw new Error('Failed to fetch user data');
 				}
-			} catch (cookieError) {
-				console.warn('[OAuth Callback] Session cookie error:', cookieError);
-				// Continue anyway - tokens are in memory
+
+				const userData = await userResponse.json();
+				const user = userData.data || userData;
+
+				// Store auth in store
+				authStore.setAuth(
+					user,
+					token,
+					sessionId,
+					expiresIn ? parseInt(expiresIn, 10) : 3600,
+					refreshToken
+				);
+
+				status = 'success';
+
+				console.info('[OAuth Callback] Authentication successful:', {
+					provider,
+					userId: user.id,
+					email: user.email
+				});
+
+				// Redirect to dashboard after brief success message
+				setTimeout(() => {
+					goto('/dashboard', { replaceState: true });
+				}, 1000);
+			} catch (error) {
+				status = 'error';
+				errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+				console.error('[OAuth Callback] Error:', error);
+
+				// Redirect to login after delay
+				setTimeout(() => goto('/login?error=callback_failed'), 2000);
 			}
-
-			// Fetch user data
-			const userResponse = await fetch('/api/auth/me', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					Accept: 'application/json'
-				},
-				credentials: 'include'
-			});
-
-			if (!userResponse.ok) {
-				throw new Error('Failed to fetch user data');
-			}
-
-			const userData = await userResponse.json();
-			const user = userData.data || userData;
-
-			// Store auth in store
-			authStore.setAuth(
-				user,
-				token,
-				sessionId,
-				expiresIn ? parseInt(expiresIn, 10) : 3600,
-				refreshToken
-			);
-
-			status = 'success';
-
-			console.info('[OAuth Callback] Authentication successful:', {
-				provider,
-				userId: user.id,
-				email: user.email
-			});
-
-			// Redirect to dashboard after brief success message
-			setTimeout(() => {
-				goto('/dashboard', { replaceState: true });
-			}, 1000);
-		} catch (error) {
-			status = 'error';
-			errorMessage = error instanceof Error ? error.message : 'Authentication failed';
-			console.error('[OAuth Callback] Error:', error);
-
-			// Redirect to login after delay
-			setTimeout(() => goto('/login?error=callback_failed'), 2000);
 		}
+
+		handleOAuthCallback();
 	});
 
 	// Format provider name for display

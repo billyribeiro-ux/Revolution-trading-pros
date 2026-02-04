@@ -26,7 +26,7 @@
 	 * @version 1.0.0 (January 2026)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import {
@@ -333,8 +333,12 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await loadLead();
+	$effect(() => {
+		if (!browser) return;
+		loadLead();
+		return () => {
+			// Cleanup if needed
+		};
 	});
 </script>
 
@@ -761,23 +765,24 @@
 
 <!-- Add Note Modal -->
 {#if showAddNoteModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-	<div
-		class="modal-overlay"
-		onclick={() => (showAddNoteModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div class="modal-overlay" role="presentation">
+		<button
+			type="button"
+			class="modal-backdrop-btn"
+			onclick={() => (showAddNoteModal = false)}
+			aria-label="Close add note modal"
+			tabindex="-1"
+		></button>
 		<div
 			class="modal"
-			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="add-note-modal-title"
+			tabindex="-1"
 			onkeydown={(e) => e.key === 'Escape' && (showAddNoteModal = false)}
-			role="document"
 		>
 			<div class="modal-header">
-				<h3>
+				<h3 id="add-note-modal-title">
 					<IconNote size={20} />
 					Add Note
 				</h3>
@@ -814,23 +819,24 @@
 
 <!-- Convert Modal -->
 {#if showConvertModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-	<div
-		class="modal-overlay"
-		onclick={() => (showConvertModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div class="modal-overlay" role="presentation">
+		<button
+			type="button"
+			class="modal-backdrop-btn"
+			onclick={() => (showConvertModal = false)}
+			aria-label="Close convert modal"
+			tabindex="-1"
+		></button>
 		<div
 			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="convert-modal-title"
+			tabindex="-1"
 			onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)}
-			role="document"
 		>
 			<div class="modal-header">
-				<h3>
+				<h3 id="convert-modal-title">
 					<IconArrowRight size={20} />
 					Convert to Contact
 				</h3>
@@ -861,23 +867,24 @@
 
 <!-- Delete Modal -->
 {#if showDeleteModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-	<div
-		class="modal-overlay"
-		onclick={() => (showDeleteModal = false)}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div class="modal-overlay" role="presentation">
+		<button
+			type="button"
+			class="modal-backdrop-btn"
+			onclick={() => (showDeleteModal = false)}
+			aria-label="Close delete modal"
+			tabindex="-1"
+		></button>
 		<div
 			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="delete-modal-title"
+			tabindex="-1"
 			onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
-			role="document"
 		>
 			<div class="modal-header">
-				<h3>
+				<h3 id="delete-modal-title">
 					<IconTrash size={20} />
 					Delete Lead
 				</h3>
@@ -1673,7 +1680,19 @@
 		padding: 20px;
 	}
 
+	.modal-backdrop-btn {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		background: transparent;
+		border: none;
+		cursor: default;
+		z-index: 0;
+	}
+
 	.modal {
+		z-index: 1;
 		width: 100%;
 		max-width: 480px;
 		background: #1e293b;

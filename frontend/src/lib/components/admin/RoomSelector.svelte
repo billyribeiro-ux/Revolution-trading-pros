@@ -137,9 +137,14 @@
 
 	<!-- Dropdown Panel -->
 	{#if isExpanded}
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="dropdown-backdrop" onclick={closeDropdown}></div>
+		<div
+			class="dropdown-backdrop"
+			onclick={closeDropdown}
+			onkeydown={(e) => e.key === 'Escape' && closeDropdown()}
+			role="button"
+			tabindex="0"
+			aria-label="Close dropdown"
+		></div>
 		<div class="dropdown-panel">
 			<!-- Quick Actions -->
 			<div class="quick-actions">

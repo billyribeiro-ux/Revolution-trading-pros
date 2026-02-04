@@ -9,7 +9,6 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
 
 	interface Props {
 		enabled?: boolean;
@@ -22,8 +21,9 @@
 	let hasPermission = $state(false);
 	let audioContext: AudioContext | null = $state(null);
 
-	onMount(() => {
-		if (browser && 'Notification' in window) {
+	$effect(() => {
+		if (!browser) return;
+		if ('Notification' in window) {
 			hasPermission = Notification.permission === 'granted';
 		}
 	});

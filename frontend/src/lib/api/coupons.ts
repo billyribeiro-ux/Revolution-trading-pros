@@ -177,10 +177,19 @@ export interface CampaignGoal {
 	unit: string;
 }
 
+export interface DistributionChannelConfig {
+	templateId?: string;
+	segmentId?: string;
+	scheduleTime?: string;
+	frequency?: 'once' | 'daily' | 'weekly' | 'monthly';
+	maxSends?: number;
+	trackingParams?: Record<string, string>;
+}
+
 export interface DistributionChannel {
 	type: 'email' | 'sms' | 'push' | 'social' | 'affiliate' | 'partner' | 'website';
 	enabled: boolean;
-	config?: Record<string, any>;
+	config?: DistributionChannelConfig;
 	performance?: ChannelPerformance;
 }
 
@@ -207,10 +216,12 @@ export interface GeoTarget {
 	include: boolean;
 }
 
+export type CriteriaValue = string | number | boolean | string[] | number[];
+
 export interface CustomCriteria {
 	field: string;
 	operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
-	value: any;
+	value: CriteriaValue;
 }
 
 export interface ABTestConfig {
@@ -249,7 +260,7 @@ export interface CustomerSegment {
 export interface SegmentCriteria {
 	type: string;
 	condition: string;
-	value: any;
+	value: CriteriaValue;
 }
 
 export interface PromotionRule {
@@ -272,14 +283,16 @@ export type RuleType =
 export interface RuleCondition {
 	field: string;
 	operator: string;
-	value: any;
+	value: CriteriaValue;
 	combineWith?: 'and' | 'or';
 	subConditions?: RuleCondition[];
 }
 
+export type RuleActionValue = number | string | { productId: string; quantity?: number } | Record<string, string | number | boolean>;
+
 export interface RuleAction {
 	type: 'apply_discount' | 'add_product' | 'free_shipping' | 'upgrade' | 'custom';
-	value: any;
+	value: RuleActionValue;
 	message?: string;
 }
 
@@ -399,7 +412,7 @@ export interface CartItem {
 	price: number;
 	quantity: number;
 	categoryId?: string;
-	attributes?: Record<string, any>;
+	attributes?: Record<string, string | number | boolean>;
 }
 
 export interface GeoLocation {
@@ -436,16 +449,67 @@ export interface BulkOperation {
 	completedAt?: string;
 }
 
+export interface WebSocketMessage {
+	type: string;
+	data?: Record<string, unknown>;
+	channels?: string[];
+	timestamp?: string;
+}
+
+export interface RedemptionData {
+	couponId: string;
+	code: string;
+	orderTotal: number;
+	customerId?: string;
+	timestamp: string;
+}
+
+export interface FraudAlertData {
+	couponId: string;
+	code: string;
+	message: string;
+	severity: 'low' | 'medium' | 'high';
+	details?: Record<string, unknown>;
+}
+
+export interface CouponFilters {
+	isActive?: boolean;
+	type?: CouponType;
+	campaignId?: string;
+	search?: string;
+	startDate?: string;
+	endDate?: string;
+	page?: number;
+	perPage?: number;
+}
+
+export interface RedemptionReport {
+	totalRedemptions: number;
+	uniqueCoupons: number;
+	totalDiscount: number;
+	averageDiscount: number;
+	topCoupons: Array<{ code: string; redemptions: number; discount: number }>;
+	redemptionsByDay: TimeSeriesData[];
+}
+
+export interface ROIReport {
+	totalRevenue: number;
+	totalDiscount: number;
+	netRevenue: number;
+	roi: number;
+	campaignBreakdown?: Array<{ campaignId: string; name: string; revenue: number; roi: number }>;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Core Service Class
 // ═══════════════════════════════════════════════════════════════════════════
 
 class CouponManagementService {
 	private static instance: CouponManagementService;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private wsConnection?: WebSocket;
 	private analyticsInterval?: number;
-	private pendingValidations = new Map<string, Promise<any>>();
+	private pendingValidations = new Map<string, Promise<CouponValidationResponse>>();
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
 
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
@@ -454,7 +518,7 @@ class CouponManagementService {
 	private wsReconnectTimer?: number;
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;
-	private wsMessageQueue: any[] = [];
+	private wsMessageQueue: WebSocketMessage[] = [];
 	private wsConnectionState = writable<
 		'disconnected' | 'connecting' | 'connected' | 'reconnecting'
 	>('disconnected');
@@ -545,7 +609,7 @@ class CouponManagementService {
 		// Check cache
 		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
 		if (!skipCache && (!fetchOptions.method || fetchOptions.method === 'GET')) {
-			const cached = this.getFromCache(cacheKey);
+			const cached = this.getFromCache<T>(cacheKey);
 			if (cached) return cached;
 		}
 
@@ -777,7 +841,7 @@ class CouponManagementService {
 	/**
 	 * Queue message for sending when connection is restored
 	 */
-	private queueMessage(message: any): void {
+	private queueMessage(message: WebSocketMessage): void {
 		if (this.wsMessageQueue.length >= WS_MESSAGE_QUEUE_SIZE) {
 			// Remove oldest message if queue is full
 			this.wsMessageQueue.shift();
@@ -809,7 +873,7 @@ class CouponManagementService {
 	/**
 	 * Send message via WebSocket with queue fallback
 	 */
-	private sendWebSocketMessage(message: any): void {
+	private sendWebSocketMessage(message: WebSocketMessage): void {
 		if (this.wsConnection?.readyState === WebSocket.OPEN) {
 			this.wsConnection.send(JSON.stringify(message));
 		} else {
@@ -837,7 +901,7 @@ class CouponManagementService {
 		});
 	}
 
-	private handleRedemption(data: any): void {
+	private handleRedemption(data: RedemptionData): void {
 		// Update metrics for the redeemed coupon
 		this.metrics.update((metrics) => {
 			const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
@@ -879,7 +943,7 @@ class CouponManagementService {
 		});
 	}
 
-	private handleFraudAlert(alert: any): void {
+	private handleFraudAlert(alert: FraudAlertData): void {
 		console.warn('[CouponService] Fraud alert:', alert);
 		this.showNotification(`Fraud detected: ${alert.message}`, 'error');
 	}
@@ -974,17 +1038,26 @@ class CouponManagementService {
 
 		if (activeCoupons.length === 0) return;
 
-		for (const coupon of activeCoupons) {
-			try {
-				const metrics = await this.getCouponMetrics(coupon.id);
-				this.metrics.update((m) => {
-					m[coupon.id] = metrics;
-					return m;
-				});
-			} catch (error) {
-				console.error(`[CouponService] Failed to update metrics for ${coupon.id}:`, error);
+		const metricsResults = await Promise.all(
+			activeCoupons.map(async (coupon) => {
+				try {
+					const metrics = await this.getCouponMetrics(coupon.id);
+					return { couponId: coupon.id, metrics, success: true };
+				} catch (error) {
+					console.error(`[CouponService] Failed to update metrics for ${coupon.id}:`, error);
+					return { couponId: coupon.id, metrics: null, success: false };
+				}
+			})
+		);
+
+		this.metrics.update((m) => {
+			for (const result of metricsResults) {
+				if (result.success && result.metrics) {
+					m[result.couponId] = result.metrics;
+				}
 			}
-		}
+			return m;
+		});
 	}
 
 	/**
@@ -1011,7 +1084,7 @@ class CouponManagementService {
 
 		// Check validation cache
 		const cacheKey = `validate_${code}_${context.cartTotal}`;
-		const cached = this.getFromCache(cacheKey);
+		const cached = this.getFromCache<CouponValidationResponse>(cacheKey);
 		if (cached) {
 			this.validationResult.set(cached);
 			this.isLoading.set(false);
@@ -1019,8 +1092,9 @@ class CouponManagementService {
 		}
 
 		// Check if validation is already pending
-		if (this.pendingValidations.has(cacheKey)) {
-			return this.pendingValidations.get(cacheKey);
+		const pendingValidation = this.pendingValidations.get(cacheKey);
+		if (pendingValidation) {
+			return pendingValidation;
 		}
 
 		// Create validation promise
@@ -1056,8 +1130,9 @@ class CouponManagementService {
 			});
 
 			return result;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Coupon validation failed';
+			this.error.set(message);
 			throw error;
 		} finally {
 			this.pendingValidations.delete(cacheKey);
@@ -1170,12 +1245,12 @@ class CouponManagementService {
 	/**
 	 * Get all coupons
 	 */
-	async getAllCoupons(filters?: any): Promise<EnhancedCoupon[]> {
+	async getAllCoupons(filters?: CouponFilters): Promise<EnhancedCoupon[]> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
 		try {
-			const params = new URLSearchParams(filters);
+			const params = filters ? new URLSearchParams(filters as Record<string, string>) : new URLSearchParams();
 			const response = await this.authFetch<{ coupons: EnhancedCoupon[] }>(
 				`${API_URL}/admin/coupons?${params}`
 			);
@@ -1187,8 +1262,9 @@ class CouponManagementService {
 			this.activeCoupons.set(active);
 
 			return response.coupons;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to fetch coupons';
+			this.error.set(message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1232,8 +1308,9 @@ class CouponManagementService {
 			});
 
 			return coupon;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to create coupon';
+			this.error.set(message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1258,8 +1335,9 @@ class CouponManagementService {
 			this.clearCache(`/coupons/${id}`);
 
 			return coupon;
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to update coupon';
+			this.error.set(message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1284,8 +1362,9 @@ class CouponManagementService {
 
 			// Track deletion
 			this.trackEvent('coupon_deleted', { id });
-		} catch (error: any) {
-			this.error.set(error.message);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to delete coupon';
+			this.error.set(message);
 			throw error;
 		} finally {
 			this.isLoading.set(false);
@@ -1415,16 +1494,16 @@ class CouponManagementService {
 		return this.authFetch<CouponAnalytics>(`${API_URL}/admin/coupons/${couponId}/analytics`);
 	}
 
-	async getRedemptionReport(dateRange: { from: string; to: string }): Promise<any> {
-		return this.authFetch(`${API_URL}/admin/reports/redemptions`, {
+	async getRedemptionReport(dateRange: { from: string; to: string }): Promise<RedemptionReport> {
+		return this.authFetch<RedemptionReport>(`${API_URL}/admin/reports/redemptions`, {
 			method: 'POST',
 			body: JSON.stringify(dateRange)
 		});
 	}
 
-	async getROIReport(campaignId?: string): Promise<any> {
+	async getROIReport(campaignId?: string): Promise<ROIReport> {
 		const params = campaignId ? `?campaign=${campaignId}` : '';
-		return this.authFetch(`${API_URL}/admin/reports/roi${params}`);
+		return this.authFetch<ROIReport>(`${API_URL}/admin/reports/roi${params}`);
 	}
 
 	async exportCoupons(format: 'csv' | 'excel' | 'json' = 'csv'): Promise<Blob> {
@@ -1515,15 +1594,15 @@ class CouponManagementService {
 	// Utilities
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	private getFromCache(key: string): any {
+	private getFromCache<T = unknown>(key: string): T | null {
 		const cached = this.cache.get(key);
 		if (cached && Date.now() < cached.expiry) {
-			return cached.data;
+			return cached.data as T;
 		}
 		return null;
 	}
 
-	private setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+	private setCache(key: string, data: unknown, ttl: number = CACHE_TTL): void {
 		this.cache.set(key, {
 			data,
 			expiry: Date.now() + ttl
@@ -1561,9 +1640,9 @@ class CouponManagementService {
 		console.log(`[${type.toUpperCase()}] ${message}`);
 	}
 
-	private trackEvent(event: string, data: any): void {
+	private trackEvent(event: string, data: Record<string, unknown>): void {
 		if (browser && 'gtag' in window) {
-			(window as any).gtag('event', event, data);
+			(window as Window & { gtag?: (command: string, event: string, params: Record<string, unknown>) => void }).gtag?.('event', event, data);
 		}
 	}
 
@@ -1610,9 +1689,9 @@ export const validateCoupon = (
 	context?: Partial<ValidationContext>
 ) => couponService.validateCoupon(code, { cartTotal, ...context });
 
-export const getAllCoupons = (filters?: any) => couponService.getAllCoupons(filters);
+export const getAllCoupons = (filters?: CouponFilters) => couponService.getAllCoupons(filters);
 
-export const createCoupon = (coupon: Partial<EnhancedCoupon>, options?: any) =>
+export const createCoupon = (coupon: Partial<EnhancedCoupon>, options?: { generateCode?: boolean; optimize?: boolean }) =>
 	couponService.createCoupon(coupon, options);
 
 export const updateCoupon = (id: string, updates: Partial<EnhancedCoupon>) =>

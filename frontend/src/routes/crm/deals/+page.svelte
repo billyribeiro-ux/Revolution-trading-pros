@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import { crmStore } from '$lib/stores/crm';
@@ -13,9 +13,11 @@
 	let forecastPeriod = $state('this_month');
 	let forecast = $state<{ commit: number; best_case: number; pipeline: number; worst_case: number } | null>(null);
 
-	onMount(async () => {
-		await loadPipelinesAndDeals();
-		await loadForecast();
+	$effect(() => {
+		if (browser) {
+			loadPipelinesAndDeals();
+			loadForecast();
+		}
 	});
 
 	async function loadPipelinesAndDeals() {

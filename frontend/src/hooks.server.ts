@@ -153,7 +153,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// ICT 7: 401 = Invalid/expired token - attempt refresh if available
 			if (!refreshToken) {
 				// No refresh token - permanent auth failure
-				console.log('[Auth Hook] 401 with no refresh token - redirecting to login');
+				if (import.meta.env.DEV) {
+					console.log('[Auth Hook] 401 with no refresh token - redirecting to login');
+				}
 				const returnUrl = encodeURIComponent(pathname);
 				throw redirect(303, `/login?redirect=${returnUrl}`);
 			}
@@ -216,23 +218,31 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				}
 			} else {
 				// Refresh failed - permanent auth failure
-				console.log('[Auth Hook] Token refresh failed - redirecting to login');
+				if (import.meta.env.DEV) {
+					console.log('[Auth Hook] Token refresh failed - redirecting to login');
+				}
 				const returnUrl = encodeURIComponent(pathname);
 				throw redirect(303, `/login?redirect=${returnUrl}`);
 			}
 		} else if (response.status >= 500) {
 			// ICT 7: 5xx = Server error (transient) - preserve session
-			console.warn(`[Auth Hook] API server error (${response.status}) - preserving session`);
+			if (import.meta.env.DEV) {
+				console.warn(`[Auth Hook] API server error (${response.status}) - preserving session`);
+			}
 			// Don't set user - let it fall through to catch block
 			throw new Error(`API_SERVER_ERROR_${response.status}`);
 		} else if (response.status === 403) {
 			// ICT 7: 403 = Forbidden (permanent) - redirect to login
-			console.log('[Auth Hook] 403 Forbidden - redirecting to login');
+			if (import.meta.env.DEV) {
+				console.log('[Auth Hook] 403 Forbidden - redirecting to login');
+			}
 			const returnUrl = encodeURIComponent(pathname);
 			throw redirect(303, `/login?redirect=${returnUrl}`);
 		} else {
 			// ICT 7: Other errors (4xx) - treat as transient, preserve session
-			console.warn(`[Auth Hook] Unexpected response (${response.status}) - preserving session`);
+			if (import.meta.env.DEV) {
+				console.warn(`[Auth Hook] Unexpected response (${response.status}) - preserving session`);
+			}
 			throw new Error(`API_UNEXPECTED_RESPONSE_${response.status}`);
 		}
 	} catch (error) {
@@ -256,7 +266,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 		if (isNetworkError && (token || refreshToken)) {
 			// ICT 7: Transient failure - preserve session with graceful degradation
-			console.warn('[Auth Hook] Transient failure detected - preserving session:', errorMessage);
+			if (import.meta.env.DEV) {
+				console.warn('[Auth Hook] Transient failure detected - preserving session:', errorMessage);
+			}
 
 			// Try to decode token to get user info (JWT tokens contain user data)
 			// This allows us to preserve the actual user session during transient failures
@@ -275,15 +287,19 @@ const authHandler: Handle = async ({ event, resolve }) => {
 							name: payload.name || payload.username || 'User',
 							role: payload.role || 'user'
 						};
-						console.log(
-							'[Auth Hook] Session preserved from token payload:',
-							event.locals.user.email
-						);
+						if (import.meta.env.DEV) {
+							console.log(
+								'[Auth Hook] Session preserved from token payload:',
+								event.locals.user.email
+							);
+						}
 						return resolve(event);
 					}
 				}
 			} catch (decodeError) {
-				console.warn('[Auth Hook] Could not decode token:', decodeError);
+				if (import.meta.env.DEV) {
+					console.warn('[Auth Hook] Could not decode token:', decodeError);
+				}
 			}
 
 			// Fallback: If token decode fails, still preserve session with minimal data
@@ -294,10 +310,14 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				name: 'Session Preserved',
 				role: 'user'
 			};
-			console.log('[Auth Hook] Session preserved with fallback user');
+			if (import.meta.env.DEV) {
+				console.log('[Auth Hook] Session preserved with fallback user');
+			}
 		} else {
 			// ICT 7: Permanent failure or no tokens - redirect to login
-			console.error('[Auth Hook] Permanent auth failure:', error);
+			if (import.meta.env.DEV) {
+				console.error('[Auth Hook] Permanent auth failure:', error);
+			}
 			const returnUrl = encodeURIComponent(pathname);
 			throw redirect(303, `/login?redirect=${returnUrl}`);
 		}

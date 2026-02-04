@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
 	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -610,8 +610,10 @@
 	});
 
 	// Lifecycle
-	onMount(() => {
-		fetchDatasources();
+	$effect(() => {
+		if (browser) {
+			fetchDatasources();
+		}
 	});
 </script>
 

@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import IconFile from '@tabler/icons-svelte-runes/icons/file';
@@ -170,8 +170,10 @@
 		}
 	}
 
-	onMount(() => {
-		loadJobs();
+	$effect(() => {
+		if (browser) {
+			loadJobs();
+		}
 	});
 </script>
 

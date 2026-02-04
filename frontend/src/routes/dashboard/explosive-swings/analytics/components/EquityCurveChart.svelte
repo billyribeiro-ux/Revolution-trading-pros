@@ -8,7 +8,7 @@
 	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { EquityPoint } from '../analytics.state.svelte';
 
 	interface Props {
@@ -128,13 +128,15 @@
 		hoveredIndex = null;
 	}
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		handleResize();
 		window.addEventListener('resize', handleResize);
-	});
 
-	onDestroy(() => {
-		window.removeEventListener('resize', handleResize);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconSearch, IconFileText, IconEye, IconDeviceFloppy, IconRefresh } from '$lib/icons';
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
 	import SeoAnalyzer from '$lib/components/seo/SeoAnalyzer.svelte';
@@ -8,9 +8,13 @@
 	let selectedEntity: any = $state(null);
 	let loading = $state(false);
 	let searchQuery = $state('');
+	let initialized = $state(false);
 
-	onMount(() => {
-		loadEntities();
+	$effect(() => {
+		if (browser && !initialized) {
+			initialized = true;
+			loadEntities();
+		}
 	});
 
 	async function loadEntities() {

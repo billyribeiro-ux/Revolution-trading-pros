@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { emailStore, getIsEmailLoading } from '$lib/stores/email.svelte';
 	import {
 		IconMail,
@@ -22,7 +22,8 @@
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		'campaigns';
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		loadData();
 	});
 

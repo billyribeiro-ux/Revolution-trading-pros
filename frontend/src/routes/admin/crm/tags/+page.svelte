@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconTag,
 		IconPlus,
@@ -175,8 +175,10 @@
 		})
 	);
 
-	onMount(() => {
-		loadTags();
+	$effect(() => {
+		if (browser) {
+			loadTags();
+		}
 	});
 </script>
 
@@ -307,15 +309,20 @@
 
 <!-- Create/Edit Modal -->
 {#if showModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={closeModal} role="dialog" aria-modal="true" tabindex="-1">
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={closeModal}
+		onkeydown={(e) => e.key === 'Escape' && closeModal()}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
 		<div
 			class="modal-content"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && closeModal()}
-			role="document"
-			tabindex="-1"
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
 		>
 			<div class="modal-header">
 				<h2>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
@@ -356,10 +363,9 @@
 					></textarea>
 				</div>
 				<div class="form-group">
-					<!-- svelte-ignore a11y_label_has_associated_control -->
-					<label>Color</label>
-					<div class="color-picker">
-						<div class="color-preview" style="background-color: {formData.color}"></div>
+					<span id="color-picker-label" class="field-label">Color</span>
+					<div class="color-picker" role="group" aria-labelledby="color-picker-label">
+						<div class="color-preview" style="background-color: {formData.color}" aria-hidden="true"></div>
 						<div class="color-palette">
 							{#each colorPalette as color}
 								<button
@@ -369,6 +375,8 @@
 									style="background-color: {color}"
 									onclick={() => (formData.color = color)}
 									disabled={isSaving}
+									aria-label="Select color {color}"
+									aria-pressed={formData.color === color}
 								>
 									{#if formData.color === color}
 										<IconCheck size={12} />
@@ -790,7 +798,8 @@
 		margin-bottom: 1.25rem;
 	}
 
-	.form-group label {
+	.form-group label,
+	.form-group .field-label {
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 500;

@@ -55,7 +55,6 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -768,31 +767,31 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Lifecycle
+	// Lifecycle - Svelte 5 $effect() pattern
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		if (browser) {
-			// Log SEO warnings in development only if score is below 60
-			// This reduces console noise while still alerting to serious SEO issues
-			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
-				console.group('🔍 SEO Warnings');
-				console.log(`SEO Score: ${seoScore}/100`);
-				seoWarnings.forEach((warning) => console.warn(warning));
-				console.groupEnd();
-			}
+	$effect(() => {
+		if (!browser) return;
 
-			// Send SEO metrics to analytics
-			if (typeof window !== 'undefined' && 'gtag' in window) {
-				(window as any).gtag('event', 'seo_metrics', {
-					page_title: fullTitle,
-					seo_score: seoScore,
-					title_length: titleLength,
-					description_length: descriptionLength,
-					has_schema: allSchemas.length > 0,
-					schema_count: allSchemas.length
-				});
-			}
+		// Log SEO warnings in development only if score is below 60
+		// This reduces console noise while still alerting to serious SEO issues
+		if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
+			console.group('SEO Warnings');
+			console.log(`SEO Score: ${seoScore}/100`);
+			seoWarnings.forEach((warning) => console.warn(warning));
+			console.groupEnd();
+		}
+
+		// Send SEO metrics to analytics
+		if (typeof window !== 'undefined' && 'gtag' in window) {
+			(window as any).gtag('event', 'seo_metrics', {
+				page_title: fullTitle,
+				seo_score: seoScore,
+				title_length: titleLength,
+				description_length: descriptionLength,
+				has_schema: allSchemas.length > 0,
+				schema_count: allSchemas.length
+			});
 		}
 	});
 </script>

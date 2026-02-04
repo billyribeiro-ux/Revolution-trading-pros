@@ -8,7 +8,7 @@
 	 * @version 2.0.0 - Phase 4 Analytics Dashboard Update
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5 January 2026
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { createAnalyticsState, type TimePeriod } from './analytics.state.svelte';
 
 	// Layout Components
@@ -35,8 +35,10 @@
 		{ value: 'all', label: 'All' }
 	];
 
-	onMount(() => {
-		analytics.initializeData();
+	$effect(() => {
+		if (browser) {
+			analytics.initializeData();
+		}
 	});
 </script>
 

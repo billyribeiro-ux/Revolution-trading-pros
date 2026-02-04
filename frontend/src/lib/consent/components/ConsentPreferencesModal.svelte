@@ -17,7 +17,6 @@
 
 	import { fade, scale } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { onDestroy } from 'svelte';
 	import type { ConsentCategory } from '../types';
 	import { consentStore, showPreferencesModal, closePreferencesModal } from '../store.svelte';
 	import { getVendorsByCategory } from '../vendors';
@@ -164,19 +163,17 @@
 
 	// Prevent body scroll when modal is open
 	$effect(() => {
-		if (browser) {
-			if ($showPreferencesModal) {
-				document.body.style.overflow = 'hidden';
-			} else {
-				document.body.style.overflow = '';
-			}
-		}
-	});
+		if (!browser) return;
 
-	onDestroy(() => {
-		if (browser) {
+		if ($showPreferencesModal) {
+			document.body.style.overflow = 'hidden';
+		} else {
 			document.body.style.overflow = '';
 		}
+
+		return () => {
+			document.body.style.overflow = '';
+		};
 	});
 
 	// Check for reduced motion
@@ -188,13 +185,19 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if $showPreferencesModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-backdrop {className}"
-		onclick={handleBackdropClick}
+		role="presentation"
 		transition:fade={{ duration: prefersReducedMotion ? 0 : 200 }}
 	>
+		<!-- Backdrop button for closing modal on outside click -->
+		<button
+			type="button"
+			class="modal-backdrop-btn"
+			onclick={handleBackdropClick}
+			aria-label="Close cookie preferences"
+			tabindex="-1"
+		></button>
 		<div
 			class="modal-container"
 			role="dialog"
@@ -326,6 +329,17 @@
 		-webkit-backdrop-filter: blur(4px);
 	}
 
+	.modal-backdrop-btn {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		background: transparent;
+		border: none;
+		cursor: default;
+		z-index: 0;
+	}
+
 	.modal-container {
 		position: fixed;
 		inset: 0;
@@ -341,6 +355,7 @@
 		/* Safe area insets */
 		padding-top: env(safe-area-inset-top, 0);
 		padding-bottom: env(safe-area-inset-bottom, 0);
+		z-index: 1;
 	}
 
 	/* Swipe indicator for mobile */

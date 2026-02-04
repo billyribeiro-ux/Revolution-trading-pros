@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconRefresh, IconDownload, IconUpload, IconFileText } from '$lib/icons';
 
 	// State using Svelte 5 runes
@@ -9,8 +9,10 @@
 	let showSitemapXml = $state(false);
 	let sitemapContent = $state('');
 
-	onMount(() => {
-		loadStats();
+	$effect(() => {
+		if (browser) {
+			loadStats();
+		}
 	});
 
 	async function loadStats() {

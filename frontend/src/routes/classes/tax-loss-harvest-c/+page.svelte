@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
 	import ClassVideoSection from '$lib/components/classes/ClassVideoSection.svelte';
 	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
@@ -32,8 +32,10 @@
 		}
 	];
 
-	onMount(() => {
-		if (typeof window !== 'undefined' && (window as any).richpanel) {
+	$effect(() => {
+		if (!browser) return;
+
+		if ((window as any).richpanel) {
 			(window as any).richpanel.track('view_article', {
 				id: 2173470,
 				name: 'Tax Loss Harvest',
@@ -41,7 +43,7 @@
 			});
 		}
 
-		if (typeof window !== 'undefined' && (window as any).gtag) {
+		if ((window as any).gtag) {
 			(window as any).gtag('event', 'page_view', {
 				page_title: 'Tax Loss Harvest',
 				page_location: window.location.href,

@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
@@ -36,8 +36,10 @@
 		{ value: 'evangelist', label: 'Evangelists' }
 	];
 
-	onMount(async () => {
-		await loadContacts();
+	$effect(() => {
+		if (browser) {
+			loadContacts();
+		}
 	});
 
 	async function loadContacts() {

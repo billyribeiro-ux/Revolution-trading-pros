@@ -16,7 +16,6 @@
  */
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
 	import { videoPreloader, type VideoPreloadInfo } from '$lib/utils/videoPreloader';
@@ -119,7 +118,7 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		// Decode blurhash for instant placeholder
@@ -133,13 +132,13 @@
 		if (enablePreload && cardElement) {
 			videoPreloader.observe(cardElement);
 		}
-	});
 
-	onDestroy(() => {
-		observer?.disconnect();
-		if (cardElement) {
-			videoPreloader.unobserve(cardElement);
-		}
+		return () => {
+			observer?.disconnect();
+			if (cardElement) {
+				videoPreloader.unobserve(cardElement);
+			}
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════

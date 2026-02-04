@@ -98,57 +98,80 @@
 	{#each items as item, index (item.id)}
 		{@const isOpen = openItems.has(item.id)}
 		<div class="accordion-item" class:open={isOpen}>
-			<button
-				type="button"
-				class="accordion-header"
-				id="accordion-btn-{props.blockId}-{item.id}"
-				aria-expanded={isOpen}
-				aria-controls="accordion-panel-{props.blockId}-{item.id}"
-				onclick={() => toggleItem(item.id)}
-				onkeydown={(e) => handleKeyDown(e, index)}
-			>
+			<div class="accordion-header-wrapper">
 				{#if props.isEditing}
-					<span
-						contenteditable="true"
-						class="accordion-title editable-content"
-						role="textbox"
-						aria-label="Section title"
-						onclick={(e) => e.stopPropagation()}
-						oninput={(e) => updateItem(index, 'title', (e.target as HTMLElement).textContent || '')}
-						onpaste={handlePaste}
-					>
-						{item.title}
-					</span>
+					<!-- When editing, use separate elements for toggle and editable title -->
+					<div class="accordion-header editing">
+						<span
+							contenteditable="true"
+							class="accordion-title editable-content"
+							role="textbox"
+							aria-label="Section title"
+							oninput={(e) => updateItem(index, 'title', (e.target as HTMLElement).textContent || '')}
+							onpaste={handlePaste}
+						>
+							{item.title}
+						</span>
+						<button
+							type="button"
+							class="accordion-toggle-btn"
+							id="accordion-btn-{props.blockId}-{item.id}"
+							aria-expanded={isOpen}
+							aria-controls="accordion-panel-{props.blockId}-{item.id}"
+							aria-label="{isOpen ? 'Collapse' : 'Expand'} section"
+							onclick={() => toggleItem(item.id)}
+							onkeydown={(e) => handleKeyDown(e, index)}
+						>
+							<span class="accordion-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
+								{#if iconStyle === 'plusminus'}
+									{#if isOpen}
+										<IconMinus size={18} />
+									{:else}
+										<IconPlus size={18} />
+									{/if}
+								{:else}
+									<IconChevronDown size={18} />
+								{/if}
+							</span>
+						</button>
+					</div>
 				{:else}
-					<span class="accordion-title">{item.title}</span>
+					<!-- When not editing, use a single button for the entire header -->
+					<button
+						type="button"
+						class="accordion-header"
+						id="accordion-btn-{props.blockId}-{item.id}"
+						aria-expanded={isOpen}
+						aria-controls="accordion-panel-{props.blockId}-{item.id}"
+						onclick={() => toggleItem(item.id)}
+						onkeydown={(e) => handleKeyDown(e, index)}
+					>
+						<span class="accordion-title">{item.title}</span>
+						<span class="accordion-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
+							{#if iconStyle === 'plusminus'}
+								{#if isOpen}
+									<IconMinus size={18} />
+								{:else}
+									<IconPlus size={18} />
+								{/if}
+							{:else}
+								<IconChevronDown size={18} />
+							{/if}
+						</span>
+					</button>
 				{/if}
-
-				<span class="accordion-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
-					{#if iconStyle === 'plusminus'}
-						{#if isOpen}
-							<IconMinus size={18} />
-						{:else}
-							<IconPlus size={18} />
-						{/if}
-					{:else}
-						<IconChevronDown size={18} />
-					{/if}
-				</span>
 
 				{#if props.isEditing && items.length > 1}
 					<button
 						type="button"
 						class="remove-item-btn"
-						onclick={(e) => {
-							e.stopPropagation();
-							removeItem(index);
-						}}
+						onclick={() => removeItem(index)}
 						aria-label="Remove section"
 					>
 						<IconX size={14} />
 					</button>
 				{/if}
-			</button>
+			</div>
 
 			<div
 				id="accordion-panel-{props.blockId}-{item.id}"
@@ -247,12 +270,18 @@
 		border-bottom: none;
 	}
 
+	.accordion-header-wrapper {
+		display: flex;
+		align-items: center;
+		position: relative;
+	}
+
 	.accordion-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-		width: 100%;
+		flex: 1;
 		padding: 1.25rem 1.5rem;
 		background: #f9fafb;
 		border: none;
@@ -273,6 +302,35 @@
 		outline: 2px solid #3b82f6;
 		outline-offset: -2px;
 		z-index: 1;
+	}
+
+	/* Editing mode: header is a div with separate toggle button */
+	.accordion-header.editing {
+		cursor: default;
+	}
+
+	.accordion-toggle-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem;
+		background: transparent;
+		border: none;
+		border-radius: 4px;
+		color: #6b7280;
+		cursor: pointer;
+		transition: all 0.15s;
+		flex-shrink: 0;
+	}
+
+	.accordion-toggle-btn:hover {
+		background: rgba(59, 130, 246, 0.1);
+		color: #3b82f6;
+	}
+
+	.accordion-toggle-btn:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
 	}
 
 	.accordion-title {
@@ -296,6 +354,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 0.375rem;
+		margin-right: 0.5rem;
 		background: transparent;
 		border: none;
 		border-radius: 4px;
@@ -306,7 +365,7 @@
 		opacity: 0;
 	}
 
-	.accordion-header:hover .remove-item-btn {
+	.accordion-header-wrapper:hover .remove-item-btn {
 		opacity: 1;
 	}
 
@@ -453,6 +512,15 @@
 	:global(.dark) .remove-item-btn:hover {
 		background: #450a0a;
 		color: #fca5a5;
+	}
+
+	:global(.dark) .accordion-toggle-btn {
+		color: #94a3b8;
+	}
+
+	:global(.dark) .accordion-toggle-btn:hover {
+		background: rgba(96, 165, 250, 0.1);
+		color: #60a5fa;
 	}
 
 	/* Mobile */

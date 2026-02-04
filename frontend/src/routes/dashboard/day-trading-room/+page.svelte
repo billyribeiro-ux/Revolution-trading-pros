@@ -9,7 +9,7 @@
 	 * @version 3.0.0 - Unified Room Resources
 	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
@@ -118,8 +118,10 @@
 			: fallbackArticles
 	);
 
-	// Google Calendar integration
-	onMount(() => {
+	// Google Calendar integration - Svelte 5 $effect() with browser guard and cleanup
+	$effect(() => {
+		if (!browser) return;
+
 		// Load Google Calendar API with error handling
 		const script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -188,8 +190,15 @@
 						if (container && response.result.items) {
 							for (let i = 0; i < response.result.items.length; i++) {
 								const eventStart = new Date(response.result.items[i].start.dateTime);
-								const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
-								container.innerHTML += eventHtml;
+								// SECURITY: Use safe DOM manipulation instead of innerHTML to prevent XSS
+								const eventWrapper = document.createElement('div');
+								const h4 = document.createElement('h4');
+								h4.textContent = response.result.items[i].summary;
+								const span = document.createElement('span');
+								span.textContent = eventStart.toLocaleString('en-US', dateOptions);
+								eventWrapper.appendChild(h4);
+								eventWrapper.appendChild(span);
+								container.appendChild(eventWrapper);
 							}
 						}
 					})

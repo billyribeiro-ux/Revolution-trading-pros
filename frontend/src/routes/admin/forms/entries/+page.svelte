@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import {
@@ -20,8 +20,10 @@
 	let selectedFormId = $state<number | null>(null);
 	let loading = $state(true);
 
-	onMount(async () => {
-		await loadForms();
+	$effect(() => {
+		if (!browser) return;
+
+		loadForms();
 	});
 
 	async function loadForms() {

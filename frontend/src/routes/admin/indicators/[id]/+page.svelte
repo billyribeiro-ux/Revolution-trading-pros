@@ -5,7 +5,7 @@
 	 * Full API integration for files, videos, and license management
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
@@ -111,7 +111,9 @@
 	// Extract indicator ID from URL pathname
 	let indicatorId = $state('');
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount
+	$effect(() => {
+		if (!browser) return;
 		const pathParts = window.location.pathname.split('/');
 		indicatorId = pathParts[pathParts.length - 1];
 		fetchIndicator();
@@ -649,8 +651,15 @@
 
 <!-- File Upload Modal -->
 {#if showFileModal}
-	<div class="modal-overlay" onclick={() => (showFileModal = false)}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		onclick={() => (showFileModal = false)}
+		onkeydown={(e) => (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') && (showFileModal = false)}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
+		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Upload Indicator File</h2>
 				<button class="btn-close" onclick={() => (showFileModal = false)}>X</button>
@@ -692,8 +701,15 @@
 
 <!-- Video Add Modal -->
 {#if showVideoModal}
-	<div class="modal-overlay" onclick={() => (showVideoModal = false)}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		onclick={() => (showVideoModal = false)}
+		onkeydown={(e) => (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') && (showVideoModal = false)}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
+		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Add Tutorial Video</h2>
 				<button class="btn-close" onclick={() => (showVideoModal = false)}>X</button>

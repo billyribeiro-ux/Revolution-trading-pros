@@ -10,25 +10,27 @@
 	 *
 	 * @version 2.0.0
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	let mounted = $state(false);
 	let ThrelteCanvas: any = $state(null);
 	let Scene3DComponent: any = $state(null);
 
-	onMount(async () => {
+	$effect(() => {
 		if (!browser) return;
 
-		// Dynamic import to prevent SSR issues and reduce initial bundle
-		const [threlte, scene] = await Promise.all([
-			import('@threlte/core'),
-			import('./Scene3D.svelte')
-		]);
+		// Use IIFE pattern for async dynamic imports - Svelte 5 pattern
+		(async () => {
+			// Dynamic import to prevent SSR issues and reduce initial bundle
+			const [threlte, scene] = await Promise.all([
+				import('@threlte/core'),
+				import('./Scene3D.svelte')
+			]);
 
-		ThrelteCanvas = threlte.Canvas;
-		Scene3DComponent = scene.default;
-		mounted = true;
+			ThrelteCanvas = threlte.Canvas;
+			Scene3DComponent = scene.default;
+			mounted = true;
+		})();
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { FormSubmission } from '$lib/api/forms';
 	import {
 		getSubmissions,
@@ -26,7 +26,8 @@
 	let statusFilter: string = $state('');
 	let selectedSubmissions: Set<string> = $state(new Set());
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		loadData();
 	});
 

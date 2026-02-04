@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
 
 	// State using Svelte 5 runes
@@ -20,8 +20,10 @@
 		`${typeof window !== 'undefined' ? window.location.origin : ''}/news-sitemap.xml`
 	);
 
-	onMount(async () => {
-		await loadArticles();
+	$effect(() => {
+		if (browser) {
+			loadArticles();
+		}
 	});
 
 	async function loadArticles() {

@@ -8,7 +8,7 @@
 	 * Supports the new subscription variants system (monthly/quarterly/annual).
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	// Types
@@ -76,8 +76,10 @@
 		missingStripeId: plans.filter((p) => !p.stripe_price_id && p.is_active).length
 	});
 
-	onMount(() => {
-		loadPlans();
+	$effect(() => {
+		if (browser) {
+			loadPlans();
+		}
 	});
 
 	async function loadPlans() {

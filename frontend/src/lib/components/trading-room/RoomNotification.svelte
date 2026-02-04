@@ -13,7 +13,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -224,7 +223,9 @@
 	// LIFECYCLE
 	// ===============================================================================
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		checkNotificationPermission();
 		fetchUpcomingEvents();
 
@@ -238,10 +239,6 @@
 			if (countdownInterval) clearInterval(countdownInterval);
 			clearInterval(scheduleInterval);
 		};
-	});
-
-	onDestroy(() => {
-		if (countdownInterval) clearInterval(countdownInterval);
 	});
 
 	// ===============================================================================

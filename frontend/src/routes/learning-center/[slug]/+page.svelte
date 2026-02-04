@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface LearningResource {
 		id: number;
@@ -201,7 +201,8 @@
 	let resource = $state<LearningResource | null>(null);
 	let loading = $state(true);
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		const slug = page.params.slug;
 		resource = allResources.find((r) => r.slug === slug) || null;
 		loading = false;

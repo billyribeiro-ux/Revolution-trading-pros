@@ -6,14 +6,13 @@
 	 * Reduces initial bundle size and improves Time to Interactive (TTI)
 	 *
 	 * ICT11+ Fixes (December 2025):
-	 * - Uses onMount for IntersectionObserver (NOT $effect - bindings not ready)
+	 * - Uses $effect() for IntersectionObserver with cleanup return function
 	 * - Removed aggressive CSS containment that broke observer
 	 * - Added fallback timeout for browsers with IO issues
-	 * - SSR-safe with proper hydration handling
+	 * - SSR-safe with proper hydration handling via browser guard
 	 * - PRODUCTION FIX: Always render content on SSR for SEO, lazy load animations only
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -45,11 +44,14 @@
 	let observer: IntersectionObserver | null = null;
 	let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
-	onMount(() => {
+	// Svelte 5 $effect() for lifecycle management with cleanup
+	$effect(() => {
 		if (!browser) return;
 
+		let rafId: number | null = null;
+
 		// Use requestAnimationFrame to ensure DOM is ready
-		requestAnimationFrame(() => {
+		rafId = requestAnimationFrame(() => {
 			if (!container) {
 				hasAnimated = true;
 				return;
@@ -99,8 +101,11 @@
 			}
 		});
 
-		// Cleanup
+		// Cleanup function returned from $effect
 		return () => {
+			if (rafId !== null) {
+				cancelAnimationFrame(rafId);
+			}
 			observer?.disconnect();
 			observer = null;
 			if (fallbackTimer) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { boardsAPI } from '$lib/api/boards';
 	import type {
@@ -107,7 +107,9 @@
 		return result;
 	});
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		loadBoard();
 
 		// Check for task in URL query

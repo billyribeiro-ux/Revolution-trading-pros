@@ -589,17 +589,19 @@
 							<img src={formData.thumbnail} alt={formData.name || 'Product'} />
 						</div>
 					{:else}
+						{@const PreviewIcon = previewTypeIcon}
 						<div class="preview-thumbnail placeholder">
-							<!-- svelte-ignore svelte_component_deprecated -->
-							<svelte:component this={previewTypeIcon} size={48} />
+							<PreviewIcon size={48} />
 						</div>
 					{/if}
 
-					<div class="preview-badge" style="background: {previewTypeColor}">
-						<!-- svelte-ignore svelte_component_deprecated -->
-						<svelte:component this={previewTypeIcon} size={14} />
-						{formData.type}
-					</div>
+					{#if previewTypeIcon}
+						{@const BadgeIcon = previewTypeIcon}
+						<div class="preview-badge" style="background: {previewTypeColor}">
+							<BadgeIcon size={14} />
+							{formData.type}
+						</div>
+					{/if}
 
 					<div class="preview-content">
 						<h4>{formData.name || 'Product Name'}</h4>
@@ -664,23 +666,23 @@
 
 	<!-- Delete Confirmation Modal -->
 	{#if showDeleteConfirm}
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-		<div
-			class="modal-overlay"
-			onclick={() => (showDeleteConfirm = false)}
-			role="dialog"
-			aria-modal="true"
-			tabindex="-1"
-		>
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div class="modal-overlay" role="presentation">
+			<button
+				type="button"
+				class="modal-backdrop-btn"
+				onclick={() => (showDeleteConfirm = false)}
+				aria-label="Close delete confirmation"
+				tabindex="-1"
+			></button>
 			<div
 				class="modal"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.key === 'Escape' && (showDeleteConfirm = false)}
-				role="document"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="delete-modal-title"
 				tabindex="-1"
+				onkeydown={(e) => e.key === 'Escape' && (showDeleteConfirm = false)}
 			>
-				<h3>Delete Product?</h3>
+				<h3 id="delete-modal-title">Delete Product?</h3>
 				<p>
 					Are you sure you want to delete <strong>{originalProduct?.name}</strong>? This action
 					cannot be undone.
@@ -1401,7 +1403,19 @@
 		padding: 2rem;
 	}
 
+	.modal-backdrop-btn {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		background: transparent;
+		border: none;
+		cursor: default;
+		z-index: 0;
+	}
+
 	.modal {
+		z-index: 1;
 		background: #1e293b;
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 16px;

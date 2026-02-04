@@ -21,7 +21,7 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconFilter,
 		IconPlus,
@@ -183,8 +183,10 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		loadSegments();
+	$effect(() => {
+		if (browser) {
+			loadSegments();
+		}
 	});
 </script>
 

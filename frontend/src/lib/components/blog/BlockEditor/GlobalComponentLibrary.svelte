@@ -654,6 +654,7 @@
 						<div class="components-grid">
 							{#each filteredComponents() as component (component.id)}
 								{@const config = categoryConfig[component.category]}
+								{@const Icon = config.icon}
 								<div
 									class="component-card"
 									class:selected={selectedComponent?.id === component.id}
@@ -669,7 +670,7 @@
 												class="thumbnail-placeholder"
 												style="background-color: {config.color}20"
 											>
-												<svelte:component this={config.icon} size={32} />
+												<Icon size={32} />
 											</div>
 										{/if}
 										{#if component.is_locked}
@@ -679,7 +680,7 @@
 
 									<div class="card-body">
 										<div class="card-category" style="color: {config.color}">
-											<svelte:component this={config.icon} size={14} />
+											<Icon size={14} />
 											{config.label}
 										</div>
 										<h4 class="card-title">{component.name}</h4>

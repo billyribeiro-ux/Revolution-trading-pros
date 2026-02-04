@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
@@ -49,7 +48,7 @@
 	 * GSAP ScrollTrigger initialization (Svelte 5 SSR-safe pattern)
 	 * Apple-grade scroll animations with GPU acceleration
 	 */
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;

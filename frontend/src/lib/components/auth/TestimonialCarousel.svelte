@@ -13,7 +13,6 @@
 	 *
 	 * @version 2.0.0 - ICT 11 Grade
 	 */
-	import { onDestroy } from 'svelte';
 	import emblaCarouselSvelte from 'embla-carousel-svelte';
 	import Autoplay from 'embla-carousel-autoplay';
 	import type { EmblaCarouselType } from 'embla-carousel';
@@ -83,8 +82,10 @@
 		emblaApi?.scrollTo(index);
 	}
 
-	onDestroy(() => {
-		emblaApi?.destroy();
+	$effect(() => {
+		return () => {
+			emblaApi?.destroy();
+		};
 	});
 </script>
 

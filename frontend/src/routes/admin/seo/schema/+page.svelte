@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 
 	// State using Svelte 5 runes
@@ -26,9 +26,11 @@
 		'WebPage'
 	];
 
-	onMount(() => {
-		loadSchemas();
-		loadTemplates();
+	$effect(() => {
+		if (browser) {
+			loadSchemas();
+			loadTemplates();
+		}
 	});
 
 	async function loadSchemas() {

@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import type { Block, BlockType } from '$lib/components/cms/blocks/types';
     import BlockLoader from '$lib/components/cms/blocks/BlockLoader.svelte';
 
@@ -89,8 +89,8 @@
     ];
 
     // Initialize with a default paragraph
-    onMount(() => {
-        if (blocks.length === 0) {
+    $effect(() => {
+        if (browser && blocks.length === 0) {
             addBlock('paragraph');
         }
     });

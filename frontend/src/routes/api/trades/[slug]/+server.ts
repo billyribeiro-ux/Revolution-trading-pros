@@ -27,7 +27,6 @@ const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Trades API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -38,15 +37,12 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) {
-			console.error(`[Trades API] Backend error: ${response.status} ${response.statusText}`);
 			return null;
 		}
 
 		const data = await response.json();
-		console.log(`[Trades API] Backend success:`, data?.data?.length || 0, 'items');
 		return data;
-	} catch (err) {
-		console.error('[Trades API] Backend fetch failed:', err);
+	} catch {
 		return null;
 	}
 }
@@ -175,7 +171,6 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	}
 
 	// Fallback to mock data
-	console.log(`[Trades API] Using mock data for ${slug}`);
 	let trades = mockTrades[slug] || [];
 
 	// Filter by status

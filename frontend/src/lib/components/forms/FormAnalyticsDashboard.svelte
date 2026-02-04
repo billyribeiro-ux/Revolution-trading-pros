@@ -15,7 +15,7 @@
 	 * @version 2.0.0
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { Form } from '$lib/api/forms';
 
 	interface Props {
@@ -66,6 +66,7 @@
 
 	// Fetch analytics data
 	async function fetchAnalytics() {
+		if (!browser) return;
 		isLoading = true;
 
 		try {
@@ -168,6 +169,7 @@
 
 	// Export analytics report
 	async function exportReport(format: 'csv' | 'pdf') {
+		if (!browser) return;
 		try {
 			const response = await fetch(
 				`/api/forms/${props.formId}/analytics/export?format=${format}&range=${dateRange}`,
@@ -192,11 +194,10 @@
 		}
 	}
 
-	onMount(() => {
-		fetchAnalytics();
-	});
-
+	// Fetch analytics on mount and when dateRange changes
 	$effect(() => {
+		if (!browser) return;
+
 		fetchAnalytics();
 	});
 </script>

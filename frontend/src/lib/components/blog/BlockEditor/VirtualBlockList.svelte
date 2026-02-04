@@ -28,7 +28,8 @@
 </script>
 
 <script lang="ts">
-	import { tick, onMount, onDestroy } from 'svelte';
+	import { tick } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconGripVertical, IconTrash, IconCopy, IconChevronUp, IconChevronDown } from '$lib/icons';
 	import BlockRenderer from './BlockRenderer.svelte';
 	import type { VirtualBlockListProps, BlockMeasurement } from './VirtualBlockList.types';
@@ -674,21 +675,23 @@
 	// Lifecycle
 	// ==========================================================================
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		// Log initial performance
 		console.log('[VirtualBlockList] Mounted with', blocks.length, 'blocks');
-	});
 
-	onDestroy(() => {
-		if (scrollTimeout) {
-			clearTimeout(scrollTimeout);
-		}
-		if (autoScrollRaf) {
-			cancelAnimationFrame(autoScrollRaf);
-		}
-		if (touchLongPressTimer) {
-			clearTimeout(touchLongPressTimer);
-		}
+		return () => {
+			if (scrollTimeout) {
+				clearTimeout(scrollTimeout);
+			}
+			if (autoScrollRaf) {
+				cancelAnimationFrame(autoScrollRaf);
+			}
+			if (touchLongPressTimer) {
+				clearTimeout(touchLongPressTimer);
+			}
+		};
 	});
 </script>
 

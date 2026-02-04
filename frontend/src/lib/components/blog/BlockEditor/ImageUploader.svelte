@@ -23,7 +23,7 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import {
@@ -138,7 +138,9 @@
 	// Lifecycle
 	// ==========================================================================
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		// Add paste event listener
 		document.addEventListener('paste', handlePaste);
 
@@ -146,19 +148,19 @@
 		if (showRecent) {
 			loadRecentAssets();
 		}
-	});
 
-	onDestroy(() => {
-		// Clean up
-		document.removeEventListener('paste', handlePaste);
+		return () => {
+			// Clean up
+			document.removeEventListener('paste', handlePaste);
 
-		// Cancel any pending uploads
-		uploadQueue.forEach((item) => {
-			item.controller?.abort();
-			if (item.previewUrl) {
-				URL.revokeObjectURL(item.previewUrl);
-			}
-		});
+			// Cancel any pending uploads
+			uploadQueue.forEach((item) => {
+				item.controller?.abort();
+				if (item.previewUrl) {
+					URL.revokeObjectURL(item.previewUrl);
+				}
+			});
+		};
 	});
 
 	// ==========================================================================

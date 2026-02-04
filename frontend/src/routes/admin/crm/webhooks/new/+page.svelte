@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
@@ -22,7 +23,6 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconKey from '@tabler/icons-svelte-runes/icons/key';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { WebhookEvent } from '$lib/crm/types';
 
@@ -224,8 +224,10 @@
 	// LIFECYCLE
 	// =====================================================
 
-	onMount(() => {
-		loadEvents();
+	$effect(() => {
+		if (browser) {
+			loadEvents();
+		}
 	});
 </script>
 

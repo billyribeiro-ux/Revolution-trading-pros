@@ -12,7 +12,7 @@
 	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { apiFetch } from '$lib/api/config';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
@@ -42,11 +42,14 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		// Load connection status
-		await connections.load();
-		connectionLoading = false;
-		await loadSettings();
+	$effect(() => {
+		if (browser) {
+			// Load connection status
+			connections.load().then(() => {
+				connectionLoading = false;
+				loadSettings();
+			});
+		}
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════

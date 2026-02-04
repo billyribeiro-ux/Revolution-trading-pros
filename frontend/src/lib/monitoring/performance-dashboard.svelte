@@ -7,7 +7,6 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 
 	interface Props {
@@ -25,6 +24,7 @@
 	let renderTime = $state(0);
 	let blockCount = $state(0);
 	let cacheStats = $state({ hits: 0, misses: 0, hitRate: '0%' });
+	let currentTime = $state('');
 
 	let frameCount = 0;
 	let lastTime = performance.now();
@@ -69,19 +69,19 @@
 		}
 	}
 
-	onMount(() => {
-		if (browser) {
-			measureFPS();
-			updateInterval = setInterval(updateMetrics, 1000);
-			updateMetrics();
-		}
-	});
+	$effect(() => {
+		if (!browser) return;
 
-	onDestroy(() => {
-		if (browser) {
+		// Update timestamp client-side only to avoid hydration mismatch
+		currentTime = new Date().toLocaleTimeString();
+		measureFPS();
+		updateInterval = setInterval(updateMetrics, 1000);
+		updateMetrics();
+
+		return () => {
 			cancelAnimationFrame(animationId);
 			clearInterval(updateInterval);
-		}
+		};
 	});
 
 	function getStatusColor(value: number, thresholds: { good: number; warn: number }): string {
@@ -140,7 +140,7 @@
 		</div>
 
 		<div class="dashboard-footer">
-			<span class="timestamp">{new Date().toLocaleTimeString()}</span>
+			<span class="timestamp">{currentTime}</span>
 		</div>
 	</div>
 {/if}

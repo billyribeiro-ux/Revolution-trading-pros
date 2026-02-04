@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
 
 	// API URL
@@ -47,8 +47,10 @@
 	let previewHtml = $state('');
 	let showPreviewModal = $state(false);
 
-	onMount(async () => {
-		await loadSettings();
+	$effect(() => {
+		if (browser) {
+			loadSettings();
+		}
 	});
 
 	async function loadSettings() {

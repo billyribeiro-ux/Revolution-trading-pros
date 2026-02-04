@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
@@ -12,6 +12,7 @@
 	let analysis: Partial<SeoAnalysis> | null = $state(null);
 	let loading = $state(false);
 	let analyzing = $state(false);
+	let initialized = $state(false);
 
 	// For content selector
 	let forms: Form[] = $state([]);
@@ -22,8 +23,11 @@
 		{ value: 'forms', label: 'Forms' }
 	];
 
-	onMount(async () => {
-		await loadForms();
+	$effect(() => {
+		if (browser && !initialized) {
+			initialized = true;
+			loadForms();
+		}
 	});
 
 	async function loadForms() {

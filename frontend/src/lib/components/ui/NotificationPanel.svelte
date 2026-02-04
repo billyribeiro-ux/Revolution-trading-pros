@@ -7,8 +7,8 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, onDestroy } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
+	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import {
 		IconBell,
@@ -125,15 +125,18 @@
 		onclick?.(notification);
 	}
 
-	onMount(() => {
+	// Setup event listeners and WebSocket connection
+	$effect(() => {
+		if (!browser) return;
+
 		document.addEventListener('click', handleClickOutside);
 		document.addEventListener('keydown', handleKeydown);
 		notificationStore.initWebSocket();
-	});
 
-	onDestroy(() => {
-		document.removeEventListener('click', handleClickOutside);
-		document.removeEventListener('keydown', handleKeydown);
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+			document.removeEventListener('keydown', handleKeydown);
+		};
 	});
 
 	let positionClasses = $derived(

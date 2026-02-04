@@ -3,7 +3,7 @@
 	 * Modal Component - Accessible & Animated
 	 * Displays content in an overlay with backdrop
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { Snippet } from 'svelte';
 	import { IconX } from '$lib/icons';
 
@@ -34,16 +34,12 @@
 
 	// Prevent body scroll when modal is open
 	$effect(() => {
-		if (typeof document !== 'undefined') {
-			document.body.style.overflow = isOpen ? 'hidden' : '';
-		}
-	});
+		if (!browser) return;
 
-	onMount(() => {
+		document.body.style.overflow = isOpen ? 'hidden' : '';
+
 		return () => {
-			if (typeof document !== 'undefined') {
-				document.body.style.overflow = '';
-			}
+			document.body.style.overflow = '';
 		};
 	});
 </script>

@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
@@ -17,8 +17,10 @@
 
 	let contactId = $derived(page.params.id as string);
 
-	onMount(async () => {
-		await loadContact();
+	$effect(() => {
+		if (browser) {
+			loadContact();
+		}
 	});
 
 	async function loadContact() {

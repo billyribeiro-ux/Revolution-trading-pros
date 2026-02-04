@@ -14,7 +14,6 @@
  */
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -67,16 +66,10 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		if (!browser || !videoId) return;
-		await fetchRelated();
-	});
-
-	// Refetch when videoId changes
+	// Fetch on mount and refetch when videoId changes
 	$effect(() => {
-		if (browser && videoId) {
-			fetchRelated();
-		}
+		if (!browser || !videoId) return;
+		fetchRelated();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════

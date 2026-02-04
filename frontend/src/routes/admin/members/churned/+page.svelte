@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
@@ -40,9 +40,11 @@
 	let emailBody = $state('');
 	let campaignType = $state<'winback' | 'free_trial' | 'promo'>('winback');
 
-	onMount(async () => {
-		await churnedStore.loadChurnedMembers();
-		await emailStore.loadTemplates();
+	$effect(() => {
+		if (browser) {
+			churnedStore.loadChurnedMembers();
+			emailStore.loadTemplates();
+		}
 	});
 
 	async function handleSearch() {

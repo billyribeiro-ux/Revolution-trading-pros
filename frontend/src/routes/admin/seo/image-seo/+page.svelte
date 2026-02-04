@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconPhoto,
 		IconRefresh,
@@ -43,15 +43,17 @@
 		{ value: 'none', label: 'No change' }
 	];
 
-	onMount(() => {
-		// Load settings from store
-		const unsubscribe = imageSeoSettings.subscribe((value) => {
-			settings = value;
-		});
+	$effect(() => {
+		if (browser) {
+			// Load settings from store
+			const unsubscribe = imageSeoSettings.subscribe((value) => {
+				settings = value;
+			});
 
-		loadImages();
+			loadImages();
 
-		return () => unsubscribe();
+			return () => unsubscribe();
+		}
 	});
 
 	async function loadImages() {

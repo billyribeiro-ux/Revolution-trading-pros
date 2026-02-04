@@ -8,7 +8,6 @@
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 * @component
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { consentStore, openPreferencesModal } from '../store.svelte.ts';
 	import { activeTemplate, isPreviewMode } from './store';
@@ -45,7 +44,9 @@
 		isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
 	}
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		// ICT9+ Hydration-Safe: Mark mounted first
 		mounted = true;
 		visible = true;

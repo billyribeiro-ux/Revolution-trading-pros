@@ -199,12 +199,16 @@ function forceReloadForFreshChunks(): void {
 
 	// Prevent reload loop - only reload once per 30 seconds
 	if (lastReload && now - parseInt(lastReload, 10) < 30000) {
-		console.warn('[ChunkError] Already reloaded recently, not reloading again');
+		if (import.meta.env.DEV) {
+			console.warn('[ChunkError] Already reloaded recently, not reloading again');
+		}
 		return;
 	}
 
 	sessionStorage.setItem(RELOAD_KEY, now.toString());
-	console.info('[ChunkError] Stale chunks detected, forcing page reload...');
+	if (import.meta.env.DEV) {
+		console.info('[ChunkError] Stale chunks detected, forcing page reload...');
+	}
 	window.location.reload();
 }
 

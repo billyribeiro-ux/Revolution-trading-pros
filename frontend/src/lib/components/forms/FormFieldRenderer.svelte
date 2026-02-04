@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { FormField } from '$lib/api/forms';
 	import { sanitizeFormContent } from '$lib/utils/sanitize';
 
@@ -20,8 +20,8 @@
 	let lastY = 0;
 
 	// Initialize signature canvas when field type is signature
-	onMount(() => {
-		if (props.props.field.field_type === 'signature') {
+	$effect(() => {
+		if (browser && props.field.field_type === 'signature') {
 			initSignatureCanvas();
 		}
 	});

@@ -3,7 +3,6 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconActivity,
@@ -19,7 +18,7 @@
 	let heroVisible = $state(false);
 	let sectionsVisible = $state<boolean[]>([false, false, false]);
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		const heroObserver = new IntersectionObserver(

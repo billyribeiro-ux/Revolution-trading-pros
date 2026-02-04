@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
 	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
@@ -44,10 +44,12 @@
 		};
 	});
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		isClient = true;
 
-		if (typeof window !== 'undefined' && (window as any).richpanel) {
+		if ((window as any).richpanel) {
 			(window as any).richpanel.track('view_article', {
 				id: 1142327,
 				name: 'Quickstart To Precision Trading',
@@ -55,7 +57,7 @@
 			});
 		}
 
-		if (typeof window !== 'undefined' && (window as any).gtag) {
+		if ((window as any).gtag) {
 			(window as any).gtag('event', 'page_view', {
 				page_title: 'Quickstart To Precision Trading',
 				page_location: window.location.href,

@@ -21,10 +21,9 @@
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import { NavBar } from '$lib/components/nav';
-	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { dev } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth.svelte';
@@ -73,12 +72,14 @@
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// LIFECYCLE - onMount (client-only by definition, no browser check needed)
+	// LIFECYCLE - Svelte 5 $effect() Pattern (replaces onMount)
 	// ═══════════════════════════════════════════════════════════════════════════
-	onMount(() => {
+	$effect(() => {
+		// $effect runs on server too, so browser check is required
+		if (!browser) return;
+
 		mounted = true;
 
-		// onMount ONLY runs in browser - no redundant check needed
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
 			console.debug('[Layout] Auth init failed (non-critical):', err);
@@ -101,6 +102,11 @@
 		} catch (err) {
 			console.debug('[Layout] Consent init failed (non-critical):', err);
 		}
+
+		// Cleanup function (runs when component unmounts or before effect re-runs)
+		return () => {
+			mounted = false;
+		};
 	});
 </script>
 

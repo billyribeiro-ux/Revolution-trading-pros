@@ -21,7 +21,6 @@
 	 *
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { IconX, IconSettings, IconCheck } from '$lib/icons';
 
@@ -75,7 +74,7 @@
 	const COOKIE_CONSENT_NAME = 'rtp_cookie_consent';
 	const COOKIE_EXPIRY_DAYS = 365;
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		// Check for existing consent
@@ -83,9 +82,10 @@
 
 		if (!existingConsent) {
 			// Show banner after short delay
-			setTimeout(() => {
+			const timeout = setTimeout(() => {
 				isVisible = true;
 			}, 1000);
+			return () => clearTimeout(timeout);
 		} else {
 			// Apply existing preferences
 			preferences = existingConsent;

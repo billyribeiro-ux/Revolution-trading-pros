@@ -9,7 +9,7 @@
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import ClosePositionModal from '../components/ClosePositionModal.svelte';
 	import { checkAdminStatus } from '$lib/utils/auth';
@@ -136,9 +136,13 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		isAdmin = await checkAdminStatus();
-		await loadData();
+	$effect(() => {
+		if (browser) {
+			(async () => {
+				isAdmin = await checkAdminStatus();
+				await loadData();
+			})();
+		}
 	});
 </script>
 

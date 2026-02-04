@@ -14,7 +14,6 @@
 	 */
 	import type { Snippet } from 'svelte';
 	import { IconX } from '$lib/icons';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	interface Props {
@@ -154,11 +153,11 @@
 	});
 
 	// Cleanup on unmount
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		return () => {
-			if (browser) {
-				document.body.style.overflow = '';
-			}
+			document.body.style.overflow = '';
 		};
 	});
 </script>
@@ -167,7 +166,17 @@
 
 {#if open}
 	<!-- Modal Backdrop - 2026 Mobile-First Responsive -->
-	<div class="modal-backdrop-2026" onclick={handleBackdropClick} role="presentation">
+	<div
+		class="modal-backdrop-2026"
+		onclick={handleBackdropClick}
+		onkeydown={(e) => {
+			if (e.key === 'Escape' && closeOnEscape) close();
+			if ((e.key === 'Enter' || e.key === ' ') && closeOnBackdrop) close();
+		}}
+		role="button"
+		tabindex="0"
+		aria-label="Close dialog"
+	>
 		<!-- Backdrop overlay -->
 		<div class="modal-overlay-2026" aria-hidden="true"></div>
 
