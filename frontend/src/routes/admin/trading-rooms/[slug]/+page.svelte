@@ -14,6 +14,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
+	import type { PageData } from './$types';
 	import { getRoomById, type Room } from '$lib/config/rooms';
 	import {
 		tradePlanApi,
@@ -61,10 +62,16 @@
 	type Tab = 'trade-plan' | 'alerts' | 'weekly-video' | 'trades' | 'video-library';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
+	// PAGE DATA FROM LOAD FUNCTION (SSR)
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	const { data }: { data: PageData } = $props();
+
+	// ═══════════════════════════════════════════════════════════════════════════════
 	// ROUTE DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	const slug = $derived(page.params.slug ?? '');
+	const slug = $derived(data.slug ?? page.params.slug ?? '');
 	const room = $derived(getRoomById(slug));
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -89,8 +96,8 @@
 	// TRADE PLAN STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let tradePlanEntries = $state<TradePlanEntry[]>([]);
-	let isLoadingTradePlan = $state(true);
+	let tradePlanEntries = $state<TradePlanEntry[]>(data.initialData?.tradePlan ?? []);
+	let isLoadingTradePlan = $state(false);
 	let showTradePlanModal = $state(false);
 	let editingTradePlan = $state<TradePlanEntry | null>(null);
 	let isSavingTradePlan = $state(false);
@@ -113,8 +120,8 @@
 	// ALERTS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let alerts = $state<RoomAlert[]>([]);
-	let isLoadingAlerts = $state(true);
+	let alerts = $state<RoomAlert[]>(data.initialData?.alerts ?? []);
+	let isLoadingAlerts = $state(false);
 	let showAlertModal = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
 	let isSavingAlert = $state(false);
@@ -148,9 +155,9 @@
 	// WEEKLY VIDEO STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let currentVideo = $state<WeeklyVideo | null>(null);
+	let currentVideo = $state<WeeklyVideo | null>(data.initialData?.weeklyVideo ?? null);
 	let archivedVideos = $state<WeeklyVideo[]>([]);
-	let isLoadingVideo = $state(true);
+	let isLoadingVideo = $state(false);
 	let showVideoModal = $state(false);
 	let isSavingVideo = $state(false);
 
@@ -169,15 +176,15 @@
 	// ROOM STATS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let roomStats = $state<RoomStats | null>(null);
-	let isLoadingStats = $state(true);
+	let roomStats = $state<RoomStats | null>(data.initialData?.roomStats ?? null);
+	let isLoadingStats = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE TRACKER STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let trades = $state<RoomTrade[]>([]);
-	let isLoadingTrades = $state(true);
+	let trades = $state<RoomTrade[]>(data.initialData?.trades ?? []);
+	let isLoadingTrades = $state(false);
 	let tradeFilter = $state<TradeStatus | 'all'>('all');
 	let showCloseTradeModal = $state(false);
 	let closingTrade = $state<RoomTrade | null>(null);
@@ -193,8 +200,8 @@
 	// VIDEO LIBRARY STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let videoResources = $state<RoomResource[]>([]);
-	let isLoadingVideos = $state(true);
+	let videoResources = $state<RoomResource[]>(data.initialData?.videoResources ?? []);
+	let isLoadingVideos = $state(false);
 	let videoFilter = $state<string>('all');
 	let showVideoResourceModal = $state(false);
 	let editingVideoResource = $state<RoomResource | null>(null);
@@ -305,17 +312,25 @@
 	// DATA FETCHING
 	// ═══════════════════════════════════════════════════════════════════════════════
 
+	// SSR data is already loaded from +page.server.ts
+	// Only refresh on client when slug changes (navigation)
 	$effect(() => {
-		if (!browser || !slug) return;
-
-		untrack(() => {
-			loadTradePlan();
-			loadAlerts();
-			loadWeeklyVideo();
-			loadRoomStats();
-			loadTrades();
-			loadVideoResources();
-		});
+		if (!browser) return;
+		
+		// Track slug changes for client-side navigation
+		const currentSlug = slug;
+		
+		// Only reload if navigating to a different room
+		if (currentSlug && data.slug !== currentSlug) {
+			untrack(() => {
+				loadTradePlan();
+				loadAlerts();
+				loadWeeklyVideo();
+				loadRoomStats();
+				loadTrades();
+				loadVideoResources();
+			});
+		}
 	});
 
 	async function loadTradePlan() {
@@ -1451,13 +1466,12 @@
      TRADE PLAN MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showTradePlanModal}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showTradePlanModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showTradePlanModal = false)}
-		role="button"
-		tabindex="0"
-		aria-label="Close modal"
+		aria-hidden="true"
 	>
 		<div
 			class="modal"
@@ -1598,13 +1612,12 @@
      ALERT MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showAlertModal}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showAlertModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showAlertModal = false)}
-		role="button"
-		tabindex="0"
-		aria-label="Close modal"
+		aria-hidden="true"
 	>
 		<div
 			class="modal"
@@ -1829,13 +1842,12 @@
      WEEKLY VIDEO MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showVideoModal}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showVideoModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showVideoModal = false)}
-		role="button"
-		tabindex="0"
-		aria-label="Close modal"
+		aria-hidden="true"
 	>
 		<div
 			class="modal"
@@ -1941,13 +1953,12 @@
      CLOSE TRADE MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showCloseTradeModal && closingTrade}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showCloseTradeModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
-		role="button"
-		tabindex="0"
-		aria-label="Close modal"
+		aria-hidden="true"
 	>
 		<div
 			class="modal"
@@ -2686,8 +2697,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 1000;
-		padding: 20px;
+		z-index: var(--z-modal, 400);
+		padding: var(--space-2, 20px);
+		isolation: isolate;
 	}
 
 	.modal {
