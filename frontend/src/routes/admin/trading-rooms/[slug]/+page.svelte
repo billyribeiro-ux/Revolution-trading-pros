@@ -1406,15 +1406,21 @@
      TRADE PLAN MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showTradePlanModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showTradePlanModal = false)} role="presentation">
+	<div
+		class="modal-overlay"
+		onclick={() => (showTradePlanModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showTradePlanModal = false)}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="trade-plan-modal-title"
-			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="trade-plan-modal-title">{editingTradePlan ? 'Edit' : 'Add'} Trade Plan Entry</h2>
@@ -1547,15 +1553,21 @@
      ALERT MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showAlertModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showAlertModal = false)} role="presentation">
+	<div
+		class="modal-overlay"
+		onclick={() => (showAlertModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showAlertModal = false)}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="alert-modal-title"
-			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="alert-modal-title">{editingAlert ? 'Edit' : 'Create'} Alert</h2>
@@ -1772,15 +1784,21 @@
      WEEKLY VIDEO MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showVideoModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showVideoModal = false)} role="presentation">
+	<div
+		class="modal-overlay"
+		onclick={() => (showVideoModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showVideoModal = false)}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="video-modal-title"
-			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="video-modal-title">Publish Weekly Video</h2>
@@ -1878,15 +1896,21 @@
      CLOSE TRADE MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showCloseTradeModal && closingTrade}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showCloseTradeModal = false)} role="presentation">
+	<div
+		class="modal-overlay"
+		onclick={() => (showCloseTradeModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="close-trade-modal-title"
-			tabindex="-1"
 		>
 			<div class="modal-header">
 				<h2 id="close-trade-modal-title">Close Trade: {closingTrade.ticker}</h2>

@@ -114,8 +114,10 @@
 	let uploadError = $state('');
 	let isFullscreen = $state(false);
 
-	onMount(async () => {
-		await Promise.all([loadPost(), loadTags()]);
+	$effect(() => {
+		if (browser) {
+			Promise.all([loadPost(), loadTags()]);
+		}
 	});
 
 	async function loadPost() {

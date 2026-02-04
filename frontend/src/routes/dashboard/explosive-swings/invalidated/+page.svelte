@@ -4,7 +4,7 @@
 	 * @version 1.0.0
 	 * @standards Apple ICT 7+ | Svelte 5 January 2026 | WCAG 2.1 AA
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import { ROOM_SLUG } from '../constants';
 
@@ -60,8 +60,10 @@
 		}
 	}
 
-	onMount(() => {
-		fetchInvalidatedTrades();
+	$effect(() => {
+		if (browser) {
+			fetchInvalidatedTrades();
+		}
 	});
 
 	function formatDate(dateStr: string): string {

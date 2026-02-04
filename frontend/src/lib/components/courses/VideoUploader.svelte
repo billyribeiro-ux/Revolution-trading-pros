@@ -5,7 +5,6 @@
 	 * Resumable uploads with progress tracking
 	 */
 
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// Dynamic import for tus-js-client to avoid SSR issues
@@ -15,9 +14,11 @@
 
 	let tus = $state<TusModule | null>(null);
 
-	onMount(async () => {
+	$effect(() => {
 		if (browser) {
-			tus = await import('tus-js-client');
+			import('tus-js-client').then((module) => {
+				tus = module;
+			});
 		}
 	});
 

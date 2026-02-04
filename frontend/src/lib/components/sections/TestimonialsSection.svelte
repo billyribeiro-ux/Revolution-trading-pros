@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import IconQuote from '@tabler/icons-svelte/icons/quote';
@@ -105,7 +104,9 @@
 	}
 
 	// Trigger entrance animations when section scrolls into viewport
-	onMount(() => {
+	let visibilityObserver: IntersectionObserver | null = null;
+
+	$effect(() => {
 		if (!browser) {
 			isVisible = true;
 			return;
@@ -117,11 +118,11 @@
 				return;
 			}
 
-			const visibilityObserver = new IntersectionObserver(
+			visibilityObserver = new IntersectionObserver(
 				(entries) => {
 					if (entries[0]?.isIntersecting) {
 						isVisible = true;
-						visibilityObserver.disconnect();
+						visibilityObserver?.disconnect();
 					}
 				},
 				{ threshold: 0.1, rootMargin: '50px' }
@@ -129,6 +130,8 @@
 
 			visibilityObserver.observe(containerRef);
 		});
+
+		return () => visibilityObserver?.disconnect();
 	});
 
 	// Ticker Tape Data

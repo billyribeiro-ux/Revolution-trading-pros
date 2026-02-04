@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
 
 	// State using Svelte 5 runes
@@ -35,8 +35,10 @@
 		}
 	];
 
-	onMount(() => {
-		loadSettings();
+	$effect(() => {
+		if (browser) {
+			loadSettings();
+		}
 	});
 
 	async function loadSettings() {

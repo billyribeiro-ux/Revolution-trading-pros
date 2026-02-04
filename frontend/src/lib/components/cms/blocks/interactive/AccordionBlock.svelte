@@ -351,6 +351,35 @@
 		z-index: 1;
 	}
 
+	/* Editing mode: header is a div with separate toggle button */
+	.accordion-header.editing {
+		cursor: default;
+	}
+
+	.accordion-toggle-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem;
+		background: transparent;
+		border: none;
+		border-radius: 4px;
+		color: #6b7280;
+		cursor: pointer;
+		transition: all 0.15s;
+		flex-shrink: 0;
+	}
+
+	.accordion-toggle-btn:hover {
+		background: rgba(59, 130, 246, 0.1);
+		color: #3b82f6;
+	}
+
+	.accordion-toggle-btn:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
+	}
+
 	.accordion-title {
 		flex: 1;
 		outline: none;
@@ -545,6 +574,15 @@
 	:global(.dark) .remove-item-btn:hover {
 		background: #450a0a;
 		color: #fca5a5;
+	}
+
+	:global(.dark) .accordion-toggle-btn {
+		color: #94a3b8;
+	}
+
+	:global(.dark) .accordion-toggle-btn:hover {
+		background: rgba(96, 165, 250, 0.1);
+		color: #60a5fa;
 	}
 
 	/* Mobile */

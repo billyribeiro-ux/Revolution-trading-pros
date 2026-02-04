@@ -19,7 +19,6 @@ const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -30,15 +29,11 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) {
-			console.error(`[Trade Plans API] Backend error: ${response.status} ${response.statusText}`);
-			const errorText = await response.text();
-			console.error(`[Trade Plans API] Error body:`, errorText);
 			return null;
 		}
 
 		return await response.json();
-	} catch (err) {
-		console.error('[Trade Plans API] Backend fetch failed:', err);
+	} catch {
 		return null;
 	}
 }

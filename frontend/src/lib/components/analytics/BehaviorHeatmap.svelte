@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { IconClick, IconEye, IconChartBar } from '$lib/icons';
 
 	interface DataPoint {
@@ -29,7 +29,8 @@
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		if (canvas) {
 			ctx = canvas.getContext('2d');
 			renderHeatmap();

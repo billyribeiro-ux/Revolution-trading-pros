@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import IconWebhook from '@tabler/icons-svelte/icons/webhook';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
@@ -224,8 +225,10 @@
 	// LIFECYCLE
 	// =====================================================
 
-	onMount(() => {
-		loadEvents();
+	$effect(() => {
+		if (browser) {
+			loadEvents();
+		}
 	});
 </script>
 

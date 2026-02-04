@@ -51,7 +51,7 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { spring, tweened } from 'svelte/motion';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups.svelte';
@@ -135,7 +135,8 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
+	// Svelte 5 $effect() for lifecycle management with cleanup
+	$effect(() => {
 		if (!browser) return;
 
 		const startTime = performance.now();
@@ -153,19 +154,20 @@
 		// Initialize A/B testing
 		initializeABTesting();
 
-		// Preload assets
-		await preloadAssets();
+		// Preload assets (fire and forget since $effect can't be async)
+		preloadAssets().then(() => {
+			loadTime = performance.now() - startTime;
 
-		loadTime = performance.now() - startTime;
+			// Log performance metrics
+			if (import.meta.env.DEV) {
+				console.log(`[PopupModal] Load time: ${loadTime.toFixed(2)}ms`);
+			}
+		});
 
-		// Log performance metrics
-		if (import.meta.env.DEV) {
-			console.log(`[PopupModal] Load time: ${loadTime.toFixed(2)}ms`);
-		}
-	});
-
-	onDestroy(() => {
-		cleanup();
+		// Cleanup function returned from $effect
+		return () => {
+			cleanup();
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

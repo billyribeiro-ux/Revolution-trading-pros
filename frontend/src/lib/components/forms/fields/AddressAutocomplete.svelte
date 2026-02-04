@@ -12,7 +12,7 @@
 	 * @version 2.0.0
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { FormField } from '$lib/api/forms';
 
 	interface AddressComponents {
@@ -266,7 +266,9 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		document.addEventListener('click', handleClickOutside);
 		return () => document.removeEventListener('click', handleClickOutside);
 	});

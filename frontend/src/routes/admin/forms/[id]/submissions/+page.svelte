@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import SubmissionsList from '$lib/components/forms/SubmissionsList.svelte';
@@ -16,14 +16,18 @@
 
 	let formId = $derived(parseInt(page.params['id']!));
 
-	onMount(async () => {
-		try {
-			form = await getForm(formId);
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load form';
-		} finally {
-			loading = false;
-		}
+	$effect(() => {
+		if (!browser) return;
+
+		(async () => {
+			try {
+				form = await getForm(formId);
+			} catch (err) {
+				error = err instanceof Error ? err.message : 'Failed to load form';
+			} finally {
+				loading = false;
+			}
+		})();
 	});
 </script>
 

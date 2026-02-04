@@ -18,7 +18,6 @@
  */
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
@@ -171,7 +170,7 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		// Decode blurhash immediately for instant visual
@@ -188,17 +187,15 @@
 		if (autoplay) {
 			hasInteracted = true;
 		}
-	});
 
-	onDestroy(() => {
-		if (browser) {
+		return () => {
 			window.removeEventListener('message', handleIframeMessage);
 			// ICT 7 ADDITION: Clear progress interval and save final position
 			if (progressInterval) {
 				clearInterval(progressInterval);
 			}
 			saveProgress(true); // Force save on unmount
-		}
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════

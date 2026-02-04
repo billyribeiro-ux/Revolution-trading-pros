@@ -13,11 +13,12 @@
 	 *
 	 * @version 2.0.0 - ICT 11 Grade
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	let mounted = $state(false);
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		mounted = true;
 	});
 </script>

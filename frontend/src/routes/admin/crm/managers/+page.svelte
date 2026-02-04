@@ -87,8 +87,10 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
-	onMount(() => {
-		loadData();
+	$effect(() => {
+		if (browser) {
+			loadData();
+		}
 	});
 </script>
 

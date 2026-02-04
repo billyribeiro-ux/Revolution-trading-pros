@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
@@ -69,7 +69,8 @@
 
 	let courseId = $state('');
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		const pathParts = window.location.pathname.split('/');
 		courseId = pathParts[pathParts.length - 1];
 		fetchCourse();

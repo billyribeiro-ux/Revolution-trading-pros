@@ -10,7 +10,6 @@
 	 * - User-friendly messaging
 	 */
 
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { log } from '$lib/api/enterprise/tracing';
 	import { serializeError } from '$lib/api/enterprise/errors';
@@ -71,7 +70,7 @@
 	}
 
 	// Global error handler for uncaught errors
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		const handleGlobalError = (event: ErrorEvent) => {

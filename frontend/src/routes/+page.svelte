@@ -7,7 +7,6 @@
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
 	 * ICT11+ Fix: Client-side posts fetch fallback for production
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import Hero from '$lib/components/sections/Hero.svelte';
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
@@ -43,18 +42,21 @@
 
 	// Client-side fallback fetch if SSR returned empty
 	// ICT 7: SSR should always fetch from production API - client fetch is backup only
-	onMount(async () => {
-		if (posts.length === 0 && browser) {
-			try {
-				const res = await fetch(`${API_URL}/api/posts?per_page=6`);
-				if (res.ok) {
-					const json = await res.json();
+	$effect(() => {
+		if (!browser) return;
+		if (posts.length === 0) {
+			fetch(`${API_URL}/api/posts?per_page=6`)
+				.then((res) => {
+					if (res.ok) return res.json();
+					throw new Error('Failed to fetch');
+				})
+				.then((json) => {
 					posts = json.data || [];
-				}
-			} catch {
-				// ICT 7: Network errors handled gracefully - posts remain empty
-				// Component renders without posts (shows empty state or placeholder)
-			}
+				})
+				.catch(() => {
+					// ICT 7: Network errors handled gracefully - posts remain empty
+					// Component renders without posts (shows empty state or placeholder)
+				});
 		}
 	});
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
@@ -81,7 +80,7 @@
 	 * GSAP Animation Controller - Svelte 5 / Dec 2025 Pattern
 	 * Uses dynamic imports for SSR safety and proper cleanup
 	 */
-	onMount(() => {
+	$effect(() => {
 		// SSR-safe guard - only run animations in browser
 		if (!browser) return;
 

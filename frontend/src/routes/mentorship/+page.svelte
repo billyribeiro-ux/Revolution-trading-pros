@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
 	import SEOHead from '$lib/components/SEOHead.svelte';
@@ -31,72 +30,80 @@
 	let heroGraphic: HTMLElement | undefined;
 
 	// --- MOTION ENGINE ---
-	onMount(async () => {
+	$effect(() => {
 		if (!browser) return;
 
-		// Dynamic GSAP import for SSR safety
-		const { gsap } = await import('gsap');
+		let observer: IntersectionObserver | undefined;
 
-		// 1. Hero Sequence (Timeline)
-		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+		(async () => {
+			// Dynamic GSAP import for SSR safety
+			const { gsap } = await import('gsap');
 
-		if (heroBadge)
-			tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-		if (heroTitle)
-			tl.fromTo(
-				heroTitle,
-				{ y: 40, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
-				'-=0.8'
-			);
-		if (heroDesc)
-			tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-		if (heroMetrics)
-			tl.fromTo(
-				heroMetrics,
-				{ opacity: 0, scale: 0.98 },
-				{ opacity: 1, scale: 1, duration: 1.2 },
-				'-=0.6'
-			);
-		if (heroGraphic)
-			tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+			// 1. Hero Sequence (Timeline)
+			const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-		// 2. Scroll Reveal Logic
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						const target = entry.target as HTMLElement;
-						const children = target.querySelectorAll('.gsap-reveal-item');
+			if (heroBadge)
+				tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+			if (heroTitle)
+				tl.fromTo(
+					heroTitle,
+					{ y: 40, opacity: 0 },
+					{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
+					'-=0.8'
+				);
+			if (heroDesc)
+				tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
+			if (heroMetrics)
+				tl.fromTo(
+					heroMetrics,
+					{ opacity: 0, scale: 0.98 },
+					{ opacity: 1, scale: 1, duration: 1.2 },
+					'-=0.6'
+				);
+			if (heroGraphic)
+				tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
-						if (children.length > 0) {
-							gsap.fromTo(
-								children,
-								{ y: 30, opacity: 0 },
-								{
-									y: 0,
-									opacity: 1,
-									duration: 0.8,
-									stagger: 0.1,
-									ease: 'power2.out',
-									overwrite: true
-								}
-							);
-						} else {
-							gsap.fromTo(
-								target,
-								{ y: 30, opacity: 0 },
-								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
-							);
+			// 2. Scroll Reveal Logic
+			observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							const target = entry.target as HTMLElement;
+							const children = target.querySelectorAll('.gsap-reveal-item');
+
+							if (children.length > 0) {
+								gsap.fromTo(
+									children,
+									{ y: 30, opacity: 0 },
+									{
+										y: 0,
+										opacity: 1,
+										duration: 0.8,
+										stagger: 0.1,
+										ease: 'power2.out',
+										overwrite: true
+									}
+								);
+							} else {
+								gsap.fromTo(
+									target,
+									{ y: 30, opacity: 0 },
+									{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
+								);
+							}
+							observer?.unobserve(target);
 						}
-						observer.unobserve(target);
-					}
-				});
-			},
-			{ threshold: 0.15 }
-		);
+					});
+				},
+				{ threshold: 0.15 }
+			);
 
-		document.querySelectorAll('.gsap-section').forEach((el) => observer.observe(el));
+			document.querySelectorAll('.gsap-section').forEach((el) => observer?.observe(el));
+		})();
+
+		return () => {
+			observer?.disconnect();
+		};
 	});
 
 	// --- DATA ---

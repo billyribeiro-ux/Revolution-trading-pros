@@ -10,7 +10,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconList,
 		IconPlus,
@@ -93,8 +93,10 @@
 		})
 	);
 
-	onMount(() => {
-		loadLists();
+	$effect(() => {
+		if (browser) {
+			loadLists();
+		}
 	});
 </script>
 

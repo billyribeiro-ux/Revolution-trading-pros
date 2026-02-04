@@ -455,17 +455,19 @@
 						<img src={formData.thumbnail} alt={formData.name || 'Product'} />
 					</div>
 				{:else}
+					{@const PreviewIcon = previewTypeIcon}
 					<div class="preview-thumbnail placeholder">
-						<!-- svelte-ignore svelte_component_deprecated -->
-						<svelte:component this={previewTypeIcon} size={48} />
+						<PreviewIcon size={48} />
 					</div>
 				{/if}
 
-				<div class="preview-badge" style="background: {previewTypeColor}">
-					<!-- svelte-ignore svelte_component_deprecated -->
-					<svelte:component this={previewTypeIcon} size={14} />
-					{formData.type}
-				</div>
+				{#if previewTypeIcon}
+					{@const BadgeIcon = previewTypeIcon}
+					<div class="preview-badge" style="background: {previewTypeColor}">
+						<BadgeIcon size={14} />
+						{formData.type}
+					</div>
+				{/if}
 
 				<div class="preview-content">
 					<h4>{formData.name || 'Product Name'}</h4>

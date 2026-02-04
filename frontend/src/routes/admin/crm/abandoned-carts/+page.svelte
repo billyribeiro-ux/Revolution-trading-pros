@@ -158,8 +158,12 @@
 		})
 	);
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		loadCarts();
+		return () => {
+			// Cleanup if needed
+		};
 	});
 </script>
 

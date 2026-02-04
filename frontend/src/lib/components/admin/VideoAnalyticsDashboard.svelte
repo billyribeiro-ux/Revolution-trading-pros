@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		analyticsApi,
 		type AnalyticsDashboard,
@@ -38,8 +38,10 @@
 	let error = $state('');
 	let selectedPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
-	onMount(() => {
-		loadData();
+	$effect(() => {
+		if (browser) {
+			loadData();
+		}
 	});
 
 	async function loadData() {

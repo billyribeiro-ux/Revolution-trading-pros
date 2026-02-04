@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import * as d3 from 'd3';
 
 	interface Props {
@@ -12,8 +12,8 @@
 
 	let svgElement: SVGSVGElement;
 
-	onMount(() => {
-		if (!svgElement) return;
+	$effect(() => {
+		if (!browser || !svgElement) return;
 
 		const svg = d3.select(svgElement);
 		svg.selectAll('*').remove();

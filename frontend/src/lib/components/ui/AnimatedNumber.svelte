@@ -7,7 +7,6 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, onDestroy } from 'svelte';
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 
@@ -101,23 +100,21 @@
 		});
 	}
 
-	onMount(() => {
-		// Initial animation from 0 to value
-		displayValue = 0;
-		animate(value);
-	});
-
-	onDestroy(() => {
-		if (tween) {
-			tween.kill();
-		}
-	});
-
-	// Reactively animate when value changes
+	// Initialize and reactively animate when value changes
 	$effect(() => {
-		if (browser && value !== undefined) {
+		if (!browser) return;
+
+		// Initial animation from 0 to value, and reactive updates
+		if (value !== undefined) {
 			animate(value);
 		}
+
+		// Cleanup: kill tween on destroy
+		return () => {
+			if (tween) {
+				tween.kill();
+			}
+		};
 	});
 </script>
 

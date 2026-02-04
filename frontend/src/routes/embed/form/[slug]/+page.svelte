@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import FormRenderer from '$lib/components/forms/FormRenderer.svelte';
 	import { previewForm } from '$lib/api/forms';
@@ -16,14 +16,20 @@
 
 	let formSlug = $derived(page.params.slug!);
 
-	onMount(async () => {
-		try {
-			form = await previewForm(formSlug);
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Form not found';
-		} finally {
-			loading = false;
+	$effect(() => {
+		if (!browser) return;
+
+		async function loadForm() {
+			try {
+				form = await previewForm(formSlug);
+			} catch (err) {
+				error = err instanceof Error ? err.message : 'Form not found';
+			} finally {
+				loading = false;
+			}
 		}
+
+		loadForm();
 	});
 
 	function handleSuccess(submissionId: string) {

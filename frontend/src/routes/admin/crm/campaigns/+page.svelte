@@ -20,7 +20,7 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconMail,
 		IconPlus,
@@ -211,8 +211,10 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		loadCampaigns();
+	$effect(() => {
+		if (browser) {
+			loadCampaigns();
+		}
 	});
 </script>
 

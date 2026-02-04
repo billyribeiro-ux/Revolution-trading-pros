@@ -1,27 +1,31 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { apiFetch } from '$lib/api/config';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 
-	let loading = true;
-	let error = '';
-	let preview: { subject?: string; body_html?: string } | null = null;
+	let loading = $state(true);
+	let error = $state('');
+	let preview: { subject?: string; body_html?: string } | null = $state(null);
 	const id = page.params['id']!;
 
-	onMount(async () => {
-		try {
-			// POST request (no sample data needed)
-			preview = await apiFetch(`/admin/email/templates/${id}/preview`, {
-				method: 'POST',
-				body: JSON.stringify({})
-			});
-		} catch (e) {
-			error = (e as Error).message;
-		} finally {
-			loading = false;
-		}
+	$effect(() => {
+		if (!browser) return;
+
+		(async () => {
+			try {
+				// POST request (no sample data needed)
+				preview = await apiFetch(`/admin/email/templates/${id}/preview`, {
+					method: 'POST',
+					body: JSON.stringify({})
+				});
+			} catch (e) {
+				error = (e as Error).message;
+			} finally {
+				loading = false;
+			}
+		})();
 	});
 </script>
 

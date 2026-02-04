@@ -5,7 +5,7 @@
 	 * Displays optimization statistics, savings charts,
 	 * and storage usage breakdowns.
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { mediaApi, type MediaStatistics } from '$lib/api/media';
 
 	interface Props {
@@ -19,8 +19,9 @@
 	let loading = $state(true);
 	let error: string | null = $state(null);
 
-	onMount(async () => {
-		await loadStatistics();
+	$effect(() => {
+		if (!browser) return;
+		loadStatistics();
 	});
 
 	async function loadStatistics() {

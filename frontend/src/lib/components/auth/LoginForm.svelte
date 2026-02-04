@@ -32,7 +32,6 @@
 	 */
 	import { goto } from '$app/navigation';
 	import { login } from '$lib/api/auth';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
 
@@ -151,7 +150,6 @@
 	function validateRedirectUrl(url: string): string {
 		// DEFENSIVE: Handle null/undefined
 		if (!url || typeof url !== 'string') {
-			console.warn('[LoginForm:ICT11] Invalid redirect URL type:', typeof url);
 			return '/dashboard';
 		}
 
@@ -182,17 +180,9 @@
 				}
 			}
 
-			console.warn('[LoginForm:ICT11] Redirect URL failed validation:', {
-				original: url,
-				decoded: decoded,
-				reason: 'Security checks failed'
-			});
-		} catch (decodeError) {
-			// Handle malformed URL encoding
-			console.error('[LoginForm:ICT11] URL decode failed:', {
-				url: url,
-				error: decodeError instanceof Error ? decodeError.message : String(decodeError)
-			});
+			// Redirect URL failed security validation - use default
+		} catch {
+			// Handle malformed URL encoding - use default
 		}
 
 		// ICT 11+ Fallback: Always return safe default
@@ -239,7 +229,7 @@
 	}
 
 	// --- Lifecycle ---
-	onMount(() => {
+	$effect(() => {
 		if (!browser || !cardRef) return;
 
 		// Load remembered email (sync)
@@ -291,7 +281,7 @@
 			}, 800);
 		})();
 
-		// Return cleanup function (sync) - Svelte 5 pattern
+		// Return cleanup function - Svelte 5 $effect pattern
 		return () => {
 			if (gsapContext) {
 				gsapContext.revert();
@@ -314,7 +304,6 @@
 	async function performRedirect(): Promise<void> {
 		// DEFENSIVE: Ensure we're in browser environment
 		if (!browser) {
-			console.warn('[LoginForm:ICT11] Server-side redirect attempt blocked');
 			return;
 		}
 
@@ -329,13 +318,6 @@
 			// Security validation: prevent open redirects and XSS
 			const validatedUrl = validateRedirectUrl(targetUrl);
 
-			console.log('[LoginForm:ICT11] Redirect flow:', {
-				raw: rawRedirect,
-				target: targetUrl,
-				validated: validatedUrl,
-				timestamp: new Date().toISOString()
-			});
-
 			// ICT 11+ Pattern: Use SvelteKit navigation with full invalidation
 			// invalidateAll ensures all load functions re-run with new auth state
 			// replaceState prevents back button from returning to login
@@ -344,19 +326,8 @@
 				invalidateAll: true,
 				noScroll: false // Allow natural scroll to top
 			});
-
-			console.log('[LoginForm:ICT11] Navigation completed successfully');
-		} catch (navigationError) {
-			// ICT 11+ Error Recovery: Log error and use native navigation as fallback
-			console.error('[LoginForm:ICT11] SvelteKit navigation failed:', {
-				error: navigationError,
-				type:
-					navigationError instanceof Error
-						? navigationError.constructor.name
-						: typeof navigationError,
-				message:
-					navigationError instanceof Error ? navigationError.message : String(navigationError)
-			});
+		} catch {
+			// ICT 11+ Error Recovery: Use native navigation as fallback
 
 			// Fallback: Use native browser navigation
 			// This ensures redirect always succeeds even if SvelteKit router fails
@@ -364,20 +335,12 @@
 				new URLSearchParams(window.location.search).get('redirect') || '/dashboard'
 			);
 
-			console.log('[LoginForm:ICT11] Using native navigation fallback:', fallbackUrl);
 			window.location.href = fallbackUrl;
 		}
 	}
 
 	// --- Form Submit ---
 	async function handleSubmit() {
-		// ICT 11+ Debug: Entry point logging for troubleshooting silent failures
-		console.log('[LoginForm:ICT11] handleSubmit called', {
-			email: email ? email.substring(0, 3) + '***' : '(empty)',
-			passwordLength: password?.length || 0,
-			timestamp: new Date().toISOString()
-		});
-
 		// Mark all fields as touched
 		touched = { email: true, password: true };
 
@@ -386,9 +349,6 @@
 		const passwordError = validatePassword(password);
 
 		if (emailError || passwordError) {
-			// ICT 11+ Debug: Log validation failures
-			console.log('[LoginForm:ICT11] Validation failed', { emailError, passwordError });
-
 			// ICT 11+ Svelte 5 Fix: Create complete object in single assignment
 			// Mutating after assignment may not trigger reactivity in Svelte 5
 			errors = {
@@ -423,21 +383,8 @@
 		if (gsap && submitBtn) gsap.to(submitBtn, { scale: 0.97, duration: 0.1 });
 
 		try {
-			// ICT 11+: Structured logging with context
-			console.log('[LoginForm:ICT11] Authentication flow initiated', {
-				email: email.substring(0, 3) + '***', // Privacy: mask email
-				rememberMe,
-				timestamp: new Date().toISOString()
-			});
-
 			// Execute login with comprehensive error handling in auth service
 			const user = await login({ email, password, remember: rememberMe });
-
-			console.log('[LoginForm:ICT11] Authentication successful', {
-				userId: user?.id,
-				email: user?.email?.substring(0, 3) + '***',
-				timestamp: new Date().toISOString()
-			});
 
 			// Persist email preference (localStorage is sync, safe to call)
 			saveRememberedEmail();
@@ -453,31 +400,18 @@
 			// - Too fast (<200ms): User misses success confirmation
 			// - Too slow (>600ms): Feels sluggish
 			// - 400ms: Sweet spot for recognition without impatience
-			console.log('[LoginForm:ICT11] Scheduling redirect (400ms delay for UX)');
 
 			// ICT 11+: Fire-and-forget timer pattern
 			// Timer ID intentionally not stored - component will unmount during navigation
 			// No cleanup needed as navigation replaces the entire page context
 			setTimeout(() => {
-				console.log('[LoginForm:ICT11] Redirect timer executed');
 				// Fire-and-forget: performRedirect handles all errors internally
-				performRedirect().catch((err) => {
-					// This should never happen as performRedirect catches all errors
-					// But ICT 11+ requires defensive programming
-					console.error('[LoginForm:ICT11] Unexpected redirect error:', err);
+				performRedirect().catch(() => {
 					// Last resort: force navigation
 					window.location.href = '/dashboard';
 				});
 			}, 400);
 		} catch (error: unknown) {
-			// ICT 11+ Debug: Log all caught errors for diagnosis
-			console.error('[LoginForm:ICT11] Login error caught:', {
-				error,
-				type: error instanceof Error ? error.constructor.name : typeof error,
-				message: error instanceof Error ? error.message : String(error),
-				timestamp: new Date().toISOString()
-			});
-
 			// Reset button animation
 			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 
@@ -519,8 +453,6 @@
 				emailNotVerified = true;
 				generalError = '';
 			} else {
-				// ICT 7 Debug: Log before setting generalError
-				console.log('[LoginForm:ICT7] Setting generalError to:', errorMessage);
 				generalError = errorMessage;
 			}
 		} finally {

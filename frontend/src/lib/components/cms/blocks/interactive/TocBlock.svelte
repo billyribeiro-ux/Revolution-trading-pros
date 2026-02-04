@@ -9,7 +9,6 @@
 <script lang="ts">
 	import { IconList, IconChevronDown } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { Block, BlockContent } from '../types';
 
@@ -176,7 +175,9 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
+
 		generateToc();
 		checkMobile();
 

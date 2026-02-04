@@ -28,7 +28,7 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
@@ -520,8 +520,12 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await Promise.all([loadContact(), loadAvailableTagsAndLists()]);
+	$effect(() => {
+		if (!browser) return;
+		Promise.all([loadContact(), loadAvailableTagsAndLists()]);
+		return () => {
+			// Cleanup if needed
+		};
 	});
 </script>
 

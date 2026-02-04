@@ -232,8 +232,10 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		loadFunnel();
+	$effect(() => {
+		if (browser) {
+			loadFunnel();
+		}
 	});
 </script>
 

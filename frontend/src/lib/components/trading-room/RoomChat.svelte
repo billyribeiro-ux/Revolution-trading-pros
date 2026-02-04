@@ -13,7 +13,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
@@ -197,20 +196,21 @@
 	// LIFECYCLE
 	// ===============================================================================
 
-	onMount(() => {
+	// Initialize WebSocket connection and cleanup on destroy
+	$effect(() => {
 		if (provider === 'websocket') {
 			connectWebSocket();
 		} else {
 			isConnecting = false;
 			isConnected = true;
 		}
-	});
 
-	onDestroy(() => {
-		if (ws) {
-			ws.close();
-			ws = null;
-		}
+		return () => {
+			if (ws) {
+				ws.close();
+				ws = null;
+			}
+		};
 	});
 </script>
 

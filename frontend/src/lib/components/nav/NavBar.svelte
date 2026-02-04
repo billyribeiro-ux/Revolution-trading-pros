@@ -94,7 +94,7 @@
 </script>
 
 <script lang="ts">
-	import { onMount, tick, type Snippet } from 'svelte';
+	import { tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
@@ -581,7 +581,10 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	// Svelte 5 $effect() for lifecycle management with cleanup
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+
 		// Media queries for user preferences
 		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		const contrastQuery = window.matchMedia('(prefers-contrast: more)');
@@ -609,6 +612,7 @@
 		// Setup scroll observer
 		setupScrollObserver();
 
+		// Cleanup function returned from $effect
 		return () => {
 			motionQuery.removeEventListener('change', handleMotionChange);
 			contrastQuery.removeEventListener('change', handleContrastChange);

@@ -134,8 +134,10 @@
 		})
 	);
 
-	onMount(() => {
-		loadCampaigns();
+	$effect(() => {
+		if (browser) {
+			loadCampaigns();
+		}
 	});
 </script>
 

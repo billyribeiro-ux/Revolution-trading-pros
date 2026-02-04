@@ -14,7 +14,6 @@
 	 */
 	import type { Snippet } from 'svelte';
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
 	import MobileBackground from './MobileBackground.svelte';
 
 	interface Props {
@@ -29,7 +28,7 @@
 	let mouseY = $state(50);
 	let isMobile = $state(false);
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		// Check for mobile viewport

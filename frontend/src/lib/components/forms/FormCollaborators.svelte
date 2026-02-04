@@ -12,7 +12,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
@@ -202,18 +202,21 @@
 	}
 
 	// Initial load
-	onMount(async () => {
-		loading = true;
-		await Promise.all([fetchCollaborators(), fetchActiveUsers(), fetchActivities()]);
-		loading = false;
+	$effect(() => {
+		if (browser) {
+			loading = true;
+			Promise.all([fetchCollaborators(), fetchActiveUsers(), fetchActivities()]).then(() => {
+				loading = false;
+			});
 
-		// Poll for presence updates
-		pollingInterval = setInterval(fetchActiveUsers, 10000);
-	});
+			// Poll for presence updates
+			pollingInterval = setInterval(fetchActiveUsers, 10000);
 
-	onDestroy(() => {
-		if (pollingInterval) {
-			clearInterval(pollingInterval);
+			return () => {
+				if (pollingInterval) {
+					clearInterval(pollingInterval);
+				}
+			};
 		}
 	});
 </script>

@@ -118,8 +118,10 @@
 		}
 	];
 
-	onMount(() => {
-		loadSettings();
+	$effect(() => {
+		if (browser) {
+			loadSettings();
+		}
 	});
 </script>
 

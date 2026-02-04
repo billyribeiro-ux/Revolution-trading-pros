@@ -8,7 +8,7 @@
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import FavoriteButton from '$lib/components/dashboard/FavoriteButton.svelte';
@@ -89,7 +89,8 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser) return;
 		fetchVideo();
 	});
 </script>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import IconLockSquare from '@tabler/icons-svelte/icons/lock-square';
@@ -37,7 +36,7 @@
 	// Trigger entrance animations when section scrolls into viewport
 	let observer: IntersectionObserver | null = null;
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) {
 			isVisible = true;
 			return;

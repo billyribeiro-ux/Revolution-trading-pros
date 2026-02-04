@@ -8,7 +8,7 @@
 	 * @version 1.0.0
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { createSearchState } from './search.state.svelte';
 
 	// Layout Components
@@ -25,8 +25,10 @@
 	// Initialize search state
 	const search = createSearchState();
 
-	onMount(() => {
-		search.initialize();
+	$effect(() => {
+		if (browser) {
+			search.initialize();
+		}
 	});
 </script>
 

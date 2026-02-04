@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { serviceMembersStore, emailStore } from '$lib/stores/members.svelte';
@@ -40,9 +40,11 @@
 	let emailSubject = $state('');
 	let emailBody = $state('');
 
-	onMount(async () => {
-		await serviceMembersStore.loadServiceMembers(serviceId);
-		await emailStore.loadTemplates();
+	$effect(() => {
+		if (browser) {
+			serviceMembersStore.loadServiceMembers(serviceId);
+			emailStore.loadTemplates();
+		}
 	});
 
 	async function handleSearch() {

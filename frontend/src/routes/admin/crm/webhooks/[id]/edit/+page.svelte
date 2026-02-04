@@ -263,8 +263,10 @@
 	// LIFECYCLE
 	// =====================================================
 
-	onMount(() => {
-		loadWebhook();
+	$effect(() => {
+		if (browser) {
+			loadWebhook();
+		}
 	});
 </script>
 

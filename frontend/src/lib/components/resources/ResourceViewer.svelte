@@ -181,11 +181,12 @@
 
 {#if open}
 	<!-- Backdrop -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
 		onclick={handleClose}
+		onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClose()}
+		role="button"
+		tabindex="0"
 		aria-label="Close viewer"
 	></div>
 

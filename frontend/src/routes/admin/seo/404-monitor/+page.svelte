@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconSearch,
 		IconArrowForward,
@@ -16,6 +16,7 @@
 	let selectedIds: number[] = $state([]);
 	let showCreateRedirect = $state(false);
 	let selected404: any = $state(null);
+	let initialized = $state(false);
 
 	const sortOptions = [
 		{ value: 'hits', label: 'Most Hits' },
@@ -24,9 +25,12 @@
 	];
 	let sortBy = $state('hits');
 
-	onMount(() => {
-		loadLogs();
-		loadStats();
+	$effect(() => {
+		if (browser && !initialized) {
+			initialized = true;
+			loadLogs();
+			loadStats();
+		}
 	});
 
 	async function loadLogs() {

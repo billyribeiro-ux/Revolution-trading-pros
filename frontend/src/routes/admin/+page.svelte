@@ -81,40 +81,40 @@
 		return response.json();
 	}
 
-	let isLoading = true;
-	let lastUpdated: Date | null = null;
-	let error: string | null = null;
-	let selectedPeriod = '30d';
-	let mounted = false;
+	let isLoading = $state(true);
+	let lastUpdated = $state<Date | null>(null);
+	let error = $state<string | null>(null);
+	let selectedPeriod = $state('30d');
+	let mounted = $state(false);
 
 	// Connection status
-	let analyticsConnected = false;
-	let seoConnected = false;
-	let hasRealAnalyticsData = false;
-	let hasRealSeoData = false;
+	let analyticsConnected = $state(false);
+	let seoConnected = $state(false);
+	let hasRealAnalyticsData = $state(false);
+	let hasRealSeoData = $state(false);
 
 	// Real stats data
-	let stats = {
+	let stats = $state({
 		activeSubscriptions: 0,
 		monthlyRevenue: 0,
 		activeCoupons: 0,
 		totalMembers: 0,
 		totalPosts: 0,
 		totalProducts: 0
-	};
+	});
 
 	// Analytics metrics - ALL VALUES START AT NULL (no fake data!)
-	let analytics = {
+	let analytics = $state({
 		sessions: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		pageviews: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		avgSessionDuration: { value: null as string | null, change: 0, trend: 'up' as 'up' | 'down' },
 		totalUsers: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		bounceRate: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
 		newUsers: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' }
-	};
+	});
 
 	// SEO metrics - ALL VALUES START AT NULL (no fake data!)
-	let seoMetrics = {
+	let seoMetrics = $state({
 		searchTraffic: { value: null as number | null, change: 0 },
 		totalImpressions: { value: null as number | null, change: 0 },
 		totalClicks: { value: null as number | null, change: 0 },
@@ -124,17 +124,17 @@
 		indexedPages: { value: null as number | null, change: 0 },
 		error404Count: { value: null as number | null, hits: 0 },
 		redirections: { count: null as number | null, hits: 0 }
-	};
+	});
 
 	// Device breakdown - default values to prevent null access errors
-	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } = {
+	let deviceBreakdown = $state<{ desktop: number; mobile: number; tablet: number }>({
 		desktop: 0,
 		mobile: 0,
 		tablet: 0
-	};
+	});
 
 	// Top pages
-	let topPages: { path: string; views: number; change: number }[] = [];
+	let topPages = $state<{ path: string; views: number; change: number }[]>([]);
 
 	// Animated counter
 	function animateValue(

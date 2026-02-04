@@ -18,7 +18,6 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { browser, dev } from '$app/environment';
 	import {
 		subscribeToMetrics,
@@ -48,7 +47,7 @@
 	// Lifecycle
 	// ==========================================================================
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser || !dev) return;
 
 		// Subscribe to metrics
@@ -82,13 +81,11 @@
 				// Ignore
 			}
 		}
-	});
 
-	onDestroy(() => {
-		if (unsubscribe) unsubscribe();
-		if (browser) {
+		return () => {
+			if (unsubscribe) unsubscribe();
 			window.removeEventListener('keydown', handleKeyDown);
-		}
+		};
 	});
 
 	// ==========================================================================

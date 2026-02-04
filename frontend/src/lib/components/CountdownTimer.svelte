@@ -51,7 +51,6 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { spring, tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -298,7 +297,7 @@
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		// Calculate server time offset if provided
@@ -322,11 +321,11 @@
 
 		// Setup event listeners
 		setupEventListeners();
-	});
 
-	onDestroy(() => {
-		stop();
-		cleanupEventListeners();
+		return () => {
+			stop();
+			cleanupEventListeners();
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

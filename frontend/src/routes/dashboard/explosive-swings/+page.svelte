@@ -4,7 +4,7 @@
 	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { createPageState } from './page.state.svelte';
 	import { createRealtimeState } from './realtime.svelte';
 
@@ -159,16 +159,19 @@
 		if (response.ok) await ps.fetchAlerts();
 	}
 
-	onMount(() => {
+	// Svelte 5: Combined lifecycle with $effect() - browser guard and cleanup
+	$effect(() => {
+		if (!browser) return;
+
 		ps.initializeData();
 
 		// ICT 7+ Phase 3: Connect to WebSocket for real-time alerts
 		realtime.connect();
-	});
 
-	onDestroy(() => {
-		// ICT 7+ Phase 3: Disconnect WebSocket when leaving page
-		realtime.disconnect();
+		// Cleanup: Disconnect WebSocket when leaving page
+		return () => {
+			realtime.disconnect();
+		};
 	});
 </script>
 

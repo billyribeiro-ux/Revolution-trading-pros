@@ -5,7 +5,7 @@
 	 * Displays all published courses for members
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { CourseCard } from '$lib/components/courses';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
@@ -61,9 +61,9 @@
 		}
 	};
 
-	onMount(fetchCourses);
-
 	$effect(() => {
+		if (!browser) return;
+		// Track dependencies for re-fetching when filters change
 		levelFilter;
 		sortBy;
 		fetchCourses();

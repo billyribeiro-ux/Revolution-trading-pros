@@ -134,7 +134,9 @@ if (browser) {
 			lastOnline: Date.now()
 		};
 		// Trigger sync when back online
-		syncPendingActions();
+		syncPendingActions().catch((error) => {
+			console.error('Failed to sync pending actions on reconnect:', error);
+		});
 	});
 
 	window.addEventListener('offline', () => {
@@ -203,7 +205,9 @@ export const offlineStore = {
 
 		// Try to sync immediately if online
 		if (offlineState.isOnline) {
-			syncPendingActions();
+			syncPendingActions().catch((error) => {
+				console.error('Failed to sync pending actions after queue:', error);
+			});
 		}
 	},
 

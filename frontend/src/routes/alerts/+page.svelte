@@ -9,13 +9,12 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
-	onMount(() => {
+	$effect(() => {
 		if (!browser) return;
 
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;

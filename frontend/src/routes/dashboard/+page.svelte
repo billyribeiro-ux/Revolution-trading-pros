@@ -238,11 +238,8 @@
 	async function loadMemberships(): Promise<void> {
 		isLoading = true;
 		try {
-			console.log('[Dashboard] Loading memberships for user:', $user?.email);
 			membershipsData = await getUserMemberships();
-			console.log('[Dashboard] Memberships loaded:', membershipsData);
-		} catch (error) {
-			console.error('[Dashboard] Failed to load memberships:', error);
+		} catch {
 			membershipsData = null;
 		} finally {
 			isLoading = false;

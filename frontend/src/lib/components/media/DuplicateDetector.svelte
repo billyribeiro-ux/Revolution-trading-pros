@@ -6,7 +6,7 @@
 	 * Allows merging duplicates to save storage space.
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface DuplicateFile {
 		id: number;
@@ -61,6 +61,7 @@
 	}
 
 	async function loadDuplicates() {
+		if (!browser) return;
 		isLoading = true;
 		error = null;
 
@@ -86,6 +87,7 @@
 	}
 
 	async function scanForDuplicates() {
+		if (!browser) return;
 		isScanning = true;
 		scanProgress = 0;
 
@@ -121,6 +123,7 @@
 	}
 
 	async function mergeDuplicates() {
+		if (!browser) return;
 		if (!selectedGroup || !selectedKeepId) return;
 
 		isMerging = true;
@@ -167,7 +170,10 @@
 		selectedKeepId = null;
 	}
 
-	onMount(() => {
+	// Load duplicates on mount
+	$effect(() => {
+		if (!browser) return;
+
 		loadDuplicates();
 	});
 </script>

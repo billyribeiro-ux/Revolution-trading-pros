@@ -38,7 +38,7 @@
 	 * @license MIT
 	 */
 
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore, user as userStore } from '$lib/stores/auth.svelte';
@@ -572,86 +572,89 @@
 	// Lifecycle Hooks
 	// ─────────────────────────────────────────────────────────────────────────────
 
-	onMount(async () => {
+	// Initialize toolbar, session monitoring, and event listeners
+	$effect(() => {
 		if (!browser) return;
 
 		console.debug('[AdminToolbar] Mounting...');
 
-		try {
-			// ICT9+ Pattern: Don't attempt token refresh in AdminToolbar
-			// Token refresh should be handled by a dedicated auth initialization service
-			// AdminToolbar only displays UI based on current auth state
-			const token = authStore.getToken();
+		const initToolbar = async () => {
+			try {
+				// ICT9+ Pattern: Don't attempt token refresh in AdminToolbar
+				// Token refresh should be handled by a dedicated auth initialization service
+				// AdminToolbar only displays UI based on current auth state
+				const token = authStore.getToken();
 
-			// Only load user if we already have a valid token
-			if (token && !$userStore) {
-				console.debug('[AdminToolbar] Loading user data...');
-				isLoading = true;
-				try {
-					await getUser();
-					// Type-safe access with proper null checking
-					const user = $userStore as AdminUser | null;
-					if (user?.email) {
-						console.debug('[AdminToolbar] User loaded:', user.email);
+				// Only load user if we already have a valid token
+				if (token && !$userStore) {
+					console.debug('[AdminToolbar] Loading user data...');
+					isLoading = true;
+					try {
+						await getUser();
+						// Type-safe access with proper null checking
+						const user = $userStore as AdminUser | null;
+						if (user?.email) {
+							console.debug('[AdminToolbar] User loaded:', user.email);
+						}
+					} catch (error) {
+						console.error('[AdminToolbar] Failed to load user:', error);
+						errorState.hasError = true;
+						errorState.message = 'Failed to load user data';
+						// Don't clear auth here - let the auth service handle it
+					} finally {
+						isLoading = false;
 					}
-				} catch (error) {
-					console.error('[AdminToolbar] Failed to load user:', error);
-					errorState.hasError = true;
-					errorState.message = 'Failed to load user data';
-					// Don't clear auth here - let the auth service handle it
-				} finally {
+				} else {
 					isLoading = false;
 				}
-			} else {
-				isLoading = false;
+
+				// Start session monitoring
+				sessionCheckInterval = window.setInterval(checkSession, CONSTANTS.SESSION_CHECK_INTERVAL);
+
+				// Monitor page visibility for session checks
+				visibilityChangeHandler = () => {
+					if (!document.hidden) {
+						checkSession();
+					}
+				};
+				document.addEventListener('visibilitychange', visibilityChangeHandler);
+
+				// Add global keyboard listener for escape
+				const handleGlobalEscape = (e: KeyboardEvent) => {
+					if (e.key === KEYBOARD_KEYS.ESCAPE) {
+						closeAllDropdowns();
+					}
+				};
+				document.addEventListener('keydown', handleGlobalEscape, { signal });
+
+				// Track toolbar load
+				trackEvent('toolbar_loaded', { isAdmin });
+			} catch (error) {
+				console.error('[AdminToolbar] Mount error:', error);
+				errorState.hasError = true;
+			}
+		};
+
+		initToolbar();
+
+		return () => {
+			console.debug('[AdminToolbar] Unmounting...');
+
+			// Cleanup
+			abortController.abort();
+
+			if (sessionCheckInterval !== null) {
+				clearInterval(sessionCheckInterval);
 			}
 
-			// Start session monitoring
-			sessionCheckInterval = window.setInterval(checkSession, CONSTANTS.SESSION_CHECK_INTERVAL);
+			if (visibilityChangeHandler) {
+				document.removeEventListener('visibilitychange', visibilityChangeHandler);
+			}
 
-			// Monitor page visibility for session checks
-			visibilityChangeHandler = () => {
-				if (!document.hidden) {
-					checkSession();
-				}
-			};
-			document.addEventListener('visibilitychange', visibilityChangeHandler);
-
-			// Add global keyboard listener for escape
-			const handleGlobalEscape = (e: KeyboardEvent) => {
-				if (e.key === KEYBOARD_KEYS.ESCAPE) {
-					closeAllDropdowns();
-				}
-			};
-			document.addEventListener('keydown', handleGlobalEscape, { signal });
-
-			// Track toolbar load
-			trackEvent('toolbar_loaded', { isAdmin });
-		} catch (error) {
-			console.error('[AdminToolbar] Mount error:', error);
-			errorState.hasError = true;
-		}
-	});
-
-	onDestroy(() => {
-		if (!browser) return;
-
-		console.debug('[AdminToolbar] Unmounting...');
-
-		// Cleanup
-		abortController.abort();
-
-		if (sessionCheckInterval !== null) {
-			clearInterval(sessionCheckInterval);
-		}
-
-		if (visibilityChangeHandler) {
-			document.removeEventListener('visibilitychange', visibilityChangeHandler);
-		}
-
-		if (clickOutsideTimeout) {
-			clearTimeout(clickOutsideTimeout);
-		}
+			if (clickOutsideTimeout) {
+				clearTimeout(clickOutsideTimeout);
+			}
+		};
 	});
 </script>
 

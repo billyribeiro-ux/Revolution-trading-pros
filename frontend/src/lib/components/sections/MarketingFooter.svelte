@@ -16,7 +16,6 @@
 	 * @version 2.0.0 - Svelte 5 Runes + MentorshipSection Pattern
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -47,7 +46,7 @@
 	// --- Intersection Observer for Viewport Detection ---
 	let observer: IntersectionObserver | null = null;
 
-	onMount(() => {
+	$effect(() => {
 		// Ensures correct year even if the page is prerendered at build time.
 		currentYear = new Date().getFullYear();
 

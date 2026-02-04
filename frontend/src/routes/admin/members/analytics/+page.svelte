@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import {
 		IconArrowLeft,
@@ -17,16 +17,16 @@
 	} from '$lib/icons';
 
 	// Analytics data
-	let loading = true;
-	let dateRange = '30d';
+	let loading = $state(true);
+	let dateRange = $state('30d');
 
 	// Connection status - NO MOCK DATA
-	let isConnected = false;
-	let connectionError: string | null = null;
-	let hasData = false;
+	let isConnected = $state(false);
+	let connectionError: string | null = $state(null);
+	let hasData = $state(false);
 
 	// Metrics - Start with null values, no fake data
-	let metrics = {
+	let metrics = $state({
 		totalMembers: null as number | null,
 		memberGrowth: null as number | null,
 		mrr: null as number | null,
@@ -35,10 +35,10 @@
 		churnChange: null as number | null,
 		avgLtv: null as number | null,
 		ltvGrowth: null as number | null
-	};
+	});
 
 	// Chart data - Empty arrays, no fake data
-	let growthData: { month: string; members: number; new: number; churned: number }[] = [];
+	let growthData: { month: string; members: number; new: number; churned: number }[] = $state([]);
 	let cohortData: {
 		cohort: string;
 		m0: number;
@@ -47,19 +47,21 @@
 		m3: number;
 		m4: number;
 		m5: number;
-	}[] = [];
+	}[] = $state([]);
 	let revenueData: {
 		month: string;
 		mrr: number;
 		expansion: number;
 		contraction: number;
 		churn: number;
-	}[] = [];
-	let churnReasons: { reason: string; count: number; percentage: number }[] = [];
-	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] = [];
+	}[] = $state([]);
+	let churnReasons: { reason: string; count: number; percentage: number }[] = $state([]);
+	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] = $state([]);
 
-	onMount(async () => {
-		await loadAnalytics();
+	$effect(() => {
+		if (browser) {
+			loadAnalytics();
+		}
 	});
 
 	async function loadAnalytics() {

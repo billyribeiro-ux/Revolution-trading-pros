@@ -12,7 +12,7 @@
 	 * - View billing history
 	 */
 
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
@@ -70,8 +70,9 @@
 	let prorationPreview = $state<any>(null);
 	let processingAction = $state(false);
 
-	onMount(async () => {
-		await loadData();
+	$effect(() => {
+		if (!browser) return;
+		loadData();
 	});
 
 	async function loadData() {
