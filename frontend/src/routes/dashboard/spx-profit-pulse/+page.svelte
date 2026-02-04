@@ -33,15 +33,6 @@
 		}))
 	);
 
-	// Get featured video from SSR data
-	const featuredVideo = $derived(
-		data.featuredVideo || {
-			url: 'https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4',
-			poster: 'https://cdn.simplertrading.com/2025/07/02134158/FTR-Jonathan.png',
-			title: 'SPX Profit Pulse Quickstart Guide'
-		}
-	);
-
 	// Get trading rooms for header dropdown
 	const tradingRooms = $derived(data.tradingRooms || []);
 </script>

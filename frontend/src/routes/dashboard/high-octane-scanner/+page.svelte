@@ -74,7 +74,6 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	import type { WatchlistResponse } from '$lib/types/watchlist';
 	import type { RoomResource } from '$lib/api/room-resources';
-	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 
 	// SvelteKit 2.0+ / Svelte 5: Use PageProps from generated types for full type safety
 	// Falls back to inline interface when types not yet generated
@@ -203,46 +202,6 @@
 		closedThisWeek: 2
 	};
 
-	const fallbackVideoUpdates: VideoUpdate[] = [
-		{
-			id: 1,
-			title: 'Market Analysis & Trading Strategies',
-			date: 'January 13, 2026',
-			excerpt: 'Weekly breakdown of top swing setups',
-			href: '/daily/high-octane-scanner/market-analysis',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: true,
-			duration: '24:35'
-		},
-		{
-			id: 2,
-			title: 'Technical Setup Review',
-			date: 'January 12, 2026',
-			excerpt: 'Key levels and entry points',
-			href: '/daily/high-octane-scanner/technical-setup',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: true,
-			duration: '18:20'
-		}
-	];
-
-	// Derive display items from API or fallback to static
-	const displayUpdates = $derived(
-		data.latestUpdates && data.latestUpdates.length > 0
-			? data.latestUpdates.map((r) => ({
-					id: r.id,
-					title: r.title,
-					date: r.formatted_date,
-					excerpt: r.description || '',
-					href: `/daily/high-octane-scanner/${r.slug}`,
-					image:
-						r.thumbnail_url ||
-						'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-					isVideo: r.resource_type === 'video',
-					duration: r.formatted_duration || ''
-				}))
-			: fallbackVideoUpdates
-	);
 
 	// Reactive data derived from server props - use $derived for reactivity
 	const weeklyContent = $derived<WeeklyContent>(

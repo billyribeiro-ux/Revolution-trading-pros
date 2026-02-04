@@ -71,7 +71,6 @@
 
 	// Derived props with defaults
 	let roomSlug = $derived(props.roomSlug);
-	let roomName = $derived(props.roomName);
 	let videos = $derived(props.videos);
 	let meta = $derived(props.meta);
 	let search = $derived(props.search ?? '');
