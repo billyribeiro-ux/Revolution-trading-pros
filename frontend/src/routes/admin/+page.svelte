@@ -81,17 +81,17 @@
 		return response.json();
 	}
 
-	let isLoading = true;
-	let lastUpdated: Date | null = null;
-	let error: string | null = null;
-	let selectedPeriod = '30d';
-	let mounted = false;
+	let isLoading = $state(true);
+	let lastUpdated = $state<Date | null>(null);
+	let error = $state<string | null>(null);
+	let selectedPeriod = $state('30d');
+	let mounted = $state(false);
 
 	// Connection status
-	let analyticsConnected = false;
-	let seoConnected = false;
-	let hasRealAnalyticsData = false;
-	let hasRealSeoData = false;
+	let analyticsConnected = $state(false);
+	let seoConnected = $state(false);
+	let hasRealAnalyticsData = $state(false);
+	let hasRealSeoData = $state(false);
 
 	// Real stats data
 	let stats = {

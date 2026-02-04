@@ -271,8 +271,8 @@ import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
 import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
 import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
-import IconMailOpen from '@tabler/icons-svelte-runes/icons/mail-open';
 import IconMailOpened from '@tabler/icons-svelte-runes/icons/mail-opened';
+const IconMailOpen = IconMailOpened; // Alias for compatibility
 
 // Map Icons
 import IconMap from '@tabler/icons-svelte-runes/icons/map';

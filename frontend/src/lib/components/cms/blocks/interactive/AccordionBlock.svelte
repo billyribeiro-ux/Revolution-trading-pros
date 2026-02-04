@@ -219,7 +219,7 @@
 						<IconX size={14} />
 					</button>
 				{/if}
-			</button>
+			</div>
 
 			<div
 				id="accordion-panel-{blockId}-{item.id}"

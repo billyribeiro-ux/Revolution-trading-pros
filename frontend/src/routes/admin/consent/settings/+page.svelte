@@ -73,7 +73,7 @@
 	}
 
 	// State
-	let settings: ConsentSettings = {
+	let settings = $state<ConsentSettings>({
 		consent_enabled: true,
 		test_mode: false,
 		expire_days: 365,
@@ -106,13 +106,13 @@
 		proof_consent_enabled: true,
 		proof_retention_days: 365,
 		proof_auto_delete: true
-	};
+	});
 
-	let activeTab = 'general';
-	let loading = true;
-	let saving = false;
-	let notification = '';
-	let notificationType: 'success' | 'error' = 'success';
+	let activeTab = $state('general');
+	let loading = $state(true);
+	let saving = $state(false);
+	let notification = $state('');
+	let notificationType = $state<'success' | 'error'>('success');
 
 	// Tabs configuration
 	const tabs = [
