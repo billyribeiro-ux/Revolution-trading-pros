@@ -590,6 +590,7 @@ export {
 	IconChartArea,
 	IconChartBar,
 	IconChartCandle,
+	IconChartCandle as IconBrandTradingview,
 	IconChartDonut,
 	IconChartDots,
 	IconChartHistogram,

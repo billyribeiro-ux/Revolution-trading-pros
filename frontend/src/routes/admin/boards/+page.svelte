@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		IconLayoutKanban,
 		IconPlus,
@@ -38,6 +39,9 @@
 	let overdueTasks = $state<Task[]>([]);
 	let tasksDueToday = $state<Task[]>([]);
 	let loading = $state(true);
+	let showArchiveModal = $state(false);
+	let showDeleteModal = $state(false);
+	let pendingBoard = $state<Board | null>(null);
 	let searchQuery = $state('');
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let showArchived = $state(false);
@@ -164,9 +168,16 @@
 		}
 	}
 
-	async function archiveBoard(board: Board) {
-		if (!confirm(`Archive "${board.title}"?`)) return;
+	function archiveBoard(board: Board) {
+		pendingBoard = board;
+		showArchiveModal = true;
+	}
 
+	async function confirmArchive() {
+		if (!pendingBoard) return;
+		showArchiveModal = false;
+		const board = pendingBoard;
+		pendingBoard = null;
 		try {
 			const updated = await boardsAPI.archiveBoard(board.id);
 			boards = boards.map((b) => (b.id === board.id ? updated : b));
@@ -175,9 +186,16 @@
 		}
 	}
 
-	async function deleteBoard(board: Board) {
-		if (!confirm(`Delete "${board.title}"? This cannot be undone.`)) return;
+	function deleteBoard(board: Board) {
+		pendingBoard = board;
+		showDeleteModal = true;
+	}
 
+	async function confirmDelete() {
+		if (!pendingBoard) return;
+		showDeleteModal = false;
+		const board = pendingBoard;
+		pendingBoard = null;
 		try {
 			await boardsAPI.deleteBoard(board.id);
 			boards = boards.filter((b) => b.id !== board.id);
@@ -919,3 +937,23 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showArchiveModal}
+	title="Archive Board"
+	message={pendingBoard ? `Archive "${pendingBoard.title}"?` : ''}
+	confirmText="Archive"
+	variant="warning"
+	onConfirm={confirmArchive}
+	onCancel={() => { showArchiveModal = false; pendingBoard = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Board"
+	message={pendingBoard ? `Delete "${pendingBoard.title}"? This cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => { showDeleteModal = false; pendingBoard = null; }}
+/>
