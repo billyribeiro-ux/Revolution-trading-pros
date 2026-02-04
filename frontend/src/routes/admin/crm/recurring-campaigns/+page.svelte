@@ -32,12 +32,17 @@
 		RecurringCampaignFilters,
 		RecurringCampaignStatus
 	} from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let campaigns = $state<RecurringCampaign[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state<RecurringCampaignStatus | 'all'>('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state({
 		total: 0,
@@ -88,8 +93,16 @@
 		}
 	}
 
-	async function deleteCampaign(id: string) {
-		if (!confirm('Are you sure you want to delete this recurring campaign?')) return;
+	function deleteCampaign(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteCampaign() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await crmAPI.deleteRecurringCampaign(id);
@@ -675,3 +688,13 @@
 		margin-bottom: 1rem;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Recurring Campaign"
+	message="Are you sure you want to delete this recurring campaign?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCampaign}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
