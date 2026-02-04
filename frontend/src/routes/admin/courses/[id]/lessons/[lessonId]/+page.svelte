@@ -14,6 +14,7 @@
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	interface Lesson {
 		id: string;
@@ -62,6 +63,12 @@
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
+	let errorMessage = $state('');
+
+	// Delete confirmation modal state
+	let showDeleteLessonModal = $state(false);
+	let showRemoveDownloadModal = $state(false);
+	let pendingRemoveDownloadId = $state<number | null>(null);
 
 	const fetchLesson = async () => {
 		loading = true;
@@ -98,23 +105,27 @@
 			if (data.success) {
 				lesson = data.data;
 			} else {
-				alert(data.error || 'Failed to save lesson');
+				errorMessage = data.error || 'Failed to save lesson';
 			}
 		} catch {
-			alert('Failed to save lesson');
+			errorMessage = 'Failed to save lesson';
 		} finally {
 			saving = false;
 		}
 	};
 
-	const deleteLesson = async () => {
-		if (!confirm('Are you sure you want to delete this lesson?')) return;
+	const deleteLesson = () => {
+		showDeleteLessonModal = true;
+	};
+
+	const confirmDeleteLesson = async () => {
+		showDeleteLessonModal = false;
 		try {
 			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
 			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
 			goto(`/admin/courses/${courseId}`);
 		} catch {
-			alert('Failed to delete lesson');
+			errorMessage = 'Failed to delete lesson';
 		}
 	};
 
@@ -143,7 +154,7 @@
 
 	// Handle video upload error
 	const handleVideoUploadError = (error: string) => {
-		alert(`Video upload failed: ${error}`);
+		errorMessage = `Video upload failed: ${error}`;
 	};
 
 	// Add download to lesson
@@ -168,16 +179,24 @@
 			if (data.success) {
 				downloads = [...downloads, data.data];
 			} else {
-				alert(data.error || 'Failed to add download');
+				errorMessage = data.error || 'Failed to add download';
 			}
 		} catch {
-			alert('Failed to add download');
+			errorMessage = 'Failed to add download';
 		}
 	};
 
 	// Remove download from lesson
-	const removeDownload = async (downloadId: number) => {
-		if (!confirm('Remove this download?')) return;
+	const removeDownload = (downloadId: number) => {
+		pendingRemoveDownloadId = downloadId;
+		showRemoveDownloadModal = true;
+	};
+
+	const confirmRemoveDownload = async () => {
+		if (pendingRemoveDownloadId === null) return;
+		showRemoveDownloadModal = false;
+		const downloadId = pendingRemoveDownloadId;
+		pendingRemoveDownloadId = null;
 
 		try {
 			await adminFetch(
@@ -188,7 +207,7 @@
 			);
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			alert('Failed to remove download');
+			errorMessage = 'Failed to remove download';
 		}
 	};
 </script>
@@ -827,3 +846,23 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteLessonModal}
+	title="Delete Lesson"
+	message="Are you sure you want to delete this lesson?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLesson}
+	onCancel={() => (showDeleteLessonModal = false)}
+/>
+
+<ConfirmationModal
+	isOpen={showRemoveDownloadModal}
+	title="Remove Download"
+	message="Remove this download?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveDownload}
+	onCancel={() => { showRemoveDownloadModal = false; pendingRemoveDownloadId = null; }}
+/>
