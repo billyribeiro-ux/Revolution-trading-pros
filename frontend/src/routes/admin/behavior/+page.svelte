@@ -84,7 +84,7 @@
 			connectionLoading = false;
 
 			// Only load data if behavior tracking is connected
-			if (getIsBehaviorConnected) {
+			if (getIsBehaviorConnected()) {
 				await loadData();
 			} else {
 				isLoading = false;
@@ -111,7 +111,7 @@
 		<header class="page-header">
 			<h1>Behavior Tracking</h1>
 			<p class="subtitle">Analyze user interactions, clicks, scrolls, and session recordings</p>
-			{#if getIsBehaviorConnected}
+			{#if getIsBehaviorConnected()}
 				<div class="header-actions">
 					<div class="period-selector">
 						<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}

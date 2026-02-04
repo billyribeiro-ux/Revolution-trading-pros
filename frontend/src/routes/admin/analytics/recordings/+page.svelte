@@ -106,7 +106,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadRecordings();
 			} else {
 				loading = false;
@@ -159,7 +159,7 @@
 					<p class="text-sm text-slate-400">Watch how users interact with your site</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected}
+			{#if getIsAnalyticsConnected()}
 				<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 			{/if}
 		</header>

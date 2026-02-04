@@ -94,7 +94,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadPages();
 			} else {
 				loading = false;
@@ -141,7 +141,7 @@
 					<p class="text-sm text-slate-400">Visualize where users click on your pages</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected}
+			{#if getIsAnalyticsConnected()}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">

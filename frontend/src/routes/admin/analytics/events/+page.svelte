@@ -94,7 +94,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadEvents();
 			} else {
 				loading = false;

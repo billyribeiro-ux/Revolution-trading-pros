@@ -138,7 +138,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadGoals();
 			} else {
 				loading = false;
@@ -190,7 +190,7 @@
 					<p class="text-sm text-slate-400">Track and measure your conversion objectives</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected}
+			{#if getIsAnalyticsConnected()}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<button

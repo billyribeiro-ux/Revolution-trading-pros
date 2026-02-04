@@ -109,7 +109,7 @@
 			await connections.load();
 			connectionLoading = false;
 
-			if (getIsAnalyticsConnected) {
+			if (getIsAnalyticsConnected()) {
 				await loadCohorts();
 			} else {
 				loading = false;
@@ -167,7 +167,7 @@
 					<p class="text-sm text-slate-400">Analyze user retention patterns over time</p>
 				</div>
 			</div>
-			{#if getIsAnalyticsConnected}
+			{#if getIsAnalyticsConnected()}
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<select
