@@ -110,12 +110,20 @@ function loadCart(): CartState {
 
 let cartState = $state<CartState>(loadCart());
 
-// Save to localStorage whenever cart changes
+// Save to localStorage whenever cart changes (skip initial run to prevent hydration issues)
 if (browser) {
 	$effect.root(() => {
+		let isFirstRun = true;
 		$effect(() => {
+			// Read the state to create dependency
+			const state = cartState;
+			// Skip initial run to prevent infinite loop during hydration
+			if (isFirstRun) {
+				isFirstRun = false;
+				return;
+			}
 			try {
-				localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartState));
+				localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
 			} catch (error) {
 				console.error('Error saving cart to localStorage:', error);
 			}

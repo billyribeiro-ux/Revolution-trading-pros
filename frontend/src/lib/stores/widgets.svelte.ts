@@ -222,11 +222,19 @@ function saveConfig(config: WidgetConfig) {
 
 let widgetConfig = $state<WidgetConfig>(loadConfig());
 
-// Auto-save on changes
+// Auto-save on changes (skip initial run to prevent hydration issues)
 if (browser) {
 	$effect.root(() => {
+		let isFirstRun = true;
 		$effect(() => {
-			saveConfig(widgetConfig);
+			// Read the state to create dependency
+			const config = widgetConfig;
+			// Skip initial run to prevent infinite loop during hydration
+			if (isFirstRun) {
+				isFirstRun = false;
+				return;
+			}
+			saveConfig(config);
 		});
 	});
 }
