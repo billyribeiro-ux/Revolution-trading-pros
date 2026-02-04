@@ -6,12 +6,27 @@
  * - Navigation error tracking
  * - Performance metrics collection
  * - Error reporting to external services
+ * - Svelte Render Scan (development only)
  *
- * @version 1.0.0 - L8 Principal Engineer
+ * @version 1.1.0 - L8 Principal Engineer
  * @see https://kit.svelte.dev/docs/hooks#client-hooks
  */
 
 import type { HandleClientError } from '@sveltejs/kit';
+
+// Enable Svelte Render Scan in development
+if (import.meta.env.DEV) {
+	import('svelte-render-scan').then(({ renderScan }) => {
+		renderScan({
+			// Track all component renders
+			trackComponents: true,
+			// Show overlay with render stats
+			showOverlay: true,
+			// Log to console
+			logToConsole: true
+		});
+	});
+}
 
 /**
  * Error severity levels for categorization
