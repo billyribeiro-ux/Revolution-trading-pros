@@ -384,7 +384,7 @@
 
 		try {
 			// Execute login with comprehensive error handling in auth service
-			const user = await login({ email, password, remember: rememberMe });
+			await login({ email, password, remember: rememberMe });
 
 			// Persist email preference (localStorage is sync, safe to call)
 			saveRememberedEmail();

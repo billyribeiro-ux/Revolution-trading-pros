@@ -11,7 +11,7 @@
 	@since January 2026
 -->
 <script lang="ts">
-	import type { Alert, RoomAlert } from './types';
+	import type { Alert } from './types';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() pattern
