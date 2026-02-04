@@ -246,6 +246,7 @@
 
 	.summary-subtitle {
 		font-size: 0.875rem;
+		font-weight: var(--font-semibold);
 		color: var(--color-text-tertiary);
 		line-height: 1.4;
 	}
