@@ -24,6 +24,7 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
+	import { dev } from '$app/environment';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth.svelte';
@@ -31,6 +32,7 @@
 	import type { Snippet } from 'svelte';
 	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
+	import { RenderScan } from 'svelte-render-scan';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() Pattern (no destructuring)
@@ -121,6 +123,17 @@
 		href="/atom.xml"
 	/>
 </svelte:head>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DEVELOPMENT TOOLS - Svelte DevTools (development only)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+{#if dev}
+	<RenderScan 
+		initialEnabled={false}
+		offsetLeft={60}
+		duration={1500}
+	/>
+{/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      TEMPLATE - Svelte 5 {@render} Pattern (replaces <slot>)
