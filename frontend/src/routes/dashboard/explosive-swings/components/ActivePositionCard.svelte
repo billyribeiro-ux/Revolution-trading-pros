@@ -234,7 +234,7 @@
 		border: 1px solid var(--color-border-default);
 		border-left: 3px solid var(--color-border-strong);
 		border-radius: 8px;
-		padding: var(--space-2);
+		padding: 12px;
 		font-size: var(--text-sm);
 	}
 	.card.profit {
@@ -269,28 +269,30 @@
 	.row-main {
 		display: flex;
 		align-items: center;
-		gap: var(--space-1);
-		margin-bottom: var(--space-0-5);
+		gap: 6px;
+		margin-bottom: 6px;
 		padding-right: 28px; /* Space for menu trigger */
 	}
 	.ticker {
 		font-weight: 700;
-		font-size: var(--text-lg);
+		font-size: 1.125rem;
 		color: var(--color-text-primary);
+		line-height: 1;
 	}
 	.status {
-		font-size: var(--text-xs);
+		font-size: 10px;
 		font-weight: 600;
 		text-transform: uppercase;
-		padding: 2px 6px;
+		padding: 3px 6px;
 		border-radius: 4px;
 		background: var(--color-bg-subtle);
 		color: var(--color-text-tertiary);
+		letter-spacing: 0.02em;
 	}
 	.pnl {
 		margin-left: auto;
 		font-weight: 700;
-		font-size: var(--text-base);
+		font-size: 15px;
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-muted);
 	}
@@ -305,11 +307,11 @@
 	.row-prices {
 		display: flex;
 		align-items: center;
-		gap: var(--space-0-5);
-		font-size: var(--text-sm);
+		gap: 6px;
+		font-size: 12px;
 		color: var(--color-text-secondary);
 		font-variant-numeric: tabular-nums;
-		margin-bottom: var(--space-0-5);
+		margin-bottom: 6px;
 	}
 	.sep {
 		color: var(--color-border-strong);
@@ -325,28 +327,30 @@
 	.row-progress {
 		display: flex;
 		align-items: center;
-		gap: var(--space-1);
-		margin-top: var(--space-1);
+		gap: 8px;
+		margin-top: 8px;
 	}
 	.bar {
 		flex: 1;
-		height: 4px;
+		height: 5px;
 		background: var(--color-bg-muted);
-		border-radius: 2px;
+		border-radius: 3px;
 		overflow: hidden;
 	}
 	.fill {
 		height: 100%;
 		background: var(--color-loss);
-		border-radius: 2px;
+		border-radius: 3px;
+		transition: width 0.3s ease;
 	}
 	.fill.profit {
 		background: var(--color-profit);
 	}
 	.pct {
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: 600;
 		color: var(--color-text-muted);
+		font-variant-numeric: tabular-nums;
 		min-width: 28px;
 		text-align: right;
 	}

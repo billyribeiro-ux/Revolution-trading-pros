@@ -305,7 +305,7 @@
 	}
 
 	.section-label {
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: var(--font-bold);
 		color: var(--color-text-secondary);
 		text-transform: uppercase;
@@ -425,22 +425,22 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--space-1);
-		margin-bottom: var(--space-2);
+		gap: 12px;
+		margin-bottom: 14px;
 	}
 
 	/* Mobile: 1 column, Tablet: 2 columns, Desktop: 3 columns */
 	.positions-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: var(--space-2);
+		gap: 12px;
 	}
 
 	.add-trade-btn {
 		display: flex;
 		align-items: center;
-		gap: var(--space-2);
-		padding: var(--space-2) var(--space-4);
+		gap: 6px;
+		padding: 8px 14px;
 		background: linear-gradient(
 			135deg,
 			var(--color-brand-primary) 0%,
@@ -449,16 +449,16 @@
 		color: white;
 		border: none;
 		border-radius: var(--radius-md);
-		font-size: var(--text-sm);
+		font-size: 13px;
 		font-weight: var(--font-semibold);
 		cursor: pointer;
 		transition: var(--transition-all);
-		box-shadow: var(--shadow-brand);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.add-trade-btn:hover {
-		box-shadow: var(--shadow-brand-lg);
-		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+		transform: translateY(-1px);
 	}
 
 	.add-trade-btn:focus-visible {
@@ -468,6 +468,8 @@
 
 	.add-trade-btn svg {
 		flex-shrink: 0;
+		width: 14px;
+		height: 14px;
 	}
 
 	.empty-positions {
