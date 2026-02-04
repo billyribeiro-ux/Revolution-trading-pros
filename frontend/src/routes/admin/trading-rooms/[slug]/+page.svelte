@@ -52,6 +52,7 @@
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -73,6 +74,16 @@
 	let activeTab = $state<Tab>('trade-plan');
 	let successMessage = $state('');
 	let errorMessage = $state('');
+
+	// Delete confirmation modal state
+	let showDeleteTradePlanModal = $state(false);
+	let showDeleteAlertModal = $state(false);
+	let showDeleteTradeModal = $state(false);
+	let showDeleteVideoModal = $state(false);
+	let pendingDeleteTradePlan = $state<TradePlanEntry | null>(null);
+	let pendingDeleteAlert = $state<RoomAlert | null>(null);
+	let pendingDeleteTrade = $state<RoomTrade | null>(null);
+	let pendingDeleteVideoId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE PLAN STATE
@@ -459,9 +470,16 @@
 		}
 	}
 
-	async function deleteTradePlan(entry: TradePlanEntry) {
-		if (!confirm(`Delete ${entry.ticker} from trade plan?`)) return;
+	function deleteTradePlan(entry: TradePlanEntry) {
+		pendingDeleteTradePlan = entry;
+		showDeleteTradePlanModal = true;
+	}
 
+	async function confirmDeleteTradePlan() {
+		if (!pendingDeleteTradePlan) return;
+		showDeleteTradePlanModal = false;
+		const entry = pendingDeleteTradePlan;
+		pendingDeleteTradePlan = null;
 		try {
 			await tradePlanApi.delete(entry.id);
 			successMessage = 'Trade plan entry deleted';
@@ -554,9 +572,16 @@
 		}
 	}
 
-	async function deleteAlert(alert: RoomAlert) {
-		if (!confirm(`Delete alert "${alert.title}"?`)) return;
+	function deleteAlert(alert: RoomAlert) {
+		pendingDeleteAlert = alert;
+		showDeleteAlertModal = true;
+	}
 
+	async function confirmDeleteAlert() {
+		if (!pendingDeleteAlert) return;
+		showDeleteAlertModal = false;
+		const alert = pendingDeleteAlert;
+		pendingDeleteAlert = null;
 		try {
 			await alertsApi.delete(alert.id);
 			successMessage = 'Alert deleted';
@@ -672,15 +697,36 @@
 		}
 	}
 
-	async function deleteTrade(trade: RoomTrade) {
-		if (!confirm(`Delete trade ${trade.ticker}? This cannot be undone.`)) return;
+	function deleteTrade(trade: RoomTrade) {
+		pendingDeleteTrade = trade;
+		showDeleteTradeModal = true;
+	}
 
+	async function confirmDeleteTrade() {
+		if (!pendingDeleteTrade) return;
+		showDeleteTradeModal = false;
+		const trade = pendingDeleteTrade;
+		pendingDeleteTrade = null;
 		try {
 			await tradesApi.delete(trade.id);
 			successMessage = 'Trade deleted';
 			await loadTrades();
 		} catch (err: any) {
 			errorMessage = err.message || 'Failed to delete trade';
+		}
+	}
+
+	async function confirmDeleteVideo() {
+		if (pendingDeleteVideoId === null) return;
+		showDeleteVideoModal = false;
+		const videoId = pendingDeleteVideoId;
+		pendingDeleteVideoId = null;
+		try {
+			await roomResourcesApi.delete(videoId);
+			successMessage = 'Video deleted';
+			await loadVideoResources();
+		} catch (err: any) {
+			errorMessage = err.message || 'Failed to delete video';
 		}
 	}
 
@@ -1385,9 +1431,8 @@
 								<button
 									class="icon-btn danger"
 									onclick={() => {
-										if (confirm('Delete this video?')) {
-											roomResourcesApi.delete(video.id).then(() => loadVideoResources());
-										}
+										pendingDeleteVideoId = video.id;
+										showDeleteVideoModal = true;
 									}}
 									title="Delete"
 								>
@@ -3097,3 +3142,43 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteTradePlanModal}
+	title="Delete Trade Plan Entry"
+	message={pendingDeleteTradePlan ? `Delete ${pendingDeleteTradePlan.ticker} from trade plan?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTradePlan}
+	onCancel={() => { showDeleteTradePlanModal = false; pendingDeleteTradePlan = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteAlertModal}
+	title="Delete Alert"
+	message={pendingDeleteAlert ? `Delete alert "${pendingDeleteAlert.title}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAlert}
+	onCancel={() => { showDeleteAlertModal = false; pendingDeleteAlert = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteTradeModal}
+	title="Delete Trade"
+	message={pendingDeleteTrade ? `Delete trade ${pendingDeleteTrade.ticker}? This cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTrade}
+	onCancel={() => { showDeleteTradeModal = false; pendingDeleteTrade = null; }}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteVideoModal}
+	title="Delete Video"
+	message="Delete this video?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteVideo}
+	onCancel={() => { showDeleteVideoModal = false; pendingDeleteVideoId = null; }}
+/>
