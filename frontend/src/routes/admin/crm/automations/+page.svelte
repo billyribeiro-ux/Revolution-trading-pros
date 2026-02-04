@@ -40,6 +40,7 @@
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -68,6 +69,10 @@
 	let showImportModal = $state(false);
 	let showAddContactsModal = $state(false);
 	let selectedFunnel = $state<AutomationFunnel | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Import Form State
 	let importForm = $state({
@@ -194,9 +199,16 @@
 		}
 	}
 
-	async function deleteFunnel(id: string) {
-		if (!confirm('Are you sure you want to delete this automation? This action cannot be undone.'))
-			return;
+	function deleteFunnel(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteFunnel() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		actionInProgress = id;
 		error = '';
@@ -1667,3 +1679,13 @@ contact_789"
 		animation: spin 0.8s linear infinite;
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Automation"
+	message="Are you sure you want to delete this automation? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteFunnel}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
