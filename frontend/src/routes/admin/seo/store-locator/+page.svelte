@@ -25,12 +25,17 @@
 		type Location,
 		type BusinessType
 	} from '$lib/seo';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let locationList = $state<Location[]>([]);
 	let loading = $state(false);
 	let showAddModal = $state(false);
 	let editingLocation = $state<Location | null>(null);
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	// Form state
 	let formData = $state({
@@ -173,9 +178,17 @@
 	}
 
 	function deleteLocation(id: string) {
-		if (confirm('Delete this location?')) {
-			locations.remove(id);
-		}
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	function confirmDeleteLocation() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
+
+		locations.remove(id);
 	}
 
 	function toggleLocation(id: string) {
@@ -753,3 +766,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Location"
+	message="Delete this location?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLocation}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
