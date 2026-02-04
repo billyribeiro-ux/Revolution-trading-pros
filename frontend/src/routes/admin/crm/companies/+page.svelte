@@ -29,6 +29,7 @@
 	import { crmAPI } from '$lib/api/crm';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let companies = $state<CrmCompany[]>([]);
 	let isLoading = $state(true);
@@ -36,6 +37,10 @@
 	let searchQuery = $state('');
 	let selectedIndustry = $state<CompanyIndustry | 'all'>('all');
 	let selectedSize = $state<CompanySize | 'all'>('all');
+
+	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let pendingDeleteId = $state<string | null>(null);
 
 	let stats = $state({
 		total: 0,
@@ -94,13 +99,16 @@
 		}
 	}
 
-	async function deleteCompany(id: string) {
-		if (
-			!confirm(
-				'Are you sure you want to delete this company? Associated contacts will NOT be deleted.'
-			)
-		)
-			return;
+	function deleteCompany(id: string) {
+		pendingDeleteId = id;
+		showDeleteModal = true;
+	}
+
+	async function confirmDeleteCompany() {
+		if (!pendingDeleteId) return;
+		showDeleteModal = false;
+		const id = pendingDeleteId;
+		pendingDeleteId = null;
 
 		try {
 			await crmAPI.deleteCompany(id);
@@ -792,3 +800,13 @@
 		}
 	}
 </style>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Company"
+	message="Are you sure you want to delete this company? Associated contacts will NOT be deleted."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCompany}
+	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
+/>
