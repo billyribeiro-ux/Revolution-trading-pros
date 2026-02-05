@@ -1073,5 +1073,28 @@
 	<title>Create User | Enterprise Admin</title>
 </svelte:head>
 
+<!-- 
+	TODO: TEMPLATE IMPLEMENTATION REQUIRED
+	═══════════════════════════════════════════════════════════════════════════
+	This component has complete script logic but NO MARKUP TEMPLATE.
+	All "unused variable" errors are because there's no HTML to use them.
+	
+	Template should include:
+	- Multi-step wizard UI (identity, security, role, organization, preferences, compliance, review)
+	- Form inputs bound to formData
+	- Password strength meter
+	- Role selection cards using ROLE_DEFINITIONS
+	- Photo upload preview
+	- Error display
+	- Navigation buttons (nextStep, previousStep, goToStep)
+	- Submit button calling handleSubmit
+	═══════════════════════════════════════════════════════════════════════════
+-->
+
+<div class="user-create-placeholder">
+	<h1>User Creation Page - Template Not Implemented</h1>
+	<p>This page has complete backend logic but requires UI template implementation.</p>
+</div>
+
 <!-- Complete HTML template continues in next section -->
 <!-- This component includes all 7 steps, validation, and enterprise features -->
