@@ -21,13 +21,15 @@ import type { WatchlistResponse } from '$lib/types/watchlist';
 
 const HIGH_OCTANE_SCANNER_ROOM_ID = 3;
 
-export const load = (async ({ fetch }) => {
+export const load = (async ({ fetch, locals }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
+	// ICT 7 FIX: Pass access token from locals for authenticated API calls
+	const accessToken = locals.accessToken ?? undefined;
 
 	// Parallel fetch for optimal performance
 	const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 		// Weekly watchlist
-		getLatestWatchlist('high-octane-scanner', fetch, baseUrl),
+		getLatestWatchlist('high-octane-scanner', fetch, baseUrl, accessToken),
 
 		// Featured tutorial video
 		fetch(

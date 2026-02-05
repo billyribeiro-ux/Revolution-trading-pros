@@ -20,13 +20,15 @@ import type { RoomResource } from '$lib/api/room-resources';
 
 const DAY_TRADING_ROOM_ID = 1;
 
-export const load = (async ({ fetch }) => {
+export const load = (async ({ fetch, locals }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
+	// ICT 7 FIX: Pass access token from locals for authenticated API calls
+	const accessToken = locals.accessToken ?? undefined;
 
 	// Parallel fetch for optimal performance
 	const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 		// Weekly watchlist
-		getLatestWatchlist('day-trading-room', fetch, baseUrl),
+		getLatestWatchlist('day-trading-room', fetch, baseUrl, accessToken),
 
 		// Featured tutorial video
 		fetch(

@@ -48,11 +48,13 @@ interface WatchlistPageData {
  * @param {typeof fetch} context.fetch - SvelteKit fetch with credentials
  * @returns {Promise<WatchlistPageData>} Page data for client hydration
  */
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async ({ fetch, locals }) => {
 	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
+	// ICT 7 FIX: Pass access token from locals for authenticated API calls
+	const accessToken = locals.accessToken ?? undefined;
 
 	try {
-		const watchlist = await getLatestWatchlist(ROOM_SLUG, fetch, baseUrl);
+		const watchlist = await getLatestWatchlist(ROOM_SLUG, fetch, baseUrl, accessToken);
 
 		return {
 			watchlist: watchlist ?? null

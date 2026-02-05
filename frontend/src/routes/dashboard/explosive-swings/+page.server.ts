@@ -135,14 +135,16 @@ function buildResourceUrl(
  * @param {typeof fetch} context.fetch - SvelteKit fetch with credentials
  * @returns {Promise<ExplosiveSwingsPageData>} Page data for client hydration
  */
-export const load = (async ({ fetch }) => {
+export const load = (async ({ fetch, locals }) => {
 	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
+	// ICT 7 FIX: Pass access token from locals for authenticated API calls
+	const accessToken = locals.accessToken ?? undefined;
 
 	try {
 		// ICT 7: Parallel fetch for optimal performance
 		const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 			// Weekly watchlist
-			getLatestWatchlist(ROOM_SLUG, fetch, baseUrl).catch((err): null => {
+			getLatestWatchlist(ROOM_SLUG, fetch, baseUrl, accessToken).catch((err): null => {
 				console.error(`${LOG_PREFIX} Watchlist fetch error:`, err);
 				return null;
 			}),

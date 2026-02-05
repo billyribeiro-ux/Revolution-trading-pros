@@ -34,12 +34,14 @@ export interface WatchlistResponse {
  * @param roomSlug - Optional room filter (e.g., 'day-trading-room')
  * @param fetchFn - SvelteKit's fetch function from load context
  * @param apiBaseUrl - API base URL (required for server-side)
+ * @param accessToken - Optional auth token for authenticated requests
  * @returns Watchlist data or null if not found
  */
 export async function getLatestWatchlist(
 	roomSlug?: string,
 	fetchFn: typeof fetch = fetch,
-	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev'
+	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev',
+	accessToken?: string
 ): Promise<WatchlistData | null> {
 	try {
 		const params = new URLSearchParams({
@@ -51,11 +53,17 @@ export async function getLatestWatchlist(
 			params.set('room', roomSlug);
 		}
 
+		// ICT 7 FIX: Build headers with optional Authorization
+		const headers: Record<string, string> = {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		};
+		if (accessToken) {
+			headers['Authorization'] = `Bearer ${accessToken}`;
+		}
+
 		const response = await fetchFn(`${apiBaseUrl}/api/watchlist?${params}`, {
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json'
-			}
+			headers
 		});
 
 		if (!response.ok) {

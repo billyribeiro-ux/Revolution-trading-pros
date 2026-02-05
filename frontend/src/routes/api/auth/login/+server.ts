@@ -52,7 +52,8 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 
 		// If successful, set httpOnly cookies for the tokens
 		if (response.ok && data.token) {
-			const isSecure = true; // Cloudflare Pages is always HTTPS
+			// ICT 7 FIX: secure=false on localhost (http), true in production (https)
+			const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
 
 			// Set access token cookie
 			cookies.set('rtp_access_token', data.token, {

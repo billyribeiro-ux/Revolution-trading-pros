@@ -28,6 +28,9 @@ const API_URL = `${API_ROOT}/api`;
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestId = crypto.randomUUID().slice(0, 8);
 	const startTime = performance.now();
+	
+	// ICT 7 FIX: secure=false on localhost (http), true in production (https)
+	const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
 
 	try {
 		const sessionId = request.headers.get('X-Session-ID') || '';
@@ -84,7 +87,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			cookies.set('rtp_access_token', accessToken, {
 				path: '/',
 				httpOnly: true,
-				secure: true,
+				secure: isSecure,
 				sameSite: 'lax',
 				maxAge: expiresIn || 900 // 15 min default
 			});
@@ -95,7 +98,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				cookies.set('rtp_refresh_token', refreshToken, {
 					path: '/',
 					httpOnly: true,
-					secure: true,
+					secure: isSecure,
 					sameSite: 'lax',
 					maxAge: 60 * 60 * 24 * 30 // 30 days (matches login proxy)
 				});
