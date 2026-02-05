@@ -733,8 +733,9 @@
 
 	.dashboard__content-section {
 		/* ICT 7: Prevent cards from touching screen edges */
-		padding-left: 15px;
-		padding-right: 15px;
+		/* 30px accounts for grid's -15px negative margins */
+		padding-left: 30px;
+		padding-right: 30px;
 	}
 
 	.card-grid {
@@ -918,9 +919,9 @@
 		}
 
 		.dashboard__content-section {
-			/* ICT 7: Ensure minimum 15px padding + safe area */
-			padding-left: max(15px, env(safe-area-inset-left));
-			padding-right: max(15px, env(safe-area-inset-right));
+			/* ICT 7: Ensure minimum 30px padding + safe area */
+			padding-left: max(30px, env(safe-area-inset-left));
+			padding-right: max(30px, env(safe-area-inset-right));
 		}
 	}
 
@@ -931,8 +932,8 @@
 		}
 
 		.dashboard__content-section {
-			padding-left: 12px;
-			padding-right: 12px;
+			padding-left: 20px;
+			padding-right: 20px;
 		}
 
 		.card-grid {
