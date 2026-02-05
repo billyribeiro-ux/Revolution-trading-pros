@@ -840,7 +840,6 @@
 	// Complete File Upload System
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let uploadError = $state('');
 	let formError = $state('');
 	let successMessage = $state('');

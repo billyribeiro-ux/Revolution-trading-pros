@@ -294,8 +294,8 @@
 	// Auto-refresh when filters change (after initial load)
 	$effect(() => {
 		// Track the reactive dependencies
-		const currentSearch = searchQuery;
-		const currentStatus = selectedStatus;
+		void searchQuery;
+		void selectedStatus;
 
 		// Only reload if already initialized (skip the initial load)
 		if (isInitialized) {
@@ -310,7 +310,7 @@
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	$effect(() => {
-		const query = searchQuery;
+		void searchQuery;
 
 		return () => {
 			if (searchTimeout) {

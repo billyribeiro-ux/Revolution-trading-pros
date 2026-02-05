@@ -392,19 +392,6 @@
 
 	let canSaveAction = $derived(actionForm.action_type !== '' && !isSaving);
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let requiresSettings = $derived(
-		[
-			'add_tag',
-			'remove_tag',
-			'add_to_list',
-			'remove_from_list',
-			'add_to_sequence',
-			'send_email',
-			'http_request'
-		].includes(actionForm.action_type)
-	);
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════

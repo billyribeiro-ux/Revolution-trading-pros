@@ -102,13 +102,6 @@
 
 	let currentStage = $derived(pipeline?.stages?.find((s) => s.id === deal?.stage_id) || null);
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let stageProgress = $derived.by(() => {
-		if (!pipeline?.stages || !deal) return 0;
-		const stageIndex = pipeline.stages.findIndex((s) => s.id === deal?.stage_id);
-		return stageIndex >= 0 ? ((stageIndex + 1) / pipeline.stages.length) * 100 : 0;
-	});
-
 	let isWon = $derived(deal?.status === 'won');
 	let isLost = $derived(deal?.status === 'lost');
 	let isOpen = $derived(deal?.status === 'open');
