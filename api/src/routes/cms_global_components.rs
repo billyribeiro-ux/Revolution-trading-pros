@@ -631,7 +631,8 @@ async fn get_global_component(
             .bind(creator_id)
             .fetch_optional(&state.db.pool)
             .await
-            .ok()?
+            .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .flatten()
     } else {
         None
     };
@@ -642,7 +643,8 @@ async fn get_global_component(
             .bind(updater_id)
             .fetch_optional(&state.db.pool)
             .await
-            .ok()?
+            .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .flatten()
     } else {
         None
     };
