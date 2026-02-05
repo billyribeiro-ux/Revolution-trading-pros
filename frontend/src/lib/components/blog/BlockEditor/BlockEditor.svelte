@@ -57,23 +57,6 @@
 
 	import { BLOCK_DEFINITIONS } from './types';
 
-	// ==========================================================================
-	// Custom Spring Animation (Apple-grade physics)
-	// ==========================================================================
-
-	interface SpringConfig {
-		stiffness: number;
-		damping: number;
-		mass: number;
-	}
-
-	const SPRING_PRESETS = {
-		snappy: { stiffness: 400, damping: 30, mass: 1 },
-		smooth: { stiffness: 200, damping: 25, mass: 1 },
-		bouncy: { stiffness: 300, damping: 15, mass: 1 },
-		gentle: { stiffness: 150, damping: 20, mass: 1 }
-	} as const;
-
 	// Import sub-components (we'll create these)
 	import BlockInserter from './BlockInserter.svelte';
 	import BlockRenderer from './BlockRenderer.svelte';
@@ -233,7 +216,6 @@
 	// Refs
 	let editorContainer: HTMLDivElement;
 	let autosaveTimer: ReturnType<typeof setInterval>;
-	let liveRegionRef: HTMLDivElement;
 
 	// ==========================================================================
 	// Computed
@@ -1897,7 +1879,7 @@
 </div>
 
 <!-- Screen Reader Live Region for Drag-Drop Announcements -->
-<div bind:this={liveRegionRef} class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
 	{#each announcements as announcement}
 		<p>{announcement}</p>
 	{/each}

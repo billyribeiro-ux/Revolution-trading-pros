@@ -11,6 +11,7 @@ export type BlockType =
   | 'quote'
   | 'pullquote'
   | 'code'
+  | 'preformatted'
   | 'list'
   | 'checklist'
   // Media
@@ -30,9 +31,11 @@ export type BlockType =
   // Layout
   | 'columns'
   | 'group'
+  | 'row'
   | 'divider'
   // Trading
   | 'ticker'
+  | 'chart'
   | 'priceAlert'
   | 'tradingIdea'
   // AI
@@ -53,7 +56,9 @@ export type BlockType =
   | 'html'
   | 'button'
   | 'callout'
-  | 'riskDisclaimer';
+  | 'riskDisclaimer'
+  | 'shortcode'
+  | 'reusable';
 
 // Block content (varies by type)
 export interface BlockContent {
