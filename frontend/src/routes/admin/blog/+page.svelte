@@ -616,8 +616,12 @@
 	// Derived state for bulk actions visibility
 	const showBulkActions = $derived(selectedPosts.size > 0);
 
+	// Track initial mount to prevent effect from running on first load
+	let isInitialMount = $state(true);
+	let filterDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+
 	// ICT11+ Fix: Debounced effect to reload posts when filters change
-	// Previous implementation caused infinite loop by always evaluating to true
+	$effect(() => {
 		if (isInitialMount) {
 			isInitialMount = false;
 			return;
