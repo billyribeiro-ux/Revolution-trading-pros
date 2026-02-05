@@ -125,7 +125,7 @@
 		// Svelte 5: Callback props receive the value directly (no CustomEvent wrapper)
 
 		if (isCreatingNew) {
-			const _newId = saveAsCustomTemplate(template.name);
+			saveAsCustomTemplate(template.name);
 			showNotification(`"${template.name}" created successfully`);
 		} else {
 			// Update existing custom template or save customization

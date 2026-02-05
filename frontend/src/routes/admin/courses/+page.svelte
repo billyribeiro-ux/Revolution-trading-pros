@@ -222,12 +222,6 @@
 		showDetailDrawer = true;
 	};
 
-	const _openCreateCourseModal = () => {
-		selectedCourse = null;
-		formModalMode = 'create';
-		showFormModal = true;
-	};
-
 	const openEditCourseModal = (course: APICourse) => {
 		selectedCourse = course;
 		formModalMode = 'edit';

@@ -21,7 +21,6 @@
 	let sessions = $state<UserSession[]>([]);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
-	let successMessage = $state<string | null>(null);
 	let revoking = $state<string | null>(null);
 	let revokingAll = $state(false);
 
@@ -118,8 +117,7 @@
 		try {
 			const response = await authService.logoutAllDevices(true);
 			await loadSessions();
-			successMessage = `Successfully logged out from ${response.revoked_count} other device(s)`;
-			setTimeout(() => (successMessage = null), 5000);
+			// Successfully logged out from other devices
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to logout from other devices';
 		} finally {

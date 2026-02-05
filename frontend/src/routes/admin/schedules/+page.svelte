@@ -222,12 +222,6 @@
 		return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}, ${end.getFullYear()}`;
 	});
 
-	/**
-	 * Check if all visible schedules are selected
-	 */
-	const allSelected = $derived(
-		filteredSchedules.length > 0 && filteredSchedules.every((s) => selectedIds.has(s.id))
-	);
 
 	/**
 	 * Detect schedule conflicts (overlapping times on same day)

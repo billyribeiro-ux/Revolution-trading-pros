@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -91,7 +91,6 @@
 	let pendingDeleteModuleId = $state<number | null>(null);
 	let pendingDeleteDownloadId = $state<number | null>(null);
 	let pendingDeleteLesson = $state<{ id: string; moduleId?: number } | null>(null);
-	let errorMessage = $state('');
 
 	const fetchCourse = async () => {
 		loading = true;
@@ -180,7 +179,7 @@
 			await adminFetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
 			modules = modules.filter((m) => m.id !== moduleId);
 		} catch {
-			errorMessage = 'Failed to delete module';
+			console.error('Failed to delete module');
 		}
 	};
 
@@ -287,7 +286,7 @@
 			});
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			errorMessage = 'Failed to delete download';
+			console.error('Failed to delete download');
 		}
 	};
 
@@ -320,7 +319,7 @@
 				unassignedLessons = unassignedLessons.filter((l) => l.id !== lessonId);
 			}
 		} catch {
-			errorMessage = 'Failed to delete lesson';
+			console.error('Failed to delete lesson');
 		}
 	};
 </script>

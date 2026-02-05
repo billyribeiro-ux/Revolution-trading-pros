@@ -621,22 +621,6 @@
 
 	// ICT11+ Fix: Debounced effect to reload posts when filters change
 	// Previous implementation caused infinite loop by always evaluating to true
-	let filterDebounceTimer: ReturnType<typeof setTimeout> | undefined;
-	let isInitialMount = true;
-
-	$effect(() => {
-		// Track filter values to detect changes (this creates proper dependencies)
-		const _currentFilters = {
-			search: searchQuery,
-			status: statusFilter,
-			category: categoryFilter,
-			sort: sortBy,
-			order: sortOrder,
-			dateStart: dateRange.start,
-			dateEnd: dateRange.end
-		};
-
-		// Skip initial mount (onMount already calls loadPosts)
 		if (isInitialMount) {
 			isInitialMount = false;
 			return;
