@@ -627,6 +627,15 @@
 
 	// ICT11+ Fix: Debounced effect to reload posts when filters change
 	$effect(() => {
+		// Track all filter dependencies (void to suppress unused warnings)
+		void searchQuery;
+		void statusFilter;
+		void categoryFilter;
+		void sortBy;
+		void sortOrder;
+		void dateRange.start;
+		void dateRange.end;
+
 		if (isInitialMount) {
 			isInitialMount = false;
 			return;
