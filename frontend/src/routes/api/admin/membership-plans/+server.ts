@@ -20,15 +20,22 @@ export const GET: RequestHandler = async ({ cookies }) => {
 			}
 		});
 
-		const data = await response.json();
-		
+		// ICT 7 FIX: Check response.ok BEFORE parsing JSON to avoid 500 on auth errors
 		if (!response.ok) {
-			return json(data, { status: response.status });
+			// Try to parse error response, fallback to status text
+			let errorData;
+			try {
+				errorData = await response.json();
+			} catch {
+				errorData = { error: response.statusText || 'Request failed' };
+			}
+			return json(errorData, { status: response.status });
 		}
 
+		const data = await response.json();
 		return json(data);
 	} catch (err) {
 		console.error('[API Proxy] Failed to fetch membership plans:', err);
-		return error(500, 'Failed to fetch membership plans');
+		return json({ error: 'Failed to fetch membership plans' }, { status: 500 });
 	}
 };
