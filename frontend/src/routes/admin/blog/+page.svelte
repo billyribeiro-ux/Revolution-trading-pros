@@ -179,6 +179,13 @@
 		}
 	}
 
+	async function loadStats() {
+		try {
+			stats = await adminFetch('/api/admin/posts/stats');
+		} catch (error) {
+			console.error('Failed to load stats:', error);
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// WebSocket & Real-time Updates
