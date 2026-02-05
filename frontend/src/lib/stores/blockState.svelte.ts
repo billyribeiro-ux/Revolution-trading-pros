@@ -8,6 +8,11 @@ import { getContext, setContext } from 'svelte';
 // Types
 export type BlockId = string & { readonly __brand: 'BlockId' };
 
+// Helper to convert string to BlockId (use this when passing string IDs)
+export function toBlockId(id: string): BlockId {
+	return id as BlockId;
+}
+
 export interface AudioState {
   playing: boolean;
   progress: number;

@@ -813,10 +813,10 @@
 					use:measureBlock={block.id}
 				>
 					<BlockRenderer
-						{block}
+						block={block as unknown as CMSBlock}
 						isSelected={selectedBlockId === block.id}
 						{isEditing}
-						onUpdate={(updates) => handleBlockUpdate(block.id, updates)}
+						onUpdate={(updates) => handleBlockUpdate(block.id, updates as Partial<Block>)}
 					/>
 				</div>
 
