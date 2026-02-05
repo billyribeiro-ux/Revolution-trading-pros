@@ -10,8 +10,7 @@
 		adminCoursesApi,
 		type Course,
 		type CourseWithContent,
-		type CourseModule,
-		type LessonListItem
+		type CourseModule
 	} from '$lib/api/courses';
 	import {
 		IconX,

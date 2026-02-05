@@ -11,7 +11,6 @@
 	import IconLoader from '@tabler/icons-svelte-runes/icons/loader-2';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 
 	interface Props {
 		contentType?: string;

@@ -25,32 +25,22 @@
 		onCancel: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const isOpen = $derived(props.isOpen);
-	const title = $derived(props.title);
-	const message = $derived(props.message);
-	const confirmTextProp = $derived(props.confirmText);
-	const confirmLabel = $derived(props.confirmLabel);
-	const cancelText = $derived(props.cancelText ?? 'Cancel');
-	const variant = $derived(props.variant ?? 'danger');
-	const isLoading = $derived(props.isLoading ?? false);
-	const showInput = $derived(props.showInput ?? false);
-	const inputLabel = $derived(props.inputLabel ?? '');
-	const inputPlaceholder = $derived(props.inputPlaceholder ?? '');
-	const onConfirm = $derived(props.onConfirm);
-	const onCancel = $derived(props.onCancel);
-
-	// Bindable state for two-way binding
-	let inputValue = $state(props.inputValue ?? '');
-
-	// Sync inputValue when props change
-	$effect(() => {
-		if (props.inputValue !== undefined) {
-			inputValue = props.inputValue;
-		}
-	});
+	let {
+		isOpen,
+		title,
+		message,
+		confirmText: confirmTextProp,
+		confirmLabel,
+		cancelText = 'Cancel',
+		variant = 'danger',
+		isLoading = false,
+		showInput = false,
+		inputLabel = '',
+		inputPlaceholder = '',
+		inputValue = $bindable(''),
+		onConfirm,
+		onCancel
+	}: Props = $props();
 
 	// Support both confirmText and confirmLabel for flexibility
 	let confirmText = $derived(confirmTextProp ?? confirmLabel ?? 'Confirm');

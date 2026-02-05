@@ -40,7 +40,6 @@
 	let videoFile = $state<File | null>(null);
 	let uploadProgress = $state(0);
 	let isUploading = $state(false);
-	let isGettingUrl = $state(false);
 	let error = $state<string | null>(null);
 	let uploadStatus = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete'>('idle');
 
@@ -111,7 +110,6 @@
 		error = null;
 		isUploading = true;
 		uploadStatus = 'preparing';
-		isGettingUrl = true;
 
 		try {
 			// Step 1: Create video entry and get upload URL from our API
@@ -130,7 +128,6 @@
 			}
 
 			const { video_guid, upload_url, video_url, embed_url } = await createResponse.json();
-			isGettingUrl = false;
 
 			// Step 2: Upload to Bunny.net
 			uploadStatus = 'uploading';
@@ -156,7 +153,6 @@
 			uploadStatus = 'idle';
 		} finally {
 			isUploading = false;
-			isGettingUrl = false;
 		}
 	}
 

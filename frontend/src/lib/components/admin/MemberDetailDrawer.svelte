@@ -8,9 +8,7 @@
 	 */
 	import {
 		membersApi,
-		type MemberFullDetails,
-		type MemberNote,
-		type MemberActivity
+		type MemberFullDetails
 	} from '$lib/api/members';
 	import {
 		IconX,
@@ -26,8 +24,6 @@
 		IconPlayerPlay,
 		IconTrash,
 		IconSend,
-		IconChartBar,
-		IconTag,
 		IconClock,
 		IconCheck,
 		IconAlertTriangle
@@ -50,7 +46,6 @@
 	const memberId = $derived(props.memberId);
 	const onClose = $derived(props.onClose);
 	const onEdit = $derived(props.onEdit);
-	const onEmail = $derived(props.onEmail);
 	const onRefresh = $derived(props.onRefresh);
 
 	// State
