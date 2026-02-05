@@ -18,9 +18,9 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
-	import { cubicOut, elasticOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 
 	// ============================================================================
@@ -90,7 +90,6 @@
 	const acceptTypes = $derived(props.acceptTypes ?? ['image', 'video', 'audio', 'document']);
 	const initialFolder = $derived(props.initialFolder ?? null);
 
-	const dispatch = createEventDispatcher();
 
 	// ============================================================================
 	// State
@@ -124,7 +123,7 @@
 
 	// Pagination
 	let currentPage = $state(1);
-	let totalPages = $state(1);
+	let _totalPages = $state(1);
 	let totalAssets = $state(0);
 	let hasMore = $state(false);
 
@@ -134,7 +133,7 @@
 	let sortBy = $state<'created_at' | 'filename' | 'file_size'>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let tagFilter = $state<string[]>([]);
-	let allTags = $state<string[]>([]);
+	let _allTags = $state<string[]>([]);
 
 	// Upload state
 	let isDragging = $state(false);
@@ -261,7 +260,7 @@
 		}
 	}
 
-	async function fetchRecentAssets() {
+	async function _fetchRecentAssets() {
 		try {
 			const response = await fetch('/api/cms/assets/recent?limit=12', {
 				credentials: 'include'
@@ -359,7 +358,7 @@
 		}
 	}
 
-	async function moveToFolder(targetFolderId: string | null) {
+	async function _moveToFolder(targetFolderId: string | null) {
 		if (selectedAssets.size === 0) return;
 
 		try {

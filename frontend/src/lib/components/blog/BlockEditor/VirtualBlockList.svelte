@@ -31,7 +31,8 @@
 	import { tick, onMount, onDestroy } from 'svelte';
 	import { IconGripVertical, IconTrash, IconCopy, IconChevronUp, IconChevronDown } from '$lib/icons';
 	import BlockRenderer from './BlockRenderer.svelte';
-	import type { VirtualBlockListProps, BlockMeasurement } from './VirtualBlockList.types';
+	import type { VirtualBlockListProps, BlockMeasurement, VisibleRange, PerformanceMetrics } from './VirtualBlockList.types';
+	import type { Block } from './types';
 
 	// ==========================================================================
 	// Props
@@ -55,7 +56,7 @@
 	const MIN_BLOCK_HEIGHT = 40;
 	const SCROLL_THRESHOLD = 100; // Distance from edge to trigger auto-scroll
 	const AUTO_SCROLL_SPEED = 8;
-	const MEASUREMENT_DEBOUNCE_MS = 50;
+	const _MEASUREMENT_DEBOUNCE_MS = 50;
 	const PERFORMANCE_LOG_INTERVAL_MS = 1000;
 
 	// ==========================================================================
@@ -85,8 +86,8 @@
 
 	// Performance tracking
 	let lastRenderTime = $state(0);
-	let frameCount = $state(0);
-	let lastFpsUpdate = $state(0);
+	let _frameCount = $state(0);
+	let _lastFpsUpdate = $state(0);
 	let currentFps = $state(60);
 
 	// ResizeObserver for block height changes

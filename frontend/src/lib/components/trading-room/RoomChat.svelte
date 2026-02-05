@@ -160,8 +160,11 @@
 
 	function scrollToBottom(): void {
 		if (chatContainer) {
+			const container = chatContainer;
 			requestAnimationFrame(() => {
-				chatContainer.scrollTop = chatContainer.scrollHeight;
+				if (container) {
+					container.scrollTop = container.scrollHeight;
+				}
 			});
 		}
 	}

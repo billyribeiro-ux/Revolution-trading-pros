@@ -991,7 +991,7 @@ class EnterpriseApiClient {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// ICT 11+ Performance: WebSocket reconnection state
-	private wsReconnectAttempts = 0;
+	private _wsReconnectAttempts = 0;
 
 	private setupWebSocket(): void {
 		if (!this.token || this.wsConnection) return;
@@ -1009,7 +1009,7 @@ class EnterpriseApiClient {
 
 			this.wsConnection.onopen = () => {
 				console.debug('[ApiClient] WebSocket connected');
-				this.wsReconnectAttempts = 0;
+				this._wsReconnectAttempts = 0;
 				this.authenticateWebSocket();
 			};
 

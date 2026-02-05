@@ -444,8 +444,8 @@ class CouponManagementService {
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
 
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
-	private wsReconnectAttempts = 0;
-	private wsReconnectDelay = WS_RECONNECT_DELAY;
+	private _wsReconnectAttempts = 0;
+	private _wsReconnectDelay = WS_RECONNECT_DELAY;
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;
 	private wsMessageQueue: any[] = [];
@@ -612,8 +612,8 @@ class CouponManagementService {
 			this.wsConnection.onopen = () => {
 				console.debug('[CouponService] WebSocket connected');
 				this.wsConnectionState.set('connected');
-				this.wsReconnectAttempts = 0;
-				this.wsReconnectDelay = WS_RECONNECT_DELAY;
+				this._wsReconnectAttempts = 0;
+				this._wsReconnectDelay = WS_RECONNECT_DELAY;
 				this.startHeartbeat();
 				this.subscribeToUpdates();
 				this.flushMessageQueue();
