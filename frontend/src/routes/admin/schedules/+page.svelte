@@ -16,8 +16,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ROOMS, type Room } from '$lib/config/rooms';
-	import { AdminApiError } from '$lib/api/admin';
+	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -119,7 +118,6 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-	const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 	const TIMEZONES = [
 		{ value: 'America/New_York', label: 'Eastern (ET)' },
@@ -615,13 +613,6 @@
 		selectedIds = new Set(selectedIds);
 	}
 
-	function toggleSelectAll() {
-		if (allSelected) {
-			selectedIds = new Set();
-		} else {
-			selectedIds = new Set(filteredSchedules.map((s) => s.id));
-		}
-	}
 
 	function isConflicting(scheduleId: number): boolean {
 		return conflicts.some(([a, b]) => a.id === scheduleId || b.id === scheduleId);
