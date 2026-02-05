@@ -78,7 +78,6 @@
 
 	// Create modal
 	let showCreateModal = $state(false);
-	let creating = $state(false);
 	let newCampaign = $state({
 		name: '',
 		subject: '',
@@ -256,7 +255,6 @@
 			return;
 		}
 
-		creating = true;
 		try {
 			const campaignData = {
 				name: newCampaign.name,
@@ -294,7 +292,6 @@
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to create campaign');
 		} finally {
-			creating = false;
 		}
 	}
 

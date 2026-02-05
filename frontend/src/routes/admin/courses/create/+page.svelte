@@ -840,7 +840,6 @@
 	// Complete File Upload System
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let uploadError = $state(''); // Used in template for upload error display
 	let formError = $state('');
 	let successMessage = $state('');
 	let pricingAnalysis = $state<{
@@ -911,17 +910,16 @@
 		const file = target.files?.[0];
 		if (!file) return;
 
-		uploadError = '';
 
 		// Validate file type
 		if (!file.type.startsWith('image/')) {
-			uploadError = 'Please select an image file (JPEG, PNG, WebP, etc.)';
+			formError = 'Please select an image file (JPEG, PNG, WebP, etc.)';
 			return;
 		}
 
 		// Validate file size (max 50MB before resize)
 		if (file.size > 50 * 1024 * 1024) {
-			uploadError = 'Image must be less than 50MB';
+			formError = 'Image must be less than 50MB';
 			return;
 		}
 
@@ -959,14 +957,13 @@
 				}
 
 				hasUnsavedChanges = true;
-				uploadError = '';
-				validateAll();
+						validateAll();
 			} else {
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error: any) {
 			console.error('Failed to upload image:', error);
-			uploadError = error.message || 'Failed to upload image. Please try again.';
+			formError = error.message || 'Failed to upload image. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
 			const url = URL.createObjectURL(file);
@@ -992,16 +989,15 @@
 		const file = target.files?.[0];
 		if (!file) return;
 
-		uploadError = '';
 
 		if (!file.type.startsWith('video/')) {
-			uploadError = 'Please select a video file (MP4, WebM, etc.)';
+			formError = 'Please select a video file (MP4, WebM, etc.)';
 			return;
 		}
 
 		// Validate file size (max 50MB for direct upload)
 		if (file.size > 50 * 1024 * 1024) {
-			uploadError = 'Video must be less than 50MB for direct upload';
+			formError = 'Video must be less than 50MB for direct upload';
 			return;
 		}
 
@@ -1020,13 +1016,12 @@
 			if (response.success && response.data && response.data.length > 0) {
 				course.promo_video = response.data[0].url;
 				hasUnsavedChanges = true;
-				uploadError = '';
-			} else {
+					} else {
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error: any) {
 			console.error('Failed to upload video:', error);
-			uploadError = error.message || 'Failed to upload video. Please try again.';
+			formError = error.message || 'Failed to upload video. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
 			course.promo_video = URL.createObjectURL(file);

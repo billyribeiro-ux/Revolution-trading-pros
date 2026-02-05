@@ -109,28 +109,6 @@
 		}
 	}
 
-	async function duplicateTemplate(template: EmailTemplate) {
-		try {
-			const duplicate = {
-				name: `${template.name} (Copy)`,
-				slug: `${template.slug}-copy-${Date.now()}`,
-				subject: template.subject,
-				body_html: template.body_html,
-				body_text: template.body_text,
-				email_type: template.email_type,
-				variables: template.variables,
-				is_active: false
-			};
-			const response = await emailTemplatesApi.create(duplicate as Partial<EmailTemplate>);
-			if (response.data) {
-				templates = [...templates, response.data as EmailTemplate];
-				toastStore.success('Template duplicated successfully');
-			}
-		} catch (e) {
-			toastStore.error('Failed to duplicate template');
-			console.error(e);
-		}
-	}
 </script>
 
 <svelte:head>

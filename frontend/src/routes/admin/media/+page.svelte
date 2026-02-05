@@ -88,7 +88,6 @@
 	// AI features
 	let aiEnabled = $state(false);
 	let isAnalyzing = $state(false);
-	let aiStatus = $state<{ enabled: boolean; provider: string } | null>(null);
 
 	// Animations
 	const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
@@ -102,7 +101,7 @@
 		if (!browser) return;
 
 		// Load initial data
-		Promise.all([loadMedia(), loadStatistics(), checkAIStatus()]);
+		Promise.all([loadMedia(), loadStatistics()]);
 
 		// Setup keyboard and click listeners
 		document.addEventListener('keydown', handleKeydown);
@@ -161,9 +160,33 @@
 		}
 	}
 
-	async function checkAIStatus() {
-		// AI features not yet implemented - disabled for now
-		aiEnabled = false;
+	async function analyzeImage(item: MediaItem) {
+		if (!aiEnabled) return;
+		isAnalyzing = true;
+
+		try {
+			const response = await fetch(`/api/media/ai/analyze/${item.id}`, {
+				method: 'POST'
+			});
+
+			if (!response.ok) throw new Error('Analysis failed');
+
+			const result = await response.json();
+
+			// Update item with AI data
+			const updatedItem = {
+				...item,
+				alt: result.altText || item.alt,
+				custom_properties: {
+				}
+			};
+			items = items.map((i) => (i.id === item.id ? updatedItem : i));
+			detailItem = updatedItem;
+		} catch (e: any) {
+			showToast(e.message || 'Analysis failed', 'error');
+		} finally {
+			isAnalyzing = false;
+		}
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

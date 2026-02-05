@@ -163,7 +163,6 @@
 	async function handleSendEmail() {
 		if (!emailSubject || !emailBody) return;
 		emailSending = true;
-		const sentSubject = emailSubject; // Capture before clearing
 		try {
 			await membersApi.sendEmail(memberId, {
 				subject: emailSubject,
