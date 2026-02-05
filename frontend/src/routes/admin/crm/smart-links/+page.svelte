@@ -190,8 +190,8 @@
 	// Reload data when debounced search or filter changes (also handles initial load)
 	$effect(() => {
 		// Track dependencies - this effect runs on mount and when these change
-		const _search = debouncedSearch;
-		const _filter = filterActive;
+		debouncedSearch;
+		filterActive;
 
 		// Load data (untrack to prevent infinite loops)
 		untrack(() => {

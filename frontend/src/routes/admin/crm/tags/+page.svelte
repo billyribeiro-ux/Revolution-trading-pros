@@ -20,7 +20,6 @@
 		IconTrash,
 		IconRefresh,
 		IconUsers,
-		IconPalette,
 		IconX,
 		IconCheck
 	} from '$lib/icons';

@@ -35,8 +35,7 @@
 		IconEye,
 		IconCopy,
 		IconTrendingUp,
-		IconArrowLeft,
-		IconExternalLink
+		IconArrowLeft
 	} from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
@@ -127,7 +126,7 @@
 		connectionLoading = false;
 
 		// Only load data if email is connected
-		if (getIsEmailConnected) {
+		if (getIsEmailConnected()) {
 			await Promise.all([loadCampaigns(), loadStats(), loadTemplates(), loadSegments()]);
 		} else {
 			loading = false;
@@ -403,7 +402,7 @@
 				</div>
 			</div>
 
-			{#if getIsEmailConnected}
+			{#if getIsEmailConnected()}
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={loadCampaigns}>
 						<IconRefresh size={18} />

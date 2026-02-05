@@ -17,13 +17,9 @@
 		IconUsers,
 		IconArrowLeft,
 		IconSearch,
-		IconMail,
-		IconPhone,
-		IconTrash,
 		IconRefresh,
 		IconUser,
 		IconX,
-		IconCheck,
 		IconChevronLeft,
 		IconChevronRight
 	} from '$lib/icons';

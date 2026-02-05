@@ -135,10 +135,10 @@
 
 	$effect(() => {
 		// Dependencies: debouncedSearch, selectedCategory, currentPage, perPage
-		const search = debouncedSearch;
-		const category = selectedCategory;
-		const page = currentPage;
-		const limit = perPage;
+		debouncedSearch;
+		selectedCategory;
+		currentPage;
+		perPage;
 
 		// Skip initial load (handled by onMount)
 		if (isInitialLoad) return;
@@ -148,8 +148,8 @@
 
 	// Reset to page 1 when filters change
 	$effect(() => {
-		const search = debouncedSearch;
-		const category = selectedCategory;
+		debouncedSearch;
+		selectedCategory;
 
 		if (!isInitialLoad) {
 			currentPage = 1;

@@ -57,7 +57,6 @@
 	const MIN_BLOCK_HEIGHT = 40;
 	const SCROLL_THRESHOLD = 100; // Distance from edge to trigger auto-scroll
 	const AUTO_SCROLL_SPEED = 8;
-	const _MEASUREMENT_DEBOUNCE_MS = 50;
 	const PERFORMANCE_LOG_INTERVAL_MS = 1000;
 
 	// ==========================================================================
@@ -81,14 +80,11 @@
 	let draggedBlockIndex = $state<number | null>(null);
 	let dropTargetIndex = $state<number | null>(null);
 	let dragStartY = $state(0);
-	let dragCurrentY = $state(0);
 	let autoScrollDirection = $state<'up' | 'down' | null>(null);
 	let autoScrollRaf: number | null = null;
 
 	// Performance tracking
 	let lastRenderTime = $state(0);
-	let _frameCount = $state(0);
-	let _lastFpsUpdate = $state(0);
 	let currentFps = $state(60);
 
 	// ResizeObserver for block height changes
@@ -459,7 +455,6 @@
 		draggedBlockId = blockId;
 		draggedBlockIndex = blockIndex;
 		dragStartY = event.clientY;
-		dragCurrentY = event.clientY;
 
 		// Set drag data
 		event.dataTransfer.effectAllowed = 'move';
@@ -479,7 +474,6 @@
 		if (!event.dataTransfer || draggedBlockIndex === null) return;
 
 		event.dataTransfer.dropEffect = 'move';
-		dragCurrentY = event.clientY;
 
 		// Calculate drop position
 		const blockElement = (event.target as HTMLElement).closest('[data-block-index]');
@@ -553,7 +547,6 @@
 
 		const touch = event.touches[0];
 		dragStartY = touch.clientY;
-		dragCurrentY = touch.clientY;
 
 		// Long press to initiate drag
 		touchLongPressTimer = setTimeout(() => {
@@ -586,7 +579,6 @@
 
 		event.preventDefault();
 		const touch = event.touches[0];
-		dragCurrentY = touch.clientY;
 
 		// Find drop target
 		const elements = document.elementsFromPoint(touch.clientX, touch.clientY);

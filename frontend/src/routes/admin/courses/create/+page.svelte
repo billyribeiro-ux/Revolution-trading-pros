@@ -840,7 +840,7 @@
 	// Complete File Upload System
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let uploadError = $state('');
+	let uploadError = $state(''); // Used in template for upload error display
 	let formError = $state('');
 	let successMessage = $state('');
 	let pricingAnalysis = $state<{

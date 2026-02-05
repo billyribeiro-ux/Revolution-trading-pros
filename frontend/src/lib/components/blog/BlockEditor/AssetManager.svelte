@@ -123,7 +123,6 @@
 
 	// Pagination
 	let currentPage = $state(1);
-	let totalPages = $state(1);
 	let totalAssets = $state(0);
 	let hasMore = $state(false);
 
@@ -133,7 +132,6 @@
 	let sortBy = $state<'created_at' | 'filename' | 'file_size'>('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let tagFilter = $state<string[]>([]);
-	let allTags = $state<string[]>([]);
 
 	// Upload state
 	let isDragging = $state(false);
@@ -208,7 +206,7 @@
 			}
 
 			totalAssets = data.meta.total;
-			totalPages = data.meta.total_pages;
+			// totalPages available in data.meta.total_pages if needed for pagination UI
 			hasMore = data.meta.has_more;
 		} catch (error) {
 			console.error('Failed to fetch assets:', error);
@@ -237,7 +235,8 @@
 				credentials: 'include'
 			});
 			if (response.ok) {
-				allTags = await response.json();
+				// Tags loaded for future tag filtering UI
+				await response.json();
 			}
 		} catch (error) {
 			console.error('Failed to fetch tags:', error);
@@ -260,19 +259,20 @@
 		}
 	}
 
-	async function fetchRecentAssets() {
-		try {
-			const response = await fetch('/api/cms/assets/recent?limit=12', {
-				credentials: 'include'
-			});
-			if (response.ok) {
-				return await response.json();
-			}
-		} catch (error) {
-			console.error('Failed to fetch recent:', error);
-		}
-		return [];
-	}
+	// Fetch recent assets - available for future use
+	// async function fetchRecentAssets() {
+	// 	try {
+	// 		const response = await fetch('/api/cms/assets/recent?limit=12', {
+	// 			credentials: 'include'
+	// 		});
+	// 		if (response.ok) {
+	// 			return await response.json();
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Failed to fetch recent:', error);
+	// 	}
+	// 	return [];
+	// }
 
 	async function updateAssetMetadata(assetId: string) {
 		try {
@@ -358,28 +358,29 @@
 		}
 	}
 
-	async function moveToFolder(targetFolderId: string | null) {
-		if (selectedAssets.size === 0) return;
-
-		try {
-			const response = await fetch('/api/cms/assets/bulk/move', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					asset_ids: Array.from(selectedAssets),
-					target_folder_id: targetFolderId
-				})
-			});
-
-			if (response.ok) {
-				await fetchAssets(true);
-				selectedAssets = new Set();
-			}
-		} catch (error) {
-			console.error('Failed to move assets:', error);
-		}
-	}
+	// Move to folder - available for future use
+	// async function moveToFolder(targetFolderId: string | null) {
+	// 	if (selectedAssets.size === 0) return;
+	// 
+	// 	try {
+	// 		const response = await fetch('/api/cms/assets/bulk/move', {
+	// 			method: 'POST',
+	// 			headers: { 'Content-Type': 'application/json' },
+	// 			credentials: 'include',
+	// 			body: JSON.stringify({
+	// 				asset_ids: Array.from(selectedAssets),
+	// 				target_folder_id: targetFolderId
+	// 			})
+	// 		});
+	// 
+	// 		if (response.ok) {
+	// 			await fetchAssets(true);
+	// 			selectedAssets = new Set();
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Failed to move assets:', error);
+	// 	}
+	// }
 
 	// ============================================================================
 	// Upload Functions
@@ -632,16 +633,17 @@
 		fetchAssets(true);
 	}
 
-	function navigateUp() {
-		if (folderStack.length > 1) {
-			folderStack = folderStack.slice(0, -1);
-			currentFolderId = folderStack[folderStack.length - 1]?.id || null;
-		} else {
-			folderStack = [];
-			currentFolderId = null;
-		}
-		fetchAssets(true);
-	}
+	// Navigate up - available for future use
+	// function navigateUp() {
+	// 	if (folderStack.length > 1) {
+	// 		folderStack = folderStack.slice(0, -1);
+	// 		currentFolderId = folderStack[folderStack.length - 1]?.id || null;
+	// 	} else {
+	// 		folderStack = [];
+	// 		currentFolderId = null;
+	// 	}
+	// 	fetchAssets(true);
+	// }
 
 	function handleSearch() {
 		if (searchTimeout) clearTimeout(searchTimeout);
@@ -678,15 +680,16 @@
 		return 'document';
 	}
 
-	function getTypeIcon(type: string): string {
-		switch (type) {
-			case 'image': return 'image';
-			case 'video': return 'video';
-			case 'audio': return 'audio';
-			case 'document': return 'file-text';
-			default: return 'file';
-		}
-	}
+	// Get type icon - available for future use
+	// function getTypeIcon(type: string): string {
+	// 	switch (type) {
+	// 		case 'image': return 'image';
+	// 		case 'video': return 'video';
+	// 		case 'audio': return 'audio';
+	// 		case 'document': return 'file-text';
+	// 		default: return 'file';
+	// 	}
+	// }
 
 	function formatDate(dateStr: string): string {
 		return new Date(dateStr).toLocaleDateString('en-US', {
@@ -730,6 +733,7 @@
 		<div
 			class="dam-modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key === 'Enter' && e.stopPropagation()}
 			ondragenter={handleDragEnter}
 			ondragleave={handleDragLeave}
 			ondragover={handleDragOver}
@@ -737,6 +741,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-label="Asset Manager"
+			tabindex="-1"
 			transition:fly={{ y: 20, duration: 300, easing: cubicOut }}
 		>
 			<!-- Header -->

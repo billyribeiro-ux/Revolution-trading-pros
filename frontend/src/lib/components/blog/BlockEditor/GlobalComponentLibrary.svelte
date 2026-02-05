@@ -22,7 +22,6 @@
 	import { fade, slide, fly } from 'svelte/transition';
 	import {
 		IconLayoutRows,
-		IconLayoutGrid,
 		IconClick,
 		IconForms,
 		IconMenu2,
@@ -43,11 +42,7 @@
 		IconX,
 		IconLoader,
 		IconAlertCircle,
-		IconEye,
-		IconChevronRight,
-		IconChevronDown,
-		IconFilter,
-		IconSortDescending
+		IconFilter
 	} from '$lib/icons';
 
 	import { API_BASE_URL } from '$lib/api/config';
@@ -666,6 +661,7 @@
 									class="component-card"
 									class:selected={selectedComponent?.id === component.id}
 									onclick={() => selectComponent(component)}
+									onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && selectComponent(component)}
 									role="button"
 									tabindex="0"
 								>
@@ -1358,6 +1354,7 @@
 		margin: 0;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
