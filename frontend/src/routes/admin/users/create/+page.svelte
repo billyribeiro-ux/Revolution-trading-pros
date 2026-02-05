@@ -51,7 +51,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-		import { usersApi, type AdminApiError } from '$lib/api/admin';
+	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import {
 		IconCheck,
 		IconUser,
