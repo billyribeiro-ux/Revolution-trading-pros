@@ -811,10 +811,11 @@ pub struct UpdateMembershipRequest {
 }
 
 /// List all membership plans (admin - includes inactive)
+/// ICT 11+ FIX: Returns { plans: [...] } format expected by frontend
 async fn list_all_plans(
     State(state): State<AppState>,
     user: User,
-) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
@@ -826,13 +827,17 @@ async fn list_all_plans(
     .fetch_all(&state.db.pool)
     .await
     .map_err(|e| {
+        tracing::error!(target: "admin", "list_all_plans error: {}", e);
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": e.to_string()})),
         )
     })?;
 
-    Ok(Json(plans))
+    tracing::info!(target: "admin", "list_all_plans returned {} plans", plans.len());
+
+    // ICT 11+ FIX: Wrap in { plans: [...] } format for frontend compatibility
+    Ok(Json(json!({ "plans": plans })))
 }
 
 /// List user memberships (admin)

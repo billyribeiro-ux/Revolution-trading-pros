@@ -454,7 +454,10 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 		}
 
 		const data = await response.json();
-		const products = data.data || data || [];
+		// ICT 11+ FIX: Handle multiple response formats from different endpoints
+		// - /api/admin/membership-plans returns { plans: [...] }
+		// - /api/products returns { data: [...] }
+		const products = data.plans || data.data || data.products || (Array.isArray(data) ? data : []);
 
 		console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
 
