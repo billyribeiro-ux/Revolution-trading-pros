@@ -20,6 +20,7 @@
 	 */
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
+	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
@@ -43,21 +44,15 @@
 	let props: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE - Svelte 5 $state() Pattern
-	// ═══════════════════════════════════════════════════════════════════════════
-	let mounted = $state(false);
-
-	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED - Svelte 5 $derived() Pattern (replaces $: reactive statements)
 	// ═══════════════════════════════════════════════════════════════════════════
 	const pathname = $derived(page.url.pathname);
 	const isAdminArea = $derived(pathname.startsWith('/admin'));
 	const isEmbedArea = $derived(pathname.startsWith('/embed'));
 
+	// ICT Level 7: AdminToolbar wrapped in ClientOnly - no mounted state needed
 	// Svelte 5: Use .current for rune-based stores (NOT $ prefix)
-	// CRITICAL: Single unified condition for toolbar render AND padding
-	// Eliminates race condition between toolbar visibility and layout padding
-	const showAdminToolbar = $derived(mounted && isAdminUser.current);
+	const showAdminToolbar = $derived(isAdminUser.current);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SIDE EFFECTS - SvelteKit Navigation Lifecycle
@@ -76,8 +71,6 @@
 	// LIFECYCLE - onMount (client-only by definition, no browser check needed)
 	// ═══════════════════════════════════════════════════════════════════════════
 	onMount(() => {
-		mounted = true;
-
 		// onMount ONLY runs in browser - no redundant check needed
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
@@ -147,10 +140,12 @@
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
 	<!-- Footer moved to individual pages for better control -->
 	<div class="min-h-screen flex flex-col min-w-0" class:has-admin-toolbar={showAdminToolbar}>
-		<!-- Hydration-safe: Admin toolbar render AND padding use same condition -->
-		{#if showAdminToolbar}
-			<AdminToolbar />
-		{/if}
+		<!-- ICT Level 7: ClientOnly prevents hydration mismatch for auth-dependent AdminToolbar -->
+		<ClientOnly>
+			{#if showAdminToolbar}
+				<AdminToolbar />
+			{/if}
+		</ClientOnly>
 
 		<NavBar />
 
