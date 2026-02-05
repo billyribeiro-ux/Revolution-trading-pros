@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import type { Block, BlockType, BlockContent, BlockSettings, BlockMetadata, BlockItem } from './types';
+import type { Block, BlockType, BlockContent, BlockItem } from './types';
 
 // =============================================================================
 // Constants - Max Lengths and Security Constraints

@@ -143,6 +143,7 @@
 						tabindex="0"
 						aria-label="Tab label"
 						onclick={(e) => e.stopPropagation()}
+						onkeydown={(e) => e.stopPropagation()}
 						oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
 						onpaste={handlePaste}
 					>

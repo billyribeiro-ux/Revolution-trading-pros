@@ -4,7 +4,7 @@
  * Composable validation logic for CMS block content with reactive updates
  */
 
-import type { Block, BlockContent } from '../types';
+import type { Block } from '../types';
 
 // ============================================================================
 // Types

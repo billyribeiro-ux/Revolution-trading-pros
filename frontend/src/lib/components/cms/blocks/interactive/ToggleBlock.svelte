@@ -71,6 +71,7 @@
 				tabindex="0"
 				aria-label="Toggle title"
 				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
 				oninput={handleTitleInput}
 				onpaste={handlePaste}
 			>
