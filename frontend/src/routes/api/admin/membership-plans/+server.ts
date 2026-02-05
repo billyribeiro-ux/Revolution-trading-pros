@@ -3,7 +3,7 @@
  * Forwards requests to backend /api/admin/membership-plans endpoint
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
