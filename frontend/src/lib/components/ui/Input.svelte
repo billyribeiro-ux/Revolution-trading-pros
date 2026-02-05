@@ -32,16 +32,6 @@
 		onchange,
 		onblur
 	}: Props = $props();
-	let oninput = $derived(props.oninput);
-	let onchange = $derived(props.onchange);
-	let onblur = $derived(props.onblur);
-
-	// Sync with external value changes
-	$effect(() => {
-		if (props.value !== undefined && props.value !== value) {
-			value = props.value;
-		}
-	});
 </script>
 
 <div class="w-full">
