@@ -72,6 +72,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let posts = $state<any[]>([]);
+	let stats = $state<any>(null);
+	let loading = $state(false);
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let categoryFilter = $state('all');
@@ -83,15 +85,30 @@
 	let sortBy = $state('created_at');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let dateRange = $state({ start: '', end: '' });
+	let previewPost = $state<any>(null);
 	let activeActionMenu = $state<number | null>(null);
 	let ws = $state<WebSocket | null>(null);
+	let showExportModal = $state(false);
 	let exportFormat = $state<'csv' | 'json' | 'wordpress'>('csv');
+	let showScheduleModal = $state(false);
+	let schedulePost = $state<any>(null);
+	let showAnalyticsModal = $state(false);
 	let analyticsPost = $state<any>(null);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 	let notifications = $state<any[]>([]);
 
 	// Delete confirmation modal state
+	let showDeleteModal = $state(false);
+	let showBulkDeleteModal = $state(false);
 	let pendingDeleteId = $state<number | null>(null);
+
+	const statusOptions = [
+		{ value: 'all', label: 'All Status' },
+		{ value: 'published', label: 'Published' },
+		{ value: 'draft', label: 'Draft' },
+		{ value: 'scheduled', label: 'Scheduled' },
+		{ value: 'archived', label: 'Archived' }
+	];
 
 	const sortOptions = [
 		{ value: 'created_at', label: 'Date Created' },
@@ -111,11 +128,13 @@
 		if (!browser) return;
 
 		loadPosts();
+		loadStats();
 		setupWebSocket();
 		setupKeyboardShortcuts();
 
 		// Auto-refresh every 30 seconds
 		refreshInterval = setInterval(() => {
+			loadStats();
 			if (viewMode === 'list') loadPosts();
 		}, 30000);
 
@@ -132,6 +151,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadPosts() {
+		loading = true;
 		try {
 			const params = new URLSearchParams();
 			if (statusFilter !== 'all') params.append('status', statusFilter);
@@ -154,6 +174,8 @@
 		} catch (error) {
 			console.error('Failed to load posts:', error);
 			showNotification('error', 'Failed to load posts');
+		} finally {
+			loading = false;
 		}
 	}
 
