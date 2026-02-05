@@ -29,9 +29,8 @@ export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) =
 			return json({ error: 'Access token required' }, { status: 400 });
 		}
 
-		// ICT11+ Fix: Cloudflare Pages doesn't have process.env.NODE_ENV
-		// Always use secure cookies - Cloudflare Pages is always HTTPS
-		const isSecure = true;
+		// ICT 7 FIX: secure=false on localhost (http), true in production (https)
+		const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
 
 		// Set access token cookie
 		cookies.set('rtp_access_token', accessToken, {
