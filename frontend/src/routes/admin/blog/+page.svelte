@@ -119,6 +119,11 @@
 		{ value: 'title', label: 'Alphabetical' }
 	];
 
+	// Helper function to get category by ID
+	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
+		return predefinedCategories.find(cat => cat.id === id);
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
