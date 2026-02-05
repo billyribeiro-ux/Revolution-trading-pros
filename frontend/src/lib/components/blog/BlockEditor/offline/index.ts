@@ -11,7 +11,6 @@
 
 import { browser } from '$app/environment';
 import type { Post } from '$lib/types/post';
-import type { Block } from '../types';
 import {
 	blogEditorDB,
 	createDraftFromPost,

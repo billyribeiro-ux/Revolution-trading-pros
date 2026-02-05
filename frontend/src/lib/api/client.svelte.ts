@@ -990,8 +990,8 @@ class EnterpriseApiClient {
 	// Real-time features
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// ICT 11+ Performance: WebSocket reconnection state
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// ICT 11+ Performance: WebSocket reconnection state (reserved for future use)
+	// @ts-expect-error Reserved for future WebSocket reconnection implementation
 	private _wsReconnectAttempts = 0;
 
 	private setupWebSocket(): void {

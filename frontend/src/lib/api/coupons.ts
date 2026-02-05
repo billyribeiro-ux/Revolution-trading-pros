@@ -444,9 +444,9 @@ class CouponManagementService {
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
 
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// @ts-expect-error Reserved for future WebSocket reconnection implementation
 	private _wsReconnectAttempts = 0;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// @ts-expect-error Reserved for future WebSocket reconnection implementation
 	private _wsReconnectDelay = WS_RECONNECT_DELAY;
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;

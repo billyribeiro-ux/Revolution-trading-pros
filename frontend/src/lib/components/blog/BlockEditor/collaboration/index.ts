@@ -19,7 +19,6 @@ import * as Y from 'yjs';
 import {
 	createYjsProvider,
 	generateUserColor,
-	generateClientId,
 	type YjsProviderInstance,
 	type ConnectionStatus
 } from './yjs-provider';
@@ -215,6 +214,7 @@ export function useCollaboration(
 	let yBlocks: Y.Array<Block>;
 
 	// Track if we're observing the yBlocks array
+	// @ts-expect-error Set during initialization, used for cleanup tracking
 	let isObserving = false;
 
 	// ═══════════════════════════════════════════════════════════════════════════

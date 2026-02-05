@@ -17,11 +17,9 @@
 import { browser } from '$app/environment';
 import { dev } from '$app/environment';
 import {
-	getMetrics,
 	subscribeToMetrics,
 	type MetricsSnapshot,
 	type WebVitalMetric,
-	type EditorMetric,
 	getPercentiles
 } from './metrics';
 

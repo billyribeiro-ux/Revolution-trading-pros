@@ -20,7 +20,7 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-	import { cubicOut, elasticOut } from 'svelte/easing';
+	import { elasticOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import type { Collaborator, CursorPosition } from './awareness';
 	import { getContrastColor, formatLastActive } from './awareness';
@@ -79,7 +79,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	/** Active collaborators (with valid cursors or selections) */
-	let activeCollaborators = $derived(
+	// @ts-expect-error Reserved for future filtering functionality
+	const activeCollaborators = $derived(
 		collaborators.filter(c => c.cursor || c.selectedBlockId || c.selection)
 	);
 

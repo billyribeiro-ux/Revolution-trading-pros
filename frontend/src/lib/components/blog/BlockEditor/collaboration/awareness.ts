@@ -242,7 +242,7 @@ export function createAwarenessManager(
 	/**
 	 * Handle awareness state changes
 	 */
-	function handleAwarenessChange(change: AwarenessChange): void {
+	function handleAwarenessChange(_change: AwarenessChange): void {
 		const localClientId = awareness.clientID;
 		const previousCollaborators = new Map(collaboratorsMap);
 
