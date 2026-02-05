@@ -11,7 +11,6 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -105,7 +104,8 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with $effect
+	$effect(() => {
 		loadData();
 	});
 </script>

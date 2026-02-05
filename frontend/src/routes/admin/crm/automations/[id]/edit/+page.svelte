@@ -12,7 +12,6 @@
 -->
 
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -393,6 +392,7 @@
 
 	let canSaveAction = $derived(actionForm.action_type !== '' && !isSaving);
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let requiresSettings = $derived(
 		[
 			'add_tag',
@@ -409,7 +409,8 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with $effect
+	$effect(() => {
 		loadFunnel();
 	});
 </script>

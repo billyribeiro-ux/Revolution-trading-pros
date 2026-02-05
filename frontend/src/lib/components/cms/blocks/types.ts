@@ -87,7 +87,7 @@ export interface BlockContent {
   items?: Array<{
     id: string;
     content: string;
-    checked: boolean;
+    checked?: boolean;
   }>;
 
   // Accordion
@@ -185,7 +185,7 @@ export interface BlockSettings {
   // Border
   borderWidth?: string;
   borderColor?: string;
-  borderStyle?: string;
+  borderStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
   borderRadius?: string;
 
   // Effects

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import {
@@ -187,7 +186,8 @@
 	// Lifecycle Hooks & Initialization
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with $effect
+	$effect(() => {
 		// Initialize with starter module
 		if (course.modules.length === 0) {
 			addModule();
@@ -840,6 +840,7 @@
 	// Complete File Upload System
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let uploadError = $state('');
 	let formError = $state('');
 	let successMessage = $state('');

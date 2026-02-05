@@ -27,7 +27,6 @@
 	 * @version 1.0.0 (January 2026)
 	 */
 
-	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
@@ -36,12 +35,6 @@
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
@@ -53,12 +46,11 @@
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import IconPhone from '@tabler/icons-svelte-runes/icons/phone';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import IconFlag from '@tabler/icons-svelte-runes/icons/flag';
 	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
 	import IconHistory from '@tabler/icons-svelte-runes/icons/history';
 	import { crmAPI } from '$lib/api/crm';
-	import type { Deal, Pipeline, Stage, TimelineEvent, Note } from '$lib/crm/types';
+	import type { Deal, Pipeline, Stage, TimelineEvent } from '$lib/crm/types';
 	import { api } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -110,6 +102,7 @@
 
 	let currentStage = $derived(pipeline?.stages?.find((s) => s.id === deal?.stage_id) || null);
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let stageProgress = $derived.by(() => {
 		if (!pipeline?.stages || !deal) return 0;
 		const stageIndex = pipeline.stages.findIndex((s) => s.id === deal?.stage_id);
@@ -334,7 +327,8 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
+	// Svelte 5: Initialize on mount with $effect
+	$effect(() => {
 		loadDeal();
 	});
 </script>
