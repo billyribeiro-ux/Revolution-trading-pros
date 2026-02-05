@@ -656,7 +656,7 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="0">
 			<div class="modal-header">
 				<h2>Upload Indicator File</h2>
 				<button class="btn-close" onclick={() => (showFileModal = false)}>X</button>
@@ -706,7 +706,7 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="0">
 			<div class="modal-header">
 				<h2>Add Tutorial Video</h2>
 				<button class="btn-close" onclick={() => (showVideoModal = false)}>X</button>
