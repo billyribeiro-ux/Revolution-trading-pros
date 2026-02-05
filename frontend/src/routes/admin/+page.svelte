@@ -3,8 +3,8 @@
 -->
 
 <script lang="ts">
-	import { fade, fly, scale } from 'svelte/transition';
-	import { cubicOut, elasticOut } from 'svelte/easing';
+	import { fly, scale } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import {
 		IconReceipt,
 		IconTicket,
@@ -12,28 +12,15 @@
 		IconChartBar,
 		IconRefresh,
 		IconNews,
-		IconForms,
-		IconMail,
-		IconBellRinging,
-		IconPhoto,
-		IconSettings,
-		IconSeo,
 		IconUserCircle,
-		IconFilter,
 		IconActivity,
-		IconSend,
 		IconAlertCircle,
 		IconShoppingCart,
-		IconVideo,
-		IconTag,
 		IconEye,
 		IconClick,
 		IconClock,
 		IconArrowUpRight,
-		IconWorld,
 		IconBrandGoogle,
-		IconLink,
-		IconAlertTriangle,
 		IconTrendingUp,
 		IconCalendar,
 		IconSearch,
@@ -46,11 +33,7 @@
 		IconPlugConnected
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
-	import {
-		connections,
-		getIsAnalyticsConnected,
-		getIsSeoConnected
-	} from '$lib/stores/connections.svelte';
+	import { getIsAnalyticsConnected, getIsSeoConnected } from '$lib/stores/connections.svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoints
@@ -135,6 +118,7 @@
 
 	// Top pages
 	let topPages: { path: string; views: number; change: number }[] = [];
+
 
 	// Animated counter
 	function animateValue(

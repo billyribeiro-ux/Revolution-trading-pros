@@ -15,8 +15,6 @@
 
 	let { isOpen = false, title = '', onClose = () => {}, children }: Props = $props();
 
-	let _modalRef: HTMLDivElement | null = $state(null);
-
 	// Close on Escape key
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape' && isOpen) {
@@ -56,7 +54,6 @@
 		tabindex="-1"
 	>
 		<div
-			bind:this={modalRef}
 			class="modal-container"
 			role="dialog"
 			aria-modal="true"

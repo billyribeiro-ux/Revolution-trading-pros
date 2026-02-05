@@ -115,7 +115,7 @@
 		showLogoutOtherModal = false;
 		revokingAll = true;
 		try {
-			const response = await authService.logoutAllDevices(true);
+			await authService.logoutAllDevices(true);
 			await loadSessions();
 			// Successfully logged out from other devices
 		} catch (e) {
