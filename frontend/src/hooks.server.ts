@@ -60,14 +60,17 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	};
 
 	// DEV MODE: Bypass auth for development (REMOVE IN PRODUCTION)
+	// ICT 7: Check for protected routes in dev mode and provide full access
 	const isDev = process.env.NODE_ENV === 'development';
-	if (isDev && pathname.startsWith('/dashboard')) {
-		// Mock user for development
+	const DEV_BYPASS_EMAIL = 'welberribeirodrums@gmail.com';
+	
+	if (isDev && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
+		// Mock user for development with full admin/developer access
 		event.locals.user = {
 			id: 999,
-			email: 'dev@example.com',
-			name: 'Dev User',
-			role: 'admin'
+			email: DEV_BYPASS_EMAIL,
+			name: 'Developer',
+			role: 'developer'
 		};
 		event.locals.accessToken = 'dev-token';
 		return resolve(event);
