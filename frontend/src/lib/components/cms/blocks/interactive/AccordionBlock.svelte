@@ -382,10 +382,6 @@
 		opacity: 0;
 	}
 
-	.accordion-header:hover .remove-item-btn {
-		opacity: 1;
-	}
-
 	.remove-item-btn:hover {
 		background: #fee2e2;
 		color: #dc2626;

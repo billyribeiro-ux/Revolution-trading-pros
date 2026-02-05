@@ -58,7 +58,6 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
 import { API_BASE_URL, API_ENDPOINTS } from './config';
 
-const _isDev = import.meta.env.DEV;
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000; // Initial delay, exponential backoff
@@ -993,8 +992,6 @@ class EnterpriseApiClient {
 
 	// ICT 11+ Performance: WebSocket reconnection state
 	private wsReconnectAttempts = 0;
-	private readonly MAX_WS_RECONNECT_ATTEMPTS = 10;
-	private wsReconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	private setupWebSocket(): void {
 		if (!this.token || this.wsConnection) return;
@@ -1031,39 +1028,6 @@ class EnterpriseApiClient {
 		} catch (error) {
 			// Silently handle - WebSocket is optional
 		}
-	}
-
-	/**
-	 * ICT 11+ Performance: WebSocket reconnection with exponential backoff
-	 * Prevents thundering herd and reduces server load during outages
-	 */
-	private scheduleWSReconnect(): void {
-		if (this.wsReconnectAttempts >= this.MAX_WS_RECONNECT_ATTEMPTS) {
-			console.warn('[ApiClient] Max WebSocket reconnect attempts reached');
-			return;
-		}
-
-		// Clear any existing reconnect timeout
-		if (this.wsReconnectTimeout) {
-			clearTimeout(this.wsReconnectTimeout);
-		}
-
-		// Exponential backoff: 1s, 2s, 4s, 8s, 16s, 32s, 64s (capped at 64s)
-		const baseDelay = 1000;
-		const maxDelay = 64000;
-		const jitter = Math.random() * 1000; // Add jitter to prevent thundering herd
-		const delay = Math.min(baseDelay * Math.pow(2, this.wsReconnectAttempts), maxDelay) + jitter;
-
-		this.wsReconnectAttempts++;
-		console.debug(
-			`[ApiClient] WebSocket reconnecting in ${Math.round(delay)}ms (attempt ${this.wsReconnectAttempts}/${this.MAX_WS_RECONNECT_ATTEMPTS})`
-		);
-
-		this.wsReconnectTimeout = setTimeout(() => {
-			if (this.token) {
-				this.setupWebSocket();
-			}
-		}, delay);
 	}
 
 	private authenticateWebSocket(): void {
@@ -1176,31 +1140,6 @@ class EnterpriseApiClient {
 		} catch (error) {
 			// Silently handle - SSE is optional
 		}
-	}
-
-	private sseReconnectAttempts = 0;
-	private readonly MAX_SSE_RECONNECT_ATTEMPTS = 5;
-
-	private scheduleSSEReconnect(): void {
-		// ICT 7 FIX: Don't auto-reconnect SSE - it's optional
-		// Only reconnect if explicitly configured
-		const configuredSseUrl = import.meta.env['VITE_SSE_URL'];
-		if (!configuredSseUrl) return;
-
-		if (this.sseReconnectAttempts >= this.MAX_SSE_RECONNECT_ATTEMPTS) {
-			return;
-		}
-
-		// Exponential backoff with jitter
-		const baseDelay = 1000;
-		const delay = baseDelay * Math.pow(2, this.sseReconnectAttempts) + Math.random() * 1000;
-		this.sseReconnectAttempts++;
-
-		setTimeout(() => {
-			if (this.token) {
-				this.setupSSE();
-			}
-		}, delay);
 	}
 
 	private handleSSEMessage(event: MessageEvent): void {

@@ -508,8 +508,15 @@
 
 <!-- Cancel Modal -->
 {#if showCancelModal && selectedSubscription}
-	<div class="modal-overlay" onclick={() => (showCancelModal = false)} role="dialog">
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
+	<div
+		class="modal-overlay"
+		onclick={() => (showCancelModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCancelModal = false)}
+		role="button"
+		tabindex="-1"
+		aria-label="Close modal"
+	>
+		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Cancel Subscription</h2>
 				<button class="modal-close" onclick={() => (showCancelModal = false)}>x</button>
@@ -556,8 +563,15 @@
 
 <!-- Upgrade Modal -->
 {#if showUpgradeModal && selectedSubscription}
-	<div class="modal-overlay" onclick={() => (showUpgradeModal = false)} role="dialog">
-		<div class="modal modal-lg" onclick={(e) => e.stopPropagation()} role="document">
+	<div
+		class="modal-overlay"
+		onclick={() => (showUpgradeModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showUpgradeModal = false)}
+		role="button"
+		tabindex="-1"
+		aria-label="Close modal"
+	>
+		<div class="modal modal-lg" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Change Plan</h2>
 				<button class="modal-close" onclick={() => (showUpgradeModal = false)}>x</button>

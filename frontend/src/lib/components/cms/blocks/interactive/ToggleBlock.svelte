@@ -68,6 +68,7 @@
 				contenteditable="true"
 				class="toggle-title editable-content"
 				role="textbox"
+				tabindex="0"
 				aria-label="Toggle title"
 				onclick={(e) => e.stopPropagation()}
 				oninput={handleTitleInput}

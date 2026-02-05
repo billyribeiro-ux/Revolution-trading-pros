@@ -478,8 +478,15 @@
 
 <!-- Installation Guide Modal - ICT 7 -->
 {#if showInstallGuide}
-	<div class="modal-overlay" onclick={() => (showInstallGuide = false)}>
-		<div class="modal install-guide-modal" onclick={(e) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		onclick={() => (showInstallGuide = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showInstallGuide = false)}
+		role="button"
+		tabindex="-1"
+		aria-label="Close modal"
+	>
+		<div class="modal install-guide-modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>{selectedPlatform} Installation Guide</h2>
 				<button class="btn-close" onclick={() => (showInstallGuide = false)}>X</button>
@@ -745,12 +752,12 @@
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	.platform_notes a {
+	.platform_notes :global(a) {
 		color: #1e73be;
 		text-decoration: none;
 	}
 
-	.platform_notes a:hover {
+	.platform_notes :global(a:hover) {
 		color: #000000;
 		text-decoration: underline;
 	}

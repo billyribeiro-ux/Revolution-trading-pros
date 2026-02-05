@@ -9,7 +9,7 @@
  *
  * Tests cover:
  * - Rendering with different styles (solid, dashed, dotted, double)
- * - Width variations (25%, 50%, 75%, 100%)
+ * - Width variations (small=25%, medium=50%, large=75%, full=100%)
  * - Color customization
  * - Spacing/margin settings
  * - Thickness control
@@ -31,7 +31,7 @@ interface DividerBlockOverrides {
 	content?: Record<string, unknown>;
 	settings?: {
 		borderStyle?: 'solid' | 'dashed' | 'dotted' | 'double';
-		width?: '25%' | '50%' | '75%' | '100%';
+		width?: 'small' | 'medium' | 'large' | 'full';
 		borderColor?: string;
 		margin?: 'small' | 'medium' | 'large';
 		borderWidth?: string;
@@ -48,7 +48,7 @@ function createDividerBlock(overrides: DividerBlockOverrides = {}): Block {
 		},
 		settings: {
 			borderStyle: 'solid',
-			width: '100%',
+			width: 'full',
 			borderColor: '#e2e8f0',
 			margin: 'medium',
 			borderWidth: '1px',
@@ -211,9 +211,9 @@ describe('DividerBlock - Width Variations', () => {
 		cleanup();
 	});
 
-	it('should apply 25% width', () => {
+	it('should apply 25% width (small)', () => {
 		const block = createDividerBlock({
-			settings: { width: '25%' }
+			settings: { width: 'small' }
 		});
 		render(DividerBlock, {
 			props: {
@@ -229,9 +229,9 @@ describe('DividerBlock - Width Variations', () => {
 		expect(separator).toHaveStyle({ width: '25%' });
 	});
 
-	it('should apply 50% width', () => {
+	it('should apply 50% width (medium)', () => {
 		const block = createDividerBlock({
-			settings: { width: '50%' }
+			settings: { width: 'medium' }
 		});
 		render(DividerBlock, {
 			props: {
@@ -247,9 +247,9 @@ describe('DividerBlock - Width Variations', () => {
 		expect(separator).toHaveStyle({ width: '50%' });
 	});
 
-	it('should apply 75% width', () => {
+	it('should apply 75% width (large)', () => {
 		const block = createDividerBlock({
-			settings: { width: '75%' }
+			settings: { width: 'large' }
 		});
 		render(DividerBlock, {
 			props: {
@@ -265,9 +265,9 @@ describe('DividerBlock - Width Variations', () => {
 		expect(separator).toHaveStyle({ width: '75%' });
 	});
 
-	it('should apply 100% width by default', () => {
+	it('should apply 100% width by default (full)', () => {
 		const block = createDividerBlock({
-			settings: { width: '100%' }
+			settings: { width: 'full' }
 		});
 		render(DividerBlock, {
 			props: {
@@ -727,7 +727,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		expect(onUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({
 				settings: expect.objectContaining({
-					width: '50%'
+					width: 'medium'
 				})
 			})
 		);
@@ -795,7 +795,7 @@ describe('DividerBlock - Styling Classes', () => {
 
 	it('should highlight active width button', () => {
 		const block = createDividerBlock({
-			settings: { width: '100%' }
+			settings: { width: 'full' }
 		});
 		render(DividerBlock, {
 			props: {

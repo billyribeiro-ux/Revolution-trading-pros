@@ -53,7 +53,7 @@
 		IconCalendar
 	} from '$lib/icons';
 
-	import type { Block, BlockType, EditorState, SEOAnalysis, Revision, DropAction } from './types';
+	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
 
 	import { BLOCK_DEFINITIONS } from './types';
 
@@ -122,7 +122,7 @@
 	// ==========================================================================
 
 	let editorState = $state<EditorState>({
-		blocks: blocks,
+		blocks: [],
 		selectedBlockId: null,
 		selectedBlockIds: [], // Multi-selection
 		hoveredBlockId: null,
@@ -131,7 +131,7 @@
 		clipboardMulti: [], // Multi-block clipboard
 		history: {
 			past: [],
-			present: blocks,
+			present: [],
 			future: [],
 			maxSize: 100
 		},
@@ -153,6 +153,12 @@
 		// Enhanced drag-drop state
 		dragPreviewOffset: null,
 		lastDropAction: null
+	});
+
+	// Sync blocks from props when they change
+	$effect(() => {
+		editorState.blocks = blocks;
+		editorState.history.present = [...blocks];
 	});
 
 	// ==========================================================================
@@ -206,7 +212,6 @@
 
 	// Screen reader announcements
 	let announcements = $state<string[]>([]);
-	let liveRegionRef: HTMLDivElement;
 
 	// UI State
 	let showBlockInserter = $state(false);
@@ -249,9 +254,6 @@
 	// ==========================================================================
 
 	onMount(() => {
-		// Initialize history
-		editorState.history.present = [...blocks];
-
 		// Start autosave
 		if (autosaveInterval > 0 && editorState.autosaveEnabled) {
 			autosaveTimer = setInterval(handleAutosave, autosaveInterval);
@@ -410,7 +412,7 @@
 	// ==========================================================================
 
 	// Screen reader announcement helper
-	function announce(message: string, priority: 'polite' | 'assertive' = 'polite') {
+	function announce(message: string, _priority: 'polite' | 'assertive' = 'polite') {
 		announcements = [...announcements, message];
 		// Clear old announcements after they've been read
 		setTimeout(() => {
@@ -431,8 +433,6 @@
 			return current + velocity * (1 / 60);
 		};
 	}
-
-	const springAnimate = createSpringAnimation(SPRING_PRESETS.snappy);
 
 	// Multi-selection helpers
 	function isBlockSelected(blockId: string): boolean {
@@ -874,22 +874,6 @@
 				movedBlock?.focus();
 			});
 		}
-	}
-
-	// Undo last drop action (Ctrl/Cmd + Shift + Z specifically for drops)
-	function undoLastDrop() {
-		if (!editorState.lastDropAction) return;
-
-		const action = editorState.lastDropAction;
-		// Only allow undo within 10 seconds
-		if (Date.now() - action.timestamp > 10000) {
-			editorState.lastDropAction = null;
-			return;
-		}
-
-		undo();
-		editorState.lastDropAction = null;
-		announce('Drop action undone', 'polite');
 	}
 
 	// ==========================================================================

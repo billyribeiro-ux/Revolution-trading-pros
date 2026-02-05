@@ -113,7 +113,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	}
 
 	// ICT 7 FIX: Validate token with proper timeout and error handling
-	let validationAttempted = false;
 	try {
 		// Add timeout to prevent hanging requests
 		const controller = new AbortController();
@@ -131,7 +130,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		});
 
 		clearTimeout(timeoutId);
-		validationAttempted = true;
 
 		if (response.ok) {
 			const json = await response.json();

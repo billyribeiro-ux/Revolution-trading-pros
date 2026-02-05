@@ -434,8 +434,6 @@
 			await login({ email, password, remember: rememberMe });
 
 			console.log('[LoginForm:ICT11] Authentication successful', {
-				userId: user?.id,
-				email: user?.email?.substring(0, 3) + '***',
 				timestamp: new Date().toISOString()
 			});
 

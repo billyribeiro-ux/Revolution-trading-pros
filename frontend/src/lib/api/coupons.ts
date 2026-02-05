@@ -71,12 +71,7 @@ const ANALYTICS_INTERVAL = 60000; // 1 minute
 // WebSocket Feature Flag - Set VITE_WS_ENABLED=true in .env to enable real-time updates
 // Backend: Laravel Reverb WebSocket server with coupon channels implemented
 // WebSocket disabled by default - enable via VITE_WS_ENABLED=true
-const _WS_ENABLED = browser ? import.meta.env['VITE_WS_ENABLED'] === 'true' : false;
-const _WS_URL = browser ? import.meta.env['VITE_WS_URL'] || '' : '';
 const WS_RECONNECT_DELAY = 1000; // Start with 1 second
-const WS_MAX_RECONNECT_DELAY = 30000; // Max 30 seconds
-const WS_RECONNECT_BACKOFF = 1.5; // Exponential backoff multiplier
-const WS_MAX_RECONNECT_ATTEMPTS = 10; // Maximum reconnection attempts
 const WS_HEARTBEAT_INTERVAL = 30000; // 30 seconds
 const WS_HEARTBEAT_TIMEOUT = 5000; // 5 seconds
 const WS_MESSAGE_QUEUE_SIZE = 100; // Maximum queued messages
@@ -451,7 +446,6 @@ class CouponManagementService {
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
 	private wsReconnectAttempts = 0;
 	private wsReconnectDelay = WS_RECONNECT_DELAY;
-	private wsReconnectTimer?: number;
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;
 	private wsMessageQueue: any[] = [];
@@ -746,32 +740,6 @@ class CouponManagementService {
 			clearTimeout(this.wsHeartbeatTimeout);
 			this.wsHeartbeatTimeout = undefined;
 		}
-	}
-
-	/**
-	 * Schedule reconnection with exponential backoff
-	 */
-	private scheduleReconnect(): void {
-		if (this.wsReconnectTimer) {
-			clearTimeout(this.wsReconnectTimer);
-		}
-
-		this.wsReconnectAttempts++;
-		this.wsConnectionState.set('reconnecting');
-
-		console.info(
-			`[CouponService] Scheduling reconnect attempt ${this.wsReconnectAttempts}/${WS_MAX_RECONNECT_ATTEMPTS} in ${this.wsReconnectDelay}ms`
-		);
-
-		this.wsReconnectTimer = window.setTimeout(() => {
-			this.setupWebSocket();
-		}, this.wsReconnectDelay);
-
-		// Apply exponential backoff
-		this.wsReconnectDelay = Math.min(
-			this.wsReconnectDelay * WS_RECONNECT_BACKOFF,
-			WS_MAX_RECONNECT_DELAY
-		);
 	}
 
 	/**

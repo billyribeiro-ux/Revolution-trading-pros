@@ -496,11 +496,6 @@
 		justify-content: center;
 	}
 
-	.file-download svg {
-		width: 1rem;
-		height: 1rem;
-	}
-
 	/* Always show download icon on mobile */
 	.file-item .file-download {
 		opacity: 1;

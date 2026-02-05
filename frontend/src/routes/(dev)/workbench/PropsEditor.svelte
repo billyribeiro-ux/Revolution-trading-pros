@@ -175,17 +175,17 @@
 				{@const currentValue = values[prop.name] ?? getDefaultValue(prop, inputType)}
 
 				<div class="prop-field">
-					<label class="prop-label">
-						<span class="prop-name">
+					<div class="prop-label">
+						<span class="prop-name" id="prop-label-{prop.name}">
 							{prop.name}
 							{#if prop.required}
 								<span class="required">*</span>
 							{/if}
 						</span>
 						<span class="prop-type">{prop.type}</span>
-					</label>
+					</div>
 
-					<div class="prop-input">
+					<div class="prop-input" role="group" aria-labelledby="prop-label-{prop.name}">
 						{#if inputType === 'boolean'}
 							<label class="toggle">
 								<input

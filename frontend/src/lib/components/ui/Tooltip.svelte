@@ -22,7 +22,7 @@
 -->
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 
 	interface Props {
 		text: string;
@@ -83,7 +83,6 @@
 		if (position === 'auto') {
 			const spaceRight = viewportWidth - triggerRect.right;
 			const spaceLeft = triggerRect.left;
-			const _spaceTop = triggerRect.top;
 			const spaceBottom = viewportHeight - triggerRect.bottom;
 
 			if (spaceRight >= tooltipRect.width + gap) {

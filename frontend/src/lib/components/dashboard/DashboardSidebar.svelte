@@ -23,7 +23,6 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 	import type { MembershipType } from '$lib/api/user-memberships';
@@ -78,7 +77,6 @@
 	// Destructure with defaults for internal use
 	let user = $derived(props.user);
 	let collapsed = $derived(props.collapsed ?? false);
-	let onToggle = $derived(props.onToggle);
 	let secondaryNavItems = $derived(props.secondaryNavItems ?? []);
 	let secondarySidebarTitle = $derived(props.secondarySidebarTitle ?? '');
 
@@ -107,7 +105,6 @@
 	}
 
 	// Svelte 5 state
-	let isHovered = $state(false);
 	let isMobileMenuOpen = $state(false);
 
 	// Current path for active state - Svelte 5 $app/state (no store subscription needed)
@@ -155,16 +152,6 @@
 		isMobileMenuOpen = false;
 	}
 
-	// Handle mouse enter/leave for secondary sidebar trigger
-	function handleMouseEnter() {
-		if (collapsed) {
-			isHovered = true;
-		}
-	}
-
-	function handleMouseLeave() {
-		isHovered = false;
-	}
 
 	// Navigation items - RTP Product Structure
 	// Icons use RTP naming convention (rtp-icon-*)
@@ -245,14 +232,6 @@
 	const accountLinks: NavLink[] = [
 		{ href: '/dashboard/account/', icon: 'settings', text: 'My Account' }
 	];
-
-	// All navigation sections for secondary sidebar
-	let allSections = $derived([
-		{ title: 'memberships', links: tradingRoomLinks },
-		{ title: 'mentorship', links: mentorshipLinks },
-		{ title: 'scanners', links: scannerLinks },
-		{ title: 'tools', links: toolsLinks }
-	]);
 </script>
 
 <!-- Main Sidebar -->
@@ -260,8 +239,6 @@
 	class="dashboard__sidebar"
 	class:is-collapsed={collapsed}
 	class:is-mobile-open={isMobileMenuOpen}
-	onmouseenter={handleMouseEnter}
-	onmouseleave={handleMouseLeave}
 	role="navigation"
 	aria-label="Dashboard navigation"
 >

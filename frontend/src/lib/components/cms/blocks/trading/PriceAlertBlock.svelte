@@ -39,11 +39,6 @@
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
 	}
-
-	function handlePaste(e: ClipboardEvent): void {
-		e.preventDefault();
-		document.execCommand('insertText', false, e.clipboardData?.getData('text/plain') || '');
-	}
 </script>
 
 <div

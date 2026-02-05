@@ -56,16 +56,42 @@
 		onPreview
 	}: Props = $props();
 
-	let resources = $state<RoomResource[]>(initialResources ?? []);
-	let loading = $state(!initialResources);
+	let resources = $state<RoomResource[]>([]);
+	let loading = $state(true);
 	let error = $state('');
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let total = $state(0);
 	let searchQuery = $state('');
-	let selectedType = $state<ResourceType | ''>(resourceType ?? '');
-	let selectedSection = $state(section ?? '');
-	let selectedAccessLevel = $state<AccessLevel | ''>(accessLevel ?? '');
+	let selectedType = $state<ResourceType | ''>('');
+	let selectedSection = $state('');
+	let selectedAccessLevel = $state<AccessLevel | ''>('');
+
+	// Sync state from props when they change
+	$effect(() => {
+		if (initialResources !== undefined) {
+			resources = initialResources;
+			loading = false;
+		}
+	});
+
+	$effect(() => {
+		if (resourceType !== undefined) {
+			selectedType = resourceType;
+		}
+	});
+
+	$effect(() => {
+		if (section !== undefined) {
+			selectedSection = section;
+		}
+	});
+
+	$effect(() => {
+		if (accessLevel !== undefined) {
+			selectedAccessLevel = accessLevel;
+		}
+	});
 
 	// Resource type options
 	const resourceTypes: { value: ResourceType | ''; label: string }[] = [

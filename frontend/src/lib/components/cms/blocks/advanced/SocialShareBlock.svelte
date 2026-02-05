@@ -157,11 +157,6 @@
 		}
 		updateContent({ sharePlatforms: current });
 	}
-
-	function handlePaste(e: ClipboardEvent): void {
-		e.preventDefault();
-		document.execCommand('insertText', false, e.clipboardData?.getData('text/plain') || '');
-	}
 </script>
 
 <div
