@@ -4,7 +4,6 @@
 
 	// State using Svelte 5 runes
 	let schemas = $state<any[]>([]);
-	let templates = $state<any>({});
 	let loading = $state(false);
 	let showPreview = $state<any>(null);
 
@@ -28,7 +27,6 @@
 
 	onMount(() => {
 		loadSchemas();
-		loadTemplates();
 	});
 
 	async function loadSchemas() {
@@ -41,15 +39,6 @@
 			console.error('Failed to load schemas:', error);
 		} finally {
 			loading = false;
-		}
-	}
-
-	async function loadTemplates() {
-		try {
-			const response = await fetch('/api/seo/schema/templates');
-			templates = await response.json();
-		} catch (error) {
-			console.error('Failed to load templates:', error);
 		}
 	}
 

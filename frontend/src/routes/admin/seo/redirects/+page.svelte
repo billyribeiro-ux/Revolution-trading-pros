@@ -6,10 +6,7 @@
 		IconTrash,
 		IconEdit,
 		IconToggleLeft,
-		IconToggleRight,
-		IconDownload,
-		IconUpload,
-		IconChartLine
+		IconToggleRight
 	} from '$lib/icons';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
 
@@ -20,7 +17,6 @@
 	let showEditor = $state(false);
 	let editingRedirect: any = $state(null);
 	let selectedIds: number[] = $state([]);
-	let initialized = $state(false);
 
 	const filterTypes = ['all', '301', '302', '307', '308', '410'];
 	let activeFilter = $state('all');

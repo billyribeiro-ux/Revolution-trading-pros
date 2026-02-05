@@ -202,21 +202,8 @@
 	let videoResources = $state<RoomResource[]>([]);
 	let isLoadingVideos = $state(false);
 	let videoFilter = $state<string>('all');
-	let _showVideoResourceModal = $state(false);
-	let _editingVideoResource = $state<RoomResource | null>(null);
-	let _isSavingVideoResource = $state(false);
 
-	let _videoResourceForm = $state({
-		title: '',
-		description: '',
-		video_url: '',
-		video_platform: 'bunny',
-		thumbnail_url: '',
-		duration: 0,
-		category: 'weekly',
-		is_published: true,
-		is_featured: false
-	});
+	// Video resource management removed - functionality not implemented
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED COMPUTED VALUES
@@ -237,13 +224,11 @@
 	/** Count of alerts for tab badge */
 	const alertsCount = $derived(alerts.length);
 
-	/** Whether any data is currently loading */
-	const _isLoadingAny = $derived(
-		isLoadingTradePlan || isLoadingAlerts || isLoadingVideo || isLoadingStats
-	);
-
-	/** Whether a save operation is in progress */
-	const _isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
+	// Removed unused derived values - functionality not implemented
+	// const isLoadingAny = $derived(
+	// 	isLoadingTradePlan || isLoadingAlerts || isLoadingVideo || isLoadingStats
+	// );
+	// const isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
 
 	/** Trade plan form validation */
 	const isTradePlanFormValid = $derived(

@@ -100,7 +100,7 @@
 	async function confirmDeleteProduct() {
 		if (!pendingDelete) return;
 		showDeleteModal = false;
-		const { id, name } = pendingDelete;
+		const { id } = pendingDelete;
 		pendingDelete = null;
 		deleting = id;
 		try {
@@ -122,7 +122,7 @@
 	// Toggle product active status
 	async function toggleActive(product: Product) {
 		try {
-			const response = await productsApi.update(product.id, {
+			await productsApi.update(product.id, {
 				is_active: !product.is_active
 			});
 			// Update local state
@@ -158,7 +158,7 @@
 	// Effect: Load products when type filter changes
 	$effect(() => {
 		// Track selectedType for reactivity
-		const type = selectedType;
+		void selectedType;
 		// Use untrack to avoid infinite loops when updating products
 		untrack(() => {
 			loadProducts();
