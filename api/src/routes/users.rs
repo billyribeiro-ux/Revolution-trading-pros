@@ -42,8 +42,13 @@ async fn list_users(
     State(state): State<AppState>,
     _admin: AdminUser, // ICT 7 FIX: Require admin authentication
 ) -> Result<Json<Vec<UserResponse>>, (StatusCode, Json<serde_json::Value>)> {
+    // ICT 7 FIX: Use explicit column list to avoid SQLx FromRow deserialization errors
     let users: Vec<crate::models::User> =
-        sqlx::query_as("SELECT * FROM users ORDER BY created_at DESC LIMIT 100")
+        sqlx::query_as(
+            r#"SELECT id, email, password_hash, name, role, email_verified_at, 
+                      avatar_url, mfa_enabled, created_at, updated_at 
+               FROM users ORDER BY created_at DESC LIMIT 100"#
+        )
             .fetch_all(&state.db.pool)
             .await
             .map_err(|e| {
