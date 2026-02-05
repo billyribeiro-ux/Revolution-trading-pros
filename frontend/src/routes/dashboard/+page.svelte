@@ -19,6 +19,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
@@ -38,6 +39,7 @@
 	// Memberships data
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let isLoading = $state(true);
+	let hasLoaded = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -210,17 +212,15 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DATA LOADING - Reactive pattern to handle auth race condition
+	// DATA LOADING - Use onMount to prevent infinite loops
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Use $effect to reactively load memberships when auth becomes ready
-	// This fixes the race condition where onMount runs before auth is initialized
-	// ICT 11+ Fix: Removed hasAttemptedLoad flag to ensure data loads on every page refresh
-	$effect(() => {
-		// Wait for auth to finish initializing
-		if ($isInitializing) {
-			isLoading = true;
-			return;
+	// ICT 11+ Fix: Use onMount instead of $effect to prevent infinite loop
+	// $effect that calls async functions mutating state causes re-runs
+	onMount(async () => {
+		// Wait for auth to initialize
+		while ($isInitializing) {
+			await new Promise(resolve => setTimeout(resolve, 50));
 		}
 
 		// If not authenticated, stop loading
@@ -230,12 +230,16 @@
 			return;
 		}
 
-		// Load memberships when authenticated
-		// This runs on every page load/refresh when user is authenticated
-		loadMemberships();
+		// Load memberships once
+		if (!hasLoaded) {
+			await loadMemberships();
+			hasLoaded = true;
+		}
 	});
 
 	async function loadMemberships(): Promise<void> {
+		if (!$isAuthenticated) return;
+		
 		isLoading = true;
 		try {
 			console.log('[Dashboard] Loading memberships for user:', $user?.email);

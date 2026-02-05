@@ -436,14 +436,14 @@
 	// EFFECTS - Svelte 5 Pattern (Aligned with Admin Layout)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auth sync and data loading - runs once on mount
+	// Auth sync - runs once on mount (NO membership loading here)
 	$effect(() => {
 		if (!browser) return;
 		if (isInitialized) return;
 
 		isInitialized = true;
 
-		// Async IIFE for data loading
+		// Async IIFE for auth sync only
 		(async () => {
 			// ICT 11+ FIX: On page refresh, server has validated auth but client store is empty
 			// We need to restore auth state before making API calls that require token
@@ -475,7 +475,8 @@
 				}
 			}
 
-			// Load memberships data
+			// ICT 11+ FIX: Load memberships for sidebar display
+			// This is separate from +page.svelte membership loading
 			await loadMembershipsData();
 		})();
 	});

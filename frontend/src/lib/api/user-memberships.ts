@@ -388,6 +388,9 @@ export async function preloadMembershipData(): Promise<void> {
 // SUPERADMIN AUTO-UNLOCK
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Request deduplication for developer memberships
+let developerMembershipsPromise: Promise<UserMembershipsResponse> | null = null;
+
 /**
  * ICT 11+ ENTERPRISE PATTERN: Developer/Superadmin Auto-Unlock System
  * ═══════════════════════════════════════════════════════════════════════════
@@ -403,15 +406,25 @@ export async function preloadMembershipData(): Promise<void> {
  * 2. Try /api/products proxy endpoint (fallback)
  * 3. Return mock data if both fail (development safety)
  *
+ * ICT 11+ FIX: Request deduplication to prevent duplicate calls
+ *
  * @returns UserMembershipsResponse with all available memberships
  */
 async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
+	// Deduplicate concurrent requests
+	if (developerMembershipsPromise) {
+		console.log('[Developer] ⏳ Reusing in-flight request...');
+		return developerMembershipsPromise;
+	}
+
 	console.log('[Developer] 🔓 Fetching all available memberships for developer access...');
 
-	try {
-		// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
-		// STRATEGY 1: Try membership plans proxy endpoint
-		let response = await fetch('/api/admin/membership-plans', {
+	// Create promise and store it for deduplication
+	developerMembershipsPromise = (async () => {
+		try {
+			// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
+			// STRATEGY 1: Try membership plans proxy endpoint
+			let response = await fetch('/api/admin/membership-plans', {
 			method: 'GET',
 			headers: await getAuthHeaders(),
 			credentials: 'include'
@@ -516,11 +529,17 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 		console.log('[Developer] ✅ Successfully loaded all memberships');
 		return categorized;
-	} catch (error) {
-		console.error('[Developer] ❌ Critical error fetching memberships:', error);
-		// STRATEGY 3: Return mock data on error
-		return getDeveloperMockMemberships();
-	}
+		} catch (error) {
+			console.error('[Developer] ❌ Critical error fetching memberships:', error);
+			// STRATEGY 3: Return mock data on error
+			return getDeveloperMockMemberships();
+		} finally {
+			// Clear cached promise after completion
+			developerMembershipsPromise = null;
+		}
+	})();
+
+	return developerMembershipsPromise;
 }
 
 /**
