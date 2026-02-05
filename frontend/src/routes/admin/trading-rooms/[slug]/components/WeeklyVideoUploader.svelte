@@ -26,7 +26,6 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS

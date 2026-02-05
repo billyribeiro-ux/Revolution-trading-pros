@@ -219,17 +219,6 @@
 			minute: '2-digit'
 		});
 	}
-
-	function getActivityIcon(type: string): string {
-		const icons: Record<string, string> = {
-			task_created: 'plus',
-			task_completed: 'check',
-			task_moved: 'arrows-move',
-			comment_added: 'message',
-			attachment_added: 'paperclip'
-		};
-		return icons[type] || 'activity';
-	}
 </script>
 
 <svelte:head>
@@ -465,6 +454,54 @@
 										{task.due_date ? formatDate(task.due_date) : ''}
 									</div>
 								</a>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- My Tasks -->
+				{#if myTasks.length > 0}
+					<div
+						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
+					>
+						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+							<IconChecks class="w-4 h-4 text-blue-500" />
+							My Tasks
+						</h3>
+						<div class="space-y-2">
+							{#each myTasks.slice(0, 5) as task}
+								<a
+									href="/admin/boards/{task.board_id}?task={task.id}"
+									class="block p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+								>
+									<div class="text-sm font-medium text-gray-900 dark:text-white truncate">
+										{task.title}
+									</div>
+									<div class="text-xs text-gray-500 dark:text-gray-400">
+										{task.due_date ? formatDate(task.due_date) : 'No due date'}
+									</div>
+								</a>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Recent Activity -->
+				{#if recentActivity.length > 0}
+					<div
+						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
+					>
+						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+							<IconClock class="w-4 h-4 text-gray-500" />
+							Recent Activity
+						</h3>
+						<div class="space-y-2">
+							{#each recentActivity.slice(0, 5) as activity}
+								<div class="text-xs text-gray-600 dark:text-gray-400">
+									<span class="font-medium">{activity.user?.name || 'Someone'}</span>
+									{activity.description}
+									<span class="text-gray-500">{activity.created_at ? formatDate(activity.created_at) : ''}</span>
+								</div>
 							{/each}
 						</div>
 					</div>
