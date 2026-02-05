@@ -179,6 +179,9 @@
 		transition: all 0.2s;
 		text-decoration: none;
 		color: inherit;
+		/* ICT 7: Apple Standard - max 525px width */
+		max-width: 525px;
+		margin: 0 auto; /* Center card within column */
 		/* Safe area padding for edge-to-edge displays */
 		padding-left: env(safe-area-inset-left);
 		padding-right: env(safe-area-inset-right);

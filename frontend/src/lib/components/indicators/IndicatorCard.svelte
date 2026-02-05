@@ -78,7 +78,11 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		/* ICT 7: Apple Standard - max 525px width, min 156px height */
+		max-width: 525px;
+		min-height: 156px;
 		height: 100%;
+		margin: 0 auto; /* Center card within column */
 		transition: all 0.2s ease-in-out;
 		padding-bottom: 72px; /* Increased for touch-friendly button */
 	}

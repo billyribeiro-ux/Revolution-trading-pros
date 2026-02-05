@@ -728,7 +728,14 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Card Grid Container - WordPress Exact Match
+	 * ICT 7: Apple Standard - proper edge padding
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content-section {
+		/* ICT 7: Prevent cards from touching screen edges */
+		padding-left: 15px;
+		padding-right: 15px;
+	}
 
 	.card-grid {
 		margin-bottom: 30px;
@@ -911,8 +918,9 @@
 		}
 
 		.dashboard__content-section {
-			padding-left: max(0px, env(safe-area-inset-left));
-			padding-right: max(0px, env(safe-area-inset-right));
+			/* ICT 7: Ensure minimum 15px padding + safe area */
+			padding-left: max(15px, env(safe-area-inset-left));
+			padding-right: max(15px, env(safe-area-inset-right));
 		}
 	}
 
@@ -920,6 +928,11 @@
 	@media (max-width: 359px) {
 		.dashboard__page-title {
 			font-size: 20px;
+		}
+
+		.dashboard__content-section {
+			padding-left: 12px;
+			padding-right: 12px;
 		}
 
 		.card-grid {
