@@ -24,7 +24,7 @@
 		status: 'active' | 'inactive';
 	}
 
-	let { id, name, description, platform, platformUrl, icon, status }: Props = $props();
+	let { name, description, platformUrl }: Props = $props();
 </script>
 
 <article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
