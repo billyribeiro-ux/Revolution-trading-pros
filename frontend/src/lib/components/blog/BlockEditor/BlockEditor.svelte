@@ -54,6 +54,7 @@
 	} from '$lib/icons';
 
 	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
+	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
 
 	import { BLOCK_DEFINITIONS } from './types';
 
@@ -1849,10 +1850,10 @@
 
 								<!-- Block Content -->
 								<BlockRenderer
-									{block}
+									block={block as unknown as CMSBlock}
 									isSelected={block.id === editorState.selectedBlockId}
 									isEditing={editorState.viewMode === 'edit'}
-									onUpdate={(updates) => updateBlock(block.id, updates)}
+									onUpdate={(updates) => updateBlock(block.id, updates as Partial<Block>)}
 								/>
 
 								<!-- Add Block Between Button -->

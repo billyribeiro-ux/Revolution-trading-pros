@@ -33,6 +33,7 @@
 	import BlockRenderer from './BlockRenderer.svelte';
 	import type { VirtualBlockListProps, BlockMeasurement, VisibleRange, PerformanceMetrics } from './VirtualBlockList.types';
 	import type { Block } from './types';
+	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
 
 	// ==========================================================================
 	// Props
