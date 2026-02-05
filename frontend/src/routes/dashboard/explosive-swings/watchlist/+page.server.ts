@@ -14,7 +14,7 @@
  */
 
 import { env } from '$env/dynamic/private';
-import { getLatestWatchlist, type WatchlistData } from '$lib/server/watchlist';
+import { getLatestWatchlist } from '$lib/server/watchlist';
 import type { PageServerLoad } from './$types';
 import { ROOM_SLUG } from '../constants';
 
@@ -24,15 +24,6 @@ import { ROOM_SLUG } from '../constants';
 
 const LOG_PREFIX = '[explosive-swings/watchlist]';
 const DEFAULT_API_URL = 'https://revolution-trading-pros-api.fly.dev';
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// TYPES - ICT 7 Type Safety
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/** Page data returned to client */
-interface WatchlistPageData {
-	watchlist: WatchlistData | null;
-}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LOAD FUNCTION - ICT 7 Server-Side Rendering
@@ -46,7 +37,7 @@ interface WatchlistPageData {
  *
  * @param {Object} context - SvelteKit load context
  * @param {typeof fetch} context.fetch - SvelteKit fetch with credentials
- * @returns {Promise<WatchlistPageData>} Page data for client hydration
+ * @returns Page data for client hydration (type inferred from PageServerLoad)
  */
 export const load: PageServerLoad = async ({ fetch, locals }) => {
 	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;

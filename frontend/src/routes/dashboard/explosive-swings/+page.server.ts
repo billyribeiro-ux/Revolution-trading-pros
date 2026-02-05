@@ -31,7 +31,7 @@
  */
 
 import { env } from '$env/dynamic/private';
-import { getLatestWatchlist, type WatchlistData } from '$lib/server/watchlist';
+import { getLatestWatchlist } from '$lib/server/watchlist';
 import type { PageServerLoad } from './$types';
 import type { RoomResource } from '$lib/api/room-resources';
 import { ROOM_RESOURCES_ID, ROOM_SLUG } from './constants';
@@ -45,15 +45,6 @@ interface RoomResourcesResponse {
 	success?: boolean;
 	data?: RoomResource[];
 	error?: string;
-}
-
-/** Page data returned to client */
-interface ExplosiveSwingsPageData {
-	watchlist: WatchlistData | null;
-	tutorialVideo: RoomResource | null;
-	latestUpdates: RoomResource[];
-	documents: RoomResource[];
-	roomId: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -72,15 +63,26 @@ const DEFAULT_API_URL = 'https://revolution-trading-pros-api.fly.dev';
  * @param fetchFn - SvelteKit fetch function
  * @param url - Full API URL
  * @param resourceType - Resource type for logging
+ * @param accessToken - Optional auth token for authenticated requests
  * @returns Promise<RoomResourcesResponse> - Always resolves, never throws
  */
 async function fetchRoomResources(
 	fetchFn: typeof fetch,
 	url: string,
-	resourceType: string
+	resourceType: string,
+	accessToken?: string
 ): Promise<RoomResourcesResponse> {
 	try {
-		const response = await fetchFn(url);
+		// ICT 7 FIX: Build headers with optional Authorization
+		const headers: Record<string, string> = {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		};
+		if (accessToken) {
+			headers['Authorization'] = `Bearer ${accessToken}`;
+		}
+
+		const response = await fetchFn(url, { headers });
 
 		if (!response.ok) {
 			console.warn(`${LOG_PREFIX} ${resourceType} fetch returned:`, response.status);
@@ -158,7 +160,8 @@ export const load = (async ({ fetch, locals }) => {
 					isFeatured: true,
 					perPage: 1
 				}),
-				'Tutorial'
+				'Tutorial',
+				accessToken
 			),
 
 			// Latest daily videos
@@ -169,7 +172,8 @@ export const load = (async ({ fetch, locals }) => {
 					contentType: 'daily_video',
 					perPage: 6
 				}),
-				'Updates'
+				'Updates',
+				accessToken
 			),
 
 			// PDFs and documents
@@ -179,7 +183,8 @@ export const load = (async ({ fetch, locals }) => {
 					resourceType: 'pdf',
 					perPage: 10
 				}),
-				'Documents'
+				'Documents',
+				accessToken
 			)
 		]);
 

@@ -25,6 +25,15 @@ export const load: ServerLoad = async ({ fetch, locals }) => {
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = (locals as { accessToken?: string }).accessToken ?? undefined;
 
+	// ICT 7 FIX: Build headers with Authorization for authenticated requests
+	const headers: Record<string, string> = {
+		Accept: 'application/json',
+		'Content-Type': 'application/json'
+	};
+	if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
+	}
+
 	// Parallel fetch for optimal performance
 	const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 		// Weekly watchlist
@@ -32,21 +41,24 @@ export const load: ServerLoad = async ({ fetch, locals }) => {
 
 		// Featured tutorial video
 		fetch(
-			`${baseUrl}/api/room-resources?room_id=${SMALL_ACCOUNT_MENTORSHIP_ID}&resource_type=video&content_type=tutorial&is_featured=true&per_page=1`
+			`${baseUrl}/api/room-resources?room_id=${SMALL_ACCOUNT_MENTORSHIP_ID}&resource_type=video&content_type=tutorial&is_featured=true&per_page=1`,
+			{ headers }
 		)
 			.then((r: Response) => (r.ok ? r.json() : { data: [] }))
 			.catch(() => ({ data: [] })),
 
 		// Latest daily videos
 		fetch(
-			`${baseUrl}/api/room-resources?room_id=${SMALL_ACCOUNT_MENTORSHIP_ID}&resource_type=video&content_type=daily_video&per_page=6`
+			`${baseUrl}/api/room-resources?room_id=${SMALL_ACCOUNT_MENTORSHIP_ID}&resource_type=video&content_type=daily_video&per_page=6`,
+			{ headers }
 		)
 			.then((r: Response) => (r.ok ? r.json() : { data: [] }))
 			.catch(() => ({ data: [] })),
 
 		// PDFs and documents
 		fetch(
-			`${baseUrl}/api/room-resources?room_id=${SMALL_ACCOUNT_MENTORSHIP_ID}&resource_type=pdf&per_page=10`
+			`${baseUrl}/api/room-resources?room_id=${SMALL_ACCOUNT_MENTORSHIP_ID}&resource_type=pdf&per_page=10`,
+			{ headers }
 		)
 			.then((r: Response) => (r.ok ? r.json() : { data: [] }))
 			.catch(() => ({ data: [] }))

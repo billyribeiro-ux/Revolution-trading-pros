@@ -89,19 +89,27 @@ export async function getLatestWatchlist(
  * @param slug - Watchlist entry slug
  * @param fetchFn - SvelteKit's fetch function from load context
  * @param apiBaseUrl - API base URL (required for server-side)
+ * @param accessToken - Optional auth token for authenticated requests
  * @returns Watchlist data or null if not found
  */
 export async function getWatchlistBySlug(
 	slug: string,
 	fetchFn: typeof fetch = fetch,
-	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev'
+	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev',
+	accessToken?: string
 ): Promise<WatchlistData | null> {
 	try {
+		// ICT 7 FIX: Build headers with optional Authorization
+		const headers: Record<string, string> = {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		};
+		if (accessToken) {
+			headers['Authorization'] = `Bearer ${accessToken}`;
+		}
+
 		const response = await fetchFn(`${apiBaseUrl}/api/watchlist/${slug}`, {
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json'
-			}
+			headers
 		});
 
 		if (!response.ok) {
