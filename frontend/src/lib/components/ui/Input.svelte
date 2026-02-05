@@ -16,8 +16,7 @@
 		onblur?: (e: FocusEvent) => void;
 	}
 
-	let props: Props = $props();
-	let value = $state(props.value ?? '');
+	let { value = $bindable(''), ...props }: Props = $props();
 	let type = $derived(props.type ?? 'text');
 	let placeholder = $derived(props.placeholder ?? '');
 	let label = $derived(props.label ?? '');

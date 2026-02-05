@@ -11,8 +11,7 @@
 		onchange?: (e: Event) => void;
 	}
 
-	let props: Props = $props();
-	let value = $state(props.value ?? '');
+	let { value = $bindable(''), ...props }: Props = $props();
 	let options = $derived(props.options ?? []);
 	let placeholder = $derived(props.placeholder ?? 'Select...');
 	let label = $derived(props.label ?? '');
@@ -21,13 +20,6 @@
 	let required = $derived(props.required ?? false);
 	let id = $derived(props.id ?? '');
 	let onchange = $derived(props.onchange);
-
-	// Sync with external value changes
-	$effect(() => {
-		if (props.value !== undefined && props.value !== value) {
-			value = props.value;
-		}
-	});
 </script>
 
 <div class="w-full">

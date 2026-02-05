@@ -160,35 +160,6 @@
 		}
 	}
 
-	async function analyzeImage(item: MediaItem) {
-		if (!aiEnabled) return;
-		isAnalyzing = true;
-
-		try {
-			const response = await fetch(`/api/media/ai/analyze/${item.id}`, {
-				method: 'POST'
-			});
-
-			if (!response.ok) throw new Error('Analysis failed');
-
-			const result = await response.json();
-
-			// Update item with AI data
-			const updatedItem = {
-				...item,
-				alt: result.altText || item.alt,
-				custom_properties: {
-				}
-			};
-			items = items.map((i) => (i.id === item.id ? updatedItem : i));
-			detailItem = updatedItem;
-		} catch (e: any) {
-			showToast(e.message || 'Analysis failed', 'error');
-		} finally {
-			isAnalyzing = false;
-		}
-	}
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Upload Handling
 	// ═══════════════════════════════════════════════════════════════════════════

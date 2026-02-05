@@ -46,7 +46,6 @@
 	let loading = $state(false);
 	let errors = $state<Record<string, string>>({});
 	let showPreview = $state(false);
-	let activeTab = $state<'content' | 'design' | 'targeting' | 'advanced'>('content');
 
 	// Trigger rules based on type
 	let timedDelay = $state(5000);
