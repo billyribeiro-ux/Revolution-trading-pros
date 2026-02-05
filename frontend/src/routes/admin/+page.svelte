@@ -134,7 +134,7 @@
 	};
 
 	// Top pages
-	let topPages: { path: string; views: number; change: number }[] = [];
+	let topPages = $state<{ path: string; views: number; change: number }[]>([]);
 
 
 	// Animated counter
@@ -344,13 +344,20 @@
 		fetchDashboardStats();
 	}
 
+	// Derived: Get active connection count from connections store
+	let activeConnectionCount = $derived(
+		Object.values(connections.connectionsList).filter((c) => c.isConnected).length
+	);
+
 	// Svelte 5: Initialize on mount
 	$effect(() => {
 		if (!browser) return;
 		mounted = true;
-		// Built-in analytics and SEO - no external connection needed
-		analyticsConnected = true;
-		seoConnected = true;
+		// Check real connection status from store
+		analyticsConnected = getIsAnalyticsConnected();
+		seoConnected = getIsSeoConnected();
+		// Log active connections for debugging
+		console.debug(`[Admin Dashboard] Active connections: ${activeConnectionCount}`);
 		fetchDashboardStats();
 	});
 </script>
@@ -793,6 +800,87 @@
 				{/each}
 			</div>
 		</section>
+
+		<!-- Quick Actions - Uses remaining icons -->
+		<section
+			class="analytics-panel glass-panel quick-actions-panel"
+			in:fade={{ duration: 400, delay: 400 }}
+		>
+			<div class="panel-header">
+				<div class="panel-title">
+					<div class="panel-icon actions-icon">
+						<IconSettings size={24} />
+					</div>
+					<div>
+						<h2>Quick Actions</h2>
+						<span class="panel-subtitle">Common admin tasks</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="quick-actions-grid">
+				{#each [
+					{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' },
+					{ href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' },
+					{ href: '/admin/notifications', icon: IconBellRinging, label: 'Notifications', color: 'amber' },
+					{ href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' },
+					{ href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' },
+					{ href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' },
+					{ href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' },
+					{ href: '/admin/links', icon: IconLink, label: 'Links', color: 'cyan' },
+					{ href: '/admin/filters', icon: IconFilter, label: 'Filters', color: 'indigo' },
+					{ href: '/admin/broadcast', icon: IconSend, label: 'Broadcast', color: 'teal' },
+					{ href: '/admin/international', icon: IconWorld, label: 'Global', color: 'slate' },
+					{ href: '/admin/alerts', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }
+				] as action, i}
+					{@const ActionIcon = action.icon}
+					<a
+						href={action.href}
+						class="quick-action-card {action.color}"
+						in:scale={{ duration: 300, delay: 450 + i * 30, easing: elasticOut }}
+					>
+						<div class="quick-action-icon {action.color}">
+							<ActionIcon size={20} />
+						</div>
+						<span class="quick-action-label">{action.label}</span>
+					</a>
+				{/each}
+			</div>
+		</section>
+
+		<!-- Top Pages Section - Uses topPages data -->
+		{#if hasRealAnalyticsData && topPages.length > 0}
+			<section
+				class="analytics-panel glass-panel top-pages-panel"
+				in:fly={{ y: 20, duration: 400, delay: 500 }}
+			>
+				<div class="panel-header">
+					<div class="panel-title">
+						<div class="panel-icon pages-icon">
+							<IconLink size={24} />
+						</div>
+						<div>
+							<h2>Top Pages</h2>
+							<span class="panel-subtitle">Most visited pages {hasRealSeoData ? '(with SEO data)' : ''}</span>
+						</div>
+					</div>
+				</div>
+				<div class="top-pages-list">
+					{#each topPages as page, i}
+						<div class="top-page-item" in:fly={{ x: -10, duration: 300, delay: 550 + i * 50 }}>
+							<span class="top-page-rank">{i + 1}</span>
+							<span class="top-page-path">{page.path}</span>
+							<span class="top-page-views">{formatNumber(page.views)} views</span>
+							{#if page.change !== 0}
+								<span class="top-page-change" class:positive={page.change > 0}>
+									{page.change > 0 ? '+' : ''}{page.change}%
+								</span>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
 	</div>
 	<!-- End admin-page-container -->
 </div>
@@ -1166,6 +1254,145 @@
 	.panel-icon.business-icon {
 		background: rgba(61, 90, 153, 0.15);
 		color: var(--secondary-300);
+	}
+
+	.panel-icon.actions-icon {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+
+	.panel-icon.pages-icon {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
+
+	/* Quick Actions Grid */
+	.quick-actions-grid {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 0.75rem;
+	}
+
+	@media (max-width: 1200px) {
+		.quick-actions-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.quick-actions-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (max-width: 480px) {
+		.quick-actions-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.quick-action-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem 0.5rem;
+		background: var(--bg-surface);
+		border: 1px solid var(--border-muted);
+		border-radius: 10px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.quick-action-card:hover {
+		background: var(--bg-hover);
+		border-color: var(--border-default);
+		transform: translateY(-2px);
+	}
+
+	.quick-action-icon {
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.quick-action-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+	.quick-action-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.quick-action-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.quick-action-icon.pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+	.quick-action-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+	.quick-action-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+	.quick-action-icon.orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; }
+	.quick-action-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+	.quick-action-icon.indigo { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.quick-action-icon.teal { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
+	.quick-action-icon.slate { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
+	.quick-action-icon.yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+
+	.quick-action-label {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--text-secondary);
+	}
+
+	/* Top Pages Section */
+	.top-pages-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.top-page-item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem 1rem;
+		background: var(--bg-surface);
+		border: 1px solid var(--border-muted);
+		border-radius: 8px;
+	}
+
+	.top-page-rank {
+		width: 24px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--bg-hover);
+		border-radius: 6px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--text-tertiary);
+	}
+
+	.top-page-path {
+		flex: 1;
+		font-size: 0.875rem;
+		color: var(--text-primary);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.top-page-views {
+		font-size: 0.75rem;
+		color: var(--text-secondary);
+	}
+
+	.top-page-change {
+		font-size: 0.75rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		background: var(--bg-hover);
+		color: var(--text-tertiary);
+	}
+
+	.top-page-change.positive {
+		background: var(--success-soft);
+		color: var(--success-emphasis);
 	}
 
 	.panel-badge {

@@ -233,6 +233,7 @@
 	// Refs
 	let editorContainer: HTMLDivElement;
 	let autosaveTimer: ReturnType<typeof setInterval>;
+	let liveRegionRef: HTMLDivElement;
 
 	// ==========================================================================
 	// Computed
@@ -418,20 +419,6 @@
 		setTimeout(() => {
 			announcements = announcements.slice(1);
 		}, 1000);
-	}
-
-	// Spring animation for smooth drop animations
-	function createSpringAnimation(
-		config: SpringConfig = SPRING_PRESETS.snappy
-	): (target: number, current: number) => number {
-		let velocity = 0;
-		return (target: number, current: number) => {
-			const force = (target - current) * config.stiffness;
-			const damping = velocity * config.damping;
-			const acceleration = (force - damping) / config.mass;
-			velocity += acceleration * (1 / 60); // Assuming 60fps
-			return current + velocity * (1 / 60);
-		};
 	}
 
 	// Multi-selection helpers
