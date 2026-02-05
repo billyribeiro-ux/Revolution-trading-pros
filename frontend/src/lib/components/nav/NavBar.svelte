@@ -255,8 +255,10 @@
 	let isRTL = $state(false);
 
 	// Element references (used in bind:this directives below)
-	let _navbarRef = $state<HTMLElement | null>(null);
-	let _hamburgerRef = $state<HTMLButtonElement | null>(null);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let navbarRef = $state<HTMLElement | null>(null);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let hamburgerRef = $state<HTMLButtonElement | null>(null);
 	let mobileCloseRef = $state<HTMLButtonElement | null>(null);
 	let mobilePanelRef = $state<HTMLElement | null>(null);
 	let scrollSentinelRef = $state<HTMLDivElement | null>(null);
@@ -640,7 +642,7 @@
      MAIN NAVBAR
      ═══════════════════════════════════════════════════════════════════════════ -->
 <header
-	bind:this={_navbarRef}
+	bind:this={navbarRef}
 	class="navbar"
 	class:scrolled={isScrolled}
 	class:sticky
@@ -821,7 +823,7 @@
 
 		<!-- ICT11+ Fix: Hamburger outside actions container to prevent layout shift -->
 		<button
-			bind:this={_hamburgerRef}
+			bind:this={hamburgerRef}
 			class="hamburger"
 			onclick={toggleMobileMenu}
 			aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}

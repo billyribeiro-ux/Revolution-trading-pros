@@ -80,7 +80,7 @@ export interface BlockContent {
   language?: string;
 
   // List
-  listType?: 'bullet' | 'number';
+  listType?: 'bullet' | 'number' | 'check';
   listItems?: string[];
 
   // Checklist
@@ -106,7 +106,7 @@ export interface BlockContent {
 
   // Gallery
   galleryImages?: Array<{
-    id?: string;
+    id: string;
     url: string;
     alt: string;
     caption?: string;
