@@ -1,5 +1,23 @@
+# ═══════════════════════════════════════════════════════════════════════════════
 # Revolution Trading Pros - Rust Backend CI
-# ICT 11+ Principal Engineer Grade
+# ICT 7+ Apple Principal Engineer Grade
+# February 2026
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# ARCHITECTURE:
+# 1. offline-build   - Validates build works WITHOUT database (uses .sqlx cache)
+# 2. check           - Full validation WITH database (migrations, clippy, build)
+# 3. test            - Integration tests with Postgres + Redis
+# 4. security        - cargo-audit with documented exemptions
+# 5. docker          - Container build verification
+#
+# SQLx OFFLINE MODE:
+# - The .cargo/config.toml sets SQLX_OFFLINE=true by default
+# - This allows compilation without DATABASE_URL
+# - The .sqlx/ directory contains cached query metadata
+# - Developers with DB access run `cargo sqlx prepare` to update cache
+#
+# ═══════════════════════════════════════════════════════════════════════════════
 
 name: Rust Backend CI
 
@@ -20,9 +38,51 @@ env:
   DATABASE_URL: postgres://test:test@localhost:5432/test_db
 
 jobs:
-  check:
-    name: Check
+  # ═══════════════════════════════════════════════════════════════════════════
+  # OFFLINE BUILD - Validates .sqlx cache is current (NO DATABASE REQUIRED)
+  # ═══════════════════════════════════════════════════════════════════════════
+  # This job ensures the codebase can compile without database access.
+  # If this fails, run `cargo sqlx prepare --workspace` locally with DB access.
+  # ═══════════════════════════════════════════════════════════════════════════
+  offline-build:
+    name: Offline Build (No Database)
     runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: api
+
+      - name: Verify SQLx offline cache exists
+        working-directory: api
+        run: |
+          if [ ! -d ".sqlx" ] || [ -z "$(ls -A .sqlx)" ]; then
+            echo "❌ ERROR: .sqlx directory is missing or empty!"
+            echo "Run 'cargo sqlx prepare --workspace' with DATABASE_URL set"
+            exit 1
+          fi
+          echo "✅ Found $(ls .sqlx/*.json | wc -l) cached queries in .sqlx/"
+
+      - name: Build without database (SQLX_OFFLINE=true)
+        working-directory: api
+        run: |
+          echo "Building with SQLX_OFFLINE=true (from .cargo/config.toml)..."
+          cargo build --release
+          echo "✅ Offline build successful - SQLx cache is valid"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # FULL CHECK - With database for complete validation
+  # ═══════════════════════════════════════════════════════════════════════════
+  check:
+    name: Check (With Database)
+    runs-on: ubuntu-latest
+    needs: offline-build
     
     services:
       postgres:

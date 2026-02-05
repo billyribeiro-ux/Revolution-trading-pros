@@ -1,0 +1,103 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# CARGO BUILD CONFIGURATION
+# ICT 7+ Apple Principal Engineer Grade
+# Revolution Trading Pros - Rust/Axum Backend
+# February 2026
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# This configuration ensures consistent builds across all environments:
+# - Local development (with or without database)
+# - CI/CD pipelines (GitHub Actions, Fly.io)
+# - Production deployments
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[env]
+# ─────────────────────────────────────────────────────────────────────────────
+# SQLX OFFLINE MODE
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# PURPOSE: Enable compile-time query verification without database connection
+#
+# HOW IT WORKS:
+# 1. When DATABASE_URL is available, run `cargo sqlx prepare` to generate
+#    query metadata files in the `.sqlx/` directory
+# 2. These JSON files contain query hashes, parameter types, and return types
+# 3. With SQLX_OFFLINE=true, sqlx uses cached metadata instead of live DB
+#
+# BENEFITS:
+# - Deterministic builds in CI/CD (no database dependency)
+# - Faster compilation (no database roundtrips)
+# - Works offline or when database is unreachable
+# - Prevents "type annotations needed" errors from sqlx macros
+#
+# WORKFLOW:
+# 1. Developer with DB access: `cargo sqlx prepare` (updates .sqlx/*.json)
+# 2. Commit .sqlx/ directory to git
+# 3. CI/CD builds use cached metadata (SQLX_OFFLINE=true)
+#
+# TO REGENERATE QUERY CACHE (requires DATABASE_URL):
+#   cargo sqlx prepare --workspace
+#
+# TO VERIFY CACHE IS CURRENT:
+#   cargo sqlx prepare --check --workspace
+#
+# ─────────────────────────────────────────────────────────────────────────────
+SQLX_OFFLINE = "true"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RUST BACKTRACE (Development)
+# ─────────────────────────────────────────────────────────────────────────────
+# Enable backtraces for better error diagnostics during development
+# This is overridden in production by the deployment environment
+# ─────────────────────────────────────────────────────────────────────────────
+# RUST_BACKTRACE = "1"
+
+[build]
+# ─────────────────────────────────────────────────────────────────────────────
+# INCREMENTAL BUILDS
+# ─────────────────────────────────────────────────────────────────────────────
+# Enable incremental compilation for faster rebuilds during development
+# This is automatically disabled in release builds
+# ─────────────────────────────────────────────────────────────────────────────
+incremental = true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PARALLEL JOBS
+# ─────────────────────────────────────────────────────────────────────────────
+# Use all available CPU cores for compilation
+# Adjust if builds consume too much memory
+# ─────────────────────────────────────────────────────────────────────────────
+# jobs = 8
+
+[target.x86_64-unknown-linux-gnu]
+# ─────────────────────────────────────────────────────────────────────────────
+# LINUX LINKER OPTIMIZATION
+# ─────────────────────────────────────────────────────────────────────────────
+# Use mold linker if available (10x faster than default ld)
+# Install: https://github.com/rui314/mold
+# Falls back gracefully if mold is not installed
+# ─────────────────────────────────────────────────────────────────────────────
+# linker = "clang"
+# rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+[target.aarch64-apple-darwin]
+# ─────────────────────────────────────────────────────────────────────────────
+# MACOS ARM64 (Apple Silicon)
+# ─────────────────────────────────────────────────────────────────────────────
+# Default settings work well on M1/M2/M3 Macs
+# ─────────────────────────────────────────────────────────────────────────────
+
+[target.x86_64-apple-darwin]
+# ─────────────────────────────────────────────────────────────────────────────
+# MACOS x86_64 (Intel)
+# ─────────────────────────────────────────────────────────────────────────────
+# Default settings work well on Intel Macs
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROFILE-SPECIFIC SETTINGS
+# ═══════════════════════════════════════════════════════════════════════════════
+# Note: Most profile settings are in Cargo.toml [profile.*] sections
+# This file is for environment and target-specific configuration
+# ═══════════════════════════════════════════════════════════════════════════════
