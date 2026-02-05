@@ -6,7 +6,6 @@
 	 * Visualize where users click on your pages
 	 * with interactive heatmap overlays.
 	 */
-	import { analyticsApi } from '$lib/api/analytics';
 	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
@@ -22,24 +21,9 @@
 		thumbnail?: string;
 	}
 
-	interface HeatmapData {
-		page_url: string;
-		clicks: Array<{
-			x: number;
-			y: number;
-			count: number;
-			element?: string;
-		}>;
-		scroll_data: Array<{
-			depth: number;
-			percentage: number;
-		}>;
-	}
-
 	// Svelte 5 Runes - State
 	let pages = $state<HeatmapPage[]>([]);
 	let selectedPage = $state<HeatmapPage | null>(null);
-	let heatmapData = $state<HeatmapData | null>(null);
 	let loading = $state(true);
 	let connectionLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -73,7 +57,7 @@
 				`/api/admin/analytics/heatmaps/${encodeURIComponent(page.url)}?period=${selectedPeriod}&type=${heatmapType}`
 			);
 			if (response.ok) {
-				heatmapData = await response.json();
+				await response.json();
 			}
 		} catch (e) {
 			// Handle gracefully

@@ -20,11 +20,9 @@
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { crmAPI } from '$lib/api/crm';
 	import type {

@@ -6,9 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ICT 7: Match actual backend schema
 	interface Indicator {
@@ -96,12 +94,6 @@
 		thumbnail_url: ''
 	});
 	let addingVideo = $state(false);
-
-	// Delete confirmation modal state
-	let showDeleteFileModal = $state(false);
-	let showDeleteVideoModal = $state(false);
-	let pendingDeleteFileId = $state<number | null>(null);
-	let pendingDeleteVideoId = $state<number | null>(null);
 
 	// Platform options
 	const platformOptions = [
@@ -257,16 +249,8 @@
 	};
 
 	// ICT 7: Delete file
-	const deleteFile = (fileId: number) => {
-		pendingDeleteFileId = fileId;
-		showDeleteFileModal = true;
-	};
-
-	const confirmDeleteFile = async () => {
-		if (pendingDeleteFileId === null) return;
-		showDeleteFileModal = false;
-		const fileId = pendingDeleteFileId;
-		pendingDeleteFileId = null;
+	const deleteFile = async (fileId: number) => {
+		if (!confirm('Are you sure you want to delete this file?')) return;
 
 		try {
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, {
@@ -338,16 +322,8 @@
 	};
 
 	// ICT 7: Delete video
-	const deleteVideo = (videoId: number) => {
-		pendingDeleteVideoId = videoId;
-		showDeleteVideoModal = true;
-	};
-
-	const confirmDeleteVideo = async () => {
-		if (pendingDeleteVideoId === null) return;
-		showDeleteVideoModal = false;
-		const videoId = pendingDeleteVideoId;
-		pendingDeleteVideoId = null;
+	const deleteVideo = async (videoId: number) => {
+		if (!confirm('Are you sure you want to delete this video?')) return;
 
 		try {
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, {
