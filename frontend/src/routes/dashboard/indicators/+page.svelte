@@ -727,65 +727,19 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Card Grid Container - WordPress Exact Match
-	 * ICT 7: Apple Standard - proper edge padding
+	 * Card Grid Container
+	 * ICT 7 ROOT FIX: Global dashboard.css handles all padding/margins correctly
+	 * NO LOCAL OVERRIDES NEEDED - grid system works as designed
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content-section {
-		/* ICT 7: Prevent cards from touching screen edges */
-		/* 30px accounts for grid's -15px negative margins */
-		padding-left: 30px;
-		padding-right: 30px;
-	}
 
 	.card-grid {
 		margin-bottom: 30px;
-		display: flex;
-		flex-wrap: wrap;
-		margin-left: -15px;
-		margin-right: -15px;
 	}
 
-	/* Grid System - WordPress/Bootstrap Standard */
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		margin-left: -15px;
-		margin-right: -15px;
-	}
-
-	/* Global column classes for proper width application */
-	:global(.col-xs-12),
-	:global(.col-sm-6),
-	:global(.col-md-6),
-	:global(.col-lg-4) {
-		width: 100%;
-		padding-left: 15px;
-		padding-right: 15px;
-		box-sizing: border-box;
-		flex-shrink: 0;
-	}
-
-	/* Small Tablet: 2 columns (≥ 576px) */
-	@media (min-width: 576px) {
-		:global(.col-sm-6) {
-			width: 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* Tablet: 2 columns (≥ 768px) */
-	@media (min-width: 768px) {
-		:global(.col-md-6) {
-			width: 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* Desktop: 3 columns (≥ 992px) */
+	/* Column responsive breakpoints - extends global dashboard.css */
 	@media (min-width: 992px) {
 		:global(.col-lg-4) {
-			width: 33.333333%;
+			flex: 0 0 33.333333%;
 			max-width: 33.333333%;
 		}
 	}
@@ -911,50 +865,10 @@
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	/* Safe areas for notched devices */
-	@supports (padding: max(0px)) {
-		.dashboard__header {
-			padding-left: max(20px, env(safe-area-inset-left));
-			padding-right: max(20px, env(safe-area-inset-right));
-		}
-
-		.dashboard__content-section {
-			/* ICT 7: Ensure minimum 30px padding + safe area */
-			padding-left: max(30px, env(safe-area-inset-left));
-			padding-right: max(30px, env(safe-area-inset-right));
-		}
-	}
-
-	/* xs: Extra small devices (< 360px) */
+	/* Responsive adjustments */
 	@media (max-width: 359px) {
 		.dashboard__page-title {
 			font-size: 20px;
-		}
-
-		.dashboard__content-section {
-			padding-left: 20px;
-			padding-right: 20px;
-		}
-
-		.card-grid {
-			margin-left: -8px;
-			margin-right: -8px;
-		}
-	}
-
-	/* sm: Small devices (≥ 640px) - 2 columns */
-	@media (min-width: 640px) {
-		:global(.col-sm-6) {
-			width: 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* lg: Large devices (≥ 1024px) - 3 columns */
-	@media (min-width: 1024px) {
-		:global(.col-lg-4) {
-			width: 33.333333%;
-			max-width: 33.333333%;
 		}
 	}
 
