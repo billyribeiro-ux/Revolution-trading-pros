@@ -233,130 +233,176 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════
+	   ACTIVE POSITION CARD - Netflix-grade compact trading card
+	   Professional design with status-based left border accent
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.card {
 		position: relative;
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
-		border-left: 2px solid var(--color-border-strong);
-		border-radius: 6px;
-		padding: 8px;
+		border-left: 3px solid var(--color-border-strong);
+		border-radius: 8px;
+		padding: 10px 12px;
 		font-size: var(--text-sm);
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		will-change: transform, box-shadow;
 	}
+
+	.card:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+		border-color: var(--color-border-strong);
+	}
+
 	.card.profit {
 		border-left-color: var(--color-profit);
+		background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-profit-bg-subtle) 100%);
 	}
 	.card.loss {
 		border-left-color: var(--color-loss);
+		background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-loss-bg-subtle) 100%);
 	}
 	.card.watching {
 		border-left-color: var(--color-watching);
+		background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(245, 158, 11, 0.04) 100%);
 	}
 	.card.entry {
 		border-left-color: var(--color-entry);
+		background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(20, 184, 166, 0.04) 100%);
 	}
 
-	/* Updated Badge */
+	/* Updated Badge - Animated pulse effect */
 	.updated-badge {
 		position: absolute;
 		top: -6px;
-		left: 8px;
-		background: var(--color-brand-primary);
+		left: 10px;
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-update) 100%);
 		color: white;
-		font-size: 7px;
+		font-size: 8px;
 		font-weight: 700;
-		padding: 1px 4px;
-		border-radius: 2px;
+		padding: 2px 6px;
+		border-radius: 4px;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
+		box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+		animation: pulse-badge 2s ease-in-out infinite;
 	}
 
-	/* Row 1 - Responsive typography */
+	@keyframes pulse-badge {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.8; }
+	}
+
+	/* Row 1 - Main ticker info */
 	.row-main {
 		display: flex;
 		align-items: center;
-		gap: 4px;
-		margin-bottom: 4px;
-		padding-right: 24px; /* Space for menu trigger */
+		gap: 6px;
+		margin-bottom: 6px;
+		padding-right: 28px;
 	}
+
 	.ticker {
-		font-weight: 700;
+		font-weight: 800;
 		font-size: 0.9375rem;
 		color: var(--color-text-primary);
 		line-height: 1;
+		letter-spacing: -0.01em;
 	}
+
 	.status {
-		font-size: 8px;
-		font-weight: 600;
+		font-size: 9px;
+		font-weight: 700;
 		text-transform: uppercase;
-		padding: 2px 4px;
-		border-radius: 2px;
+		padding: 2px 6px;
+		border-radius: 4px;
 		background: var(--color-bg-subtle);
 		color: var(--color-text-tertiary);
-		letter-spacing: 0.02em;
+		letter-spacing: 0.03em;
 	}
+
 	.pnl {
 		margin-left: auto;
-		font-weight: 700;
-		font-size: 13px;
+		font-weight: 800;
+		font-size: 14px;
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-muted);
+		transition: transform 0.15s ease;
 	}
+
+	.card:hover .pnl {
+		transform: scale(1.05);
+	}
+
 	.pnl.profit {
 		color: var(--color-profit);
 	}
+
 	.pnl.loss {
 		color: var(--color-loss);
 	}
 
-	/* Row 2 - Prices */
+	/* Row 2 - Price levels */
 	.row-prices {
 		display: flex;
 		align-items: center;
-		gap: 4px;
-		font-size: 10px;
+		gap: 6px;
+		font-size: 11px;
 		color: var(--color-text-secondary);
 		font-variant-numeric: tabular-nums;
-		margin-bottom: 4px;
-	}
-	.sep {
-		color: var(--color-border-strong);
-	}
-	.stop {
-		color: var(--color-loss);
-	}
-	.target {
-		color: var(--color-profit);
+		margin-bottom: 6px;
+		flex-wrap: wrap;
 	}
 
-	/* Row 3 - Progress bar */
+	.sep {
+		color: var(--color-border-strong);
+		opacity: 0.5;
+	}
+
+	.stop {
+		color: var(--color-loss);
+		font-weight: 600;
+	}
+
+	.target {
+		color: var(--color-profit);
+		font-weight: 600;
+	}
+
+	/* Row 3 - Progress bar with animation */
 	.row-progress {
 		display: flex;
 		align-items: center;
-		gap: 5px;
-		margin-top: 5px;
+		gap: 8px;
+		margin-top: 6px;
 	}
+
 	.bar {
 		flex: 1;
-		height: 3px;
+		height: 4px;
 		background: var(--color-bg-muted);
-		border-radius: 2px;
+		border-radius: 4px;
 		overflow: hidden;
 	}
+
 	.fill {
 		height: 100%;
-		background: var(--color-loss);
-		border-radius: 2px;
-		transition: width 0.3s ease;
+		background: linear-gradient(90deg, var(--color-loss) 0%, var(--color-loss-light) 100%);
+		border-radius: 4px;
+		transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 	}
+
 	.fill.profit {
-		background: var(--color-profit);
+		background: linear-gradient(90deg, var(--color-profit) 0%, var(--color-profit-light) 100%);
 	}
+
 	.pct {
-		font-size: 10px;
-		font-weight: 600;
+		font-size: 11px;
+		font-weight: 700;
 		color: var(--color-text-muted);
 		font-variant-numeric: tabular-nums;
-		min-width: 28px;
+		min-width: 32px;
 		text-align: right;
 	}
 

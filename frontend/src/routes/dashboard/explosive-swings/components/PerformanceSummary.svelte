@@ -206,14 +206,21 @@
 </section>
 
 <style>
-	/* COMPACT CONTAINER - Responsive padding with design tokens */
+	/* ═══════════════════════════════════════════════════════════════════════
+	   PERFORMANCE SUMMARY - Netflix-grade responsive container
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.performance-summary {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
 		border-radius: var(--radius-lg);
-		padding: 20px;
+		padding: 16px;
 		margin: var(--space-2);
 		box-shadow: var(--shadow-sm);
+		transition: box-shadow 0.3s ease, transform 0.3s ease;
+	}
+
+	.performance-summary:hover {
+		box-shadow: var(--shadow-md);
 	}
 
 	/* COMPACT HEADER */
@@ -363,43 +370,16 @@
 		opacity: 0.5;
 	}
 
-	/* Ticker Pills Container - with scroll shadow affordance */
+	/* ═══════════════════════════════════════════════════════════════════════
+	   TICKER PILLS - Responsive: scroll on mobile, grid on desktop
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.ticker-pills-scroll {
 		display: flex;
-		gap: var(--space-2);
-		overflow-x: auto;
-		padding: var(--space-1) var(--space-1);
-		margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-1));
-		scroll-snap-type: x mandatory;
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: thin;
-		scrollbar-color: var(--color-border-strong) var(--color-bg-subtle);
-		mask-image: linear-gradient(
-			to right,
-			transparent 0,
-			black var(--space-1),
-			black calc(100% - var(--space-4)),
-			transparent 100%
-		);
+		flex-wrap: wrap;
+		gap: 8px;
+		padding: 4px 0;
 	}
 
-	.ticker-pills-scroll::-webkit-scrollbar {
-		height: 8px;
-	}
-
-	.ticker-pills-scroll::-webkit-scrollbar-track {
-		background: var(--color-bg-subtle);
-		border-radius: var(--radius-sm);
-	}
-
-	.ticker-pills-scroll::-webkit-scrollbar-thumb {
-		background: var(--color-border-strong);
-		border-radius: var(--radius-sm);
-	}
-
-	.ticker-pills-scroll::-webkit-scrollbar-thumb:hover {
-		background: var(--color-text-muted);
-	}
 
 	/* Skeleton for Ticker Pills */
 	.ticker-pill-skeleton {
@@ -430,11 +410,14 @@
 		margin-bottom: 14px;
 	}
 
-	/* Mobile: 1 column, Tablet: 2 columns, Desktop: 3 columns */
+	/* ═══════════════════════════════════════════════════════════════════════
+	   POSITIONS GRID - Netflix-grade auto-fill responsive grid
+	   Cards auto-fill based on available space, min 280px each
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.positions-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 12px;
+		gap: 10px;
 	}
 
 	.add-trade-btn {
@@ -597,7 +580,34 @@
 	@media (min-width: 768px) {
 		.performance-summary {
 			margin: var(--space-3);
+			padding: 20px;
+		}
+
+		.summary-title {
+			font-size: 1.5rem;
+		}
+
+		.win-rate-value {
+			font-size: 28px;
+		}
+
+		.summary-header {
+			gap: 16px;
+			margin-bottom: 20px;
+			padding-bottom: 16px;
+		}
+	}
+
+	/* Desktop (1024px+) - 3 column positions grid */
+	@media (min-width: 1024px) {
+		.performance-summary {
+			margin: var(--space-3);
 			padding: 24px;
+		}
+
+		.positions-grid {
+			grid-template-columns: repeat(3, 1fr);
+			gap: 10px;
 		}
 
 		.summary-title {
@@ -608,22 +618,21 @@
 			font-size: 32px;
 		}
 
-		.summary-header {
-			gap: 20px;
-			margin-bottom: 24px;
-			padding-bottom: 20px;
+		.win-rate-badge {
+			padding: 10px 16px;
 		}
 	}
 
-	/* Desktop (1024px+) - 3 column positions grid */
-	@media (min-width: 1024px) {
+	/* Large Desktop (1440px+) - 4 columns */
+	@media (min-width: 1440px) {
 		.performance-summary {
-			margin: var(--space-3);
+			margin: var(--space-4);
 			padding: 28px;
+			border-radius: 16px;
 		}
 
 		.positions-grid {
-			grid-template-columns: repeat(3, 1fr);
+			grid-template-columns: repeat(4, 1fr);
 			gap: 12px;
 		}
 
@@ -631,24 +640,56 @@
 			font-size: 1.75rem;
 		}
 
+		.ticker-pills-scroll {
+			gap: 10px;
+		}
+	}
+
+	/* Full HD (1920px+) - 5 columns, Netflix-grade scaling */
+	@media (min-width: 1920px) {
+		.performance-summary {
+			margin: var(--space-5) var(--space-6);
+			padding: 32px;
+			border-radius: 18px;
+		}
+
+		.positions-grid {
+			grid-template-columns: repeat(5, 1fr);
+			gap: 14px;
+		}
+
+		.summary-title {
+			font-size: 1.875rem;
+		}
+
 		.win-rate-value {
 			font-size: 36px;
 		}
 
-		.win-rate-badge {
-			padding: 12px 20px;
+		.ticker-pills-scroll {
+			gap: 12px;
 		}
 	}
 
-	/* Large Desktop (1440px+) */
-	@media (min-width: 1440px) {
+	/* Ultra-wide (2560px+) - 6 columns */
+	@media (min-width: 2560px) {
 		.performance-summary {
-			margin: var(--space-4);
-			padding: 32px;
+			margin: var(--space-6) var(--space-8);
+			padding: 40px;
+			border-radius: 20px;
+		}
+
+		.positions-grid {
+			grid-template-columns: repeat(6, 1fr);
+			gap: 16px;
 		}
 
 		.summary-title {
 			font-size: 2rem;
+		}
+
+		.win-rate-value {
+			font-size: 42px;
 		}
 	}
 </style>

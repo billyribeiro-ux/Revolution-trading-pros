@@ -239,12 +239,51 @@
 		.sidebar {
 			gap: var(--space-3);
 		}
+
+		.help-card {
+			border-radius: 16px;
+		}
 	}
 
-	/* Ultra-wide (1920px+) */
+	/* Full HD (1920px+) - Netflix-grade scaling */
 	@media (min-width: 1920px) {
 		.sidebar {
 			gap: var(--space-4);
+		}
+
+		.help-title {
+			font-size: var(--text-xl);
+		}
+
+		.help-text {
+			font-size: var(--text-base);
+		}
+
+		.help-btn {
+			padding: var(--space-2) var(--space-4);
+			font-size: var(--text-base);
+		}
+
+		.archive-link {
+			padding: var(--space-3);
+			font-size: var(--text-base);
+			border-radius: 14px;
+		}
+	}
+
+	/* Ultra-wide (2560px+) */
+	@media (min-width: 2560px) {
+		.sidebar {
+			gap: var(--space-5);
+		}
+
+		.help-card {
+			padding: var(--space-4);
+			border-radius: 18px;
+		}
+
+		.help-title {
+			font-size: var(--text-2xl);
 		}
 	}
 </style>

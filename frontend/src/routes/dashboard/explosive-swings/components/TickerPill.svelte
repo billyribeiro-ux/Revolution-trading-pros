@@ -48,28 +48,36 @@
 </div>
 
 <style>
-	/* COMPACT PILL - Horizontal Layout */
+	/* ═══════════════════════════════════════════════════════════════════════
+	   TICKER PILL - Netflix-grade closed trade indicator
+	   Compact, informative, visually distinct win/loss states
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.pill {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
 		padding: 6px 10px;
-		border-radius: var(--radius-md);
+		border-radius: 6px;
 		border: 1px solid;
 		flex-shrink: 0;
-		scroll-snap-align: start;
 		cursor: default;
-		transition: var(--transition-shadow);
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		will-change: transform, box-shadow;
 	}
 
-	/* Win State */
+	.pill:hover {
+		transform: translateY(-1px) scale(1.02);
+	}
+
+	/* Win State - Green gradient accent */
 	.pill.win {
-		background: var(--color-profit-bg);
+		background: linear-gradient(135deg, var(--color-profit-bg) 0%, rgba(16, 185, 129, 0.12) 100%);
 		border-color: var(--color-profit-border);
 	}
 
 	.pill.win:hover {
-		box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+		border-color: var(--color-profit-light);
 	}
 
 	.pill.win .pct {
@@ -77,17 +85,18 @@
 	}
 
 	.pill.win .icon {
-		color: var(--color-profit-light);
+		color: var(--color-profit);
 	}
 
-	/* Loss State */
+	/* Loss State - Red gradient accent */
 	.pill.loss {
-		background: var(--color-loss-bg);
+		background: linear-gradient(135deg, var(--color-loss-bg) 0%, rgba(239, 68, 68, 0.08) 100%);
 		border-color: var(--color-loss-border);
 	}
 
 	.pill.loss:hover {
-		box-shadow: 0 2px 8px rgba(239, 68, 68, 0.12);
+		box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+		border-color: var(--color-loss-light);
 	}
 
 	.pill.loss .pct {
@@ -95,10 +104,10 @@
 	}
 
 	.pill.loss .icon {
-		color: var(--color-loss-light);
+		color: var(--color-loss);
 	}
 
-	/* Icon */
+	/* Icon container */
 	.icon {
 		display: flex;
 		align-items: center;
@@ -107,23 +116,59 @@
 	}
 
 	.icon svg {
-		width: 12px;
-		height: 12px;
+		width: 14px;
+		height: 14px;
 	}
 
-	/* Ticker */
+	/* Ticker symbol */
 	.ticker {
 		font-size: 12px;
-		font-weight: var(--font-extrabold);
+		font-weight: 800;
 		text-transform: uppercase;
 		color: var(--color-text-primary);
 		letter-spacing: 0.02em;
 	}
 
-	/* Percentage */
+	/* Percentage gain/loss */
 	.pct {
 		font-size: 13px;
-		font-weight: var(--font-bold);
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* Responsive scaling for larger screens */
+	@media (min-width: 1440px) {
+		.pill {
+			padding: 7px 12px;
+			gap: 8px;
+		}
+
+		.ticker {
+			font-size: 13px;
+		}
+
+		.pct {
+			font-size: 14px;
+		}
+
+		.icon svg {
+			width: 15px;
+			height: 15px;
+		}
+	}
+
+	@media (min-width: 1920px) {
+		.pill {
+			padding: 8px 14px;
+			border-radius: 8px;
+		}
+
+		.ticker {
+			font-size: 14px;
+		}
+
+		.pct {
+			font-size: 15px;
+		}
 	}
 </style>

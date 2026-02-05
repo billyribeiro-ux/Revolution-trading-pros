@@ -430,23 +430,26 @@
 />
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════
+	   PAGE CONTAINER - Netflix-grade fullscreen optimization
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.page {
-		background: #EFEFEF;
+		background: var(--color-bg-page, #f5f7fa);
 		min-height: 100vh;
 		min-height: 100dvh;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   MAIN GRID - Mobile-first responsive layout
-	   Uses CSS custom property for sidebar width from design-tokens.css
+	   MAIN GRID - Netflix-grade fluid responsive layout
+	   No max-width constraint - uses full viewport width
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.main-grid {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-2);
 		padding: var(--space-2);
-		max-width: 1600px;
-		margin: 0 auto;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -680,6 +683,36 @@
 		.main-grid {
 			gap: var(--space-4);
 			padding: var(--space-4);
+		}
+	}
+
+	/* Full HD (1920px+) - Netflix-grade scaling */
+	@media (min-width: 1920px) {
+		.main-grid {
+			gap: var(--space-5);
+			padding: var(--space-5) var(--space-6);
+		}
+
+		.alerts-section {
+			padding: 28px;
+			border-radius: 16px;
+		}
+
+		.section-header h2 {
+			font-size: var(--text-2xl);
+		}
+	}
+
+	/* Ultra-wide (2560px+) */
+	@media (min-width: 2560px) {
+		.main-grid {
+			gap: var(--space-6);
+			padding: var(--space-6) var(--space-8);
+		}
+
+		.alerts-section {
+			padding: 32px;
+			border-radius: 20px;
 		}
 	}
 

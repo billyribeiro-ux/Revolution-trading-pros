@@ -307,6 +307,27 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (min-width: 1440px) {
 	:root {
+		--sidebar-width: 400px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES - Full HD (1920px+)
+   Netflix-grade responsive scaling for professional displays
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1920px) {
+	:root {
 		--sidebar-width: 420px;
+		--card-padding-lg: 28px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES - Ultra-wide (2560px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 2560px) {
+	:root {
+		--sidebar-width: 480px;
+		--card-padding-lg: 32px;
 	}
 }

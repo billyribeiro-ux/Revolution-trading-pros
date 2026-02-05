@@ -1386,19 +1386,91 @@
 	/* Large Desktop (1440px+) */
 	@media (min-width: 1440px) {
 		.hero-content {
-			padding: var(--space-6);
+			padding: var(--space-5);
 		}
 
 		.video-section,
 		.entries-container {
-			max-width: 1400px;
+			max-width: none;
+		}
+
+		.video-info h2 {
+			font-size: 32px;
 		}
 	}
 
-	/* Ultra-wide Screens (1920px+) */
+	/* Full HD (1920px+) - Netflix-grade scaling */
 	@media (min-width: 1920px) {
 		.hero-content {
-			padding: var(--space-8);
+			padding: var(--space-6) var(--space-8);
+			min-height: 400px;
+		}
+
+		.hero-header-compact h1 {
+			font-size: 20px;
+		}
+
+		.hero-tab {
+			padding: 14px 28px;
+			font-size: 15px;
+		}
+
+		.video-info h2 {
+			font-size: 36px;
+		}
+
+		.video-info .published-date {
+			font-size: 16px;
+		}
+
+		.watch-btn {
+			padding: 16px 32px;
+			font-size: 16px;
+		}
+
+		.play-btn {
+			width: 100px;
+			height: 100px;
+		}
+
+		.play-btn svg {
+			width: 44px;
+			height: 44px;
+		}
+
+		.trade-sheet th {
+			padding: 18px 16px;
+			font-size: 13px;
+		}
+
+		.trade-sheet td {
+			padding: 16px;
+		}
+	}
+
+	/* Ultra-wide (2560px+) */
+	@media (min-width: 2560px) {
+		.hero-content {
+			padding: var(--space-8) var(--space-10);
+			min-height: 450px;
+		}
+
+		.hero-header-compact h1 {
+			font-size: 22px;
+		}
+
+		.video-info h2 {
+			font-size: 42px;
+		}
+
+		.play-btn {
+			width: 120px;
+			height: 120px;
+		}
+
+		.play-btn svg {
+			width: 52px;
+			height: 52px;
 		}
 	}
 
