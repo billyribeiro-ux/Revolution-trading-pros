@@ -1,24 +1,38 @@
 /**
  * Products API Proxy
- * ICT 7 FIX: Return mock data immediately - backend endpoint not implemented
- * This prevents 404 console errors
+ * Forwards requests to backend /api/products endpoint
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async () => {
-	// ICT 7 FIX: Return mock data immediately - endpoint not implemented on backend
-	// This prevents 404 console errors
-	return json({
-		products: [],
-		data: [],
-		total: 0,
-		meta: {
-			current_page: 1,
-			per_page: 100,
-			total: 0,
-			last_page: 1
+const API_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+export const GET: RequestHandler = async ({ url, cookies }) => {
+	try {
+		const token = cookies.get('auth_token');
+		
+		// Forward query parameters
+		const queryParams = url.searchParams.toString();
+		const endpoint = queryParams ? `${API_URL}/api/products?${queryParams}` : `${API_URL}/api/products`;
+		
+		const response = await fetch(endpoint, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
+			}
+		});
+
+		const data = await response.json();
+		
+		if (!response.ok) {
+			return json(data, { status: response.status });
 		}
-	});
+
+		return json(data);
+	} catch (err) {
+		console.error('[API Proxy] Failed to fetch products:', err);
+		return error(500, 'Failed to fetch products');
+	}
 };

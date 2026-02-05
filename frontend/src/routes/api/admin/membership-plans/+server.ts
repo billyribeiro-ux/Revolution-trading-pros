@@ -1,22 +1,34 @@
 /**
  * Admin Membership Plans API Proxy
- * ICT 7 FIX: Return mock data immediately - backend endpoint not implemented
- * This prevents 404 console errors
+ * Forwards requests to backend /api/admin/membership-plans endpoint
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async () => {
-	// ICT 7 FIX: Return mock data immediately - endpoint not implemented on backend
-	// This prevents 404 console errors
-	return json({
-		plans: [],
-		total: 0
-	});
-};
+const API_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-export const POST: RequestHandler = async () => {
-	// ICT 7 FIX: Return error - endpoint not implemented on backend
-	return json({ message: 'Membership plans endpoint not implemented' }, { status: 501 });
+export const GET: RequestHandler = async ({ cookies }) => {
+	try {
+		const token = cookies.get('auth_token');
+		
+		const response = await fetch(`${API_URL}/api/admin/membership-plans`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
+			}
+		});
+
+		const data = await response.json();
+		
+		if (!response.ok) {
+			return json(data, { status: response.status });
+		}
+
+		return json(data);
+	} catch (err) {
+		console.error('[API Proxy] Failed to fetch membership plans:', err);
+		return error(500, 'Failed to fetch membership plans');
+	}
 };
