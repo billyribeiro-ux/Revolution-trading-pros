@@ -16,17 +16,22 @@
 		onblur?: (e: FocusEvent) => void;
 	}
 
-	let { value = $bindable(''), ...props }: Props = $props();
-	let type = $derived(props.type ?? 'text');
-	let placeholder = $derived(props.placeholder ?? '');
-	let label = $derived(props.label ?? '');
-	let error = $derived(props.error ?? '');
-	let disabled = $derived(props.disabled ?? false);
-	let required = $derived(props.required ?? false);
-	let id = $derived(props.id ?? '');
-	let min = $derived(props.min);
-	let max = $derived(props.max);
-	let step = $derived(props.step);
+	let {
+		value = $bindable(''),
+		type = 'text',
+		placeholder = '',
+		label = '',
+		error = '',
+		disabled = false,
+		required = false,
+		id = '',
+		min,
+		max,
+		step,
+		oninput,
+		onchange,
+		onblur
+	}: Props = $props();
 	let oninput = $derived(props.oninput);
 	let onchange = $derived(props.onchange);
 	let onblur = $derived(props.onblur);
@@ -63,9 +68,15 @@
       {error ? 'border-red-500' : 'border-gray-300'}
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
       disabled:bg-gray-100 disabled:cursor-not-allowed"
-		{oninput}
-		{onchange}
-		{onblur}
+		oninput={(e) => {
+			if (oninput) oninput(e);
+		}}
+		onchange={(e) => {
+			if (onchange) onchange(e);
+		}}
+		onblur={(e) => {
+			if (onblur) onblur(e);
+		}}
 	/>
 
 	{#if error}
