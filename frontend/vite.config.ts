@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { defineConfig } from 'vitest/config';
+import devtoolsJson from 'vite-plugin-devtools-json';
 
 export default defineConfig({
   plugins: [
@@ -9,7 +10,8 @@ export default defineConfig({
       toggleKeyCombo: 'meta-shift',
       showToggleButton: 'always',
       toggleButtonPos: 'bottom-right'
-    })
+    }),
+    devtoolsJson()
   ],
   test: {
     globals: true,
