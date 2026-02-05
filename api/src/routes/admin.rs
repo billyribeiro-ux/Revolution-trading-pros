@@ -16,7 +16,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{middleware::admin::AdminUser, models::User, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // AUTHORIZATION HELPERS
@@ -814,10 +814,8 @@ pub struct UpdateMembershipRequest {
 /// ICT 11+ FIX: Returns { plans: [...] } format expected by frontend
 async fn list_all_plans(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<MembershipPlanRow> = sqlx::query_as(
         r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
