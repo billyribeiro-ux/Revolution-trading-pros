@@ -21,8 +21,10 @@
 	// Use provided stateManager or create a default one
 	let resolvedStateManager = $derived(props.stateManager ?? new BlockStateManager());
 
-	// Set the context when the component mounts
-	setBlockStateManager(resolvedStateManager);
+	// Set the context reactively when the stateManager changes
+	$effect(() => {
+		setBlockStateManager(resolvedStateManager);
+	});
 </script>
 
 {@render props.children()}

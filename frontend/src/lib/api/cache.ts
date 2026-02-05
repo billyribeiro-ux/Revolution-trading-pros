@@ -140,7 +140,6 @@ export class RequestCache implements Disposable {
 	private readonly cache: Map<string, CacheEntry<unknown>> = new Map();
 	private readonly maxSize: number;
 	private readonly defaultTtl: number;
-	private readonly staleWhileRevalidate: boolean;
 	private readonly accessOrder: string[] = [];
 	private readonly listeners: Set<CacheEventListener> = new Set();
 
@@ -155,8 +154,6 @@ export class RequestCache implements Disposable {
 	constructor(config: Partial<CacheConfig> & { maxSize?: number } = {}) {
 		this.maxSize = config.maxSize ?? 100;
 		this.defaultTtl = config.ttl ?? DEFAULT_CACHE_CONFIG.ttl;
-		this.staleWhileRevalidate =
-			config.staleWhileRevalidate ?? DEFAULT_CACHE_CONFIG.staleWhileRevalidate;
 
 		// Start periodic cleanup
 		if (browser) {

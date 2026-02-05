@@ -453,6 +453,7 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content"
 			onclick={(e) => e.stopPropagation()}

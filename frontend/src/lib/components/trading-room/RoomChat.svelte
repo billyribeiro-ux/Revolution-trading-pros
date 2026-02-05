@@ -65,7 +65,7 @@
 	let isConnected = $state(false);
 	let isConnecting = $state(true);
 	let error = $state<string | null>(null);
-	let chatContainer: HTMLElement;
+	let chatContainer = $state<HTMLElement | null>(null);
 	let ws: WebSocket | null = null;
 
 	// User info

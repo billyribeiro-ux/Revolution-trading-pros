@@ -32,13 +32,19 @@
 	];
 
 	// Width options
-	type DividerWidth = '25%' | '50%' | '75%' | '100%';
+	type DividerWidth = 'small' | 'medium' | 'large' | 'full';
 	const WIDTH_OPTIONS: { value: DividerWidth; label: string }[] = [
-		{ value: '25%', label: '25%' },
-		{ value: '50%', label: '50%' },
-		{ value: '75%', label: '75%' },
-		{ value: '100%', label: '100%' }
+		{ value: 'small', label: '25%' },
+		{ value: 'medium', label: '50%' },
+		{ value: 'large', label: '75%' },
+		{ value: 'full', label: '100%' }
 	];
+	const WIDTH_VALUES: Record<DividerWidth, string> = {
+		small: '25%',
+		medium: '50%',
+		large: '75%',
+		full: '100%'
+	};
 
 	// Spacing options
 	type SpacingSize = 'small' | 'medium' | 'large';
@@ -58,13 +64,14 @@
 
 	// Derived state
 	const dividerStyle = $derived((props.block.settings.borderStyle || 'solid') as DividerStyle);
-	const dividerWidth = $derived((props.block.settings.width || '100%') as DividerWidth);
+	const dividerWidth = $derived((props.block.settings.width || 'full') as DividerWidth);
 	const dividerColor = $derived((props.block.settings.borderColor || '#e2e8f0') as string);
 	const spacing = $derived((props.block.settings.margin || 'medium') as SpacingSize);
 	const thickness = $derived((props.block.settings.borderWidth || '1px') as string);
 
 	// Computed values
 	const marginValue = $derived(SPACING_VALUES[spacing] || spacing);
+	const widthValue = $derived(WIDTH_VALUES[dividerWidth] || dividerWidth);
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
 		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
@@ -194,11 +201,10 @@
 	>
 		<hr
 			class="divider-line"
-			style:width={dividerWidth}
+			style:width={widthValue}
 			style:border-top-style={dividerStyle}
 			style:border-top-color={dividerColor}
 			style:border-top-width={dividerStyle === 'double' ? `${parseInt(thickness) * 2}px` : thickness}
-			role="separator"
 			aria-orientation="horizontal"
 		/>
 	</div>

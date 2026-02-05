@@ -85,7 +85,7 @@
 					<td colspan={props.columns.length} class="empty-message">{props.emptyMessage ?? 'No data available'}</td>
 				</tr>
 			{:else}
-				{#each sortedData as row, _i}
+				{#each sortedData as row}
 					<tr
 						class:clickable={!!props.onRowClick}
 						onclick={() => handleRowClick(row)}

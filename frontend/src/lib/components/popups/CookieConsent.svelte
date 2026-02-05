@@ -61,8 +61,13 @@
 
 	// State
 	let isVisible = $state(false);
-	let isPreferencesOpen = $state(showPreferences);
+	let isPreferencesOpen = $state(false);
 	let isExiting = $state(false);
+
+	// Sync isPreferencesOpen from prop when it changes
+	$effect(() => {
+		isPreferencesOpen = showPreferences;
+	});
 	let preferences = $state<CookiePreferences>({
 		necessary: true,
 		analytics: false,

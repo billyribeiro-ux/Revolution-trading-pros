@@ -189,8 +189,13 @@
 						</div>
 					{/if}
 
-					<div onclick={() => selectBlock(block.id)}>
-						<BlockRenderer
+					<div
+					onclick={() => selectBlock(block.id)}
+					onkeydown={(e) => e.key === 'Enter' && selectBlock(block.id)}
+					role="button"
+					tabindex="0"
+				>
+					<BlockRenderer
 							{block}
 							blockId={block.id}
 							{isEditing}

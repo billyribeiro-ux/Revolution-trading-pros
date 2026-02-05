@@ -279,7 +279,7 @@
 	/** Debounced effect for analysis */
 	$effect(() => {
 		// Dependencies - these trigger re-analysis
-		const _deps = [title, content, metaDescription, focusKeyword, slug, contentBlocks];
+		[title, content, metaDescription, focusKeyword, slug, contentBlocks];
 
 		// Clear existing timer
 		if (debounceTimer) {

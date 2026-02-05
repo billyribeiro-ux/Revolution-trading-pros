@@ -95,7 +95,7 @@
 	// TRADE PLAN STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let tradePlanEntries = $state<TradePlanEntry[]>(data.initialData?.tradePlan ?? []);
+	let tradePlanEntries = $state<TradePlanEntry[]>([]);
 	let isLoadingTradePlan = $state(false);
 	let showTradePlanModal = $state(false);
 	let editingTradePlan = $state<TradePlanEntry | null>(null);
@@ -119,7 +119,7 @@
 	// ALERTS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let alerts = $state<RoomAlert[]>(data.initialData?.alerts ?? []);
+	let alerts = $state<RoomAlert[]>([]);
 	let isLoadingAlerts = $state(false);
 	let showAlertModal = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
@@ -154,7 +154,7 @@
 	// WEEKLY VIDEO STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let currentVideo = $state<WeeklyVideo | null>(data.initialData?.weeklyVideo ?? null);
+	let currentVideo = $state<WeeklyVideo | null>(null);
 	let archivedVideos = $state<WeeklyVideo[]>([]);
 	let isLoadingVideo = $state(false);
 	let showVideoModal = $state(false);
@@ -175,14 +175,14 @@
 	// ROOM STATS STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let roomStats = $state<RoomStats | null>(data.initialData?.roomStats ?? null);
+	let roomStats = $state<RoomStats | null>(null);
 	let isLoadingStats = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE TRACKER STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let trades = $state<RoomTrade[]>(data.initialData?.trades ?? []);
+	let trades = $state<RoomTrade[]>([]);
 	let isLoadingTrades = $state(false);
 	let tradeFilter = $state<TradeStatus | 'all'>('all');
 	let showCloseTradeModal = $state(false);
@@ -199,7 +199,7 @@
 	// VIDEO LIBRARY STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	let videoResources = $state<RoomResource[]>(data.initialData?.videoResources ?? []);
+	let videoResources = $state<RoomResource[]>([]);
 	let isLoadingVideos = $state(false);
 	let videoFilter = $state<string>('all');
 	let _showVideoResourceModal = $state(false);
@@ -306,6 +306,35 @@
 	const isCloseTradeFormValid = $derived(
 		closeTradeForm.exit_price.trim() !== '' && !isNaN(parseFloat(closeTradeForm.exit_price))
 	);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// SYNC STATE FROM PAGE DATA (SSR)
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	// Sync state from page data when it changes (e.g., on navigation)
+	$effect(() => {
+		tradePlanEntries = data.initialData?.tradePlan ?? [];
+	});
+
+	$effect(() => {
+		alerts = data.initialData?.alerts ?? [];
+	});
+
+	$effect(() => {
+		currentVideo = data.initialData?.weeklyVideo ?? null;
+	});
+
+	$effect(() => {
+		roomStats = data.initialData?.roomStats ?? null;
+	});
+
+	$effect(() => {
+		trades = data.initialData?.trades ?? [];
+	});
+
+	$effect(() => {
+		videoResources = data.initialData?.videoResources ?? [];
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
@@ -1472,6 +1501,7 @@
 		onkeydown={(e) => e.key === 'Escape' && (showTradePlanModal = false)}
 		aria-hidden="true"
 	>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1618,6 +1648,7 @@
 		onkeydown={(e) => e.key === 'Escape' && (showAlertModal = false)}
 		aria-hidden="true"
 	>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1848,6 +1879,7 @@
 		onkeydown={(e) => e.key === 'Escape' && (showVideoModal = false)}
 		aria-hidden="true"
 	>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1959,6 +1991,7 @@
 		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
 		aria-hidden="true"
 	>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}

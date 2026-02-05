@@ -102,9 +102,14 @@
 	let sidebarOpen = $state(false);
 
 	// Navigation
-	let currentFolderId = $state<string | null>(initialFolder);
+	let currentFolderId = $state<string | null>(null);
 	let folders = $state<Folder[]>([]);
 	let folderStack = $state<Folder[]>([]);
+
+	// Sync currentFolderId from initialFolder prop when it changes
+	$effect(() => {
+		currentFolderId = initialFolder;
+	});
 
 	// Assets
 	let assets = $state<Asset[]>([]);
@@ -714,17 +719,15 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="dam-overlay"
 		onclick={onClose}
-		role="dialog"
-		aria-modal="true"
-		aria-label="Asset Manager"
+		onkeydown={(e) => e.key === 'Escape' && onClose()}
+		role="button"
 		tabindex="-1"
+		aria-label="Close Asset Manager"
 		transition:fade={{ duration: 200 }}
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<div
 			class="dam-modal"
 			onclick={(e) => e.stopPropagation()}
@@ -732,7 +735,9 @@
 			ondragleave={handleDragLeave}
 			ondragover={handleDragOver}
 			ondrop={handleDrop}
-			role="document"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Asset Manager"
 			transition:fly={{ y: 20, duration: 300, easing: cubicOut }}
 		>
 			<!-- Header -->
@@ -806,7 +811,7 @@
 									oninput={handleSearch}
 								/>
 								{#if searchQuery}
-									<button class="clear-search" onclick={() => { searchQuery = ''; fetchAssets(true); }}>
+									<button class="clear-search" onclick={() => { searchQuery = ''; fetchAssets(true); }} aria-label="Clear search">
 										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<line x1="18" y1="6" x2="6" y2="18" />
 											<line x1="6" y1="6" x2="18" y2="18" />
@@ -1166,7 +1171,7 @@
 							<aside class="details-sidebar" transition:fly={{ x: 300, duration: 200 }}>
 								<div class="sidebar-header">
 									<h4>Details</h4>
-									<button class="close-sidebar" onclick={() => (sidebarOpen = false)}>
+									<button class="close-sidebar" onclick={() => (sidebarOpen = false)} aria-label="Close sidebar">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<line x1="18" y1="6" x2="6" y2="18" />
 											<line x1="6" y1="6" x2="18" y2="18" />
@@ -1179,6 +1184,7 @@
 									{#if getAssetType(selectedAsset.mime_type) === 'image'}
 										<img src={selectedAsset.cdn_url} alt={selectedAsset.alt_text || selectedAsset.filename} />
 									{:else if getAssetType(selectedAsset.mime_type) === 'video'}
+										<!-- svelte-ignore a11y_media_has_caption -->
 										<video src={selectedAsset.cdn_url} controls></video>
 									{:else}
 										<div class="type-preview-large {getAssetType(selectedAsset.mime_type)}">
@@ -1404,7 +1410,7 @@
 												{:else if item.status === 'uploading'}
 													<div class="spinner small"></div>
 												{:else}
-													<button class="remove-item" onclick={() => removeFromQueue(item.id)}>
+													<button class="remove-item" onclick={() => removeFromQueue(item.id)} aria-label="Remove from queue">
 														<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 															<line x1="18" y1="6" x2="6" y2="18" />
 															<line x1="6" y1="6" x2="18" y2="18" />

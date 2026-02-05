@@ -55,8 +55,6 @@
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
 
 	import type { BlockType, BlockContent, BlockSettings } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
@@ -201,11 +199,6 @@
 	}
 
 	function handlePresetClose() {
-		showPresetPicker = false;
-		selectedBlockType = null;
-	}
-
-	function handleBackToBlocks() {
 		showPresetPicker = false;
 		selectedBlockType = null;
 	}

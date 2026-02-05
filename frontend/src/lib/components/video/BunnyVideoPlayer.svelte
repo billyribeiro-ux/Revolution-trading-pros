@@ -118,9 +118,14 @@
 	let thumbnailLoaded = $state(false);
 
 	// ICT 7 ADDITION: Progress tracking state
-	let currentTime = $state(startTime);
+	let currentTime = $state(0);
 	let progressInterval: ReturnType<typeof setInterval> | null = null;
 	let lastSavedTime = $state(0);
+
+	// Sync currentTime from startTime prop when it changes
+	$effect(() => {
+		currentTime = startTime;
+	});
 	const PROGRESS_SAVE_INTERVAL = 10000; // Save every 10 seconds
 	const PROGRESS_THRESHOLD = 5; // Only save if changed by 5+ seconds
 

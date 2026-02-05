@@ -17,13 +17,12 @@
 		IconInfoCircle,
 		IconChevronDown,
 		IconChevronUp,
-		IconCheck,
 		IconShieldCheck,
 		IconEdit,
 		IconSquare,
 		IconSquareCheck
 	} from '$lib/icons';
-	import type { Block, BlockContent, BlockSettings } from '../types';
+	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
 

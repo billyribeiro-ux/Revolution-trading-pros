@@ -8,10 +8,17 @@
 	}
 
 	let props: Props = $props();
-	let selectedTheme = $state(props.selectedTheme ?? themes[0]);
-
+	let selectedTheme = $state<FormTheme>(themes[0]);
 	let isCustomizing = $state(false);
-	let customTheme: FormTheme = $state({ ...selectedTheme });
+	let customTheme = $state<FormTheme>({ ...themes[0] });
+
+	// Sync from props when they change
+	$effect(() => {
+		if (props.selectedTheme) {
+			selectedTheme = props.selectedTheme;
+			customTheme = { ...props.selectedTheme };
+		}
+	});
 
 	function selectTheme(theme: FormTheme) {
 		selectedTheme = theme;

@@ -67,9 +67,6 @@ const VIDEO_CDN_DOMAINS = [
 // Video file extensions to cache
 const VIDEO_EXTENSIONS = ['.ts', '.m4s', '.mp4', '.m3u8', '.mpd'];
 
-// Maximum video cache size (500MB)
-const _MAX_VIDEO_CACHE_SIZE = 500 * 1024 * 1024;
-
 // Video cache TTL (1 hour for segments, 5 min for manifests)
 const VIDEO_SEGMENT_TTL = 60 * 60 * 1000; // 1 hour
 const VIDEO_MANIFEST_TTL = 5 * 60 * 1000; // 5 minutes

@@ -221,6 +221,7 @@
 				contenteditable="true"
 				class="toc-title editable-content"
 				role="textbox"
+				tabindex="0"
 				aria-label="TOC title"
 				onclick={(e) => e.stopPropagation()}
 				oninput={handleTitleInput}

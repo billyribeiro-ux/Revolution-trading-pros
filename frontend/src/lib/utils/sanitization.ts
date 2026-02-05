@@ -334,7 +334,7 @@ function addSecureLinkAttributes(html: string): string {
 				return `<a ${attributes} rel="noopener noreferrer">`;
 			} else if (!attributes.includes('noopener') || !attributes.includes('noreferrer')) {
 				// Update existing rel attribute
-				return match.replace(/rel=["']([^"']*)["']/i, (relMatch: string, relValue: string) => {
+				return match.replace(/rel=["']([^"']*)["']/i, (_: string, relValue: string) => {
 					const parts = new Set(relValue.split(/\s+/).filter(Boolean));
 					parts.add('noopener');
 					parts.add('noreferrer');
@@ -712,7 +712,7 @@ export function generateCSPNonce(): string {
  * @returns CSP header value string
  */
 export function buildCSP(config: CSPConfig = {}): string {
-	const { nonce, allowedDomains = [], reportUri, reportOnly = false } = config;
+	const { nonce, allowedDomains = [], reportUri } = config;
 
 	const directives: CSPDirectives = {
 		'default-src': ["'self'"],

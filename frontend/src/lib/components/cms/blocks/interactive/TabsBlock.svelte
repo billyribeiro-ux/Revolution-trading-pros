@@ -118,9 +118,6 @@
 		const text = e.clipboardData?.getData('text/plain') || '';
 		document.execCommand('insertText', false, text);
 	}
-
-	let activeTabContent = $derived(tabs.find((t) => t.id === activeTab)?.content || '');
-	let activeTabIndex = $derived(tabs.findIndex((t) => t.id === activeTab));
 </script>
 
 <div class="tabs-block" class:vertical={orientation === 'vertical'} role="region" aria-label="Tabbed content">
@@ -143,6 +140,7 @@
 						contenteditable="true"
 						class="tab-label editable-content"
 						role="textbox"
+						tabindex="0"
 						aria-label="Tab label"
 						onclick={(e) => e.stopPropagation()}
 						oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
@@ -153,21 +151,20 @@
 				{:else}
 					<span class="tab-label">{tab.label}</span>
 				{/if}
-
-				{#if props.isEditing && tabs.length > 1}
-					<button
-						type="button"
-						class="remove-tab-btn"
-						onclick={(e) => {
-							e.stopPropagation();
-							removeTab(index);
-						}}
-						aria-label="Remove tab"
-					>
-						<IconX size={12} />
-					</button>
-				{/if}
 			</button>
+			{#if props.isEditing && tabs.length > 1}
+				<button
+					type="button"
+					class="remove-tab-btn"
+					onclick={(e) => {
+						e.stopPropagation();
+						removeTab(index);
+					}}
+					aria-label="Remove tab"
+				>
+					<IconX size={12} />
+				</button>
+			{/if}
 		{/each}
 
 		{#if props.isEditing}

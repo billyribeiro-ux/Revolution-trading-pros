@@ -22,9 +22,6 @@
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconBookmark from '@tabler/icons-svelte-runes/icons/bookmark';
-	import IconBookmarkFilled from '@tabler/icons-svelte-runes/icons/bookmark-filled';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
@@ -121,7 +118,6 @@
 	let searchQuery = $state('');
 	let selectedCategory = $state<string | null>(null);
 	let hoveredPreset = $state<PresetSummary | null>(null);
-	let previewPreset = $state<FullPreset | null>(null);
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
 	let groupedPresets = $state<GroupedPresetsResponse | null>(null);
@@ -406,6 +402,7 @@
 					</button>
 					{#each allCategories() as cat}
 						{@const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.custom}
+						{@const Icon = config.icon}
 						<button
 							type="button"
 							class="category-tab"
@@ -413,7 +410,7 @@
 							style:--tab-color={config.color}
 							onclick={() => (selectedCategory = cat)}
 						>
-							<svelte:component this={config.icon} size={14} />
+							<Icon size={14} />
 							{config.name}
 						</button>
 					{/each}
@@ -453,10 +450,11 @@
 					<!-- Presets by Category -->
 					{#each filteredCategories() as category}
 						{@const config = CATEGORY_CONFIG[category.category] || CATEGORY_CONFIG.custom}
+						{@const Icon = config.icon}
 						<div class="category-section" transition:fly={{ y: -10, duration: 200 }}>
 							<div class="category-header" style:--cat-color={config.color}>
 								<span class="category-dot"></span>
-								<svelte:component this={config.icon} size={16} />
+								<Icon size={16} />
 								<span class="category-name">{config.name}</span>
 								<span class="category-count">{category.presets.length}</span>
 							</div>
@@ -596,6 +594,7 @@
 			<div class="save-modal-content">
 				<div class="form-field">
 					<label for="preset-name">Preset Name *</label>
+					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						id="preset-name"
 						type="text"
