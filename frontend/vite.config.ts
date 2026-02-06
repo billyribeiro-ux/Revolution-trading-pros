@@ -2,14 +2,9 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
-import tailwindcss from '@tailwindcss/vite';
-import { clickToSource } from 'svelte-click-to-source';
-import type { Plugin } from 'vite';
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
-    clickToSource({ editor: 'windsurf' }) as unknown as Plugin,
     sveltekit(),
     svelteInspector({
       toggleKeyCombo: 'meta-shift',

@@ -231,6 +231,14 @@
 		}
 	};
 
+	// ICT 7: Format install guide markdown to HTML
+	function formatGuideHtml(text: string): string {
+		return text
+			.replace(/\n/g, '<br>')
+			.replace(/##\s*(.*?)(<br>|$)/g, '<h3>$1</h3>')
+			.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+	}
+
 	onMount(fetchIndicator);
 </script>
 
@@ -499,7 +507,7 @@
 					</div>
 				{:else}
 					<div class="guide-content">
-						{@html installGuide.replace(/\n/g, '<br>').replace(/##\s*(.*?)(<br>|$)/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+						{@html formatGuideHtml(installGuide)}
 					</div>
 				{/if}
 			</div>
