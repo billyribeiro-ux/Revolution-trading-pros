@@ -72,7 +72,7 @@
 	class="spacer-block"
 	class:editing={props.isEditing}
 	class:selected={props.isSelected}
-	style:height={height}
+	style:height
 	role="separator"
 	aria-label="Vertical spacing: {currentSize}"
 >

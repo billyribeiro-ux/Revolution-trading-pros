@@ -224,7 +224,13 @@
 				<h2>Contacts with this Tag</h2>
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input id="page-searchquery" name="page-searchquery" type="text" placeholder="Search contacts..." bind:value={searchQuery} />
+					<input
+						id="page-searchquery"
+						name="page-searchquery"
+						type="text"
+						placeholder="Search contacts..."
+						bind:value={searchQuery}
+					/>
 				</div>
 			</div>
 
@@ -338,6 +344,19 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showRemoveTagModal}
+	title="Remove Tag"
+	message="Remove this tag from the contact?"
+	confirmText="Remove"
+	variant="warning"
+	onConfirm={confirmRemoveTagFromContact}
+	onCancel={() => {
+		showRemoveTagModal = false;
+		pendingRemoveContactId = null;
+	}}
+/>
 
 <style>
 	.tag-detail-page {
@@ -750,13 +769,3 @@
 		border-width: 2px;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showRemoveTagModal}
-	title="Remove Tag"
-	message="Remove this tag from the contact?"
-	confirmText="Remove"
-	variant="warning"
-	onConfirm={confirmRemoveTagFromContact}
-	onCancel={() => { showRemoveTagModal = false; pendingRemoveContactId = null; }}
-/>

@@ -31,7 +31,9 @@
 	let newsletterState = $derived(stateManager.getNewsletterState(props.blockId));
 
 	// Content fields with defaults
-	let placeholder = $derived(props.block.content.newsletterPlaceholder || 'Enter your email address');
+	let placeholder = $derived(
+		props.block.content.newsletterPlaceholder || 'Enter your email address'
+	);
 	let buttonText = $derived(props.block.content.newsletterButtonText || 'Subscribe');
 
 	// Local state for input binding
@@ -101,7 +103,8 @@
 			});
 			emailInput = '';
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : 'Failed to subscribe. Please try again.';
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to subscribe. Please try again.';
 			stateManager.setNewsletterState(props.blockId, {
 				submitting: false,
 				error: errorMessage
@@ -124,7 +127,6 @@
 		});
 		emailInput = '';
 	}
-
 </script>
 
 <div
@@ -150,9 +152,7 @@
 			<p class="success-message">Thanks for subscribing!</p>
 			<p class="success-subtext">Check your inbox for a confirmation email.</p>
 			{#if props.isEditing}
-				<button type="button" class="reset-button" onclick={handleReset}>
-					Reset Form
-				</button>
+				<button type="button" class="reset-button" onclick={handleReset}> Reset Form </button>
 			{/if}
 		</div>
 	{:else}
@@ -163,7 +163,7 @@
 					type="email"
 					value={emailInput}
 					oninput={handleEmailInput}
-					placeholder={placeholder}
+					{placeholder}
 					disabled={newsletterState.submitting || props.isEditing}
 					aria-label="Email address"
 					aria-invalid={newsletterState.error ? 'true' : undefined}
@@ -191,9 +191,7 @@
 				</div>
 			{/if}
 
-			<p class="privacy-text">
-				We respect your privacy. Unsubscribe at any time.
-			</p>
+			<p class="privacy-text">We respect your privacy. Unsubscribe at any time.</p>
 		</form>
 	{/if}
 
@@ -207,7 +205,8 @@
 					<input
 						type="text"
 						value={placeholder}
-						oninput={(e) => updateContent({ newsletterPlaceholder: (e.target as HTMLInputElement).value })}
+						oninput={(e) =>
+							updateContent({ newsletterPlaceholder: (e.target as HTMLInputElement).value })}
 						placeholder="Enter your email..."
 					/>
 				</label>
@@ -216,7 +215,8 @@
 					<input
 						type="text"
 						value={buttonText}
-						oninput={(e) => updateContent({ newsletterButtonText: (e.target as HTMLInputElement).value })}
+						oninput={(e) =>
+							updateContent({ newsletterButtonText: (e.target as HTMLInputElement).value })}
 						placeholder="Subscribe"
 					/>
 				</label>
@@ -313,7 +313,9 @@
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
-		transition: background 0.15s, transform 0.1s;
+		transition:
+			background 0.15s,
+			transform 0.1s;
 		display: flex;
 		align-items: center;
 		justify-content: center;

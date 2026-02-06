@@ -6,10 +6,7 @@
 	 * Enterprise-grade slide-out drawer showing complete member profile
 	 * with tabs for overview, subscriptions, orders, activity, and notes.
 	 */
-	import {
-		membersApi,
-		type MemberFullDetails
-	} from '$lib/api/members';
+	import { membersApi, type MemberFullDetails } from '$lib/api/members';
 	import {
 		IconX,
 		IconUser,

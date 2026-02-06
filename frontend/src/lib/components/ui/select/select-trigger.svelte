@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { Select as SelectPrimitive } from "bits-ui";
-	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
-	import { cn, type WithoutChild } from "$lib/utils.js";
+	import { Select as SelectPrimitive } from 'bits-ui';
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+	import { cn, type WithoutChild } from '$lib/utils.js';
 
 	type TriggerProps = WithoutChild<SelectPrimitive.TriggerProps> & {
-		size?: "sm" | "default";
+		size?: 'sm' | 'default';
 	};
 
 	let props: TriggerProps = $props();
 	let ref = $state<HTMLElement | null>(props.ref ?? null);
 	let className = $derived(props.class);
-	let size = $derived(props.size ?? "default");
+	let size = $derived(props.size ?? 'default');
 
 	$effect(() => {
 		if (props.ref !== undefined && props.ref !== ref) {

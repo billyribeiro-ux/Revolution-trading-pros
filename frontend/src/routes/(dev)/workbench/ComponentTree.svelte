@@ -54,8 +54,7 @@
 
 		for (const [folder, components] of Object.entries(tree)) {
 			const filtered = components.filter(
-				(c) =>
-					c.name.toLowerCase().includes(query) || c.relativePath.toLowerCase().includes(query)
+				(c) => c.name.toLowerCase().includes(query) || c.relativePath.toLowerCase().includes(query)
 			);
 
 			if (filtered.length > 0) {
@@ -234,7 +233,12 @@
 										class="favorite-btn"
 										class:active={favorites.has(component.relativePath)}
 										onclick={(e) => toggleFavorite(component, e)}
-										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFavorite(component, e); } }}
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												toggleFavorite(component, e);
+											}
+										}}
 										role="button"
 										tabindex="0"
 										aria-label={favorites.has(component.relativePath)

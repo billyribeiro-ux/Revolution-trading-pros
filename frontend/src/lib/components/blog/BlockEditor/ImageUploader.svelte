@@ -127,9 +127,9 @@
 
 	// Derived state for progress tracking
 	// @ts-expect-error Reserved for future progress UI
-	const isUploading = $derived(uploadQueue.some(
-		(item) => item.status === 'processing' || item.status === 'uploading'
-	));
+	const isUploading = $derived(
+		uploadQueue.some((item) => item.status === 'processing' || item.status === 'uploading')
+	);
 	// @ts-expect-error Reserved for future error display
 	const hasErrors = $derived(uploadQueue.some((item) => item.status === 'error'));
 	// @ts-expect-error Reserved for future progress counter
@@ -441,8 +441,7 @@
 			const currentIdx = uploadQueue.findIndex((i) => i.id === itemId);
 			if (currentIdx !== -1) {
 				uploadQueue[currentIdx].status = 'error';
-				uploadQueue[currentIdx].error =
-					error instanceof Error ? error.message : 'Upload failed';
+				uploadQueue[currentIdx].error = error instanceof Error ? error.message : 'Upload failed';
 				uploadQueue = uploadQueue;
 			}
 		}
@@ -526,7 +525,10 @@
 				Math.max(width, height)
 			);
 			gradient.addColorStop(0, `rgb(${r}, ${g}, ${b})`);
-			gradient.addColorStop(1, `rgb(${Math.max(0, r - 30)}, ${Math.max(0, g - 30)}, ${Math.max(0, b - 30)})`);
+			gradient.addColorStop(
+				1,
+				`rgb(${Math.max(0, r - 30)}, ${Math.max(0, g - 30)}, ${Math.max(0, b - 30)})`
+			);
 
 			ctx.fillStyle = gradient;
 			ctx.fillRect(0, 0, width, height);
@@ -563,7 +565,12 @@
 						<polyline points="12 6 12 12 16 14" />
 					</svg>
 					Recent
-					<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+					<svg
+						class="chevron"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
 						style="transform: rotate({showRecentPanel ? 180 : 0}deg)"
 					>
 						<polyline points="6 9 12 15 18 9" />
@@ -584,11 +591,7 @@
 						onclick={() => handleRecentAssetClick(asset)}
 						title={asset.filename}
 					>
-						<img
-							src={asset.thumbnail_url || asset.cdn_url}
-							alt={asset.filename}
-							loading="lazy"
-						/>
+						<img src={asset.thumbnail_url || asset.cdn_url} alt={asset.filename} loading="lazy" />
 					</button>
 				{/each}
 			</div>
@@ -625,7 +628,13 @@
 
 		{#if isDragging}
 			<div class="drop-indicator" in:scale={{ duration: 200, easing: elasticOut }}>
-				<svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="drop-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 					<polyline points="17 8 12 3 7 8" />
 					<line x1="12" y1="3" x2="12" y2="15" />
@@ -634,7 +643,13 @@
 			</div>
 		{:else if uploadQueue.length === 0}
 			<div class="empty-state">
-				<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+				<svg
+					class="upload-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+				>
 					<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
 					<circle cx="8.5" cy="8.5" r="1.5" />
 					<polyline points="21 15 16 10 5 21" />
@@ -699,7 +714,9 @@
 							{item.file.name}
 						</div>
 						<div class="item-meta">
-							<span class="item-size">{formatFileSize(item.processedImage?.size || item.file.size)}</span>
+							<span class="item-size"
+								>{formatFileSize(item.processedImage?.size || item.file.size)}</span
+							>
 							{#if item.processedImage && item.processedImage.compressionRatio < 0.9}
 								<span class="compression-badge">
 									-{Math.round((1 - item.processedImage.compressionRatio) * 100)}%
@@ -736,7 +753,13 @@
 					<!-- Status Icon -->
 					<div class="item-status">
 						{#if item.status === 'complete'}
-							<svg class="status-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg
+								class="status-icon success"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
 								<polyline points="22 4 12 14.01 9 11.01" />
 							</svg>
@@ -761,7 +784,8 @@
 					<button
 						type="button"
 						class="remove-btn"
-						onclick={() => item.status === 'uploading' ? cancelUpload(item.id) : removeItem(item.id)}
+						onclick={() =>
+							item.status === 'uploading' ? cancelUpload(item.id) : removeItem(item.id)}
 						title={item.status === 'uploading' ? 'Cancel upload' : 'Remove'}
 					>
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

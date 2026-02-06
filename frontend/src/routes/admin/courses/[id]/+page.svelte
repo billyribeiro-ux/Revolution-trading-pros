@@ -438,7 +438,12 @@
 						</div>
 						<div class="form-group full">
 							<label for="card_description">Card Description (short)</label>
-							<input id="card_description" name="card_description" type="text" bind:value={course.card_description} />
+							<input
+								id="card_description"
+								name="card_description"
+								type="text"
+								bind:value={course.card_description}
+							/>
 						</div>
 						<div class="form-group">
 							<label for="level">Level</label>
@@ -455,7 +460,12 @@
 						</div>
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input id="page-course-is-free" name="page-course-is-free" type="checkbox" bind:checked={course.is_free} />
+								<input
+									id="page-course-is-free"
+									name="page-course-is-free"
+									type="checkbox"
+									bind:checked={course.is_free}
+								/>
 								Free Course
 							</label>
 						</div>
@@ -467,11 +477,21 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="instructor_name">Name</label>
-							<input id="instructor_name" name="instructor_name" type="text" bind:value={course.instructor_name} />
+							<input
+								id="instructor_name"
+								name="instructor_name"
+								type="text"
+								bind:value={course.instructor_name}
+							/>
 						</div>
 						<div class="form-group">
 							<label for="instructor_title">Title</label>
-							<input id="instructor_title" name="instructor_title" type="text" bind:value={course.instructor_title} />
+							<input
+								id="instructor_title"
+								name="instructor_title"
+								type="text"
+								bind:value={course.instructor_title}
+							/>
 						</div>
 						<div class="form-group full">
 							<label for="instructor_bio">Bio</label>
@@ -485,12 +505,18 @@
 					<div class="form-grid">
 						<div class="form-group full">
 							<label for="card_image">Card Image URL</label>
-							<input id="card_image" name="card_image" type="text" bind:value={course.card_image_url} />
+							<input
+								id="card_image"
+								name="card_image"
+								type="text"
+								bind:value={course.card_image_url}
+							/>
 						</div>
 						<div class="form-group">
 							<label for="badge">Badge Text</label>
 							<input
-								id="badge" name="badge"
+								id="badge"
+								name="badge"
 								type="text"
 								bind:value={course.card_badge}
 								placeholder="e.g., NEW"
@@ -498,7 +524,12 @@
 						</div>
 						<div class="form-group">
 							<label for="badge_color">Badge Color</label>
-							<input id="badge_color" name="badge_color" type="color" bind:value={course.card_badge_color} />
+							<input
+								id="badge_color"
+								name="badge_color"
+								type="color"
+								bind:value={course.card_badge_color}
+							/>
 						</div>
 					</div>
 				</div>
@@ -666,7 +697,9 @@
 					<div class="content-header">
 						<h2>Course Downloads</h2>
 						<input
-							id="page-file" name="page-file" type="file"
+							id="page-file"
+							name="page-file"
+							type="file"
 							bind:this={fileInput}
 							onchange={handleFileUpload}
 							style="display: none;"
@@ -755,7 +788,12 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="bunny_lib">Bunny.net Library ID</label>
-							<input id="bunny_lib" name="bunny_lib" type="number" bind:value={course.bunny_library_id} />
+							<input
+								id="bunny_lib"
+								name="bunny_lib"
+								type="number"
+								bind:value={course.bunny_library_id}
+							/>
 						</div>
 					</div>
 				</div>
@@ -763,6 +801,45 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModuleModal}
+	title="Delete Module"
+	message="Delete this module? Lessons will be unassigned."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteModule}
+	onCancel={() => {
+		showDeleteModuleModal = false;
+		pendingDeleteModuleId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteDownloadModal}
+	title="Delete Download"
+	message="Delete this download?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDownload}
+	onCancel={() => {
+		showDeleteDownloadModal = false;
+		pendingDeleteDownloadId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteLessonModal}
+	title="Delete Lesson"
+	message="Delete this lesson?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLesson}
+	onCancel={() => {
+		showDeleteLessonModal = false;
+		pendingDeleteLesson = null;
+	}}
+/>
 
 <style>
 	.course-editor {
@@ -1167,33 +1244,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModuleModal}
-	title="Delete Module"
-	message="Delete this module? Lessons will be unassigned."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteModule}
-	onCancel={() => { showDeleteModuleModal = false; pendingDeleteModuleId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteDownloadModal}
-	title="Delete Download"
-	message="Delete this download?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteDownload}
-	onCancel={() => { showDeleteDownloadModal = false; pendingDeleteDownloadId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteLessonModal}
-	title="Delete Lesson"
-	message="Delete this lesson?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteLesson}
-	onCancel={() => { showDeleteLessonModal = false; pendingDeleteLesson = null; }}
-/>

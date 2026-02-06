@@ -311,6 +311,32 @@
 	{/if}
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteRoleModal}
+	title="Delete Role"
+	message="Are you sure you want to delete this role? Users with this role will lose access."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteRole}
+	onCancel={() => {
+		showDeleteRoleModal = false;
+		pendingDeleteRoleId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showRemoveManagerModal}
+	title="Remove Manager"
+	message="Are you sure you want to remove this manager?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveManager}
+	onCancel={() => {
+		showRemoveManagerModal = false;
+		pendingRemoveManagerId = null;
+	}}
+/>
+
 <style>
 	.managers-page {
 		max-width: 1200px;
@@ -746,23 +772,3 @@
 		margin-bottom: 1rem;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteRoleModal}
-	title="Delete Role"
-	message="Are you sure you want to delete this role? Users with this role will lose access."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteRole}
-	onCancel={() => { showDeleteRoleModal = false; pendingDeleteRoleId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showRemoveManagerModal}
-	title="Remove Manager"
-	message="Are you sure you want to remove this manager?"
-	confirmText="Remove"
-	variant="danger"
-	onConfirm={confirmRemoveManager}
-	onCancel={() => { showRemoveManagerModal = false; pendingRemoveManagerId = null; }}
-/>

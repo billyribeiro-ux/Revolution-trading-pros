@@ -297,11 +297,13 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 				updateState({ isPersisted: true });
 			});
 
-			persistence.whenSynced.then(() => {
-				console.log('[YjsProvider] IndexedDB initial sync complete');
-			}).catch((err: unknown) => {
-				console.warn('[YjsProvider] IndexedDB sync failed:', err);
-			});
+			persistence.whenSynced
+				.then(() => {
+					console.log('[YjsProvider] IndexedDB initial sync complete');
+				})
+				.catch((err: unknown) => {
+					console.warn('[YjsProvider] IndexedDB sync failed:', err);
+				});
 		} catch (err) {
 			console.warn('[YjsProvider] Failed to initialize IndexedDB persistence:', err);
 		}
@@ -322,20 +324,15 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 
 			console.log('[YjsProvider] Connecting to:', wsUrlFull);
 
-			wsProvider = new WebsocketProvider(
-				wsUrlFull,
-				roomId,
-				doc,
-				{
-					connect: true,
-					params: user ? { userId: user.id } : {},
-					// WebSocket connection options
-					WebSocketPolyfill: undefined,
-					resyncInterval: 30000, // Resync every 30 seconds
-					maxBackoffTime: MAX_RECONNECT_DELAY,
-					disableBc: false // Enable broadcast channel for same-origin tabs
-				}
-			);
+			wsProvider = new WebsocketProvider(wsUrlFull, roomId, doc, {
+				connect: true,
+				params: user ? { userId: user.id } : {},
+				// WebSocket connection options
+				WebSocketPolyfill: undefined,
+				resyncInterval: 30000, // Resync every 30 seconds
+				maxBackoffTime: MAX_RECONNECT_DELAY,
+				disableBc: false // Enable broadcast channel for same-origin tabs
+			});
 
 			// Set up awareness with user info
 			if (user) {
@@ -399,13 +396,16 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 			});
 
 			// Connection close handler
-			wsProvider.on('connection-close', (event: CloseEvent | null, _provider: WebsocketProvider) => {
-				console.log('[YjsProvider] Connection closed:', event?.code, event?.reason);
+			wsProvider.on(
+				'connection-close',
+				(event: CloseEvent | null, _provider: WebsocketProvider) => {
+					console.log('[YjsProvider] Connection closed:', event?.code, event?.reason);
 
-				if (!isManualDisconnect && event?.code !== 1000) {
-					scheduleReconnect();
+					if (!isManualDisconnect && event?.code !== 1000) {
+						scheduleReconnect();
+					}
 				}
-			});
+			);
 
 			updateState({ status: 'connecting' });
 		} catch (err) {
@@ -523,9 +523,15 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 		doc,
 		yBlocks,
 		yMeta,
-		get wsProvider() { return wsProvider; },
-		get persistence() { return persistence; },
-		get state() { return state; },
+		get wsProvider() {
+			return wsProvider;
+		},
+		get persistence() {
+			return persistence;
+		},
+		get state() {
+			return state;
+		},
 		connect,
 		disconnect,
 		reconnect,
@@ -577,7 +583,7 @@ export function generateUserColor(): string {
 		'#60a5fa', // blue
 		'#a78bfa', // violet
 		'#f472b6', // pink
-		'#e879f9'  // fuchsia
+		'#e879f9' // fuchsia
 	];
 	return colors[Math.floor(Math.random() * colors.length)];
 }

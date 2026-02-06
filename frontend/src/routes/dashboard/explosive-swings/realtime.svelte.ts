@@ -234,7 +234,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	// WebSocket service instance
 	let ws: WebSocketService | null = null;
 	let unsubscribe: (() => void) | null = null;
-	
+
 	// ICT 7 Fix: Track sync interval to prevent memory leaks
 	let syncIntervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -559,7 +559,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	 */
 	function connect(): void {
 		if (!browser) return;
-		
+
 		// ICT 7 Fix: Prevent duplicate connections and memory leaks
 		if (state.isConnected || state.isReconnecting) {
 			console.warn('[realtime] Already connected or reconnecting, skipping connect()');
@@ -582,7 +582,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 			clearInterval(syncIntervalId);
 			syncIntervalId = null;
 		}
-		
+
 		// Set up connection state sync
 		syncIntervalId = setInterval(syncConnectionState, 1000);
 
@@ -612,7 +612,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 			unsubscribe();
 			unsubscribe = null;
 		}
-		
+
 		// ICT 7 Fix: Explicitly clear sync interval
 		if (syncIntervalId) {
 			clearInterval(syncIntervalId);

@@ -266,7 +266,9 @@
 
 	function handleMemberSaved(savedMember: Member, temporaryPassword?: string) {
 		if (temporaryPassword) {
-			toastStore.success(`Member ${savedMember.name} created! Temporary password: ${temporaryPassword}`);
+			toastStore.success(
+				`Member ${savedMember.name} created! Temporary password: ${temporaryPassword}`
+			);
 		} else {
 			toastStore.success(`Member ${savedMember.name} saved successfully`);
 		}
@@ -302,12 +304,17 @@
 
 	function getMemberActions(targetMember: Member) {
 		// Check if member is inactive (churned or never subscribed)
-		const isInactive = targetMember.status === 'churned' || targetMember.status === 'never_subscribed';
+		const isInactive =
+			targetMember.status === 'churned' || targetMember.status === 'never_subscribed';
 		return [
 			{ id: 'view', label: 'View Details', icon: IconExternalLink },
 			{ id: 'edit', label: 'Edit Member', icon: IconEdit },
 			{ id: 'email', label: 'Send Email', icon: IconMail },
-			{ id: isInactive ? 'activate' : 'suspend', label: isInactive ? 'Activate' : 'Suspend', icon: isInactive ? IconPlayerPlay : IconBan },
+			{
+				id: isInactive ? 'activate' : 'suspend',
+				label: isInactive ? 'Activate' : 'Suspend',
+				icon: isInactive ? IconPlayerPlay : IconBan
+			},
 			{
 				id: 'delete',
 				label: 'Delete Member',
@@ -418,7 +425,11 @@
 					Import
 				</button>
 				<div class="export-dropdown">
-					<button class="btn-secondary" onclick={() => handleExportAdvanced(exportFormat)} disabled={exporting}>
+					<button
+						class="btn-secondary"
+						onclick={() => handleExportAdvanced(exportFormat)}
+						disabled={exporting}
+					>
 						<IconDownload size={18} />
 						{exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}`}
 					</button>
@@ -586,7 +597,8 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					id="search-members" name="search-members"
+					id="search-members"
+					name="search-members"
 					type="text"
 					placeholder="Search members by name or email..."
 					bind:value={searchQuery}
@@ -853,7 +865,8 @@
 				<div class="form-group">
 					<label for="email-subject">Subject</label>
 					<input
-						id="email-subject" name="email-subject"
+						id="email-subject"
+						name="email-subject"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."
@@ -937,7 +950,8 @@
 						{/if}
 					</label>
 					<input
-						id="import-file" name="import-file"
+						id="import-file"
+						name="import-file"
 						type="file"
 						accept=".csv"
 						onchange={handleFileSelect}

@@ -392,9 +392,12 @@ describe('ImageBlock - File Upload Validation', () => {
 		}
 
 		// Wait for upload processing (500ms simulated delay + processing)
-		await waitFor(() => {
-			expect(onUpdate).toHaveBeenCalled();
-		}, { timeout: 2000 });
+		await waitFor(
+			() => {
+				expect(onUpdate).toHaveBeenCalled();
+			},
+			{ timeout: 2000 }
+		);
 	});
 });
 
@@ -607,7 +610,7 @@ describe('ImageBlock - Lightbox', () => {
 
 		// In edit mode, the image should not have button role
 		const buttons = screen.queryAllByRole('button');
-		const imgButton = buttons.find(btn => btn.tagName === 'IMG');
+		const imgButton = buttons.find((btn) => btn.tagName === 'IMG');
 		expect(imgButton).toBeUndefined();
 	});
 });
@@ -688,7 +691,10 @@ describe('ImageBlock - Alt Text Editing', () => {
 		});
 
 		const altInput = container.querySelector('[data-placeholder]');
-		expect(altInput).toHaveAttribute('data-placeholder', 'Describe this image for screen readers...');
+		expect(altInput).toHaveAttribute(
+			'data-placeholder',
+			'Describe this image for screen readers...'
+		);
 	});
 });
 

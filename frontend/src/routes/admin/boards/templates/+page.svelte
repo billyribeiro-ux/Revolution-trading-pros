@@ -288,7 +288,9 @@
 			<div class="flex-1 relative">
 				<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 				<input
-					id="page-searchquery" name="page-searchquery" type="text"
+					id="page-searchquery"
+					name="page-searchquery"
+					type="text"
 					placeholder="Search templates..."
 					bind:value={searchQuery}
 					class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"

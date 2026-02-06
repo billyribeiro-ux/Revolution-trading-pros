@@ -264,7 +264,9 @@
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
 										<input
-											id="page-settings-webhooks-enabled" name="page-settings-webhooks-enabled" type="checkbox"
+											id="page-settings-webhooks-enabled"
+											name="page-settings-webhooks-enabled"
+											type="checkbox"
 											bind:checked={settings.webhooks_enabled}
 											class="sr-only peer"
 										/>
@@ -286,17 +288,27 @@
 								{#each settings.default_stages as stage, index}
 									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
 										<input
-											id="page-stage-color" name="page-stage-color" type="color"
+											id="page-stage-color"
+											name="page-stage-color"
+											type="color"
 											bind:value={stage.color}
 											class="w-8 h-8 rounded cursor-pointer"
 										/>
 										<input
-											id="page-stage-title" name="page-stage-title" type="text"
+											id="page-stage-title"
+											name="page-stage-title"
+											type="text"
 											bind:value={stage.title}
 											class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
 										/>
 										<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-											<input id="page-stage-auto-complete" name="page-stage-auto-complete" type="checkbox" bind:checked={stage.auto_complete} class="rounded" />
+											<input
+												id="page-stage-auto-complete"
+												name="page-stage-auto-complete"
+												type="checkbox"
+												bind:checked={stage.auto_complete}
+												class="rounded"
+											/>
 											Auto-complete
 										</label>
 										<button
@@ -313,18 +325,28 @@
 								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
 							>
 								<input
-									id="page-newstage-color" name="page-newstage-color" type="color"
+									id="page-newstage-color"
+									name="page-newstage-color"
+									type="color"
 									bind:value={newStage.color}
 									class="w-8 h-8 rounded cursor-pointer"
 								/>
 								<input
-									id="page-newstage-title" name="page-newstage-title" type="text"
+									id="page-newstage-title"
+									name="page-newstage-title"
+									type="text"
 									bind:value={newStage.title}
 									placeholder="Stage name..."
 									class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
 								/>
 								<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-									<input id="page-newstage-auto-complete" name="page-newstage-auto-complete" type="checkbox" bind:checked={newStage.auto_complete} class="rounded" />
+									<input
+										id="page-newstage-auto-complete"
+										name="page-newstage-auto-complete"
+										type="checkbox"
+										bind:checked={newStage.auto_complete}
+										class="rounded"
+									/>
 									Auto-complete
 								</label>
 								<button
@@ -347,12 +369,16 @@
 								{#each settings.default_labels as label, index}
 									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
 										<input
-											id="page-label-color" name="page-label-color" type="color"
+											id="page-label-color"
+											name="page-label-color"
+											type="color"
 											bind:value={label.color}
 											class="w-8 h-8 rounded cursor-pointer"
 										/>
 										<input
-											id="page-label-title" name="page-label-title" type="text"
+											id="page-label-title"
+											name="page-label-title"
+											type="text"
 											bind:value={label.title}
 											class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
 										/>
@@ -376,12 +402,16 @@
 								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
 							>
 								<input
-									id="page-newlabel-color" name="page-newlabel-color" type="color"
+									id="page-newlabel-color"
+									name="page-newlabel-color"
+									type="color"
 									bind:value={newLabel.color}
 									class="w-8 h-8 rounded cursor-pointer"
 								/>
 								<input
-									id="page-newlabel-title" name="page-newlabel-title" type="text"
+									id="page-newlabel-title"
+									name="page-newlabel-title"
+									type="text"
 									bind:value={newLabel.title}
 									placeholder="Label name..."
 									class="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
@@ -411,7 +441,9 @@
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
 										<input
-											id="page-settings-time-tracking-enabled" name="page-settings-time-tracking-enabled" type="checkbox"
+											id="page-settings-time-tracking-enabled"
+											name="page-settings-time-tracking-enabled"
+											type="checkbox"
 											bind:checked={settings.time_tracking_enabled}
 											class="sr-only peer"
 										/>
@@ -430,7 +462,8 @@
 									</label>
 									<input
 										type="number"
-										id="default-hourly-rate" name="default-hourly-rate"
+										id="default-hourly-rate"
+										name="default-hourly-rate"
 										bind:value={settings.default_hourly_rate}
 										min="0"
 										step="0.01"
@@ -448,7 +481,8 @@
 										</label>
 										<input
 											type="number"
-											id="working-hours" name="working-hours"
+											id="working-hours"
+											name="working-hours"
 											bind:value={settings.working_hours_per_day}
 											min="1"
 											max="24"
@@ -464,7 +498,8 @@
 										</label>
 										<input
 											type="number"
-											id="working-days" name="working-days"
+											id="working-days"
+											name="working-days"
 											bind:value={settings.working_days_per_week}
 											min="1"
 											max="7"
@@ -512,7 +547,8 @@
 										</label>
 										<input
 											type="text"
-											id="bucket-name" name="bucket-name"
+											id="bucket-name"
+											name="bucket-name"
 											bind:value={storageConfig.bucket}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -527,7 +563,8 @@
 										</label>
 										<input
 											type="text"
-											id="region" name="region"
+											id="region"
+											name="region"
 											bind:value={storageConfig.region}
 											placeholder="us-east-1"
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -543,7 +580,8 @@
 										</label>
 										<input
 											type="text"
-											id="endpoint" name="endpoint"
+											id="endpoint"
+											name="endpoint"
 											bind:value={storageConfig.endpoint}
 											placeholder="https://..."
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -559,7 +597,9 @@
 										</label>
 										<input
 											type="password"
-											id="access-key" name="access-key" autocomplete="current-password"
+											id="access-key"
+											name="access-key"
+											autocomplete="current-password"
 											bind:value={storageConfig.access_key}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -574,7 +614,9 @@
 										</label>
 										<input
 											type="password"
-											id="secret-key" name="secret-key" autocomplete="current-password"
+											id="secret-key"
+											name="secret-key"
+											autocomplete="current-password"
 											bind:value={storageConfig.secret_key}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>

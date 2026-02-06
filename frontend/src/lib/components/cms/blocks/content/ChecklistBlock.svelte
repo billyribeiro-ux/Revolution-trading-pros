@@ -58,7 +58,9 @@
 	// Progress calculations
 	const totalItems = $derived(items.length);
 	const completedItems = $derived(items.filter((item) => item.checked).length);
-	const progressPercent = $derived(totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0);
+	const progressPercent = $derived(
+		totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+	);
 
 	// Generate unique IDs for ARIA
 	const listId = $derived(`checklist-${props.blockId}`);
@@ -347,7 +349,12 @@
 	{/if}
 
 	<!-- Checklist Items -->
-	<ul id={listId} class="checklist-items" role="list" aria-describedby={showProgress ? progressId : undefined}>
+	<ul
+		id={listId}
+		class="checklist-items"
+		role="list"
+		aria-describedby={showProgress ? progressId : undefined}
+	>
 		{#each items as item, index (item.id)}
 			<li
 				class="checklist-item"
@@ -411,7 +418,12 @@
 
 	<!-- Add Item Button -->
 	{#if props.isEditing}
-		<button type="button" class="add-item-btn" onclick={addItem} aria-label="Add new checklist item">
+		<button
+			type="button"
+			class="add-item-btn"
+			onclick={addItem}
+			aria-label="Add new checklist item"
+		>
 			<IconPlus size={16} aria-hidden="true" />
 			<span>Add item</span>
 		</button>

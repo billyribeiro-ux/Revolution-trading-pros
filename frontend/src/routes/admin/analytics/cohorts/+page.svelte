@@ -396,7 +396,8 @@
 					<label for="cohort-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label
 					>
 					<input
-						id="cohort-name" name="cohort-name"
+						id="cohort-name"
+						name="cohort-name"
 						type="text"
 						bind:value={newCohort.name}
 						placeholder="e.g., Weekly Signup Retention"
@@ -455,7 +456,8 @@
 								>Start Event</label
 							>
 							<input
-								id="cohort-start-event" name="cohort-start-event"
+								id="cohort-start-event"
+								name="cohort-start-event"
 								type="text"
 								bind:value={newCohort.start_event}
 								placeholder="e.g., signup"
@@ -467,7 +469,8 @@
 								>Return Event</label
 							>
 							<input
-								id="cohort-return-event" name="cohort-return-event"
+								id="cohort-return-event"
+								name="cohort-return-event"
 								type="text"
 								bind:value={newCohort.return_event}
 								placeholder="e.g., login"

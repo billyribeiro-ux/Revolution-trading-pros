@@ -2061,7 +2061,8 @@
 
 	/* Fullscreen safe areas */
 	.video-embed-container.fullscreen {
-		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0)
+			env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
 	}
 
 	.video-embed-container.fullscreen .custom-controls {

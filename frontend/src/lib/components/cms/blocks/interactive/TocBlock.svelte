@@ -239,23 +239,12 @@
 		</span>
 	</button>
 
-	<div
-		id="toc-list-{props.blockId}"
-		class="toc-content"
-		hidden={isCollapsed}
-	>
+	<div id="toc-list-{props.blockId}" class="toc-content" hidden={isCollapsed}>
 		{#if tocItems.length > 0}
 			<ul class="toc-list" role="list">
 				{#each tocItems as item (item.id)}
-					<li
-						class="toc-item toc-level-{item.level}"
-						class:active={activeHeading === item.id}
-					>
-						<button
-							type="button"
-							class="toc-link"
-							onclick={() => scrollToHeading(item.id)}
-						>
+					<li class="toc-item toc-level-{item.level}" class:active={activeHeading === item.id}>
+						<button type="button" class="toc-link" onclick={() => scrollToHeading(item.id)}>
 							{item.text}
 						</button>
 					</li>

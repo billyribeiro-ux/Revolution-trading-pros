@@ -576,7 +576,11 @@ describe('GroupBlock - Max Width Settings', () => {
 
 		const buttons = screen.getAllByRole('button', { pressed: expect.anything() });
 		const widthButtons = buttons.filter(
-			(btn) => btn.textContent === 'F' || btn.textContent === 'L' || btn.textContent === 'M' || btn.textContent === 'S'
+			(btn) =>
+				btn.textContent === 'F' ||
+				btn.textContent === 'L' ||
+				btn.textContent === 'M' ||
+				btn.textContent === 'S'
 		);
 		expect(widthButtons.length).toBeGreaterThanOrEqual(4);
 	});

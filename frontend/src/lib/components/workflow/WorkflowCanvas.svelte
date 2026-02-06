@@ -206,10 +206,7 @@
 				<circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /><path d="M11 8v6M8 11h6" />
 			</svg>
 		</button>
-		<button
-			onclick={() => workflowCanvas.setZoom(zoom - 0.1)}
-			aria-label="Zoom out"
-		>
+		<button onclick={() => workflowCanvas.setZoom(zoom - 0.1)} aria-label="Zoom out">
 			<svg
 				width="20"
 				height="20"

@@ -216,7 +216,9 @@
 		padding: 16px;
 		margin: var(--space-2);
 		box-shadow: var(--shadow-sm);
-		transition: box-shadow 0.3s ease, transform 0.3s ease;
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.3s ease;
 	}
 
 	.performance-summary:hover {
@@ -379,7 +381,6 @@
 		gap: 8px;
 		padding: 4px 0;
 	}
-
 
 	/* Skeleton for Ticker Pills */
 	.ticker-pill-skeleton {

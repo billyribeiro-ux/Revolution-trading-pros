@@ -526,7 +526,9 @@ describe('VideoBlock - URL Input', () => {
 		});
 
 		const input = screen.getByPlaceholderText(/youtube.com/i);
-		await fireEvent.input(input, { target: { value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' } });
+		await fireEvent.input(input, {
+			target: { value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
+		});
 
 		const submitButton = screen.getByRole('button', { name: /add video/i });
 		await fireEvent.click(submitButton);
@@ -920,13 +922,16 @@ describe('VideoBlock - Edit Mode Controls', () => {
 		});
 
 		// Wait for loading to complete
-		await waitFor(() => {
-			const clearButton = screen.queryByLabelText('Remove video');
-			if (clearButton) {
-				return true;
-			}
-			return false;
-		}, { timeout: 3000 }).catch(() => {});
+		await waitFor(
+			() => {
+				const clearButton = screen.queryByLabelText('Remove video');
+				if (clearButton) {
+					return true;
+				}
+				return false;
+			},
+			{ timeout: 3000 }
+		).catch(() => {});
 
 		const clearButton = screen.queryByLabelText('Remove video');
 		if (clearButton) {

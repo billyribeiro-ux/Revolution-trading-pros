@@ -184,7 +184,8 @@
 						<label for="first_name">First Name</label>
 						<input
 							type="text"
-							id="first_name" name="first_name"
+							id="first_name"
+							name="first_name"
 							bind:value={formData.first_name}
 							class="input"
 							placeholder="John"
@@ -195,7 +196,8 @@
 						<label for="last_name">Last Name</label>
 						<input
 							type="text"
-							id="last_name" name="last_name"
+							id="last_name"
+							name="last_name"
 							bind:value={formData.last_name}
 							class="input"
 							placeholder="Doe"
@@ -207,7 +209,9 @@
 					<label for="email">Email Address *</label>
 					<input
 						type="email"
-						id="email" name="email" autocomplete="email"
+						id="email"
+						name="email"
+						autocomplete="email"
 						bind:value={formData.email}
 						class="input"
 						required
@@ -225,7 +229,9 @@
 						<label for="password">New Password</label>
 						<input
 							type="password"
-							id="password" name="password" autocomplete="current-password"
+							id="password"
+							name="password"
+							autocomplete="current-password"
 							bind:value={formData.password}
 							class="input"
 							placeholder="••••••••"
@@ -236,7 +242,9 @@
 						<label for="password_confirmation">Confirm Password</label>
 						<input
 							type="password"
-							id="password_confirmation" name="password_confirmation" autocomplete="new-password"
+							id="password_confirmation"
+							name="password_confirmation"
+							autocomplete="new-password"
 							bind:value={formData.password_confirmation}
 							class="input"
 							placeholder="••••••••"
@@ -251,7 +259,9 @@
 				<div class="roles-grid">
 					<label class="role-checkbox">
 						<input
-							id="page-checkbox" name="page-checkbox" type="checkbox"
+							id="page-checkbox"
+							name="page-checkbox"
+							type="checkbox"
 							checked={formData.roles.includes('admin')}
 							onchange={() => toggleRole('admin')}
 						/>
@@ -268,7 +278,9 @@
 
 					<label class="role-checkbox">
 						<input
-							id="page-checkbox" name="page-checkbox" type="checkbox"
+							id="page-checkbox"
+							name="page-checkbox"
+							type="checkbox"
 							checked={formData.roles.includes('super-admin')}
 							onchange={() => toggleRole('super-admin')}
 						/>

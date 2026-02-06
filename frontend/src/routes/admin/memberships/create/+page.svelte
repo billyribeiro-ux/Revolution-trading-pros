@@ -238,7 +238,8 @@
 				<div class="form-group">
 					<label for="name">Plan Name *</label>
 					<input
-						id="name" name="name"
+						id="name"
+						name="name"
 						type="text"
 						bind:value={membership.name}
 						placeholder="e.g., Pro Membership"
@@ -248,7 +249,8 @@
 				<div class="form-group">
 					<label for="slug">URL Slug</label>
 					<input
-						id="slug" name="slug"
+						id="slug"
+						name="slug"
 						type="text"
 						bind:value={membership.slug}
 						oninput={handleSlugInput}
@@ -273,7 +275,8 @@
 						<div class="price-input">
 							<span class="currency">$</span>
 							<input
-								id="price" name="price"
+								id="price"
+								name="price"
 								type="number"
 								bind:value={membership.price}
 								placeholder="29.99"
@@ -306,13 +309,17 @@
 						<div class="feature-form">
 							<div class="feature-inputs">
 								<input
-									id="page-feature-feature-name" name="page-feature-feature-name" type="text"
+									id="page-feature-feature-name"
+									name="page-feature-feature-name"
+									type="text"
 									bind:value={feature.feature_name}
 									placeholder="Feature name"
 									class="feature-name-input"
 								/>
 								<input
-									id="page-feature-description" name="page-feature-description" type="text"
+									id="page-feature-description"
+									name="page-feature-description"
+									type="text"
 									bind:value={feature.description}
 									placeholder="Description (optional)"
 									class="feature-desc-input"
@@ -333,7 +340,12 @@
 
 				<div class="form-group">
 					<label class="checkbox-label">
-						<input id="page-membership-is-active" name="page-membership-is-active" type="checkbox" bind:checked={membership.is_active} />
+						<input
+							id="page-membership-is-active"
+							name="page-membership-is-active"
+							type="checkbox"
+							bind:checked={membership.is_active}
+						/>
 						<span>Active (visible to customers)</span>
 					</label>
 				</div>

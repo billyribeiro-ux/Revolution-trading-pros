@@ -251,7 +251,9 @@ const blockSettingsSchema = z.object({
 	textTransform: z.enum(['none', 'uppercase', 'lowercase', 'capitalize']).optional(),
 
 	// Heading specific
-	level: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6)]).optional(),
+	level: z
+		.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6)])
+		.optional(),
 	anchor: z.string().max(MAX_LENGTHS.ANCHOR).optional(),
 
 	// Spacing - shorthand
@@ -842,10 +844,7 @@ export const blockSchema = z.object({
 // Type-Specific Block Schemas with Content Validation
 // =============================================================================
 
-const createTypeSpecificBlockSchema = <T extends z.ZodType>(
-	type: BlockType,
-	contentSchema: T
-) => {
+const createTypeSpecificBlockSchema = <T extends z.ZodType>(type: BlockType, contentSchema: T) => {
 	return z.object({
 		id: blockIdSchema,
 		type: z.literal(type),
@@ -1014,10 +1013,7 @@ export function validateBlocks(blocks: unknown[]): ValidationResults {
 	}
 
 	const results = blocks.map((block) => validateBlock(block));
-	const totalErrors = results.reduce(
-		(sum, r) => sum + (r.errors?.length || 0),
-		0
-	);
+	const totalErrors = results.reduce((sum, r) => sum + (r.errors?.length || 0), 0);
 
 	return {
 		success: results.every((r) => r.success),

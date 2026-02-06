@@ -108,7 +108,6 @@
 			console.error(e);
 		}
 	}
-
 </script>
 
 <svelte:head>
@@ -124,7 +123,9 @@
 		<div class="header-actions">
 			<div class="search-box">
 				<input
-					id="page-searchquery" name="page-searchquery" type="text"
+					id="page-searchquery"
+					name="page-searchquery"
+					type="text"
 					placeholder="Search templates..."
 					bind:value={searchQuery}
 					class="search-input"

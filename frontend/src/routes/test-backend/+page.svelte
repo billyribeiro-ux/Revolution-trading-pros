@@ -212,7 +212,10 @@
 				<form class="newsletter-form" onsubmit={handleNewsletterSubmit}>
 					<div class="form-group">
 						<input
-							id="page-newsletteremail" autocomplete="email" name="page-newsletteremail" type="email"
+							id="page-newsletteremail"
+							autocomplete="email"
+							name="page-newsletteremail"
+							type="email"
 							bind:value={newsletterEmail}
 							placeholder="Enter your email"
 							required
@@ -255,7 +258,8 @@
 								Name
 							</label>
 							<input
-								id="name" name="name"
+								id="name"
+								name="name"
 								type="text"
 								bind:value={formData.name}
 								placeholder="Your name"
@@ -275,7 +279,9 @@
 								Email
 							</label>
 							<input
-								id="email" name="email" autocomplete="email"
+								id="email"
+								name="email"
+								autocomplete="email"
 								type="email"
 								bind:value={formData.email}
 								placeholder="your@email.com"
@@ -394,7 +400,10 @@
 
 			<form class="popup-form" onsubmit={handlePopupSubmit}>
 				<input
-					id="page-popupemail" autocomplete="email" name="page-popupemail" type="email"
+					id="page-popupemail"
+					autocomplete="email"
+					name="page-popupemail"
+					type="email"
 					bind:value={popupEmail}
 					placeholder="Enter your email"
 					required

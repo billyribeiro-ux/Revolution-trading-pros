@@ -28,7 +28,12 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { weeklyVideoApi, tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
+	import {
+		weeklyVideoApi,
+		tradePlanApi,
+		type Bias,
+		type TradePlanEntry
+	} from '$lib/api/room-content';
 
 	// ═══════════════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS
@@ -202,9 +207,7 @@
 	}
 
 	function updateRow(id: string, field: keyof TradePlanRow, value: string) {
-		tradePlanRows = tradePlanRows.map((row) =>
-			row.id === id ? { ...row, [field]: value } : row
-		);
+		tradePlanRows = tradePlanRows.map((row) => (row.id === id ? { ...row, [field]: value } : row));
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════════════
@@ -396,21 +399,19 @@
 		onkeydown={handleKeydown}
 	>
 		<!-- Modal Container -->
-		<div
-			class="modal-container"
-			bind:this={modalRef}
-			tabindex="-1"
-		>
+		<div class="modal-container" bind:this={modalRef} tabindex="-1">
 			<!-- Modal Header -->
 			<header class="modal-header">
 				<h2 id="publish-modal-title">Publish Weekly Breakdown</h2>
-				<button
-					type="button"
-					class="close-btn"
-					onclick={handleClose}
-					aria-label="Close modal"
-				>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+				<button type="button" class="close-btn" onclick={handleClose} aria-label="Close modal">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="24"
+						height="24"
+					>
 						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
@@ -420,7 +421,9 @@
 			{#if errorMessage}
 				<div class="message message--error" role="alert">
 					<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-						<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+						<path
+							d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+						/>
 					</svg>
 					{errorMessage}
 				</div>
@@ -429,7 +432,9 @@
 			{#if successMessage}
 				<div class="message message--success" role="status">
 					<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-						<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+						<path
+							d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+						/>
 					</svg>
 					{successMessage}
 				</div>
@@ -455,12 +460,7 @@
 						<!-- Week Selection -->
 						<div class="form-group">
 							<label for="week_of">Week Of</label>
-							<input
-								type="date"
-								id="week_of"
-								bind:value={videoForm.week_of}
-								required
-							/>
+							<input type="date" id="week_of" bind:value={videoForm.week_of} required />
 						</div>
 
 						<!-- Video URL -->
@@ -535,7 +535,14 @@
 				<section class="panel panel--trades">
 					<div class="panel-header">
 						<h3>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="20"
+								height="20"
+							>
 								<rect x="3" y="3" width="18" height="18" rx="2" />
 								<path d="M3 9h18M9 21V9" />
 							</svg>
@@ -551,7 +558,14 @@
 								{#if isLoadingLastWeek}
 									<span class="spinner-small"></span>
 								{:else}
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+									<svg
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										width="16"
+										height="16"
+									>
 										<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
 										<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
 									</svg>
@@ -589,7 +603,8 @@
 												<input
 													type="text"
 													value={row.ticker}
-													oninput={(e) => updateRow(row.id, 'ticker', e.currentTarget.value.toUpperCase())}
+													oninput={(e) =>
+														updateRow(row.id, 'ticker', e.currentTarget.value.toUpperCase())}
 													placeholder="NVDA"
 													maxlength="5"
 													class="cell-input cell-input--ticker"
@@ -687,7 +702,15 @@
 													onclick={() => toggleRowNotes(row.id)}
 													aria-label="Toggle notes"
 												>
-													<svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+													<svg
+														class="chevron-icon"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="2.5"
+														width="16"
+														height="16"
+													>
 														<path d="M19 9l-7 7-7-7" />
 													</svg>
 												</button>
@@ -700,7 +723,14 @@
 													disabled={tradePlanRows.length <= 1}
 													aria-label="Remove row"
 												>
-													<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+													<svg
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="2"
+														width="16"
+														height="16"
+													>
 														<path d="M18 6L6 18M6 6l12 12" />
 													</svg>
 												</button>
@@ -729,7 +759,14 @@
 
 						<!-- Add Row Button -->
 						<button type="button" class="add-row-btn" onclick={addRow}>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="18"
+								height="18"
+							>
 								<path d="M12 5v14M5 12h14" />
 							</svg>
 							Add Entry
@@ -749,9 +786,7 @@
 					</span>
 				</div>
 				<div class="footer-actions">
-					<button type="button" class="btn btn--secondary" onclick={handleClose}>
-						Cancel
-					</button>
+					<button type="button" class="btn btn--secondary" onclick={handleClose}> Cancel </button>
 					<button
 						type="button"
 						class="btn btn--primary"
@@ -762,7 +797,14 @@
 							<span class="spinner-small"></span>
 							Publishing...
 						{:else}
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="18"
+								height="18"
+							>
 								<path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
 							</svg>
 							Publish Weekly Breakdown
@@ -795,8 +837,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════════
@@ -841,7 +887,11 @@
 	}
 
 	.modal-header h2 {
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-family:
+			'Montserrat',
+			-apple-system,
+			BlinkMacSystemFont,
+			sans-serif;
 		font-size: 20px;
 		font-weight: 700;
 		color: #fff;
@@ -1449,7 +1499,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════════

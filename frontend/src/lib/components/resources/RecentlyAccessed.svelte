@@ -118,7 +118,9 @@
 			{/each}
 		</div>
 	{:else if error}
-		<div class="rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-900/20">
+		<div
+			class="rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-900/20"
+		>
 			<p class="text-sm text-red-600 dark:text-red-400">{error}</p>
 			<button
 				class="mt-2 text-sm text-red-700 underline hover:no-underline dark:text-red-300"
@@ -128,22 +130,40 @@
 			</button>
 		</div>
 	{:else if items.length === 0}
-		<div class="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-800">
-			<svg class="mx-auto h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+		<div
+			class="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-800"
+		>
+			<svg
+				class="mx-auto h-10 w-10 text-gray-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+				/>
 			</svg>
 			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No recently accessed resources</p>
 			<p class="text-xs text-gray-400 dark:text-gray-500">Resources you view will appear here</p>
 		</div>
 	{:else}
-		<div class="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-gray-600">
+		<div
+			class="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-gray-600"
+		>
 			{#each items as item (item.id)}
 				<button
-					class="group w-40 flex-shrink-0 text-left transition-transform hover:scale-[1.02] {compact ? '' : 'w-48'}"
+					class="group w-40 flex-shrink-0 text-left transition-transform hover:scale-[1.02] {compact
+						? ''
+						: 'w-48'}"
 					onclick={() => handleItemClick(item)}
 				>
 					<!-- Thumbnail -->
-					<div class="relative aspect-video overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
+					<div
+						class="relative aspect-video overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700"
+					>
 						{#if item.resource_thumbnail}
 							<img
 								src={item.resource_thumbnail}
@@ -152,22 +172,38 @@
 								loading="lazy"
 							/>
 						{:else}
-							<div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
-								<svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={getResourceIcon(item.resource_type)} />
+							<div
+								class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
+							>
+								<svg
+									class="h-8 w-8 text-gray-400"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d={getResourceIcon(item.resource_type)}
+									/>
 								</svg>
 							</div>
 						{/if}
 
 						<!-- Type badge -->
-						<span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium capitalize text-white">
+						<span
+							class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium capitalize text-white"
+						>
 							{item.resource_type}
 						</span>
 					</div>
 
 					<!-- Title and time -->
 					<div class="mt-2">
-						<p class="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+						<p
+							class="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+						>
 							{item.resource_title}
 						</p>
 						<p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">

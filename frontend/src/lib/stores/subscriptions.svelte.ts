@@ -220,11 +220,7 @@ export const subscriptionStore = {
 	},
 
 	// Update subscription status - Connected to enterprise API
-	async updateStatus(
-		subscriptionId: string,
-		newStatus: SubscriptionStatus,
-		reason?: string
-	) {
+	async updateStatus(subscriptionId: string, newStatus: SubscriptionStatus, reason?: string) {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
@@ -242,7 +238,11 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to update subscription', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to update subscription',
+				loading: false
+			};
 		}
 	},
 
@@ -262,7 +262,11 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to pause subscription', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to pause subscription',
+				loading: false
+			};
 		}
 	},
 
@@ -282,16 +286,16 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to resume subscription', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to resume subscription',
+				loading: false
+			};
 		}
 	},
 
 	// Cancel subscription - Connected to enterprise API
-	async cancelSubscription(
-		subscriptionId: string,
-		reason: string,
-		immediate: boolean = false
-	) {
+	async cancelSubscription(subscriptionId: string, reason: string, immediate: boolean = false) {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
@@ -306,7 +310,11 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to cancel subscription', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to cancel subscription',
+				loading: false
+			};
 		}
 	},
 
@@ -352,15 +360,16 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to retry payment', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to retry payment',
+				loading: false
+			};
 		}
 	},
 
 	// Update payment method - Connected to enterprise API
-	async updatePaymentMethod(
-		subscriptionId: string,
-		paymentMethod: Subscription['paymentMethod']
-	) {
+	async updatePaymentMethod(subscriptionId: string, paymentMethod: Subscription['paymentMethod']) {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
@@ -375,7 +384,11 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to update payment method', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to update payment method',
+				loading: false
+			};
 		}
 	},
 
@@ -397,7 +410,11 @@ export const subscriptionStore = {
 				loading: false
 			};
 		} catch (error) {
-			subscriptionState = { ...subscriptionState, error: 'Failed to process renewal', loading: false };
+			subscriptionState = {
+				...subscriptionState,
+				error: 'Failed to process renewal',
+				loading: false
+			};
 		}
 	},
 

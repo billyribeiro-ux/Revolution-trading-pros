@@ -152,7 +152,6 @@
 		isMobileMenuOpen = false;
 	}
 
-
 	// Navigation items - RTP Product Structure
 	// Icons use RTP naming convention (rtp-icon-*)
 	const mainLinks: NavLink[] = [

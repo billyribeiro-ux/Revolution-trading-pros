@@ -25,8 +25,13 @@ export const prerender = false; // Dynamic watchlist content - cannot prerender
 export const load: ServerLoad = async ({ fetch, locals }) => {
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = (locals as { accessToken?: string }).accessToken ?? undefined;
-	
-	const watchlist = await getLatestWatchlist('small-account-mentorship', fetch, undefined, accessToken);
+
+	const watchlist = await getLatestWatchlist(
+		'small-account-mentorship',
+		fetch,
+		undefined,
+		accessToken
+	);
 
 	return {
 		watchlist

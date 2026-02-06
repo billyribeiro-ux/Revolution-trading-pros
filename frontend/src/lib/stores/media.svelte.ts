@@ -439,18 +439,38 @@ export const uploadStore = {
 // Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export function getCurrentFiles() { return mediaState.files; }
-export function getCurrentFolders() { return mediaState.folders; }
-export function getSelectedFilesSet() { return mediaState.selectedFiles; }
-export function getSelectedCount() { return mediaState.selectedFiles.size; }
-export function getHasSelection() { return mediaState.selectedFiles.size > 0; }
-export function getCurrentViewMode() { return mediaState.viewMode; }
-export function getIsMediaLoading() { return mediaState.isLoading; }
+export function getCurrentFiles() {
+	return mediaState.files;
+}
+export function getCurrentFolders() {
+	return mediaState.folders;
+}
+export function getSelectedFilesSet() {
+	return mediaState.selectedFiles;
+}
+export function getSelectedCount() {
+	return mediaState.selectedFiles.size;
+}
+export function getHasSelection() {
+	return mediaState.selectedFiles.size > 0;
+}
+export function getCurrentViewMode() {
+	return mediaState.viewMode;
+}
+export function getIsMediaLoading() {
+	return mediaState.isLoading;
+}
 
 // Upload getters
-export function getActiveUploads() { return Array.from(uploadState.uploads.values()); }
-export function getUploadCount() { return uploadState.uploads.size; }
-export function getIsCurrentlyUploading() { return uploadState.isUploading; }
+export function getActiveUploads() {
+	return Array.from(uploadState.uploads.values());
+}
+export function getUploadCount() {
+	return uploadState.uploads.size;
+}
+export function getIsCurrentlyUploading() {
+	return uploadState.isUploading;
+}
 export function getUploadProgress() {
 	const uploads = Array.from(uploadState.uploads.values());
 	if (uploads.length === 0) return 0;

@@ -63,12 +63,14 @@
 	let wasSanitized = $derived(rawHtml !== safeHtml && rawHtml.length > 0);
 
 	// Height values mapping
-	let editorHeightValue = $derived({
-		small: '150px',
-		medium: '250px',
-		large: '400px',
-		auto: 'auto'
-	}[editorHeight]);
+	let editorHeightValue = $derived(
+		{
+			small: '150px',
+			medium: '250px',
+			large: '400px',
+			auto: 'auto'
+		}[editorHeight]
+	);
 
 	// =========================================================================
 	// Handlers
@@ -114,12 +116,7 @@
 	}
 </script>
 
-<div
-	class="html-block"
-	class:expanded={isExpanded}
-	role="region"
-	aria-label="Custom HTML block"
->
+<div class="html-block" class:expanded={isExpanded} role="region" aria-label="Custom HTML block">
 	{#if props.isEditing}
 		<!-- Edit Mode Header -->
 		<header class="html-header">
@@ -186,8 +183,8 @@
 			<div class="xss-warning" role="alert">
 				<IconAlertTriangle size={16} aria-hidden="true" />
 				<span>
-					<strong>Security Notice:</strong> HTML is sanitized to prevent XSS attacks.
-					Some tags and attributes may be removed.
+					<strong>Security Notice:</strong> HTML is sanitized to prevent XSS attacks. Some tags and attributes
+					may be removed.
 				</span>
 			</div>
 		{/if}
@@ -197,9 +194,7 @@
 			<!-- Code Editor -->
 			{#if viewMode === 'edit' || viewMode === 'split'}
 				<div class="editor-pane">
-					<label class="sr-only" for="html-editor-{props.blockId}">
-						HTML Code Editor
-					</label>
+					<label class="sr-only" for="html-editor-{props.blockId}"> HTML Code Editor </label>
 					<!-- svelte-ignore a11y_autocomplete_valid -->
 					<textarea
 						id="html-editor-{props.blockId}"
@@ -240,10 +235,7 @@ Example:
 			{#if viewMode === 'preview' || viewMode === 'split'}
 				<div class="preview-pane">
 					<div class="preview-label">Preview</div>
-					<div
-						class="html-preview"
-						style:min-height={editorHeightValue}
-					>
+					<div class="html-preview" style:min-height={editorHeightValue}>
 						{#if safeHtml}
 							{@html safeHtml}
 						{:else}
@@ -264,7 +256,10 @@ Example:
 					<span>Editor Height:</span>
 					<select
 						value={editorHeight}
-						onchange={(e) => updateSettings({ htmlEditorHeight: (e.target as HTMLSelectElement).value as EditorHeight })}
+						onchange={(e) =>
+							updateSettings({
+								htmlEditorHeight: (e.target as HTMLSelectElement).value as EditorHeight
+							})}
 					>
 						<option value="small">Small (150px)</option>
 						<option value="medium">Medium (250px)</option>
@@ -277,7 +272,8 @@ Example:
 					<input
 						type="checkbox"
 						checked={showWarning}
-						onchange={(e) => updateSettings({ htmlShowWarning: (e.target as HTMLInputElement).checked })}
+						onchange={(e) =>
+							updateSettings({ htmlShowWarning: (e.target as HTMLInputElement).checked })}
 					/>
 					<span>Show security warning</span>
 				</label>
@@ -285,11 +281,7 @@ Example:
 		{/if}
 	{:else}
 		<!-- View Mode: Render Sanitized HTML -->
-		<div
-			class="html-output"
-			role="region"
-			aria-label="Custom HTML content"
-		>
+		<div class="html-output" role="region" aria-label="Custom HTML content">
 			{#if safeHtml}
 				{@html safeHtml}
 			{/if}

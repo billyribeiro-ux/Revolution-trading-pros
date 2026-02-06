@@ -231,7 +231,8 @@
 					<div class="form-group">
 						<label for="trader">Trader Name <span class="required">*</span></label>
 						<input
-							id="trader" name="trader"
+							id="trader"
+							name="trader"
 							type="text"
 							bind:value={trader}
 							placeholder="e.g., TG Watkins"
@@ -295,7 +296,8 @@
 					<div class="form-group full-width">
 						<label for="videoUrl">Video URL <span class="required">*</span></label>
 						<input
-							id="videoUrl" name="videoUrl"
+							id="videoUrl"
+							name="videoUrl"
 							type="url"
 							bind:value={videoUrl}
 							placeholder="https://cloud-streaming.s3.amazonaws.com/..."
@@ -307,7 +309,8 @@
 					<div class="form-group full-width">
 						<label for="posterUrl">Poster Image URL</label>
 						<input
-							id="posterUrl" name="posterUrl"
+							id="posterUrl"
+							name="posterUrl"
 							type="url"
 							bind:value={posterUrl}
 							placeholder="https://cdn.simplertrading.com/..."
@@ -337,7 +340,8 @@
 							>Default Spreadsheet URL <span class="required">*</span></label
 						>
 						<input
-							id="spreadsheetUrl" name="spreadsheetUrl"
+							id="spreadsheetUrl"
+							name="spreadsheetUrl"
 							type="url"
 							bind:value={spreadsheetUrl}
 							placeholder="https://docs.google.com/spreadsheets/..."
@@ -384,14 +388,21 @@
 					<div class="date-adder-row">
 						<div class="form-group">
 							<label for="newDate">Date Label</label>
-							<input type="text" id="newDate" name="newDate" bind:value={newDate} placeholder="e.g., 1/3/2026" />
+							<input
+								type="text"
+								id="newDate"
+								name="newDate"
+								bind:value={newDate}
+								placeholder="e.g., 1/3/2026"
+							/>
 						</div>
 
 						<div class="form-group flex-grow">
 							<label for="newDateSpreadsheet">Spreadsheet URL</label>
 							<input
 								type="url"
-								id="newDateSpreadsheet" name="newDateSpreadsheet"
+								id="newDateSpreadsheet"
+								name="newDateSpreadsheet"
 								bind:value={newDateSpreadsheet}
 								placeholder="https://docs.google.com/..."
 							/>

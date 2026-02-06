@@ -145,7 +145,9 @@
 	// API Functions
 	async function loadPendingSchedules() {
 		try {
-			const response = await fetch(`/api/cms/scheduling/schedules?content_id=${contentId}&status=pending`);
+			const response = await fetch(
+				`/api/cms/scheduling/schedules?content_id=${contentId}&status=pending`
+			);
 			if (response.ok) {
 				const data = await response.json();
 				pendingSchedules = data.schedules || [];
@@ -185,7 +187,9 @@
 
 	async function loadHistory() {
 		try {
-			const response = await fetch(`/api/cms/scheduling/schedules/history?content_id=${contentId}&limit=20`);
+			const response = await fetch(
+				`/api/cms/scheduling/schedules/history?content_id=${contentId}&limit=20`
+			);
 			if (response.ok) {
 				const data = await response.json();
 				scheduleHistory = data.history || [];
@@ -491,7 +495,12 @@
 				>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" />
-						<path d="M8 4.5V8L10.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+						<path
+							d="M8 4.5V8L10.5 10"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+						/>
 					</svg>
 					Schedule
 				</button>
@@ -513,7 +522,15 @@
 					onclick={() => switchTab('calendar')}
 				>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-						<rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" />
+						<rect
+							x="2"
+							y="3"
+							width="12"
+							height="11"
+							rx="2"
+							stroke="currentColor"
+							stroke-width="1.5"
+						/>
 						<path d="M2 6.5H14" stroke="currentColor" stroke-width="1.5" />
 						<path d="M5 1.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
 						<path d="M11 1.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -526,12 +543,13 @@
 					onclick={() => switchTab('history')}
 				>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+						<path d="M8 14A6 6 0 108 2a6 6 0 000 12z" stroke="currentColor" stroke-width="1.5" />
 						<path
-							d="M8 14A6 6 0 108 2a6 6 0 000 12z"
+							d="M3.5 8H2M8 3.5V2"
 							stroke="currentColor"
 							stroke-width="1.5"
+							stroke-linecap="round"
 						/>
-						<path d="M3.5 8H2M8 3.5V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
 					</svg>
 					History
 				</button>
@@ -652,7 +670,9 @@
 													{schedule.action}
 												</span>
 												<span class="schedule-time">{formatDateTime(schedule.scheduled_at)}</span>
-												<span class="schedule-relative">{formatRelativeTime(schedule.scheduled_at)}</span>
+												<span class="schedule-relative"
+													>{formatRelativeTime(schedule.scheduled_at)}</span
+												>
 											</div>
 											{#if schedule.notes}
 												<p class="schedule-notes">{schedule.notes}</p>
@@ -677,7 +697,10 @@
 					<div class="releases-section" transition:fade>
 						<div class="releases-header">
 							<h3>Release Bundles</h3>
-							<button class="btn-secondary" onclick={() => (showCreateRelease = !showCreateRelease)}>
+							<button
+								class="btn-secondary"
+								onclick={() => (showCreateRelease = !showCreateRelease)}
+							>
 								{showCreateRelease ? 'Cancel' : '+ New Release'}
 							</button>
 						</div>
@@ -760,7 +783,12 @@
 						<div class="calendar-header">
 							<button class="calendar-nav" onclick={prevMonth} aria-label="Previous month">
 								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-									<path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+									<path
+										d="M10 12L6 8L10 4"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+									/>
 								</svg>
 							</button>
 							<h3>
@@ -768,7 +796,12 @@
 							</h3>
 							<button class="calendar-nav" onclick={nextMonth} aria-label="Next month">
 								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-									<path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+									<path
+										d="M6 4L10 8L6 12"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+									/>
 								</svg>
 							</button>
 						</div>
@@ -839,7 +872,12 @@
 										<div class="history-icon">
 											<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 												<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
-												<path d="M8 4.5V8L10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+												<path
+													d="M8 4.5V8L10 10"
+													stroke="currentColor"
+													stroke-width="1.5"
+													stroke-linecap="round"
+												/>
 											</svg>
 										</div>
 										<div class="history-content">

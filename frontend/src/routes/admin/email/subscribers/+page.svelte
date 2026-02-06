@@ -319,7 +319,9 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="page-searchquery" name="page-searchquery" type="text"
+				id="page-searchquery"
+				name="page-searchquery"
+				type="text"
 				placeholder="Search by email or name..."
 				bind:value={searchQuery}
 				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
@@ -374,7 +376,9 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								id="page-checkbox" name="page-checkbox" type="checkbox"
+								id="page-checkbox"
+								name="page-checkbox"
+								type="checkbox"
 								checked={selectedSubscribers.size === subscribers.length}
 								onchange={toggleAllSubscribers}
 							/>
@@ -393,7 +397,9 @@
 						<tr>
 							<td class="checkbox-col">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedSubscribers.has(subscriber.id)}
 									onchange={() => toggleSubscriber(subscriber.id)}
 								/>
@@ -527,7 +533,9 @@
 				<div class="form-group">
 					<label for="email">Email Address *</label>
 					<input
-						id="email" name="email" autocomplete="email"
+						id="email"
+						name="email"
+						autocomplete="email"
 						type="email"
 						bind:value={newSubscriber.email}
 						placeholder="subscriber@example.com"
@@ -537,18 +545,29 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="first_name">First Name</label>
-						<input id="first_name" name="first_name" type="text" bind:value={newSubscriber.first_name} />
+						<input
+							id="first_name"
+							name="first_name"
+							type="text"
+							bind:value={newSubscriber.first_name}
+						/>
 					</div>
 					<div class="form-group">
 						<label for="last_name">Last Name</label>
-						<input id="last_name" name="last_name" type="text" bind:value={newSubscriber.last_name} />
+						<input
+							id="last_name"
+							name="last_name"
+							type="text"
+							bind:value={newSubscriber.last_name}
+						/>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label for="tags">Tags (comma-separated)</label>
 					<input
-						id="tags" name="tags"
+						id="tags"
+						name="tags"
 						type="text"
 						bind:value={newSubscriber.tags}
 						placeholder="newsletter, vip"
@@ -566,6 +585,29 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Subscriber"
+	message="Are you sure you want to delete this subscriber? This cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSubscriber}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Subscribers"
+	message={`Delete ${selectedSubscribers.size} selected subscribers? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	.subscribers-page {
@@ -1087,23 +1129,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Subscriber"
-	message="Are you sure you want to delete this subscriber? This cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteSubscriber}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Subscribers"
-	message={`Delete ${selectedSubscribers.size} selected subscribers? This cannot be undone.`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

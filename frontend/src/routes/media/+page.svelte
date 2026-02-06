@@ -146,7 +146,9 @@
 					<div class="search-box">
 						<IconSearch size={20} class="search-icon" />
 						<input
-							id="page-searchquery" name="page-searchquery" type="text"
+							id="page-searchquery"
+							name="page-searchquery"
+							type="text"
 							bind:value={searchQuery}
 							oninput={(e: Event) =>
 								mediaStore.setSearchQuery((e.currentTarget as HTMLInputElement).value)}
@@ -278,7 +280,9 @@
 									>
 										<td>
 											<input
-												id="page-checkbox" name="page-checkbox" type="checkbox"
+												id="page-checkbox"
+												name="page-checkbox"
+												type="checkbox"
 												checked={mediaStore.selectedFiles.has(file.id)}
 												onchange={() => mediaStore.toggleFileSelection(file.id)}
 											/>
@@ -346,6 +350,32 @@
 		</main>
 	</div>
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Files"
+	message={`Delete ${selectedCount} file(s)?`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => {
+		showDeleteModal = false;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteErrorModal}
+	title="Delete Failed"
+	message="Failed to delete files. Some files may be in use."
+	confirmText="OK"
+	variant="warning"
+	onConfirm={() => {
+		showDeleteErrorModal = false;
+	}}
+	onCancel={() => {
+		showDeleteErrorModal = false;
+	}}
+/>
 
 <style lang="postcss">
 	@reference "../../app.css";
@@ -558,23 +588,3 @@
 		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Files"
-	message={`Delete ${selectedCount} file(s)?`}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => { showDeleteModal = false; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteErrorModal}
-	title="Delete Failed"
-	message="Failed to delete files. Some files may be in use."
-	confirmText="OK"
-	variant="warning"
-	onConfirm={() => { showDeleteErrorModal = false; }}
-	onCancel={() => { showDeleteErrorModal = false; }}
-/>

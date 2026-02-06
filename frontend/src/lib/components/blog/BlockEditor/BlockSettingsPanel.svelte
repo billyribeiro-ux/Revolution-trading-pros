@@ -17,7 +17,7 @@
 	import { onMount } from 'svelte';
 	import type { Block, BlockSettings } from './types';
 	import { API_BASE_URL } from '$lib/api/config';
-  import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
 		block: Block;
@@ -1299,7 +1299,10 @@
 											placeholder="default"
 											value={block.settings.datasourceDimension || 'default'}
 											onchange={(e: Event) =>
-												updateSetting('datasourceDimension', (e.currentTarget as HTMLInputElement).value)}
+												updateSetting(
+													'datasourceDimension',
+													(e.currentTarget as HTMLInputElement).value
+												)}
 										/>
 									</label>
 									<p class="help-text">Use 'en', 'de', 'fr', etc. for localized options</p>
@@ -1311,7 +1314,10 @@
 											type="checkbox"
 											checked={block.settings.datasourceIncludeEmpty !== false}
 											onchange={(e: Event) =>
-												updateSetting('datasourceIncludeEmpty', (e.currentTarget as HTMLInputElement).checked)}
+												updateSetting(
+													'datasourceIncludeEmpty',
+													(e.currentTarget as HTMLInputElement).checked
+												)}
 										/>
 										<span>Include empty "Select..." option</span>
 									</label>
@@ -1328,7 +1334,10 @@
 										placeholder="Option 1|value1&#10;Option 2|value2&#10;Option 3|value3"
 										value={block.settings.staticOptions || ''}
 										onchange={(e: Event) =>
-											updateSetting('staticOptions', (e.currentTarget as HTMLTextAreaElement).value)}
+											updateSetting(
+												'staticOptions',
+												(e.currentTarget as HTMLTextAreaElement).value
+											)}
 									></textarea>
 								</label>
 								<p class="help-text">Format: Label|value (one per line)</p>

@@ -113,7 +113,10 @@
 </script>
 
 {#if !isLoading && videos.length > 0}
-	<section class="related-videos {className}" class:related-videos--horizontal={layout === 'horizontal'}>
+	<section
+		class="related-videos {className}"
+		class:related-videos--horizontal={layout === 'horizontal'}
+	>
 		<h3 class="related-videos__title">{title}</h3>
 
 		<div class="related-videos__list">

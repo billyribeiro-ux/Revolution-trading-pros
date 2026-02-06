@@ -58,9 +58,13 @@
 </script>
 
 <!-- Responsive Payment Summary Component - Mobile-first design -->
-<div class="w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm pb-[env(safe-area-inset-bottom)]">
+<div
+	class="w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm pb-[env(safe-area-inset-bottom)]"
+>
 	<!-- Summary Header -->
-	<div class="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gray-50 border-b border-gray-200">
+	<div
+		class="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gray-50 border-b border-gray-200"
+	>
 		<svg
 			class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 flex-shrink-0"
 			viewBox="0 0 24 24"
@@ -88,7 +92,9 @@
 					<div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
 						<span class="text-sm sm:text-base text-gray-700 truncate">{item.name}</span>
 						{#if item.quantity > 1}
-							<span class="text-xs sm:text-sm text-gray-500 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded flex-shrink-0">
+							<span
+								class="text-xs sm:text-sm text-gray-500 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded flex-shrink-0"
+							>
 								x{item.quantity}
 							</span>
 						{/if}
@@ -128,7 +134,9 @@
 					</svg>
 					<span class="truncate">Discount ({discount.code})</span>
 					{#if discount.type === 'percentage'}
-						<span class="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded flex-shrink-0">
+						<span
+							class="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded flex-shrink-0"
+						>
 							-{discount.value}%
 						</span>
 					{/if}
@@ -158,7 +166,9 @@
 
 	<!-- Savings Badge - Touch-friendly -->
 	{#if discount}
-		<div class="flex items-center justify-center gap-2 p-3 sm:p-4 bg-emerald-50 text-emerald-700 min-h-[44px]">
+		<div
+			class="flex items-center justify-center gap-2 p-3 sm:p-4 bg-emerald-50 text-emerald-700 min-h-[44px]"
+		>
 			<svg
 				class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
 				viewBox="0 0 24 24"

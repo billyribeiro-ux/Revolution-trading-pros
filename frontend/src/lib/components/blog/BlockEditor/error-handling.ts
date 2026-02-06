@@ -719,7 +719,8 @@ export const getBlockErrors = (
 async function reportErrorToBackend(record: BlockErrorRecord): Promise<void> {
 	// Check if reporting is enabled
 	const reportingEnabled =
-		typeof window !== 'undefined' && (window as { __ERROR_REPORTING_ENABLED__?: boolean }).__ERROR_REPORTING_ENABLED__;
+		typeof window !== 'undefined' &&
+		(window as { __ERROR_REPORTING_ENABLED__?: boolean }).__ERROR_REPORTING_ENABLED__;
 
 	if (!reportingEnabled) {
 		return;

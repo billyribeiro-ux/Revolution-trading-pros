@@ -337,7 +337,12 @@
 								>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-consent-enabled" name="page-settings-consent-enabled" type="checkbox" bind:checked={settings.consent_enabled} />
+								<input
+									id="page-settings-consent-enabled"
+									name="page-settings-consent-enabled"
+									type="checkbox"
+									bind:checked={settings.consent_enabled}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -350,7 +355,12 @@
 								>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-test-mode" name="page-settings-test-mode" type="checkbox" bind:checked={settings.test_mode} />
+								<input
+									id="page-settings-test-mode"
+									name="page-settings-test-mode"
+									type="checkbox"
+									bind:checked={settings.test_mode}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -365,7 +375,9 @@
 								>
 							</div>
 							<input
-								id="page-settings-expire-days" name="page-settings-expire-days" type="number"
+								id="page-settings-expire-days"
+								name="page-settings-expire-days"
+								type="number"
 								class="input-number"
 								bind:value={settings.expire_days}
 								min="1"
@@ -382,7 +394,9 @@
 							</div>
 							<div class="version-input">
 								<input
-									id="page-settings-consent-version" name="page-settings-consent-version" type="number"
+									id="page-settings-consent-version"
+									name="page-settings-consent-version"
+									type="number"
 									class="input-number"
 									bind:value={settings.consent_version}
 									min="1"
@@ -400,7 +414,9 @@
 								>
 							</div>
 							<input
-								id="page-settings-policy-version" name="page-settings-policy-version" type="text"
+								id="page-settings-policy-version"
+								name="page-settings-policy-version"
+								type="text"
 								class="input-text"
 								bind:value={settings.policy_version}
 								placeholder="1.0.0"
@@ -422,7 +438,12 @@
 								<span class="setting-description">Show the consent banner to visitors</span>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-banner-enabled" name="page-settings-banner-enabled" type="checkbox" bind:checked={settings.banner_enabled} />
+								<input
+									id="page-settings-banner-enabled"
+									name="page-settings-banner-enabled"
+									type="checkbox"
+									bind:checked={settings.banner_enabled}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -466,7 +487,12 @@
 								>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-show-reject-button" name="page-settings-show-reject-button" type="checkbox" bind:checked={settings.show_reject_button} />
+								<input
+									id="page-settings-show-reject-button"
+									name="page-settings-show-reject-button"
+									type="checkbox"
+									bind:checked={settings.show_reject_button}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -477,7 +503,12 @@
 								<span class="setting-description">Display a "Manage Preferences" button</span>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-show-settings-button" name="page-settings-show-settings-button" type="checkbox" bind:checked={settings.show_settings_button} />
+								<input
+									id="page-settings-show-settings-button"
+									name="page-settings-show-settings-button"
+									type="checkbox"
+									bind:checked={settings.show_settings_button}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -494,7 +525,12 @@
 								>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-close-on-scroll" name="page-settings-close-on-scroll" type="checkbox" bind:checked={settings.close_on_scroll} />
+								<input
+									id="page-settings-close-on-scroll"
+									name="page-settings-close-on-scroll"
+									type="checkbox"
+									bind:checked={settings.close_on_scroll}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -506,7 +542,9 @@
 									<span class="setting-description">Pixels to scroll before accepting</span>
 								</div>
 								<input
-									id="page-settings-close-on-scroll-distance" name="page-settings-close-on-scroll-distance" type="number"
+									id="page-settings-close-on-scroll-distance"
+									name="page-settings-close-on-scroll-distance"
+									type="number"
 									class="input-number"
 									bind:value={settings.close_on_scroll_distance}
 									min="10"
@@ -540,7 +578,12 @@
 								<span class="setting-description">Block scripts based on consent categories</span>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-script-blocking-enabled" name="page-settings-script-blocking-enabled" type="checkbox" bind:checked={settings.script_blocking_enabled} />
+								<input
+									id="page-settings-script-blocking-enabled"
+									name="page-settings-script-blocking-enabled"
+									type="checkbox"
+									bind:checked={settings.script_blocking_enabled}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -557,7 +600,12 @@
 											<span class="setting-description">{script.description}</span>
 										</div>
 										<div class="toggle small">
-											<input id="page-settings-script-key" name="page-settings-script-key" type="checkbox" bind:checked={settings[script.key]} />
+											<input
+												id="page-settings-script-key"
+												name="page-settings-script-key"
+												type="checkbox"
+												bind:checked={settings[script.key]}
+											/>
 											<span class="toggle-slider"></span>
 										</div>
 									</label>
@@ -573,7 +621,12 @@
 											<span class="setting-description">{script.description}</span>
 										</div>
 										<div class="toggle small">
-											<input id="page-settings-script-key" name="page-settings-script-key" type="checkbox" bind:checked={settings[script.key]} />
+											<input
+												id="page-settings-script-key"
+												name="page-settings-script-key"
+												type="checkbox"
+												bind:checked={settings[script.key]}
+											/>
 											<span class="toggle-slider"></span>
 										</div>
 									</label>
@@ -589,7 +642,12 @@
 											<span class="setting-description">{script.description}</span>
 										</div>
 										<div class="toggle small">
-											<input id="page-settings-script-key" name="page-settings-script-key" type="checkbox" bind:checked={settings[script.key]} />
+											<input
+												id="page-settings-script-key"
+												name="page-settings-script-key"
+												type="checkbox"
+												bind:checked={settings[script.key]}
+											/>
 											<span class="toggle-slider"></span>
 										</div>
 									</label>
@@ -617,7 +675,12 @@
 									<p>Enable Google's consent mode for GA4, Google Ads, and Tag Manager</p>
 								</div>
 								<div class="toggle">
-									<input id="page-settings-google-consent-mode-enabled" name="page-settings-google-consent-mode-enabled" type="checkbox" bind:checked={settings.google_consent_mode_enabled} />
+									<input
+										id="page-settings-google-consent-mode-enabled"
+										name="page-settings-google-consent-mode-enabled"
+										type="checkbox"
+										bind:checked={settings.google_consent_mode_enabled}
+									/>
 									<span class="toggle-slider"></span>
 								</div>
 							</div>
@@ -642,7 +705,12 @@
 									<p>Enable Microsoft's consent mode for Bing Ads and Clarity</p>
 								</div>
 								<div class="toggle">
-									<input id="page-settings-bing-consent-mode-enabled" name="page-settings-bing-consent-mode-enabled" type="checkbox" bind:checked={settings.bing_consent_mode_enabled} />
+									<input
+										id="page-settings-bing-consent-mode-enabled"
+										name="page-settings-bing-consent-mode-enabled"
+										type="checkbox"
+										bind:checked={settings.bing_consent_mode_enabled}
+									/>
 									<span class="toggle-slider"></span>
 								</div>
 							</div>
@@ -674,7 +742,12 @@
 								>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-geolocation-enabled" name="page-settings-geolocation-enabled" type="checkbox" bind:checked={settings.geolocation_enabled} />
+								<input
+									id="page-settings-geolocation-enabled"
+									name="page-settings-geolocation-enabled"
+									type="checkbox"
+									bind:checked={settings.geolocation_enabled}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -686,7 +759,12 @@
 								>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-geo-default-strict" name="page-settings-geo-default-strict" type="checkbox" bind:checked={settings.geo_default_strict} />
+								<input
+									id="page-settings-geo-default-strict"
+									name="page-settings-geo-default-strict"
+									type="checkbox"
+									bind:checked={settings.geo_default_strict}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -762,7 +840,12 @@
 								<span class="setting-description">Store consent records in the database</span>
 							</div>
 							<div class="toggle">
-								<input id="page-settings-proof-consent-enabled" name="page-settings-proof-consent-enabled" type="checkbox" bind:checked={settings.proof_consent_enabled} />
+								<input
+									id="page-settings-proof-consent-enabled"
+									name="page-settings-proof-consent-enabled"
+									type="checkbox"
+									bind:checked={settings.proof_consent_enabled}
+								/>
 								<span class="toggle-slider"></span>
 							</div>
 						</label>
@@ -776,7 +859,9 @@
 									<span class="setting-description">How long to keep consent records</span>
 								</div>
 								<input
-									id="page-settings-proof-retention-days" name="page-settings-proof-retention-days" type="number"
+									id="page-settings-proof-retention-days"
+									name="page-settings-proof-retention-days"
+									type="number"
 									class="input-number"
 									bind:value={settings.proof_retention_days}
 									min="30"
@@ -792,7 +877,12 @@
 									>
 								</div>
 								<div class="toggle">
-									<input id="page-settings-proof-auto-delete" name="page-settings-proof-auto-delete" type="checkbox" bind:checked={settings.proof_auto_delete} />
+									<input
+										id="page-settings-proof-auto-delete"
+										name="page-settings-proof-auto-delete"
+										type="checkbox"
+										bind:checked={settings.proof_auto_delete}
+									/>
 									<span class="toggle-slider"></span>
 								</div>
 							</label>
@@ -852,6 +942,18 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showResetModal}
+	title="Reset Settings"
+	message="Are you sure you want to reset all settings to defaults?"
+	confirmText="Reset"
+	variant="warning"
+	onConfirm={confirmResetSettings}
+	onCancel={() => {
+		showResetModal = false;
+	}}
+/>
 
 <style>
 	.settings-page {
@@ -1414,13 +1516,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showResetModal}
-	title="Reset Settings"
-	message="Are you sure you want to reset all settings to defaults?"
-	confirmText="Reset"
-	variant="warning"
-	onConfirm={confirmResetSettings}
-	onCancel={() => { showResetModal = false; }}
-/>

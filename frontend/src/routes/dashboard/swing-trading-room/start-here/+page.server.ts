@@ -25,7 +25,7 @@ export const prerender = false; // Dynamic watchlist content - cannot prerender
 export const load: PageServerLoad = async ({ fetch, locals }) => {
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = locals.accessToken ?? undefined;
-	
+
 	// Pre-fetch latest watchlist for swing-trading-room (SSR)
 	const watchlist = await getLatestWatchlist('swing-trading-room', fetch, undefined, accessToken);
 

@@ -106,11 +106,7 @@
 	}
 </script>
 
-<div
-	class="group-block-wrapper"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
->
+<div class="group-block-wrapper" class:editing={props.isEditing} class:selected={props.isSelected}>
 	{#if props.isEditing && props.isSelected}
 		<div class="group-toolbar" role="toolbar" aria-label="Group settings">
 			<div class="toolbar-row">
@@ -133,7 +129,14 @@
 								title="Clear background"
 								aria-label="Clear background color"
 							>
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<line x1="18" y1="6" x2="6" y2="18"></line>
 									<line x1="6" y1="6" x2="18" y2="18"></line>
 								</svg>
@@ -205,7 +208,14 @@
 							aria-pressed={alignment === 'left'}
 							aria-label="Align left"
 						>
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<line x1="3" y1="6" x2="21" y2="6"></line>
 								<line x1="3" y1="12" x2="15" y2="12"></line>
 								<line x1="3" y1="18" x2="18" y2="18"></line>
@@ -220,7 +230,14 @@
 							aria-pressed={alignment === 'center'}
 							aria-label="Align center"
 						>
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<line x1="3" y1="6" x2="21" y2="6"></line>
 								<line x1="6" y1="12" x2="18" y2="12"></line>
 								<line x1="4" y1="18" x2="20" y2="18"></line>
@@ -235,7 +252,14 @@
 							aria-pressed={alignment === 'right'}
 							aria-label="Align right"
 						>
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<line x1="3" y1="6" x2="21" y2="6"></line>
 								<line x1="9" y1="12" x2="21" y2="12"></line>
 								<line x1="6" y1="18" x2="21" y2="18"></line>
@@ -262,7 +286,14 @@
 				<div class="nested-placeholder">
 					{#if children.length === 0}
 						<div class="placeholder-icon">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+							<svg
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+							>
 								<rect x="3" y="3" width="18" height="18" rx="2"></rect>
 								<line x1="12" y1="8" x2="12" y2="16"></line>
 								<line x1="8" y1="12" x2="16" y2="12"></line>
@@ -271,7 +302,9 @@
 						<span class="placeholder-text">Group content</span>
 						<span class="placeholder-hint">Drop blocks here to group them</span>
 					{:else}
-						<span class="placeholder-text">{children.length} nested block{children.length !== 1 ? 's' : ''}</span>
+						<span class="placeholder-text"
+							>{children.length} nested block{children.length !== 1 ? 's' : ''}</span
+						>
 					{/if}
 				</div>
 			{:else}

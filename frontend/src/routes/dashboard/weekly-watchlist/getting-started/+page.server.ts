@@ -14,7 +14,7 @@ import type { PageServerLoad } from './$types';
 export const load = (async ({ fetch, locals }) => {
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = locals.accessToken ?? undefined;
-	
+
 	const watchlist = await getLatestWatchlist('weekly-watchlist', fetch, undefined, accessToken);
 	return { watchlist };
 }) satisfies PageServerLoad;

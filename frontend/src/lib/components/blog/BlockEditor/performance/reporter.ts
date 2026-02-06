@@ -353,14 +353,16 @@ class PerformanceReporter {
 	 * Get connection info
 	 */
 	private getConnectionInfo(): ConnectionInfo | null {
-		const connection = (navigator as Navigator & {
-			connection?: {
-				effectiveType: string;
-				downlink: number;
-				rtt: number;
-				saveData: boolean;
+		const connection = (
+			navigator as Navigator & {
+				connection?: {
+					effectiveType: string;
+					downlink: number;
+					rtt: number;
+					saveData: boolean;
+				};
 			}
-		}).connection;
+		).connection;
 
 		if (!connection) return null;
 
@@ -431,7 +433,10 @@ class PerformanceReporter {
 
 		// Build operation stats
 		const operationStats: OperationStatsPayload = {};
-		const opsByName = new Map<string, { durations: number[]; successes: number; failures: number }>();
+		const opsByName = new Map<
+			string,
+			{ durations: number[]; successes: number; failures: number }
+		>();
 
 		for (const metric of snapshot.operationMetrics) {
 			let existing = opsByName.get(metric.operation);
@@ -625,10 +630,7 @@ class PerformanceReporter {
 	 * Log metrics in development mode
 	 */
 	private logDevMetrics(payload: MetricsPayload): void {
-		console.groupCollapsed(
-			'%c[Performance Metrics]',
-			'color: #8b5cf6; font-weight: bold;'
-		);
+		console.groupCollapsed('%c[Performance Metrics]', 'color: #8b5cf6; font-weight: bold;');
 
 		// Web Vitals
 		console.group('Web Vitals');

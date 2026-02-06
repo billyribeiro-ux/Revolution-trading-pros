@@ -400,7 +400,8 @@
 				<div class="form-group">
 					<label for="title">Automation Title <span class="required">*</span></label>
 					<input
-						id="title" name="title"
+						id="title"
+						name="title"
 						type="text"
 						placeholder="e.g., Welcome New Subscribers"
 						bind:value={formData.title}
@@ -488,7 +489,8 @@
 					<div class="form-group">
 						<label for="form-id">Form ID</label>
 						<input
-							id="form-id" name="form-id"
+							id="form-id"
+							name="form-id"
 							type="text"
 							placeholder="Enter form ID..."
 							bind:value={formData.trigger_settings.form_id}
@@ -498,7 +500,8 @@
 					<div class="form-group">
 						<label for="event-name">Event Name <span class="required">*</span></label>
 						<input
-							id="event-name" name="event-name"
+							id="event-name"
+							name="event-name"
 							type="text"
 							placeholder="e.g., user_upgraded"
 							bind:value={formData.trigger_settings.event_name}
@@ -518,11 +521,21 @@
 				<div class="advanced-options">
 					<h3>Advanced Options</h3>
 					<label class="checkbox-group">
-						<input id="page-formdata-trigger-settings-run-once" name="page-formdata-trigger-settings-run-once" type="checkbox" bind:checked={formData.trigger_settings.run_once} />
+						<input
+							id="page-formdata-trigger-settings-run-once"
+							name="page-formdata-trigger-settings-run-once"
+							type="checkbox"
+							bind:checked={formData.trigger_settings.run_once}
+						/>
 						<span>Run only once per contact</span>
 					</label>
 					<label class="checkbox-group">
-						<input id="page-formdata-trigger-settings-skip-if-active" name="page-formdata-trigger-settings-skip-if-active" type="checkbox" bind:checked={formData.trigger_settings.skip_if_active} />
+						<input
+							id="page-formdata-trigger-settings-skip-if-active"
+							name="page-formdata-trigger-settings-skip-if-active"
+							type="checkbox"
+							bind:checked={formData.trigger_settings.skip_if_active}
+						/>
 						<span>Skip if contact is already in this automation</span>
 					</label>
 				</div>

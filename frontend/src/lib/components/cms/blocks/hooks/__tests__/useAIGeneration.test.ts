@@ -58,7 +58,9 @@ import { useAIGeneration, type AIGenerationType } from '../useAIGeneration.svelt
 // ============================================================================
 
 describe('useAIGeneration', () => {
-	const mockBlockId = 'test-block-123' as unknown as Parameters<typeof useAIGeneration>[0]['blockId'];
+	const mockBlockId = 'test-block-123' as unknown as Parameters<
+		typeof useAIGeneration
+	>[0]['blockId'];
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -153,10 +155,17 @@ describe('useAIGeneration', () => {
 		it('sets loading during generation', async () => {
 			// Mock fetch to delay response
 			(global.fetch as ReturnType<typeof vi.fn>).mockImplementation(
-				() => new Promise((resolve) => setTimeout(() => resolve({
-					ok: true,
-					json: () => Promise.resolve({ success: true, output: 'Generated text' })
-				}), 100))
+				() =>
+					new Promise((resolve) =>
+						setTimeout(
+							() =>
+								resolve({
+									ok: true,
+									json: () => Promise.resolve({ success: true, output: 'Generated text' })
+								}),
+							100
+						)
+					)
 			);
 
 			const hook = useAIGeneration({
@@ -413,10 +422,17 @@ describe('useAIGeneration', () => {
 		it('cancels pending request on clear()', async () => {
 			// Create a long-running request
 			(global.fetch as ReturnType<typeof vi.fn>).mockImplementation(
-				() => new Promise((resolve) => setTimeout(() => resolve({
-					ok: true,
-					json: () => Promise.resolve({ success: true, output: 'Content' })
-				}), 5000))
+				() =>
+					new Promise((resolve) =>
+						setTimeout(
+							() =>
+								resolve({
+									ok: true,
+									json: () => Promise.resolve({ success: true, output: 'Content' })
+								}),
+							5000
+						)
+					)
 			);
 
 			const hook = useAIGeneration({
@@ -674,10 +690,9 @@ describe('useAIGeneration', () => {
 
 			hook.setTranslationView('side-by-side');
 
-			expect(mockStateManager.setAITranslationState).toHaveBeenCalledWith(
-				mockBlockId,
-				{ view: 'side-by-side' }
-			);
+			expect(mockStateManager.setAITranslationState).toHaveBeenCalledWith(mockBlockId, {
+				view: 'side-by-side'
+			});
 		});
 	});
 
@@ -695,10 +710,14 @@ describe('useAIGeneration', () => {
 					options?.signal?.addEventListener('abort', () => {
 						reject(new DOMException('Aborted', 'AbortError'));
 					});
-					setTimeout(() => resolve({
-						ok: true,
-						json: () => Promise.resolve({ success: true, output: 'Content' })
-					}), 5000);
+					setTimeout(
+						() =>
+							resolve({
+								ok: true,
+								json: () => Promise.resolve({ success: true, output: 'Content' })
+							}),
+						5000
+					);
 				});
 			});
 

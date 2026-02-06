@@ -721,16 +721,9 @@
 					</div>
 				{:else}
 					{#each filteredDatasources as datasource (datasource.id)}
-						<div
-							class="datasource-card"
-							class:system={datasource.is_system}
-							transition:fade
-						>
+						<div class="datasource-card" class:system={datasource.is_system} transition:fade>
 							<div class="card-header">
-								<div
-									class="card-icon"
-									style="background-color: {datasource.color || '#6366f1'}20"
-								>
+								<div class="card-icon" style="background-color: {datasource.color || '#6366f1'}20">
 									{#if datasource.is_system}
 										<IconWorld size={24} style="color: {datasource.color || '#6366f1'}" />
 									{:else}
@@ -805,7 +798,10 @@
 			{#if pagination.total > pagination.limit}
 				<div class="pagination">
 					<span class="pagination-info">
-						Showing {pagination.offset + 1} - {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
+						Showing {pagination.offset + 1} - {Math.min(
+							pagination.offset + pagination.limit,
+							pagination.total
+						)} of {pagination.total}
 					</span>
 					<div class="pagination-buttons">
 						<button
@@ -847,7 +843,9 @@
 					</div>
 					{selectedDatasource.name}
 				</h1>
-				<p class="subtitle">/{selectedDatasource.slug} - {selectedDatasource.entry_count} entries</p>
+				<p class="subtitle">
+					/{selectedDatasource.slug} - {selectedDatasource.entry_count} entries
+				</p>
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={exportCsv}>
 						<IconDownload size={18} />
@@ -937,11 +935,7 @@
 										</td>
 										<td>
 											<div class="action-buttons">
-												<button
-													class="btn-icon"
-													onclick={() => openEntryModal(entry)}
-													title="Edit"
-												>
+												<button class="btn-icon" onclick={() => openEntryModal(entry)} title="Edit">
 													<IconEdit size={16} />
 												</button>
 												<button
@@ -1162,8 +1156,8 @@
 
 			<div class="modal-body">
 				<p class="import-info">
-					Upload a CSV file with columns: <code>name</code>, <code>value</code>, <code>dimension</code> (optional).
-					Existing entries with the same value will be updated.
+					Upload a CSV file with columns: <code>name</code>, <code>value</code>,
+					<code>dimension</code> (optional). Existing entries with the same value will be updated.
 				</p>
 
 				<div class="form-group">
@@ -1198,6 +1192,34 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteDatasourceModal}
+	title="Delete Datasource"
+	message={pendingDeleteDatasource
+		? `Delete datasource "${pendingDeleteDatasource.name}"? This will also delete all ${pendingDeleteDatasource.entry_count} entries.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDatasource}
+	onCancel={() => {
+		showDeleteDatasourceModal = false;
+		pendingDeleteDatasource = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteEntryModal}
+	title="Delete Entry"
+	message={pendingDeleteEntry ? `Delete entry "${pendingDeleteEntry.name}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteEntry}
+	onCancel={() => {
+		showDeleteEntryModal = false;
+		pendingDeleteEntry = null;
+	}}
+/>
 
 <style>
 	/* Page Layout */
@@ -2044,23 +2066,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteDatasourceModal}
-	title="Delete Datasource"
-	message={pendingDeleteDatasource ? `Delete datasource "${pendingDeleteDatasource.name}"? This will also delete all ${pendingDeleteDatasource.entry_count} entries.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteDatasource}
-	onCancel={() => { showDeleteDatasourceModal = false; pendingDeleteDatasource = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteEntryModal}
-	title="Delete Entry"
-	message={pendingDeleteEntry ? `Delete entry "${pendingDeleteEntry.name}"?` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteEntry}
-	onCancel={() => { showDeleteEntryModal = false; pendingDeleteEntry = null; }}
-/>

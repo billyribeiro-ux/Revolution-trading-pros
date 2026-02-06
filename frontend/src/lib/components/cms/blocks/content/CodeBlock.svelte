@@ -150,16 +150,13 @@
 				role={props.isEditing ? 'textbox' : undefined}
 				aria-label={props.isEditing ? 'Code editor' : 'Code content'}
 				aria-multiline="true"
-				spellcheck="false"
-			>{props.block.content.code || ''}</code
+				spellcheck="false">{props.block.content.code || ''}</code
 			></pre>
 	</div>
 
 	{#if props.isEditing}
 		<footer class="code-block__footer">
-			<span class="code-block__hint">
-				Press Tab for indentation. Paste code directly.
-			</span>
+			<span class="code-block__hint"> Press Tab for indentation. Paste code directly. </span>
 		</footer>
 	{/if}
 </div>
@@ -378,7 +375,10 @@
 	.code-block__hint {
 		font-size: 0.75rem;
 		color: #64748b;
-		font-family: system-ui, -apple-system, sans-serif;
+		font-family:
+			system-ui,
+			-apple-system,
+			sans-serif;
 	}
 
 	/* =========================================================================

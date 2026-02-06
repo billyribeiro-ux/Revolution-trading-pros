@@ -2,12 +2,12 @@
  * Trading Room Admin - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════════════
  * Apple Principal Engineer ICT 7+ Grade - February 2026
- * 
+ *
  * SvelteKit best practice: Load data server-side for SSR benefits:
  * - Faster initial page load (no client-side fetch waterfall)
  * - SEO-friendly (content rendered on first paint)
  * - Auth validation at server level
- * 
+ *
  * @version 1.0.0
  */
 
@@ -36,12 +36,14 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 		tradesResult,
 		videoResourcesResult
 	] = await Promise.allSettled([
-		fetch(`/api/trade-plans/${slug}?per_page=50`).then(r => r.ok ? r.json() : null),
-		fetch(`/api/alerts/${slug}?per_page=50`).then(r => r.ok ? r.json() : null),
-		fetch(`/api/weekly-video/${slug}`).then(r => r.ok ? r.json() : null),
-		fetch(`/api/room-stats/${slug}`).then(r => r.ok ? r.json() : null),
-		fetch(`/api/trades/${slug}?per_page=100`).then(r => r.ok ? r.json() : null),
-		fetch(`/api/room-resources?room_slug=${slug}&content_type=video&per_page=50`).then(r => r.ok ? r.json() : null)
+		fetch(`/api/trade-plans/${slug}?per_page=50`).then((r) => (r.ok ? r.json() : null)),
+		fetch(`/api/alerts/${slug}?per_page=50`).then((r) => (r.ok ? r.json() : null)),
+		fetch(`/api/weekly-video/${slug}`).then((r) => (r.ok ? r.json() : null)),
+		fetch(`/api/room-stats/${slug}`).then((r) => (r.ok ? r.json() : null)),
+		fetch(`/api/trades/${slug}?per_page=100`).then((r) => (r.ok ? r.json() : null)),
+		fetch(`/api/room-resources?room_slug=${slug}&content_type=video&per_page=50`).then((r) =>
+			r.ok ? r.json() : null
+		)
 	]);
 
 	// Extract successful results with fallbacks
@@ -50,7 +52,8 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 	const weeklyVideo = weeklyVideoResult.status === 'fulfilled' ? weeklyVideoResult.value : null;
 	const roomStats = roomStatsResult.status === 'fulfilled' ? roomStatsResult.value : null;
 	const trades = tradesResult.status === 'fulfilled' ? tradesResult.value : null;
-	const videoResources = videoResourcesResult.status === 'fulfilled' ? videoResourcesResult.value : null;
+	const videoResources =
+		videoResourcesResult.status === 'fulfilled' ? videoResourcesResult.value : null;
 
 	return {
 		slug,

@@ -36,14 +36,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	const {
-		block,
-		blockId,
-		isSelected,
-		isEditing,
-		onUpdate,
-		onError
-	}: Props = $props();
+	const { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	const stateManager = getBlockStateManager();
 
@@ -53,7 +46,11 @@
 		(block.settings.iconStyle as 'chevron' | 'plusminus') ?? 'chevron'
 	);
 
-	const DEFAULT_ITEM: AccordionItem = { id: 'acc_1', title: 'Section 1', content: 'Content for section 1' };
+	const DEFAULT_ITEM: AccordionItem = {
+		id: 'acc_1',
+		title: 'Section 1',
+		content: 'Content for section 1'
+	};
 	const items = $derived<AccordionItem[]>(block.content.accordionItems ?? [DEFAULT_ITEM]);
 
 	let editableRefs = $state<Map<string, HTMLElement>>(new Map());
@@ -86,9 +83,7 @@
 	}
 
 	function updateItem(index: number, field: 'title' | 'content', value: string): void {
-		const newItems = items.map((item, i) =>
-			i === index ? { ...item, [field]: value } : item
-		);
+		const newItems = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
 		updateContent({ accordionItems: newItems });
 	}
 
@@ -190,13 +185,17 @@
 							onclick={(e) => e.stopPropagation()}
 							onkeydown={(e) => e.stopPropagation()}
 							oninput={(e) => handleEditableInput(e, index, 'title')}
-							onpaste={(e) => handlePaste(e, e.currentTarget)}
-						>{item.title}</span>
+							onpaste={(e) => handlePaste(e, e.currentTarget)}>{item.title}</span
+						>
 					{:else}
 						<span class="accordion-title">{item.title}</span>
 					{/if}
 
-					<span class="accordion-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
+					<span
+						class="accordion-icon"
+						class:rotated={isOpen && iconStyle === 'chevron'}
+						aria-hidden="true"
+					>
 						{#if iconStyle === 'plusminus'}
 							{#if isOpen}
 								<IconMinus size={18} />
@@ -237,7 +236,9 @@
 						aria-label="Edit section content"
 						oninput={(e) => handleEditableInput(e, index, 'content')}
 						onpaste={(e) => handlePaste(e, e.currentTarget)}
-					>{item.content}</div>
+					>
+						{item.content}
+					</div>
 				{:else}
 					<div class="accordion-content">{item.content}</div>
 				{/if}

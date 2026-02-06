@@ -29,9 +29,20 @@
 
 <script lang="ts">
 	import { tick, onMount, onDestroy } from 'svelte';
-	import { IconGripVertical, IconTrash, IconCopy, IconChevronUp, IconChevronDown } from '$lib/icons';
+	import {
+		IconGripVertical,
+		IconTrash,
+		IconCopy,
+		IconChevronUp,
+		IconChevronDown
+	} from '$lib/icons';
 	import BlockRenderer from './BlockRenderer.svelte';
-	import type { VirtualBlockListProps, BlockMeasurement, VisibleRange, PerformanceMetrics } from './VirtualBlockList.types';
+	import type {
+		VirtualBlockListProps,
+		BlockMeasurement,
+		VisibleRange,
+		PerformanceMetrics
+	} from './VirtualBlockList.types';
 	import type { Block } from './types';
 	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
 
@@ -800,10 +811,7 @@
 				{/if}
 
 				<!-- Block Content -->
-				<div
-					class="block-content"
-					use:measureBlock={block.id}
-				>
+				<div class="block-content" use:measureBlock={block.id}>
 					<BlockRenderer
 						block={block as unknown as CMSBlock}
 						isSelected={selectedBlockId === block.id}
@@ -835,7 +843,9 @@
 		<div class="performance-overlay">
 			<div class="perf-stat">
 				<span class="perf-label">Visible:</span>
-				<span class="perf-value">{performanceMetrics.visibleCount}/{performanceMetrics.totalBlocks}</span>
+				<span class="perf-value"
+					>{performanceMetrics.visibleCount}/{performanceMetrics.totalBlocks}</span
+				>
 			</div>
 			<div class="perf-stat">
 				<span class="perf-label">Render:</span>
@@ -843,7 +853,9 @@
 			</div>
 			<div class="perf-stat">
 				<span class="perf-label">FPS:</span>
-				<span class="perf-value" class:perf-warning={performanceMetrics.fps < 30}>{performanceMetrics.fps}</span>
+				<span class="perf-value" class:perf-warning={performanceMetrics.fps < 30}
+					>{performanceMetrics.fps}</span
+				>
 			</div>
 			<div class="perf-stat">
 				<span class="perf-label">Measured:</span>

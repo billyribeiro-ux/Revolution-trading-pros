@@ -120,11 +120,7 @@
 	});
 </script>
 
-<span
-	class="animated-number tabular-nums"
-	aria-live="polite"
-	aria-atomic="true"
->
+<span class="animated-number tabular-nums" aria-live="polite" aria-atomic="true">
 	{formatValue(displayValue)}
 </span>
 

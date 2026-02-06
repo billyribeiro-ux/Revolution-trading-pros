@@ -190,12 +190,7 @@
 					<h2 id={titleId} class="modal-title-2026">
 						{title}
 					</h2>
-					<button
-						type="button"
-						onclick={close}
-						class="modal-close-2026"
-						aria-label="Close dialog"
-					>
+					<button type="button" onclick={close} class="modal-close-2026" aria-label="Close dialog">
 						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>

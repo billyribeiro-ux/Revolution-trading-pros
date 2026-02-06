@@ -531,13 +531,13 @@
 {#if isOpen}
 	<div class="global-component-library" transition:fade={{ duration: 150 }}>
 		<div
-		class="library-backdrop"
-		onclick={onclose}
-		onkeydown={(e) => e.key === 'Escape' && onclose()}
-		role="button"
-		tabindex="-1"
-		aria-label="Close library"
-	></div>
+			class="library-backdrop"
+			onclick={onclose}
+			onkeydown={(e) => e.key === 'Escape' && onclose()}
+			role="button"
+			tabindex="-1"
+			aria-label="Close library"
+		></div>
 
 		<div class="library-modal" transition:fly={{ x: 50, duration: 200 }}>
 			<!-- Header -->
@@ -616,11 +616,7 @@
 					<!-- Sort -->
 					<div class="sort-controls">
 						<label for="sort-select">Sort by:</label>
-						<select
-							id="sort-select"
-							bind:value={sortBy}
-							onchange={() => loadComponents()}
-						>
+						<select id="sort-select" bind:value={sortBy} onchange={() => loadComponents()}>
 							<option value="updated_at">Recently Updated</option>
 							<option value="created_at">Recently Created</option>
 							<option value="name">Name</option>
@@ -661,7 +657,8 @@
 									class="component-card"
 									class:selected={selectedComponent?.id === component.id}
 									onclick={() => selectComponent(component)}
-									onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && selectComponent(component)}
+									onkeydown={(e) =>
+										(e.key === 'Enter' || e.key === ' ') && selectComponent(component)}
 									role="button"
 									tabindex="0"
 								>
@@ -669,10 +666,7 @@
 										{#if component.thumbnail_url}
 											<img src={component.thumbnail_url} alt={component.name} />
 										{:else}
-											<div
-												class="thumbnail-placeholder"
-												style="background-color: {config.color}20"
-											>
+											<div class="thumbnail-placeholder" style="background-color: {config.color}20">
 												<Icon size={32} />
 											</div>
 										{/if}
@@ -704,7 +698,10 @@
 										<button
 											type="button"
 											class="action-btn primary"
-											onclick={(e) => { e.stopPropagation(); handleInsert(component); }}
+											onclick={(e) => {
+												e.stopPropagation();
+												handleInsert(component);
+											}}
 											title="Insert into editor"
 										>
 											<IconPlus size={16} />
@@ -712,7 +709,10 @@
 										<button
 											type="button"
 											class="action-btn"
-											onclick={(e) => { e.stopPropagation(); openEditModal(component); }}
+											onclick={(e) => {
+												e.stopPropagation();
+												openEditModal(component);
+											}}
 											title="Edit"
 										>
 											<IconEdit size={16} />
@@ -720,7 +720,10 @@
 										<button
 											type="button"
 											class="action-btn"
-											onclick={(e) => { e.stopPropagation(); handleDuplicate(component); }}
+											onclick={(e) => {
+												e.stopPropagation();
+												handleDuplicate(component);
+											}}
 											title="Duplicate"
 										>
 											<IconCopy size={16} />
@@ -787,9 +790,7 @@
 												>
 													<div class="version-info">
 														<span class="version-number">v{version.version}</span>
-														<span class="version-date"
-															>{formatDate(version.created_at)}</span
-														>
+														<span class="version-date">{formatDate(version.created_at)}</span>
 													</div>
 													<div class="version-meta">
 														{#if version.change_message}
@@ -877,15 +878,11 @@
 											</div>
 											<div class="meta-item">
 												<span class="meta-label">Created</span>
-												<span class="meta-value"
-													>{formatDate(selectedComponent.created_at)}</span
-												>
+												<span class="meta-value">{formatDate(selectedComponent.created_at)}</span>
 											</div>
 											<div class="meta-item">
 												<span class="meta-label">Updated</span>
-												<span class="meta-value"
-													>{formatDate(selectedComponent.updated_at)}</span
-												>
+												<span class="meta-value">{formatDate(selectedComponent.updated_at)}</span>
 											</div>
 										</div>
 
@@ -927,7 +924,13 @@
 				</button>
 			</div>
 
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); handleSubmitForm(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmitForm();
+				}}
+			>
 				<div class="form-group">
 					<label for="comp-name">Name *</label>
 					<input

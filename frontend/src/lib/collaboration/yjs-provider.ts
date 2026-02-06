@@ -105,10 +105,7 @@ export class CollaborationProvider {
 			if (currentIndex !== -1 && currentIndex !== newIndex) {
 				const block = blocks[currentIndex];
 				this.blocksArray.delete(currentIndex, 1);
-				this.blocksArray.insert(
-					newIndex > currentIndex ? newIndex - 1 : newIndex,
-					[block]
-				);
+				this.blocksArray.insert(newIndex > currentIndex ? newIndex - 1 : newIndex, [block]);
 			}
 		});
 	}

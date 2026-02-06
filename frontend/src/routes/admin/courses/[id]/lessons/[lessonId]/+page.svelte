@@ -274,7 +274,12 @@
 						</div>
 						<div class="form-group">
 							<label for="duration">Duration (minutes)</label>
-							<input id="duration" name="duration" type="number" bind:value={lesson.duration_minutes} />
+							<input
+								id="duration"
+								name="duration"
+								type="number"
+								bind:value={lesson.duration_minutes}
+							/>
 						</div>
 						<div class="form-group">
 							<label for="sort">Sort Order</label>
@@ -283,7 +288,8 @@
 						<div class="form-group">
 							<label for="drip">Drip Days</label>
 							<input
-								id="drip" name="drip"
+								id="drip"
+								name="drip"
 								type="number"
 								bind:value={lesson.drip_days}
 								placeholder="0 = immediate"
@@ -366,7 +372,9 @@
 									</button>
 									<span class="divider">or</span>
 									<input
-										id="page-lesson-bunny-video-guid" name="page-lesson-bunny-video-guid" type="text"
+										id="page-lesson-bunny-video-guid"
+										name="page-lesson-bunny-video-guid"
+										type="text"
 										placeholder="Enter Bunny Video GUID"
 										bind:value={lesson.bunny_video_guid}
 									/>
@@ -390,15 +398,30 @@
 				<section class="panel-section">
 					<h3>Access Settings</h3>
 					<label class="toggle">
-						<input id="page-lesson-is-published" name="page-lesson-is-published" type="checkbox" bind:checked={lesson.is_published} />
+						<input
+							id="page-lesson-is-published"
+							name="page-lesson-is-published"
+							type="checkbox"
+							bind:checked={lesson.is_published}
+						/>
 						<span>Published</span>
 					</label>
 					<label class="toggle">
-						<input id="page-lesson-is-free" name="page-lesson-is-free" type="checkbox" bind:checked={lesson.is_free} />
+						<input
+							id="page-lesson-is-free"
+							name="page-lesson-is-free"
+							type="checkbox"
+							bind:checked={lesson.is_free}
+						/>
 						<span>Free Preview</span>
 					</label>
 					<label class="toggle">
-						<input id="page-lesson-is-preview" name="page-lesson-is-preview" type="checkbox" bind:checked={lesson.is_preview} />
+						<input
+							id="page-lesson-is-preview"
+							name="page-lesson-is-preview"
+							type="checkbox"
+							bind:checked={lesson.is_preview}
+						/>
 						<span>Show in Preview</span>
 					</label>
 				</section>
@@ -412,7 +435,13 @@
 							<div class="no-thumb">No thumbnail</div>
 						{/if}
 					</div>
-					<input id="page-lesson-thumbnail-url" name="page-lesson-thumbnail-url" type="text" placeholder="Thumbnail URL" bind:value={lesson.thumbnail_url} />
+					<input
+						id="page-lesson-thumbnail-url"
+						name="page-lesson-thumbnail-url"
+						type="text"
+						placeholder="Thumbnail URL"
+						bind:value={lesson.thumbnail_url}
+					/>
 				</section>
 
 				<section class="panel-section">
@@ -456,6 +485,29 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteLessonModal}
+	title="Delete Lesson"
+	message="Are you sure you want to delete this lesson?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLesson}
+	onCancel={() => (showDeleteLessonModal = false)}
+/>
+
+<ConfirmationModal
+	isOpen={showRemoveDownloadModal}
+	title="Remove Download"
+	message="Remove this download?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveDownload}
+	onCancel={() => {
+		showRemoveDownloadModal = false;
+		pendingRemoveDownloadId = null;
+	}}
+/>
 
 <style>
 	.lesson-editor {
@@ -845,23 +897,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteLessonModal}
-	title="Delete Lesson"
-	message="Are you sure you want to delete this lesson?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteLesson}
-	onCancel={() => (showDeleteLessonModal = false)}
-/>
-
-<ConfirmationModal
-	isOpen={showRemoveDownloadModal}
-	title="Remove Download"
-	message="Remove this download?"
-	confirmText="Remove"
-	variant="danger"
-	onConfirm={confirmRemoveDownload}
-	onCancel={() => { showRemoveDownloadModal = false; pendingRemoveDownloadId = null; }}
-/>

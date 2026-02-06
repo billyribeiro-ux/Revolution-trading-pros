@@ -44,13 +44,7 @@
 		class?: string;
 	}
 
-	let {
-		vttUrl,
-		cues: propCues,
-		currentTime = 0,
-		onSeek,
-		class: className = ''
-	}: Props = $props();
+	let { vttUrl, cues: propCues, currentTime = 0, onSeek, class: className = '' }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// STATE

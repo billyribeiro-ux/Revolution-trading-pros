@@ -11,7 +11,12 @@
 	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 
 	let forecastPeriod = $state('this_month');
-	let forecast = $state<{ commit: number; best_case: number; pipeline: number; worst_case: number } | null>(null);
+	let forecast = $state<{
+		commit: number;
+		best_case: number;
+		pipeline: number;
+		worst_case: number;
+	} | null>(null);
 
 	onMount(async () => {
 		await loadPipelinesAndDeals();
@@ -40,7 +45,10 @@
 		if (!crmStore.selectedPipeline) return;
 		try {
 			crmStore.setLoading(true);
-			const response = await crmAPI.getDeals({ pipeline_id: crmStore.selectedPipeline.id, per_page: 500 });
+			const response = await crmAPI.getDeals({
+				pipeline_id: crmStore.selectedPipeline.id,
+				per_page: 500
+			});
 			crmStore.setDeals(response.data);
 		} catch (e) {
 			console.error('Failed to load deals', e);

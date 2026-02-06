@@ -5,19 +5,19 @@
 		type ButtonVariant,
 		type ButtonSize,
 		type ButtonProps
-	} from "./button.types";
+	} from './button.types';
 </script>
 
 <script lang="ts">
-	import { cn } from "$lib/utils.js";
-	import { buttonVariants, type ButtonProps } from "./button.types";
+	import { cn } from '$lib/utils.js';
+	import { buttonVariants, type ButtonProps } from './button.types';
 	let {
 		class: className,
-		variant = "default",
-		size = "default",
+		variant = 'default',
+		size = 'default',
 		ref = $bindable(null),
 		href = undefined,
-		type = "button",
+		type = 'button',
 		disabled,
 		children,
 		...restProps
@@ -31,7 +31,7 @@
 		class={cn(buttonVariants({ variant, size }), className)}
 		href={disabled ? undefined : href}
 		aria-disabled={disabled}
-		role={disabled ? "link" : undefined}
+		role={disabled ? 'link' : undefined}
 		tabindex={disabled ? -1 : undefined}
 		{...restProps}
 	>

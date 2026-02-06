@@ -204,7 +204,9 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="page-searchquery" name="page-searchquery" type="text"
+				id="page-searchquery"
+				name="page-searchquery"
+				type="text"
 				placeholder="Search members..."
 				bind:value={searchQuery}
 				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
@@ -242,7 +244,9 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								id="page-checkbox" name="page-checkbox" type="checkbox"
+								id="page-checkbox"
+								name="page-checkbox"
+								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
 								onchange={selectAllMembers}
 							/>
@@ -260,7 +264,9 @@
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedMembers.has(member.id)}
 									onchange={() => toggleMemberSelection(member.id)}
 								/>
@@ -397,7 +403,8 @@
 				<div class="form-group">
 					<label for="email-subject">Subject</label>
 					<input
-						id="email-subject" name="email-subject"
+						id="email-subject"
+						name="email-subject"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."

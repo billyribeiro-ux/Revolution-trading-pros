@@ -13,8 +13,12 @@
 
 	// Initialize filters from URL query params (ICT 7: URL-driven state)
 	let localSearch = $state(page.url.searchParams.get('search') ?? '');
-	let localStatus = $state<ContactStatus | 'all'>((page.url.searchParams.get('status') as ContactStatus) ?? 'all');
-	let localStage = $state<LifecycleStage | 'all'>((page.url.searchParams.get('stage') as LifecycleStage) ?? 'all');
+	let localStatus = $state<ContactStatus | 'all'>(
+		(page.url.searchParams.get('status') as ContactStatus) ?? 'all'
+	);
+	let localStage = $state<LifecycleStage | 'all'>(
+		(page.url.searchParams.get('stage') as LifecycleStage) ?? 'all'
+	);
 
 	const statusOptions: { value: ContactStatus | 'all'; label: string }[] = [
 		{ value: 'all', label: 'All statuses' },
@@ -69,7 +73,9 @@
 	}
 
 	let totalContacts = $derived(crmStore.contacts.length);
-	let highScoreContacts = $derived(crmStore.contacts.filter((c: Contact) => c.lead_score >= 75).length);
+	let highScoreContacts = $derived(
+		crmStore.contacts.filter((c: Contact) => c.lead_score >= 75).length
+	);
 	let atRiskCustomers = $derived(
 		crmStore.contacts.filter((c: Contact) => c.status === 'customer' && c.health_score < 50).length
 	);
@@ -115,7 +121,8 @@
 			>
 				<IconSearch size={18} class="text-slate-500" />
 				<input
-					id="contact-search" name="contact-search"
+					id="contact-search"
+					name="contact-search"
 					class="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
 					placeholder="Search by name, email, title"
 					bind:value={localSearch}

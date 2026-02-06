@@ -19,7 +19,15 @@
 	}
 
 	let props: Props = $props();
-	let accept = $derived(props.accept ?? ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska']);
+	let accept = $derived(
+		props.accept ?? [
+			'video/mp4',
+			'video/webm',
+			'video/quicktime',
+			'video/x-msvideo',
+			'video/x-matroska'
+		]
+	);
 	let maxSizeBytes = $derived(props.maxSizeBytes ?? 5 * 1024 * 1024 * 1024);
 	let onfile = $derived(props.onfile);
 	let onerror = $derived(props.onerror);

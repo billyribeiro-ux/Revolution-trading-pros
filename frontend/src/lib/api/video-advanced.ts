@@ -866,7 +866,11 @@ export const bulkOpsApi = {
 	): Promise<{ success: boolean; message?: string; error?: string }> {
 		return apiRequest('/bulk/assign', {
 			method: 'POST',
-			body: JSON.stringify({ video_ids: videoIds, room_ids: roomIds, clear_existing: clearExisting })
+			body: JSON.stringify({
+				video_ids: videoIds,
+				room_ids: roomIds,
+				clear_existing: clearExisting
+			})
 		});
 	}
 };

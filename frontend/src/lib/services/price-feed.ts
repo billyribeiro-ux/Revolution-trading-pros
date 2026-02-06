@@ -359,7 +359,9 @@ class PriceFeedService {
 			RECONNECT_MAX_DELAY
 		);
 
-		logger.debug(`[PriceFeed] Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
+		logger.debug(
+			`[PriceFeed] Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`
+		);
 
 		this.reconnectTimeout = setTimeout(() => {
 			if (this.subscribedTickers.size > 0) {

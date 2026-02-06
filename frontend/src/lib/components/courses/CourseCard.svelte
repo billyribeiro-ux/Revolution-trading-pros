@@ -129,7 +129,9 @@
 				<p class="desc">{props.course.card_description}</p>
 			{/if}
 			<div class="meta">
-				{#if props.course.instructor_name}<span class="instructor">{props.course.instructor_name}</span>{/if}
+				{#if props.course.instructor_name}<span class="instructor"
+						>{props.course.instructor_name}</span
+					>{/if}
 				<div class="stats">
 					{#if props.course.lesson_count}<span>{props.course.lesson_count} lessons</span>{/if}
 					{#if props.course.total_duration_minutes}<span
@@ -151,7 +153,8 @@
 							/></svg
 						>
 						<span>{props.course.avg_rating.toFixed(1)}</span>
-						{#if props.course.review_count}<span class="count">({props.course.review_count})</span>{/if}
+						{#if props.course.review_count}<span class="count">({props.course.review_count})</span
+							>{/if}
 					</div>
 				{/if}
 				<span class="price">{formatPrice(props.course.price_cents, props.course.is_free)}</span>

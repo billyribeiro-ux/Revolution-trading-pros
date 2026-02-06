@@ -688,8 +688,8 @@
 		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
 			<!-- Overview Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'overview'}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
@@ -877,8 +877,8 @@
 			</div>
 
 			<!-- Emails Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'emails'}
 				inert={activeTab !== 'emails' ? true : undefined}
 			>
@@ -924,8 +924,8 @@
 			</div>
 
 			<!-- Notes Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'notes'}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
@@ -959,8 +959,8 @@
 			</div>
 
 			<!-- Activity Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'activity'}
 				inert={activeTab !== 'activity' ? true : undefined}
 			>
@@ -1201,7 +1201,8 @@
 						Subject Line
 					</label>
 					<input
-						id="email-subject" name="email-subject"
+						id="email-subject"
+						name="email-subject"
 						type="text"
 						class="form-input"
 						placeholder="Enter email subject..."
@@ -1264,6 +1265,18 @@
 		</button>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Contact"
+	message="Are you sure you want to delete this contact? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteContact}
+	onCancel={() => {
+		showDeleteModal = false;
+	}}
+/>
 
 <style>
 	.contact-detail-page {
@@ -1570,7 +1583,7 @@
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(8px);
-		transition: 
+		transition:
 			opacity 0.2s ease,
 			visibility 0.2s ease,
 			transform 0.2s ease;
@@ -2503,13 +2516,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Contact"
-	message="Are you sure you want to delete this contact? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteContact}
-	onCancel={() => { showDeleteModal = false; }}
-/>

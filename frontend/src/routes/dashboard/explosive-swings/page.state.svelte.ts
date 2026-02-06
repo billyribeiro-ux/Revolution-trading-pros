@@ -396,7 +396,7 @@ export function createPageState() {
 			fetchAllTrades(),
 			fetchWeeklyVideo()
 		]);
-		
+
 		// End page load tracking
 		performanceMonitor.endMark('page-load');
 	}
@@ -588,12 +588,15 @@ export function createPageState() {
 
 			// Refresh data after successful deletion
 			await Promise.all([fetchAllTrades(), fetchStats()]);
-			
+
 			// Track successful deletion
 			analyticsTracker.trackEvent('trade', 'position_deleted', position.ticker);
 		} catch (err) {
 			console.error('Failed to delete position:', err);
-			analyticsTracker.trackError('delete_position', err instanceof Error ? err.message : 'Unknown error');
+			analyticsTracker.trackError(
+				'delete_position',
+				err instanceof Error ? err.message : 'Unknown error'
+			);
 			// Re-throw to allow UI to show error if needed
 			throw err;
 		}

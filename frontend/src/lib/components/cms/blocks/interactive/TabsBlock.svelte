@@ -32,7 +32,9 @@
 
 	let defaultTabId = $derived(tabs[0]?.id || '');
 	let activeTab = $derived(stateManager.getActiveTab(props.blockId, defaultTabId));
-	let orientation = $derived((props.block.settings.tabOrientation as 'horizontal' | 'vertical') || 'horizontal');
+	let orientation = $derived(
+		(props.block.settings.tabOrientation as 'horizontal' | 'vertical') || 'horizontal'
+	);
 
 	// Track previous active tab for animation
 	let previousActiveTab = $state<string | null>(null);
@@ -120,7 +122,12 @@
 	}
 </script>
 
-<div class="tabs-block" class:vertical={orientation === 'vertical'} role="region" aria-label="Tabbed content">
+<div
+	class="tabs-block"
+	class:vertical={orientation === 'vertical'}
+	role="region"
+	aria-label="Tabbed content"
+>
 	<div class="tabs-list" role="tablist" aria-orientation={orientation}>
 		{#each tabs as tab, index (tab.id)}
 			<div class="tab-button-wrapper">
@@ -145,7 +152,8 @@
 							aria-label="Tab label"
 							onclick={(e) => e.stopPropagation()}
 							onkeydown={(e) => e.stopPropagation()}
-							oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
+							oninput={(e) =>
+								updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
 							onpaste={handlePaste}
 						>
 							{tab.label}
@@ -198,7 +206,8 @@
 						role="textbox"
 						aria-label="Tab content"
 						data-placeholder="Add content for this tab..."
-						oninput={(e) => updateTab(index, 'content', (e.target as HTMLElement).textContent || '')}
+						oninput={(e) =>
+							updateTab(index, 'content', (e.target as HTMLElement).textContent || '')}
 						onpaste={handlePaste}
 					>
 						{tab.content}

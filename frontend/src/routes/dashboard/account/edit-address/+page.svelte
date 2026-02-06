@@ -171,7 +171,8 @@
 					<label for="phone">Phone <span class="required">*</span></label>
 					<input
 						type="tel"
-						id="phone" autocomplete="tel"
+						id="phone"
+						autocomplete="tel"
 						name="phone"
 						class="form-control"
 						value={address.phone || ''}
@@ -183,7 +184,8 @@
 					<label for="email">Email Address <span class="required">*</span></label>
 					<input
 						type="email"
-						id="email" autocomplete="email"
+						id="email"
+						autocomplete="email"
 						name="email"
 						class="form-control"
 						value={address.email || ''}

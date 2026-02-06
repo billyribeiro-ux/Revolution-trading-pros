@@ -67,14 +67,19 @@
 				class="card-title"
 				oninput={(e) => updateContent({ cardTitle: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
-			>{title}</h3>
+			>
+				{title}
+			</h3>
 			<p
 				contenteditable="true"
 				class="card-description"
 				data-placeholder="Add a description..."
-				oninput={(e) => updateContent({ cardDescription: (e.target as HTMLElement).textContent || '' })}
+				oninput={(e) =>
+					updateContent({ cardDescription: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
-			>{description}</p>
+			>
+				{description}
+			</p>
 		{:else}
 			<h3 class="card-title">{title}</h3>
 			{#if description}
@@ -84,10 +89,30 @@
 
 		{#if props.isEditing}
 			<div class="button-edit">
-				<input type="text" placeholder="Button text" value={buttonText} oninput={(e) => updateContent({ cardButtonText: (e.target as HTMLInputElement).value })} />
-				<input type="url" placeholder="Button URL" value={buttonUrl} oninput={(e) => updateContent({ cardButtonUrl: (e.target as HTMLInputElement).value })} />
+				<input
+					type="text"
+					placeholder="Button text"
+					value={buttonText}
+					oninput={(e) => updateContent({ cardButtonText: (e.target as HTMLInputElement).value })}
+				/>
+				<input
+					type="url"
+					placeholder="Button URL"
+					value={buttonUrl}
+					oninput={(e) => updateContent({ cardButtonUrl: (e.target as HTMLInputElement).value })}
+				/>
 				<label class="new-tab-check">
-					<input type="checkbox" checked={newTab} onchange={(e) => props.onUpdate({ settings: { ...props.block.settings, cardNewTab: (e.target as HTMLInputElement).checked } })} />
+					<input
+						type="checkbox"
+						checked={newTab}
+						onchange={(e) =>
+							props.onUpdate({
+								settings: {
+									...props.block.settings,
+									cardNewTab: (e.target as HTMLInputElement).checked
+								}
+							})}
+					/>
 					New tab
 				</label>
 			</div>
@@ -107,53 +132,126 @@
 
 <style>
 	.card-block {
-		border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden;
-		background: white; transition: box-shadow 0.2s;
+		border: 1px solid #e5e7eb;
+		border-radius: 16px;
+		overflow: hidden;
+		background: white;
+		transition: box-shadow 0.2s;
 	}
-	.card-block:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+	.card-block:hover {
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+	}
 
-	.card-image { position: relative; aspect-ratio: 16/9; background: #f3f4f6; overflow: hidden; }
-	.card-image img { width: 100%; height: 100%; object-fit: cover; }
-	.image-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: #9ca3af; }
+	.card-image {
+		position: relative;
+		aspect-ratio: 16/9;
+		background: #f3f4f6;
+		overflow: hidden;
+	}
+	.card-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.image-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		color: #9ca3af;
+	}
 	.image-input {
-		position: absolute; bottom: 0; left: 0; right: 0;
-		padding: 0.5rem; border: none; background: rgba(0,0,0,0.7);
-		color: white; font-size: 0.8125rem;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 0.5rem;
+		border: none;
+		background: rgba(0, 0, 0, 0.7);
+		color: white;
+		font-size: 0.8125rem;
 	}
-	.image-input::placeholder { color: rgba(255,255,255,0.6); }
+	.image-input::placeholder {
+		color: rgba(255, 255, 255, 0.6);
+	}
 
-	.card-content { padding: 1.5rem; }
+	.card-content {
+		padding: 1.5rem;
+	}
 	.card-title {
-		margin: 0 0 0.75rem; font-size: 1.25rem; font-weight: 700; color: #0f172a;
+		margin: 0 0 0.75rem;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: #0f172a;
 		outline: none;
 	}
 	.card-description {
-		margin: 0 0 1.25rem; font-size: 0.9375rem; line-height: 1.6; color: #64748b;
+		margin: 0 0 1.25rem;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: #64748b;
 		outline: none;
 	}
 	.card-description:empty::before {
-		content: attr(data-placeholder); color: #9ca3af;
+		content: attr(data-placeholder);
+		color: #9ca3af;
 	}
 
 	.card-button {
-		display: inline-flex; align-items: center; gap: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: #3b82f6; border-radius: 8px;
-		color: white; font-weight: 600; font-size: 0.9375rem;
-		text-decoration: none; transition: background 0.15s;
+		background: #3b82f6;
+		border-radius: 8px;
+		color: white;
+		font-weight: 600;
+		font-size: 0.9375rem;
+		text-decoration: none;
+		transition: background 0.15s;
 	}
-	.card-button:hover { background: #2563eb; }
+	.card-button:hover {
+		background: #2563eb;
+	}
 
-	.button-edit { display: flex; flex-direction: column; gap: 0.5rem; }
+	.button-edit {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
 	.button-edit input {
-		padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		font-size: 0.875rem;
 	}
-	.new-tab-check { display: flex; align-items: center; gap: 0.375rem; font-size: 0.8125rem; color: #6b7280; }
+	.new-tab-check {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: 0.8125rem;
+		color: #6b7280;
+	}
 
-	:global(.dark) .card-block { background: #1e293b; border-color: #334155; }
-	:global(.dark) .card-image { background: #0f172a; }
-	:global(.dark) .image-placeholder { color: #475569; }
-	:global(.dark) .card-title { color: #f8fafc; }
-	:global(.dark) .card-description { color: #94a3b8; }
-	:global(.dark) .button-edit input { background: #0f172a; border-color: #475569; color: #e2e8f0; }
+	:global(.dark) .card-block {
+		background: #1e293b;
+		border-color: #334155;
+	}
+	:global(.dark) .card-image {
+		background: #0f172a;
+	}
+	:global(.dark) .image-placeholder {
+		color: #475569;
+	}
+	:global(.dark) .card-title {
+		color: #f8fafc;
+	}
+	:global(.dark) .card-description {
+		color: #94a3b8;
+	}
+	:global(.dark) .button-edit input {
+		background: #0f172a;
+		border-color: #475569;
+		color: #e2e8f0;
+	}
 </style>

@@ -38,7 +38,7 @@
 
 	function confirmDelete(event: Event, method: PaymentMethod): boolean {
 		event.preventDefault();
-		
+
 		if (method.subscriptions && method.subscriptions.length > 0) {
 			showLinkedWarningModal = true;
 			return false;
@@ -227,6 +227,34 @@
 		</div>
 	</div>
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Payment Method"
+	message="Are you sure you want to delete this payment method?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={handleConfirmDelete}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteMethod = null;
+		deleteFormElement = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showLinkedWarningModal}
+	title="Cannot Delete Payment Method"
+	message="That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again."
+	confirmText="OK"
+	variant="warning"
+	onConfirm={() => {
+		showLinkedWarningModal = false;
+	}}
+	onCancel={() => {
+		showLinkedWarningModal = false;
+	}}
+/>
 
 <style>
 	/* Dashboard Header */
@@ -495,23 +523,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Payment Method"
-	message="Are you sure you want to delete this payment method?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={handleConfirmDelete}
-	onCancel={() => { showDeleteModal = false; pendingDeleteMethod = null; deleteFormElement = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showLinkedWarningModal}
-	title="Cannot Delete Payment Method"
-	message="That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again."
-	confirmText="OK"
-	variant="warning"
-	onConfirm={() => { showLinkedWarningModal = false; }}
-	onCancel={() => { showLinkedWarningModal = false; }}
-/>

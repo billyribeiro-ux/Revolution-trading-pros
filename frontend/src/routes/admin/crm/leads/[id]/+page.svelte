@@ -508,8 +508,8 @@
 		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
 			<!-- Overview Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'overview'}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
@@ -670,8 +670,8 @@
 			</div>
 
 			<!-- Activity Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'activity'}
 				inert={activeTab !== 'activity' ? true : undefined}
 			>
@@ -711,8 +711,8 @@
 			</div>
 
 			<!-- Notes Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'notes'}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
@@ -1268,7 +1268,7 @@
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(8px);
-		transition: 
+		transition:
 			opacity 0.2s ease,
 			visibility 0.2s ease,
 			transform 0.2s ease;

@@ -520,7 +520,9 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					id="page-searchquery" name="page-searchquery" type="text"
+					id="page-searchquery"
+					name="page-searchquery"
+					type="text"
 					placeholder="Search plans..."
 					bind:value={searchQuery}
 					class="search-input"
@@ -723,11 +725,23 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="edit_name">Plan Name *</label>
-						<input id="edit_name" name="edit_name" type="text" bind:value={formData.name} required />
+						<input
+							id="edit_name"
+							name="edit_name"
+							type="text"
+							bind:value={formData.name}
+							required
+						/>
 					</div>
 					<div class="form-group">
 						<label for="edit_slug">URL Slug *</label>
-						<input id="edit_slug" name="edit_slug" type="text" bind:value={formData.slug} required />
+						<input
+							id="edit_slug"
+							name="edit_slug"
+							type="text"
+							bind:value={formData.slug}
+							required
+						/>
 					</div>
 					<div class="form-group full-width">
 						<label for="edit_description">Description</label>
@@ -736,7 +750,8 @@
 					<div class="form-group">
 						<label for="edit_price">Price (USD) *</label>
 						<input
-							id="edit_price" name="edit_price"
+							id="edit_price"
+							name="edit_price"
 							type="number"
 							min="0"
 							step="0.01"
@@ -754,7 +769,12 @@
 					</div>
 					<div class="form-group full-width">
 						<label class="checkbox-label">
-							<input id="page-formdata-is-active" name="page-formdata-is-active" type="checkbox" bind:checked={formData.is_active} />
+							<input
+								id="page-formdata-is-active"
+								name="page-formdata-is-active"
+								type="checkbox"
+								bind:checked={formData.is_active}
+							/>
 							<span>Active (visible to customers)</span>
 						</label>
 					</div>
@@ -772,13 +792,17 @@
 							{#each formData.features as feature, index}
 								<div class="feature-row">
 									<input
-										id="page-feature-feature-name" name="page-feature-feature-name" type="text"
+										id="page-feature-feature-name"
+										name="page-feature-feature-name"
+										type="text"
 										bind:value={feature.feature_name}
 										placeholder="Feature name"
 										class="feature-input"
 									/>
 									<input
-										id="page-feature-description" name="page-feature-description" type="text"
+										id="page-feature-description"
+										name="page-feature-description"
+										type="text"
 										bind:value={feature.description}
 										placeholder="Description (optional)"
 										class="feature-desc"

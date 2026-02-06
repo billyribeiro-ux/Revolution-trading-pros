@@ -845,7 +845,8 @@
 				<div class="form-group">
 					<label for="segment-name">Segment Name</label>
 					<input
-						id="segment-name" name="segment-name"
+						id="segment-name"
+						name="segment-name"
 						type="text"
 						bind:value={newSegment.name}
 						placeholder="e.g., High Value Customers"
@@ -855,7 +856,8 @@
 				<div class="form-group">
 					<label for="segment-description">Description</label>
 					<input
-						id="segment-description" name="segment-description"
+						id="segment-description"
+						name="segment-description"
 						type="text"
 						bind:value={newSegment.description}
 						placeholder="Brief description of this segment"
@@ -887,7 +889,13 @@
 								{/each}
 							</select>
 
-							<input id="page-condition-value" name="page-condition-value" type="text" bind:value={condition.value} placeholder="Value" />
+							<input
+								id="page-condition-value"
+								name="page-condition-value"
+								type="text"
+								bind:value={condition.value}
+								placeholder="Value"
+							/>
 
 							<button class="btn-icon danger" onclick={() => removeCondition(index)}>
 								<IconX size={16} />
@@ -942,7 +950,13 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="tag-name">Tag Name</label>
-					<input id="tag-name" name="tag-name" type="text" bind:value={newTag.name} placeholder="e.g., VIP" />
+					<input
+						id="tag-name"
+						name="tag-name"
+						type="text"
+						bind:value={newTag.name}
+						placeholder="e.g., VIP"
+					/>
 				</div>
 
 				<div class="form-group">
@@ -1010,7 +1024,8 @@
 				<div class="form-group">
 					<label for="filter-name">Filter Name</label>
 					<input
-						id="filter-name" name="filter-name"
+						id="filter-name"
+						name="filter-name"
 						type="text"
 						bind:value={newFilter.name}
 						placeholder="e.g., High Value Active Members"

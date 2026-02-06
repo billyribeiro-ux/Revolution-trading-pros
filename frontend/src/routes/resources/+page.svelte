@@ -96,8 +96,12 @@
 	<div class="resources-container max-w-7xl mx-auto">
 		<div class="resources-grid">
 			<!-- Beginner Guides -->
-			<div class="resource-card bg-rtp-surface rounded-2xl shadow-lg hover:shadow-xl transition-all">
-				<div class="resource-card__icon bg-rtp-emerald/10 rounded-xl flex items-center justify-center">
+			<div
+				class="resource-card bg-rtp-surface rounded-2xl shadow-lg hover:shadow-xl transition-all"
+			>
+				<div
+					class="resource-card__icon bg-rtp-emerald/10 rounded-xl flex items-center justify-center"
+				>
 					<svg
 						class="w-8 h-8 text-rtp-emerald"
 						fill="none"
@@ -174,8 +178,12 @@
 			</div>
 
 			<!-- Free Tools -->
-			<div class="resource-card bg-rtp-surface rounded-2xl shadow-lg hover:shadow-xl transition-all">
-				<div class="resource-card__icon bg-rtp-primary/10 rounded-xl flex items-center justify-center">
+			<div
+				class="resource-card bg-rtp-surface rounded-2xl shadow-lg hover:shadow-xl transition-all"
+			>
+				<div
+					class="resource-card__icon bg-rtp-primary/10 rounded-xl flex items-center justify-center"
+				>
 					<svg
 						class="w-8 h-8 text-rtp-primary"
 						fill="none"

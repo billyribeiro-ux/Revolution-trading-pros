@@ -20,10 +20,16 @@ vi.mock('$lib/utils/sanitization', () => ({
 	validateFile: vi.fn((file, options) => {
 		// Simulate validation based on options
 		if (options.maxSize && file.size > options.maxSize) {
-			return { valid: false, error: `File too large. Maximum size: ${(options.maxSize / 1024 / 1024).toFixed(2)}MB` };
+			return {
+				valid: false,
+				error: `File too large. Maximum size: ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`
+			};
 		}
 		if (options.allowedTypes && !options.allowedTypes.includes(file.type)) {
-			return { valid: false, error: `Invalid file type. Allowed: ${options.allowedTypes.join(', ')}` };
+			return {
+				valid: false,
+				error: `Invalid file type. Allowed: ${options.allowedTypes.join(', ')}`
+			};
 		}
 		return { valid: true, sanitizedName: file.name.toLowerCase() };
 	}),
@@ -277,11 +283,13 @@ describe('useImageUpload', () => {
 
 			// Store the progress handler when addEventListener is called
 			let progressHandler: ((event: ProgressEvent) => void) | undefined;
-			mockXHR.upload.addEventListener.mockImplementation((event: string, handler: (e: ProgressEvent) => void) => {
-				if (event === 'progress') {
-					progressHandler = handler;
+			mockXHR.upload.addEventListener.mockImplementation(
+				(event: string, handler: (e: ProgressEvent) => void) => {
+					if (event === 'progress') {
+						progressHandler = handler;
+					}
 				}
-			});
+			);
 
 			// Store load handler
 			let loadHandler: (() => void) | undefined;
@@ -322,11 +330,13 @@ describe('useImageUpload', () => {
 			});
 
 			let progressHandler: ((event: ProgressEvent) => void) | undefined;
-			mockXHR.upload.addEventListener.mockImplementation((event: string, handler: (e: ProgressEvent) => void) => {
-				if (event === 'progress') {
-					progressHandler = handler;
+			mockXHR.upload.addEventListener.mockImplementation(
+				(event: string, handler: (e: ProgressEvent) => void) => {
+					if (event === 'progress') {
+						progressHandler = handler;
+					}
 				}
-			});
+			);
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1000);
 			hook.upload(file);
@@ -735,7 +745,8 @@ describe('useImageUpload', () => {
 
 describe('dataUrlToFile', () => {
 	it('converts PNG data URL to File', () => {
-		const dataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+		const dataUrl =
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 		const file = dataUrlToFile(dataUrl, 'test.png');
 
 		expect(file).toBeInstanceOf(File);
@@ -789,7 +800,7 @@ describe('createPresignedUploader', () => {
 
 		const mockXHR = {
 			open: vi.fn(),
-			send: vi.fn(function(this: any) {
+			send: vi.fn(function (this: any) {
 				setTimeout(() => {
 					this.status = 200;
 					if (this.onload) this.onload(new Event('load'));
@@ -799,7 +810,7 @@ describe('createPresignedUploader', () => {
 			upload: {
 				addEventListener: vi.fn()
 			},
-			addEventListener: vi.fn(function(this: any, event: string, handler: () => void) {
+			addEventListener: vi.fn(function (this: any, event: string, handler: () => void) {
 				if (event === 'load') {
 					this.onload = handler;
 				}

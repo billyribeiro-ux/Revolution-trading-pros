@@ -188,6 +188,19 @@
 	<!-- End admin-page-container -->
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete User"
+	message="Are you sure you want to delete this user? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteUser}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * ADMIN USERS - Analytics Dashboard Layout Pattern
@@ -537,13 +550,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete User"
-	message="Are you sure you want to delete this user? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteUser}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

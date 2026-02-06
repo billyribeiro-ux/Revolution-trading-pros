@@ -508,8 +508,8 @@
 		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
 			<!-- Overview Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'overview'}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
@@ -641,8 +641,8 @@
 			</div>
 
 			<!-- Timeline Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'timeline'}
 				inert={activeTab !== 'timeline' ? true : undefined}
 			>
@@ -678,8 +678,8 @@
 			</div>
 
 			<!-- Notes Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'notes'}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
@@ -992,6 +992,20 @@
 		</button>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Deal"
+	message={deal
+		? `Are you sure you want to delete "${deal.name}"? This action cannot be undone.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDeal}
+	onCancel={() => {
+		showDeleteModal = false;
+	}}
+/>
 
 <style>
 	.deal-detail-page {
@@ -1425,7 +1439,7 @@
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(8px);
-		transition: 
+		transition:
 			opacity 0.2s ease,
 			visibility 0.2s ease,
 			transform 0.2s ease;
@@ -2088,13 +2102,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Deal"
-	message={deal ? `Are you sure you want to delete "${deal.name}"? This action cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteDeal}
-	onCancel={() => { showDeleteModal = false; }}
-/>

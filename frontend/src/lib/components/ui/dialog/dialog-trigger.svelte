@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Dialog as DialogPrimitive } from "bits-ui";
+	import { Dialog as DialogPrimitive } from 'bits-ui';
 
 	let props: DialogPrimitive.TriggerProps = $props();
 	let ref = $state<HTMLElement | null>(props.ref ?? null);

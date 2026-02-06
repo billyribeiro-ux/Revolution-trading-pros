@@ -62,7 +62,9 @@
 		/** Additional context for error logging */
 		errorContext?: BlockErrorContext;
 		/** Custom fallback content */
-		fallback?: Snippet<[{ error: Error; block: Block; retry: () => void; reset: () => void; remove: () => void }]>;
+		fallback?: Snippet<
+			[{ error: Error; block: Block; retry: () => void; reset: () => void; remove: () => void }]
+		>;
 	}
 
 	let props: Props = $props();
@@ -302,7 +304,10 @@
 								</div>
 								<div class="detail-row">
 									<span class="detail-label">Severity:</span>
-									<code class="detail-value severity-badge" class:critical={errorSeverity === ErrorSeverity.CRITICAL}>
+									<code
+										class="detail-value severity-badge"
+										class:critical={errorSeverity === ErrorSeverity.CRITICAL}
+									>
 										{errorSeverity}
 									</code>
 								</div>

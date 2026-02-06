@@ -64,7 +64,12 @@
 		{/if}
 	</div>
 
-	<input id="toggle-{props.field.name}" type="hidden" name={props.field.name} value={value ? '1' : '0'} />
+	<input
+		id="toggle-{props.field.name}"
+		type="hidden"
+		name={props.field.name}
+		value={value ? '1' : '0'}
+	/>
 
 	{#if error && error.length > 0}
 		<div class="field-error">

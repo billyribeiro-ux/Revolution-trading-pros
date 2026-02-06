@@ -222,7 +222,6 @@
 		return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}, ${end.getFullYear()}`;
 	});
 
-
 	/**
 	 * Detect schedule conflicts (overlapping times on same day)
 	 */
@@ -607,7 +606,6 @@
 		selectedIds = new Set(selectedIds);
 	}
 
-
 	function isConflicting(scheduleId: number): boolean {
 		return conflicts.some(([a, b]) => a.id === scheduleId || b.id === scheduleId);
 	}
@@ -796,7 +794,9 @@
 									>
 										<div class="event-checkbox">
 											<input
-												id="page-checkbox" name="page-checkbox" type="checkbox"
+												id="page-checkbox"
+												name="page-checkbox"
+												type="checkbox"
 												checked={selectedIds.has(event.id)}
 												onchange={() => toggleSelection(event.id)}
 												aria-label="Select schedule"
@@ -962,7 +962,8 @@
 					<label for="title">Event Title <span class="required">*</span></label>
 					<input
 						type="text"
-						id="title" name="title"
+						id="title"
+						name="title"
 						bind:value={formData.title}
 						placeholder="e.g., Morning Market Analysis"
 						required
@@ -974,7 +975,8 @@
 						<label for="trader_name">Trader/Host</label>
 						<input
 							type="text"
-							id="trader_name" name="trader_name"
+							id="trader_name"
+							name="trader_name"
 							bind:value={formData.trader_name}
 							placeholder="e.g., Taylor Horton"
 						/>
@@ -1014,12 +1016,24 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="start_time">Start Time <span class="required">*</span></label>
-						<input type="time" id="start_time" name="start_time" bind:value={formData.start_time} required />
+						<input
+							type="time"
+							id="start_time"
+							name="start_time"
+							bind:value={formData.start_time}
+							required
+						/>
 					</div>
 
 					<div class="form-group">
 						<label for="end_time">End Time <span class="required">*</span></label>
-						<input type="time" id="end_time" name="end_time" bind:value={formData.end_time} required />
+						<input
+							type="time"
+							id="end_time"
+							name="end_time"
+							bind:value={formData.end_time}
+							required
+						/>
 					</div>
 				</div>
 
@@ -1044,7 +1058,12 @@
 
 				<div class="form-group form-checkbox">
 					<label>
-						<input id="page-formdata-is-active" name="page-formdata-is-active" type="checkbox" bind:checked={formData.is_active} />
+						<input
+							id="page-formdata-is-active"
+							name="page-formdata-is-active"
+							type="checkbox"
+							bind:checked={formData.is_active}
+						/>
 						<span>Active (visible to members)</span>
 					</label>
 				</div>
@@ -1064,6 +1083,29 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Schedule"
+	message="Are you sure you want to delete this schedule?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSchedule}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Schedules"
+	message={`Delete ${selectedIds.size} selected schedules?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1855,23 +1897,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Schedule"
-	message="Are you sure you want to delete this schedule?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteSchedule}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Schedules"
-	message={`Delete ${selectedIds.size} selected schedules?`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

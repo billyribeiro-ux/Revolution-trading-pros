@@ -81,22 +81,20 @@
 	/** Active collaborators (with valid cursors or selections) */
 	// @ts-expect-error Reserved for future filtering functionality
 	const activeCollaborators = $derived(
-		collaborators.filter(c => c.cursor || c.selectedBlockId || c.selection)
+		collaborators.filter((c) => c.cursor || c.selectedBlockId || c.selection)
 	);
 
 	/** Collaborators with visible cursors */
-	let cursorCollaborators = $derived(
-		collaborators.filter(c => c.cursor && !c.isIdle)
-	);
+	let cursorCollaborators = $derived(collaborators.filter((c) => c.cursor && !c.isIdle));
 
 	/** Collaborators with block selections */
 	let selectionCollaborators = $derived(
-		collaborators.filter(c => c.selectedBlockId && showBlockSelections)
+		collaborators.filter((c) => c.selectedBlockId && showBlockSelections)
 	);
 
 	/** Collaborators who are typing */
 	let typingCollaborators = $derived(
-		collaborators.filter(c => c.isTyping && showTypingIndicators)
+		collaborators.filter((c) => c.isTyping && showTypingIndicators)
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -137,11 +135,16 @@
 	 */
 	function getLabelOffset(position: typeof labelPosition): { x: number; y: number } {
 		switch (position) {
-			case 'top': return { x: 0, y: -28 };
-			case 'bottom': return { x: 0, y: 24 };
-			case 'left': return { x: -100, y: 0 };
-			case 'right': return { x: 24, y: 0 };
-			default: return { x: 0, y: -28 };
+			case 'top':
+				return { x: 0, y: -28 };
+			case 'bottom':
+				return { x: 0, y: 24 };
+			case 'left':
+				return { x: -100, y: 0 };
+			case 'right':
+				return { x: 24, y: 0 };
+			default:
+				return { x: 0, y: -28 };
 		}
 	}
 
@@ -189,7 +192,7 @@
 	function getInitials(name: string): string {
 		return name
 			.split(' ')
-			.map(part => part[0])
+			.map((part) => part[0])
 			.join('')
 			.toUpperCase()
 			.substring(0, 2);
@@ -197,11 +200,7 @@
 </script>
 
 <!-- Collaborator Cursors Container -->
-<div
-	class="collaborator-cursors"
-	style:--z-index={zIndex}
-	aria-hidden="true"
->
+<div class="collaborator-cursors" style:--z-index={zIndex} aria-hidden="true">
 	<!-- Block Selection Highlights -->
 	{#if showBlockSelections}
 		{#each selectionCollaborators as collab (collab.clientId)}
@@ -295,7 +294,7 @@
 
 	<!-- Text Selection Overlays -->
 	{#if showTextSelections}
-		{#each collaborators.filter(c => c.selection) as collab (collab.clientId)}
+		{#each collaborators.filter((c) => c.selection) as collab (collab.clientId)}
 			{@const selection = collab.selection}
 			{@const blockRect = selection ? getBlockPosition(selection.blockId) : null}
 			{#if selection && blockRect && containerRect}
@@ -330,11 +329,7 @@
 					animate:flip={{ duration: 300 }}
 				>
 					{#if collab.avatar}
-						<img
-							src={collab.avatar}
-							alt={collab.name}
-							class="typing-avatar"
-						/>
+						<img src={collab.avatar} alt={collab.name} class="typing-avatar" />
 					{:else}
 						<span class="typing-initials">
 							{getInitials(collab.name)}
@@ -361,11 +356,7 @@
 			out:fade={{ duration: 150 }}
 		>
 			{#if collab.avatar}
-				<img
-					src={collab.avatar}
-					alt={collab.name}
-					class="avatar-image"
-				/>
+				<img src={collab.avatar} alt={collab.name} class="avatar-image" />
 			{:else}
 				<span
 					class="avatar-initials"
@@ -429,7 +420,9 @@
 
 	.cursor-container {
 		position: absolute;
-		transition: left 0.08s ease-out, top 0.08s ease-out;
+		transition:
+			left 0.08s ease-out,
+			top 0.08s ease-out;
 		transform-origin: top left;
 	}
 
@@ -448,7 +441,8 @@
 	}
 
 	@keyframes cursor-pulse {
-		0%, 100% {
+		0%,
+		100% {
 			transform: scale(1);
 		}
 		50% {
@@ -511,7 +505,9 @@
 	}
 
 	@keyframes typing-bounce {
-		0%, 60%, 100% {
+		0%,
+		60%,
+		100% {
 			transform: translateY(0);
 			opacity: 0.4;
 		}
@@ -616,7 +612,9 @@
 		border: 2px solid var(--color);
 		background: white;
 		overflow: hidden;
-		transition: transform 0.15s ease, opacity 0.15s ease;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease;
 		cursor: pointer;
 		pointer-events: auto;
 		margin-left: -8px;
@@ -640,7 +638,8 @@
 	}
 
 	@keyframes presence-pulse {
-		0%, 100% {
+		0%,
+		100% {
 			box-shadow: 0 0 0 0 var(--color);
 		}
 		50% {
@@ -677,7 +676,8 @@
 	}
 
 	@keyframes typing-blink {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {

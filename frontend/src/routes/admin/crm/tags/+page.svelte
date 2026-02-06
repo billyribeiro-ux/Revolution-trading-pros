@@ -350,7 +350,8 @@
 					<label for="tag-title">Title <span class="required">*</span></label>
 					<input
 						type="text"
-						id="tag-title" name="tag-title"
+						id="tag-title"
+						name="tag-title"
 						bind:value={formData.title}
 						placeholder="Enter tag title"
 						disabled={isSaving}
@@ -407,6 +408,19 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Tag"
+	message="Are you sure you want to delete this tag? It will be removed from all contacts."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTag}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
 
 <style>
 	.admin-crm-tags {
@@ -913,13 +927,3 @@
 		animation: spin 0.8s linear infinite;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Tag"
-	message="Are you sure you want to delete this tag? It will be removed from all contacts."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTag}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

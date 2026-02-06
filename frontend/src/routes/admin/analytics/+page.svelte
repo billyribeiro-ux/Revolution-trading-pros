@@ -301,8 +301,8 @@
 				<!-- Dashboard Content - Layout Shift Free Pattern -->
 				<div class="dashboard-grid" in:fade={{ duration: 400 }}>
 					<!-- Overview Panel -->
-					<div 
-						class="tab-panel" 
+					<div
+						class="tab-panel"
 						class:active={activeTab === 'overview'}
 						inert={activeTab !== 'overview' ? true : undefined}
 					>
@@ -407,8 +407,8 @@
 					</div>
 
 					<!-- Funnels Panel -->
-					<div 
-						class="tab-panel" 
+					<div
+						class="tab-panel"
 						class:active={activeTab === 'funnels'}
 						inert={activeTab !== 'funnels' ? true : undefined}
 					>
@@ -438,8 +438,8 @@
 					</div>
 
 					<!-- Cohorts Panel -->
-					<div 
-						class="tab-panel" 
+					<div
+						class="tab-panel"
 						class:active={activeTab === 'cohorts'}
 						inert={activeTab !== 'cohorts' ? true : undefined}
 					>
@@ -474,8 +474,8 @@
 					</div>
 
 					<!-- Attribution Panel -->
-					<div 
-						class="tab-panel" 
+					<div
+						class="tab-panel"
 						class:active={activeTab === 'attribution'}
 						inert={activeTab !== 'attribution' ? true : undefined}
 					>
@@ -880,7 +880,7 @@
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(8px);
-		transition: 
+		transition:
 			opacity 0.2s ease,
 			visibility 0.2s ease,
 			transform 0.2s ease;

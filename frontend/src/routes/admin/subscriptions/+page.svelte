@@ -513,7 +513,8 @@
 						<label for="search" class="block text-sm font-medium text-slate-400 mb-2">Search</label>
 						<input
 							type="text"
-							id="search" name="search"
+							id="search"
+							name="search"
 							bind:value={searchQuery}
 							oninput={handleSearchInput}
 							placeholder="Search subscriptions..."
@@ -789,7 +790,9 @@
 			<div class="mb-6">
 				<label class="flex items-center gap-3 cursor-pointer">
 					<input
-						id="page-cancelimmediate" name="page-cancelimmediate" type="checkbox"
+						id="page-cancelimmediate"
+						name="page-cancelimmediate"
+						type="checkbox"
 						bind:checked={cancelImmediate}
 						class="w-4 h-4 bg-slate-900 border-slate-600 rounded text-red-500 focus:ring-red-500"
 					/>

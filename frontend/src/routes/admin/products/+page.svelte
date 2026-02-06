@@ -340,6 +340,19 @@
 	<!-- End admin-page-container -->
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Product"
+	message={pendingDelete ? `Delete "${pendingDelete.name}"? This action cannot be undone.` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteProduct}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDelete = null;
+	}}
+/>
+
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * RTP ADMIN PRODUCTS - Product-Specific Styles Only
@@ -701,13 +714,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Product"
-	message={pendingDelete ? `Delete "${pendingDelete.name}"? This action cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteProduct}
-	onCancel={() => { showDeleteModal = false; pendingDelete = null; }}
-/>

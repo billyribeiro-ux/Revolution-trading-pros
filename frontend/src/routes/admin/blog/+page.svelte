@@ -66,7 +66,6 @@
 		{ id: 'beginners', name: 'Beginners Guide', color: '#fb7185' }
 	];
 
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -121,7 +120,7 @@
 
 	// Helper function to get category by ID
 	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
-		return predefinedCategories.find(cat => cat.id === id);
+		return predefinedCategories.find((cat) => cat.id === id);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -778,7 +777,13 @@
 				{:else}
 					<div class="search-box">
 						<IconSearch size={20} />
-						<input id="blog-search" name="blog-search" type="text" bind:value={searchQuery} placeholder="Search posts... (Ctrl+F)" />
+						<input
+							id="blog-search"
+							name="blog-search"
+							type="text"
+							bind:value={searchQuery}
+							placeholder="Search posts... (Ctrl+F)"
+						/>
 					</div>
 				{/if}
 			</div>
@@ -786,9 +791,21 @@
 			<div class="controls-right">
 				<!-- Date Range -->
 				<div class="date-range">
-					<input id="blog-date-start" name="blog-date-start" type="date" bind:value={dateRange.start} class="date-input" />
+					<input
+						id="blog-date-start"
+						name="blog-date-start"
+						type="date"
+						bind:value={dateRange.start}
+						class="date-input"
+					/>
 					<span>to</span>
-					<input id="blog-date-end" name="blog-date-end" type="date" bind:value={dateRange.end} class="date-input" />
+					<input
+						id="blog-date-end"
+						name="blog-date-end"
+						type="date"
+						bind:value={dateRange.end}
+						class="date-input"
+					/>
 				</div>
 
 				<!-- Filters -->
@@ -888,7 +905,13 @@
 					<!-- Select All Card -->
 					<div class="select-all-card">
 						<label class="checkbox-label">
-							<input id="select-all-posts" name="select-all-posts" type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+							<input
+								id="select-all-posts"
+								name="select-all-posts"
+								type="checkbox"
+								bind:checked={selectAll}
+								onchange={toggleSelectAll}
+							/>
 							<span>Select All ({posts.length})</span>
 						</label>
 					</div>
@@ -1103,7 +1126,13 @@
 						<thead>
 							<tr>
 								<th class="th-checkbox">
-									<input id="select-all-posts-list" name="select-all-posts-list" type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+									<input
+										id="select-all-posts-list"
+										name="select-all-posts-list"
+										type="checkbox"
+										bind:checked={selectAll}
+										onchange={toggleSelectAll}
+									/>
 								</th>
 								<th class="th-title">Title</th>
 								<th class="th-author hidden-mobile">Author</th>
@@ -1174,7 +1203,9 @@
 											{post.seo_score}
 										</div>
 									</td>
-									<td class="hidden-mobile">{post.published_at ? formatDate(post.published_at) : '-'}</td>
+									<td class="hidden-mobile"
+										>{post.published_at ? formatDate(post.published_at) : '-'}</td
+									>
 									<td class="td-actions">
 										<div class="table-actions">
 											<button
@@ -1219,13 +1250,9 @@
 						Showing {posts.length} posts
 					</div>
 					<div class="pagination-controls">
-						<button class="pagination-btn" disabled>
-							Previous
-						</button>
+						<button class="pagination-btn" disabled> Previous </button>
 						<span class="pagination-current">1</span>
-						<button class="pagination-btn" disabled>
-							Next
-						</button>
+						<button class="pagination-btn" disabled> Next </button>
 					</div>
 				</div>
 			</div>
@@ -1287,15 +1314,33 @@
 					<div class="modal-content">
 						<div class="export-options">
 							<label>
-								<input id="export-csv" name="export-format" type="radio" bind:group={exportFormat} value="csv" />
+								<input
+									id="export-csv"
+									name="export-format"
+									type="radio"
+									bind:group={exportFormat}
+									value="csv"
+								/>
 								CSV Format
 							</label>
 							<label>
-								<input id="export-json" name="export-format" type="radio" bind:group={exportFormat} value="json" />
+								<input
+									id="export-json"
+									name="export-format"
+									type="radio"
+									bind:group={exportFormat}
+									value="json"
+								/>
 								JSON Format
 							</label>
 							<label>
-								<input id="export-wordpress" name="export-format" type="radio" bind:group={exportFormat} value="wordpress" />
+								<input
+									id="export-wordpress"
+									name="export-format"
+									type="radio"
+									bind:group={exportFormat}
+									value="wordpress"
+								/>
 								WordPress XML
 							</label>
 						</div>
@@ -1459,6 +1504,29 @@
 	<span>V Toggle View</span>
 	<span>R Refresh</span>
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Post"
+	message="Are you sure you want to delete this post?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeletePost}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Posts"
+	message={`Delete ${selectedPosts.size} posts? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	.admin-blog {
@@ -3022,23 +3090,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Post"
-	message="Are you sure you want to delete this post?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeletePost}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Posts"
-	message={`Delete ${selectedPosts.size} posts? This cannot be undone.`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

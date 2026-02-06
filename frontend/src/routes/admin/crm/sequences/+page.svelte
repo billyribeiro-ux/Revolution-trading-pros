@@ -411,7 +411,9 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					id="page-searchquery" name="page-searchquery" type="text"
+					id="page-searchquery"
+					name="page-searchquery"
+					type="text"
 					placeholder="Search sequences..."
 					bind:value={searchQuery}
 					aria-label="Search sequences"
@@ -612,7 +614,9 @@
 						<div class="form-group">
 							<label for="test-email">Email Address</label>
 							<input
-								id="test-email" name="test-email" autocomplete="email"
+								id="test-email"
+								name="test-email"
+								autocomplete="email"
 								type="email"
 								placeholder="Enter email address..."
 								bind:value={sendEmailForm.testEmail}
@@ -655,6 +659,19 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Sequence"
+	message="Are you sure you want to delete this sequence? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSequence}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
 
 <style>
 	/* =====================================================
@@ -1308,13 +1325,3 @@
 		animation: spin 0.8s linear infinite;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Sequence"
-	message="Are you sure you want to delete this sequence? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteSequence}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

@@ -108,9 +108,7 @@ export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageD
 
 			if (roomId) {
 				queryParams.set('room_id', roomId.toString());
-				const publicVideosResponse = await fetch(
-					`${API_URL}/api/videos?${queryParams.toString()}`
-				);
+				const publicVideosResponse = await fetch(`${API_URL}/api/videos?${queryParams.toString()}`);
 
 				if (publicVideosResponse.ok) {
 					const data: ApiResponse = await publicVideosResponse.json();

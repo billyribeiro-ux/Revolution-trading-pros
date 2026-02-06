@@ -425,113 +425,116 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
 			// STRATEGY 1: Try membership plans proxy endpoint
 			let response = await fetch('/api/admin/membership-plans', {
-			method: 'GET',
-			headers: await getAuthHeaders(),
-			credentials: 'include'
-		});
-
-		// STRATEGY 2: Fallback to products proxy endpoint
-		if (!response.ok || (await response.clone().json()).plans?.length === 0) {
-			console.warn(
-				'[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...'
-			);
-			response = await fetch('/api/products?product_type=membership&per_page=100', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
-		}
 
-		// Check if we got valid data
-		const responseData = await response.clone().json();
-		if (
-			!response.ok ||
-			(!responseData.data?.length && !responseData.products?.length && !responseData.plans?.length)
-		) {
-			console.log('[Developer] API returned no products, using mock data');
-			// STRATEGY 3: Return mock data for development
-			return getDeveloperMockMemberships();
-		}
+			// STRATEGY 2: Fallback to products proxy endpoint
+			if (!response.ok || (await response.clone().json()).plans?.length === 0) {
+				console.warn(
+					'[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...'
+				);
+				response = await fetch('/api/products?product_type=membership&per_page=100', {
+					method: 'GET',
+					headers: await getAuthHeaders(),
+					credentials: 'include'
+				});
+			}
 
-		const data = await response.json();
-		// ICT 11+ FIX: Handle multiple response formats from different endpoints
-		// - /api/admin/membership-plans returns { plans: [...] }
-		// - /api/products returns { data: [...] }
-		const products = data.plans || data.data || data.products || (Array.isArray(data) ? data : []);
-
-		console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
-
-		if (products.length === 0) {
-			console.warn('[Developer] ⚠️ No products returned from API, using mock data');
-			return getDeveloperMockMemberships();
-		}
-
-		// Transform membership plans/products into active memberships for developer
-		const memberships: UserMembership[] = products.map((item: any) => {
-			// Handle both membership_plans and products structures
-			const name = item.name || item.title || 'Unnamed Membership';
-			const slug = item.slug || `membership-${item.id}`;
-			const price = item.price || item.price_monthly || 0;
-
-			// Determine membership type from name, slug, or metadata
-			let membershipType: MembershipType = 'trading-room';
-			const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
-
+			// Check if we got valid data
+			const responseData = await response.clone().json();
 			if (
-				searchText.includes('course') ||
-				searchText.includes('class') ||
-				searchText.includes('mastery')
+				!response.ok ||
+				(!responseData.data?.length &&
+					!responseData.products?.length &&
+					!responseData.plans?.length)
 			) {
-				membershipType = 'course';
-			} else if (searchText.includes('indicator')) {
-				membershipType = 'indicator';
-			} else if (searchText.includes('alert')) {
-				membershipType = 'alert-service';
-			} else if (searchText.includes('watchlist') || searchText.includes('weekly')) {
-				membershipType = 'weekly-watchlist';
-			} else if (searchText.includes('report') || searchText.includes('premium')) {
-				membershipType = 'premium-report';
+				console.log('[Developer] API returned no products, using mock data');
+				// STRATEGY 3: Return mock data for development
+				return getDeveloperMockMemberships();
 			}
 
-			// Extract icon from metadata if available
-			let icon = getDefaultIcon(membershipType);
-			if (item.metadata && typeof item.metadata === 'object') {
-				icon = item.metadata.icon || icon;
-			} else if (item.features && typeof item.features === 'object') {
-				icon = item.features.icon || icon;
+			const data = await response.json();
+			// ICT 11+ FIX: Handle multiple response formats from different endpoints
+			// - /api/admin/membership-plans returns { plans: [...] }
+			// - /api/products returns { data: [...] }
+			const products =
+				data.plans || data.data || data.products || (Array.isArray(data) ? data : []);
+
+			console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
+
+			if (products.length === 0) {
+				console.warn('[Developer] ⚠️ No products returned from API, using mock data');
+				return getDeveloperMockMemberships();
 			}
 
-			return {
-				id: String(item.id),
-				name,
-				type: membershipType,
-				slug,
-				status: 'active' as MembershipStatus,
-				membershipType: 'complimentary' as MembershipSubscriptionType,
-				icon,
-				startDate: new Date().toISOString(),
-				nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-				price,
-				interval: 'monthly' as BillingInterval,
-				roomLabel: name,
-				features: Array.isArray(item.features) ? item.features : []
-			};
-		});
+			// Transform membership plans/products into active memberships for developer
+			const memberships: UserMembership[] = products.map((item: any) => {
+				// Handle both membership_plans and products structures
+				const name = item.name || item.title || 'Unnamed Membership';
+				const slug = item.slug || `membership-${item.id}`;
+				const price = item.price || item.price_monthly || 0;
 
-		console.log('[Developer] 📊 Membership breakdown:', {
-			total: memberships.length,
-			tradingRooms: memberships.filter((m) => m.type === 'trading-room').length,
-			courses: memberships.filter((m) => m.type === 'course').length,
-			indicators: memberships.filter((m) => m.type === 'indicator').length,
-			weeklyWatchlist: memberships.filter((m) => m.type === 'weekly-watchlist').length,
-			premiumReports: memberships.filter((m) => m.type === 'premium-report').length
-		});
+				// Determine membership type from name, slug, or metadata
+				let membershipType: MembershipType = 'trading-room';
+				const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
 
-		const enhanced = enhanceMemberships(memberships);
-		const categorized = categorizeMemberships(enhanced);
+				if (
+					searchText.includes('course') ||
+					searchText.includes('class') ||
+					searchText.includes('mastery')
+				) {
+					membershipType = 'course';
+				} else if (searchText.includes('indicator')) {
+					membershipType = 'indicator';
+				} else if (searchText.includes('alert')) {
+					membershipType = 'alert-service';
+				} else if (searchText.includes('watchlist') || searchText.includes('weekly')) {
+					membershipType = 'weekly-watchlist';
+				} else if (searchText.includes('report') || searchText.includes('premium')) {
+					membershipType = 'premium-report';
+				}
 
-		console.log('[Developer] ✅ Successfully loaded all memberships');
-		return categorized;
+				// Extract icon from metadata if available
+				let icon = getDefaultIcon(membershipType);
+				if (item.metadata && typeof item.metadata === 'object') {
+					icon = item.metadata.icon || icon;
+				} else if (item.features && typeof item.features === 'object') {
+					icon = item.features.icon || icon;
+				}
+
+				return {
+					id: String(item.id),
+					name,
+					type: membershipType,
+					slug,
+					status: 'active' as MembershipStatus,
+					membershipType: 'complimentary' as MembershipSubscriptionType,
+					icon,
+					startDate: new Date().toISOString(),
+					nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+					price,
+					interval: 'monthly' as BillingInterval,
+					roomLabel: name,
+					features: Array.isArray(item.features) ? item.features : []
+				};
+			});
+
+			console.log('[Developer] 📊 Membership breakdown:', {
+				total: memberships.length,
+				tradingRooms: memberships.filter((m) => m.type === 'trading-room').length,
+				courses: memberships.filter((m) => m.type === 'course').length,
+				indicators: memberships.filter((m) => m.type === 'indicator').length,
+				weeklyWatchlist: memberships.filter((m) => m.type === 'weekly-watchlist').length,
+				premiumReports: memberships.filter((m) => m.type === 'premium-report').length
+			});
+
+			const enhanced = enhanceMemberships(memberships);
+			const categorized = categorizeMemberships(enhanced);
+
+			console.log('[Developer] ✅ Successfully loaded all memberships');
+			return categorized;
 		} catch (error) {
 			console.error('[Developer] ❌ Critical error fetching memberships:', error);
 			// STRATEGY 3: Return mock data on error

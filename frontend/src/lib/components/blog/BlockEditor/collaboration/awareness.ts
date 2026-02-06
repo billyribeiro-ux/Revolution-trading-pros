@@ -172,16 +172,9 @@ export interface AwarenessManagerInstance {
  * awareness.destroy();
  * ```
  */
-export function createAwarenessManager(
-	options: AwarenessManagerOptions
-): AwarenessManagerInstance {
-	const {
-		awareness,
-		user,
-		onCollaboratorsChange,
-		onCollaboratorJoin,
-		onCollaboratorLeave
-	} = options;
+export function createAwarenessManager(options: AwarenessManagerOptions): AwarenessManagerInstance {
+	const { awareness, user, onCollaboratorsChange, onCollaboratorJoin, onCollaboratorLeave } =
+		options;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -474,8 +467,12 @@ export function createAwarenessManager(
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	return {
-		get collaborators() { return getCollaborators(); },
-		get localPresence() { return localPresence; },
+		get collaborators() {
+			return getCollaborators();
+		},
+		get localPresence() {
+			return localPresence;
+		},
 		updateCursor,
 		updateSelection,
 		updateTextSelection,
@@ -503,7 +500,7 @@ export function generateUserColor(): string {
 		'#60a5fa', // blue
 		'#a78bfa', // violet
 		'#f472b6', // pink
-		'#e879f9'  // fuchsia
+		'#e879f9' // fuchsia
 	];
 	return colors[Math.floor(Math.random() * colors.length)];
 }

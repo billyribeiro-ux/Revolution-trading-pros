@@ -356,7 +356,13 @@
 		const contentScore = analyzeContentSEO(plainText, wordCount, focusKeyword, issues, suggestions);
 
 		// Readability Analysis
-		const readabilityScore = analyzeReadability(plainText, sentences, wordCount, issues, suggestions);
+		const readabilityScore = analyzeReadability(
+			plainText,
+			sentences,
+			wordCount,
+			issues,
+			suggestions
+		);
 
 		// Keyword Analysis
 		const keywordScore = analyzeKeywords(

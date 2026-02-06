@@ -49,7 +49,7 @@
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
 	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
-		import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -329,10 +329,10 @@
 	// Only refresh on client when slug changes (navigation)
 	$effect(() => {
 		if (!browser) return;
-		
+
 		// Track slug changes for client-side navigation
 		const currentSlug = slug;
-		
+
 		// Only reload if navigating to a different room
 		if (currentSlug && data.slug !== currentSlug) {
 			untrack(() => {
@@ -1512,7 +1512,8 @@
 					<div class="form-group">
 						<label for="ticker">Ticker *</label>
 						<input
-							id="ticker" name="ticker"
+							id="ticker"
+							name="ticker"
 							type="text"
 							bind:value={tradePlanForm.ticker}
 							placeholder="NVDA"
@@ -1532,11 +1533,23 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="entry">Entry</label>
-						<input id="entry" name="entry" type="text" bind:value={tradePlanForm.entry} placeholder="$142.50" />
+						<input
+							id="entry"
+							name="entry"
+							type="text"
+							bind:value={tradePlanForm.entry}
+							placeholder="$142.50"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="stop">Stop</label>
-						<input id="stop" name="stop" type="text" bind:value={tradePlanForm.stop} placeholder="$136.00" />
+						<input
+							id="stop"
+							name="stop"
+							type="text"
+							bind:value={tradePlanForm.stop}
+							placeholder="$136.00"
+						/>
 					</div>
 				</div>
 
@@ -1544,7 +1557,8 @@
 					<div class="form-group">
 						<label for="target1">Target 1</label>
 						<input
-							id="target1" name="target1"
+							id="target1"
+							name="target1"
 							type="text"
 							bind:value={tradePlanForm.target1}
 							placeholder="$148.00"
@@ -1553,7 +1567,8 @@
 					<div class="form-group">
 						<label for="target2">Target 2</label>
 						<input
-							id="target2" name="target2"
+							id="target2"
+							name="target2"
 							type="text"
 							bind:value={tradePlanForm.target2}
 							placeholder="$152.00"
@@ -1562,7 +1577,8 @@
 					<div class="form-group">
 						<label for="target3">Target 3</label>
 						<input
-							id="target3" name="target3"
+							id="target3"
+							name="target3"
 							type="text"
 							bind:value={tradePlanForm.target3}
 							placeholder="$158.00"
@@ -1571,7 +1587,8 @@
 					<div class="form-group">
 						<label for="runner">Runner</label>
 						<input
-							id="runner" name="runner"
+							id="runner"
+							name="runner"
 							type="text"
 							bind:value={tradePlanForm.runner}
 							placeholder="$165.00+"
@@ -1583,7 +1600,8 @@
 					<div class="form-group">
 						<label for="options_strike">Options Strike</label>
 						<input
-							id="options_strike" name="options_strike"
+							id="options_strike"
+							name="options_strike"
 							type="text"
 							bind:value={tradePlanForm.options_strike}
 							placeholder="$145 Call"
@@ -1591,7 +1609,12 @@
 					</div>
 					<div class="form-group">
 						<label for="options_exp">Options Exp</label>
-						<input id="options_exp" name="options_exp" type="date" bind:value={tradePlanForm.options_exp} />
+						<input
+							id="options_exp"
+							name="options_exp"
+							type="date"
+							bind:value={tradePlanForm.options_exp}
+						/>
 					</div>
 				</div>
 
@@ -1667,7 +1690,8 @@
 					<div class="form-group">
 						<label for="alert_ticker">Ticker *</label>
 						<input
-							id="alert_ticker" name="alert_ticker"
+							id="alert_ticker"
+							name="alert_ticker"
 							type="text"
 							bind:value={alertForm.ticker}
 							placeholder="NVDA"
@@ -1679,7 +1703,8 @@
 				<div class="form-group full-width">
 					<label for="alert_title">Title *</label>
 					<input
-						id="alert_title" name="alert_title"
+						id="alert_title"
+						name="alert_title"
 						type="text"
 						bind:value={alertForm.title}
 						placeholder="Opening NVDA Swing Position"
@@ -1730,7 +1755,8 @@
 							<div class="form-group">
 								<label for="quantity">Quantity</label>
 								<input
-									id="quantity" name="quantity"
+									id="quantity"
+									name="quantity"
 									type="number"
 									bind:value={alertForm.quantity}
 									placeholder="10"
@@ -1751,7 +1777,8 @@
 								<div class="form-group">
 									<label for="strike">Strike</label>
 									<input
-										id="strike" name="strike"
+										id="strike"
+										name="strike"
 										type="number"
 										step="0.5"
 										bind:value={alertForm.strike}
@@ -1760,7 +1787,12 @@
 								</div>
 								<div class="form-group">
 									<label for="expiration">Expiration</label>
-									<input id="expiration" name="expiration" type="date" bind:value={alertForm.expiration} />
+									<input
+										id="expiration"
+										name="expiration"
+										type="date"
+										bind:value={alertForm.expiration}
+									/>
 								</div>
 							</div>
 							<div class="form-row">
@@ -1788,7 +1820,8 @@
 							<div class="form-group">
 								<label for="limit_price">Limit Price</label>
 								<input
-									id="limit_price" name="limit_price"
+									id="limit_price"
+									name="limit_price"
 									type="number"
 									step="0.01"
 									bind:value={alertForm.limit_price}
@@ -1798,7 +1831,8 @@
 							<div class="form-group">
 								<label for="fill_price">Fill Price</label>
 								<input
-									id="fill_price" name="fill_price"
+									id="fill_price"
+									name="fill_price"
 									type="number"
 									step="0.01"
 									bind:value={alertForm.fill_price}
@@ -1810,7 +1844,8 @@
 						<div class="form-group full-width">
 							<label for="tos_string">TOS String (auto-generated or manual)</label>
 							<input
-								id="tos_string" name="tos_string"
+								id="tos_string"
+								name="tos_string"
 								type="text"
 								bind:value={alertForm.tos_string}
 								placeholder="BUY +10 NVDA 100 (Weeklys) 17 JAN 25 145 CALL @2.50 LMT"
@@ -1894,7 +1929,8 @@
 					<div class="form-group">
 						<label for="week_title">Week Title *</label>
 						<input
-							id="week_title" name="week_title"
+							id="week_title"
+							name="week_title"
 							type="text"
 							bind:value={videoForm.week_title}
 							placeholder="Week of January 13, 2026"
@@ -1905,7 +1941,8 @@
 				<div class="form-group full-width">
 					<label for="video_title">Video Title *</label>
 					<input
-						id="video_title" name="video_title"
+						id="video_title"
+						name="video_title"
 						type="text"
 						bind:value={videoForm.video_title}
 						placeholder="Weekly Breakdown: Top Swing Setups"
@@ -1916,7 +1953,8 @@
 					<div class="form-group flex-2">
 						<label for="video_url">Video URL *</label>
 						<input
-							id="video_url" name="video_url"
+							id="video_url"
+							name="video_url"
 							type="url"
 							bind:value={videoForm.video_url}
 							placeholder="https://player.vimeo.com/video/..."
@@ -1924,14 +1962,21 @@
 					</div>
 					<div class="form-group">
 						<label for="duration">Duration</label>
-						<input id="duration" name="duration" type="text" bind:value={videoForm.duration} placeholder="24:35" />
+						<input
+							id="duration"
+							name="duration"
+							type="text"
+							bind:value={videoForm.duration}
+							placeholder="24:35"
+						/>
 					</div>
 				</div>
 
 				<div class="form-group full-width">
 					<label for="thumbnail_url">Thumbnail URL</label>
 					<input
-						id="thumbnail_url" name="thumbnail_url"
+						id="thumbnail_url"
+						name="thumbnail_url"
 						type="url"
 						bind:value={videoForm.thumbnail_url}
 						placeholder="https://..."
@@ -2027,7 +2072,8 @@
 					<div class="form-group">
 						<label for="exit_price">Exit Price *</label>
 						<input
-							id="exit_price" name="exit_price"
+							id="exit_price"
+							name="exit_price"
 							type="number"
 							step="0.01"
 							bind:value={closeTradeForm.exit_price}
@@ -2037,7 +2083,12 @@
 					</div>
 					<div class="form-group">
 						<label for="exit_date">Exit Date</label>
-						<input id="exit_date" name="exit_date" type="date" bind:value={closeTradeForm.exit_date} />
+						<input
+							id="exit_date"
+							name="exit_date"
+							type="date"
+							bind:value={closeTradeForm.exit_date}
+						/>
 					</div>
 				</div>
 
@@ -2067,6 +2118,60 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteTradePlanModal}
+	title="Delete Trade Plan Entry"
+	message={pendingDeleteTradePlan ? `Delete ${pendingDeleteTradePlan.ticker} from trade plan?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTradePlan}
+	onCancel={() => {
+		showDeleteTradePlanModal = false;
+		pendingDeleteTradePlan = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteAlertModal}
+	title="Delete Alert"
+	message={pendingDeleteAlert ? `Delete alert "${pendingDeleteAlert.title}"?` : ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAlert}
+	onCancel={() => {
+		showDeleteAlertModal = false;
+		pendingDeleteAlert = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteTradeModal}
+	title="Delete Trade"
+	message={pendingDeleteTrade
+		? `Delete trade ${pendingDeleteTrade.ticker}? This cannot be undone.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTrade}
+	onCancel={() => {
+		showDeleteTradeModal = false;
+		pendingDeleteTrade = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteVideoModal}
+	title="Delete Video"
+	message="Delete this video?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteVideo}
+	onCancel={() => {
+		showDeleteVideoModal = false;
+		pendingDeleteVideoId = null;
+	}}
+/>
 
 <style>
 	/* Base Styles */
@@ -3171,43 +3276,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteTradePlanModal}
-	title="Delete Trade Plan Entry"
-	message={pendingDeleteTradePlan ? `Delete ${pendingDeleteTradePlan.ticker} from trade plan?` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTradePlan}
-	onCancel={() => { showDeleteTradePlanModal = false; pendingDeleteTradePlan = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteAlertModal}
-	title="Delete Alert"
-	message={pendingDeleteAlert ? `Delete alert "${pendingDeleteAlert.title}"?` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteAlert}
-	onCancel={() => { showDeleteAlertModal = false; pendingDeleteAlert = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteTradeModal}
-	title="Delete Trade"
-	message={pendingDeleteTrade ? `Delete trade ${pendingDeleteTrade.ticker}? This cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTrade}
-	onCancel={() => { showDeleteTradeModal = false; pendingDeleteTrade = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteVideoModal}
-	title="Delete Video"
-	message="Delete this video?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteVideo}
-	onCancel={() => { showDeleteVideoModal = false; pendingDeleteVideoId = null; }}
-/>

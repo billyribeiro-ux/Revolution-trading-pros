@@ -298,7 +298,9 @@
 				<!-- Custom Date Range -->
 				<div class="flex items-center gap-2">
 					<input
-						id="page-filterdatefrom" name="page-filterdatefrom" type="date"
+						id="page-filterdatefrom"
+						name="page-filterdatefrom"
+						type="date"
 						bind:value={filterDateFrom}
 						onchange={() => {
 							datePreset = '';
@@ -308,7 +310,9 @@
 					/>
 					<span class="text-gray-500">to</span>
 					<input
-						id="page-filterdateto" name="page-filterdateto" type="date"
+						id="page-filterdateto"
+						name="page-filterdateto"
+						type="date"
 						bind:value={filterDateTo}
 						onchange={() => {
 							datePreset = '';

@@ -370,7 +370,7 @@
 		}
 
 		/* Full width fields don't need gap adjustment */
-		.field-wrapper[style*="--field-width: 100%"] {
+		.field-wrapper[style*='--field-width: 100%'] {
 			width: 100%;
 			flex-basis: 100%;
 		}

@@ -649,7 +649,8 @@
 						<div class="form-group">
 							<label for="action-title">Action Title (optional)</label>
 							<input
-								id="action-title" name="action-title"
+								id="action-title"
+								name="action-title"
 								type="text"
 								placeholder="Give this action a descriptive name..."
 								bind:value={actionForm.title}
@@ -661,7 +662,8 @@
 							<label for="action-delay">Delay Before This Action</label>
 							<div class="delay-inputs">
 								<input
-									id="action-delay" name="action-delay"
+									id="action-delay"
+									name="action-delay"
 									type="number"
 									min="0"
 									bind:value={actionForm.delay_seconds}
@@ -710,7 +712,8 @@
 							<div class="form-group">
 								<label for="email-subject">Email Subject</label>
 								<input
-									id="email-subject" name="email-subject"
+									id="email-subject"
+									name="email-subject"
 									type="text"
 									placeholder="Enter email subject..."
 									bind:value={actionForm.settings.subject}
@@ -729,7 +732,8 @@
 							<div class="form-group">
 								<label for="webhook-url">Webhook URL</label>
 								<input
-									id="webhook-url" name="webhook-url"
+									id="webhook-url"
+									name="webhook-url"
 									type="url"
 									placeholder="https://..."
 									bind:value={actionForm.settings.url}
@@ -783,6 +787,19 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteActionModal}
+	title="Delete Action"
+	message="Are you sure you want to delete this action?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAction}
+	onCancel={() => {
+		showDeleteActionModal = false;
+		pendingDeleteActionId = null;
+	}}
+/>
 
 <style>
 	.edit-automation-page {
@@ -1414,13 +1431,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteActionModal}
-	title="Delete Action"
-	message="Are you sure you want to delete this action?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteAction}
-	onCancel={() => { showDeleteActionModal = false; pendingDeleteActionId = null; }}
-/>

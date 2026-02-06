@@ -500,7 +500,9 @@
 								<div class="text-xs text-gray-600 dark:text-gray-400">
 									<span class="font-medium">{activity.user?.name || 'Someone'}</span>
 									{activity.description}
-									<span class="text-gray-500">{activity.created_at ? formatDate(activity.created_at) : ''}</span>
+									<span class="text-gray-500"
+										>{activity.created_at ? formatDate(activity.created_at) : ''}</span
+									>
 								</div>
 							{/each}
 						</div>
@@ -515,7 +517,9 @@
 					<div class="flex-1 relative">
 						<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 						<input
-							id="boards-searchquery" name="boards-searchquery" type="text"
+							id="boards-searchquery"
+							name="boards-searchquery"
+							type="text"
 							placeholder="Search boards..."
 							bind:value={searchQuery}
 							class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
@@ -541,7 +545,9 @@
 					</div>
 					<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
 						<input
-							id="boards-showarchived" name="boards-showarchived" type="checkbox"
+							id="boards-showarchived"
+							name="boards-showarchived"
+							type="checkbox"
 							bind:checked={showArchived}
 							class="rounded border-gray-300 dark:border-gray-600"
 						/>
@@ -846,7 +852,8 @@
 						>
 						<input
 							type="text"
-							id="board-title" name="board-title"
+							id="board-title"
+							name="board-title"
 							bind:value={newBoard.title}
 							placeholder="Enter board title..."
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
@@ -934,7 +941,8 @@
 						>
 						<input
 							type="text"
-							id="folder-name" name="folder-name"
+							id="folder-name"
+							name="folder-name"
 							bind:value={newFolder.title}
 							placeholder="Enter folder name..."
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
@@ -947,7 +955,8 @@
 						>
 						<input
 							type="color"
-							id="folder-color" name="folder-color"
+							id="folder-color"
+							name="folder-color"
 							bind:value={newFolder.color}
 							class="w-full h-10 rounded-lg cursor-pointer"
 						/>
@@ -980,7 +989,10 @@
 	confirmText="Archive"
 	variant="warning"
 	onConfirm={confirmArchive}
-	onCancel={() => { showArchiveModal = false; pendingBoard = null; }}
+	onCancel={() => {
+		showArchiveModal = false;
+		pendingBoard = null;
+	}}
 />
 
 <ConfirmationModal
@@ -990,5 +1002,8 @@
 	confirmText="Delete"
 	variant="danger"
 	onConfirm={confirmDelete}
-	onCancel={() => { showDeleteModal = false; pendingBoard = null; }}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingBoard = null;
+	}}
 />

@@ -696,7 +696,9 @@
 			<div class="header-actions">
 				<div class="search-box">
 					<input
-						id="page-searchquery" name="page-searchquery" type="text"
+						id="page-searchquery"
+						name="page-searchquery"
+						type="text"
 						placeholder="Search media..."
 						bind:value={searchQuery}
 						class="search-input"
@@ -1081,7 +1083,9 @@
 											class:visible={selectedIds.size > 0 || selectedIds.has(item.id)}
 										>
 											<input
-												id="page-checkbox" name="page-checkbox" type="checkbox"
+												id="page-checkbox"
+												name="page-checkbox"
+												type="checkbox"
 												checked={selectedIds.has(item.id)}
 												onclick={(e: MouseEvent) => {
 													e.stopPropagation();
@@ -1104,7 +1108,9 @@
 									<!-- List view -->
 									<div class="item-checkbox">
 										<input
-											id="page-checkbox" name="page-checkbox" type="checkbox"
+											id="page-checkbox"
+											name="page-checkbox"
+											type="checkbox"
 											checked={selectedIds.has(item.id)}
 											onclick={(e: MouseEvent) => {
 												e.stopPropagation();
@@ -1670,6 +1676,33 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Delete Single Item Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete File"
+	message={pendingDeleteItem
+		? `Delete "${pendingDeleteItem.filename}"? This cannot be undone.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteItem = null;
+	}}
+/>
+
+<!-- Bulk Delete Modal -->
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Selected Files"
+	message={`Delete ${selectedIds.size} selected file(s)? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -2915,25 +2948,3 @@
 		}
 	}
 </style>
-
-<!-- Delete Single Item Modal -->
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete File"
-	message={pendingDeleteItem ? `Delete "${pendingDeleteItem.filename}"? This cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDelete}
-	onCancel={() => { showDeleteModal = false; pendingDeleteItem = null; }}
-/>
-
-<!-- Bulk Delete Modal -->
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Selected Files"
-	message={`Delete ${selectedIds.size} selected file(s)? This cannot be undone.`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

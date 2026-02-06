@@ -111,7 +111,9 @@
 		if (!confirm('Are you sure you want to delete your review?')) return;
 
 		try {
-			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, { method: 'DELETE' });
+			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, {
+				method: 'DELETE'
+			});
 			if (res.success) {
 				successMessage = 'Review deleted';
 				await loadReviews();
@@ -146,8 +148,16 @@
 
 	{#if successMessage}
 		<div class="alert success">
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
 			</svg>
 			{successMessage}
 		</div>
@@ -168,8 +178,18 @@
 							onclick={() => (rating = star)}
 							aria-label="Rate {star} stars"
 						>
-							<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill={star <= rating ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2">
-								<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="28"
+								height="28"
+								viewBox="0 0 24 24"
+								fill={star <= rating ? 'currentColor' : 'none'}
+								stroke="currentColor"
+								stroke-width="2"
+							>
+								<polygon
+									points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+								/>
 							</svg>
 						</button>
 					{/each}
@@ -232,7 +252,9 @@
 							stroke="#fbbf24"
 							stroke-width="2"
 						>
-							<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+							<polygon
+								points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+							/>
 						</svg>
 					{/each}
 				</div>
@@ -261,8 +283,20 @@
 						<div class="review-header">
 							<div class="user-info">
 								<div class="avatar">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
+										<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle
+											cx="12"
+											cy="7"
+											r="4"
+										/>
 									</svg>
 								</div>
 								<div class="user-meta">
@@ -285,7 +319,9 @@
 									stroke="#fbbf24"
 									stroke-width="2"
 								>
-									<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+									<polygon
+										points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+									/>
 								</svg>
 							{/each}
 						</div>
@@ -339,7 +375,9 @@
 		transition: background 0.2s;
 	}
 
-	.btn-write-review:hover { background: #0f2f45; }
+	.btn-write-review:hover {
+		background: #0f2f45;
+	}
 
 	.alert {
 		display: flex;
@@ -400,7 +438,10 @@
 		transition: color 0.2s;
 	}
 
-	.star-btn.active, .star-btn:hover { color: #fbbf24; }
+	.star-btn.active,
+	.star-btn:hover {
+		color: #fbbf24;
+	}
 
 	.rating-label {
 		font-size: 14px;
@@ -453,11 +494,25 @@
 		border: none;
 	}
 
-	.btn.primary { background: #143e59; color: #fff; }
-	.btn.primary:hover:not(:disabled) { background: #0f2f45; }
-	.btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn.secondary { background: #fff; color: #374151; border: 1px solid #d1d5db; }
-	.btn.secondary:hover { background: #f9fafb; }
+	.btn.primary {
+		background: #143e59;
+		color: #fff;
+	}
+	.btn.primary:hover:not(:disabled) {
+		background: #0f2f45;
+	}
+	.btn.primary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	.btn.secondary {
+		background: #fff;
+		color: #374151;
+		border: 1px solid #d1d5db;
+	}
+	.btn.secondary:hover {
+		background: #f9fafb;
+	}
 
 	.loading {
 		display: flex;
@@ -477,7 +532,11 @@
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin { to { transform: rotate(360deg); } }
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 	.reviews-summary {
 		display: grid;

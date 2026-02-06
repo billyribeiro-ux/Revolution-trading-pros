@@ -45,9 +45,7 @@
 	// Derived Values
 	// =========================================================================
 
-	let ctaHeading = $derived(
-		props.block.content.ctaHeading || 'Ready to Transform Your Trading?'
-	);
+	let ctaHeading = $derived(props.block.content.ctaHeading || 'Ready to Transform Your Trading?');
 	let ctaDescription = $derived(
 		props.block.content.ctaDescription ||
 			'Join thousands of successful traders who have elevated their game with our proven strategies and tools.'
@@ -63,12 +61,8 @@
 	);
 
 	// Settings
-	let alignment = $derived<Alignment>(
-		(props.block.settings.alignment as Alignment) || 'center'
-	);
-	let backgroundColor = $derived(
-		props.block.settings.backgroundColor || '#3b82f6'
-	);
+	let alignment = $derived<Alignment>((props.block.settings.alignment as Alignment) || 'center');
+	let backgroundColor = $derived(props.block.settings.backgroundColor || '#3b82f6');
 
 	// Computed styles
 	let containerStyle = $derived(`background-color: ${backgroundColor};`);
@@ -113,11 +107,7 @@
 	}
 </script>
 
-<section
-	class="cta-block {textAlignClass}"
-	style={containerStyle}
-	aria-label="Call to action"
->
+<section class="cta-block {textAlignClass}" style={containerStyle} aria-label="Call to action">
 	<div class="cta-content">
 		<!-- Heading -->
 		{#if props.isEditing}
@@ -126,7 +116,9 @@
 				class="cta-heading"
 				oninput={(e) => updateContent({ ctaHeading: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
-			>{ctaHeading}</h2>
+			>
+				{ctaHeading}
+			</h2>
 		{:else}
 			<h2 class="cta-heading">{ctaHeading}</h2>
 		{/if}
@@ -136,9 +128,12 @@
 			<p
 				contenteditable="true"
 				class="cta-description"
-				oninput={(e) => updateContent({ ctaDescription: (e.target as HTMLElement).textContent || '' })}
+				oninput={(e) =>
+					updateContent({ ctaDescription: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
-			>{ctaDescription}</p>
+			>
+				{ctaDescription}
+			</p>
 		{:else}
 			<p class="cta-description">{ctaDescription}</p>
 		{/if}
@@ -237,7 +232,8 @@
 						<span>Alignment:</span>
 						<select
 							value={alignment}
-							onchange={(e) => updateSettings({ alignment: (e.target as HTMLSelectElement).value as Alignment })}
+							onchange={(e) =>
+								updateSettings({ alignment: (e.target as HTMLSelectElement).value as Alignment })}
 						>
 							<option value="left">Left</option>
 							<option value="center">Center</option>
@@ -250,14 +246,16 @@
 						<input
 							type="color"
 							value={backgroundColor}
-							oninput={(e) => updateSettings({ backgroundColor: (e.target as HTMLInputElement).value })}
+							oninput={(e) =>
+								updateSettings({ backgroundColor: (e.target as HTMLInputElement).value })}
 							class="color-picker"
 						/>
 						<input
 							type="text"
 							value={backgroundColor}
 							placeholder="#3b82f6"
-							oninput={(e) => updateSettings({ backgroundColor: (e.target as HTMLInputElement).value })}
+							oninput={(e) =>
+								updateSettings({ backgroundColor: (e.target as HTMLInputElement).value })}
 							class="color-input"
 						/>
 					</label>
@@ -467,8 +465,8 @@
 		opacity: 0.9;
 	}
 
-	.setting-field input[type="text"],
-	.setting-field input[type="url"] {
+	.setting-field input[type='text'],
+	.setting-field input[type='url'] {
 		flex: 1;
 		padding: 0.5rem 0.75rem;
 		border: 1px solid rgba(255, 255, 255, 0.3);
@@ -478,13 +476,13 @@
 		font-size: 0.875rem;
 	}
 
-	.setting-field input[type="text"]::placeholder,
-	.setting-field input[type="url"]::placeholder {
+	.setting-field input[type='text']::placeholder,
+	.setting-field input[type='url']::placeholder {
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.setting-field input[type="text"]:focus,
-	.setting-field input[type="url"]:focus {
+	.setting-field input[type='text']:focus,
+	.setting-field input[type='url']:focus {
 		outline: none;
 		border-color: rgba(255, 255, 255, 0.6);
 		background: rgba(255, 255, 255, 0.15);

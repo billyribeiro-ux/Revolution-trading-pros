@@ -232,6 +232,17 @@
 	{/if}
 </div>
 
+<!-- Delete Confirmation Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Position"
+	message="Are you sure you want to delete {position.ticker}? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => (showDeleteModal = false)}
+/>
+
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════
 	   ACTIVE POSITION CARD - Netflix-grade compact trading card
@@ -257,7 +268,11 @@
 
 	.card.profit {
 		border-left-color: var(--color-profit);
-		background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-profit-bg-subtle) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-bg-card) 0%,
+			var(--color-profit-bg-subtle) 100%
+		);
 	}
 	.card.loss {
 		border-left-color: var(--color-loss);
@@ -290,8 +305,13 @@
 	}
 
 	@keyframes pulse-badge {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.8; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.8;
+		}
 	}
 
 	/* Row 1 - Main ticker info */
@@ -524,14 +544,3 @@
 		min-height: var(--touch-target-min);
 	}
 </style>
-
-<!-- Delete Confirmation Modal -->
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Position"
-	message="Are you sure you want to delete {position.ticker}? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDelete}
-	onCancel={() => (showDeleteModal = false)}
-/>

@@ -749,7 +749,8 @@
 					<div class="form-group full-width">
 						<label for="cat-name">Name *</label>
 						<input
-							id="cat-name" name="cat-name"
+							id="cat-name"
+							name="cat-name"
 							type="text"
 							bind:value={categoryForm.name}
 							placeholder="Category name"
@@ -760,7 +761,8 @@
 					<div class="form-group">
 						<label for="cat-slug">Slug *</label>
 						<input
-							id="cat-slug" name="cat-slug"
+							id="cat-slug"
+							name="cat-slug"
 							type="text"
 							bind:value={categoryForm.slug}
 							placeholder="category-slug"
@@ -813,7 +815,8 @@
 					<div class="form-group full-width">
 						<label for="cat-meta-title">SEO Meta Title</label>
 						<input
-							id="cat-meta-title" name="cat-meta-title"
+							id="cat-meta-title"
+							name="cat-meta-title"
 							type="text"
 							bind:value={categoryForm.meta_title}
 							placeholder="Custom page title for SEO"
@@ -899,6 +902,31 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Delete Single Category Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Category"
+	message={deleteWarningMessage}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCategory}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteCategory = null;
+	}}
+/>
+
+<!-- Bulk Delete Modal -->
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Categories"
+	message={`Delete ${selectedIds.size} categories? This action cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	/* Page Layout */
@@ -1738,25 +1766,3 @@
 		}
 	}
 </style>
-
-<!-- Delete Single Category Modal -->
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Category"
-	message={deleteWarningMessage}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCategory}
-	onCancel={() => { showDeleteModal = false; pendingDeleteCategory = null; }}
-/>
-
-<!-- Bulk Delete Modal -->
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Categories"
-	message={`Delete ${selectedIds.size} categories? This action cannot be undone.`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

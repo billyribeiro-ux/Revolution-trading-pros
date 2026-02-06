@@ -687,7 +687,10 @@
 		try {
 			const response = await bulkOpsApi.bulkPublish(Array.from(selectedVideoIds), publish);
 			if (response.success) {
-				showSuccess(response.message || `${selectedVideoIds.size} videos ${publish ? 'published' : 'unpublished'}`);
+				showSuccess(
+					response.message ||
+						`${selectedVideoIds.size} videos ${publish ? 'published' : 'unpublished'}`
+				);
 				clearSelection();
 				await loadVideos();
 			} else {
@@ -708,7 +711,10 @@
 		try {
 			const response = await bulkOpsApi.bulkFeature(Array.from(selectedVideoIds), feature);
 			if (response.success) {
-				showSuccess(response.message || `${selectedVideoIds.size} videos ${feature ? 'featured' : 'unfeatured'}`);
+				showSuccess(
+					response.message ||
+						`${selectedVideoIds.size} videos ${feature ? 'featured' : 'unfeatured'}`
+				);
 				clearSelection();
 				await loadVideos();
 			} else {
@@ -1203,7 +1209,8 @@
 				<label for="search-videos" class="sr-only">Search videos or categories</label>
 				<input
 					type="text"
-					id="search-videos" name="search-videos"
+					id="search-videos"
+					name="search-videos"
 					placeholder="Search videos, categories..."
 					bind:value={searchQuery}
 				/>
@@ -1335,7 +1342,9 @@
 								<button
 									class="select-all-btn"
 									onclick={toggleSelectAll}
-									title={selectedVideoIds.size === filteredVideos.length ? 'Deselect all' : 'Select all'}
+									title={selectedVideoIds.size === filteredVideos.length
+										? 'Deselect all'
+										: 'Select all'}
 								>
 									{#if selectedVideoIds.size === filteredVideos.length && filteredVideos.length > 0}
 										<IconCheckbox size={18} />
@@ -1459,7 +1468,11 @@
 										<button class="btn-icon" title="Edit" onclick={() => openEditModal(video)}>
 											<IconEdit size={16} />
 										</button>
-										<button class="btn-icon" title="Fetch Duration" onclick={() => fetchVideoDuration(video.id)}>
+										<button
+											class="btn-icon"
+											title="Fetch Duration"
+											onclick={() => fetchVideoDuration(video.id)}
+										>
 											<IconRefresh size={16} />
 										</button>
 										<button
@@ -1553,7 +1566,8 @@
 					<label for="video-url">Video URL</label>
 					<input
 						type="url"
-						id="video-url" name="video-url"
+						id="video-url"
+						name="video-url"
 						placeholder="https://vimeo.com/..."
 						bind:value={formData.video_url}
 					/>
@@ -1570,7 +1584,8 @@
 					<label for="video-title">Title</label>
 					<input
 						type="text"
-						id="video-title" name="video-title"
+						id="video-title"
+						name="video-title"
 						placeholder="Risk Management Fundamentals"
 						bind:value={formData.title}
 					/>
@@ -1656,7 +1671,8 @@
 					<label for="thumbnail-url">Thumbnail URL (optional)</label>
 					<input
 						type="url"
-						id="thumbnail-url" name="thumbnail-url"
+						id="thumbnail-url"
+						name="thumbnail-url"
 						placeholder="https://..."
 						bind:value={formData.thumbnail_url}
 					/>
@@ -1665,11 +1681,21 @@
 				<!-- Options -->
 				<div class="form-options">
 					<label class="checkbox-label">
-						<input id="videos-formdata-is-published" name="videos-formdata-is-published" type="checkbox" bind:checked={formData.is_published} />
+						<input
+							id="videos-formdata-is-published"
+							name="videos-formdata-is-published"
+							type="checkbox"
+							bind:checked={formData.is_published}
+						/>
 						<span>Publish immediately</span>
 					</label>
 					<label class="checkbox-label">
-						<input id="videos-formdata-is-featured" name="videos-formdata-is-featured" type="checkbox" bind:checked={formData.is_featured} />
+						<input
+							id="videos-formdata-is-featured"
+							name="videos-formdata-is-featured"
+							type="checkbox"
+							bind:checked={formData.is_featured}
+						/>
 						<span>Feature this video</span>
 					</label>
 				</div>
@@ -1749,7 +1775,8 @@
 					<label for="new-video-url">New Video URL</label>
 					<input
 						type="url"
-						id="new-video-url" name="new-video-url"
+						id="new-video-url"
+						name="new-video-url"
 						placeholder="https://your-video-url.com/video.mp4"
 						bind:value={newVideoUrl}
 					/>
@@ -1959,20 +1986,22 @@
 					<IconTags size={24} />
 					Bulk Update Tags
 				</h2>
-				<button
-					class="modal-close"
-					onclick={closeBulkTagsModal}
-					type="button"
-					aria-label="Close"
-				>&times;</button>
+				<button class="modal-close" onclick={closeBulkTagsModal} type="button" aria-label="Close"
+					>&times;</button
+				>
 			</div>
 			<div class="modal-body">
-				<p class="bulk-info">Update tags for <strong>{selectedVideoIds.size}</strong> selected video(s)</p>
+				<p class="bulk-info">
+					Update tags for <strong>{selectedVideoIds.size}</strong> selected video(s)
+				</p>
 
 				<!-- Tags to Add -->
 				<div class="form-group">
 					<label>
-						<IconPlus size={16} style="display:inline;vertical-align:middle;color:#22c55e;margin-right:4px;" />
+						<IconPlus
+							size={16}
+							style="display:inline;vertical-align:middle;color:#22c55e;margin-right:4px;"
+						/>
 						Tags to Add
 					</label>
 					<div class="bulk-tags-grid">
@@ -1996,7 +2025,10 @@
 				<!-- Tags to Remove -->
 				<div class="form-group">
 					<label>
-						<IconX size={16} style="display:inline;vertical-align:middle;color:#ef4444;margin-right:4px;" />
+						<IconX
+							size={16}
+							style="display:inline;vertical-align:middle;color:#ef4444;margin-right:4px;"
+						/>
 						Tags to Remove
 					</label>
 					<div class="bulk-tags-grid">
@@ -2020,10 +2052,16 @@
 				{#if bulkTagsToAdd.length > 0 || bulkTagsToRemove.length > 0}
 					<div class="bulk-tags-summary">
 						{#if bulkTagsToAdd.length > 0}
-							<p><strong>Adding:</strong> {bulkTagsToAdd.map(id => getCategoryById(id)?.name).join(', ')}</p>
+							<p>
+								<strong>Adding:</strong>
+								{bulkTagsToAdd.map((id) => getCategoryById(id)?.name).join(', ')}
+							</p>
 						{/if}
 						{#if bulkTagsToRemove.length > 0}
-							<p><strong>Removing:</strong> {bulkTagsToRemove.map(id => getCategoryById(id)?.name).join(', ')}</p>
+							<p>
+								<strong>Removing:</strong>
+								{bulkTagsToRemove.map((id) => getCategoryById(id)?.name).join(', ')}
+							</p>
 						{/if}
 					</div>
 				{/if}
@@ -2033,7 +2071,8 @@
 				<button
 					class="btn-primary"
 					onclick={bulkUpdateTags}
-					disabled={isBulkActionLoading || (bulkTagsToAdd.length === 0 && bulkTagsToRemove.length === 0)}
+					disabled={isBulkActionLoading ||
+						(bulkTagsToAdd.length === 0 && bulkTagsToRemove.length === 0)}
 				>
 					{#if isBulkActionLoading}
 						<span class="btn-spinner"></span>
@@ -2054,8 +2093,12 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		onclick={() => { showEmbedModal = false; embedCodeData = null; }}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmbedModal = false, embedCodeData = null)}
+		onclick={() => {
+			showEmbedModal = false;
+			embedCodeData = null;
+		}}
+		onkeydown={(e: KeyboardEvent) =>
+			e.key === 'Escape' && ((showEmbedModal = false), (embedCodeData = null))}
 	>
 		<div
 			class="modal"
@@ -2072,10 +2115,13 @@
 				</h2>
 				<button
 					class="modal-close"
-					onclick={() => { showEmbedModal = false; embedCodeData = null; }}
+					onclick={() => {
+						showEmbedModal = false;
+						embedCodeData = null;
+					}}
 					type="button"
-					aria-label="Close"
-				>&times;</button>
+					aria-label="Close">&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<p class="embed-title"><strong>{embedCodeData.title}</strong></p>
@@ -2085,7 +2131,14 @@
 				<p class="embed-hint">Copy this code and paste it into your website to embed this video.</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => { showEmbedModal = false; embedCodeData = null; }} type="button">Close</button>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						showEmbedModal = false;
+						embedCodeData = null;
+					}}
+					type="button">Close</button
+				>
 				<button class="btn-primary" onclick={copyEmbedCode}>
 					<IconCode size={16} />
 					Copy to Clipboard
@@ -2094,6 +2147,31 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Video"
+	message={pendingDeleteVideo
+		? `Are you sure you want to delete "${pendingDeleteVideo.title}"?`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteVideo}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteVideo = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Videos"
+	message={`Are you sure you want to delete ${selectedVideoIds.size} video(s)? This cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	.admin-videos {
@@ -3546,23 +3624,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Video"
-	message={pendingDeleteVideo ? `Are you sure you want to delete "${pendingDeleteVideo.title}"?` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteVideo}
-	onCancel={() => { showDeleteModal = false; pendingDeleteVideo = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Videos"
-	message={`Are you sure you want to delete ${selectedVideoIds.size} video(s)? This cannot be undone.`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

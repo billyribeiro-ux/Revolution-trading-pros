@@ -15,7 +15,12 @@
 	 */
 
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
-	import type { Stripe, StripeElements, StripeCardElement, PaymentIntentResult } from '@stripe/stripe-js';
+	import type {
+		Stripe,
+		StripeElements,
+		StripeCardElement,
+		PaymentIntentResult
+	} from '@stripe/stripe-js';
 
 	interface Props {
 		publicKey: string;
@@ -266,17 +271,14 @@
 
 		try {
 			// Confirm the PaymentIntent with 3D Secure authentication
-			const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
-				secret,
-				{
-					payment_method: {
-						card: cardElement,
-						billing_details: {
-							email: customerEmail || undefined
-						}
+			const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(secret, {
+				payment_method: {
+					card: cardElement,
+					billing_details: {
+						email: customerEmail || undefined
 					}
 				}
-			);
+			});
 
 			if (confirmError) {
 				const errorMsg = confirmError.message || 'Payment confirmation failed';
@@ -310,7 +312,8 @@
 				}
 
 				const result: StripePaymentResult = {
-					paymentMethodId: typeof paymentMethod === 'string' ? paymentMethod : paymentMethod?.id || '',
+					paymentMethodId:
+						typeof paymentMethod === 'string' ? paymentMethod : paymentMethod?.id || '',
 					paymentIntentId: paymentIntent.id,
 					last4,
 					cardBrand,
@@ -321,18 +324,15 @@
 
 				if (onpayment) onpayment(result);
 				return result;
-
 			} else if (paymentIntent.status === 'requires_action') {
 				// Still requires action (e.g., redirects)
 				if (onrequiresaction) onrequiresaction(secret);
 				return null;
-
 			} else if (paymentIntent.status === 'requires_payment_method') {
 				const errorMsg = 'Your card was declined. Please try a different payment method.';
 				cardError = errorMsg;
 				if (onerror) onerror(errorMsg);
 				return null;
-
 			} else {
 				const errorMsg = `Payment status: ${paymentIntent.status}`;
 				cardError = errorMsg;
@@ -374,25 +374,28 @@
 	class:pointer-events-none={disabled}
 >
 	{#if label}
-		<span
-			class="text-sm sm:text-base font-medium text-gray-700"
-			id="stripe-label"
-		>
+		<span class="text-sm sm:text-base font-medium text-gray-700" id="stripe-label">
 			{label}
 		</span>
 	{/if}
 
 	{#if testMode}
-		<div class="p-2 sm:p-3 bg-amber-50 border border-amber-500 rounded-md text-xs sm:text-sm text-amber-800">
+		<div
+			class="p-2 sm:p-3 bg-amber-50 border border-amber-500 rounded-md text-xs sm:text-sm text-amber-800"
+		>
 			<span>Test mode - Use card 4242 4242 4242 4242</span>
 		</div>
 	{/if}
 
 	{#if loading}
-		<div class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base">
+		<div
+			class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base"
+		>
 			<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
 				<circle
-					cx="12" cy="12" r="10"
+					cx="12"
+					cy="12"
+					r="10"
 					stroke="currentColor"
 					stroke-width="3"
 					fill="none"
@@ -406,10 +409,7 @@
 	{:else}
 		{#if paymentRequestAvailable}
 			<!-- Payment Request Button (Apple Pay, Google Pay) - Touch-friendly -->
-			<div
-				bind:this={paymentRequestRef}
-				class="mb-2 sm:mb-3 min-h-[44px] sm:min-h-[48px]"
-			></div>
+			<div bind:this={paymentRequestRef} class="mb-2 sm:mb-3 min-h-[44px] sm:min-h-[48px]"></div>
 			<div class="flex items-center gap-3 sm:gap-4 text-gray-500 text-xs sm:text-sm">
 				<span class="flex-1 h-px bg-gray-200"></span>
 				<span>Or pay with card</span>
@@ -422,10 +422,7 @@
 			class="p-3 sm:p-4 border border-gray-300 rounded-lg bg-white transition-all duration-150 min-h-[48px] sm:min-h-[52px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10"
 			class:border-red-300={error || cardError}
 		>
-			<div
-				bind:this={cardElementRef}
-				class="min-h-[24px] sm:min-h-[28px]"
-			></div>
+			<div bind:this={cardElementRef} class="min-h-[24px] sm:min-h-[28px]"></div>
 		</div>
 
 		{#if cardError}
@@ -442,7 +439,9 @@
 			{#if processing}
 				<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin flex-shrink-0" viewBox="0 0 24 24">
 					<circle
-						cx="12" cy="12" r="10"
+						cx="12"
+						cy="12"
+						r="10"
 						stroke="currentColor"
 						stroke-width="3"
 						fill="none"
@@ -458,8 +457,16 @@
 		</button>
 
 		<!-- Secure Badge -->
-		<div class="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 py-2">
-			<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<div
+			class="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 py-2"
+		>
+			<svg
+				class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 			</svg>

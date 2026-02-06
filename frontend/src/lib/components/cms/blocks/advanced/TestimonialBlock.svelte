@@ -42,7 +42,9 @@
 	// Derived Values
 	// ==========================================================================
 
-	const quote = $derived(props.block.content.testimonialQuote || 'This is an amazing product that changed my life!');
+	const quote = $derived(
+		props.block.content.testimonialQuote || 'This is an amazing product that changed my life!'
+	);
 	const authorName = $derived(props.block.content.testimonialAuthor || 'John Doe');
 	const authorTitle = $derived(props.block.content.testimonialTitle || 'CEO');
 	const authorCompany = $derived(props.block.content.testimonialCompany || 'Acme Corp');
@@ -280,7 +282,9 @@
 				role="textbox"
 				aria-label="Testimonial quote"
 				aria-multiline="true"
-			>{quote}</p>
+			>
+				{quote}
+			</p>
 		{:else}
 			<p class="testimonial-block__quote-text">{quote}</p>
 		{/if}
@@ -292,11 +296,7 @@
 		{#if showPhoto}
 			<div class="testimonial-block__photo">
 				{#if sanitizedPhotoURL}
-					<img
-						src={sanitizedPhotoURL}
-						alt={authorName}
-						class="testimonial-block__photo-img"
-					/>
+					<img src={sanitizedPhotoURL} alt={authorName} class="testimonial-block__photo-img" />
 					{#if props.isEditing && props.isSelected}
 						<button
 							type="button"
@@ -324,8 +324,8 @@
 					oninput={handleAuthorNameInput}
 					onpaste={handlePaste}
 					role="textbox"
-					aria-label="Author name"
-				>{authorName}</span>
+					aria-label="Author name">{authorName}</span
+				>
 				<span class="testimonial-block__meta">
 					<span
 						contenteditable="true"
@@ -333,8 +333,8 @@
 						oninput={handleAuthorTitleInput}
 						onpaste={handlePaste}
 						role="textbox"
-						aria-label="Author title"
-					>{authorTitle}</span>
+						aria-label="Author title">{authorTitle}</span
+					>
 					<span class="testimonial-block__separator">,</span>
 					<span
 						contenteditable="true"
@@ -342,8 +342,8 @@
 						oninput={handleAuthorCompanyInput}
 						onpaste={handlePaste}
 						role="textbox"
-						aria-label="Author company"
-					>{authorCompany}</span>
+						aria-label="Author company">{authorCompany}</span
+					>
 				</span>
 			{:else}
 				<span class="testimonial-block__name">{authorName}</span>
@@ -360,89 +360,79 @@
 <!-- Settings Panel (Edit Mode) - Outside figure to fix figcaption position -->
 {#if props.isEditing && props.isSelected}
 	<div class="testimonial-block__settings">
-			<!-- Show Photo Toggle -->
-			<label class="testimonial-block__setting">
-				<input
-					type="checkbox"
-					checked={showPhoto}
-					onchange={handleShowPhotoChange}
-				/>
-				<span>Show author photo</span>
-			</label>
+		<!-- Show Photo Toggle -->
+		<label class="testimonial-block__setting">
+			<input type="checkbox" checked={showPhoto} onchange={handleShowPhotoChange} />
+			<span>Show author photo</span>
+		</label>
 
-			<!-- Photo Upload Section -->
-			{#if showPhoto}
-				<div class="testimonial-block__photo-upload">
-					<span class="testimonial-block__setting-label">Author Photo</span>
+		<!-- Photo Upload Section -->
+		{#if showPhoto}
+			<div class="testimonial-block__photo-upload">
+				<span class="testimonial-block__setting-label">Author Photo</span>
 
-					{#if isUploading}
-						<div class="testimonial-block__upload-loading">
-							<div class="testimonial-block__spinner"></div>
-							<span>Uploading...</span>
-						</div>
-					{:else if uploadError}
-						<div class="testimonial-block__upload-error">
-							<span>{uploadError}</span>
-							<button type="button" onclick={() => (uploadError = null)}>Dismiss</button>
-						</div>
-					{:else}
-						<div
-							class="testimonial-block__upload-area"
-							ondrop={handleDrop}
-							ondragover={handleDragOver}
-							role="region"
-							aria-label="Photo upload area"
-						>
+				{#if isUploading}
+					<div class="testimonial-block__upload-loading">
+						<div class="testimonial-block__spinner"></div>
+						<span>Uploading...</span>
+					</div>
+				{:else if uploadError}
+					<div class="testimonial-block__upload-error">
+						<span>{uploadError}</span>
+						<button type="button" onclick={() => (uploadError = null)}>Dismiss</button>
+					</div>
+				{:else}
+					<div
+						class="testimonial-block__upload-area"
+						ondrop={handleDrop}
+						ondragover={handleDragOver}
+						role="region"
+						aria-label="Photo upload area"
+					>
+						<button type="button" class="testimonial-block__upload-btn" onclick={triggerFileInput}>
+							<IconUpload size={16} />
+							Upload Photo
+						</button>
+
+						<span class="testimonial-block__upload-divider">or</span>
+
+						<div class="testimonial-block__url-input-wrapper">
+							<input
+								type="url"
+								class="testimonial-block__url-input"
+								placeholder="Paste image URL..."
+								bind:value={urlInputValue}
+								onkeydown={handleURLKeyDown}
+								aria-label="Photo URL"
+							/>
 							<button
 								type="button"
-								class="testimonial-block__upload-btn"
-								onclick={triggerFileInput}
+								class="testimonial-block__url-submit"
+								onclick={handleURLSubmit}
+								disabled={!urlInputValue.trim()}
 							>
-								<IconUpload size={16} />
-								Upload Photo
+								Add
 							</button>
-
-							<span class="testimonial-block__upload-divider">or</span>
-
-							<div class="testimonial-block__url-input-wrapper">
-								<input
-									type="url"
-									class="testimonial-block__url-input"
-									placeholder="Paste image URL..."
-									bind:value={urlInputValue}
-									onkeydown={handleURLKeyDown}
-									aria-label="Photo URL"
-								/>
-								<button
-									type="button"
-									class="testimonial-block__url-submit"
-									onclick={handleURLSubmit}
-									disabled={!urlInputValue.trim()}
-								>
-									Add
-								</button>
-							</div>
-
-							<span class="testimonial-block__upload-hint">
-								JPG, PNG, WebP (max 5MB)
-							</span>
 						</div>
-					{/if}
 
-					<!-- Hidden file input -->
-					<input
-						bind:this={fileInputRef}
-						type="file"
-						accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-						onchange={handleFileSelect}
-						class="testimonial-block__file-input"
-						aria-hidden="true"
-						tabindex="-1"
-					/>
-				</div>
-			{/if}
-		</div>
-	{/if}
+						<span class="testimonial-block__upload-hint"> JPG, PNG, WebP (max 5MB) </span>
+					</div>
+				{/if}
+
+				<!-- Hidden file input -->
+				<input
+					bind:this={fileInputRef}
+					type="file"
+					accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+					onchange={handleFileSelect}
+					class="testimonial-block__file-input"
+					aria-hidden="true"
+					tabindex="-1"
+				/>
+			</div>
+		{/if}
+	</div>
+{/if}
 
 <style>
 	/* ==========================================================================
@@ -491,7 +481,9 @@
 		align-items: center;
 		justify-content: center;
 		color: #d1d5db;
-		transition: color 0.15s ease, transform 0.15s ease;
+		transition:
+			color 0.15s ease,
+			transform 0.15s ease;
 	}
 
 	.testimonial-block__star--filled {
@@ -661,7 +653,7 @@
 		cursor: pointer;
 	}
 
-	.testimonial-block__setting input[type="checkbox"] {
+	.testimonial-block__setting input[type='checkbox'] {
 		width: 16px;
 		height: 16px;
 		accent-color: #3b82f6;
@@ -798,8 +790,12 @@
 	}
 
 	@keyframes testimonial-spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.testimonial-block__upload-error {

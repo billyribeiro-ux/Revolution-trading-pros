@@ -276,6 +276,19 @@
 	{/if}
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete List"
+	message="Are you sure you want to delete this list? Contacts will NOT be deleted."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteList}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
 <style>
 	.lists-page {
 		max-width: 1600px;
@@ -633,13 +646,3 @@
 		margin-bottom: 1rem;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete List"
-	message="Are you sure you want to delete this list? Contacts will NOT be deleted."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteList}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

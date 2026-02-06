@@ -1,18 +1,18 @@
 <script lang="ts" module>
 	// Re-export types from the dedicated types file
-	export { badgeVariants, type BadgeVariant } from "./badge.types";
+	export { badgeVariants, type BadgeVariant } from './badge.types';
 </script>
 
 <script lang="ts">
-	import type { HTMLAnchorAttributes } from "svelte/elements";
-	import { cn, type WithElementRef } from "$lib/utils.js";
-	import { badgeVariants, type BadgeVariant } from "./badge.types";
+	import type { HTMLAnchorAttributes } from 'svelte/elements';
+	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { badgeVariants, type BadgeVariant } from './badge.types';
 
 	let {
 		ref = $bindable(null),
 		href,
 		class: className,
-		variant = "default",
+		variant = 'default',
 		children,
 		...restProps
 	}: WithElementRef<HTMLAnchorAttributes> & {
@@ -21,7 +21,7 @@
 </script>
 
 <svelte:element
-	this={href ? "a" : "span"}
+	this={href ? 'a' : 'span'}
 	bind:this={ref}
 	data-slot="badge"
 	{href}

@@ -600,7 +600,9 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="page-searchquery" name="page-searchquery" type="text"
+				id="page-searchquery"
+				name="page-searchquery"
+				type="text"
 				placeholder="Search automations..."
 				bind:value={searchQuery}
 				aria-label="Search automations"
@@ -791,7 +793,8 @@
 						<label for="import-file">Upload JSON File</label>
 						<div class="file-upload">
 							<input
-								id="import-file" name="import-file"
+								id="import-file"
+								name="import-file"
 								type="file"
 								accept=".json"
 								onchange={handleFileUpload}

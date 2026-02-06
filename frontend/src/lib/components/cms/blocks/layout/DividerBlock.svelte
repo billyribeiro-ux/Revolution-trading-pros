@@ -98,11 +98,7 @@
 	}
 </script>
 
-<div
-	class="divider-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
->
+<div class="divider-block" class:editing={props.isEditing} class:selected={props.isSelected}>
 	{#if props.isEditing && props.isSelected}
 		<div class="divider-toolbar" role="toolbar" aria-label="Divider settings">
 			<div class="toolbar-row">
@@ -118,10 +114,7 @@
 								aria-pressed={dividerStyle === option.value}
 								title="{option.label} line"
 							>
-								<span
-									class="style-preview"
-									style:border-top-style={option.value}
-								></span>
+								<span class="style-preview" style:border-top-style={option.value}></span>
 							</button>
 						{/each}
 					</div>
@@ -194,17 +187,15 @@
 		</div>
 	{/if}
 
-	<div
-		class="divider-wrapper"
-		style:margin-top={marginValue}
-		style:margin-bottom={marginValue}
-	>
+	<div class="divider-wrapper" style:margin-top={marginValue} style:margin-bottom={marginValue}>
 		<hr
 			class="divider-line"
 			style:width={widthValue}
 			style:border-top-style={dividerStyle}
 			style:border-top-color={dividerColor}
-			style:border-top-width={dividerStyle === 'double' ? `${parseInt(thickness) * 2}px` : thickness}
+			style:border-top-width={dividerStyle === 'double'
+				? `${parseInt(thickness) * 2}px`
+				: thickness}
 			aria-orientation="horizontal"
 		/>
 	</div>

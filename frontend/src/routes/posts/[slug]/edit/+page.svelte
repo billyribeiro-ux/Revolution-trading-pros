@@ -62,9 +62,7 @@
 	}
 
 	function handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
-		blocks = blocks.map((block) =>
-			block.id === blockId ? { ...block, ...updates } : block
-		);
+		blocks = blocks.map((block) => (block.id === blockId ? { ...block, ...updates } : block));
 	}
 
 	function selectBlock(blockId: string): void {
@@ -190,12 +188,12 @@
 					{/if}
 
 					<div
-					onclick={() => selectBlock(block.id)}
-					onkeydown={(e) => e.key === 'Enter' && selectBlock(block.id)}
-					role="button"
-					tabindex="0"
-				>
-					<BlockRenderer
+						onclick={() => selectBlock(block.id)}
+						onkeydown={(e) => e.key === 'Enter' && selectBlock(block.id)}
+						role="button"
+						tabindex="0"
+					>
+						<BlockRenderer
 							{block}
 							blockId={block.id}
 							{isEditing}

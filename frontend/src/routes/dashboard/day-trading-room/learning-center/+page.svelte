@@ -43,7 +43,6 @@
 	let currentPage = $derived(meta.current_page);
 	let totalPages = $derived(meta.last_page);
 
-
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
 		const url = new URL($page.url);

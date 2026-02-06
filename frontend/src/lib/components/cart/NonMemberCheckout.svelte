@@ -411,7 +411,10 @@
 											<div>Total</div>
 											<div class="checkout-order-total-price">
 												<span class="rtp-price-amount amount">
-													<bdi><span class="rtp-price-currency">$</span>{getCartTotal().toFixed(2)}</bdi
+													<bdi
+														><span class="rtp-price-currency">$</span>{getCartTotal().toFixed(
+															2
+														)}</bdi
 													>
 												</span>
 											</div>

@@ -395,7 +395,8 @@
 								<label for="show-logo-toggle" class="flex items-center gap-3 cursor-pointer">
 									<input
 										type="checkbox"
-										id="show-logo-toggle" name="show-logo-toggle"
+										id="show-logo-toggle"
+										name="show-logo-toggle"
 										bind:checked={settings.show_logo}
 										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 									/>
@@ -415,13 +416,15 @@
 										<div class="flex items-center gap-3">
 											<input
 												type="color"
-												id="primary-color" name="primary-color"
+												id="primary-color"
+												name="primary-color"
 												bind:value={settings.primary_color}
 												class="w-12 h-12 rounded-lg cursor-pointer border-0"
 											/>
 											<input
 												type="text"
-												id="primary-color-text" name="primary-color-text"
+												id="primary-color-text"
+												name="primary-color-text"
 												bind:value={settings.primary_color}
 												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
 											/>
@@ -437,13 +440,15 @@
 										<div class="flex items-center gap-3">
 											<input
 												type="color"
-												id="secondary-color" name="secondary-color"
+												id="secondary-color"
+												name="secondary-color"
 												bind:value={settings.secondary_color}
 												class="w-12 h-12 rounded-lg cursor-pointer border-0"
 											/>
 											<input
 												type="text"
-												id="secondary-color-text" name="secondary-color-text"
+												id="secondary-color-text"
+												name="secondary-color-text"
 												bind:value={settings.secondary_color}
 												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
 											/>
@@ -459,13 +464,15 @@
 										<div class="flex items-center gap-3">
 											<input
 												type="color"
-												id="accent-color" name="accent-color"
+												id="accent-color"
+												name="accent-color"
 												bind:value={settings.accent_color}
 												class="w-12 h-12 rounded-lg cursor-pointer border-0"
 											/>
 											<input
 												type="text"
-												id="accent-color-text" name="accent-color-text"
+												id="accent-color-text"
+												name="accent-color-text"
 												bind:value={settings.accent_color}
 												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
 											/>
@@ -507,7 +514,8 @@
 										</label>
 										<input
 											type="text"
-											id="company-name" name="company-name"
+											id="company-name"
+											name="company-name"
 											bind:value={settings.company_name}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="Your Company Name"
@@ -522,7 +530,9 @@
 										</label>
 										<input
 											type="email"
-											id="company-email" name="company-email" autocomplete="email"
+											id="company-email"
+											name="company-email"
+											autocomplete="email"
 											bind:value={settings.company_email}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="billing@company.com"
@@ -540,7 +550,9 @@
 										</label>
 										<input
 											type="tel"
-											id="company-phone" name="company-phone" autocomplete="tel"
+											id="company-phone"
+											name="company-phone"
+											autocomplete="tel"
 											bind:value={settings.company_phone}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="+1 (555) 123-4567"
@@ -555,7 +567,8 @@
 										</label>
 										<input
 											type="text"
-											id="tax-id" name="tax-id"
+											id="tax-id"
+											name="tax-id"
 											bind:value={settings.tax_id}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="US123456789"
@@ -572,7 +585,8 @@
 									</label>
 									<input
 										type="text"
-										id="company-address" name="company-address"
+										id="company-address"
+										name="company-address"
 										bind:value={settings.company_address}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										placeholder="123 Business Street, Suite 100"
@@ -588,7 +602,8 @@
 										>
 										<input
 											type="text"
-											id="company-city" name="company-city"
+											id="company-city"
+											name="company-city"
 											bind:value={settings.company_city}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -601,7 +616,8 @@
 										>
 										<input
 											type="text"
-											id="company-state" name="company-state"
+											id="company-state"
+											name="company-state"
 											bind:value={settings.company_state}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -614,7 +630,8 @@
 										>
 										<input
 											type="text"
-											id="company-zip" name="company-zip"
+											id="company-zip"
+											name="company-zip"
 											bind:value={settings.company_zip}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -652,7 +669,8 @@
 										</label>
 										<input
 											type="text"
-											id="header-text" name="header-text"
+											id="header-text"
+											name="header-text"
 											bind:value={settings.header_text}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="INVOICE"
@@ -667,7 +685,8 @@
 										</label>
 										<input
 											type="text"
-											id="invoice-prefix" name="invoice-prefix"
+											id="invoice-prefix"
+											name="invoice-prefix"
 											bind:value={settings.invoice_prefix}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="INV-"
@@ -684,7 +703,8 @@
 									</label>
 									<input
 										type="text"
-										id="payment-terms" name="payment-terms"
+										id="payment-terms"
+										name="payment-terms"
 										bind:value={settings.payment_terms}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										placeholder="Due upon receipt"
@@ -700,7 +720,8 @@
 									</label>
 									<input
 										type="text"
-										id="footer-text" name="footer-text"
+										id="footer-text"
+										name="footer-text"
 										bind:value={settings.footer_text}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										placeholder="Thank you for your business!"
@@ -738,7 +759,8 @@
 								>
 									<input
 										type="checkbox"
-										id="display-show-logo" name="display-show-logo"
+										id="display-show-logo"
+										name="display-show-logo"
 										bind:checked={settings.show_logo}
 										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 									/>
@@ -758,7 +780,8 @@
 								>
 									<input
 										type="checkbox"
-										id="display-show-tax-id" name="display-show-tax-id"
+										id="display-show-tax-id"
+										name="display-show-tax-id"
 										bind:checked={settings.show_tax_id}
 										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 									/>
@@ -778,7 +801,8 @@
 								>
 									<input
 										type="checkbox"
-										id="display-show-payment-method" name="display-show-payment-method"
+										id="display-show-payment-method"
+										name="display-show-payment-method"
 										bind:checked={settings.show_payment_method}
 										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 									/>
@@ -798,7 +822,8 @@
 								>
 									<input
 										type="checkbox"
-										id="display-show-due-date" name="display-show-due-date"
+										id="display-show-due-date"
+										name="display-show-due-date"
 										bind:checked={settings.show_due_date}
 										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 									/>
@@ -1013,5 +1038,7 @@
 	confirmText="Reset"
 	variant="warning"
 	onConfirm={confirmResetToDefaults}
-	onCancel={() => { showResetModal = false; }}
+	onCancel={() => {
+		showResetModal = false;
+	}}
 />

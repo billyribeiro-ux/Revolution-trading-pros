@@ -232,7 +232,9 @@
 				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform}
 					<label class="platform-checkbox" style="--platform-color: {getPlatformColor(platform)}">
 						<input
-							id="page-checkbox" name="page-checkbox" type="checkbox"
+							id="page-checkbox"
+							name="page-checkbox"
+							type="checkbox"
 							checked={settings.platforms.includes(platform)}
 							onchange={(e: Event) => {
 								const target = e.target as HTMLInputElement;
@@ -354,7 +356,9 @@
 			<h3>Add Video URL</h3>
 			<p>Enter a video URL from YouTube, Vimeo, or other supported platforms.</p>
 			<input
-				id="page-newvideourl" name="page-newvideourl" type="url"
+				id="page-newvideourl"
+				name="page-newvideourl"
+				type="url"
 				bind:value={newVideoUrl}
 				placeholder="https://youtube.com/watch?v=..."
 				class="url-input"
@@ -366,6 +370,19 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Remove Video"
+	message="Remove this video from the sitemap?"
+	confirmText="Remove"
+	variant="danger"
+	onConfirm={confirmRemoveVideo}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
 
 <style>
 	.video-sitemap-page {
@@ -822,13 +839,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Remove Video"
-	message="Remove this video from the sitemap?"
-	confirmText="Remove"
-	variant="danger"
-	onConfirm={confirmRemoveVideo}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

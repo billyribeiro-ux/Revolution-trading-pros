@@ -7,7 +7,14 @@
 -->
 
 <script lang="ts">
-	import { IconFile, IconDownload, IconFileTypePdf, IconFileTypeDoc, IconFileSpreadsheet, IconFileZip } from '$lib/icons';
+	import {
+		IconFile,
+		IconDownload,
+		IconFileTypePdf,
+		IconFileTypeDoc,
+		IconFileSpreadsheet,
+		IconFileZip
+	} from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -34,16 +41,21 @@
 	function getFileIcon(name: string) {
 		const ext = name.split('.').pop()?.toLowerCase() || '';
 		switch (ext) {
-			case 'pdf': return IconFileTypePdf;
+			case 'pdf':
+				return IconFileTypePdf;
 			case 'doc':
-			case 'docx': return IconFileTypeDoc;
+			case 'docx':
+				return IconFileTypeDoc;
 			case 'xls':
 			case 'xlsx':
-			case 'csv': return IconFileSpreadsheet;
+			case 'csv':
+				return IconFileSpreadsheet;
 			case 'zip':
 			case 'rar':
-			case '7z': return IconFileZip;
-			default: return IconFile;
+			case '7z':
+				return IconFileZip;
+			default:
+				return IconFile;
 		}
 	}
 
@@ -85,7 +97,8 @@
 					type="number"
 					placeholder="File size (bytes)"
 					value={fileSize || ''}
-					oninput={(e) => updateContent({ fileSize: parseInt((e.target as HTMLInputElement).value) || 0 })}
+					oninput={(e) =>
+						updateContent({ fileSize: parseInt((e.target as HTMLInputElement).value) || 0 })}
 				/>
 			</div>
 		</div>
@@ -222,12 +235,32 @@
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 
-	:global(.dark) .file-block { border-color: #334155; }
-	:global(.dark) .file-link { background: #1e293b; }
-	:global(.dark) .file-link:hover { background: #334155; }
-	:global(.dark) .file-icon-wrapper { background: #0f172a; border-color: #334155; }
-	:global(.dark) .file-name { color: #f1f5f9; }
-	:global(.dark) .file-meta { color: #94a3b8; }
-	:global(.dark) .file-download { background: #334155; color: #94a3b8; }
-	:global(.dark) .file-inputs input { background: #0f172a; border-color: #475569; color: #e2e8f0; }
+	:global(.dark) .file-block {
+		border-color: #334155;
+	}
+	:global(.dark) .file-link {
+		background: #1e293b;
+	}
+	:global(.dark) .file-link:hover {
+		background: #334155;
+	}
+	:global(.dark) .file-icon-wrapper {
+		background: #0f172a;
+		border-color: #334155;
+	}
+	:global(.dark) .file-name {
+		color: #f1f5f9;
+	}
+	:global(.dark) .file-meta {
+		color: #94a3b8;
+	}
+	:global(.dark) .file-download {
+		background: #334155;
+		color: #94a3b8;
+	}
+	:global(.dark) .file-inputs input {
+		background: #0f172a;
+		border-color: #475569;
+		color: #e2e8f0;
+	}
 </style>

@@ -608,7 +608,8 @@ export const emailStore = {
 			emailState = {
 				...emailState,
 				automations: emailState.automations.filter((a) => a.id !== id),
-				currentAutomation: emailState.currentAutomation?.id === id ? null : emailState.currentAutomation,
+				currentAutomation:
+					emailState.currentAutomation?.id === id ? null : emailState.currentAutomation,
 				isLoading: false
 			};
 		} catch (error: any) {
@@ -756,6 +757,10 @@ export function getActiveAutomations() {
 	return emailState.automations.filter((a) => a.status === 'active');
 }
 
-export function getIsEmailLoading() { return emailState.isLoading; }
+export function getIsEmailLoading() {
+	return emailState.isLoading;
+}
 
-export function getHasEmailError() { return emailState.error !== null; }
+export function getHasEmailError() {
+	return emailState.error !== null;
+}

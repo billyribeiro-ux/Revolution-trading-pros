@@ -99,9 +99,7 @@ class CrmStore {
 	}
 
 	updateContact(id: string, updates: Partial<Contact>) {
-		this.contacts = this.contacts.map((c) =>
-			c.id === id ? { ...c, ...updates } : c
-		);
+		this.contacts = this.contacts.map((c) => (c.id === id ? { ...c, ...updates } : c));
 	}
 
 	removeContact(id: string) {
@@ -121,9 +119,7 @@ class CrmStore {
 	}
 
 	updateDeal(id: string, updates: Partial<Deal>) {
-		this.deals = this.deals.map((d) =>
-			d.id === id ? { ...d, ...updates } : d
-		);
+		this.deals = this.deals.map((d) => (d.id === id ? { ...d, ...updates } : d));
 	}
 
 	removeDeal(id: string) {

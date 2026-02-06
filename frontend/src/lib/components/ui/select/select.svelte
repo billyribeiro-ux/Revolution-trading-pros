@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Select as SelectPrimitive } from "bits-ui";
+	import { Select as SelectPrimitive } from 'bits-ui';
 
 	let props: SelectPrimitive.RootProps = $props();
 	let open = $state(props.open ?? false);

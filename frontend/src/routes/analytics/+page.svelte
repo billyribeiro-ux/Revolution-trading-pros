@@ -34,7 +34,9 @@
 		IconAlertTriangle
 	} from '$lib/icons';
 
-	let selectedTab = $state<'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue'>('overview');
+	let selectedTab = $state<
+		'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue'
+	>('overview');
 
 	// Local derived from getters
 	const dashboard = $derived(getDashboard());

@@ -331,7 +331,9 @@
 					LinkedIn
 				</a>
 				<a
-					href="mailto:?subject={encodeURIComponent(props.formTitle)}&body={encodeURIComponent(shareUrl)}"
+					href="mailto:?subject={encodeURIComponent(props.formTitle)}&body={encodeURIComponent(
+						shareUrl
+					)}"
 					class="social-btn email"
 				>
 					Email

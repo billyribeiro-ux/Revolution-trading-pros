@@ -157,11 +157,7 @@
 		</div>
 	{/if}
 
-	<div
-		class="columns-container"
-		style:grid-template-columns={gridTemplate}
-		style:gap={gap}
-	>
+	<div class="columns-container" style:grid-template-columns={gridTemplate} style:gap>
 		{#each columns as column (column.index)}
 			<div
 				class="column"

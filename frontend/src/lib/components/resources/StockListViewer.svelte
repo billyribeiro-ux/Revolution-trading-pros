@@ -76,7 +76,15 @@
 		onExport?.(format);
 
 		if (format === 'csv') {
-			const headers = ['Symbol', 'Name', 'Sector', 'Entry Price', 'Price Target', 'Stop Loss', 'Notes'];
+			const headers = [
+				'Symbol',
+				'Name',
+				'Sector',
+				'Entry Price',
+				'Price Target',
+				'Stop Loss',
+				'Notes'
+			];
 			const rows = symbols.map((s: StockSymbol) => [
 				s.symbol,
 				s.name ?? '',
@@ -130,19 +138,33 @@
 	}
 </script>
 
-<div class="stock-list-viewer rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+<div
+	class="stock-list-viewer rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
+>
 	{#if showHeader}
 		<!-- Header -->
 		<div class="border-b border-gray-200 p-4 dark:border-gray-700 {compact ? 'p-3' : 'p-4 lg:p-6'}">
 			<div class="flex flex-wrap items-start justify-between gap-4">
 				<div>
 					<div class="flex items-center gap-2">
-						<h2 class="text-xl font-bold text-gray-900 dark:text-white {compact ? 'text-lg' : 'text-xl'}">{stockList.name}</h2>
-						<span class="rounded-full px-2.5 py-0.5 text-xs font-medium capitalize {getListTypeColor(stockList.list_type)}">
+						<h2
+							class="text-xl font-bold text-gray-900 dark:text-white {compact
+								? 'text-lg'
+								: 'text-xl'}"
+						>
+							{stockList.name}
+						</h2>
+						<span
+							class="rounded-full px-2.5 py-0.5 text-xs font-medium capitalize {getListTypeColor(
+								stockList.list_type
+							)}"
+						>
 							{stockList.list_type}
 						</span>
 						{#if stockList.is_featured}
-							<span class="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+							<span
+								class="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+							>
 								Featured
 							</span>
 						{/if}
@@ -186,8 +208,18 @@
 						placeholder="Search symbols, names, or sectors..."
 						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white lg:max-w-md"
 					/>
-					<svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					<svg
+						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+						/>
 					</svg>
 				</div>
 			{/if}
@@ -200,28 +232,57 @@
 			<thead class="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
 				<tr>
 					<th class="px-4 py-3">
-						<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onclick={() => handleSort('symbol')}>
+						<button
+							class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+							onclick={() => handleSort('symbol')}
+						>
 							Symbol
 							{#if sortColumn === 'symbol'}
-								<svg class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+								<svg
+									class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 15l7-7 7 7"
+									/>
 								</svg>
 							{/if}
 						</button>
 					</th>
 					<th class="px-4 py-3">
-						<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onclick={() => handleSort('name')}>
+						<button
+							class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+							onclick={() => handleSort('name')}
+						>
 							Name
 							{#if sortColumn === 'name'}
-								<svg class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+								<svg
+									class="h-4 w-4 {sortDirection === 'desc' ? 'rotate-180' : ''}"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 15l7-7 7 7"
+									/>
 								</svg>
 							{/if}
 						</button>
 					</th>
 					{#if !compact}
 						<th class="hidden px-4 py-3 lg:table-cell">
-							<button class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onclick={() => handleSort('sector')}>
+							<button
+								class="flex items-center gap-1 font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+								onclick={() => handleSort('sector')}
+							>
 								Sector
 							</button>
 						</th>
@@ -261,14 +322,19 @@
 							{symbol.stop_loss ? `$${symbol.stop_loss.toFixed(2)}` : '-'}
 						</td>
 						{#if !compact}
-							<td class="hidden max-w-xs truncate px-4 py-3 text-gray-500 dark:text-gray-400 md:table-cell">
+							<td
+								class="hidden max-w-xs truncate px-4 py-3 text-gray-500 dark:text-gray-400 md:table-cell"
+							>
 								{symbol.notes || '-'}
 							</td>
 						{/if}
 					</tr>
 				{:else}
 					<tr>
-						<td colspan={compact ? 5 : 7} class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+						<td
+							colspan={compact ? 5 : 7}
+							class="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+						>
 							{#if searchQuery}
 								No symbols match your search
 							{:else}
@@ -283,7 +349,9 @@
 
 	<!-- Footer with count -->
 	{#if filteredSymbols.length !== symbols.length}
-		<div class="border-t border-gray-200 px-4 py-2 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+		<div
+			class="border-t border-gray-200 px-4 py-2 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400"
+		>
 			Showing {filteredSymbols.length} of {symbols.length} symbols
 		</div>
 	{/if}

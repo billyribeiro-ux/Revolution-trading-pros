@@ -76,11 +76,13 @@
 
 		// ICT 7: Load dev tooling client-side only (prevents hydration mismatch)
 		if (dev) {
-			import('svelte-render-scan').then((mod) => {
-				RenderScanComponent = mod.RenderScan;
-			}).catch(() => {
-				// Package not installed — silently skip
-			});
+			import('svelte-render-scan')
+				.then((mod) => {
+					RenderScanComponent = mod.RenderScan;
+				})
+				.catch(() => {
+					// Package not installed — silently skip
+				});
 		}
 
 		// All initializers wrapped in try/catch to prevent render interruption
@@ -132,11 +134,7 @@
      DEVELOPMENT TOOLS - Svelte DevTools (development only)
      ═══════════════════════════════════════════════════════════════════════════ -->
 {#if dev && RenderScanComponent}
-	<RenderScanComponent 
-		initialEnabled={false}
-		offsetLeft={60}
-		duration={1500}
-	/>
+	<RenderScanComponent initialEnabled={false} offsetLeft={60} duration={1500} />
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════

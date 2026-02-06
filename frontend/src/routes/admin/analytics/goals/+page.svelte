@@ -431,7 +431,8 @@
 						<label for="goal-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label
 						>
 						<input
-							id="goal-name" name="goal-name"
+							id="goal-name"
+							name="goal-name"
 							type="text"
 							bind:value={newGoal.name}
 							placeholder="e.g., Newsletter Signup"
@@ -493,7 +494,8 @@
 							>Target Event</label
 						>
 						<input
-							id="target-event" name="target-event"
+							id="target-event"
+							name="target-event"
 							type="text"
 							bind:value={newGoal.target_event}
 							placeholder="e.g., signup_completed"
@@ -506,7 +508,8 @@
 							>Target URL</label
 						>
 						<input
-							id="target-url" name="target-url"
+							id="target-url"
+							name="target-url"
 							type="text"
 							bind:value={newGoal.target_url}
 							placeholder="e.g., /thank-you"
@@ -519,7 +522,8 @@
 							{newGoal.type === 'revenue' ? 'Target Revenue ($)' : 'Target Duration (seconds)'}
 						</label>
 						<input
-							id="target-value" name="target-value"
+							id="target-value"
+							name="target-value"
 							type="number"
 							bind:value={newGoal.target_value}
 							placeholder={newGoal.type === 'revenue' ? 'e.g., 10000' : 'e.g., 300'}

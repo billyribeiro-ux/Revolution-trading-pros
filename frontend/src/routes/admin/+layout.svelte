@@ -641,7 +641,7 @@
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(8px);
-		transition: 
+		transition:
 			opacity 0.2s ease,
 			visibility 0.2s ease,
 			transform 0.2s ease;

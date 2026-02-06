@@ -296,7 +296,8 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="search-churned-members" name="search-churned-members"
+				id="search-churned-members"
+				name="search-churned-members"
 				type="text"
 				placeholder="Search churned members..."
 				bind:value={searchQuery}
@@ -357,7 +358,9 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								id="page-checkbox" name="page-checkbox" type="checkbox"
+								id="page-checkbox"
+								name="page-checkbox"
+								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
 								onchange={selectAllMembers}
 								aria-label="Select all churned members"
@@ -377,7 +380,9 @@
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedMembers.has(member.id)}
 									onchange={() => toggleMemberSelection(member.id)}
 									aria-label="Select {member.name}"
@@ -562,7 +567,8 @@
 				<div class="form-group">
 					<label for="email-subject">Subject Line</label>
 					<input
-						id="email-subject" name="email-subject"
+						id="email-subject"
+						name="email-subject"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."

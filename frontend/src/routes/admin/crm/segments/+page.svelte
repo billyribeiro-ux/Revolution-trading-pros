@@ -376,6 +376,19 @@
 	{/if}
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Segment"
+	message="Are you sure you want to delete this segment?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSegment}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
 <style>
 	.segments-page {
 		max-width: 1600px;
@@ -776,13 +789,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Segment"
-	message="Are you sure you want to delete this segment?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteSegment}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

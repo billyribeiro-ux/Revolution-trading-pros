@@ -465,7 +465,8 @@
 						<label for="video_url">Video URL</label>
 						<div class="url-input-wrapper">
 							<input
-								id="video_url" name="video_url"
+								id="video_url"
+								name="video_url"
 								type="url"
 								bind:value={form.video_url}
 								oninput={handleUrlPaste}
@@ -495,7 +496,8 @@
 						<div class="form-group">
 							<label for="week_of">Week Of *</label>
 							<input
-								id="week_of" name="week_of"
+								id="week_of"
+								name="week_of"
 								type="date"
 								bind:value={form.week_of}
 								class="form-input"
@@ -505,7 +507,8 @@
 						<div class="form-group">
 							<label for="week_title">Week Title</label>
 							<input
-								id="week_title" name="week_title"
+								id="week_title"
+								name="week_title"
 								type="text"
 								bind:value={form.week_title}
 								placeholder="Week of Jan 27, 2026"
@@ -517,7 +520,8 @@
 					<div class="form-group">
 						<label for="video_title">Video Title *</label>
 						<input
-							id="video_title" name="video_title"
+							id="video_title"
+							name="video_title"
 							type="text"
 							bind:value={form.video_title}
 							placeholder="Weekly Breakdown - Key Levels & Setups"
@@ -530,7 +534,8 @@
 						<div class="form-group">
 							<label for="thumbnail_url">Thumbnail URL</label>
 							<input
-								id="thumbnail_url" name="thumbnail_url"
+								id="thumbnail_url"
+								name="thumbnail_url"
 								type="url"
 								bind:value={form.thumbnail_url}
 								placeholder="https://..."
@@ -540,7 +545,8 @@
 						<div class="form-group">
 							<label for="duration">Duration</label>
 							<input
-								id="duration" name="duration"
+								id="duration"
+								name="duration"
 								type="text"
 								bind:value={form.duration}
 								placeholder="12:34"

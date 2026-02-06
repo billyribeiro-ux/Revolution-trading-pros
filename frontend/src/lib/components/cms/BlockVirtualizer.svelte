@@ -104,7 +104,9 @@
 						{#if block.content.text}
 							<p class="preview-text">{block.content.text.slice(0, 100)}...</p>
 						{:else if block.content.html}
-							<p class="preview-text">{block.content.html.replace(/<[^>]*>/g, '').slice(0, 100)}...</p>
+							<p class="preview-text">
+								{block.content.html.replace(/<[^>]*>/g, '').slice(0, 100)}...
+							</p>
 						{:else if block.content.mediaUrl}
 							<span class="preview-media">Media: {block.content.mediaUrl.split('/').pop()}</span>
 						{:else}

@@ -27,7 +27,9 @@
 	});
 
 	function initSignatureCanvas() {
-		signatureCanvas = document.getElementById(`field-${props.props.field.name}`) as HTMLCanvasElement;
+		signatureCanvas = document.getElementById(
+			`field-${props.props.field.name}`
+		) as HTMLCanvasElement;
 		if (!signatureCanvas) return;
 
 		signatureCtx = signatureCanvas.getContext('2d');
@@ -370,7 +372,9 @@
 				required={props.field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				accept={typeof props.field.validation?.accept === 'string' ? props.field.validation.accept : undefined}
+				accept={typeof props.field.validation?.accept === 'string'
+					? props.field.validation.accept
+					: undefined}
 				{...(props.field.attributes as Record<string, any>) || {}}
 			/>
 			{#if props.field.validation?.max_size}
@@ -500,11 +504,13 @@
 
 			<!-- ICT 7 Fix: Address Field - Complete multi-part address input -->
 		{:else if props.field.field_type === 'address'}
-			{@const addressValue = (typeof value === 'object' && value !== null) ? value : {}}
+			{@const addressValue = typeof value === 'object' && value !== null ? value : {}}
 			<div class="address-wrapper">
 				<div class="address-fields">
 					<div class="address-row full-width">
-						<label class="address-sub-label" for={`${props.field.name}-address1`}>Address Line 1</label>
+						<label class="address-sub-label" for={`${props.field.name}-address1`}
+							>Address Line 1</label
+						>
 						<input
 							type="text"
 							id={`${props.field.name}-address1`}
@@ -514,14 +520,19 @@
 							class={getInputClasses()}
 							required={props.field.required}
 							oninput={(e: Event) => {
-								const newVal = { ...addressValue, address_line_1: (e.target as HTMLInputElement).value };
+								const newVal = {
+									...addressValue,
+									address_line_1: (e.target as HTMLInputElement).value
+								};
 								props.onchange?.(newVal);
 							}}
 						/>
 					</div>
 					{#if props.field.attributes?.show_address_2 !== false}
 						<div class="address-row full-width">
-							<label class="address-sub-label" for={`${props.field.name}-address2`}>Address Line 2</label>
+							<label class="address-sub-label" for={`${props.field.name}-address2`}
+								>Address Line 2</label
+							>
 							<input
 								type="text"
 								id={`${props.field.name}-address2`}
@@ -530,7 +541,10 @@
 								value={addressValue.address_line_2 || ''}
 								class={getInputClasses()}
 								oninput={(e: Event) => {
-									const newVal = { ...addressValue, address_line_2: (e.target as HTMLInputElement).value };
+									const newVal = {
+										...addressValue,
+										address_line_2: (e.target as HTMLInputElement).value
+									};
 									props.onchange?.(newVal);
 								}}
 							/>
@@ -554,7 +568,9 @@
 							/>
 						</div>
 						<div class="address-row state">
-							<label class="address-sub-label" for={`${props.field.name}-state`}>State/Province</label>
+							<label class="address-sub-label" for={`${props.field.name}-state`}
+								>State/Province</label
+							>
 							<input
 								type="text"
 								id={`${props.field.name}-state`}
@@ -570,7 +586,9 @@
 							/>
 						</div>
 						<div class="address-row zip">
-							<label class="address-sub-label" for={`${props.field.name}-zip`}>ZIP/Postal Code</label>
+							<label class="address-sub-label" for={`${props.field.name}-zip`}
+								>ZIP/Postal Code</label
+							>
 							<input
 								type="text"
 								id={`${props.field.name}-zip`}
@@ -595,7 +613,10 @@
 								value={addressValue.country || 'US'}
 								class={getInputClasses()}
 								onchange={(e: Event) => {
-									const newVal = { ...addressValue, country: (e.target as HTMLSelectElement).value };
+									const newVal = {
+										...addressValue,
+										country: (e.target as HTMLSelectElement).value
+									};
 									props.onchange?.(newVal);
 								}}
 							>

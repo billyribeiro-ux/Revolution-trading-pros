@@ -388,8 +388,8 @@
 		// Build display rules with page targeting
 		formData.display_rules = {
 			...formData.display_rules,
-			include_pages: includePages.split('\n').filter(p => p.trim()),
-			exclude_pages: excludePages.split('\n').filter(p => p.trim())
+			include_pages: includePages.split('\n').filter((p) => p.trim()),
+			exclude_pages: excludePages.split('\n').filter((p) => p.trim())
 		};
 
 		// Add video embed if enabled
@@ -455,11 +455,7 @@
 		<header class="page-header">
 			<div class="header-row">
 				<a href="/admin/popups" class="back-btn">Back to Popups</a>
-				<button
-					type="button"
-					onclick={() => showPreview = !showPreview}
-					class="preview-btn"
-				>
+				<button type="button" onclick={() => (showPreview = !showPreview)} class="preview-btn">
 					{showPreview ? 'Hide Preview' : 'Show Preview'}
 				</button>
 			</div>
@@ -471,7 +467,9 @@
 	<!-- Template Selector -->
 	<Card class="template-selector">
 		<h2 class="text-xl font-semibold mb-4">Start from Template</h2>
-		<p class="text-sm text-gray-600 mb-4">Choose a template to get started quickly, or start from scratch.</p>
+		<p class="text-sm text-gray-600 mb-4">
+			Choose a template to get started quickly, or start from scratch.
+		</p>
 
 		<div class="template-grid">
 			<button
@@ -711,7 +709,8 @@
 					<div class="flex items-center gap-2">
 						<input
 							type="checkbox"
-							id="cta_new_tab" name="cta_new_tab"
+							id="cta_new_tab"
+							name="cta_new_tab"
 							bind:checked={formData.cta_new_tab}
 							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 						/>
@@ -802,13 +801,16 @@
 			<!-- Secondary CTA -->
 			<Card>
 				<h2 class="text-xl font-semibold mb-4">Secondary Action</h2>
-				<p class="text-sm text-gray-600 mb-4">Add a secondary button for users who want to decline or take an alternative action.</p>
+				<p class="text-sm text-gray-600 mb-4">
+					Add a secondary button for users who want to decline or take an alternative action.
+				</p>
 
 				<div class="space-y-4">
 					<div class="flex items-center gap-2">
 						<input
 							type="checkbox"
-							id="has_secondary_cta" name="has_secondary_cta"
+							id="has_secondary_cta"
+							name="has_secondary_cta"
 							bind:checked={hasSecondaryCta}
 							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 						/>
@@ -828,7 +830,10 @@
 								/>
 							</div>
 							<div>
-								<label for="secondary-cta-action" class="block text-sm font-medium text-gray-700 mb-1">
+								<label
+									for="secondary-cta-action"
+									class="block text-sm font-medium text-gray-700 mb-1"
+								>
 									Action
 								</label>
 								<select
@@ -865,13 +870,12 @@
 					<div class="flex items-center gap-2">
 						<input
 							type="checkbox"
-							id="has_video" name="has_video"
+							id="has_video"
+							name="has_video"
 							bind:checked={hasVideo}
 							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 						/>
-						<label for="has_video" class="text-sm text-gray-700">
-							Include video in popup
-						</label>
+						<label for="has_video" class="text-sm text-gray-700"> Include video in popup </label>
 					</div>
 
 					{#if hasVideo}
@@ -882,13 +886,16 @@
 								bind:value={videoUrl}
 								placeholder="https://www.youtube.com/watch?v=..."
 							/>
-							<p class="text-xs text-gray-500 mt-1">Supports YouTube, Vimeo, or direct video URLs</p>
+							<p class="text-xs text-gray-500 mt-1">
+								Supports YouTube, Vimeo, or direct video URLs
+							</p>
 						</div>
 
 						<div class="flex items-center gap-2">
 							<input
 								type="checkbox"
-								id="video_autoplay" name="video_autoplay"
+								id="video_autoplay"
+								name="video_autoplay"
 								bind:checked={videoAutoplay}
 								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 							/>
@@ -903,19 +910,20 @@
 			<!-- Form Integration -->
 			<Card>
 				<h2 class="text-xl font-semibold mb-4">Form Integration</h2>
-				<p class="text-sm text-gray-600 mb-4">Embed an existing form in your popup to collect leads or feedback.</p>
+				<p class="text-sm text-gray-600 mb-4">
+					Embed an existing form in your popup to collect leads or feedback.
+				</p>
 
 				<div class="space-y-4">
 					<div class="flex items-center gap-2">
 						<input
 							type="checkbox"
-							id="has_form" name="has_form"
+							id="has_form"
+							name="has_form"
 							bind:checked={hasForm}
 							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 						/>
-						<label for="has_form" class="text-sm text-gray-700">
-							Include form in popup
-						</label>
+						<label for="has_form" class="text-sm text-gray-700"> Include form in popup </label>
 					</div>
 
 					{#if hasForm}
@@ -937,7 +945,9 @@
 							{:else}
 								<div class="bg-yellow-50 border border-yellow-200 rounded-md p-3">
 									<p class="text-sm text-yellow-800">
-										No forms available. <a href="/admin/forms" class="text-yellow-600 underline">Create a form</a> first.
+										No forms available. <a href="/admin/forms" class="text-yellow-600 underline"
+											>Create a form</a
+										> first.
 									</p>
 								</div>
 							{/if}
@@ -946,7 +956,8 @@
 						{#if selectedFormId}
 							<div class="bg-green-50 border border-green-200 rounded-md p-3">
 								<p class="text-sm text-green-800">
-									Form will be displayed inside the popup. Form submissions will be tracked as conversions.
+									Form will be displayed inside the popup. Form submissions will be tracked as
+									conversions.
 								</p>
 							</div>
 						{/if}
@@ -1003,7 +1014,8 @@
 						<div class="flex items-center gap-2">
 							<input
 								type="checkbox"
-								id="show_close_button" name="show_close_button"
+								id="show_close_button"
+								name="show_close_button"
 								bind:checked={formData.show_close_button}
 								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 							/>
@@ -1015,7 +1027,8 @@
 						<div class="flex items-center gap-2">
 							<input
 								type="checkbox"
-								id="close_on_overlay_click" name="close_on_overlay_click"
+								id="close_on_overlay_click"
+								name="close_on_overlay_click"
 								bind:checked={formData.close_on_overlay_click}
 								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 							/>
@@ -1046,7 +1059,9 @@
 						<div class="flex gap-4">
 							<label class="flex items-center gap-2">
 								<input
-									id="device-desktop" name="device-desktop" type="checkbox"
+									id="device-desktop"
+									name="device-desktop"
+									type="checkbox"
 									value="desktop"
 									bind:group={formData.display_rules.devices}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -1055,7 +1070,9 @@
 							</label>
 							<label class="flex items-center gap-2">
 								<input
-									id="device-tablet" name="device-tablet" type="checkbox"
+									id="device-tablet"
+									name="device-tablet"
+									type="checkbox"
 									value="tablet"
 									bind:group={formData.display_rules.devices}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -1064,7 +1081,9 @@
 							</label>
 							<label class="flex items-center gap-2">
 								<input
-									id="device-mobile" name="device-mobile" type="checkbox"
+									id="device-mobile"
+									name="device-mobile"
+									type="checkbox"
 									value="mobile"
 									bind:group={formData.display_rules.devices}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -1079,7 +1098,9 @@
 			<!-- Page Targeting -->
 			<Card>
 				<h2 class="text-xl font-semibold mb-4">Page Targeting</h2>
-				<p class="text-sm text-gray-600 mb-4">Control which pages the popup appears on. Use wildcards (*) for pattern matching.</p>
+				<p class="text-sm text-gray-600 mb-4">
+					Control which pages the popup appears on. Use wildcards (*) for pattern matching.
+				</p>
 
 				<div class="space-y-4">
 					<div>
@@ -1093,7 +1114,9 @@
 							rows="3"
 							placeholder="/pricing&#10;/products/*&#10;/checkout"
 						></textarea>
-						<p class="text-xs text-gray-500 mt-1">One URL pattern per line. Use * as wildcard. Leave empty to show on all pages.</p>
+						<p class="text-xs text-gray-500 mt-1">
+							One URL pattern per line. Use * as wildcard. Leave empty to show on all pages.
+						</p>
 					</div>
 
 					<div>
@@ -1107,7 +1130,9 @@
 							rows="3"
 							placeholder="/admin/*&#10;/login&#10;/register"
 						></textarea>
-						<p class="text-xs text-gray-500 mt-1">Pages to exclude even if they match include patterns.</p>
+						<p class="text-xs text-gray-500 mt-1">
+							Pages to exclude even if they match include patterns.
+						</p>
 					</div>
 				</div>
 			</Card>
@@ -1115,7 +1140,9 @@
 			<!-- Scheduling -->
 			<Card>
 				<h2 class="text-xl font-semibold mb-4">Scheduling</h2>
-				<p class="text-sm text-gray-600 mb-4">Set start and end dates to control when this popup is active. Leave empty for always-on.</p>
+				<p class="text-sm text-gray-600 mb-4">
+					Set start and end dates to control when this popup is active. Leave empty for always-on.
+				</p>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
@@ -1143,7 +1170,9 @@
 			<!-- Overlay Settings -->
 			<Card>
 				<h2 class="text-xl font-semibold mb-4">Overlay Settings</h2>
-				<p class="text-sm text-gray-600 mb-4">Customize the backdrop overlay that appears behind the popup.</p>
+				<p class="text-sm text-gray-600 mb-4">
+					Customize the backdrop overlay that appears behind the popup.
+				</p>
 
 				<div class="space-y-4">
 					<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1182,7 +1211,8 @@
 					<div class="flex items-center gap-2">
 						<input
 							type="checkbox"
-							id="closeOnEscape" name="closeOnEscape"
+							id="closeOnEscape"
+							name="closeOnEscape"
 							bind:checked={formData.closeOnEscape}
 							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 						/>

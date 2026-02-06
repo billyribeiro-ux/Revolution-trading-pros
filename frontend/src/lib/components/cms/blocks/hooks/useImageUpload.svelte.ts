@@ -4,7 +4,11 @@
  * Composable logic for image uploads with progress tracking and validation
  */
 
-import { validateFile, sanitizeFilename, type FileValidationOptions } from '$lib/utils/sanitization';
+import {
+	validateFile,
+	sanitizeFilename,
+	type FileValidationOptions
+} from '$lib/utils/sanitization';
 
 // ============================================================================
 // Types
@@ -189,11 +193,7 @@ export function useImageUpload(options: ImageUploadOptions) {
 
 				ctx.drawImage(img, 0, 0, width, height);
 
-				canvas.toBlob(
-					(blob) => resolve(blob),
-					'image/jpeg',
-					0.8
-				);
+				canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8);
 			};
 
 			img.onerror = () => {
@@ -418,9 +418,7 @@ export function useImageUpload(options: ImageUploadOptions) {
 		const files = event.dataTransfer?.files;
 		if (files && files.length > 0) {
 			// Only upload the first image file
-			const imageFile = Array.from(files).find((file) =>
-				allowedTypes.includes(file.type)
-			);
+			const imageFile = Array.from(files).find((file) => allowedTypes.includes(file.type));
 
 			if (imageFile) {
 				upload(imageFile);
@@ -528,7 +526,10 @@ export function useImageUpload(options: ImageUploadOptions) {
 export function createPresignedUploader(
 	getPresignedUrl: (filename: string, contentType: string) => Promise<string>
 ) {
-	return async function uploadToPresigned(file: File, onProgress?: (percent: number) => void): Promise<string> {
+	return async function uploadToPresigned(
+		file: File,
+		onProgress?: (percent: number) => void
+	): Promise<string> {
 		const presignedUrl = await getPresignedUrl(file.name, file.type);
 
 		return new Promise((resolve, reject) => {

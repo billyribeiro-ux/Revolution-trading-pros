@@ -7,7 +7,13 @@
 -->
 
 <script lang="ts">
-	import { IconBrandYoutube, IconBrandVimeo, IconBrandTwitter, IconCode, IconLink } from '$lib/icons';
+	import {
+		IconBrandYoutube,
+		IconBrandVimeo,
+		IconBrandTwitter,
+		IconCode,
+		IconLink
+	} from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -43,10 +49,12 @@
 
 	function getEmbedUrl(url: string, type: string): string {
 		if (!url) return '';
-		
+
 		switch (type) {
 			case 'youtube': {
-				const videoId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/)?.[1];
+				const videoId = url.match(
+					/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/
+				)?.[1];
 				return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
 			}
 			case 'vimeo': {
@@ -59,16 +67,28 @@
 	}
 
 	function handleUrlChange(url: string): void {
-		const type = detectEmbedType(url) as 'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'tiktok' | 'soundcloud' | 'spotify' | 'custom';
+		const type = detectEmbedType(url) as
+			| 'youtube'
+			| 'vimeo'
+			| 'twitter'
+			| 'instagram'
+			| 'tiktok'
+			| 'soundcloud'
+			| 'spotify'
+			| 'custom';
 		updateContent({ embedUrl: url, embedType: type });
 	}
 
 	function getTypeIcon(type: string) {
 		switch (type) {
-			case 'youtube': return IconBrandYoutube;
-			case 'vimeo': return IconBrandVimeo;
-			case 'twitter': return IconBrandTwitter;
-			default: return IconCode;
+			case 'youtube':
+				return IconBrandYoutube;
+			case 'vimeo':
+				return IconBrandVimeo;
+			case 'twitter':
+				return IconBrandTwitter;
+			default:
+				return IconCode;
 		}
 	}
 
@@ -215,7 +235,9 @@
 		font-size: 0.875rem;
 	}
 
-	.embed-error p { margin: 0; }
+	.embed-error p {
+		margin: 0;
+	}
 
 	.embed-fallback {
 		padding: 2rem;
@@ -236,7 +258,9 @@
 		transition: background 0.15s;
 	}
 
-	.embed-fallback a:hover { background: #2563eb; }
+	.embed-fallback a:hover {
+		background: #2563eb;
+	}
 
 	.embed-empty {
 		display: flex;
@@ -248,14 +272,36 @@
 		text-align: center;
 	}
 
-	.embed-empty p { margin: 0; font-size: 0.9375rem; }
+	.embed-empty p {
+		margin: 0;
+		font-size: 0.9375rem;
+	}
 
-	:global(.dark) .embed-block { border-color: #334155; }
-	:global(.dark) .embed-editor { background: #1e293b; }
-	:global(.dark) .embed-header { color: #94a3b8; }
-	:global(.dark) .embed-input-wrapper { background: #0f172a; border-color: #475569; }
-	:global(.dark) .embed-input-wrapper input { background: transparent; color: #e2e8f0; }
-	:global(.dark) .embed-error { background: #450a0a; color: #fca5a5; }
-	:global(.dark) .embed-fallback { background: #1e293b; }
-	:global(.dark) .embed-empty { color: #64748b; }
+	:global(.dark) .embed-block {
+		border-color: #334155;
+	}
+	:global(.dark) .embed-editor {
+		background: #1e293b;
+	}
+	:global(.dark) .embed-header {
+		color: #94a3b8;
+	}
+	:global(.dark) .embed-input-wrapper {
+		background: #0f172a;
+		border-color: #475569;
+	}
+	:global(.dark) .embed-input-wrapper input {
+		background: transparent;
+		color: #e2e8f0;
+	}
+	:global(.dark) .embed-error {
+		background: #450a0a;
+		color: #fca5a5;
+	}
+	:global(.dark) .embed-fallback {
+		background: #1e293b;
+	}
+	:global(.dark) .embed-empty {
+		color: #64748b;
+	}
 </style>

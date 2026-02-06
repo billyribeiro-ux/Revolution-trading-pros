@@ -70,7 +70,10 @@
 		position?: { x: number; y: number } | null;
 		/** Show preset picker after block type selection */
 		showPresets?: boolean;
-		oninsert: (type: BlockType, presetData?: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }) => void;
+		oninsert: (
+			type: BlockType,
+			presetData?: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }
+		) => void;
 		onclose?: () => void;
 	}
 
@@ -95,9 +98,9 @@
 	let showPresetPicker = $state(false);
 
 	// Block types that have presets (loaded from API)
-	let blockTypesWithPresets = $state<Set<string>>(new Set([
-		'button', 'heading', 'callout', 'quote', 'card', 'separator', 'riskDisclaimer'
-	]));
+	let blockTypesWithPresets = $state<Set<string>>(
+		new Set(['button', 'heading', 'callout', 'quote', 'card', 'separator', 'riskDisclaimer'])
+	);
 
 	// ==========================================================================
 	// Icon Mapping
@@ -189,7 +192,10 @@
 		}
 	}
 
-	function handlePresetApply(data: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }) {
+	function handlePresetApply(data: {
+		content: Partial<BlockContent>;
+		settings: Partial<BlockSettings>;
+	}) {
 		if (selectedBlockType) {
 			oninsert(selectedBlockType, data);
 			showPresetPicker = false;
@@ -277,118 +283,118 @@
 				</div>
 
 				<div class="inserter-content">
-				{#if displayMode === 'search' && filteredBlocks}
-					<!-- Search Results -->
-					<div class="search-results">
-						{#if (filteredBlocks?.length ?? 0) === 0}
-							<div class="no-results">
-								<p>No blocks found for "{localSearch}"</p>
-							</div>
-						{:else}
-							<div class="blocks-grid">
-								{#each filteredBlocks as type}
-									{@const def = BLOCK_DEFINITIONS[type]}
-									{@const Icon = BLOCK_ICONS[type] || IconBox}
+					{#if displayMode === 'search' && filteredBlocks}
+						<!-- Search Results -->
+						<div class="search-results">
+							{#if (filteredBlocks?.length ?? 0) === 0}
+								<div class="no-results">
+									<p>No blocks found for "{localSearch}"</p>
+								</div>
+							{:else}
+								<div class="blocks-grid">
+									{#each filteredBlocks as type}
+										{@const def = BLOCK_DEFINITIONS[type]}
+										{@const Icon = BLOCK_ICONS[type] || IconBox}
+										<button
+											type="button"
+											class="block-item"
+											class:has-presets={hasPresets(type)}
+											onclick={() => handleBlockClick(type)}
+											onmouseenter={() => (hoveredBlock = type)}
+											onmouseleave={() => (hoveredBlock = null)}
+										>
+											<div
+												class="block-icon"
+												style:background={getCategoryColor(def.category) + '15'}
+												style:color={getCategoryColor(def.category)}
+											>
+												<Icon size={24} />
+											</div>
+											<span class="block-name">{def.name}</span>
+											{#if hasPresets(type)}
+												<span class="presets-badge" title="Has presets available">
+													<IconTemplate size={12} />
+												</span>
+											{/if}
+										</button>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{:else}
+						<!-- Category View -->
+						<div class="categories-view">
+							{#each BLOCK_CATEGORIES as category}
+								<div class="category-section">
 									<button
 										type="button"
-										class="block-item"
-										class:has-presets={hasPresets(type)}
-										onclick={() => handleBlockClick(type)}
-										onmouseenter={() => (hoveredBlock = type)}
-										onmouseleave={() => (hoveredBlock = null)}
+										class="category-header"
+										class:expanded={activeCategory === category.id}
+										onclick={() =>
+											(activeCategory = activeCategory === category.id ? null : category.id)}
 									>
-										<div
-											class="block-icon"
-											style:background={getCategoryColor(def.category) + '15'}
-											style:color={getCategoryColor(def.category)}
-										>
-											<Icon size={24} />
+										<div class="category-label" style:--cat-color={category.color}>
+											<span class="category-dot"></span>
+											{category.name}
 										</div>
-										<span class="block-name">{def.name}</span>
-										{#if hasPresets(type)}
-											<span class="presets-badge" title="Has presets available">
-												<IconTemplate size={12} />
-											</span>
-										{/if}
+										<span class="category-count">{category.blocks.length}</span>
 									</button>
-								{/each}
-							</div>
-						{/if}
-					</div>
-				{:else}
-					<!-- Category View -->
-					<div class="categories-view">
-						{#each BLOCK_CATEGORIES as category}
-							<div class="category-section">
-								<button
-									type="button"
-									class="category-header"
-									class:expanded={activeCategory === category.id}
-									onclick={() =>
-										(activeCategory = activeCategory === category.id ? null : category.id)}
-								>
-									<div class="category-label" style:--cat-color={category.color}>
-										<span class="category-dot"></span>
-										{category.name}
-									</div>
-									<span class="category-count">{category.blocks.length}</span>
-								</button>
 
-								{#if activeCategory === category.id || !activeCategory}
-									<div class="category-blocks" transition:fly={{ y: -10, duration: 200 }}>
-										{#each category.blocks as type}
-											{@const def = BLOCK_DEFINITIONS[type]}
-											{@const Icon = BLOCK_ICONS[type] || IconBox}
-											<button
-												type="button"
-												class="block-item"
-												class:has-presets={hasPresets(type)}
-												onclick={() => handleBlockClick(type)}
-												onmouseenter={() => (hoveredBlock = type)}
-												onmouseleave={() => (hoveredBlock = null)}
-											>
-												<div
-													class="block-icon"
-													style:background={category.color + '15'}
-													style:color={category.color}
+									{#if activeCategory === category.id || !activeCategory}
+										<div class="category-blocks" transition:fly={{ y: -10, duration: 200 }}>
+											{#each category.blocks as type}
+												{@const def = BLOCK_DEFINITIONS[type]}
+												{@const Icon = BLOCK_ICONS[type] || IconBox}
+												<button
+													type="button"
+													class="block-item"
+													class:has-presets={hasPresets(type)}
+													onclick={() => handleBlockClick(type)}
+													onmouseenter={() => (hoveredBlock = type)}
+													onmouseleave={() => (hoveredBlock = null)}
 												>
-													<Icon size={20} />
-												</div>
-												<div class="block-info">
-													<span class="block-name">{def.name}</span>
-													<span class="block-desc">{def.description}</span>
-												</div>
-												{#if hasPresets(type)}
-													<span class="presets-badge inline" title="Has presets available">
-														<IconTemplate size={14} />
-														Presets
-													</span>
-												{/if}
-											</button>
-										{/each}
-									</div>
-								{/if}
-							</div>
-						{/each}
+													<div
+														class="block-icon"
+														style:background={category.color + '15'}
+														style:color={category.color}
+													>
+														<Icon size={20} />
+													</div>
+													<div class="block-info">
+														<span class="block-name">{def.name}</span>
+														<span class="block-desc">{def.description}</span>
+													</div>
+													{#if hasPresets(type)}
+														<span class="presets-badge inline" title="Has presets available">
+															<IconTemplate size={14} />
+															Presets
+														</span>
+													{/if}
+												</button>
+											{/each}
+										</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<!-- Block Preview -->
+				{#if hoveredBlock}
+					{@const def = BLOCK_DEFINITIONS[hoveredBlock]}
+					<div class="block-preview" transition:fade={{ duration: 100 }}>
+						<h4>{def.name}</h4>
+						<p>{def.description}</p>
+						<div class="preview-keywords">
+							{#each def.keywords.slice(0, 4) as keyword}
+								<span class="keyword">{keyword}</span>
+							{/each}
+						</div>
 					</div>
 				{/if}
 			</div>
-
-			<!-- Block Preview -->
-			{#if hoveredBlock}
-				{@const def = BLOCK_DEFINITIONS[hoveredBlock]}
-				<div class="block-preview" transition:fade={{ duration: 100 }}>
-					<h4>{def.name}</h4>
-					<p>{def.description}</p>
-					<div class="preview-keywords">
-						{#each def.keywords.slice(0, 4) as keyword}
-							<span class="keyword">{keyword}</span>
-						{/each}
-					</div>
-				</div>
-			{/if}
 		</div>
-	</div>
 	{/if}
 {:else}
 	<!-- Inline Inserter (Sidebar) -->
@@ -408,7 +414,9 @@
 							class="block-btn"
 							class:has-presets={hasPresets(type)}
 							onclick={() => handleBlockClick(type)}
-							title={hasPresets(type) ? `${def.description} - Has presets available` : def.description}
+							title={hasPresets(type)
+								? `${def.description} - Has presets available`
+								: def.description}
 						>
 							<Icon size={18} />
 							<span>{def.name}</span>

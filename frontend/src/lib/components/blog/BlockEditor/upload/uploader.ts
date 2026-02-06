@@ -134,10 +134,7 @@ export class UploadController {
  * console.log(result.url); // CDN URL
  * ```
  */
-export async function uploadImage(
-	file: File,
-	options: UploadOptions = {}
-): Promise<UploadResult> {
+export async function uploadImage(file: File, options: UploadOptions = {}): Promise<UploadResult> {
 	const {
 		collection = 'blog-images',
 		filename,

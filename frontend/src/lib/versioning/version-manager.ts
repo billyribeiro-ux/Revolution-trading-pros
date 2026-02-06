@@ -34,12 +34,7 @@ export class VersionManager {
 		this.maxVersions = maxVersions;
 	}
 
-	createVersion(
-		blocks: Block[],
-		author: string,
-		message: string,
-		authorEmail?: string
-	): Version {
+	createVersion(blocks: Block[], author: string, message: string, authorEmail?: string): Version {
 		const previous = this.versions[this.versions.length - 1];
 		const current = JSON.stringify(blocks, null, 2);
 

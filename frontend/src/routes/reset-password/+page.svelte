@@ -172,7 +172,8 @@
 							<IconLock size={20} />
 						</div>
 						<input
-							id="password" name="password"
+							id="password"
+							name="password"
 							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							required
@@ -199,7 +200,9 @@
 					{#if errors.password}
 						<p class="mt-2 text-sm text-red-400">{errors.password[0]}</p>
 					{:else}
-						<p class="mt-2 text-xs text-slate-500">Minimum 12 characters with uppercase, lowercase, and number</p>
+						<p class="mt-2 text-xs text-slate-500">
+							Minimum 12 characters with uppercase, lowercase, and number
+						</p>
 					{/if}
 				</div>
 
@@ -216,7 +219,8 @@
 							<IconLock size={20} />
 						</div>
 						<input
-							id="password_confirmation" name="password_confirmation"
+							id="password_confirmation"
+							name="password_confirmation"
 							type={showConfirmPassword ? 'text' : 'password'}
 							bind:value={password_confirmation}
 							required

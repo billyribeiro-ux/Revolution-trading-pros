@@ -90,18 +90,23 @@
 		return 'bad';
 	}
 
-	function getInverseStatusColor(value: number, thresholds: { good: number; warn: number }): string {
+	function getInverseStatusColor(
+		value: number,
+		thresholds: { good: number; warn: number }
+	): string {
 		if (value <= thresholds.good) return 'good';
 		if (value <= thresholds.warn) return 'warn';
 		return 'bad';
 	}
 
-	let positionClass = $derived({
-		'bottom-right': 'pos-br',
-		'bottom-left': 'pos-bl',
-		'top-right': 'pos-tr',
-		'top-left': 'pos-tl'
-	}[position]);
+	let positionClass = $derived(
+		{
+			'bottom-right': 'pos-br',
+			'bottom-left': 'pos-bl',
+			'top-right': 'pos-tr',
+			'top-left': 'pos-tl'
+		}[position]
+	);
 </script>
 
 {#if visible}
@@ -118,7 +123,9 @@
 
 			<div class="metric">
 				<span class="metric-label">Render</span>
-				<span class="metric-value {getInverseStatusColor(renderTime, { good: 8, warn: 16 })}">{renderTime}ms</span>
+				<span class="metric-value {getInverseStatusColor(renderTime, { good: 8, warn: 16 })}"
+					>{renderTime}ms</span
+				>
 			</div>
 
 			<div class="metric">
@@ -129,7 +136,9 @@
 			{#if memory.total > 0}
 				<div class="metric">
 					<span class="metric-label">Memory</span>
-					<span class="metric-value {getInverseStatusColor(memory.percent, { good: 50, warn: 75 })}">{memory.used}MB</span>
+					<span class="metric-value {getInverseStatusColor(memory.percent, { good: 50, warn: 75 })}"
+						>{memory.used}MB</span
+					>
 				</div>
 			{/if}
 
@@ -161,10 +170,22 @@
 		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.pos-br { bottom: 1rem; right: 1rem; }
-	.pos-bl { bottom: 1rem; left: 1rem; }
-	.pos-tr { top: 1rem; right: 1rem; }
-	.pos-tl { top: 1rem; left: 1rem; }
+	.pos-br {
+		bottom: 1rem;
+		right: 1rem;
+	}
+	.pos-bl {
+		bottom: 1rem;
+		left: 1rem;
+	}
+	.pos-tr {
+		top: 1rem;
+		right: 1rem;
+	}
+	.pos-tl {
+		top: 1rem;
+		left: 1rem;
+	}
 
 	.dashboard-header {
 		margin-bottom: 0.5rem;
@@ -202,9 +223,15 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	.metric-value.good { color: #22c55e; }
-	.metric-value.warn { color: #f59e0b; }
-	.metric-value.bad { color: #ef4444; }
+	.metric-value.good {
+		color: #22c55e;
+	}
+	.metric-value.warn {
+		color: #f59e0b;
+	}
+	.metric-value.bad {
+		color: #ef4444;
+	}
 
 	.dashboard-footer {
 		margin-top: 0.5rem;

@@ -137,12 +137,25 @@
 
 			<div class="setting-group">
 				<label for="language">Language Code</label>
-				<input type="text" id="language" name="language" bind:value={settings.language} placeholder="en" />
+				<input
+					type="text"
+					id="language"
+					name="language"
+					bind:value={settings.language}
+					placeholder="en"
+				/>
 			</div>
 
 			<div class="setting-group">
 				<label for="maxAge">Max Article Age (hours)</label>
-				<input type="number" id="maxAge" name="maxAge" bind:value={settings.maxAge} min="1" max="48" />
+				<input
+					type="number"
+					id="maxAge"
+					name="maxAge"
+					bind:value={settings.maxAge}
+					min="1"
+					max="48"
+				/>
 				<span class="hint">Google News requires articles within 48 hours</span>
 			</div>
 		</div>

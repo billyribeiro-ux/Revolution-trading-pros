@@ -295,7 +295,9 @@
 					><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg
 				>
 				<input
-					id="courses-searchquery" name="courses-searchquery" type="text"
+					id="courses-searchquery"
+					name="courses-searchquery"
+					type="text"
 					placeholder="Search courses..."
 					bind:value={searchQuery}
 					onkeydown={(e) => e.key === 'Enter' && handleSearch()}
@@ -611,7 +613,8 @@
 				<div class="form-group">
 					<label for="course-title">Course Title <span class="required">*</span></label>
 					<input
-						id="course-title" name="course-title"
+						id="course-title"
+						name="course-title"
 						type="text"
 						placeholder="e.g., Options Trading Mastery"
 						bind:value={quickCreateTitle}
@@ -625,7 +628,8 @@
 					<div class="slug-preview">
 						<span class="slug-prefix">/classes/</span>
 						<input
-							id="course-slug" name="course-slug"
+							id="course-slug"
+							name="course-slug"
 							type="text"
 							placeholder="options-trading-mastery"
 							bind:value={quickCreateSlug}
@@ -739,6 +743,19 @@
 		selectedModule = null;
 	}}
 	onSaved={handleModuleSaved}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Course"
+	message="Are you sure you want to delete this course? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDelete}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
 />
 
 <style>
@@ -1343,13 +1360,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Course"
-	message="Are you sure you want to delete this course? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDelete}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

@@ -175,11 +175,11 @@ export function formatDuration(seconds: number): string {
  */
 export function formatTimeAgo(dateString: string | Date): string {
 	const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
-	
+
 	if (isNaN(date.getTime())) {
 		return 'Unknown';
 	}
-	
+
 	const now = new Date();
 	const diffMs = now.getTime() - date.getTime();
 	const diffMins = Math.floor(diffMs / 60000);
@@ -189,7 +189,7 @@ export function formatTimeAgo(dateString: string | Date): string {
 	if (diffMins < 1) return 'Just now';
 	if (diffMins < 60) return `${diffMins} min ago`;
 	if (diffHours < 24) return `${diffHours}h ago`;
-	
+
 	if (diffDays === 0) {
 		return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
 	}

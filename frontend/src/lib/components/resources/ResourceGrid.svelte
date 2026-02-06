@@ -10,7 +10,13 @@
   - Loading states
 -->
 <script lang="ts">
-	import type { RoomResource, ResourceListQuery, ContentType, ResourceType, AccessLevel } from '$lib/api/room-resources';
+	import type {
+		RoomResource,
+		ResourceListQuery,
+		ContentType,
+		ResourceType,
+		AccessLevel
+	} from '$lib/api/room-resources';
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
 
@@ -207,11 +213,13 @@
 	}
 
 	// Grid column classes
-	let gridClasses = $derived({
-		2: 'grid-cols-1 sm:grid-cols-2',
-		3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-		4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-	}[columns]);
+	let gridClasses = $derived(
+		{
+			2: 'grid-cols-1 sm:grid-cols-2',
+			3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+			4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+		}[columns]
+	);
 </script>
 
 <div class="resource-grid">
@@ -233,7 +241,12 @@
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+						/>
 					</svg>
 				</div>
 			{/if}
@@ -281,7 +294,8 @@
 	<!-- Results count -->
 	{#if total > 0 && !loading}
 		<p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
-			Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, total)} of {total} resources
+			Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, total)} of {total}
+			resources
 		</p>
 	{/if}
 
@@ -304,11 +318,25 @@
 		</div>
 	{:else if error}
 		<!-- Error state -->
-		<div class="rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-900/20">
-			<svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+		<div
+			class="rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-900/20"
+		>
+			<svg
+				class="mx-auto h-12 w-12 text-red-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+				/>
 			</svg>
-			<h3 class="mt-4 text-lg font-medium text-red-800 dark:text-red-200">Failed to load resources</h3>
+			<h3 class="mt-4 text-lg font-medium text-red-800 dark:text-red-200">
+				Failed to load resources
+			</h3>
 			<p class="mt-2 text-sm text-red-600 dark:text-red-300">{error}</p>
 			<button
 				class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
@@ -319,9 +347,21 @@
 		</div>
 	{:else if resources.length === 0}
 		<!-- Empty state -->
-		<div class="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-gray-800">
-			<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+		<div
+			class="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-gray-800"
+		>
+			<svg
+				class="mx-auto h-12 w-12 text-gray-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+				/>
 			</svg>
 			<h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No resources found</h3>
 			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -334,7 +374,10 @@
 			{#if searchQuery}
 				<button
 					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-					onclick={() => { searchQuery = ''; loadResources(); }}
+					onclick={() => {
+						searchQuery = '';
+						loadResources();
+					}}
 				>
 					Clear Search
 				</button>
@@ -373,7 +416,9 @@
 					{@const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
 						<button
-							class="rounded-lg px-3 py-2 text-sm font-medium {pageNum === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}"
+							class="rounded-lg px-3 py-2 text-sm font-medium {pageNum === currentPage
+								? 'bg-blue-600 text-white'
+								: 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}"
 							onclick={() => handlePageChange(pageNum)}
 						>
 							{pageNum}

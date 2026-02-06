@@ -468,13 +468,27 @@ export function useCollaboration(
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	return {
-		get isConnected() { return isConnected; },
-		get connectionStatus() { return connectionStatus; },
-		get collaborators() { return collaborators; },
-		get localUser() { return localUser; },
-		get yBlocks() { return yBlocks; },
-		get isSynced() { return isSynced; },
-		get error() { return error; },
+		get isConnected() {
+			return isConnected;
+		},
+		get connectionStatus() {
+			return connectionStatus;
+		},
+		get collaborators() {
+			return collaborators;
+		},
+		get localUser() {
+			return localUser;
+		},
+		get yBlocks() {
+			return yBlocks;
+		},
+		get isSynced() {
+			return isSynced;
+		},
+		get error() {
+			return error;
+		},
 		updateBlock,
 		insertBlock,
 		deleteBlock,
@@ -533,10 +547,7 @@ export function blocksEqual(a: Block, b: Block): boolean {
 /**
  * Merge block updates preserving metadata
  */
-export function mergeBlockUpdate(
-	original: Block,
-	updates: Partial<Block>
-): Block {
+export function mergeBlockUpdate(original: Block, updates: Partial<Block>): Block {
 	return {
 		...original,
 		...updates,

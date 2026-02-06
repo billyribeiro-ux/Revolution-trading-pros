@@ -353,7 +353,9 @@
 					<!-- Search -->
 					<div class="search-wrapper">
 						<input
-							id="page-searchquery" name="page-searchquery" type="text"
+							id="page-searchquery"
+							name="page-searchquery"
+							type="text"
 							placeholder="Search..."
 							bind:value={searchQuery}
 							class="search-input"
@@ -744,7 +746,13 @@
 			</div>
 
 			<!-- Form -->
-			<form class="p-6 space-y-4" onsubmit={(e) => { e.preventDefault(); connectService(); }}>
+			<form
+				class="p-6 space-y-4"
+				onsubmit={(e) => {
+					e.preventDefault();
+					connectService();
+				}}
+			>
 				{#if selectedService.environments && selectedService.environments.length > 1}
 					<fieldset>
 						<legend class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"
@@ -776,7 +784,8 @@
 							{#if field.required}<span class="text-red-400 ml-1">*</span>{/if}
 						</label>
 						<input
-							id="field-{field.key}" name="field-{field.key}"
+							id="field-{field.key}"
+							name="field-{field.key}"
 							type={field.type === 'password' ? 'password' : 'text'}
 							placeholder={field.placeholder}
 							bind:value={credentialValues[field.key]}

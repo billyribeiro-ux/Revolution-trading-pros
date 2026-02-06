@@ -190,7 +190,12 @@
 
 					<div class="form-group">
 						<label class="toggle-label">
-							<input id="page-doubleoptin-enabled" name="page-doubleoptin-enabled" type="checkbox" bind:checked={doubleOptIn.enabled} />
+							<input
+								id="page-doubleoptin-enabled"
+								name="page-doubleoptin-enabled"
+								type="checkbox"
+								bind:checked={doubleOptIn.enabled}
+							/>
 							<span class="toggle-switch"></span>
 							<span>Enable Double Opt-In</span>
 						</label>
@@ -205,7 +210,8 @@
 							<label for="doi-subject">Confirmation Email Subject</label>
 							<input
 								type="text"
-								id="doi-subject" name="doi-subject"
+								id="doi-subject"
+								name="doi-subject"
 								bind:value={doubleOptIn.email_subject}
 								placeholder="Please confirm your subscription"
 							/>
@@ -228,7 +234,8 @@
 							<label for="doi-redirect">Redirect URL After Confirmation</label>
 							<input
 								type="text"
-								id="doi-redirect" name="doi-redirect"
+								id="doi-redirect"
+								name="doi-redirect"
 								bind:value={doubleOptIn.redirect_url}
 								placeholder="https://example.com/thank-you"
 							/>
@@ -264,7 +271,12 @@
 
 					<div class="form-group">
 						<label class="toggle-label">
-							<input id="page-emailpreferences-enabled" name="page-emailpreferences-enabled" type="checkbox" bind:checked={emailPreferences.enabled} />
+							<input
+								id="page-emailpreferences-enabled"
+								name="page-emailpreferences-enabled"
+								type="checkbox"
+								bind:checked={emailPreferences.enabled}
+							/>
 							<span class="toggle-switch"></span>
 							<span>Enable Email Preferences Page</span>
 						</label>
@@ -278,7 +290,8 @@
 							<label for="ep-title">Page Title</label>
 							<input
 								type="text"
-								id="ep-title" name="ep-title"
+								id="ep-title"
+								name="ep-title"
 								bind:value={emailPreferences.title}
 								placeholder="Email Preferences"
 							/>
@@ -299,22 +312,39 @@
 								<legend class="form-label">Display Options</legend>
 								<div class="checkbox-group">
 									<label class="checkbox-label">
-										<input id="page-emailpreferences-show-lists" name="page-emailpreferences-show-lists" type="checkbox" bind:checked={emailPreferences.show_lists} />
+										<input
+											id="page-emailpreferences-show-lists"
+											name="page-emailpreferences-show-lists"
+											type="checkbox"
+											bind:checked={emailPreferences.show_lists}
+										/>
 										<span>Show Lists</span>
 									</label>
 									<label class="checkbox-label">
-										<input id="page-emailpreferences-show-tags" name="page-emailpreferences-show-tags" type="checkbox" bind:checked={emailPreferences.show_tags} />
+										<input
+											id="page-emailpreferences-show-tags"
+											name="page-emailpreferences-show-tags"
+											type="checkbox"
+											bind:checked={emailPreferences.show_tags}
+										/>
 										<span>Show Tags</span>
 									</label>
 									<label class="checkbox-label">
 										<input
-											id="page-emailpreferences-show-communication-types" name="page-emailpreferences-show-communication-types" type="checkbox"
+											id="page-emailpreferences-show-communication-types"
+											name="page-emailpreferences-show-communication-types"
+											type="checkbox"
 											bind:checked={emailPreferences.show_communication_types}
 										/>
 										<span>Show Communication Types</span>
 									</label>
 									<label class="checkbox-label">
-										<input id="page-emailpreferences-show-unsubscribe-all" name="page-emailpreferences-show-unsubscribe-all" type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
+										<input
+											id="page-emailpreferences-show-unsubscribe-all"
+											name="page-emailpreferences-show-unsubscribe-all"
+											type="checkbox"
+											bind:checked={emailPreferences.show_unsubscribe_all}
+										/>
 										<span>Show Unsubscribe All Option</span>
 									</label>
 								</div>
@@ -335,7 +365,8 @@
 							<label for="ep-redirect">Redirect After Update</label>
 							<input
 								type="text"
-								id="ep-redirect" name="ep-redirect"
+								id="ep-redirect"
+								name="ep-redirect"
 								bind:value={emailPreferences.redirect_after_update}
 								placeholder="https://example.com/preferences-saved"
 							/>

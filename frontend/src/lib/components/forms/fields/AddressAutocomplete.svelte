@@ -453,7 +453,11 @@
 	<input type="hidden" name="{props.field.name}[state]" value={address.state} />
 	<input type="hidden" name="{props.field.name}[postal_code]" value={address.postal_code} />
 	<input type="hidden" name="{props.field.name}[country]" value={address.country} />
-	<input type="hidden" name="{props.field.name}[formatted_address]" value={address.formatted_address} />
+	<input
+		type="hidden"
+		name="{props.field.name}[formatted_address]"
+		value={address.formatted_address}
+	/>
 </div>
 
 <style>

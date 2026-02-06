@@ -95,10 +95,7 @@
 
 {#if isPullQuote}
 	<!-- Pull Quote Variant -->
-	<figure
-		class="quote-block quote-block--pullquote"
-		class:quote-block--selected={props.isSelected}
-	>
+	<figure class="quote-block quote-block--pullquote" class:quote-block--selected={props.isSelected}>
 		<!-- Decorative Quote Icon -->
 		<div class="quote-block__icon" aria-hidden="true">
 			<IconQuote size={32} />
@@ -215,7 +212,7 @@
 	}
 
 	.quote-block__cite::before {
-		content: '\2014\00a0';  /* em dash + nbsp */
+		content: '\2014\00a0'; /* em dash + nbsp */
 	}
 
 	/* =========================================================================

@@ -120,11 +120,7 @@
 </script>
 
 {#if props.isEditing}
-	<div
-		class="spacer-block editing"
-		class:selected={props.isSelected}
-		class:dragging={isDragging}
-	>
+	<div class="spacer-block editing" class:selected={props.isSelected} class:dragging={isDragging}>
 		{#if props.isSelected}
 			<div class="spacer-toolbar" role="toolbar" aria-label="Spacer settings">
 				<div class="toolbar-row">
@@ -138,7 +134,7 @@
 									class:active={height === preset.value}
 									onclick={() => setHeight(preset.value)}
 									aria-pressed={height === preset.value}
-									title="{preset.value}"
+									title={preset.value}
 								>
 									{preset.label}
 								</button>
@@ -171,11 +167,7 @@
 			</div>
 		{/if}
 
-		<div
-			class="spacer-visual"
-			style:height={height}
-			role="presentation"
-		>
+		<div class="spacer-visual" style:height role="presentation">
 			<div class="spacer-outline">
 				<span class="spacer-label">{heightInPx}px</span>
 			</div>
@@ -205,12 +197,7 @@
 	</div>
 {:else}
 	<!-- View mode: invisible spacer, just creates vertical space -->
-	<div
-		class="spacer-block"
-		style:height={height}
-		role="separator"
-		aria-label="Vertical spacing"
-	></div>
+	<div class="spacer-block" style:height role="separator" aria-label="Vertical spacing"></div>
 {/if}
 
 <style>

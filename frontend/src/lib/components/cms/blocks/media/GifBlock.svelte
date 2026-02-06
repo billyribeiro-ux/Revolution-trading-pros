@@ -24,7 +24,9 @@
 	let props: Props = $props();
 
 	let searchQuery = $state('');
-	let searchResults = $state<Array<{ id: string; url: string; preview: string; title: string }>>([]);
+	let searchResults = $state<Array<{ id: string; url: string; preview: string; title: string }>>(
+		[]
+	);
 	let isSearching = $state(false);
 
 	let gifUrl = $derived(props.block.content.mediaUrl || '');
@@ -38,17 +40,37 @@
 		if (!searchQuery.trim()) return;
 
 		isSearching = true;
-		
+
 		try {
 			// Simulated Giphy API response - replace with actual Giphy API integration
-			await new Promise(resolve => setTimeout(resolve, 800));
-			
+			await new Promise((resolve) => setTimeout(resolve, 800));
+
 			// Mock results for demonstration
 			searchResults = [
-				{ id: '1', url: `https://media.giphy.com/media/placeholder1/giphy.gif`, preview: `https://media.giphy.com/media/placeholder1/200w.gif`, title: `${searchQuery} GIF 1` },
-				{ id: '2', url: `https://media.giphy.com/media/placeholder2/giphy.gif`, preview: `https://media.giphy.com/media/placeholder2/200w.gif`, title: `${searchQuery} GIF 2` },
-				{ id: '3', url: `https://media.giphy.com/media/placeholder3/giphy.gif`, preview: `https://media.giphy.com/media/placeholder3/200w.gif`, title: `${searchQuery} GIF 3` },
-				{ id: '4', url: `https://media.giphy.com/media/placeholder4/giphy.gif`, preview: `https://media.giphy.com/media/placeholder4/200w.gif`, title: `${searchQuery} GIF 4` },
+				{
+					id: '1',
+					url: `https://media.giphy.com/media/placeholder1/giphy.gif`,
+					preview: `https://media.giphy.com/media/placeholder1/200w.gif`,
+					title: `${searchQuery} GIF 1`
+				},
+				{
+					id: '2',
+					url: `https://media.giphy.com/media/placeholder2/giphy.gif`,
+					preview: `https://media.giphy.com/media/placeholder2/200w.gif`,
+					title: `${searchQuery} GIF 2`
+				},
+				{
+					id: '3',
+					url: `https://media.giphy.com/media/placeholder3/giphy.gif`,
+					preview: `https://media.giphy.com/media/placeholder3/200w.gif`,
+					title: `${searchQuery} GIF 3`
+				},
+				{
+					id: '4',
+					url: `https://media.giphy.com/media/placeholder4/giphy.gif`,
+					preview: `https://media.giphy.com/media/placeholder4/200w.gif`,
+					title: `${searchQuery} GIF 4`
+				}
 			];
 		} catch (error) {
 			props.onError?.(error instanceof Error ? error : new Error('Failed to search GIFs'));
@@ -197,7 +219,9 @@
 		transition: background 0.15s;
 	}
 
-	.gif-remove:hover { background: #dc2626; }
+	.gif-remove:hover {
+		background: #dc2626;
+	}
 
 	.gif-meta {
 		padding: 0.75rem;
@@ -258,9 +282,18 @@
 		gap: 0.375rem;
 	}
 
-	.search-input button:disabled { opacity: 0.6; cursor: not-allowed; }
-	.search-input button :global(.spinning) { animation: spin 1s linear infinite; }
-	@keyframes spin { to { transform: rotate(360deg); } }
+	.search-input button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	.search-input button :global(.spinning) {
+		animation: spin 1s linear infinite;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 	.search-results {
 		display: grid;
@@ -279,7 +312,9 @@
 		background: #e2e8f0;
 	}
 
-	.gif-result:hover { border-color: #3b82f6; }
+	.gif-result:hover {
+		border-color: #3b82f6;
+	}
 
 	.gif-placeholder {
 		width: 100%;
@@ -324,17 +359,50 @@
 		color: #94a3b8;
 	}
 
-	.gif-empty p { margin: 0; }
+	.gif-empty p {
+		margin: 0;
+	}
 
-	:global(.dark) .gif-block { border-color: #334155; }
-	:global(.dark) .gif-meta { background: #1e293b; border-color: #334155; }
-	:global(.dark) .gif-meta input { background: #0f172a; border-color: #475569; color: #e2e8f0; }
-	:global(.dark) .gif-search { background: #1e293b; }
-	:global(.dark) .search-header { color: #f1f5f9; }
-	:global(.dark) .search-input { background: #0f172a; border-color: #475569; }
-	:global(.dark) .search-input input { background: transparent; color: #e2e8f0; }
-	:global(.dark) .gif-result { border-color: #334155; background: #0f172a; }
-	:global(.dark) .gif-url-input { border-color: #334155; }
-	:global(.dark) .gif-url-input input { background: #0f172a; border-color: #475569; color: #e2e8f0; }
-	:global(.dark) .gif-empty { background: #1e293b; color: #64748b; }
+	:global(.dark) .gif-block {
+		border-color: #334155;
+	}
+	:global(.dark) .gif-meta {
+		background: #1e293b;
+		border-color: #334155;
+	}
+	:global(.dark) .gif-meta input {
+		background: #0f172a;
+		border-color: #475569;
+		color: #e2e8f0;
+	}
+	:global(.dark) .gif-search {
+		background: #1e293b;
+	}
+	:global(.dark) .search-header {
+		color: #f1f5f9;
+	}
+	:global(.dark) .search-input {
+		background: #0f172a;
+		border-color: #475569;
+	}
+	:global(.dark) .search-input input {
+		background: transparent;
+		color: #e2e8f0;
+	}
+	:global(.dark) .gif-result {
+		border-color: #334155;
+		background: #0f172a;
+	}
+	:global(.dark) .gif-url-input {
+		border-color: #334155;
+	}
+	:global(.dark) .gif-url-input input {
+		background: #0f172a;
+		border-color: #475569;
+		color: #e2e8f0;
+	}
+	:global(.dark) .gif-empty {
+		background: #1e293b;
+		color: #64748b;
+	}
 </style>

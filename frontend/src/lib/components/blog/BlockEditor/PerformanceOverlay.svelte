@@ -64,10 +64,7 @@
 			}
 
 			// Update FPS history
-			fpsHistory = [
-				...fpsHistory.slice(-(MAX_HISTORY_POINTS - 1)),
-				newSnapshot.fps
-			];
+			fpsHistory = [...fpsHistory.slice(-(MAX_HISTORY_POINTS - 1)), newSnapshot.fps];
 		});
 
 		// Listen for keyboard shortcut
@@ -171,7 +168,12 @@
 		return `${mb.toFixed(1)}MB`;
 	}
 
-	function getSparklinePath(values: number[], width: number, height: number, maxValue: number): string {
+	function getSparklinePath(
+		values: number[],
+		width: number,
+		height: number,
+		maxValue: number
+	): string {
 		if (values.length < 2) return '';
 
 		const stepX = width / (MAX_HISTORY_POINTS - 1);
@@ -185,10 +187,7 @@
 	}
 </script>
 
-<svelte:window
-	onmousemove={handleMouseMove}
-	onmouseup={handleMouseUp}
-/>
+<svelte:window onmousemove={handleMouseMove} onmouseup={handleMouseUp} />
 
 {#if dev && isVisible}
 	<div
@@ -204,7 +203,14 @@
 		<!-- Header -->
 		<div class="perf-header perf-drag-handle">
 			<div class="perf-title">
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="M22 12h-4l-3 9L9 3l-3 9H2" />
 				</svg>
 				<span>Performance</span>
@@ -217,22 +223,38 @@
 					aria-label={isMinimized ? 'Expand' : 'Minimize'}
 				>
 					{#if isMinimized}
-						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
 						</svg>
 					{:else}
-						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />
 						</svg>
 					{/if}
 				</button>
-				<button
-					type="button"
-					class="perf-btn"
-					onclick={close}
-					aria-label="Close"
-				>
-					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<button type="button" class="perf-btn" onclick={close} aria-label="Close">
+					<svg
+						width="12"
+						height="12"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M18 6L6 18M6 6l12 12" />
 					</svg>
 				</button>
@@ -245,10 +267,7 @@
 				<div class="perf-section">
 					<div class="perf-section-header">
 						<span class="perf-section-title">FPS</span>
-						<span
-							class="perf-fps-value"
-							style="color: {getFpsColor(snapshot.fps)}"
-						>
+						<span class="perf-fps-value" style="color: {getFpsColor(snapshot.fps)}">
 							{snapshot.fps}
 						</span>
 					</div>
@@ -269,7 +288,7 @@
 				<div class="perf-section">
 					<div class="perf-section-title">Core Web Vitals</div>
 					<div class="perf-vitals-grid">
-						{#each (['LCP', 'FCP', 'CLS', 'INP', 'TTFB'] as const) as vital}
+						{#each ['LCP', 'FCP', 'CLS', 'INP', 'TTFB'] as const as vital}
 							{@const metric = snapshot.webVitals[vital]}
 							<div class="perf-vital">
 								<span class="perf-vital-name">{vital}</span>
@@ -297,7 +316,9 @@
 								class="perf-memory-value"
 								style="color: {getMemoryColor(snapshot.memoryMetrics.usagePercentage)}"
 							>
-								{formatBytes(snapshot.memoryMetrics.usedJSHeapSize)} / {formatBytes(snapshot.memoryMetrics.jsHeapSizeLimit)}
+								{formatBytes(snapshot.memoryMetrics.usedJSHeapSize)} / {formatBytes(
+									snapshot.memoryMetrics.jsHeapSizeLimit
+								)}
 							</span>
 						</div>
 						<div class="perf-memory-bar">
@@ -337,7 +358,10 @@
 							{@const color = avg < 16 ? '#10b981' : avg < 50 ? '#f59e0b' : '#ef4444'}
 							<div class="perf-metric-row">
 								<span class="perf-metric-name" title={name}>
-									{name.replace(/_/g, ' ').replace(/block render/i, '').trim() || 'render'}
+									{name
+										.replace(/_/g, ' ')
+										.replace(/block render/i, '')
+										.trim() || 'render'}
 								</span>
 								<span class="perf-metric-value" style="color: {color}">
 									{avg.toFixed(1)}ms
@@ -354,13 +378,18 @@
 						<div class="perf-section-title">Recent Operations</div>
 						<div class="perf-ops-list">
 							{#each snapshot.operationMetrics.slice(-5).reverse() as op}
-								{@const color = op.duration < 100 ? '#10b981' : op.duration < 500 ? '#f59e0b' : '#ef4444'}
+								{@const color =
+									op.duration < 100 ? '#10b981' : op.duration < 500 ? '#f59e0b' : '#ef4444'}
 								<div class="perf-op-row">
 									<span class="perf-op-name">{op.operation}</span>
 									<span class="perf-op-duration" style="color: {color}">
 										{op.duration.toFixed(0)}ms
 									</span>
-									<span class="perf-op-status" class:success={op.success} class:failure={!op.success}>
+									<span
+										class="perf-op-status"
+										class:success={op.success}
+										class:failure={!op.success}
+									>
 										{op.success ? 'OK' : 'FAIL'}
 									</span>
 								</div>
@@ -555,7 +584,9 @@
 	.perf-memory-fill {
 		height: 100%;
 		border-radius: 2px;
-		transition: width 0.3s ease, background-color 0.3s ease;
+		transition:
+			width 0.3s ease,
+			background-color 0.3s ease;
 	}
 
 	.perf-metrics-list,

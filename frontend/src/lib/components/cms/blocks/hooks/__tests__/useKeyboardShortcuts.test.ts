@@ -900,8 +900,8 @@ describe('generateShortcutsHelp', () => {
 		const help = generateShortcutsHelp(shortcuts);
 
 		expect(help).toHaveLength(2);
-		expect(help.find(g => g.name === 'Editor')).toBeDefined();
-		expect(help.find(g => g.name === 'Global')).toBeDefined();
+		expect(help.find((g) => g.name === 'Editor')).toBeDefined();
+		expect(help.find((g) => g.name === 'Global')).toBeDefined();
 	});
 
 	it('filters out shortcuts without description', () => {
@@ -911,7 +911,7 @@ describe('generateShortcutsHelp', () => {
 		];
 
 		const help = generateShortcutsHelp(shortcuts);
-		const editorGroup = help.find(g => g.name === 'Editor');
+		const editorGroup = help.find((g) => g.name === 'Editor');
 
 		expect(editorGroup?.shortcuts).toHaveLength(1);
 	});
@@ -927,9 +927,7 @@ describe('generateShortcutsHelp', () => {
 	});
 
 	it('uses "General" for unscoped shortcuts', () => {
-		const shortcuts: Shortcut[] = [
-			{ key: 's', handler: vi.fn(), description: 'Save' }
-		];
+		const shortcuts: Shortcut[] = [{ key: 's', handler: vi.fn(), description: 'Save' }];
 
 		const help = generateShortcutsHelp(shortcuts);
 
@@ -949,30 +947,30 @@ describe('generateShortcutsHelp', () => {
 
 describe('EDITOR_SHORTCUTS', () => {
 	it('contains save shortcut (Ctrl+S)', () => {
-		const save = EDITOR_SHORTCUTS.find(s => s.key === 's' && s.ctrl);
+		const save = EDITOR_SHORTCUTS.find((s) => s.key === 's' && s.ctrl);
 
 		expect(save).toBeDefined();
 		expect(save?.description).toBe('Save');
 	});
 
 	it('contains undo shortcut (Ctrl+Z)', () => {
-		const undo = EDITOR_SHORTCUTS.find(s => s.key === 'z' && s.ctrl && !s.shift);
+		const undo = EDITOR_SHORTCUTS.find((s) => s.key === 'z' && s.ctrl && !s.shift);
 
 		expect(undo).toBeDefined();
 		expect(undo?.description).toBe('Undo');
 	});
 
 	it('contains redo shortcut (Ctrl+Shift+Z)', () => {
-		const redo = EDITOR_SHORTCUTS.find(s => s.key === 'z' && s.ctrl && s.shift);
+		const redo = EDITOR_SHORTCUTS.find((s) => s.key === 'z' && s.ctrl && s.shift);
 
 		expect(redo).toBeDefined();
 		expect(redo?.description).toBe('Redo');
 	});
 
 	it('contains formatting shortcuts', () => {
-		const bold = EDITOR_SHORTCUTS.find(s => s.key === 'b' && s.ctrl);
-		const italic = EDITOR_SHORTCUTS.find(s => s.key === 'i' && s.ctrl);
-		const underline = EDITOR_SHORTCUTS.find(s => s.key === 'u' && s.ctrl);
+		const bold = EDITOR_SHORTCUTS.find((s) => s.key === 'b' && s.ctrl);
+		const italic = EDITOR_SHORTCUTS.find((s) => s.key === 'i' && s.ctrl);
+		const underline = EDITOR_SHORTCUTS.find((s) => s.key === 'u' && s.ctrl);
 
 		expect(bold).toBeDefined();
 		expect(italic).toBeDefined();
@@ -980,13 +978,13 @@ describe('EDITOR_SHORTCUTS', () => {
 	});
 
 	it('all shortcuts have editor scope', () => {
-		EDITOR_SHORTCUTS.forEach(shortcut => {
+		EDITOR_SHORTCUTS.forEach((shortcut) => {
 			expect(shortcut.scope).toBe('editor');
 		});
 	});
 
 	it('all shortcuts have handlers', () => {
-		EDITOR_SHORTCUTS.forEach(shortcut => {
+		EDITOR_SHORTCUTS.forEach((shortcut) => {
 			expect(typeof shortcut.handler).toBe('function');
 		});
 	});
@@ -994,15 +992,15 @@ describe('EDITOR_SHORTCUTS', () => {
 
 describe('NAVIGATION_SHORTCUTS', () => {
 	it('contains arrow navigation', () => {
-		const up = NAVIGATION_SHORTCUTS.find(s => s.key === 'ArrowUp');
-		const down = NAVIGATION_SHORTCUTS.find(s => s.key === 'ArrowDown');
+		const up = NAVIGATION_SHORTCUTS.find((s) => s.key === 'ArrowUp');
+		const down = NAVIGATION_SHORTCUTS.find((s) => s.key === 'ArrowDown');
 
 		expect(up).toBeDefined();
 		expect(down).toBeDefined();
 	});
 
 	it('all shortcuts have navigation scope', () => {
-		NAVIGATION_SHORTCUTS.forEach(shortcut => {
+		NAVIGATION_SHORTCUTS.forEach((shortcut) => {
 			expect(shortcut.scope).toBe('navigation');
 		});
 	});
@@ -1010,20 +1008,20 @@ describe('NAVIGATION_SHORTCUTS', () => {
 
 describe('GLOBAL_SHORTCUTS', () => {
 	it('contains help shortcut (Shift+?)', () => {
-		const help = GLOBAL_SHORTCUTS.find(s => s.key === '?' && s.shift);
+		const help = GLOBAL_SHORTCUTS.find((s) => s.key === '?' && s.shift);
 
 		expect(help).toBeDefined();
 		expect(help?.description).toBe('Show Keyboard Shortcuts');
 	});
 
 	it('contains escape shortcut', () => {
-		const escape = GLOBAL_SHORTCUTS.find(s => s.key === 'Escape');
+		const escape = GLOBAL_SHORTCUTS.find((s) => s.key === 'Escape');
 
 		expect(escape).toBeDefined();
 	});
 
 	it('all shortcuts have global scope', () => {
-		GLOBAL_SHORTCUTS.forEach(shortcut => {
+		GLOBAL_SHORTCUTS.forEach((shortcut) => {
 			expect(shortcut.scope).toBe('global');
 		});
 	});

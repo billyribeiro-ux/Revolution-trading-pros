@@ -89,12 +89,8 @@
 	let pageNumbers = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
 
 	// Separate in-progress and completed courses
-	let inProgressCourses = $derived(
-		paginatedCourses.filter((c) => c.progress_percent < 100)
-	);
-	let completedCourses = $derived(
-		paginatedCourses.filter((c) => c.progress_percent >= 100)
-	);
+	let inProgressCourses = $derived(paginatedCourses.filter((c) => c.progress_percent < 100));
+	let completedCourses = $derived(paginatedCourses.filter((c) => c.progress_percent >= 100));
 
 	// Pagination navigation
 	function goToPage(page: number) {
@@ -157,36 +153,63 @@
 					</div>
 				</div>
 
-			<!-- Error State -->
+				<!-- Error State -->
 			{:else if error}
 				<div class="dashboard__content">
 					<div class="error-state">
-						<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="48"
+							height="48"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line
+								x1="12"
+								x2="12.01"
+								y1="16"
+								y2="16"
+							/>
 						</svg>
 						<p>{error}</p>
-						<button class="btn btn-primary" onclick={() => window.location.reload()}>Try Again</button>
+						<button class="btn btn-primary" onclick={() => window.location.reload()}
+							>Try Again</button
+						>
 					</div>
 				</div>
 
-			<!-- Empty State -->
+				<!-- Empty State -->
 			{:else if enrolledCourses.length === 0}
 				<div class="dashboard__content">
 					<div class="dashboard__content-main">
 						<section class="dashboard__content-section">
 							<div class="empty-state">
-								<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="64"
+									height="64"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								>
+									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path
+										d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+									/>
 								</svg>
 								<h3>No Classes Yet</h3>
-								<p class="empty-state__message">You haven't enrolled in any classes yet. Browse our course catalog to get started!</p>
+								<p class="empty-state__message">
+									You haven't enrolled in any classes yet. Browse our course catalog to get started!
+								</p>
 								<a href="/courses" class="btn btn-orange">Explore Courses</a>
 							</div>
 						</section>
 					</div>
 				</div>
 
-			<!-- Enrolled Courses -->
+				<!-- Enrolled Courses -->
 			{:else}
 				<div class="dashboard__content">
 					<div class="dashboard__content-main">
@@ -200,21 +223,33 @@
 											<div class="class-card">
 												{#if enrollment.course.card_image_url}
 													<div class="class-card__image">
-														<img src={enrollment.course.card_image_url} alt={enrollment.course.title} loading="lazy" />
+														<img
+															src={enrollment.course.card_image_url}
+															alt={enrollment.course.title}
+															loading="lazy"
+														/>
 														<div class="progress-overlay">
 															<div class="progress-bar">
-																<div class="progress-fill" style="width: {enrollment.progress_percent}%"></div>
+																<div
+																	class="progress-fill"
+																	style="width: {enrollment.progress_percent}%"
+																></div>
 															</div>
-															<span class="progress-text">{enrollment.progress_percent}% complete</span>
+															<span class="progress-text"
+																>{enrollment.progress_percent}% complete</span
+															>
 														</div>
 													</div>
 												{/if}
 												<section class="class-card__body">
 													<h4 class="class-card__title">
-														<a href="/classes/{enrollment.course.slug}">{enrollment.course.title}</a>
+														<a href="/classes/{enrollment.course.slug}">{enrollment.course.title}</a
+														>
 													</h4>
 													{#if enrollment.course.instructor_name}
-														<p class="class-card__instructor">by {enrollment.course.instructor_name}</p>
+														<p class="class-card__instructor">
+															by {enrollment.course.instructor_name}
+														</p>
 													{/if}
 													<p class="class-card__meta">
 														{#if enrollment.course.lesson_count}
@@ -226,7 +261,10 @@
 													</p>
 												</section>
 												<footer class="class-card__footer">
-													<button class="btn btn-primary btn-small" onclick={() => resumeCourse(enrollment.course.slug)}>
+													<button
+														class="btn btn-primary btn-small"
+														onclick={() => resumeCourse(enrollment.course.slug)}
+													>
 														Continue
 													</button>
 												</footer>
@@ -247,10 +285,22 @@
 											<div class="class-card completed">
 												{#if enrollment.course.card_image_url}
 													<div class="class-card__image">
-														<img src={enrollment.course.card_image_url} alt={enrollment.course.title} loading="lazy" />
+														<img
+															src={enrollment.course.card_image_url}
+															alt={enrollment.course.title}
+															loading="lazy"
+														/>
 														<div class="completed-badge">
-															<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-																<polyline points="20 6 9 17 4 12"/>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																width="16"
+																height="16"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="2"
+															>
+																<polyline points="20 6 9 17 4 12" />
 															</svg>
 															Completed
 														</div>
@@ -258,18 +308,37 @@
 												{/if}
 												<section class="class-card__body">
 													<h4 class="class-card__title">
-														<a href="/classes/{enrollment.course.slug}">{enrollment.course.title}</a>
+														<a href="/classes/{enrollment.course.slug}">{enrollment.course.title}</a
+														>
 													</h4>
 													{#if enrollment.course.instructor_name}
-														<p class="class-card__instructor">by {enrollment.course.instructor_name}</p>
+														<p class="class-card__instructor">
+															by {enrollment.course.instructor_name}
+														</p>
 													{/if}
 												</section>
 												<footer class="class-card__footer">
-													<a class="btn btn-secondary btn-small" href="/classes/{enrollment.course.slug}">Review</a>
+													<a
+														class="btn btn-secondary btn-small"
+														href="/classes/{enrollment.course.slug}">Review</a
+													>
 													{#if enrollment.certificate_issued}
-														<a class="btn btn-outline btn-small" href="/api/my/courses/{enrollment.course.slug}/certificate">
-															<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-																<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+														<a
+															class="btn btn-outline btn-small"
+															href="/api/my/courses/{enrollment.course.slug}/certificate"
+														>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																width="14"
+																height="14"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="2"
+															>
+																<circle cx="12" cy="8" r="6" /><path
+																	d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"
+																/>
 															</svg>
 															Certificate
 														</a>
@@ -288,7 +357,12 @@
 								<nav class="pagination" aria-label="Pagination">
 									<ul class="page-numbers">
 										<li>
-											<button class="page-numbers prev" onclick={previousPage} disabled={currentPage === 1} aria-label="Previous page">
+											<button
+												class="page-numbers prev"
+												onclick={previousPage}
+												disabled={currentPage === 1}
+												aria-label="Previous page"
+											>
 												Previous
 											</button>
 										</li>
@@ -297,14 +371,23 @@
 												{#if pageNum === currentPage}
 													<span class="page-numbers current" aria-current="page">{pageNum}</span>
 												{:else}
-													<button class="page-numbers" onclick={() => goToPage(pageNum)} aria-label="Go to page {pageNum}">
+													<button
+														class="page-numbers"
+														onclick={() => goToPage(pageNum)}
+														aria-label="Go to page {pageNum}"
+													>
 														{pageNum}
 													</button>
 												{/if}
 											</li>
 										{/each}
 										<li>
-											<button class="page-numbers next" onclick={nextPage} disabled={currentPage === totalPages} aria-label="Next page">
+											<button
+												class="page-numbers next"
+												onclick={nextPage}
+												disabled={currentPage === totalPages}
+												aria-label="Next page"
+											>
 												Next
 											</button>
 										</li>

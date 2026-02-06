@@ -46,7 +46,7 @@
 	}
 	let props: { data: PageData } = $props();
 	let data = $derived(props.data);
-	
+
 	// ICT 7: Local error state for user feedback
 	let saveAlertError = $state<string | null>(null);
 	let showDeleteAlertModal = $state(false);
@@ -54,7 +54,7 @@
 
 	// Initialize state module (named 'ps' to avoid conflict with $state rune)
 	const ps = createPageState();
-	
+
 	// ICT 7: Transform WeeklyContent to WeeklyVideo for Sidebar component
 	// Must be defined after ps initialization
 	const weeklyVideoForSidebar = $derived.by(() => {
@@ -67,7 +67,7 @@
 			publishedAt: new Date() // WeeklyContent has formatted string, Sidebar expects Date
 		};
 	});
-	
+
 	// ICT 7: Transform RoomResource[] to Video[] for Sidebar component
 	const latestUpdatesForSidebar = $derived.by(() => {
 		return (data.latestUpdates ?? []).map((resource) => ({
@@ -119,9 +119,12 @@
 	 * Handle saving alerts with proper error handling and user feedback
 	 * @description ICT 7 Fix: Added try/catch with user-friendly error messages
 	 */
-	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean): Promise<void> {
+	async function handleSaveAlert(
+		alertData: AlertCreateInput | AlertUpdateInput,
+		isEdit: boolean
+	): Promise<void> {
 		saveAlertError = null;
-		
+
 		const url =
 			isEdit && ps.editingAlert
 				? `/api/alerts/${ps.ROOM_SLUG}/${ps.editingAlert.id}`
@@ -139,9 +142,9 @@
 				const errorData = await response.json().catch(() => ({}));
 				throw new Error(errorData.message || `Failed to ${isEdit ? 'update' : 'create'} alert`);
 			}
-			
+
 			await ps.fetchAlerts();
-			
+
 			// Close modal on success
 			alertModalOpen = false;
 			ps.closeAlertModal();
@@ -315,7 +318,8 @@
 				winRate: ps.stats?.winRate ?? 0,
 				totalAlerts: (ps.stats?.activeTrades ?? 0) + (ps.stats?.closedThisWeek ?? 0),
 				profitableAlerts: Math.round(
-					((ps.stats?.winRate ?? 0) / 100) * ((ps.stats?.activeTrades ?? 0) + (ps.stats?.closedThisWeek ?? 0))
+					((ps.stats?.winRate ?? 0) / 100) *
+						((ps.stats?.activeTrades ?? 0) + (ps.stats?.closedThisWeek ?? 0))
 				),
 				avgWinPercent: ps.weeklyPerformance?.avgWinPercent ?? 0,
 				avgLossPercent: ps.weeklyPerformance?.avgLossPercent ?? 0
@@ -331,19 +335,33 @@
 {#if saveAlertError}
 	<div class="modal-error-toast" role="alert" aria-live="assertive">
 		<div class="error-content">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				width="20"
+				height="20"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>
 			</svg>
 			<p>{saveAlertError}</p>
 		</div>
-		<button 
-			class="error-dismiss" 
-			onclick={() => saveAlertError = null}
+		<button
+			class="error-dismiss"
+			onclick={() => (saveAlertError = null)}
 			aria-label="Dismiss error"
 		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				width="18"
+				height="18"
+			>
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
@@ -426,6 +444,20 @@
 	onSuccess={() => {
 		ps.fetchAllTrades();
 		ps.fetchStats();
+	}}
+/>
+
+<!-- Delete Alert Confirmation Modal -->
+<ConfirmationModal
+	isOpen={showDeleteAlertModal}
+	title="Delete Alert"
+	message="Are you sure you want to delete this alert? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteAlert}
+	onCancel={() => {
+		showDeleteAlertModal = false;
+		pendingDeleteAlertId = null;
 	}}
 />
 
@@ -805,17 +837,3 @@
 		}
 	}
 </style>
-
-<!-- Delete Alert Confirmation Modal -->
-<ConfirmationModal
-	isOpen={showDeleteAlertModal}
-	title="Delete Alert"
-	message="Are you sure you want to delete this alert? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteAlert}
-	onCancel={() => {
-		showDeleteAlertModal = false;
-		pendingDeleteAlertId = null;
-	}}
-/>

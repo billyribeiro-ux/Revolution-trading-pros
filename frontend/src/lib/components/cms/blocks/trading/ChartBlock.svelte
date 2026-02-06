@@ -77,10 +77,14 @@
 	// Derived State
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let mode = $derived<'embed' | 'image'>((props.block.content.chartMode as 'embed' | 'image') || 'embed');
+	let mode = $derived<'embed' | 'image'>(
+		(props.block.content.chartMode as 'embed' | 'image') || 'embed'
+	);
 	let symbol = $derived(props.block.content.chartSymbol || 'NASDAQ:AAPL');
 	let interval = $derived((props.block.content.chartInterval as ChartContent['interval']) || '1D');
-	let themePreference = $derived((props.block.content.chartTheme as ChartContent['theme']) || 'auto');
+	let themePreference = $derived(
+		(props.block.content.chartTheme as ChartContent['theme']) || 'auto'
+	);
 	let imageUrl = $derived(props.block.content.chartImageUrl || '');
 	let imageAlt = $derived(props.block.content.chartImageAlt || 'Trading chart');
 	let imageCaption = $derived(props.block.content.chartImageCaption || '');
@@ -89,9 +93,7 @@
 	let allowFullscreen = $derived(props.block.settings.chartAllowFullscreen !== false);
 
 	// Resolve actual theme based on preference
-	let resolvedTheme = $derived(
-		themePreference === 'auto' ? systemTheme : themePreference
-	);
+	let resolvedTheme = $derived(themePreference === 'auto' ? systemTheme : themePreference);
 
 	// TradingView interval mapping
 	let tvInterval = $derived.by(() => {
@@ -282,7 +284,10 @@
 
 	function openInNewTab(): void {
 		if (mode === 'embed' && symbol) {
-			window.open(`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`, '_blank');
+			window.open(
+				`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`,
+				'_blank'
+			);
 		} else if (mode === 'image' && imageUrl) {
 			window.open(imageUrl, '_blank');
 		}
@@ -292,13 +297,9 @@
 	// Validation
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let isValidSymbol = $derived(
-		symbol.length > 0 && /^[A-Z0-9:._-]+$/i.test(symbol)
-	);
+	let isValidSymbol = $derived(symbol.length > 0 && /^[A-Z0-9:._-]+$/i.test(symbol));
 
-	let isValidImageUrl = $derived(
-		imageUrl.length === 0 || /^https?:\/\/.+/i.test(imageUrl)
-	);
+	let isValidImageUrl = $derived(imageUrl.length === 0 || /^https?:\/\/.+/i.test(imageUrl));
 
 	// Generate aria-label for the chart
 	let chartAriaLabel = $derived(
@@ -393,10 +394,18 @@
 
 				<div class="symbol-examples">
 					<span class="examples-label">Examples:</span>
-					<button type="button" onclick={() => updateContent({ chartSymbol: 'NASDAQ:AAPL' })}>NASDAQ:AAPL</button>
-					<button type="button" onclick={() => updateContent({ chartSymbol: 'NYSE:SPY' })}>NYSE:SPY</button>
-					<button type="button" onclick={() => updateContent({ chartSymbol: 'BINANCE:BTCUSDT' })}>BINANCE:BTCUSDT</button>
-					<button type="button" onclick={() => updateContent({ chartSymbol: 'FOREXCOM:EURUSD' })}>FOREXCOM:EURUSD</button>
+					<button type="button" onclick={() => updateContent({ chartSymbol: 'NASDAQ:AAPL' })}
+						>NASDAQ:AAPL</button
+					>
+					<button type="button" onclick={() => updateContent({ chartSymbol: 'NYSE:SPY' })}
+						>NYSE:SPY</button
+					>
+					<button type="button" onclick={() => updateContent({ chartSymbol: 'BINANCE:BTCUSDT' })}
+						>BINANCE:BTCUSDT</button
+					>
+					<button type="button" onclick={() => updateContent({ chartSymbol: 'FOREXCOM:EURUSD' })}
+						>FOREXCOM:EURUSD</button
+					>
 				</div>
 			{:else}
 				<div class="settings-row image-settings">
@@ -478,45 +487,43 @@
 					></iframe>
 				{/if}
 			{/if}
+		{:else if !imageUrl}
+			<div class="chart-placeholder">
+				<IconPhoto size={48} aria-hidden="true" />
+				<p>Enter an image URL</p>
+				<span class="hint">Supports PNG, JPG, WebP, and GIF formats</span>
+			</div>
+		{:else if !isValidImageUrl}
+			<div class="chart-error" role="alert">
+				<IconAlertCircle size={32} aria-hidden="true" />
+				<p>Please enter a valid URL starting with http:// or https://</p>
+			</div>
 		{:else}
-			{#if !imageUrl}
-				<div class="chart-placeholder">
-					<IconPhoto size={48} aria-hidden="true" />
-					<p>Enter an image URL</p>
-					<span class="hint">Supports PNG, JPG, WebP, and GIF formats</span>
+			{#if isLoading && !imageLoaded}
+				<div class="chart-loading" role="status" aria-live="polite">
+					<IconLoader2 size={32} class="spinner" aria-hidden="true" />
+					<p>Loading image...</p>
 				</div>
-			{:else if !isValidImageUrl}
+			{/if}
+
+			{#if hasError}
 				<div class="chart-error" role="alert">
 					<IconAlertCircle size={32} aria-hidden="true" />
-					<p>Please enter a valid URL starting with http:// or https://</p>
+					<p>{errorMessage}</p>
+					<button type="button" class="retry-btn" onclick={retryLoad}>
+						<IconRefresh size={16} aria-hidden="true" />
+						<span>Retry</span>
+					</button>
 				</div>
 			{:else}
-				{#if isLoading && !imageLoaded}
-					<div class="chart-loading" role="status" aria-live="polite">
-						<IconLoader2 size={32} class="spinner" aria-hidden="true" />
-						<p>Loading image...</p>
-					</div>
-				{/if}
-
-				{#if hasError}
-					<div class="chart-error" role="alert">
-						<IconAlertCircle size={32} aria-hidden="true" />
-						<p>{errorMessage}</p>
-						<button type="button" class="retry-btn" onclick={retryLoad}>
-							<IconRefresh size={16} aria-hidden="true" />
-							<span>Retry</span>
-						</button>
-					</div>
-				{:else}
-					<img
-						src={imageUrl}
-						alt={imageAlt}
-						class="chart-image"
-						class:loading={!imageLoaded}
-						onload={handleImageLoad}
-						onerror={handleImageError}
-					/>
-				{/if}
+				<img
+					src={imageUrl}
+					alt={imageAlt}
+					class="chart-image"
+					class:loading={!imageLoaded}
+					onload={handleImageLoad}
+					onerror={handleImageError}
+				/>
 			{/if}
 		{/if}
 
@@ -774,8 +781,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Error State */

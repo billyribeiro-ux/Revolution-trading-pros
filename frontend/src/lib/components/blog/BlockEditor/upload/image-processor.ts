@@ -98,10 +98,9 @@ function generateSimpleBlurhash(
 	}
 
 	// Calculate average color for base
-	const avgColor = colors.reduce(
-		(acc, c) => [acc[0] + c[0], acc[1] + c[1], acc[2] + c[2]],
-		[0, 0, 0]
-	).map((v) => Math.round(v / colors.length));
+	const avgColor = colors
+		.reduce((acc, c) => [acc[0] + c[0], acc[1] + c[1], acc[2] + c[2]], [0, 0, 0])
+		.map((v) => Math.round(v / colors.length));
 
 	// Encode as base83-like string (simplified)
 	const base83Chars =
@@ -110,7 +109,7 @@ function generateSimpleBlurhash(
 	let hash = '';
 
 	// Encode size flag (componentX-1 + (componentY-1) * 9)
-	const sizeFlag = (componentX - 1) + (componentY - 1) * 9;
+	const sizeFlag = componentX - 1 + (componentY - 1) * 9;
 	hash += base83Chars[sizeFlag];
 
 	// Encode DC value (average color)
@@ -422,10 +421,7 @@ export async function getImageDimensions(file: File): Promise<ImageDimensions> {
 /**
  * Create a thumbnail from an image file
  */
-export async function createThumbnail(
-	file: File,
-	size: number = 200
-): Promise<ProcessedImage> {
+export async function createThumbnail(file: File, size: number = 200): Promise<ProcessedImage> {
 	return processImage(file, {
 		maxWidth: size,
 		maxHeight: size,
@@ -504,7 +500,9 @@ export async function extractDominantColor(file: File): Promise<string> {
 	const data = imageData.data;
 
 	// Calculate average color
-	let r = 0, g = 0, b = 0;
+	let r = 0,
+		g = 0,
+		b = 0;
 	const pixelCount = data.length / 4;
 
 	for (let i = 0; i < data.length; i += 4) {

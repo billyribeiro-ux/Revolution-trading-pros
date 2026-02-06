@@ -101,9 +101,7 @@ function calculatePerformanceMetrics(closedTrades: ClosedTradeData[]): {
 	const losers = closedTrades.filter((t) => !t.isWinner);
 
 	const avgWinPercent =
-		winners.length > 0
-			? winners.reduce((sum, t) => sum + t.pnlPercent, 0) / winners.length
-			: 0;
+		winners.length > 0 ? winners.reduce((sum, t) => sum + t.pnlPercent, 0) / winners.length : 0;
 
 	const avgLossPercent =
 		losers.length > 0

@@ -136,7 +136,6 @@
 	// Top pages
 	let topPages = $state<{ path: string; views: number; change: number }[]>([]);
 
-
 	// Animated counter
 	function animateValue(
 		start: number,
@@ -818,20 +817,7 @@
 			</div>
 
 			<div class="quick-actions-grid">
-				{#each [
-					{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' },
-					{ href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' },
-					{ href: '/admin/notifications', icon: IconBellRinging, label: 'Notifications', color: 'amber' },
-					{ href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' },
-					{ href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' },
-					{ href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' },
-					{ href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' },
-					{ href: '/admin/links', icon: IconLink, label: 'Links', color: 'cyan' },
-					{ href: '/admin/filters', icon: IconFilter, label: 'Filters', color: 'indigo' },
-					{ href: '/admin/broadcast', icon: IconSend, label: 'Broadcast', color: 'teal' },
-					{ href: '/admin/international', icon: IconWorld, label: 'Global', color: 'slate' },
-					{ href: '/admin/alerts', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }
-				] as action, i}
+				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/notifications', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/links', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/filters', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/broadcast', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/international', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/alerts', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i}
 					{@const ActionIcon = action.icon}
 					<a
 						href={action.href}
@@ -860,7 +846,9 @@
 						</div>
 						<div>
 							<h2>Top Pages</h2>
-							<span class="panel-subtitle">Most visited pages {hasRealSeoData ? '(with SEO data)' : ''}</span>
+							<span class="panel-subtitle"
+								>Most visited pages {hasRealSeoData ? '(with SEO data)' : ''}</span
+							>
 						</div>
 					</div>
 				</div>
@@ -1318,18 +1306,54 @@
 		justify-content: center;
 	}
 
-	.quick-action-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.quick-action-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.quick-action-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.quick-action-icon.pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
-	.quick-action-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.quick-action-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.quick-action-icon.orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; }
-	.quick-action-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-	.quick-action-icon.indigo { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-	.quick-action-icon.teal { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
-	.quick-action-icon.slate { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
-	.quick-action-icon.yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+	.quick-action-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.quick-action-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.quick-action-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.quick-action-icon.pink {
+		background: rgba(236, 72, 153, 0.15);
+		color: #f472b6;
+	}
+	.quick-action-icon.red {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.quick-action-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.quick-action-icon.orange {
+		background: rgba(249, 115, 22, 0.15);
+		color: #fb923c;
+	}
+	.quick-action-icon.cyan {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
+	.quick-action-icon.indigo {
+		background: rgba(99, 102, 241, 0.15);
+		color: #818cf8;
+	}
+	.quick-action-icon.teal {
+		background: rgba(20, 184, 166, 0.15);
+		color: #2dd4bf;
+	}
+	.quick-action-icon.slate {
+		background: rgba(100, 116, 139, 0.15);
+		color: #94a3b8;
+	}
+	.quick-action-icon.yellow {
+		background: rgba(234, 179, 8, 0.15);
+		color: #facc15;
+	}
 
 	.quick-action-label {
 		font-size: 0.75rem;
@@ -1994,7 +2018,6 @@
 			font-size: 1.25rem;
 		}
 
-
 		/* Panel Sections */
 		.glass-panel {
 			padding: 1rem;
@@ -2059,7 +2082,6 @@
 		.business-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
-
 	}
 
 	/* Tablet Landscape (769px - 1024px) */

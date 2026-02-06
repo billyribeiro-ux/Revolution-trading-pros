@@ -55,7 +55,9 @@
 
 	let calloutType = $derived((props.block.settings.type as CalloutType) || 'info');
 	let title = $derived(props.block.content.title || '');
-	let description = $derived(props.block.content.description || 'Enter your callout message here...');
+	let description = $derived(
+		props.block.content.description || 'Enter your callout message here...'
+	);
 	let dismissible = $derived(props.block.settings.dismissible || false);
 
 	// =========================================================================
@@ -170,15 +172,18 @@
 						class="callout-title"
 						data-placeholder="Add title (optional)..."
 						oninput={(e) => updateContent({ title: (e.target as HTMLElement).textContent || '' })}
-						onpaste={handlePaste}
-					>{title}</strong>
+						onpaste={handlePaste}>{title}</strong
+					>
 				{/if}
 				<p
 					contenteditable="true"
 					class="callout-description"
-					oninput={(e) => updateContent({ description: (e.target as HTMLElement).textContent || '' })}
+					oninput={(e) =>
+						updateContent({ description: (e.target as HTMLElement).textContent || '' })}
 					onpaste={handlePaste}
-				>{description}</p>
+				>
+					{description}
+				</p>
 			{:else}
 				{#if title}
 					<strong class="callout-title">{title}</strong>
@@ -208,7 +213,8 @@
 				<span>Type:</span>
 				<select
 					value={calloutType}
-					onchange={(e) => updateSettings({ type: (e.target as HTMLSelectElement).value as CalloutType })}
+					onchange={(e) =>
+						updateSettings({ type: (e.target as HTMLSelectElement).value as CalloutType })}
 				>
 					<option value="info">Info (Blue)</option>
 					<option value="success">Success (Green)</option>
@@ -241,7 +247,9 @@
 		background-color: var(--callout-bg);
 		color: var(--callout-text);
 		position: relative;
-		transition: opacity 0.2s ease, transform 0.2s ease;
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease;
 	}
 
 	.callout-block.dismissed {
@@ -300,7 +308,9 @@
 		color: currentColor;
 		cursor: pointer;
 		opacity: 0.6;
-		transition: opacity 0.15s, background-color 0.15s;
+		transition:
+			opacity 0.15s,
+			background-color 0.15s;
 	}
 
 	.callout-dismiss:hover {

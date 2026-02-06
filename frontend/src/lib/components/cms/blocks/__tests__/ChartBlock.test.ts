@@ -680,10 +680,7 @@ describe('ChartBlock - Accessibility', () => {
 		});
 
 		const chartBlock = container.querySelector('.chart-block');
-		expect(chartBlock).toHaveAttribute(
-			'aria-label',
-			'Trading chart for NASDAQ:TSLA, 1M interval'
-		);
+		expect(chartBlock).toHaveAttribute('aria-label', 'Trading chart for NASDAQ:TSLA, 1M interval');
 	});
 
 	it('should have correct aria-label for image mode', () => {

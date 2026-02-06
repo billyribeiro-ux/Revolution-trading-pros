@@ -801,12 +801,7 @@
 
 		<!-- Generate Button -->
 		<div class="button-row">
-			<button
-				type="button"
-				class="generate-btn"
-				onclick={handleGenerate}
-				disabled={!canGenerate}
-			>
+			<button type="button" class="generate-btn" onclick={handleGenerate} disabled={!canGenerate}>
 				{#if isGenerating}
 					<IconLoader size={18} class="spin" />
 					{isStreaming ? 'Streaming...' : 'Generating...'}

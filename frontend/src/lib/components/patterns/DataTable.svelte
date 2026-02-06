@@ -82,7 +82,9 @@
 		<tbody>
 			{#if sortedData.length === 0}
 				<tr>
-					<td colspan={props.columns.length} class="empty-message">{props.emptyMessage ?? 'No data available'}</td>
+					<td colspan={props.columns.length} class="empty-message"
+						>{props.emptyMessage ?? 'No data available'}</td
+					>
 				</tr>
 			{:else}
 				{#each sortedData as row}

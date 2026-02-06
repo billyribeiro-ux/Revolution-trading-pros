@@ -333,7 +333,9 @@ export const widgetStore = {
 	markRefreshed(id: string) {
 		widgetConfig = {
 			...widgetConfig,
-			widgets: widgetConfig.widgets.map((w) => (w.id === id ? { ...w, lastRefreshed: Date.now() } : w))
+			widgets: widgetConfig.widgets.map((w) =>
+				w.id === id ? { ...w, lastRefreshed: Date.now() } : w
+			)
 		};
 	},
 
@@ -378,5 +380,9 @@ export function getWidgetsByCategory() {
 	return categories;
 }
 
-export function getWidgetLayout() { return widgetConfig.layout; }
-export function getAutoRefreshEnabled() { return widgetConfig.autoRefresh; }
+export function getWidgetLayout() {
+	return widgetConfig.layout;
+}
+export function getAutoRefreshEnabled() {
+	return widgetConfig.autoRefresh;
+}

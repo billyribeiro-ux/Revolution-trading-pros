@@ -673,7 +673,8 @@
 					<div class="form-group full-width">
 						<label for="campaign-name">Campaign Name</label>
 						<input
-							id="campaign-name" name="campaign-name"
+							id="campaign-name"
+							name="campaign-name"
 							type="text"
 							bind:value={newCampaign.name}
 							placeholder="e.g., December Newsletter"
@@ -683,7 +684,8 @@
 					<div class="form-group full-width">
 						<label for="campaign-subject">Subject Line</label>
 						<input
-							id="campaign-subject" name="campaign-subject"
+							id="campaign-subject"
+							name="campaign-subject"
 							type="text"
 							bind:value={newCampaign.subject}
 							placeholder="e.g., Your Weekly Trading Insights"
@@ -706,7 +708,8 @@
 						<div class="form-group full-width">
 							<label for="campaign-subject-b">Subject Line B</label>
 							<input
-								id="campaign-subject-b" name="campaign-subject-b"
+								id="campaign-subject-b"
+								name="campaign-subject-b"
 								type="text"
 								bind:value={newCampaign.subjectB}
 								placeholder="Alternative subject to test"
@@ -715,7 +718,8 @@
 						<div class="form-group">
 							<label for="ab-split">A/B Split (%)</label>
 							<input
-								id="ab-split" name="ab-split"
+								id="ab-split"
+								name="ab-split"
 								type="range"
 								min="10"
 								max="90"
@@ -750,7 +754,8 @@
 					<div class="form-group full-width">
 						<label for="campaign-schedule">Schedule (optional)</label>
 						<input
-							id="campaign-schedule" name="campaign-schedule"
+							id="campaign-schedule"
+							name="campaign-schedule"
 							type="datetime-local"
 							bind:value={newCampaign.scheduledFor}
 						/>
@@ -774,6 +779,45 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Campaign"
+	message="Delete this campaign? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCampaign}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingCampaignId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showSendModal}
+	title="Send Campaign"
+	message="Send this campaign now? It will be delivered to all recipients."
+	confirmText="Send Now"
+	variant="info"
+	onConfirm={confirmSendCampaign}
+	onCancel={() => {
+		showSendModal = false;
+		pendingCampaignId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showCancelModal}
+	title="Cancel Campaign"
+	message="Cancel this scheduled campaign? It will not be sent."
+	confirmText="Cancel Campaign"
+	variant="warning"
+	onConfirm={confirmCancelCampaign}
+	onCancel={() => {
+		showCancelModal = false;
+		pendingCampaignId = null;
+	}}
+/>
 
 <style>
 	.campaigns-page {
@@ -1393,33 +1437,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Campaign"
-	message="Delete this campaign? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCampaign}
-	onCancel={() => { showDeleteModal = false; pendingCampaignId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showSendModal}
-	title="Send Campaign"
-	message="Send this campaign now? It will be delivered to all recipients."
-	confirmText="Send Now"
-	variant="info"
-	onConfirm={confirmSendCampaign}
-	onCancel={() => { showSendModal = false; pendingCampaignId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showCancelModal}
-	title="Cancel Campaign"
-	message="Cancel this scheduled campaign? It will not be sent."
-	confirmText="Cancel Campaign"
-	variant="warning"
-	onConfirm={confirmCancelCampaign}
-	onCancel={() => { showCancelModal = false; pendingCampaignId = null; }}
-/>

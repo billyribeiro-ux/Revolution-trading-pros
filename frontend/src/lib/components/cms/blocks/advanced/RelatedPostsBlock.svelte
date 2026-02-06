@@ -54,7 +54,8 @@
 		{
 			id: '1',
 			title: 'Mastering Technical Analysis for Day Trading',
-			excerpt: 'Learn the essential technical analysis indicators and patterns that professional day traders use to identify high-probability setups.',
+			excerpt:
+				'Learn the essential technical analysis indicators and patterns that professional day traders use to identify high-probability setups.',
 			image: '/images/placeholder-trading-1.jpg',
 			category: 'Trading',
 			url: '/blog/technical-analysis-day-trading'
@@ -62,7 +63,8 @@
 		{
 			id: '2',
 			title: 'Risk Management Strategies Every Trader Needs',
-			excerpt: 'Discover proven risk management techniques to protect your capital and maximize your trading performance over the long term.',
+			excerpt:
+				'Discover proven risk management techniques to protect your capital and maximize your trading performance over the long term.',
 			image: '/images/placeholder-trading-2.jpg',
 			category: 'Education',
 			url: '/blog/risk-management-strategies'
@@ -70,7 +72,8 @@
 		{
 			id: '3',
 			title: 'Understanding Market Psychology and Sentiment',
-			excerpt: 'Explore how market psychology affects price movements and learn to read sentiment indicators for better trading decisions.',
+			excerpt:
+				'Explore how market psychology affects price movements and learn to read sentiment indicators for better trading decisions.',
 			image: '/images/placeholder-trading-3.jpg',
 			category: 'Analysis',
 			url: '/blog/market-psychology-sentiment'
@@ -78,7 +81,8 @@
 		{
 			id: '4',
 			title: 'Building a Winning Trading Plan',
-			excerpt: 'Step-by-step guide to creating a comprehensive trading plan that aligns with your goals, risk tolerance, and trading style.',
+			excerpt:
+				'Step-by-step guide to creating a comprehensive trading plan that aligns with your goals, risk tolerance, and trading style.',
 			image: '/images/placeholder-trading-4.jpg',
 			category: 'Strategy',
 			url: '/blog/building-trading-plan'
@@ -130,19 +134,19 @@
 	}
 </script>
 
-<section
-	class="related-posts-block"
-	aria-label="Related articles"
->
+<section class="related-posts-block" aria-label="Related articles">
 	<!-- Section Header -->
 	<header class="related-posts-header">
 		{#if props.isEditing}
 			<h3
 				contenteditable="true"
 				class="related-posts-title"
-				oninput={(e) => updateContent({ relatedPostsTitle: (e.target as HTMLElement).textContent || '' })}
+				oninput={(e) =>
+					updateContent({ relatedPostsTitle: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
-			>{title}</h3>
+			>
+				{title}
+			</h3>
 		{:else}
 			<h3 class="related-posts-title">{title}</h3>
 		{/if}
@@ -181,10 +185,7 @@
 		aria-label="Related posts list"
 	>
 		{#each displayPosts as post (post.id)}
-			<article
-				class="post-card"
-				role="listitem"
-			>
+			<article class="post-card" role="listitem">
 				{#if props.isEditing}
 					<!-- Edit Mode: Placeholder Card -->
 					<div class="post-card-inner">
@@ -218,11 +219,7 @@
 					>
 						<div class="post-image">
 							{#if post.image}
-								<img
-									src={sanitizeURL(post.image)}
-									alt={post.title}
-									loading="lazy"
-								/>
+								<img src={sanitizeURL(post.image)} alt={post.title} loading="lazy" />
 							{:else}
 								<div class="image-placeholder">
 									<IconPhoto size={32} aria-hidden="true" />
@@ -256,7 +253,8 @@
 			<span>Number of Posts:</span>
 			<select
 				value={postCount}
-				onchange={(e) => updateContent({ relatedPostsCount: parseInt((e.target as HTMLSelectElement).value, 10) })}
+				onchange={(e) =>
+					updateContent({ relatedPostsCount: parseInt((e.target as HTMLSelectElement).value, 10) })}
 			>
 				<option value="2">2 Posts</option>
 				<option value="3">3 Posts</option>
@@ -268,7 +266,8 @@
 			<input
 				type="checkbox"
 				checked={showCategory}
-				onchange={(e) => updateSettings({ relatedPostsShowCategory: (e.target as HTMLInputElement).checked })}
+				onchange={(e) =>
+					updateSettings({ relatedPostsShowCategory: (e.target as HTMLInputElement).checked })}
 			/>
 			<span>Show Category</span>
 		</label>
@@ -277,13 +276,16 @@
 			<input
 				type="checkbox"
 				checked={showExcerpt}
-				onchange={(e) => updateSettings({ relatedPostsShowExcerpt: (e.target as HTMLInputElement).checked })}
+				onchange={(e) =>
+					updateSettings({ relatedPostsShowExcerpt: (e.target as HTMLInputElement).checked })}
 			/>
 			<span>Show Excerpt</span>
 		</label>
 
 		<div class="settings-note">
-			<small>Posts will be automatically populated from your content library based on category and tags.</small>
+			<small
+				>Posts will be automatically populated from your content library based on category and tags.</small
+			>
 		</div>
 	</div>
 {/if}

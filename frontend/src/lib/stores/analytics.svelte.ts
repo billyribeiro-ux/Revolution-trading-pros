@@ -366,10 +366,18 @@ export const eventTracker = {
 // Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export function getDashboard() { return analyticsState.dashboard; }
-export function getRealtime() { return analyticsState.realtime; }
-export function getIsAnalyticsLoading() { return analyticsState.isLoading; }
-export function getAnalyticsSelectedPeriod() { return analyticsState.selectedPeriod; }
+export function getDashboard() {
+	return analyticsState.dashboard;
+}
+export function getRealtime() {
+	return analyticsState.realtime;
+}
+export function getIsAnalyticsLoading() {
+	return analyticsState.isLoading;
+}
+export function getAnalyticsSelectedPeriod() {
+	return analyticsState.selectedPeriod;
+}
 
 // KPI helpers
 export function getPrimaryKpis() {

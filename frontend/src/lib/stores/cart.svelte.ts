@@ -190,14 +190,8 @@ export const cartStore = {
 	/**
 	 * Update item quantity - Enforces max quantity of 1
 	 */
-	updateQuantity(
-		itemId: string,
-		quantity: number,
-		interval?: 'monthly' | 'quarterly' | 'yearly'
-	) {
-		const itemIndex = cartState.items.findIndex(
-			(i) => i.id === itemId && i.interval === interval
-		);
+	updateQuantity(itemId: string, quantity: number, interval?: 'monthly' | 'quarterly' | 'yearly') {
+		const itemIndex = cartState.items.findIndex((i) => i.id === itemId && i.interval === interval);
 
 		if (itemIndex >= 0) {
 			if (quantity <= 0) {

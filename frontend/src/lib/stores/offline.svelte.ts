@@ -91,7 +91,11 @@ async function performSync(_action: PendingAction): Promise<void> {
 }
 
 async function syncPendingActions() {
-	if (!offlineState.isOnline || offlineState.syncInProgress || offlineState.pendingActions.length === 0) {
+	if (
+		!offlineState.isOnline ||
+		offlineState.syncInProgress ||
+		offlineState.pendingActions.length === 0
+	) {
 		return;
 	}
 
@@ -258,7 +262,15 @@ export const offlineStore = {
 // Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export function getIsOnline() { return offlineState.isOnline; }
-export function getHasPendingActions() { return offlineState.pendingActions.length > 0; }
-export function getPendingActionsCount() { return offlineState.pendingActions.length; }
-export function getIsSyncing() { return offlineState.syncInProgress; }
+export function getIsOnline() {
+	return offlineState.isOnline;
+}
+export function getHasPendingActions() {
+	return offlineState.pendingActions.length > 0;
+}
+export function getPendingActionsCount() {
+	return offlineState.pendingActions.length;
+}
+export function getIsSyncing() {
+	return offlineState.syncInProgress;
+}

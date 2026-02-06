@@ -94,11 +94,7 @@
 		</span>
 	</button>
 
-	<div
-		id="toggle-content-{props.blockId}"
-		class="toggle-content-wrapper"
-		hidden={!isOpen}
-	>
+	<div id="toggle-content-{props.blockId}" class="toggle-content-wrapper" hidden={!isOpen}>
 		{#if props.isEditing}
 			<div
 				contenteditable="true"

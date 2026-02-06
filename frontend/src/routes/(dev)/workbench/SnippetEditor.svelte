@@ -29,11 +29,21 @@
 
 	const templates = [
 		{ name: 'Simple Text', content: 'Hello, World!' },
-		{ name: 'Paragraph', content: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>' },
+		{
+			name: 'Paragraph',
+			content: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>'
+		},
 		{ name: 'Button', content: '<button>Click Me</button>' },
 		{ name: 'Card Content', content: '<h3>Card Title</h3>\n<p>Card description goes here.</p>' },
-		{ name: 'List', content: '<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n  <li>Item 3</li>\n</ul>' },
-		{ name: 'Form', content: '<form>\n  <input type="text" placeholder="Name" />\n  <button type="submit">Submit</button>\n</form>' }
+		{
+			name: 'List',
+			content: '<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n  <li>Item 3</li>\n</ul>'
+		},
+		{
+			name: 'Form',
+			content:
+				'<form>\n  <input type="text" placeholder="Name" />\n  <button type="submit">Submit</button>\n</form>'
+		}
 	];
 
 	function applyTemplate(content: string) {
@@ -62,18 +72,13 @@
 	{#if isExpanded}
 		<div class="editor-content">
 			{#if !hasSnippets}
-				<p class="no-snippet-note">
-					This component doesn't accept children content.
-				</p>
+				<p class="no-snippet-note">This component doesn't accept children content.</p>
 			{:else}
 				<!-- Templates -->
 				<div class="templates">
 					<span class="templates-label">Templates:</span>
 					{#each templates as template}
-						<button
-							class="template-btn"
-							onclick={() => applyTemplate(template.content)}
-						>
+						<button class="template-btn" onclick={() => applyTemplate(template.content)}>
 							{template.name}
 						</button>
 					{/each}
@@ -83,7 +88,7 @@
 				<div class="code-editor">
 					<textarea
 						class="code-textarea"
-						value={value}
+						{value}
 						oninput={handleInput}
 						placeholder="Enter HTML content for children..."
 						rows="8"
@@ -91,9 +96,7 @@
 					></textarea>
 					<div class="editor-footer">
 						<span class="char-count">{value.length} chars</span>
-						<button class="clear-btn" onclick={() => onChange('')}>
-							Clear
-						</button>
+						<button class="clear-btn" onclick={() => onChange('')}> Clear </button>
 					</div>
 				</div>
 

@@ -124,11 +124,13 @@
 
 			// Check if any event is currently in session
 			const now = new Date();
-			isLive = events.some((event: { event_date: string; start_time: string; end_time: string }) => {
-				const startDateTime = new Date(`${event.event_date}T${event.start_time}`);
-				const endDateTime = new Date(`${event.event_date}T${event.end_time}`);
-				return now >= startDateTime && now <= endDateTime;
-			});
+			isLive = events.some(
+				(event: { event_date: string; start_time: string; end_time: string }) => {
+					const startDateTime = new Date(`${event.event_date}T${event.start_time}`);
+					const endDateTime = new Date(`${event.event_date}T${event.end_time}`);
+					return now >= startDateTime && now <= endDateTime;
+				}
+			);
 
 			isLoading = false;
 		} catch (err) {

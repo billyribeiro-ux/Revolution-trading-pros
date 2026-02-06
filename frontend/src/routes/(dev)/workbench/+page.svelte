@@ -65,7 +65,10 @@
 		{ name: 'Light', value: '#f4f4f5' },
 		{ name: 'Dark', value: '#18181b' },
 		{ name: 'Black', value: '#0a0a0a' },
-		{ name: 'Checker', value: 'repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50% / 20px 20px' }
+		{
+			name: 'Checker',
+			value: 'repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50% / 20px 20px'
+		}
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -212,22 +215,14 @@
 				</label>
 				<label class="toolbar-toggle">
 					<span>Padding:</span>
-					<input
-						type="number"
-						class="padding-input"
-						bind:value={padding}
-						min="0"
-						max="100"
-					/>
+					<input type="number" class="padding-input" bind:value={padding} min="0" max="100" />
 				</label>
 			</div>
 
 			<!-- Actions -->
 			<div class="toolbar-group toolbar-group--right">
 				{#if selectedComponent}
-					<button class="action-btn" onclick={copyPermalink} title="Copy permalink">
-						🔗
-					</button>
+					<button class="action-btn" onclick={copyPermalink} title="Copy permalink"> 🔗 </button>
 				{/if}
 				<span class="component-count">
 					{data.totalCount} components

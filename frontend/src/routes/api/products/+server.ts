@@ -11,11 +11,13 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros
 export const GET: RequestHandler = async ({ url, cookies }) => {
 	try {
 		const token = cookies.get('auth_token');
-		
+
 		// Forward query parameters
 		const queryParams = url.searchParams.toString();
-		const endpoint = queryParams ? `${API_URL}/api/products?${queryParams}` : `${API_URL}/api/products`;
-		
+		const endpoint = queryParams
+			? `${API_URL}/api/products?${queryParams}`
+			: `${API_URL}/api/products`;
+
 		const response = await fetch(endpoint, {
 			method: 'GET',
 			headers: {
@@ -25,7 +27,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		});
 
 		const data = await response.json();
-		
+
 		if (!response.ok) {
 			return json(data, { status: response.status });
 		}

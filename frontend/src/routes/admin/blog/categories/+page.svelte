@@ -426,14 +426,21 @@
 		<div class="search-group">
 			<IconSearch size={18} />
 			<input
-				id="page-categorysearch" name="page-categorysearch" type="text"
+				id="page-categorysearch"
+				name="page-categorysearch"
+				type="text"
 				class="search-input"
 				placeholder="Search categories and tags..."
 				bind:value={categorySearch}
 			/>
 		</div>
 		<label class="checkbox-label">
-			<input id="page-showhidden" name="page-showhidden" type="checkbox" bind:checked={showHidden} />
+			<input
+				id="page-showhidden"
+				name="page-showhidden"
+				type="checkbox"
+				bind:checked={showHidden}
+			/>
 			<span>Show Hidden</span>
 		</label>
 	</div>
@@ -479,7 +486,9 @@
 						<div class="item-card" transition:fade>
 							<label class="checkbox-wrapper">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedCategories.has(category.id)}
 									onchange={(e: Event) => {
 										if ((e.currentTarget as HTMLInputElement).checked) {
@@ -578,7 +587,9 @@
 						<div class="item-card" transition:fade>
 							<label class="checkbox-wrapper">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedTags.has(tag.id)}
 									onchange={(e: Event) => {
 										if ((e.currentTarget as HTMLInputElement).checked) {
@@ -669,7 +680,8 @@
 				<div class="form-group">
 					<label for="cat-name">Name *</label>
 					<input
-						id="cat-name" name="cat-name"
+						id="cat-name"
+						name="cat-name"
 						type="text"
 						bind:value={categoryForm.name}
 						placeholder="Category name"
@@ -680,7 +692,8 @@
 				<div class="form-group">
 					<label for="cat-slug">Slug *</label>
 					<input
-						id="cat-slug" name="cat-slug"
+						id="cat-slug"
+						name="cat-slug"
 						type="text"
 						bind:value={categoryForm.slug}
 						placeholder="category-slug"
@@ -707,7 +720,12 @@
 
 					<div class="form-group">
 						<label class="checkbox-label">
-							<input id="page-categoryform-is-visible" name="page-categoryform-is-visible" type="checkbox" bind:checked={categoryForm.is_visible} />
+							<input
+								id="page-categoryform-is-visible"
+								name="page-categoryform-is-visible"
+								type="checkbox"
+								bind:checked={categoryForm.is_visible}
+							/>
 							<span>Visible</span>
 						</label>
 						<p class="help-text">Hidden categories won't appear in public listings</p>
@@ -768,7 +786,8 @@
 				<div class="form-group">
 					<label for="tag-name">Name *</label>
 					<input
-						id="tag-name" name="tag-name"
+						id="tag-name"
+						name="tag-name"
 						type="text"
 						bind:value={tagForm.name}
 						placeholder="Tag name"
@@ -779,7 +798,8 @@
 				<div class="form-group">
 					<label for="tag-slug">Slug *</label>
 					<input
-						id="tag-slug" name="tag-slug"
+						id="tag-slug"
+						name="tag-slug"
 						type="text"
 						bind:value={tagForm.slug}
 						placeholder="tag-slug"
@@ -796,7 +816,12 @@
 
 					<div class="form-group">
 						<label class="checkbox-label">
-							<input id="page-tagform-is-visible" name="page-tagform-is-visible" type="checkbox" bind:checked={tagForm.is_visible} />
+							<input
+								id="page-tagform-is-visible"
+								name="page-tagform-is-visible"
+								type="checkbox"
+								bind:checked={tagForm.is_visible}
+							/>
 							<span>Visible</span>
 						</label>
 						<p class="help-text">Hidden tags won't appear in public listings</p>
@@ -819,6 +844,56 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteCategoryModal}
+	title="Delete Category"
+	message={pendingDeleteCategory
+		? `Delete "${pendingDeleteCategory.name}"? ${pendingDeleteCategory.post_count} posts will not be deleted.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCategory}
+	onCancel={() => {
+		showDeleteCategoryModal = false;
+		pendingDeleteCategory = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showDeleteTagModal}
+	title="Delete Tag"
+	message={pendingDeleteTag
+		? `Delete "${pendingDeleteTag.name}"? ${pendingDeleteTag.post_count} posts will not be deleted.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTag}
+	onCancel={() => {
+		showDeleteTagModal = false;
+		pendingDeleteTag = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteCategoriesModal}
+	title="Delete Categories"
+	message={`Delete ${selectedCategories.size} selected categories?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDeleteCategories}
+	onCancel={() => (showBulkDeleteCategoriesModal = false)}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteTagsModal}
+	title="Delete Tags"
+	message={`Delete ${selectedTags.size} selected tags?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDeleteTags}
+	onCancel={() => (showBulkDeleteTagsModal = false)}
+/>
 
 <style>
 	.categories-page {
@@ -1396,43 +1471,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteCategoryModal}
-	title="Delete Category"
-	message={pendingDeleteCategory ? `Delete "${pendingDeleteCategory.name}"? ${pendingDeleteCategory.post_count} posts will not be deleted.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCategory}
-	onCancel={() => { showDeleteCategoryModal = false; pendingDeleteCategory = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showDeleteTagModal}
-	title="Delete Tag"
-	message={pendingDeleteTag ? `Delete "${pendingDeleteTag.name}"? ${pendingDeleteTag.post_count} posts will not be deleted.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTag}
-	onCancel={() => { showDeleteTagModal = false; pendingDeleteTag = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteCategoriesModal}
-	title="Delete Categories"
-	message={`Delete ${selectedCategories.size} selected categories?`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDeleteCategories}
-	onCancel={() => (showBulkDeleteCategoriesModal = false)}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteTagsModal}
-	title="Delete Tags"
-	message={`Delete ${selectedTags.size} selected tags?`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDeleteTags}
-	onCancel={() => (showBulkDeleteTagsModal = false)}
-/>

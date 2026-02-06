@@ -352,7 +352,8 @@
 						>
 						<input
 							type="text"
-							id="report-name" name="report-name"
+							id="report-name"
+							name="report-name"
 							bind:value={newReport.name}
 							placeholder="e.g., Weekly Revenue Report"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -427,7 +428,9 @@
 				<div class="border-t border-gray-100 pt-6">
 					<label class="flex items-center gap-3 cursor-pointer">
 						<input
-							id="page-newreport-schedule" name="page-newreport-schedule" type="checkbox"
+							id="page-newreport-schedule"
+							name="page-newreport-schedule"
+							type="checkbox"
 							bind:checked={newReport.schedule}
 							class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
 						/>
@@ -454,7 +457,8 @@
 									>Recipients (comma-separated)</label
 								>
 								<input
-									id="report-recipients" name="report-recipients"
+									id="report-recipients"
+									name="report-recipients"
 									type="text"
 									bind:value={newReport.recipients}
 									placeholder="email@example.com, another@example.com"

@@ -631,7 +631,8 @@
 
 	.bunny-player:fullscreen,
 	.bunny-player:-webkit-full-screen {
-		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0)
+			env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
 		border-radius: 0;
 	}
 

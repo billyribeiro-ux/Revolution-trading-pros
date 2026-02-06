@@ -444,7 +444,13 @@
 						</div>
 						<div class="form-group">
 							<label for="price">Price (USD)</label>
-							<input type="number" id="price" name="price" step="0.01" bind:value={indicator.price} />
+							<input
+								type="number"
+								id="price"
+								name="price"
+								step="0.01"
+								bind:value={indicator.price}
+							/>
 						</div>
 						<div class="form-group">
 							<label for="platform">Platform</label>
@@ -456,7 +462,13 @@
 						</div>
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input type="text" id="version" name="version" bind:value={indicator.version} placeholder="1.0" />
+							<input
+								type="text"
+								id="version"
+								name="version"
+								bind:value={indicator.version}
+								placeholder="1.0"
+							/>
 						</div>
 						<div class="form-group">
 							<label for="is_active">Status</label>
@@ -475,7 +487,8 @@
 							<label for="thumbnail">Thumbnail URL</label>
 							<input
 								type="url"
-								id="thumbnail" name="thumbnail"
+								id="thumbnail"
+								name="thumbnail"
 								bind:value={indicator.thumbnail}
 								placeholder="https://..."
 							/>
@@ -484,7 +497,8 @@
 							<label for="download_url">Download URL</label>
 							<input
 								type="url"
-								id="download_url" name="download_url"
+								id="download_url"
+								name="download_url"
 								bind:value={indicator.download_url}
 								placeholder="https://..."
 							/>
@@ -493,7 +507,8 @@
 							<label for="documentation_url">Documentation URL</label>
 							<input
 								type="url"
-								id="documentation_url" name="documentation_url"
+								id="documentation_url"
+								name="documentation_url"
 								bind:value={indicator.documentation_url}
 								placeholder="https://..."
 							/>
@@ -513,7 +528,6 @@
 						></textarea>
 					</div>
 				</div>
-
 			{:else if activeTab === 'files'}
 				<div class="form-section">
 					<div class="section-header">
@@ -563,7 +577,11 @@
 												</button>
 											</td>
 											<td>
-												<button class="btn-icon btn-danger" onclick={() => deleteFile(file.id)} title="Delete file">
+												<button
+													class="btn-icon btn-danger"
+													onclick={() => deleteFile(file.id)}
+													title="Delete file"
+												>
 													X
 												</button>
 											</td>
@@ -574,7 +592,6 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'videos'}
 				<div class="form-section">
 					<div class="section-header">
@@ -612,13 +629,16 @@
 											</span>
 										</div>
 									</div>
-									<button class="btn-icon btn-danger" onclick={() => deleteVideo(video.id)} title="Delete video">X</button>
+									<button
+										class="btn-icon btn-danger"
+										onclick={() => deleteVideo(video.id)}
+										title="Delete video">X</button
+									>
 								</div>
 							{/each}
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'seo'}
 				<div class="form-section">
 					<h2>SEO Settings</h2>
@@ -626,7 +646,8 @@
 						<label for="meta_title">Meta Title</label>
 						<input
 							type="text"
-							id="meta_title" name="meta_title"
+							id="meta_title"
+							name="meta_title"
 							bind:value={indicator.meta_title}
 							placeholder="Page title for search engines"
 						/>
@@ -656,7 +677,14 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="0">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="0"
+		>
 			<div class="modal-header">
 				<h2>Upload Indicator File</h2>
 				<button class="btn-close" onclick={() => (showFileModal = false)}>X</button>
@@ -672,7 +700,12 @@
 				</div>
 				<div class="form-group">
 					<label for="file-name">Display Name *</label>
-					<input type="text" id="file-name" bind:value={newFile.display_name} placeholder="e.g., Squeeze Pro v2.0" />
+					<input
+						type="text"
+						id="file-name"
+						bind:value={newFile.display_name}
+						placeholder="e.g., Squeeze Pro v2.0"
+					/>
 				</div>
 				<div class="form-group">
 					<label for="file-version">Version</label>
@@ -706,7 +739,14 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="0">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="0"
+		>
 			<div class="modal-header">
 				<h2>Add Tutorial Video</h2>
 				<button class="btn-close" onclick={() => (showVideoModal = false)}>X</button>
@@ -714,23 +754,48 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="video-title">Title *</label>
-					<input type="text" id="video-title" bind:value={newVideo.title} placeholder="e.g., Getting Started with Squeeze Pro" />
+					<input
+						type="text"
+						id="video-title"
+						bind:value={newVideo.title}
+						placeholder="e.g., Getting Started with Squeeze Pro"
+					/>
 				</div>
 				<div class="form-group">
 					<label for="video-description">Description</label>
-					<textarea id="video-description" rows="3" bind:value={newVideo.description} placeholder="Brief description of the video"></textarea>
+					<textarea
+						id="video-description"
+						rows="3"
+						bind:value={newVideo.description}
+						placeholder="Brief description of the video"
+					></textarea>
 				</div>
 				<div class="form-group">
 					<label for="video-url">Video URL (Direct)</label>
-					<input type="url" id="video-url" bind:value={newVideo.video_url} placeholder="https://..." />
+					<input
+						type="url"
+						id="video-url"
+						bind:value={newVideo.video_url}
+						placeholder="https://..."
+					/>
 				</div>
 				<div class="form-group">
 					<label for="embed-url">Embed URL (YouTube/Vimeo)</label>
-					<input type="url" id="embed-url" bind:value={newVideo.embed_url} placeholder="https://www.youtube.com/embed/..." />
+					<input
+						type="url"
+						id="embed-url"
+						bind:value={newVideo.embed_url}
+						placeholder="https://www.youtube.com/embed/..."
+					/>
 				</div>
 				<div class="form-group">
 					<label for="thumbnail-url">Thumbnail URL</label>
-					<input type="url" id="thumbnail-url" bind:value={newVideo.thumbnail_url} placeholder="https://..." />
+					<input
+						type="url"
+						id="thumbnail-url"
+						bind:value={newVideo.thumbnail_url}
+						placeholder="https://..."
+					/>
 				</div>
 			</div>
 			<div class="modal-footer">

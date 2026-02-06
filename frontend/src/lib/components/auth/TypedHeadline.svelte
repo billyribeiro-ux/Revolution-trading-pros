@@ -26,7 +26,9 @@
 	}
 
 	let props: Props = $props();
-	const strings = $derived(props.strings ?? ['Welcome Back, Trader', 'Ready to Trade?', 'Access Your Dashboard']);
+	const strings = $derived(
+		props.strings ?? ['Welcome Back, Trader', 'Ready to Trade?', 'Access Your Dashboard']
+	);
 	const typeSpeed = $derived(props.typeSpeed ?? 50);
 	const backSpeed = $derived(props.backSpeed ?? 30);
 	const backDelay = $derived(props.backDelay ?? 2000);

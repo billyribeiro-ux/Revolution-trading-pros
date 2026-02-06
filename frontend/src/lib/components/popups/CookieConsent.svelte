@@ -330,8 +330,8 @@
 							</label>
 						</div>
 						<p id="analytics-desc" class="cookie-category-desc">
-							Help us understand how visitors interact with our website by collecting anonymous usage
-							data.
+							Help us understand how visitors interact with our website by collecting anonymous
+							usage data.
 						</p>
 					</div>
 
@@ -379,7 +379,11 @@
 					<button type="button" class="cookie-btn cookie-btn-secondary" onclick={togglePreferences}>
 						Back
 					</button>
-					<button type="button" class="cookie-btn cookie-btn-primary" onclick={handleSavePreferences}>
+					<button
+						type="button"
+						class="cookie-btn cookie-btn-primary"
+						onclick={handleSavePreferences}
+					>
 						<IconCheck size={16} />
 						Save Preferences
 					</button>

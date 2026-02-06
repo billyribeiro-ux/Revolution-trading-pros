@@ -520,9 +520,7 @@ describe('useBlockValidation', () => {
 				content: { url: 'https://example.com/path' }
 			});
 
-			const rules: ValidationRule[] = [
-				PRESET_RULES.url('content.url')
-			];
+			const rules: ValidationRule[] = [PRESET_RULES.url('content.url')];
 
 			const validator = useBlockValidation(block, rules);
 			const result = validator.validate();
@@ -535,9 +533,7 @@ describe('useBlockValidation', () => {
 				content: { slug: 'my-valid-slug' }
 			});
 
-			const rules: ValidationRule[] = [
-				PRESET_RULES.slug('content.slug')
-			];
+			const rules: ValidationRule[] = [PRESET_RULES.slug('content.slug')];
 
 			const validator = useBlockValidation(block, rules);
 			const result = validator.validate();
@@ -550,9 +546,7 @@ describe('useBlockValidation', () => {
 				content: { slug: 'Invalid Slug!' }
 			});
 
-			const rules: ValidationRule[] = [
-				PRESET_RULES.slug('content.slug')
-			];
+			const rules: ValidationRule[] = [PRESET_RULES.slug('content.slug')];
 
 			const validator = useBlockValidation(block, rules);
 			const result = validator.validate();
@@ -629,9 +623,12 @@ describe('useBlockValidation', () => {
 			const validator = useBlockValidation(block, rules);
 			validator.validate();
 
-			expect(customValidator).toHaveBeenCalledWith('check', expect.objectContaining({
-				id: 'test-123'
-			}));
+			expect(customValidator).toHaveBeenCalledWith(
+				'check',
+				expect.objectContaining({
+					id: 'test-123'
+				})
+			);
 		});
 
 		it('validates safe HTML custom function', () => {
@@ -639,9 +636,7 @@ describe('useBlockValidation', () => {
 				content: { html: '<script>alert("xss")</script>' }
 			});
 
-			const rules: ValidationRule[] = [
-				PRESET_RULES.safeHtml('content.html')
-			];
+			const rules: ValidationRule[] = [PRESET_RULES.safeHtml('content.html')];
 
 			const validator = useBlockValidation(block, rules);
 			const result = validator.validate();
@@ -689,7 +684,12 @@ describe('useBlockValidation', () => {
 
 			const rules: ValidationRule[] = [
 				{ field: 'content.text', required: true, message: 'Text required' },
-				{ field: 'content.mediaAlt', required: true, message: 'Alt text recommended', severity: 'warning' }
+				{
+					field: 'content.mediaAlt',
+					required: true,
+					message: 'Alt text recommended',
+					severity: 'warning'
+				}
 			];
 
 			const validator = useBlockValidation(block, rules);
@@ -741,7 +741,12 @@ describe('useBlockValidation', () => {
 
 			const rules: ValidationRule[] = [
 				{ field: 'content.text', required: true, message: 'Text required', severity: 'error' },
-				{ field: 'content.mediaAlt', required: true, message: 'Alt text recommended', severity: 'warning' }
+				{
+					field: 'content.mediaAlt',
+					required: true,
+					message: 'Alt text recommended',
+					severity: 'warning'
+				}
 			];
 
 			const validator = useBlockValidation(block, rules);
@@ -935,7 +940,7 @@ describe('useBlockValidation', () => {
 
 			let validatingDuringAsync = false;
 			const asyncValidator = vi.fn().mockImplementation(async () => {
-				await new Promise(resolve => setTimeout(resolve, 10));
+				await new Promise((resolve) => setTimeout(resolve, 10));
 				return true;
 			});
 

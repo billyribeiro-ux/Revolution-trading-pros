@@ -121,7 +121,12 @@
 		</div>
 	{/if}
 
-	<input id="calculator-{props.field.name}" type="hidden" name={props.field.name} value={calculatedValue} />
+	<input
+		id="calculator-{props.field.name}"
+		type="hidden"
+		name={props.field.name}
+		value={calculatedValue}
+	/>
 
 	{#if error && error.length > 0}
 		<div class="field-error">

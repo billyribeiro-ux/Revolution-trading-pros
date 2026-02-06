@@ -134,7 +134,8 @@
 			<label for="search-keywords" class="sr-only">Search keywords</label>
 			<input
 				type="text"
-				id="search-keywords" name="search-keywords"
+				id="search-keywords"
+				name="search-keywords"
 				bind:value={searchQuery}
 				placeholder="Search keywords..."
 			/>
@@ -261,6 +262,19 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Keyword"
+	message="Delete this keyword?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteKeyword}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
 
 <style>
 	.keywords-page {
@@ -648,13 +662,3 @@
 		border-width: 0;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Keyword"
-	message="Delete this keyword?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteKeyword}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

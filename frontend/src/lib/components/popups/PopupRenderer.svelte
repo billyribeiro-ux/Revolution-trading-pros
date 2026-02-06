@@ -419,7 +419,8 @@
 		class="popup-backdrop {getPositionClass()}"
 		onclick={handleBackdropClick}
 		role="presentation"
-		style="--overlay-color: {currentPopup.design?.overlay_color || '#000000'}; --overlay-opacity: {(currentPopup.design?.overlay_opacity || 50) / 100}"
+		style="--overlay-color: {currentPopup.design?.overlay_color ||
+			'#000000'}; --overlay-opacity: {(currentPopup.design?.overlay_opacity || 50) / 100}"
 	>
 		<!-- Overlay -->
 		<div class="popup-overlay" aria-hidden="true"></div>
@@ -433,20 +434,21 @@
 			aria-labelledby="popup-title"
 			tabindex="-1"
 			style="
-        background-color: {currentPopup.design?.background_color || currentPopup.design?.backgroundColor || '#ffffff'};
+        background-color: {currentPopup.design?.background_color ||
+				currentPopup.design?.backgroundColor ||
+				'#ffffff'};
         color: {currentPopup.design?.text_color || currentPopup.design?.textColor || '#1f2937'};
-        border-radius: {currentPopup.design?.border_radius || currentPopup.design?.borderRadius || 12}px;
-        {currentPopup.design?.background_image ? `background-image: url(${currentPopup.design.background_image});` : ''}
+        border-radius: {currentPopup.design?.border_radius ||
+				currentPopup.design?.borderRadius ||
+				12}px;
+        {currentPopup.design?.background_image
+				? `background-image: url(${currentPopup.design.background_image});`
+				: ''}
       "
 		>
 			<!-- Close Button -->
 			{#if currentPopup.show_close_button !== false}
-				<button
-					type="button"
-					class="popup-close"
-					onclick={handleClose}
-					aria-label="Close popup"
-				>
+				<button type="button" class="popup-close" onclick={handleClose} aria-label="Close popup">
 					<IconX size={20} />
 				</button>
 			{/if}
@@ -455,11 +457,7 @@
 			<div class="popup-content">
 				<!-- Header Image -->
 				{#if currentPopup.design?.header_image}
-					<img
-						src={currentPopup.design.header_image}
-						alt=""
-						class="popup-header-image"
-					/>
+					<img src={currentPopup.design.header_image} alt="" class="popup-header-image" />
 				{/if}
 
 				<!-- Video Embed -->
@@ -467,7 +465,10 @@
 					<div class="popup-video">
 						{#if currentPopup.design.video_url.includes('youtube.com') || currentPopup.design.video_url.includes('youtu.be')}
 							<iframe
-								src={getYoutubeEmbedUrl(currentPopup.design.video_url, currentPopup.design.video_autoplay)}
+								src={getYoutubeEmbedUrl(
+									currentPopup.design.video_url,
+									currentPopup.design.video_autoplay
+								)}
 								frameborder="0"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen
@@ -475,7 +476,10 @@
 							></iframe>
 						{:else if currentPopup.design.video_url.includes('vimeo.com')}
 							<iframe
-								src={getVimeoEmbedUrl(currentPopup.design.video_url, currentPopup.design.video_autoplay)}
+								src={getVimeoEmbedUrl(
+									currentPopup.design.video_url,
+									currentPopup.design.video_autoplay
+								)}
 								frameborder="0"
 								allow="autoplay; fullscreen; picture-in-picture"
 								allowfullscreen
@@ -498,7 +502,9 @@
 					<h2
 						id="popup-title"
 						class="popup-title"
-						style="color: {currentPopup.design?.title_color || currentPopup.design?.titleColor || '#1f2937'}"
+						style="color: {currentPopup.design?.title_color ||
+							currentPopup.design?.titleColor ||
+							'#1f2937'}"
 					>
 						{currentPopup.title}
 					</h2>
@@ -519,11 +525,19 @@
 								class="popup-cta popup-cta-primary"
 								onclick={handleCTAClick}
 								style="
-									background-color: {currentPopup.design?.button_color || currentPopup.design?.buttonColor || '#3b82f6'};
-									color: {currentPopup.design?.button_text_color || currentPopup.design?.buttonTextColor || '#ffffff'};
-									border-radius: {currentPopup.design?.button_border_radius || currentPopup.design?.buttonBorderRadius || 8}px;
+									background-color: {currentPopup.design?.button_color ||
+									currentPopup.design?.buttonColor ||
+									'#3b82f6'};
+									color: {currentPopup.design?.button_text_color ||
+									currentPopup.design?.buttonTextColor ||
+									'#ffffff'};
+									border-radius: {currentPopup.design?.button_border_radius ||
+									currentPopup.design?.buttonBorderRadius ||
+									8}px;
 									box-shadow: {currentPopup.design?.button_shadow || currentPopup.design?.buttonShadow || 'none'};
-									padding: {currentPopup.design?.button_padding || currentPopup.design?.buttonPadding || '0.875rem 1.5rem'};
+									padding: {currentPopup.design?.button_padding ||
+									currentPopup.design?.buttonPadding ||
+									'0.875rem 1.5rem'};
 								"
 							>
 								{currentPopup.cta_text}
@@ -537,8 +551,13 @@
 								onclick={handleSecondaryCTAClick}
 								style="
 									background-color: {currentPopup.design?.secondary_button_color || 'transparent'};
-									color: {currentPopup.design?.secondary_button_text_color || currentPopup.design?.text_color || currentPopup.design?.textColor || '#6b7280'};
-									border-radius: {currentPopup.design?.button_border_radius || currentPopup.design?.buttonBorderRadius || 8}px;
+									color: {currentPopup.design?.secondary_button_text_color ||
+									currentPopup.design?.text_color ||
+									currentPopup.design?.textColor ||
+									'#6b7280'};
+									border-radius: {currentPopup.design?.button_border_radius ||
+									currentPopup.design?.buttonBorderRadius ||
+									8}px;
 								"
 							>
 								{currentPopup.design.secondary_cta_text}

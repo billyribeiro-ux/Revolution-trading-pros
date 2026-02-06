@@ -410,9 +410,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 			}
 		});
 
-		expect(
-			screen.getByText('I understand and acknowledge the risks involved')
-		).toBeInTheDocument();
+		expect(screen.getByText('I understand and acknowledge the risks involved')).toBeInTheDocument();
 	});
 
 	it('should not show acknowledgment checkbox when not required', () => {
@@ -544,9 +542,7 @@ describe('RiskDisclaimerBlock - Preset Disclaimers', () => {
 			}
 		});
 
-		expect(
-			screen.getByText(/trading involves substantial risk of loss/i)
-		).toBeInTheDocument();
+		expect(screen.getByText(/trading involves substantial risk of loss/i)).toBeInTheDocument();
 	});
 
 	it('should show trading preset text', () => {
@@ -590,9 +586,7 @@ describe('RiskDisclaimerBlock - Preset Disclaimers', () => {
 			}
 		});
 
-		expect(
-			screen.getByText(/does not constitute financial advice/i)
-		).toBeInTheDocument();
+		expect(screen.getByText(/does not constitute financial advice/i)).toBeInTheDocument();
 	});
 
 	it('should use custom text when provided', () => {

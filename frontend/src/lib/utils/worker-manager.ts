@@ -19,10 +19,9 @@ export class WorkerManager {
 
 	private initWorker(): void {
 		try {
-			this.worker = new Worker(
-				new URL('../workers/block-processor.worker.ts', import.meta.url),
-				{ type: 'module' }
-			);
+			this.worker = new Worker(new URL('../workers/block-processor.worker.ts', import.meta.url), {
+				type: 'module'
+			});
 
 			this.worker.onmessage = (e) => {
 				const { messageId, ...data } = e.data;

@@ -93,8 +93,8 @@
 				contenteditable="true"
 				class="btn-text"
 				oninput={(e) => updateContent({ buttonText: (e.target as HTMLElement).textContent || '' })}
-				onpaste={handlePaste}
-			>{buttonText}</span>
+				onpaste={handlePaste}>{buttonText}</span
+			>
 		</a>
 	{:else}
 		<!-- View Mode: Actual Link -->
@@ -128,7 +128,8 @@
 				<span>Style:</span>
 				<select
 					value={buttonStyle}
-					onchange={(e) => updateContent({ buttonStyle: (e.target as HTMLSelectElement).value as ButtonStyle })}
+					onchange={(e) =>
+						updateContent({ buttonStyle: (e.target as HTMLSelectElement).value as ButtonStyle })}
 				>
 					<option value="primary">Primary</option>
 					<option value="secondary">Secondary</option>
@@ -141,7 +142,8 @@
 				<span>Size:</span>
 				<select
 					value={buttonSize}
-					onchange={(e) => updateContent({ buttonSize: (e.target as HTMLSelectElement).value as ButtonSize })}
+					onchange={(e) =>
+						updateContent({ buttonSize: (e.target as HTMLSelectElement).value as ButtonSize })}
 				>
 					<option value="small">Small</option>
 					<option value="medium">Medium</option>
@@ -320,7 +322,7 @@
 		color: #475569;
 	}
 
-	.setting-field input[type="url"] {
+	.setting-field input[type='url'] {
 		flex: 1;
 		min-width: 200px;
 		padding: 0.375rem 0.75rem;

@@ -300,7 +300,9 @@
 	{#if showQuickAdd}
 		<div class="quick-add-bar">
 			<input
-				id="tradeentrymanager-quickform-ticker" name="tradeentrymanager-quickform-ticker" type="text"
+				id="tradeentrymanager-quickform-ticker"
+				name="tradeentrymanager-quickform-ticker"
+				type="text"
 				placeholder="TICKER"
 				bind:value={quickForm.ticker}
 				class="quick-input ticker"
@@ -311,8 +313,22 @@
 				<option value="BEARISH">BEARISH</option>
 				<option value="NEUTRAL">NEUTRAL</option>
 			</select>
-			<input id="tradeentrymanager-quickform-entry" name="tradeentrymanager-quickform-entry" type="text" placeholder="Entry" bind:value={quickForm.entry} class="quick-input" />
-			<input id="tradeentrymanager-quickform-stop" name="tradeentrymanager-quickform-stop" type="text" placeholder="Stop" bind:value={quickForm.stop} class="quick-input" />
+			<input
+				id="tradeentrymanager-quickform-entry"
+				name="tradeentrymanager-quickform-entry"
+				type="text"
+				placeholder="Entry"
+				bind:value={quickForm.entry}
+				class="quick-input"
+			/>
+			<input
+				id="tradeentrymanager-quickform-stop"
+				name="tradeentrymanager-quickform-stop"
+				type="text"
+				placeholder="Stop"
+				bind:value={quickForm.stop}
+				class="quick-input"
+			/>
 			<button
 				class="btn-quick-submit"
 				onclick={quickAddEntry}
@@ -433,7 +449,8 @@
 					<div class="form-group">
 						<label for="ticker">Ticker *</label>
 						<input
-							id="ticker" name="ticker"
+							id="ticker"
+							name="ticker"
 							type="text"
 							bind:value={form.ticker}
 							placeholder="NVDA"
@@ -455,7 +472,8 @@
 					<div class="form-group">
 						<label for="entry">Entry Price</label>
 						<input
-							id="entry" name="entry"
+							id="entry"
+							name="entry"
 							type="text"
 							bind:value={form.entry}
 							placeholder="$142.50"
@@ -465,7 +483,8 @@
 					<div class="form-group">
 						<label for="stop">Stop Loss</label>
 						<input
-							id="stop" name="stop"
+							id="stop"
+							name="stop"
 							type="text"
 							bind:value={form.stop}
 							placeholder="$136.00"
@@ -478,7 +497,8 @@
 					<div class="form-group">
 						<label for="target1">Target 1</label>
 						<input
-							id="target1" name="target1"
+							id="target1"
+							name="target1"
 							type="text"
 							bind:value={form.target1}
 							placeholder="$148"
@@ -488,7 +508,8 @@
 					<div class="form-group">
 						<label for="target2">Target 2</label>
 						<input
-							id="target2" name="target2"
+							id="target2"
+							name="target2"
 							type="text"
 							bind:value={form.target2}
 							placeholder="$155"
@@ -498,7 +519,8 @@
 					<div class="form-group">
 						<label for="target3">Target 3</label>
 						<input
-							id="target3" name="target3"
+							id="target3"
+							name="target3"
 							type="text"
 							bind:value={form.target3}
 							placeholder="$162"
@@ -508,7 +530,8 @@
 					<div class="form-group">
 						<label for="runner">Runner</label>
 						<input
-							id="runner" name="runner"
+							id="runner"
+							name="runner"
 							type="text"
 							bind:value={form.runner}
 							placeholder="$170+"
@@ -521,7 +544,8 @@
 					<div class="form-group">
 						<label for="options_strike">Options Strike</label>
 						<input
-							id="options_strike" name="options_strike"
+							id="options_strike"
+							name="options_strike"
 							type="text"
 							bind:value={form.options_strike}
 							placeholder="$145C"
@@ -531,7 +555,8 @@
 					<div class="form-group">
 						<label for="options_exp">Expiration</label>
 						<input
-							id="options_exp" name="options_exp"
+							id="options_exp"
+							name="options_exp"
 							type="text"
 							bind:value={form.options_exp}
 							placeholder="Feb 21"
@@ -567,6 +592,19 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Trade Entry"
+	message="Delete this trade plan entry?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteEntry}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
 
 <style>
 	.trade-entry-manager {
@@ -1031,13 +1069,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Trade Entry"
-	message="Delete this trade plan entry?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteEntry}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

@@ -219,7 +219,10 @@ export const notificationStore = {
 
 		const newState = {
 			...notificationState,
-			notifications: [newNotification, ...notificationState.notifications].slice(0, MAX_STORED_NOTIFICATIONS),
+			notifications: [newNotification, ...notificationState.notifications].slice(
+				0,
+				MAX_STORED_NOTIFICATIONS
+			),
 			hasNewNotifications: true
 		};
 		persist(newState);
@@ -241,7 +244,9 @@ export const notificationStore = {
 	markAsRead(id: string) {
 		const newState = {
 			...notificationState,
-			notifications: notificationState.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+			notifications: notificationState.notifications.map((n) =>
+				n.id === id ? { ...n, read: true } : n
+			),
 			hasNewNotifications: notificationState.notifications.some((n) => n.id !== id && !n.read)
 		};
 		persist(newState);

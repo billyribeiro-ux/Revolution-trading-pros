@@ -162,7 +162,8 @@
 
 		if (!isYouTube && !isVimeo && !isNative) {
 			hasError = true;
-			errorMessage = 'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
+			errorMessage =
+				'Unable to recognize video URL. Please use YouTube, Vimeo, or a direct video link.';
 			props.onError?.(new Error(errorMessage));
 			return;
 		}
@@ -306,7 +307,16 @@
 					onclick={clearVideo}
 					aria-label="Remove video"
 				>
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
 						<line x1="18" y1="6" x2="6" y2="18"></line>
 						<line x1="6" y1="6" x2="18" y2="18"></line>
 					</svg>
@@ -338,12 +348,20 @@
 				<IconVideo size={48} aria-hidden="true" />
 			</div>
 			<span class="video-placeholder-title">Add a Video</span>
-			<span class="video-placeholder-subtitle">
-				Paste a YouTube, Vimeo, or direct video URL
-			</span>
+			<span class="video-placeholder-subtitle"> Paste a YouTube, Vimeo, or direct video URL </span>
 
 			<div class="video-url-input-wrapper">
-				<svg class="video-url-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<svg
+					class="video-url-icon"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
 					<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
 					<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
 				</svg>
@@ -363,7 +381,16 @@
 					disabled={!urlInputValue.trim()}
 					aria-label="Add video"
 				>
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<svg
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
 						<polygon points="5 3 19 12 5 21 5 3"></polygon>
 					</svg>
 				</button>
@@ -371,7 +398,16 @@
 
 			{#if hasError}
 				<div class="video-input-error" role="alert">
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<line x1="12" y1="8" x2="12" y2="12"></line>
 						<line x1="12" y1="16" x2="12.01" y2="16"></line>

@@ -131,36 +131,36 @@
      ═══════════════════════════════════════════════════════════════════════════ */
 
 	--space-0: 0;
-	--space-0-5: 4px;   /* 0.25rem - Sub-spacing for internal component use only */
-	--space-1: 8px;    /* 0.5rem */
+	--space-0-5: 4px; /* 0.25rem - Sub-spacing for internal component use only */
+	--space-1: 8px; /* 0.5rem */
 	--space-1-5: 12px; /* 0.75rem - Sub-spacing for internal component use only */
-	--space-2: 16px;   /* 1rem */
-	--space-3: 24px;   /* 1.5rem */
-	--space-4: 32px;   /* 2rem */
-	--space-5: 40px;   /* 2.5rem */
-	--space-6: 48px;   /* 3rem */
-	--space-7: 56px;   /* 3.5rem */
-	--space-8: 64px;   /* 4rem */
-	--space-10: 80px;  /* 5rem */
-	--space-12: 96px;  /* 6rem */
+	--space-2: 16px; /* 1rem */
+	--space-3: 24px; /* 1.5rem */
+	--space-4: 32px; /* 2rem */
+	--space-5: 40px; /* 2.5rem */
+	--space-6: 48px; /* 3rem */
+	--space-7: 56px; /* 3.5rem */
+	--space-8: 64px; /* 4rem */
+	--space-10: 80px; /* 5rem */
+	--space-12: 96px; /* 6rem */
 	--space-16: 128px; /* 8rem */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE CARD PADDING - Scales with viewport
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	--card-padding-sm: var(--space-2);   /* Mobile: 16px */
-	--card-padding-md: var(--space-2);   /* Tablet: 18px (override in media query) */
-	--card-padding-lg: var(--space-3);   /* Desktop: 24px */
+	--card-padding-sm: var(--space-2); /* Mobile: 16px */
+	--card-padding-md: var(--space-2); /* Tablet: 18px (override in media query) */
+	--card-padding-lg: var(--space-3); /* Desktop: 24px */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE SIDEBAR WIDTH
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	--sidebar-width: 340px;  /* Default (1024-1279px) */
+	--sidebar-width: 340px; /* Default (1024-1279px) */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   INTERACTIVE ELEMENTS - WCAG 2.2 Touch Targets
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	--touch-target-min: 44px;  /* WCAG minimum touch target */
+	--touch-target-min: 44px; /* WCAG minimum touch target */
 	--button-padding-mobile: 12px 20px;
 	--button-padding-desktop: 14px 28px;
 

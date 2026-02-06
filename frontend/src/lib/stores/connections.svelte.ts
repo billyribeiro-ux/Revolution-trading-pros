@@ -266,7 +266,11 @@ export const connections = {
 	 */
 	async load(force = false): Promise<void> {
 		// Check cache
-		if (!force && connectionsState.lastFetched && Date.now() - connectionsState.lastFetched < CACHE_TTL) {
+		if (
+			!force &&
+			connectionsState.lastFetched &&
+			Date.now() - connectionsState.lastFetched < CACHE_TTL
+		) {
 			return;
 		}
 

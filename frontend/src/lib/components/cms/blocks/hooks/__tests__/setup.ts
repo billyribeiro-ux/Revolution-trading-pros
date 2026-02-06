@@ -182,8 +182,7 @@ beforeAll(() => {
 	console.warn = (...args: unknown[]) => {
 		if (
 			typeof args[0] === 'string' &&
-			(args[0].includes('Unsafe URL') ||
-				args[0].includes('deprecated'))
+			(args[0].includes('Unsafe URL') || args[0].includes('deprecated'))
 		) {
 			return;
 		}

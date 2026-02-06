@@ -447,7 +447,9 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					id="page-searchquery" name="page-searchquery" type="text"
+					id="page-searchquery"
+					name="page-searchquery"
+					type="text"
 					placeholder="Search templates..."
 					bind:value={searchQuery}
 					aria-label="Search templates"
@@ -831,6 +833,29 @@
 		{/each}
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Template"
+	message="Are you sure you want to delete this template? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Templates"
+	message={`Are you sure you want to delete ${selectedCount} template${selectedCount > 1 ? 's' : ''}? This action cannot be undone.`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDeleteTemplates}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	/* =====================================================
@@ -1834,23 +1859,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Template"
-	message="Are you sure you want to delete this template? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTemplate}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Templates"
-	message={`Are you sure you want to delete ${selectedCount} template${selectedCount > 1 ? 's' : ''}? This action cannot be undone.`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDeleteTemplates}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

@@ -98,17 +98,13 @@
 		(props.block.settings.galleryLayout as GalleryLayout) || 'grid'
 	);
 
-	let columns = $derived(
-		Math.min(4, Math.max(2, props.block.settings.galleryColumns || 3))
-	);
+	let columns = $derived(Math.min(4, Math.max(2, props.block.settings.galleryColumns || 3)));
 
 	let gap = $derived(props.block.settings.gap || '1rem');
 
 	let lightboxState = $derived<LightboxState>(stateManager.getLightboxState());
 
-	let isLightboxOpen = $derived(
-		lightboxState.open && lightboxState.blockId === props.blockId
-	);
+	let isLightboxOpen = $derived(lightboxState.open && lightboxState.blockId === props.blockId);
 
 	let currentIndex = $derived(lightboxState.index);
 
@@ -116,14 +112,10 @@
 		isLightboxOpen && images[currentIndex] ? images[currentIndex] : null
 	);
 
-	let imageCounter = $derived(
-		isLightboxOpen ? `${currentIndex + 1} / ${images.length}` : ''
-	);
+	let imageCounter = $derived(isLightboxOpen ? `${currentIndex + 1} / ${images.length}` : '');
 
 	// Grid style computed from columns and gap
-	let gridStyle = $derived(
-		`--gallery-columns: ${columns}; --gallery-gap: ${gap};`
-	);
+	let gridStyle = $derived(`--gallery-columns: ${columns}; --gallery-gap: ${gap};`);
 
 	// ============================================================================
 	// Content Update Helpers
@@ -417,12 +409,7 @@
 	{#if images.length > 0}
 		<!-- Grid and Masonry Layout -->
 		{#if layout === 'grid' || layout === 'masonry'}
-			<div
-				class="gallery-grid"
-				class:masonry={layout === 'masonry'}
-				role="list"
-				style={gridStyle}
-			>
+			<div class="gallery-grid" class:masonry={layout === 'masonry'} role="list" style={gridStyle}>
 				{#each images as image, index (image.id)}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
@@ -587,7 +574,14 @@
 			<!-- Add Image Form -->
 			{#if showAddForm}
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<form class="gallery-add-form" onsubmit={(e) => { e.preventDefault(); addImage(); }} onkeydown={handleAddFormKeyDown}>
+				<form
+					class="gallery-add-form"
+					onsubmit={(e) => {
+						e.preventDefault();
+						addImage();
+					}}
+					onkeydown={handleAddFormKeyDown}
+				>
 					<div class="add-form-header">
 						<span>Add New Image</span>
 						<button
@@ -725,11 +719,7 @@
 
 			<!-- Image Container -->
 			<div class="lightbox-image-container">
-				<img
-					src={sanitizeURL(currentImage.url)}
-					alt={currentImage.alt}
-					class="lightbox-image"
-				/>
+				<img src={sanitizeURL(currentImage.url)} alt={currentImage.alt} class="lightbox-image" />
 			</div>
 
 			<!-- Navigation: Next -->
@@ -822,7 +812,9 @@
 		overflow: hidden;
 		border-radius: 8px;
 		background: #f1f5f9;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.gallery-grid.masonry .gallery-item {
@@ -1254,7 +1246,9 @@
 		border-radius: 50%;
 		color: #374151;
 		cursor: pointer;
-		transition: background 0.15s ease, color 0.15s ease;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
 		z-index: 10;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	}
@@ -1287,7 +1281,9 @@
 		border: none;
 		border-radius: 50%;
 		cursor: pointer;
-		transition: background 0.15s ease, transform 0.15s ease;
+		transition:
+			background 0.15s ease,
+			transform 0.15s ease;
 	}
 
 	.carousel-dot:hover {

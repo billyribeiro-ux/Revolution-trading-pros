@@ -320,7 +320,8 @@
 					</label>
 					<input
 						type="text"
-						id="name" name="name"
+						id="name"
+						name="name"
 						bind:value={name}
 						placeholder="e.g., Slack Notifications, Zapier Integration"
 						class:error={fieldErrors.name}
@@ -336,7 +337,8 @@
 					</label>
 					<input
 						type="url"
-						id="url" name="url"
+						id="url"
+						name="url"
 						bind:value={url}
 						placeholder="https://api.example.com/webhook"
 						class:error={fieldErrors.url}
@@ -354,7 +356,8 @@
 					<div class="input-with-action">
 						<input
 							type="text"
-							id="secret" name="secret"
+							id="secret"
+							name="secret"
 							bind:value={secret}
 							placeholder="Used to sign webhook payloads"
 						/>
@@ -373,7 +376,13 @@
 
 				<div class="form-group">
 					<label class="toggle-label">
-						<input id="page-isactive" name="page-isactive" type="checkbox" bind:checked={isActive} class="toggle-input" />
+						<input
+							id="page-isactive"
+							name="page-isactive"
+							type="checkbox"
+							bind:checked={isActive}
+							class="toggle-input"
+						/>
 						<span class="toggle-switch"></span>
 						<span class="toggle-text">Active</span>
 					</label>
@@ -441,13 +450,17 @@
 						{#each customHeaders as header, index}
 							<div class="header-row">
 								<input
-									id="page-header-name" name="page-header-name" type="text"
+									id="page-header-name"
+									name="page-header-name"
+									type="text"
 									placeholder="Header Name"
 									value={header.key}
 									oninput={(e) => updateHeaderKey(index, e.currentTarget.value)}
 								/>
 								<input
-									id="page-header-value" name="page-header-value" type="text"
+									id="page-header-value"
+									name="page-header-value"
+									type="text"
 									placeholder="Header Value"
 									value={header.value}
 									oninput={(e) => updateHeaderValue(index, e.currentTarget.value)}

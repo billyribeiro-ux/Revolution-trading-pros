@@ -307,7 +307,9 @@
 					<tr>
 						<th class="checkbox-col">
 							<input
-								id="page-checkbox" name="page-checkbox" type="checkbox"
+								id="page-checkbox"
+								name="page-checkbox"
+								type="checkbox"
 								checked={selectedCarts.length === carts.length}
 								onchange={toggleAllSelection}
 							/>
@@ -325,7 +327,9 @@
 						<tr>
 							<td class="checkbox-col">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedCarts.includes(cart.id)}
 									onchange={() => toggleCartSelection(cart.id)}
 								/>
@@ -394,6 +398,29 @@
 		</div>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Cart"
+	message="Are you sure you want to delete this cart?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCart}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showBulkDeleteModal}
+	title="Delete Carts"
+	message={`Are you sure you want to delete ${selectedCarts.length} carts?`}
+	confirmText="Delete All"
+	variant="danger"
+	onConfirm={confirmBulkDelete}
+	onCancel={() => (showBulkDeleteModal = false)}
+/>
 
 <style>
 	.abandoned-carts-page {
@@ -825,23 +852,3 @@
 		margin-bottom: 1rem;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Cart"
-	message="Are you sure you want to delete this cart?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCart}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showBulkDeleteModal}
-	title="Delete Carts"
-	message={`Are you sure you want to delete ${selectedCarts.length} carts?`}
-	confirmText="Delete All"
-	variant="danger"
-	onConfirm={confirmBulkDelete}
-	onCancel={() => (showBulkDeleteModal = false)}
-/>

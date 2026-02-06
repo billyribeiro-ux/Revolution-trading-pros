@@ -32,7 +32,9 @@
 	const checklistItems = $derived(props.block.content.items || []);
 	const completedCount = $derived(checklistItems.filter((item) => item.checked).length);
 	const totalCount = $derived(checklistItems.length);
-	const progressPercent = $derived(totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0);
+	const progressPercent = $derived(
+		totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
+	);
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
@@ -239,7 +241,8 @@
 						contenteditable={props.isEditing}
 						class="list-block__check-text"
 						class:list-block__check-text--placeholder={!item.content}
-						oninput={(e) => updateCheckItemContent(item.id, (e.target as HTMLElement).textContent || '')}
+						oninput={(e) =>
+							updateCheckItemContent(item.id, (e.target as HTMLElement).textContent || '')}
 						onkeydown={(e) => handleCheckKeyDown(e, item.id, index)}
 						onpaste={handlePaste}
 						data-placeholder="List item..."
@@ -279,7 +282,11 @@
 	</div>
 {:else}
 	<!-- Regular List Mode -->
-	<div class="list-block" role="group" aria-label={listType === 'number' ? 'Numbered list' : 'Bulleted list'}>
+	<div
+		class="list-block"
+		role="group"
+		aria-label={listType === 'number' ? 'Numbered list' : 'Bulleted list'}
+	>
 		<!-- List Type Toggle -->
 		{#if props.isEditing}
 			<div class="list-block__toolbar">
@@ -291,7 +298,14 @@
 					aria-pressed={listType === 'bullet'}
 					aria-label="Toggle bullet list"
 				>
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="9" y1="6" x2="20" y2="6"></line>
 						<line x1="9" y1="12" x2="20" y2="12"></line>
 						<line x1="9" y1="18" x2="20" y2="18"></line>
@@ -309,7 +323,14 @@
 					aria-pressed={listType === 'number'}
 					aria-label="Toggle numbered list"
 				>
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="10" y1="6" x2="21" y2="6"></line>
 						<line x1="10" y1="12" x2="21" y2="12"></line>
 						<line x1="10" y1="18" x2="21" y2="18"></line>
@@ -323,7 +344,11 @@
 		{/if}
 
 		<!-- List Items -->
-		<svelte:element this={ListTag} class="list-block__list" class:list-block__list--numbered={listType === 'number'}>
+		<svelte:element
+			this={ListTag}
+			class="list-block__list"
+			class:list-block__list--numbered={listType === 'number'}
+		>
 			{#each props.block.content.listItems || [''] as item, index (index)}
 				<li class="list-block__item">
 					<span
@@ -366,9 +391,7 @@
 				<IconPlus size={14} aria-hidden="true" />
 				<span>Add item</span>
 			</button>
-			<p class="list-block__hint">
-				Press Enter to add a new item. Backspace on empty to remove.
-			</p>
+			<p class="list-block__hint">Press Enter to add a new item. Backspace on empty to remove.</p>
 		{/if}
 	</div>
 {/if}

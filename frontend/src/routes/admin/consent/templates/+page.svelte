@@ -402,6 +402,21 @@
 	{/if}
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Template"
+	message={pendingDeleteTemplate
+		? `Are you sure you want to delete "${pendingDeleteTemplate.name}"?`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteTemplate}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteTemplate = null;
+	}}
+/>
+
 <style>
 	.templates-page {
 		background: #0a101c;
@@ -689,13 +704,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Template"
-	message={pendingDeleteTemplate ? `Are you sure you want to delete "${pendingDeleteTemplate.name}"?` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteTemplate}
-	onCancel={() => { showDeleteModal = false; pendingDeleteTemplate = null; }}
-/>

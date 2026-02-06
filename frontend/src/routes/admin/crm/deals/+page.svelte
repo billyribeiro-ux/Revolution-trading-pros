@@ -901,6 +901,21 @@
 	</div>
 {/if}
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Deal"
+	message={pendingDeleteDeal
+		? `Are you sure you want to delete "${pendingDeleteDeal.name}"? This action cannot be undone.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteDeal}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteDeal = null;
+	}}
+/>
+
 <style>
 	.admin-crm-deals {
 		max-width: 1400px;
@@ -1825,13 +1840,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Deal"
-	message={pendingDeleteDeal ? `Are you sure you want to delete "${pendingDeleteDeal.name}"? This action cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteDeal}
-	onCancel={() => { showDeleteModal = false; pendingDeleteDeal = null; }}
-/>

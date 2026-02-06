@@ -283,9 +283,7 @@ class DatabaseConnection {
 		};
 
 		// Clean up old drafts without pending changes
-		const pendingDraftIds = new Set(
-			(await this.getAllPendingChanges()).map((pc) => pc.draftId)
-		);
+		const pendingDraftIds = new Set((await this.getAllPendingChanges()).map((pc) => pc.draftId));
 
 		const drafts = await this.getAllDrafts();
 		for (const draft of drafts) {
@@ -620,9 +618,7 @@ class DatabaseConnection {
 				const request = index.getAll(draftId);
 				request.onsuccess = () => {
 					// Sort by createdAt descending
-					const results = (request.result ?? []).sort(
-						(a, b) => b.createdAt - a.createdAt
-					);
+					const results = (request.result ?? []).sort((a, b) => b.createdAt - a.createdAt);
 					resolve(results);
 				};
 				request.onerror = () => reject(request.error);
@@ -694,12 +690,8 @@ class DatabaseConnection {
 			assetsCount: assets.length,
 			assetsSize,
 			revisionsCount: revisions.length,
-			oldestDraft: drafts.length
-				? Math.min(...drafts.map((d) => d.createdAt))
-				: null,
-			newestDraft: drafts.length
-				? Math.max(...drafts.map((d) => d.updatedAt))
-				: null
+			oldestDraft: drafts.length ? Math.min(...drafts.map((d) => d.createdAt)) : null,
+			newestDraft: drafts.length ? Math.max(...drafts.map((d) => d.updatedAt)) : null
 		};
 	}
 
@@ -827,7 +819,7 @@ export function generateChecksum(content: unknown): string {
 	let hash = 0;
 	for (let i = 0; i < str.length; i++) {
 		const char = str.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
+		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32-bit integer
 	}
 	return Math.abs(hash).toString(16).padStart(8, '0');

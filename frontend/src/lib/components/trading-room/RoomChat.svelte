@@ -229,7 +229,11 @@
 					<span class="status-dot status-dot--offline" title="Disconnected"></span>
 				{/if}
 			</div>
-			<button class="collapse-btn" onclick={toggleCollapse} aria-label={collapsed ? 'Expand chat' : 'Collapse chat'}>
+			<button
+				class="collapse-btn"
+				onclick={toggleCollapse}
+				aria-label={collapsed ? 'Expand chat' : 'Collapse chat'}
+			>
 				<RtpIcon name={collapsed ? 'chevron-up' : 'chevron-down'} size={16} />
 			</button>
 		</header>
@@ -260,7 +264,12 @@
 					<RtpIcon name="external-link" size={40} />
 					<p>Chat is available in an external window</p>
 					{#if externalChatUrl}
-						<a href={externalChatUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+						<a
+							href={externalChatUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="btn btn-primary"
+						>
 							Open Chat
 							<RtpIcon name="external-link" size={14} />
 						</a>

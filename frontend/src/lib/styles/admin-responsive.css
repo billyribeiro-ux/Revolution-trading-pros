@@ -236,11 +236,11 @@
 	.metrics-grid {
 		grid-template-columns: repeat(3, 1fr);
 	}
-	
+
 	.stats-grid {
 		grid-template-columns: repeat(4, 1fr);
 	}
-	
+
 	.business-grid {
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	}
@@ -394,7 +394,7 @@
 		min-width: 44px;
 		padding: var(--space-3);
 	}
-	
+
 	.admin-table td,
 	.admin-table th {
 		padding: var(--space-3) var(--space-4);
@@ -495,7 +495,7 @@
 	.mobile-only {
 		display: none;
 	}
-	
+
 	.tablet-up {
 		display: block;
 	}
@@ -550,7 +550,7 @@
 	.stat-card {
 		border-width: 2px;
 	}
-	
+
 	.btn,
 	button {
 		border-width: 2px;
@@ -567,14 +567,14 @@
 		max-width: 100%;
 		padding: 0;
 	}
-	
+
 	.glass-panel,
 	.analytics-panel {
 		border: 1px solid #000;
 		background: #fff;
 		page-break-inside: avoid;
 	}
-	
+
 	.btn,
 	button,
 	.header-actions {

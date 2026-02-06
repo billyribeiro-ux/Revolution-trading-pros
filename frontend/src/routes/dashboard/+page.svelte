@@ -220,7 +220,7 @@
 	onMount(async () => {
 		// Wait for auth to initialize
 		while ($isInitializing) {
-			await new Promise(resolve => setTimeout(resolve, 50));
+			await new Promise((resolve) => setTimeout(resolve, 50));
 		}
 
 		// If not authenticated, stop loading
@@ -239,7 +239,7 @@
 
 	async function loadMemberships(): Promise<void> {
 		if (!$isAuthenticated) return;
-		
+
 		isLoading = true;
 		try {
 			console.log('[Dashboard] Loading memberships for user:', $user?.email);

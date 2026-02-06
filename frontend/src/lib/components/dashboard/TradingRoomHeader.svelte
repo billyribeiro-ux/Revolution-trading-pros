@@ -30,7 +30,13 @@
 		showTradingRoomControls?: boolean;
 	}
 
-	let { roomName, startHereUrl, pageTitle, tradingRooms = [], showTradingRoomControls = true }: Props = $props();
+	let {
+		roomName,
+		startHereUrl,
+		pageTitle,
+		tradingRooms = [],
+		showTradingRoomControls = true
+	}: Props = $props();
 
 	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
 	let displayTitle = $derived(pageTitle || `${roomName} Dashboard`);

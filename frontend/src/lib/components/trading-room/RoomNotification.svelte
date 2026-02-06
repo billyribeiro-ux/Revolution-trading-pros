@@ -86,10 +86,11 @@
 			if (events.length > 0) {
 				// Get the next upcoming event
 				const now = new Date();
-				nextEvent = events.find((event) => {
-					const eventTime = new Date(event.date_time);
-					return eventTime > now || isWithinSession(event);
-				}) || null;
+				nextEvent =
+					events.find((event) => {
+						const eventTime = new Date(event.date_time);
+						return eventTime > now || isWithinSession(event);
+					}) || null;
 			} else {
 				nextEvent = null;
 			}

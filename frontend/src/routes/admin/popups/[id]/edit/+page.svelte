@@ -354,7 +354,8 @@
 						<div class="flex items-center gap-2">
 							<input
 								type="checkbox"
-								id="cta_new_tab" name="cta_new_tab"
+								id="cta_new_tab"
+								name="cta_new_tab"
 								bind:checked={formData.cta_new_tab}
 								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 							/>
@@ -477,7 +478,8 @@
 							<div class="flex items-center gap-2">
 								<input
 									type="checkbox"
-									id="show_close_button" name="show_close_button"
+									id="show_close_button"
+									name="show_close_button"
 									bind:checked={formData.show_close_button}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 								/>
@@ -489,7 +491,8 @@
 							<div class="flex items-center gap-2">
 								<input
 									type="checkbox"
-									id="close_on_overlay_click" name="close_on_overlay_click"
+									id="close_on_overlay_click"
+									name="close_on_overlay_click"
 									bind:checked={formData.close_on_overlay_click}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 								/>
@@ -520,7 +523,9 @@
 							<div class="flex gap-4">
 								<label class="flex items-center gap-2">
 									<input
-										id="page-checkbox" name="page-checkbox" type="checkbox"
+										id="page-checkbox"
+										name="page-checkbox"
+										type="checkbox"
 										value="desktop"
 										bind:group={formData.display_rules.devices}
 										class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -529,7 +534,9 @@
 								</label>
 								<label class="flex items-center gap-2">
 									<input
-										id="page-checkbox" name="page-checkbox" type="checkbox"
+										id="page-checkbox"
+										name="page-checkbox"
+										type="checkbox"
 										value="tablet"
 										bind:group={formData.display_rules.devices}
 										class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -538,7 +545,9 @@
 								</label>
 								<label class="flex items-center gap-2">
 									<input
-										id="page-checkbox" name="page-checkbox" type="checkbox"
+										id="page-checkbox"
+										name="page-checkbox"
+										type="checkbox"
 										value="mobile"
 										bind:group={formData.display_rules.devices}
 										class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -718,7 +727,9 @@
 							<h4 class="text-sm font-semibold text-blue-800 mb-1">Schedule Preview</h4>
 							<p class="text-sm text-blue-700">
 								{#if (formData as any).start_date && (formData as any).end_date}
-									Active from <strong>{new Date((formData as any).start_date).toLocaleString()}</strong>
+									Active from <strong
+										>{new Date((formData as any).start_date).toLocaleString()}</strong
+									>
 									to <strong>{new Date((formData as any).end_date).toLocaleString()}</strong>
 								{:else if (formData as any).start_date}
 									Starts <strong>{new Date((formData as any).start_date).toLocaleString()}</strong>
@@ -742,7 +753,9 @@
 					{#if formData.abTestId}
 						<div class="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
 							<div class="flex items-center gap-2 mb-2">
-								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+								<span
+									class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+								>
 									A/B Test Active
 								</span>
 								<span class="text-sm text-green-700">Test ID: {formData.abTestId}</span>
@@ -756,15 +769,26 @@
 					{:else}
 						<div class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
 							<div class="text-gray-400 mb-3">
-								<svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+								<svg
+									class="w-12 h-12 mx-auto"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+									/>
 								</svg>
 							</div>
 							<h3 class="text-lg font-medium text-gray-900 mb-2">No A/B Test Running</h3>
 							<p class="text-sm text-gray-500 mb-4">
-								Create an A/B test to compare different versions of this popup and find what works best.
+								Create an A/B test to compare different versions of this popup and find what works
+								best.
 							</p>
-							<Button variant="outline" type="button" onclick={() => showAbTestModal = true}>
+							<Button variant="outline" type="button" onclick={() => (showAbTestModal = true)}>
 								Create A/B Test
 							</Button>
 						</div>

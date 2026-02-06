@@ -377,9 +377,7 @@ class SyncManager {
 			}
 
 			const batch = changes.slice(i, i + this.options.batchSize);
-			const results = await Promise.allSettled(
-				batch.map((change) => this.syncChange(change))
-			);
+			const results = await Promise.allSettled(batch.map((change) => this.syncChange(change)));
 
 			for (let j = 0; j < results.length; j++) {
 				const result = results[j];
@@ -393,7 +391,7 @@ class SyncManager {
 					const error =
 						result.status === 'rejected'
 							? String(result.reason)
-							: result.value.error ?? 'Unknown error';
+							: (result.value.error ?? 'Unknown error');
 
 					await this.handleSyncError(change, error);
 				}
@@ -783,7 +781,11 @@ function formatRelativeTime(timestamp: number): string {
  * Register for background sync if supported
  */
 export async function registerBackgroundSync(): Promise<boolean> {
-	if (!browser || !('serviceWorker' in navigator) || !('sync' in ServiceWorkerRegistration.prototype)) {
+	if (
+		!browser ||
+		!('serviceWorker' in navigator) ||
+		!('sync' in ServiceWorkerRegistration.prototype)
+	) {
 		return false;
 	}
 

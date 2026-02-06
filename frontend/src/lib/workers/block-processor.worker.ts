@@ -43,7 +43,10 @@ function countWords(text: string | undefined): number {
 // Strip HTML tags
 function stripHtml(html: string | undefined): string {
 	if (!html) return '';
-	return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+	return html
+		.replace(/<[^>]*>/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
 }
 
 // Process multiple blocks
@@ -108,7 +111,10 @@ function sanitizeContent(content: BlockContent): BlockContent {
 	// Sanitize HTML content
 	if (sanitized.html) {
 		// Remove script tags
-		sanitized.html = sanitized.html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+		sanitized.html = sanitized.html.replace(
+			/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+			''
+		);
 		// Remove event handlers
 		sanitized.html = sanitized.html.replace(/\son\w+="[^"]*"/gi, '');
 		sanitized.html = sanitized.html.replace(/\son\w+='[^']*'/gi, '');

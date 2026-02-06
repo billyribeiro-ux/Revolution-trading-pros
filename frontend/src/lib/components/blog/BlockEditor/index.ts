@@ -81,11 +81,7 @@ export {
 	extractDominantColor
 } from './upload/image-processor';
 
-export type {
-	ProcessOptions,
-	ProcessedImage,
-	ImageDimensions
-} from './upload/image-processor';
+export type { ProcessOptions, ProcessedImage, ImageDimensions } from './upload/image-processor';
 
 // Keyboard & Accessibility
 export { default as KeyboardShortcuts } from './KeyboardShortcuts.svelte';

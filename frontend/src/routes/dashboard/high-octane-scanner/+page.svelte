@@ -202,7 +202,6 @@
 		closedThisWeek: 2
 	};
 
-
 	// Reactive data derived from server props - use $derived for reactivity
 	const weeklyContent = $derived<WeeklyContent>(
 		data.watchlist?.video

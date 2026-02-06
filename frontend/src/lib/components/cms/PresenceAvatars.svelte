@@ -25,11 +25,13 @@
 	let visibleCollaborators = $derived(props.collaborators.slice(0, maxVisible));
 	let hiddenCount = $derived(Math.max(0, props.collaborators.length - maxVisible));
 
-	let sizeClasses = $derived({
-		sm: 'avatar-sm',
-		md: 'avatar-md',
-		lg: 'avatar-lg'
-	}[size]);
+	let sizeClasses = $derived(
+		{
+			sm: 'avatar-sm',
+			md: 'avatar-md',
+			lg: 'avatar-lg'
+		}[size]
+	);
 
 	function getInitials(name: string): string {
 		return name
@@ -56,7 +58,9 @@
 			{#each visibleCollaborators as collaborator (collaborator.clientId)}
 				<div
 					class="avatar {sizeClasses}"
-					style="background-color: {collaborator.color}; color: {getContrastColor(collaborator.color)}"
+					style="background-color: {collaborator.color}; color: {getContrastColor(
+						collaborator.color
+					)}"
 					title="{collaborator.name} is editing"
 				>
 					{getInitials(collaborator.name)}
@@ -104,7 +108,9 @@
 		border: 2px solid white;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		position: relative;
-		transition: transform 0.15s, z-index 0.15s;
+		transition:
+			transform 0.15s,
+			z-index 0.15s;
 	}
 
 	.avatar:not(:last-child) {

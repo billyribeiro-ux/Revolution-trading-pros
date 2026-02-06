@@ -292,9 +292,7 @@ class OfflineEditorStore {
 			draft.version++;
 		} else {
 			// It's a Post, convert to Draft
-			const existing = postOrDraft.id
-				? await blogEditorDB.getDraftByPostId(postOrDraft.id)
-				: null;
+			const existing = postOrDraft.id ? await blogEditorDB.getDraftByPostId(postOrDraft.id) : null;
 
 			if (existing) {
 				draft = {

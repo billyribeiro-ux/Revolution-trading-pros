@@ -354,6 +354,19 @@
 	<!-- End admin-page-container -->
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Company"
+	message="Are you sure you want to delete this company? Associated contacts will NOT be deleted."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCompany}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
 <style>
 	/* =====================================================
 	   Page Layout - Email Templates Style
@@ -798,13 +811,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Company"
-	message="Are you sure you want to delete this company? Associated contacts will NOT be deleted."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCompany}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

@@ -159,10 +159,7 @@
 									</span>
 								</td>
 								<td>
-									<a
-										href="/dashboard/indicators/{download.indicator_slug}"
-										class="btn btn-small"
-									>
+									<a href="/dashboard/indicators/{download.indicator_slug}" class="btn btn-small">
 										Re-download
 									</a>
 								</td>

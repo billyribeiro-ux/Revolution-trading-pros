@@ -670,9 +670,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 			}
 		});
 
-		expect(
-			screen.getByText(/posts will be automatically populated/i)
-		).toBeInTheDocument();
+		expect(screen.getByText(/posts will be automatically populated/i)).toBeInTheDocument();
 	});
 
 	it('should call onUpdate when post count changes', async () => {

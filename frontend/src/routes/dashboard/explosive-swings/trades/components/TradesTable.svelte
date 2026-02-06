@@ -102,11 +102,19 @@
 					<span class="data-label">Entry</span>
 					<span class="data-value">{trade.entryDate}</span>
 				</div>
-				<div class="data-item profit-cell" class:profit={trade.profit > 0} class:loss={trade.profit < 0}>
+				<div
+					class="data-item profit-cell"
+					class:profit={trade.profit > 0}
+					class:loss={trade.profit < 0}
+				>
 					<span class="data-label">P/L</span>
 					<span class="data-value">{formatProfit(trade.profit)}</span>
 				</div>
-				<div class="data-item" class:profit={trade.profitPercent > 0} class:loss={trade.profitPercent < 0}>
+				<div
+					class="data-item"
+					class:profit={trade.profitPercent > 0}
+					class:loss={trade.profitPercent < 0}
+				>
 					<span class="data-label">%</span>
 					<span class="data-value">{formatPercent(trade.profitPercent)}</span>
 				</div>

@@ -90,7 +90,6 @@
 	const acceptTypes = $derived(props.acceptTypes ?? ['image', 'video', 'audio', 'document']);
 	const initialFolder = $derived(props.initialFolder ?? null);
 
-
 	// ============================================================================
 	// State
 	// ============================================================================
@@ -288,14 +287,19 @@
 					credits: metadataForm.credits || null,
 					seo_title: metadataForm.seo_title || null,
 					seo_description: metadataForm.seo_description || null,
-					tags: metadataForm.tags ? metadataForm.tags.split(',').map(t => t.trim()).filter(Boolean) : null
+					tags: metadataForm.tags
+						? metadataForm.tags
+								.split(',')
+								.map((t) => t.trim())
+								.filter(Boolean)
+						: null
 				})
 			});
 
 			if (response.ok) {
 				const updated = await response.json();
 				// Update in list
-				const idx = assets.findIndex(a => a.id === assetId);
+				const idx = assets.findIndex((a) => a.id === assetId);
 				if (idx !== -1) {
 					assets[idx] = updated;
 					assets = [...assets];
@@ -320,7 +324,7 @@
 			});
 
 			if (response.ok) {
-				assets = assets.filter(a => a.id !== assetId);
+				assets = assets.filter((a) => a.id !== assetId);
 				selectedAssets.delete(assetId);
 				selectedAssets = new Set(selectedAssets);
 				if (selectedAsset?.id === assetId) {
@@ -348,7 +352,7 @@
 			});
 
 			if (response.ok) {
-				assets = assets.filter(a => !selectedAssets.has(a.id));
+				assets = assets.filter((a) => !selectedAssets.has(a.id));
 				selectedAssets = new Set();
 				selectedAsset = null;
 				sidebarOpen = false;
@@ -361,7 +365,7 @@
 	// Move to folder - available for future use
 	// async function moveToFolder(targetFolderId: string | null) {
 	// 	if (selectedAssets.size === 0) return;
-	// 
+	//
 	// 	try {
 	// 		const response = await fetch('/api/cms/assets/bulk/move', {
 	// 			method: 'POST',
@@ -372,7 +376,7 @@
 	// 				target_folder_id: targetFolderId
 	// 			})
 	// 		});
-	// 
+	//
 	// 		if (response.ok) {
 	// 			await fetchAssets(true);
 	// 			selectedAssets = new Set();
@@ -387,7 +391,7 @@
 	// ============================================================================
 
 	async function uploadFile(item: UploadItem) {
-		const idx = uploadQueue.findIndex(u => u.id === item.id);
+		const idx = uploadQueue.findIndex((u) => u.id === item.id);
 		if (idx === -1) return;
 
 		uploadQueue[idx].status = 'uploading';
@@ -471,7 +475,7 @@
 
 		isUploading = true;
 
-		const pendingItems = uploadQueue.filter(item => item.status === 'pending');
+		const pendingItems = uploadQueue.filter((item) => item.status === 'pending');
 		for (const item of pendingItems) {
 			await uploadFile(item);
 		}
@@ -479,7 +483,7 @@
 		isUploading = false;
 
 		// Switch to library if all complete
-		const allComplete = uploadQueue.every(item => item.status === 'complete');
+		const allComplete = uploadQueue.every((item) => item.status === 'complete');
 		if (allComplete) {
 			setTimeout(() => {
 				activeTab = 'library';
@@ -546,7 +550,7 @@
 	}
 
 	function addFilesToQueue(files: File[]) {
-		const validFiles = files.filter(file => {
+		const validFiles = files.filter((file) => {
 			const type = file.type.split('/')[0];
 			if (type === 'image' && acceptTypes.includes('image')) return true;
 			if (type === 'video' && acceptTypes.includes('video')) return true;
@@ -555,7 +559,7 @@
 			return false;
 		});
 
-		const newItems: UploadItem[] = validFiles.map(file => ({
+		const newItems: UploadItem[] = validFiles.map((file) => ({
 			id: crypto.randomUUID(),
 			file,
 			status: 'pending',
@@ -567,11 +571,11 @@
 	}
 
 	function removeFromQueue(id: string) {
-		const item = uploadQueue.find(u => u.id === id);
+		const item = uploadQueue.find((u) => u.id === id);
 		if (item?.previewUrl) {
 			URL.revokeObjectURL(item.previewUrl);
 		}
-		uploadQueue = uploadQueue.filter(u => u.id !== id);
+		uploadQueue = uploadQueue.filter((u) => u.id !== id);
 	}
 
 	function toggleAssetSelection(asset: Asset) {
@@ -606,10 +610,10 @@
 	}
 
 	function handleInsert() {
-		const selected = assets.filter(a => selectedAssets.has(a.id));
+		const selected = assets.filter((a) => selectedAssets.has(a.id));
 		if (selected.length > 0) {
 			if (allowMultiple) {
-				selected.forEach(a => onSelect(a));
+				selected.forEach((a) => onSelect(a));
 			} else {
 				onSelect(selected[0]);
 			}
@@ -709,13 +713,13 @@
 
 	// Cleanup
 	onDestroy(() => {
-		uploadQueue.forEach(item => {
+		uploadQueue.forEach((item) => {
 			if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
 		});
 	});
 
 	// Get child folders for current location
-	const childFolders = $derived(folders.filter(f => f.parent_id === currentFolderId));
+	const childFolders = $derived(folders.filter((f) => f.parent_id === currentFolderId));
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -752,7 +756,14 @@
 				</div>
 				<div class="header-actions">
 					<label class="upload-btn">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 							<polyline points="17 8 12 3 7 8" />
 							<line x1="12" y1="3" x2="12" y2="15" />
@@ -761,13 +772,22 @@
 						<input
 							type="file"
 							multiple
-							accept={acceptTypes.map(t => t === 'document' ? 'application/*' : `${t}/*`).join(',')}
+							accept={acceptTypes
+								.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
+								.join(',')}
 							onchange={handleFileInput}
 							hidden
 						/>
 					</label>
 					<button class="close-btn" onclick={onClose} aria-label="Close">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<line x1="18" y1="6" x2="6" y2="18" />
 							<line x1="6" y1="6" x2="18" y2="18" />
 						</svg>
@@ -804,7 +824,14 @@
 						<div class="toolbar-left">
 							<!-- Search -->
 							<div class="search-box">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<circle cx="11" cy="11" r="8" />
 									<line x1="21" y1="21" x2="16.65" y2="16.65" />
 								</svg>
@@ -815,8 +842,22 @@
 									oninput={handleSearch}
 								/>
 								{#if searchQuery}
-									<button class="clear-search" onclick={() => { searchQuery = ''; fetchAssets(true); }} aria-label="Clear search">
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<button
+										class="clear-search"
+										onclick={() => {
+											searchQuery = '';
+											fetchAssets(true);
+										}}
+										aria-label="Clear search"
+									>
+										<svg
+											width="14"
+											height="14"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<line x1="18" y1="6" x2="6" y2="18" />
 											<line x1="6" y1="6" x2="18" y2="18" />
 										</svg>
@@ -825,7 +866,11 @@
 							</div>
 
 							<!-- Type Filter -->
-							<select class="filter-select" bind:value={typeFilter} onchange={() => fetchAssets(true)}>
+							<select
+								class="filter-select"
+								bind:value={typeFilter}
+								onchange={() => fetchAssets(true)}
+							>
 								<option value="all">All Types</option>
 								<option value="image">Images</option>
 								<option value="video">Videos</option>
@@ -842,10 +887,19 @@
 
 							<button
 								class="sort-btn"
-								onclick={() => { sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; fetchAssets(true); }}
+								onclick={() => {
+									sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+									fetchAssets(true);
+								}}
 								title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
 							>
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
 									style="transform: {sortOrder === 'asc' ? 'rotate(180deg)' : 'rotate(0)'}"
 								>
 									<path d="M12 5v14" />
@@ -860,13 +914,33 @@
 								<div class="bulk-actions" transition:fade={{ duration: 150 }}>
 									<span class="selected-count">{selectedAssets.size} selected</span>
 									<button class="bulk-btn danger" onclick={bulkDelete} title="Delete selected">
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<svg
+											width="14"
+											height="14"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<polyline points="3 6 5 6 21 6" />
-											<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+											<path
+												d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+											/>
 										</svg>
 									</button>
-									<button class="bulk-btn" onclick={() => selectedAssets = new Set()} title="Clear selection">
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<button
+										class="bulk-btn"
+										onclick={() => (selectedAssets = new Set())}
+										title="Clear selection"
+									>
+										<svg
+											width="14"
+											height="14"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<line x1="18" y1="6" x2="6" y2="18" />
 											<line x1="6" y1="6" x2="18" y2="18" />
 										</svg>
@@ -881,7 +955,14 @@
 									onclick={() => (viewMode = 'grid')}
 									title="Grid view"
 								>
-									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<svg
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
 										<rect x="3" y="3" width="7" height="7" />
 										<rect x="14" y="3" width="7" height="7" />
 										<rect x="14" y="14" width="7" height="7" />
@@ -893,7 +974,14 @@
 									onclick={() => (viewMode = 'list')}
 									title="List view"
 								>
-									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<svg
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
 										<line x1="8" y1="6" x2="21" y2="6" />
 										<line x1="8" y1="12" x2="21" y2="12" />
 										<line x1="8" y1="18" x2="21" y2="18" />
@@ -913,7 +1001,14 @@
 							<div class="sidebar-header">
 								<h4>Folders</h4>
 								<button class="new-folder-btn" title="New folder">
-									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<svg
+										width="14"
+										height="14"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
 										<line x1="12" y1="5" x2="12" y2="19" />
 										<line x1="5" y1="12" x2="19" y2="12" />
 									</svg>
@@ -925,19 +1020,35 @@
 									class:active={currentFolderId === null}
 									onclick={() => navigateToFolder(null)}
 								>
-									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<svg
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
 										<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
 									</svg>
 									<span>All Assets</span>
 								</button>
-								{#each folders.filter(f => f.parent_id === null) as folder}
+								{#each folders.filter((f) => f.parent_id === null) as folder}
 									<button
 										class="folder-item"
 										class:active={currentFolderId === folder.id}
 										onclick={() => navigateToFolder(folder)}
 									>
-										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={folder.color || 'currentColor'} stroke-width="2">
-											<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+										<svg
+											width="16"
+											height="16"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke={folder.color || 'currentColor'}
+											stroke-width="2"
+										>
+											<path
+												d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+											/>
 										</svg>
 										<span>{folder.name}</span>
 										<span class="folder-count">{folder.asset_count}</span>
@@ -953,14 +1064,23 @@
 								<div class="breadcrumb" transition:slide={{ duration: 200 }}>
 									<button onclick={() => navigateToFolder(null)}>All Assets</button>
 									{#each folderStack as folder, i}
-										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<svg
+											width="12"
+											height="12"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<polyline points="9 18 15 12 9 6" />
 										</svg>
-										<button onclick={() => {
-											folderStack = folderStack.slice(0, i + 1);
-											currentFolderId = folder.id;
-											fetchAssets(true);
-										}}>
+										<button
+											onclick={() => {
+												folderStack = folderStack.slice(0, i + 1);
+												currentFolderId = folder.id;
+												fetchAssets(true);
+											}}
+										>
 											{folder.name}
 										</button>
 									{/each}
@@ -976,7 +1096,14 @@
 							{:else if assets.length === 0}
 								<!-- Empty State -->
 								<div class="empty-state">
-									<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+									<svg
+										width="48"
+										height="48"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+									>
 										<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
 										<circle cx="8.5" cy="8.5" r="1.5" />
 										<polyline points="21 15 16 10 5 21" />
@@ -988,7 +1115,9 @@
 										<input
 											type="file"
 											multiple
-											accept={acceptTypes.map(t => t === 'document' ? 'application/*' : `${t}/*`).join(',')}
+											accept={acceptTypes
+												.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
+												.join(',')}
 											onchange={handleFileInput}
 											hidden
 										/>
@@ -1004,8 +1133,17 @@
 												ondblclick={() => navigateToFolder(folder)}
 												onclick={() => {}}
 											>
-												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={folder.color || '#64748b'} stroke-width="2">
-													<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+												<svg
+													width="24"
+													height="24"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke={folder.color || '#64748b'}
+													stroke-width="2"
+												>
+													<path
+														d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+													/>
 												</svg>
 												<span class="folder-name">{folder.name}</span>
 												<span class="folder-asset-count">{folder.asset_count} items</span>
@@ -1037,13 +1175,27 @@
 														/>
 													{:else if getAssetType(asset.mime_type) === 'video'}
 														<div class="type-preview video">
-															<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+															<svg
+																width="32"
+																height="32"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="1.5"
+															>
 																<polygon points="5 3 19 12 5 21 5 3" />
 															</svg>
 														</div>
 													{:else if getAssetType(asset.mime_type) === 'audio'}
 														<div class="type-preview audio">
-															<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+															<svg
+																width="32"
+																height="32"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="1.5"
+															>
 																<path d="M9 18V5l12-2v13" />
 																<circle cx="6" cy="18" r="3" />
 																<circle cx="18" cy="16" r="3" />
@@ -1051,8 +1203,17 @@
 														</div>
 													{:else}
 														<div class="type-preview document">
-															<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-																<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+															<svg
+																width="32"
+																height="32"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="1.5"
+															>
+																<path
+																	d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+																/>
 																<polyline points="14 2 14 8 20 8" />
 																<line x1="16" y1="13" x2="8" y2="13" />
 																<line x1="16" y1="17" x2="8" y2="17" />
@@ -1064,7 +1225,14 @@
 													<!-- Selection Indicator -->
 													{#if selectedAssets.has(asset.id)}
 														<div class="selection-indicator" transition:scale={{ duration: 150 }}>
-															<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+															<svg
+																width="16"
+																height="16"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="3"
+															>
 																<polyline points="20 6 9 17 4 12" />
 															</svg>
 														</div>
@@ -1074,10 +1242,20 @@
 													<div class="quick-actions">
 														<button
 															class="action-btn"
-															onclick={(e) => { e.stopPropagation(); openAssetDetails(asset); }}
+															onclick={(e) => {
+																e.stopPropagation();
+																openAssetDetails(asset);
+															}}
 															title="Details"
 														>
-															<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+															<svg
+																width="14"
+																height="14"
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="2"
+															>
 																<circle cx="12" cy="12" r="10" />
 																<line x1="12" y1="16" x2="12" y2="12" />
 																<line x1="12" y1="8" x2="12.01" y2="8" />
@@ -1118,13 +1296,22 @@
 																<img src={asset.thumbnail_url || asset.cdn_url} alt="" />
 															{:else}
 																<div class="type-icon {getAssetType(asset.mime_type)}">
-																	<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+																	<svg
+																		width="20"
+																		height="20"
+																		viewBox="0 0 24 24"
+																		fill="none"
+																		stroke="currentColor"
+																		stroke-width="2"
+																	>
 																		{#if getAssetType(asset.mime_type) === 'video'}
 																			<polygon points="5 3 19 12 5 21 5 3" />
 																		{:else if getAssetType(asset.mime_type) === 'audio'}
 																			<path d="M9 18V5l12-2v13" />
 																		{:else}
-																			<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+																			<path
+																				d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+																			/>
 																			<polyline points="14 2 14 8 20 8" />
 																		{/if}
 																	</svg>
@@ -1139,10 +1326,20 @@
 														<td class="td-date">{formatDate(asset.created_at)}</td>
 														<td class="td-actions">
 															<button
-																onclick={(e) => { e.stopPropagation(); openAssetDetails(asset); }}
+																onclick={(e) => {
+																	e.stopPropagation();
+																	openAssetDetails(asset);
+																}}
 																title="Details"
 															>
-																<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+																<svg
+																	width="14"
+																	height="14"
+																	viewBox="0 0 24 24"
+																	fill="none"
+																	stroke="currentColor"
+																	stroke-width="2"
+																>
 																	<circle cx="12" cy="12" r="10" />
 																	<line x1="12" y1="16" x2="12" y2="12" />
 																	<line x1="12" y1="8" x2="12.01" y2="8" />
@@ -1160,7 +1357,10 @@
 								{#if hasMore}
 									<div class="load-more">
 										<button
-											onclick={() => { currentPage++; fetchAssets(false); }}
+											onclick={() => {
+												currentPage++;
+												fetchAssets(false);
+											}}
 											disabled={isLoadingMore}
 										>
 											{isLoadingMore ? 'Loading...' : 'Load More'}
@@ -1175,8 +1375,19 @@
 							<aside class="details-sidebar" transition:fly={{ x: 300, duration: 200 }}>
 								<div class="sidebar-header">
 									<h4>Details</h4>
-									<button class="close-sidebar" onclick={() => (sidebarOpen = false)} aria-label="Close sidebar">
-										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<button
+										class="close-sidebar"
+										onclick={() => (sidebarOpen = false)}
+										aria-label="Close sidebar"
+									>
+										<svg
+											width="16"
+											height="16"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<line x1="18" y1="6" x2="6" y2="18" />
 											<line x1="6" y1="6" x2="18" y2="18" />
 										</svg>
@@ -1186,13 +1397,23 @@
 								<!-- Preview -->
 								<div class="detail-preview">
 									{#if getAssetType(selectedAsset.mime_type) === 'image'}
-										<img src={selectedAsset.cdn_url} alt={selectedAsset.alt_text || selectedAsset.filename} />
+										<img
+											src={selectedAsset.cdn_url}
+											alt={selectedAsset.alt_text || selectedAsset.filename}
+										/>
 									{:else if getAssetType(selectedAsset.mime_type) === 'video'}
 										<!-- svelte-ignore a11y_media_has_caption -->
 										<video src={selectedAsset.cdn_url} controls></video>
 									{:else}
 										<div class="type-preview-large {getAssetType(selectedAsset.mime_type)}">
-											<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+											<svg
+												width="48"
+												height="48"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.5"
+											>
 												{#if getAssetType(selectedAsset.mime_type) === 'audio'}
 													<path d="M9 18V5l12-2v13" />
 													<circle cx="6" cy="18" r="3" />
@@ -1229,10 +1450,7 @@
 								<div class="detail-section">
 									<div class="section-header">
 										<h5>Metadata</h5>
-										<button
-											class="edit-btn"
-											onclick={() => (editingMetadata = !editingMetadata)}
-										>
+										<button class="edit-btn" onclick={() => (editingMetadata = !editingMetadata)}>
 											{editingMetadata ? 'Cancel' : 'Edit'}
 										</button>
 									</div>
@@ -1245,7 +1463,12 @@
 											</div>
 											<div class="field">
 												<label for="meta-alt">Alt Text</label>
-												<input id="meta-alt" type="text" bind:value={metadataForm.alt_text} placeholder="Describe the image" />
+												<input
+													id="meta-alt"
+													type="text"
+													bind:value={metadataForm.alt_text}
+													placeholder="Describe the image"
+												/>
 											</div>
 											<div class="field">
 												<label for="meta-caption">Caption</label>
@@ -1253,21 +1476,37 @@
 											</div>
 											<div class="field">
 												<label for="meta-credits">Credits</label>
-												<input id="meta-credits" type="text" bind:value={metadataForm.credits} placeholder="Photo credit or attribution" />
+												<input
+													id="meta-credits"
+													type="text"
+													bind:value={metadataForm.credits}
+													placeholder="Photo credit or attribution"
+												/>
 											</div>
 											<div class="field">
 												<label for="meta-seo-title">SEO Title</label>
-												<input id="meta-seo-title" type="text" bind:value={metadataForm.seo_title} />
+												<input
+													id="meta-seo-title"
+													type="text"
+													bind:value={metadataForm.seo_title}
+												/>
 											</div>
 											<div class="field">
 												<label for="meta-seo-description">SEO Description</label>
-												<input id="meta-seo-description" type="text" bind:value={metadataForm.seo_description} />
+												<input
+													id="meta-seo-description"
+													type="text"
+													bind:value={metadataForm.seo_description}
+												/>
 											</div>
 											<div class="field">
 												<label for="meta-tags">Tags (comma separated)</label>
 												<input id="meta-tags" type="text" bind:value={metadataForm.tags} />
 											</div>
-											<button class="save-btn" onclick={() => selectedAsset && updateAssetMetadata(selectedAsset.id)}>
+											<button
+												class="save-btn"
+												onclick={() => selectedAsset && updateAssetMetadata(selectedAsset.id)}
+											>
 												Save Changes
 											</button>
 										</div>
@@ -1317,17 +1556,36 @@
 								<!-- Actions -->
 								<div class="detail-actions">
 									<a href={selectedAsset.cdn_url} target="_blank" class="action-link">
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<svg
+											width="14"
+											height="14"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
 											<polyline points="15 3 21 3 21 9" />
 											<line x1="10" y1="14" x2="21" y2="3" />
 										</svg>
 										Open Original
 									</a>
-									<button class="action-link danger" onclick={() => selectedAsset && deleteAsset(selectedAsset.id)}>
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<button
+										class="action-link danger"
+										onclick={() => selectedAsset && deleteAsset(selectedAsset.id)}
+									>
+										<svg
+											width="14"
+											height="14"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
 											<polyline points="3 6 5 6 21 6" />
-											<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+											<path
+												d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+											/>
 										</svg>
 										Delete Asset
 									</button>
@@ -1344,7 +1602,14 @@
 							role="region"
 							aria-label="Upload drop zone"
 						>
-							<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+							<svg
+								width="48"
+								height="48"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+							>
 								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 								<polyline points="17 8 12 3 7 8" />
 								<line x1="12" y1="3" x2="12" y2="15" />
@@ -1356,13 +1621,17 @@
 								<input
 									type="file"
 									multiple
-									accept={acceptTypes.map(t => t === 'document' ? 'application/*' : `${t}/*`).join(',')}
+									accept={acceptTypes
+										.map((t) => (t === 'document' ? 'application/*' : `${t}/*`))
+										.join(',')}
 									onchange={handleFileInput}
 									hidden
 								/>
 							</label>
 							<p class="upload-hint">
-								Supports: {acceptTypes.map(t => t.charAt(0).toUpperCase() + t.slice(1) + 's').join(', ')}
+								Supports: {acceptTypes
+									.map((t) => t.charAt(0).toUpperCase() + t.slice(1) + 's')
+									.join(', ')}
 							</p>
 						</div>
 
@@ -1371,19 +1640,33 @@
 								<div class="queue-header">
 									<h4>Upload Queue ({uploadQueue.length})</h4>
 									{#if !isUploading}
-										<button class="clear-queue" onclick={() => (uploadQueue = [])}>Clear All</button>
+										<button class="clear-queue" onclick={() => (uploadQueue = [])}>Clear All</button
+										>
 									{/if}
 								</div>
 								<ul class="queue-list">
 									{#each uploadQueue as item (item.id)}
-										<li class="queue-item" class:complete={item.status === 'complete'} class:error={item.status === 'error'}>
+										<li
+											class="queue-item"
+											class:complete={item.status === 'complete'}
+											class:error={item.status === 'error'}
+										>
 											<div class="item-preview">
 												{#if item.previewUrl}
 													<img src={item.previewUrl} alt="" />
 												{:else}
 													<div class="file-icon">
-														<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-															<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+														<svg
+															width="20"
+															height="20"
+															viewBox="0 0 24 24"
+															fill="none"
+															stroke="currentColor"
+															stroke-width="2"
+														>
+															<path
+																d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+															/>
 															<polyline points="14 2 14 8 20 8" />
 														</svg>
 													</div>
@@ -1402,11 +1685,25 @@
 											</div>
 											<div class="item-status">
 												{#if item.status === 'complete'}
-													<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+													<svg
+														width="18"
+														height="18"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="#22c55e"
+														stroke-width="2"
+													>
 														<polyline points="20 6 9 17 4 12" />
 													</svg>
 												{:else if item.status === 'error'}
-													<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+													<svg
+														width="18"
+														height="18"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="#ef4444"
+														stroke-width="2"
+													>
 														<circle cx="12" cy="12" r="10" />
 														<line x1="15" y1="9" x2="9" y2="15" />
 														<line x1="9" y1="9" x2="15" y2="15" />
@@ -1414,8 +1711,19 @@
 												{:else if item.status === 'uploading'}
 													<div class="spinner small"></div>
 												{:else}
-													<button class="remove-item" onclick={() => removeFromQueue(item.id)} aria-label="Remove from queue">
-														<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+													<button
+														class="remove-item"
+														onclick={() => removeFromQueue(item.id)}
+														aria-label="Remove from queue"
+													>
+														<svg
+															width="14"
+															height="14"
+															viewBox="0 0 24 24"
+															fill="none"
+															stroke="currentColor"
+															stroke-width="2"
+														>
 															<line x1="18" y1="6" x2="6" y2="18" />
 															<line x1="6" y1="6" x2="18" y2="18" />
 														</svg>
@@ -1428,7 +1736,7 @@
 								<button
 									class="start-upload-btn"
 									onclick={startUpload}
-									disabled={isUploading || uploadQueue.every(i => i.status !== 'pending')}
+									disabled={isUploading || uploadQueue.every((i) => i.status !== 'pending')}
 								>
 									{#if isUploading}
 										Uploading...
@@ -1453,11 +1761,7 @@
 				</div>
 				<div class="footer-actions">
 					<button class="cancel-btn" onclick={onClose}>Cancel</button>
-					<button
-						class="insert-btn"
-						onclick={handleInsert}
-						disabled={selectedAssets.size === 0}
-					>
+					<button class="insert-btn" onclick={handleInsert} disabled={selectedAssets.size === 0}>
 						Insert Selected
 					</button>
 				</div>
@@ -1467,7 +1771,14 @@
 			{#if isDragging}
 				<div class="drag-overlay" transition:fade={{ duration: 150 }}>
 					<div class="drag-indicator">
-						<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="48"
+							height="48"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 							<polyline points="17 8 12 3 7 8" />
 							<line x1="12" y1="3" x2="12" y2="15" />
@@ -2088,9 +2399,15 @@
 		color: #64748b;
 	}
 
-	.type-preview.video { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
-	.type-preview.audio { background: linear-gradient(135deg, #14532d 0%, #166534 100%); }
-	.type-preview.document { background: linear-gradient(135deg, #1e3a5f 0%, #0369a1 100%); }
+	.type-preview.video {
+		background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+	}
+	.type-preview.audio {
+		background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+	}
+	.type-preview.document {
+		background: linear-gradient(135deg, #1e3a5f 0%, #0369a1 100%);
+	}
 
 	.selection-indicator {
 		position: absolute;
@@ -2217,9 +2534,18 @@
 		color: #64748b;
 	}
 
-	.type-icon.video { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
-	.type-icon.audio { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-	.type-icon.document { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+	.type-icon.video {
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+	}
+	.type-icon.audio {
+		background: rgba(34, 197, 94, 0.2);
+		color: #22c55e;
+	}
+	.type-icon.document {
+		background: rgba(59, 130, 246, 0.2);
+		color: #3b82f6;
+	}
 
 	.td-name span {
 		display: block;
@@ -2230,9 +2556,16 @@
 		color: #e2e8f0;
 	}
 
-	.td-type { color: #94a3b8; text-transform: capitalize; }
-	.td-size { color: #64748b; }
-	.td-date { color: #64748b; }
+	.td-type {
+		color: #94a3b8;
+		text-transform: capitalize;
+	}
+	.td-size {
+		color: #64748b;
+	}
+	.td-date {
+		color: #64748b;
+	}
 
 	.td-actions button {
 		background: none;
@@ -2857,12 +3190,18 @@
 	/* ========================================================================== */
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	@keyframes indeterminate {
-		0% { transform: translateX(-100%); }
-		100% { transform: translateX(400%); }
+		0% {
+			transform: translateX(-100%);
+		}
+		100% {
+			transform: translateX(400%);
+		}
 	}
 
 	/* ========================================================================== */

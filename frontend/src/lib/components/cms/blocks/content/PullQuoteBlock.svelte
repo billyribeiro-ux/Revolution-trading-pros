@@ -71,7 +71,7 @@
 		'#06b6d4', // Cyan
 		'#64748b', // Slate
 		'#1f2937', // Dark gray
-		'#059669'  // Emerald
+		'#059669' // Emerald
 	];
 
 	// =========================================================================
@@ -646,7 +646,9 @@
 		background: white;
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
-		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+		box-shadow:
+			0 10px 25px -5px rgba(0, 0, 0, 0.1),
+			0 8px 10px -6px rgba(0, 0, 0, 0.1);
 		z-index: 50;
 	}
 
@@ -672,7 +674,9 @@
 
 	.preset-color.selected {
 		border-color: #1f2937;
-		box-shadow: 0 0 0 2px white, 0 0 0 4px #1f2937;
+		box-shadow:
+			0 0 0 2px white,
+			0 0 0 4px #1f2937;
 	}
 
 	.preset-color:focus-visible {

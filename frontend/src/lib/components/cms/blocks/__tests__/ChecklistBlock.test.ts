@@ -520,9 +520,7 @@ describe('ChecklistBlock - Adding Items', () => {
 		expect(onUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({
 				content: expect.objectContaining({
-					items: expect.arrayContaining([
-						expect.objectContaining({ text: '' })
-					])
+					items: expect.arrayContaining([expect.objectContaining({ text: '' })])
 				})
 			})
 		);

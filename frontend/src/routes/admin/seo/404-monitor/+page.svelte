@@ -215,7 +215,9 @@
 						<tr>
 							<td>
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={selectedIds.includes(log.id)}
 									onchange={() => toggleSelection(log.id)}
 								/>
@@ -286,6 +288,19 @@
 		}}
 	/>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete 404 Logs"
+	message={`Delete ${pendingDeleteIds.length} log(s)?`}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteLogs}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteIds = [];
+	}}
+/>
 
 <style>
 	.monitor-page {
@@ -548,13 +563,3 @@
 		color: #999;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete 404 Logs"
-	message={`Delete ${pendingDeleteIds.length} log(s)?`}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteLogs}
-	onCancel={() => { showDeleteModal = false; pendingDeleteIds = []; }}
-/>

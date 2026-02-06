@@ -137,11 +137,7 @@ export function createMockBlock(overrides: Record<string, unknown> = {}) {
 /**
  * Creates a mock File object for upload testing
  */
-export function createMockFile(
-	name: string,
-	type: string,
-	size: number = 1024
-): File {
+export function createMockFile(name: string, type: string, size: number = 1024): File {
 	const content = new Array(size).fill('a').join('');
 	return new File([content], name, { type });
 }

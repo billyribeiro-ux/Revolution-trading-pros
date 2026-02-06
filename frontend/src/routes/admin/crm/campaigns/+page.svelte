@@ -417,6 +417,19 @@
 	{/if}
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Campaign"
+	message="Are you sure you want to delete this campaign?"
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteCampaign}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
 <style>
 	.campaigns-page {
 		max-width: 1600px;
@@ -804,13 +817,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Campaign"
-	message="Are you sure you want to delete this campaign?"
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteCampaign}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

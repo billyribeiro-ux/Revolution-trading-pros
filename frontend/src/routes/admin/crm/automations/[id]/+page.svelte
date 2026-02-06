@@ -390,8 +390,8 @@
 		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
 			<!-- Overview Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'overview'}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
@@ -440,8 +440,8 @@
 			</div>
 
 			<!-- Workflow Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'workflow'}
 				inert={activeTab !== 'workflow' ? true : undefined}
 			>
@@ -506,8 +506,8 @@
 			</div>
 
 			<!-- Subscribers Panel -->
-			<div 
-				class="tab-panel" 
+			<div
+				class="tab-panel"
 				class:active={activeTab === 'subscribers'}
 				inert={activeTab !== 'subscribers' ? true : undefined}
 			>
@@ -928,7 +928,7 @@
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(8px);
-		transition: 
+		transition:
 			opacity 0.2s ease,
 			visibility 0.2s ease,
 			transform 0.2s ease;

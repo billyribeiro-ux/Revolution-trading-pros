@@ -195,7 +195,9 @@
 
 	// ICT 7: Bulk operations state
 	let selectedResources = $state<Set<number>>(new Set());
-	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>('publish');
+	let bulkAction = $state<'publish' | 'unpublish' | 'feature' | 'unfeature' | 'access' | 'delete'>(
+		'publish'
+	);
 	let bulkAccessLevel = $state<AccessLevel>('premium');
 
 	// Form state
@@ -1075,7 +1077,8 @@
 					<label for="title">Title *</label>
 					<input
 						type="text"
-						id="title" name="title"
+						id="title"
+						name="title"
 						bind:value={formData.title}
 						placeholder="Resource title"
 						required
@@ -1141,7 +1144,8 @@
 					<label for="file-url">File/Video URL *</label>
 					<input
 						type="url"
-						id="file-url" name="file-url"
+						id="file-url"
+						name="file-url"
 						bind:value={formData.file_url}
 						placeholder="https://..."
 						required
@@ -1182,14 +1186,20 @@
 						<label for="thumbnail-url">Thumbnail URL</label>
 						<input
 							type="url"
-							id="thumbnail-url" name="thumbnail-url"
+							id="thumbnail-url"
+							name="thumbnail-url"
 							bind:value={formData.thumbnail_url}
 							placeholder="https://..."
 						/>
 					</div>
 					<div class="form-group">
 						<label for="resource-date">Date</label>
-						<input type="date" id="resource-date" name="resource-date" bind:value={formData.resource_date} />
+						<input
+							type="date"
+							id="resource-date"
+							name="resource-date"
+							bind:value={formData.resource_date}
+						/>
 					</div>
 				</div>
 
@@ -1218,15 +1228,30 @@
 				<!-- Options -->
 				<div class="form-options">
 					<label class="checkbox-label">
-						<input id="page-formdata-is-published" name="page-formdata-is-published" type="checkbox" bind:checked={formData.is_published} />
+						<input
+							id="page-formdata-is-published"
+							name="page-formdata-is-published"
+							type="checkbox"
+							bind:checked={formData.is_published}
+						/>
 						<span>Published</span>
 					</label>
 					<label class="checkbox-label">
-						<input id="page-formdata-is-featured" name="page-formdata-is-featured" type="checkbox" bind:checked={formData.is_featured} />
+						<input
+							id="page-formdata-is-featured"
+							name="page-formdata-is-featured"
+							type="checkbox"
+							bind:checked={formData.is_featured}
+						/>
 						<span>Featured (Main Resource)</span>
 					</label>
 					<label class="checkbox-label">
-						<input id="page-formdata-is-pinned" name="page-formdata-is-pinned" type="checkbox" bind:checked={formData.is_pinned} />
+						<input
+							id="page-formdata-is-pinned"
+							name="page-formdata-is-pinned"
+							type="checkbox"
+							bind:checked={formData.is_pinned}
+						/>
 						<span>Pinned (Always on top)</span>
 					</label>
 				</div>
@@ -1295,7 +1320,8 @@
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						type="url"
-						id="new-file-url" name="new-file-url"
+						id="new-file-url"
+						name="new-file-url"
 						bind:value={newFileUrl}
 						placeholder="https://..."
 						autofocus
@@ -1330,19 +1356,26 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
-		onclick={() => showBulkModal = false}
+		onclick={() => (showBulkModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Bulk Operations</h2>
-				<button class="modal-close" onclick={() => showBulkModal = false}>&times;</button>
+				<button class="modal-close" onclick={() => (showBulkModal = false)}>&times;</button>
 			</div>
 			<div class="modal-body">
-				<p class="bulk-info">Apply action to <strong>{selectedResources.size}</strong> selected resources:</p>
+				<p class="bulk-info">
+					Apply action to <strong>{selectedResources.size}</strong> selected resources:
+				</p>
 
 				<div class="form-group">
 					<label for="bulk-action">Action</label>
@@ -1375,7 +1408,7 @@
 				{/if}
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showBulkModal = false}>Cancel</button>
+				<button class="btn-secondary" onclick={() => (showBulkModal = false)}>Cancel</button>
 				<button
 					class="btn-primary"
 					class:btn-danger={bulkAction === 'delete'}
@@ -1395,6 +1428,21 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Resource"
+	message={pendingDeleteResource
+		? `Delete "${pendingDeleteResource.title}"? This action cannot be undone.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteResource}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteResource = null;
+	}}
+/>
 
 <style>
 	.admin-resources {
@@ -2280,7 +2328,9 @@
 
 	.modal {
 		max-width: 100%;
-		max-height: calc(100vh - 1rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+		max-height: calc(
+			100vh - 1rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+		);
 	}
 
 	.modal.modal-large {
@@ -2469,13 +2519,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Resource"
-	message={pendingDeleteResource ? `Delete "${pendingDeleteResource.title}"? This action cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteResource}
-	onCancel={() => { showDeleteModal = false; pendingDeleteResource = null; }}
-/>

@@ -51,7 +51,9 @@
 				help_text: props.field.help_text ?? '',
 				default_value: props.field.default_value ?? '',
 				options: props.field.options ?? null,
-				validation: props.field.validation ? { ...createDefaultValidation(), ...props.field.validation } : createDefaultValidation(),
+				validation: props.field.validation
+					? { ...createDefaultValidation(), ...props.field.validation }
+					: createDefaultValidation(),
 				conditional_logic: props.field.conditional_logic ?? null,
 				attributes: props.field.attributes ?? null,
 				required: props.field.required ?? false,

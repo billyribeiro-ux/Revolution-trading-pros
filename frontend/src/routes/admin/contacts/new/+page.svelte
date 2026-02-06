@@ -62,17 +62,36 @@
 		<div class="form-row">
 			<div class="form-group">
 				<label for="first_name">First Name *</label>
-				<input type="text" id="first_name" name="first_name" bind:value={formData.first_name} required />
+				<input
+					type="text"
+					id="first_name"
+					name="first_name"
+					bind:value={formData.first_name}
+					required
+				/>
 			</div>
 			<div class="form-group">
 				<label for="last_name">Last Name *</label>
-				<input type="text" id="last_name" name="last_name" bind:value={formData.last_name} required />
+				<input
+					type="text"
+					id="last_name"
+					name="last_name"
+					bind:value={formData.last_name}
+					required
+				/>
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="email">Email Address *</label>
-			<input type="email" id="email" name="email" autocomplete="email" bind:value={formData.email} required />
+			<input
+				type="email"
+				id="email"
+				name="email"
+				autocomplete="email"
+				bind:value={formData.email}
+				required
+			/>
 		</div>
 
 		<div class="form-group">

@@ -706,7 +706,9 @@ describe('GalleryBlock - Edit Mode Add Image', () => {
 			expect(container.querySelector('.gallery-add-form')).toBeInTheDocument();
 		});
 
-		expect(container.querySelector('.add-form-input[placeholder*="Image URL"]')).toBeInTheDocument();
+		expect(
+			container.querySelector('.add-form-input[placeholder*="Image URL"]')
+		).toBeInTheDocument();
 		expect(container.querySelector('.add-form-input[placeholder*="Alt text"]')).toBeInTheDocument();
 	});
 
@@ -733,8 +735,12 @@ describe('GalleryBlock - Edit Mode Add Image', () => {
 			expect(container.querySelector('.gallery-add-form')).toBeInTheDocument();
 		});
 
-		const urlInput = container.querySelector('.add-form-input[placeholder*="Image URL"]') as HTMLInputElement;
-		const altInput = container.querySelector('.add-form-input[placeholder*="Alt text"]') as HTMLInputElement;
+		const urlInput = container.querySelector(
+			'.add-form-input[placeholder*="Image URL"]'
+		) as HTMLInputElement;
+		const altInput = container.querySelector(
+			'.add-form-input[placeholder*="Alt text"]'
+		) as HTMLInputElement;
 
 		await fireEvent.input(urlInput, { target: { value: 'https://example.com/new.jpg' } });
 		await fireEvent.input(altInput, { target: { value: 'New image' } });
@@ -1170,9 +1176,7 @@ describe('GalleryBlock - Accessibility', () => {
 	});
 
 	it('should have descriptive aria-label on image buttons', () => {
-		const images = [
-			{ id: 'img-1', url: 'https://example.com/1.jpg', alt: 'Mountain landscape' }
-		];
+		const images = [{ id: 'img-1', url: 'https://example.com/1.jpg', alt: 'Mountain landscape' }];
 		const block = createMockGalleryBlock({
 			content: { galleryImages: images }
 		});
@@ -1351,9 +1355,7 @@ describe('GalleryBlock - Lightbox Caption', () => {
 	});
 
 	it('should show image alt text as caption in lightbox', async () => {
-		const images = [
-			{ id: 'img-1', url: 'https://example.com/1.jpg', alt: 'Beautiful sunset' }
-		];
+		const images = [{ id: 'img-1', url: 'https://example.com/1.jpg', alt: 'Beautiful sunset' }];
 		const block = createMockGalleryBlock({
 			content: { galleryImages: images }
 		});
@@ -1380,9 +1382,7 @@ describe('GalleryBlock - Lightbox Caption', () => {
 	});
 
 	it('should not show caption container when alt is empty', async () => {
-		const images = [
-			{ id: 'img-1', url: 'https://example.com/1.jpg', alt: '' }
-		];
+		const images = [{ id: 'img-1', url: 'https://example.com/1.jpg', alt: '' }];
 		const block = createMockGalleryBlock({
 			content: { galleryImages: images }
 		});

@@ -539,11 +539,7 @@ export const BLOCK_VALIDATION_RULES: Partial<Record<string, ValidationRule[]>> =
 
 	newsletter: [
 		PRESET_RULES.requiredText('content.newsletterTitle', 'Newsletter title is required'),
-		PRESET_RULES.maxLength(
-			'content.newsletterTitle',
-			100,
-			'Title should be under 100 characters'
-		)
+		PRESET_RULES.maxLength('content.newsletterTitle', 100, 'Title should be under 100 characters')
 	],
 
 	countdown: [
@@ -576,7 +572,5 @@ export const BLOCK_VALIDATION_RULES: Partial<Record<string, ValidationRule[]>> =
 		PRESET_RULES.positiveNumber('content.alertTarget', 'Target price must be a positive number')
 	],
 
-	html: [
-		PRESET_RULES.safeHtml('content.html')
-	]
+	html: [PRESET_RULES.safeHtml('content.html')]
 };

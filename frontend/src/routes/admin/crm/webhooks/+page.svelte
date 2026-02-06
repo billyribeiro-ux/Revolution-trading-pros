@@ -275,7 +275,9 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="page-searchquery" name="page-searchquery" type="text"
+				id="page-searchquery"
+				name="page-searchquery"
+				type="text"
 				placeholder="Search webhooks..."
 				bind:value={searchQuery}
 				aria-label="Search webhooks"
@@ -462,6 +464,21 @@
 		{/each}
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Webhook"
+	message={pendingDeleteWebhook
+		? `Are you sure you want to delete the webhook "${pendingDeleteWebhook.name}"? This action cannot be undone.`
+		: ''}
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteWebhook}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteWebhook = null;
+	}}
+/>
 
 <style>
 	.page {
@@ -1047,13 +1064,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Webhook"
-	message={pendingDeleteWebhook ? `Are you sure you want to delete the webhook "${pendingDeleteWebhook.name}"? This action cannot be undone.` : ''}
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteWebhook}
-	onCancel={() => { showDeleteModal = false; pendingDeleteWebhook = null; }}
-/>

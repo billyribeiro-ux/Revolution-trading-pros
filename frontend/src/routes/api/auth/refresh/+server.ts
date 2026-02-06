@@ -28,7 +28,7 @@ const API_URL = `${API_ROOT}/api`;
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestId = crypto.randomUUID().slice(0, 8);
 	const startTime = performance.now();
-	
+
 	// ICT 7 FIX: secure=false on localhost (http), true in production (https)
 	const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
 

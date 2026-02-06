@@ -423,6 +423,19 @@
 	{/if}
 </div>
 
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title="Delete Smart Link"
+	message="Are you sure you want to delete this smart link? This action cannot be undone."
+	confirmText="Delete"
+	variant="danger"
+	onConfirm={confirmDeleteSmartLink}
+	onCancel={() => {
+		showDeleteModal = false;
+		pendingDeleteId = null;
+	}}
+/>
+
 <style>
 	.admin-crm-smart-links {
 		max-width: 1400px;
@@ -853,13 +866,3 @@
 		margin-bottom: 1rem;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showDeleteModal}
-	title="Delete Smart Link"
-	message="Are you sure you want to delete this smart link? This action cannot be undone."
-	confirmText="Delete"
-	variant="danger"
-	onConfirm={confirmDeleteSmartLink}
-	onCancel={() => { showDeleteModal = false; pendingDeleteId = null; }}
-/>

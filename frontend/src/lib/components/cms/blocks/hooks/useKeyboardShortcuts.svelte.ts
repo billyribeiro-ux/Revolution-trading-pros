@@ -63,16 +63,16 @@ const MODIFIER_KEYS = ['Control', 'Shift', 'Alt', 'Meta'];
 
 // Normalize key names across browsers
 const KEY_ALIASES: Record<string, string> = {
-	'esc': 'Escape',
-	'return': 'Enter',
-	'space': ' ',
-	'spacebar': ' ',
-	'up': 'ArrowUp',
-	'down': 'ArrowDown',
-	'left': 'ArrowLeft',
-	'right': 'ArrowRight',
-	'del': 'Delete',
-	'ins': 'Insert'
+	esc: 'Escape',
+	return: 'Enter',
+	space: ' ',
+	spacebar: ' ',
+	up: 'ArrowUp',
+	down: 'ArrowDown',
+	left: 'ArrowLeft',
+	right: 'ArrowRight',
+	del: 'Delete',
+	ins: 'Insert'
 };
 
 // ============================================================================
@@ -103,7 +103,9 @@ function matchesShortcut(event: KeyboardEvent, shortcut: Shortcut): boolean {
 
 	// Check modifiers
 	const ctrlMatch = shortcut.ctrl
-		? (isMac() ? event.metaKey : event.ctrlKey)
+		? isMac()
+			? event.metaKey
+			: event.ctrlKey
 		: !(isMac() ? event.metaKey && !shortcut.meta : event.ctrlKey);
 
 	const shiftMatch = shortcut.shift ? event.shiftKey : !event.shiftKey;
@@ -139,15 +141,15 @@ function formatShortcut(shortcut: Shortcut): string {
 	// Format key
 	let keyDisplay = shortcut.key;
 	const keyDisplayMap: Record<string, string> = {
-		'ArrowUp': '↑',
-		'ArrowDown': '↓',
-		'ArrowLeft': '←',
-		'ArrowRight': '→',
-		'Enter': '↵',
-		'Escape': 'Esc',
-		'Backspace': '⌫',
-		'Delete': 'Del',
-		'Tab': '⇥',
+		ArrowUp: '↑',
+		ArrowDown: '↓',
+		ArrowLeft: '←',
+		ArrowRight: '→',
+		Enter: '↵',
+		Escape: 'Esc',
+		Backspace: '⌫',
+		Delete: 'Del',
+		Tab: '⇥',
 		' ': 'Space'
 	};
 
@@ -198,9 +200,7 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions) {
 		if (MODIFIER_KEYS.includes(event.key)) return;
 
 		// Sort shortcuts by priority (higher first)
-		const sortedShortcuts = [...shortcuts].sort(
-			(a, b) => (b.priority || 0) - (a.priority || 0)
-		);
+		const sortedShortcuts = [...shortcuts].sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
 		for (const shortcut of sortedShortcuts) {
 			// Check scope

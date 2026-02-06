@@ -187,7 +187,8 @@
 								<div class="form-row form-row-wide">
 									<label for="set_as_default_checkbox">
 										<input
-											id="set_as_default_checkbox" name="set_as_default_checkbox"
+											id="set_as_default_checkbox"
+											name="set_as_default_checkbox"
 											type="checkbox"
 											bind:checked={setAsDefault}
 										/>

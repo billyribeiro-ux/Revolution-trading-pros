@@ -347,7 +347,12 @@
 		{:else if subscriptions.length === 0}
 			<!-- Empty State -->
 			<div class="empty-state">
-				<svg class="w-16 h-16 text-slate-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<svg
+					class="w-16 h-16 text-slate-500 mb-4"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
@@ -469,9 +474,7 @@
 								<button class="btn-secondary" onclick={() => openUpgradeModal(sub)}>
 									Change Plan
 								</button>
-								<button class="btn-danger" onclick={() => openCancelModal(sub)}>
-									Cancel
-								</button>
+								<button class="btn-danger" onclick={() => openCancelModal(sub)}> Cancel </button>
 							{:else if sub.cancelAtPeriodEnd || sub.status === 'cancelled'}
 								<button
 									class="btn-primary"
@@ -516,7 +519,14 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2>Cancel Subscription</h2>
 				<button class="modal-close" onclick={() => (showCancelModal = false)}>x</button>
@@ -543,12 +553,16 @@
 						<span>Cancel immediately (lose access now)</span>
 					</label>
 					<p class="form-hint">
-						If unchecked, you'll keep access until {formatDate(selectedSubscription.currentPeriodEnd)}
+						If unchecked, you'll keep access until {formatDate(
+							selectedSubscription.currentPeriodEnd
+						)}
 					</p>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showCancelModal = false)}>Keep Subscription</button>
+				<button class="btn-secondary" onclick={() => (showCancelModal = false)}
+					>Keep Subscription</button
+				>
 				<button
 					class="btn-danger"
 					onclick={confirmCancel}
@@ -571,14 +585,22 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal modal-lg" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal modal-lg"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2>Change Plan</h2>
 				<button class="modal-close" onclick={() => (showUpgradeModal = false)}>x</button>
 			</div>
 			<div class="modal-body">
 				<p class="text-slate-300 mb-6">
-					Current plan: <strong>{selectedSubscription.productName}</strong> ({selectedSubscription.total}/{selectedSubscription.interval})
+					Current plan: <strong>{selectedSubscription.productName}</strong>
+					({selectedSubscription.total}/{selectedSubscription.interval})
 				</p>
 
 				<div class="plans-grid">
@@ -607,7 +629,9 @@
 						<div class="proration-details">
 							<div class="proration-row">
 								<span>Credit from current plan:</span>
-								<span class="text-emerald-400">-{formatCurrency(prorationPreview.proration.current_plan_credit)}</span>
+								<span class="text-emerald-400"
+									>-{formatCurrency(prorationPreview.proration.current_plan_credit)}</span
+								>
 							</div>
 							<div class="proration-row">
 								<span>New plan cost (prorated):</span>

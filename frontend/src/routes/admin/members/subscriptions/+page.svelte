@@ -298,7 +298,9 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="page-searchquery" name="page-searchquery" type="text"
+				id="page-searchquery"
+				name="page-searchquery"
+				type="text"
 				placeholder="Search by name, email, or ID..."
 				bind:value={searchQuery}
 				class="search-input"
@@ -478,6 +480,36 @@
 		</table>
 	{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showPauseModal}
+	title="Pause Subscription"
+	message={pendingPauseSub
+		? `Pause subscription for ${pendingPauseSub.customer?.name || pendingPauseSub.customer?.email}?`
+		: ''}
+	confirmText="Pause"
+	variant="warning"
+	onConfirm={confirmPause}
+	onCancel={() => {
+		showPauseModal = false;
+		pendingPauseSub = null;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showCancelModal}
+	title="Cancel Subscription"
+	message={pendingCancelSub
+		? `Cancel subscription for ${pendingCancelSub.customer?.name || pendingCancelSub.customer?.email}? This cannot be undone.`
+		: ''}
+	confirmText="Cancel Subscription"
+	variant="danger"
+	onConfirm={confirmCancel}
+	onCancel={() => {
+		showCancelModal = false;
+		pendingCancelSub = null;
+	}}
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -1038,23 +1070,3 @@
 		}
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showPauseModal}
-	title="Pause Subscription"
-	message={pendingPauseSub ? `Pause subscription for ${pendingPauseSub.customer?.name || pendingPauseSub.customer?.email}?` : ''}
-	confirmText="Pause"
-	variant="warning"
-	onConfirm={confirmPause}
-	onCancel={() => { showPauseModal = false; pendingPauseSub = null; }}
-/>
-
-<ConfirmationModal
-	isOpen={showCancelModal}
-	title="Cancel Subscription"
-	message={pendingCancelSub ? `Cancel subscription for ${pendingCancelSub.customer?.name || pendingCancelSub.customer?.email}? This cannot be undone.` : ''}
-	confirmText="Cancel Subscription"
-	variant="danger"
-	onConfirm={confirmCancel}
-	onCancel={() => { showCancelModal = false; pendingCancelSub = null; }}
-/>

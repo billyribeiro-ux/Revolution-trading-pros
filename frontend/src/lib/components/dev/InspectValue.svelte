@@ -28,7 +28,11 @@
 
 {#if dev}
 	<div class="inspect-wrapper">
-		<Inspect value={props.value} name={props.label ?? 'Value'} expandLevel={props.expandLevel ?? 1} />
+		<Inspect
+			value={props.value}
+			name={props.label ?? 'Value'}
+			expandLevel={props.expandLevel ?? 1}
+		/>
 	</div>
 {/if}
 
@@ -38,8 +42,8 @@
 		padding: 8px;
 		background: rgba(0, 0, 0, 0.05);
 		border-radius: 4px;
-		font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New',
-			monospace;
+		font-family:
+			'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
 		font-size: 12px;
 	}
 </style>

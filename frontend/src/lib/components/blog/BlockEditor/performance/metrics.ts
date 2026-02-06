@@ -219,7 +219,7 @@ class PerformanceMetricsStore {
 				for (const entry of list.getEntries()) {
 					const layoutShiftEntry = entry as PerformanceEntry & {
 						hadRecentInput: boolean;
-						value: number
+						value: number;
 					};
 					if (!layoutShiftEntry.hadRecentInput) {
 						this.recordEditorMetric('layout_shift', layoutShiftEntry.value);
@@ -272,13 +272,15 @@ class PerformanceMetricsStore {
 	private startMemoryMonitoring(): void {
 		const measureMemory = () => {
 			if ('memory' in performance) {
-				const memory = (performance as Performance & {
-					memory: {
-						usedJSHeapSize: number;
-						totalJSHeapSize: number;
-						jsHeapSizeLimit: number;
+				const memory = (
+					performance as Performance & {
+						memory: {
+							usedJSHeapSize: number;
+							totalJSHeapSize: number;
+							jsHeapSizeLimit: number;
+						};
 					}
-				}).memory;
+				).memory;
 
 				this.memoryMetrics = {
 					usedJSHeapSize: memory.usedJSHeapSize,
@@ -424,16 +426,22 @@ class PerformanceMetricsStore {
 	/**
 	 * Get block render stats by type
 	 */
-	getBlockRenderStats(): Record<string, {
-		avgRenderTime: number;
-		count: number;
-		percentiles: PercentileResult
-	}> {
-		const stats: Record<string, {
+	getBlockRenderStats(): Record<
+		string,
+		{
 			avgRenderTime: number;
 			count: number;
-			percentiles: PercentileResult
-		}> = {};
+			percentiles: PercentileResult;
+		}
+	> {
+		const stats: Record<
+			string,
+			{
+				avgRenderTime: number;
+				count: number;
+				percentiles: PercentileResult;
+			}
+		> = {};
 
 		const byType = new Map<string, number[]>();
 
@@ -564,10 +572,7 @@ export function initializeMetrics(): void {
 /**
  * Measure block render time
  */
-export function measureBlockRender(
-	blockType: string,
-	blockId: string
-): () => void {
+export function measureBlockRender(blockType: string, blockId: string): () => void {
 	const startTime = performance.now();
 
 	return () => {
@@ -668,20 +673,21 @@ export function getPercentiles(metricName: string): PercentileResult | null {
 /**
  * Get block render statistics by type
  */
-export function getBlockRenderStats(): Record<string, {
-	avgRenderTime: number;
-	count: number;
-	percentiles: PercentileResult
-}> {
+export function getBlockRenderStats(): Record<
+	string,
+	{
+		avgRenderTime: number;
+		count: number;
+		percentiles: PercentileResult;
+	}
+> {
 	return metricsStore.getBlockRenderStats();
 }
 
 /**
  * Subscribe to metric updates
  */
-export function subscribeToMetrics(
-	callback: (snapshot: MetricsSnapshot) => void
-): () => void {
+export function subscribeToMetrics(callback: (snapshot: MetricsSnapshot) => void): () => void {
 	return metricsStore.subscribe(callback);
 }
 

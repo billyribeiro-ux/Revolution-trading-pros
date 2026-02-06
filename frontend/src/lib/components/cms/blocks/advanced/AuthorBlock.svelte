@@ -60,9 +60,14 @@
 
 	const name = $derived(props.block.content.authorName || 'Author Name');
 	const title = $derived(props.block.content.authorTitle || '');
-	const bio = $derived(props.block.content.authorBio || 'Author bio goes here. Share a brief description about the author.');
+	const bio = $derived(
+		props.block.content.authorBio ||
+			'Author bio goes here. Share a brief description about the author.'
+	);
 	const photo = $derived(props.block.content.authorPhoto || '');
-	const socials = $derived<Array<{ platform: string; url: string }>>(props.block.content.authorSocials || []);
+	const socials = $derived<Array<{ platform: string; url: string }>>(
+		props.block.content.authorSocials || []
+	);
 	const sanitizedPhotoURL = $derived(photo ? sanitizeURL(photo) : '');
 
 	// ==========================================================================
@@ -180,9 +185,7 @@
 	}
 
 	function updateSocial(index: number, field: 'platform' | 'url', value: string): void {
-		const newSocials = socials.map((s, i) =>
-			i === index ? { ...s, [field]: value } : s
-		);
+		const newSocials = socials.map((s, i) => (i === index ? { ...s, [field]: value } : s));
 		updateContent({ authorSocials: newSocials });
 	}
 
@@ -307,12 +310,15 @@
 				<h3
 					contenteditable="true"
 					class="author-block__name"
-					oninput={(e) => updateContent({ authorName: (e.target as HTMLElement).textContent || '' })}
+					oninput={(e) =>
+						updateContent({ authorName: (e.target as HTMLElement).textContent || '' })}
 					onpaste={handlePaste}
 					data-placeholder="Author Name"
 					role="textbox"
 					aria-label="Author name"
-				>{name}</h3>
+				>
+					{name}
+				</h3>
 			{:else}
 				<h3 class="author-block__name">{name}</h3>
 			{/if}
@@ -325,12 +331,15 @@
 						contenteditable="true"
 						class="author-block__title"
 						class:author-block__title--empty={!title}
-						oninput={(e) => updateContent({ authorTitle: (e.target as HTMLElement).textContent || '' })}
+						oninput={(e) =>
+							updateContent({ authorTitle: (e.target as HTMLElement).textContent || '' })}
 						onpaste={handlePaste}
 						data-placeholder="Job title or role"
 						role="textbox"
 						aria-label="Author title"
-					>{title}</p>
+					>
+						{title}
+					</p>
 				{:else if title}
 					<p class="author-block__title">{title}</p>
 				{/if}
@@ -348,7 +357,9 @@
 				data-placeholder="Author bio..."
 				role="textbox"
 				aria-label="Author bio"
-			>{bio}</p>
+			>
+				{bio}
+			</p>
 		{:else}
 			<p class="author-block__bio">{bio}</p>
 		{/if}
@@ -361,7 +372,8 @@
 						<div class="author-block__social-edit">
 							<select
 								value={social.platform}
-								onchange={(e) => updateSocial(index, 'platform', (e.target as HTMLSelectElement).value)}
+								onchange={(e) =>
+									updateSocial(index, 'platform', (e.target as HTMLSelectElement).value)}
 								aria-label="Social platform"
 							>
 								{#each PLATFORM_OPTIONS as option (option.value)}
@@ -535,7 +547,9 @@
 	}
 
 	@keyframes author-spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.author-block__file-input {

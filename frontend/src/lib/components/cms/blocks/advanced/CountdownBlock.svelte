@@ -12,7 +12,11 @@
 
 <script lang="ts">
 	import { IconSparkles, IconTrophy } from '$lib/icons';
-	import { getBlockStateManager, type BlockId, type CountdownState } from '$lib/stores/blockState.svelte';
+	import {
+		getBlockStateManager,
+		type BlockId,
+		type CountdownState
+	} from '$lib/stores/blockState.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -156,20 +160,18 @@
 	});
 </script>
 
-<div
-	class="countdown-block"
-	role="timer"
-	aria-label="Countdown timer"
-	aria-live="polite"
->
+<div class="countdown-block" role="timer" aria-label="Countdown timer" aria-live="polite">
 	<!-- Title -->
 	{#if props.isEditing}
 		<h3
 			contenteditable="true"
 			class="countdown-title"
-			oninput={(e) => updateContent({ countdownTitle: (e.target as HTMLElement).textContent || '' })}
+			oninput={(e) =>
+				updateContent({ countdownTitle: (e.target as HTMLElement).textContent || '' })}
 			onpaste={handlePaste}
-		>{title}</h3>
+		>
+			{title}
+		</h3>
 	{:else}
 		<h3 class="countdown-title">{title}</h3>
 	{/if}
@@ -220,7 +222,8 @@
 						<input
 							type="datetime-local"
 							value={targetDate}
-							oninput={(e) => updateContent({ countdownTarget: (e.target as HTMLInputElement).value })}
+							oninput={(e) =>
+								updateContent({ countdownTarget: (e.target as HTMLInputElement).value })}
 						/>
 					</label>
 				</div>
@@ -231,7 +234,8 @@
 							type="text"
 							value={expiredMessage}
 							placeholder="Message when countdown ends"
-							oninput={(e) => updateContent({ countdownExpiredMessage: (e.target as HTMLInputElement).value })}
+							oninput={(e) =>
+								updateContent({ countdownExpiredMessage: (e.target as HTMLInputElement).value })}
 						/>
 					</label>
 				</div>
@@ -386,7 +390,8 @@
 	}
 
 	@keyframes celebrationPulse {
-		0%, 100% {
+		0%,
+		100% {
 			box-shadow: 0 0 20px rgba(252, 211, 77, 0.3);
 		}
 		50% {
@@ -395,7 +400,8 @@
 	}
 
 	@keyframes bounce {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0);
 		}
 		50% {
@@ -479,7 +485,7 @@
 	}
 
 	/* Datetime-local input color scheme */
-	.setting-field input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+	.setting-field input[type='datetime-local']::-webkit-calendar-picker-indicator {
 		filter: invert(1);
 		cursor: pointer;
 	}

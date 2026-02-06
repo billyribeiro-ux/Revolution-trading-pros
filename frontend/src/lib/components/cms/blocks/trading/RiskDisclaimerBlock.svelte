@@ -57,20 +57,26 @@
 	// Preset Disclaimers
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const PRESET_DISCLAIMERS: Record<string, { text: string; expandedText: string; defaultStyle: RiskDisclaimerContent['style'] }> = {
+	const PRESET_DISCLAIMERS: Record<
+		string,
+		{ text: string; expandedText: string; defaultStyle: RiskDisclaimerContent['style'] }
+	> = {
 		general: {
 			text: 'Trading involves substantial risk of loss and is not suitable for all investors.',
-			expandedText: 'The high degree of leverage can work against you as well as for you. Before deciding to invest, you should carefully consider your investment objectives, level of experience, and risk appetite. The possibility exists that you could sustain a loss of some or all of your initial investment and therefore you should not invest money that you cannot afford to lose. You should be aware of all the risks associated with trading and seek advice from an independent financial advisor if you have any doubts.',
+			expandedText:
+				'The high degree of leverage can work against you as well as for you. Before deciding to invest, you should carefully consider your investment objectives, level of experience, and risk appetite. The possibility exists that you could sustain a loss of some or all of your initial investment and therefore you should not invest money that you cannot afford to lose. You should be aware of all the risks associated with trading and seek advice from an independent financial advisor if you have any doubts.',
 			defaultStyle: 'warning'
 		},
 		trading: {
 			text: 'Past performance is not indicative of future results. Trading carries significant risk.',
-			expandedText: 'Trading financial instruments carries a high level of risk to your capital with the possibility of losing more than your initial investment. Trading is not suitable for all investors. Please ensure that you fully understand the risks involved, taking into account your investment objectives and level of experience, before trading. If necessary, seek independent advice. Historical results are not a reliable indicator of future performance. No representation is being made that any account will or is likely to achieve profits or losses similar to those shown. All trading strategies are used at your own risk.',
+			expandedText:
+				'Trading financial instruments carries a high level of risk to your capital with the possibility of losing more than your initial investment. Trading is not suitable for all investors. Please ensure that you fully understand the risks involved, taking into account your investment objectives and level of experience, before trading. If necessary, seek independent advice. Historical results are not a reliable indicator of future performance. No representation is being made that any account will or is likely to achieve profits or losses similar to those shown. All trading strategies are used at your own risk.',
 			defaultStyle: 'danger'
 		},
 		investment: {
 			text: 'This content does not constitute financial advice. Always consult a qualified professional.',
-			expandedText: 'The information provided on this platform is for educational and informational purposes only. It should not be considered as investment advice or a recommendation to buy, sell, or hold any financial instrument. The content is not tailored to the specific investment needs, objectives, or financial situation of any individual user. Before making any investment decisions, you should conduct your own research and consult with a licensed financial advisor or other qualified professional who can provide personalized advice based on your individual circumstances.',
+			expandedText:
+				'The information provided on this platform is for educational and informational purposes only. It should not be considered as investment advice or a recommendation to buy, sell, or hold any financial instrument. The content is not tailored to the specific investment needs, objectives, or financial situation of any individual user. Before making any investment decisions, you should conduct your own research and consult with a licensed financial advisor or other qualified professional who can provide personalized advice based on your individual circumstances.',
 			defaultStyle: 'info'
 		}
 	};
@@ -93,9 +99,15 @@
 	let preset = $derived<NonNullable<RiskDisclaimerContent['preset']>>(
 		(props.block.content.disclaimerPreset as RiskDisclaimerContent['preset']) || 'general'
 	);
-	let text = $derived(props.block.content.disclaimerText || (preset && preset !== 'custom' ? PRESET_DISCLAIMERS[preset]?.text : '') || '');
+	let text = $derived(
+		props.block.content.disclaimerText ||
+			(preset && preset !== 'custom' ? PRESET_DISCLAIMERS[preset]?.text : '') ||
+			''
+	);
 	let expandedText = $derived(
-		props.block.content.disclaimerExpandedText || (preset && preset !== 'custom' ? PRESET_DISCLAIMERS[preset]?.expandedText : '') || ''
+		props.block.content.disclaimerExpandedText ||
+			(preset && preset !== 'custom' ? PRESET_DISCLAIMERS[preset]?.expandedText : '') ||
+			''
 	);
 	let requireAcknowledgment = $derived(props.block.content.disclaimerRequireAck === true);
 
@@ -310,11 +322,7 @@
 				</label>
 
 				<label class="setting-field checkbox-field">
-					<input
-						type="checkbox"
-						checked={requireAcknowledgment}
-						onchange={handleAckToggle}
-					/>
+					<input type="checkbox" checked={requireAcknowledgment} onchange={handleAckToggle} />
 					<span>Require acknowledgment</span>
 				</label>
 			</div>
@@ -420,9 +428,7 @@
 								<IconSquare size={22} aria-hidden="true" />
 							{/if}
 						</button>
-						<span class="checkbox-label">
-							I understand and acknowledge the risks involved
-						</span>
+						<span class="checkbox-label"> I understand and acknowledge the risks involved </span>
 					</label>
 
 					{#if isAcknowledged}
@@ -627,7 +633,9 @@
 	.expanded-content {
 		max-height: 0;
 		overflow: hidden;
-		transition: max-height 0.3s ease-out, margin-top 0.3s ease-out;
+		transition:
+			max-height 0.3s ease-out,
+			margin-top 0.3s ease-out;
 	}
 
 	.expanded-content.visible {
@@ -692,9 +700,15 @@
 	}
 
 	@keyframes checkPulse {
-		0% { transform: scale(1); }
-		50% { transform: scale(1.2); }
-		100% { transform: scale(1); }
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.2);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 
 	.checkbox-label {
@@ -722,8 +736,14 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; transform: translateY(-4px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.acknowledgment-preview {

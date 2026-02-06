@@ -550,7 +550,8 @@
 							<div class="relative">
 								<span class="absolute left-4 top-3 text-slate-500">$</span>
 								<input
-									id="sim-account" name="sim-account"
+									id="sim-account"
+									name="sim-account"
 									type="number"
 									bind:value={simAccount}
 									class="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-8 pr-4 text-white font-mono focus:border-rtp-primary focus:outline-none transition-colors"
@@ -566,7 +567,8 @@
 								<span class={riskColor}>{simRisk}%</span>
 							</label>
 							<input
-								id="sim-risk" name="sim-risk"
+								id="sim-risk"
+								name="sim-risk"
 								type="range"
 								min="0.5"
 								max="10"
@@ -587,7 +589,8 @@
 									>Win Rate (%)</label
 								>
 								<input
-									id="sim-winrate" name="sim-winrate"
+									id="sim-winrate"
+									name="sim-winrate"
 									type="number"
 									bind:value={simWinRate}
 									class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-white font-mono focus:border-rtp-primary focus:outline-none"
@@ -600,7 +603,8 @@
 									>R:R Ratio</label
 								>
 								<input
-									id="sim-rr" name="sim-rr"
+									id="sim-rr"
+									name="sim-rr"
 									type="number"
 									step="0.1"
 									bind:value={simRR}
@@ -900,7 +904,9 @@
 							{@html Icons.Target}
 						</div>
 						<input
-							id="page-glossarysearch" name="page-glossarysearch" type="text"
+							id="page-glossarysearch"
+							name="page-glossarysearch"
+							type="text"
 							bind:value={glossarySearch}
 							placeholder="Search terms..."
 							class="bg-[#0a0a0a] border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:border-rtp-primary outline-none w-64 transition-colors"

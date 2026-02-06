@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { HTMLAttributes } from "svelte/elements";
-	import { cn, type WithElementRef } from "$lib/utils.js";
+	import type { HTMLAttributes } from 'svelte/elements';
+	import { cn, type WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 	let ref = $state<HTMLDivElement | null>(props.ref ?? null);
@@ -18,6 +18,6 @@
 	});
 </script>
 
-<div bind:this={ref} data-slot="card-content" class={cn("px-6", className)} {...restProps}>
+<div bind:this={ref} data-slot="card-content" class={cn('px-6', className)} {...restProps}>
 	{@render props.children?.()}
 </div>

@@ -654,7 +654,8 @@
 					<div class="form-group">
 						<label for="name">Indicator Name <span class="required">*</span></label>
 						<input
-							id="name" name="name"
+							id="name"
+							name="name"
 							type="text"
 							bind:value={indicator.name}
 							placeholder="e.g., Volume Max Indicator"
@@ -671,7 +672,8 @@
 					<div class="form-group">
 						<label for="subtitle">Subtitle / Tagline</label>
 						<input
-							id="subtitle" name="subtitle"
+							id="subtitle"
+							name="subtitle"
 							type="text"
 							bind:value={indicator.subtitle}
 							placeholder="e.g., Advanced volume analysis for professional traders"
@@ -691,7 +693,13 @@
 
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input id="version" name="version" type="text" bind:value={indicator.version} placeholder="1.0.0" />
+							<input
+								id="version"
+								name="version"
+								type="text"
+								bind:value={indicator.version}
+								placeholder="1.0.0"
+							/>
 						</div>
 					</div>
 
@@ -726,7 +734,8 @@
 								</span>
 							{/each}
 							<input
-								id="tags-input" name="tags-input"
+								id="tags-input"
+								name="tags-input"
 								type="text"
 								class="tag-input"
 								bind:value={tagInput}
@@ -751,7 +760,9 @@
 						{#each PLATFORMS as platform}
 							<label class="platform-toggle">
 								<input
-									id="page-checkbox" name="page-checkbox" type="checkbox"
+									id="page-checkbox"
+									name="page-checkbox"
+									type="checkbox"
 									checked={indicator.platforms.includes(platform.id)}
 									onchange={() => togglePlatform(platform.id)}
 								/>
@@ -864,7 +875,9 @@
 												</div>
 											{/if}
 											<input
-												id="page-file" name="page-file" type="file"
+												id="page-file"
+												name="page-file"
+												type="file"
 												class="file-input"
 												onchange={(e) => handlePlatformFileSelect(e, pf.platform_id)}
 											/>
@@ -877,7 +890,9 @@
 										<!-- Installation Notes -->
 										<div class="form-group compact">
 											<input
-												id="page-pf-installation-notes" name="page-pf-installation-notes" type="text"
+												id="page-pf-installation-notes"
+												name="page-pf-installation-notes"
+												type="text"
 												bind:value={pf.installation_notes}
 												placeholder="Installation notes (optional)..."
 											/>
@@ -930,7 +945,9 @@
 									</div>
 
 									<input
-										id="page-doc-title" name="page-doc-title" type="text"
+										id="page-doc-title"
+										name="page-doc-title"
+										type="text"
 										bind:value={doc.title}
 										placeholder="Document title..."
 										class="doc-title"
@@ -960,7 +977,9 @@
 											<span class="drop-text">Drop file or click</span>
 										{/if}
 										<input
-											id="page-file" name="page-file" type="file"
+											id="page-file"
+											name="page-file"
+											type="file"
 											class="file-input"
 											accept=".pdf,.doc,.docx,.txt,.md"
 											onchange={(e) => handleDocSelect(e, index)}
@@ -1003,7 +1022,12 @@
 					</h2>
 
 					<label class="toggle-row">
-						<input id="page-indicator-is-free" name="page-indicator-is-free" type="checkbox" bind:checked={indicator.is_free} />
+						<input
+							id="page-indicator-is-free"
+							name="page-indicator-is-free"
+							type="checkbox"
+							bind:checked={indicator.is_free}
+						/>
 						<span class="toggle-label">Free Indicator</span>
 					</label>
 
@@ -1013,7 +1037,8 @@
 							<div class="price-input">
 								<span class="currency">$</span>
 								<input
-									id="price" name="price"
+									id="price"
+									name="price"
 									type="number"
 									bind:value={indicator.price_cents}
 									placeholder="9900"
@@ -1047,13 +1072,23 @@
 						</h2>
 
 						<label class="toggle-row">
-							<input id="page-indicator-has-tradingview-access" name="page-indicator-has-tradingview-access" type="checkbox" bind:checked={indicator.has_tradingview_access} />
+							<input
+								id="page-indicator-has-tradingview-access"
+								name="page-indicator-has-tradingview-access"
+								type="checkbox"
+								bind:checked={indicator.has_tradingview_access}
+							/>
 							<span class="toggle-label">Enable TradingView Access Management</span>
 						</label>
 
 						{#if indicator.has_tradingview_access}
 							<label class="toggle-row">
-								<input id="page-indicator-tradingview-invite-only" name="page-indicator-tradingview-invite-only" type="checkbox" bind:checked={indicator.tradingview_invite_only} />
+								<input
+									id="page-indicator-tradingview-invite-only"
+									name="page-indicator-tradingview-invite-only"
+									type="checkbox"
+									bind:checked={indicator.tradingview_invite_only}
+								/>
 								<span class="toggle-label">Invite-only (manual approval required)</span>
 							</label>
 						{/if}
@@ -1082,12 +1117,22 @@
 
 					<div class="toggle-group">
 						<label class="toggle-row">
-							<input id="page-indicator-is-published" name="page-indicator-is-published" type="checkbox" bind:checked={indicator.is_published} />
+							<input
+								id="page-indicator-is-published"
+								name="page-indicator-is-published"
+								type="checkbox"
+								bind:checked={indicator.is_published}
+							/>
 							<span class="toggle-label">Publish immediately</span>
 						</label>
 
 						<label class="toggle-row">
-							<input id="page-indicator-is-featured" name="page-indicator-is-featured" type="checkbox" bind:checked={indicator.is_featured} />
+							<input
+								id="page-indicator-is-featured"
+								name="page-indicator-is-featured"
+								type="checkbox"
+								bind:checked={indicator.is_featured}
+							/>
 							<span class="toggle-label">Featured indicator</span>
 						</label>
 					</div>
@@ -1176,7 +1221,9 @@
 							</div>
 						{/if}
 						<input
-							id="page-file" name="page-file" type="file"
+							id="page-file"
+							name="page-file"
+							type="file"
 							class="file-input"
 							accept="image/*"
 							onchange={handleThumbnailSelect}

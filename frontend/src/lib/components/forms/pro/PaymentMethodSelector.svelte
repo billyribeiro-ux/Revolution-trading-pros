@@ -65,7 +65,9 @@
 
 	let props: Props = $props();
 
-	const enabledMethods = $derived((props.availableMethods ?? defaultMethods).filter((m) => m.enabled));
+	const enabledMethods = $derived(
+		(props.availableMethods ?? defaultMethods).filter((m) => m.enabled)
+	);
 
 	function handleSelect(methodId: string) {
 		props.onchange?.(methodId);
@@ -74,9 +76,11 @@
 	function getMethodIcon(iconType: string): string {
 		const icons: Record<string, string> = {
 			card: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
-			paypal: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
+			paypal:
+				'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
 			square: 'M4 4h16v16H4V4z',
-			razorpay: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+			razorpay:
+				'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
 			mollie: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'
 		};
 		return icons[iconType] || icons.card;
@@ -84,7 +88,9 @@
 </script>
 
 <!-- Responsive Payment Method Selector - Mobile-first design -->
-<div class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]">
+<div
+	class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
+>
 	<label
 		class="text-sm sm:text-base font-medium text-gray-700"
 		for="payment-method-{props.field.name}"
@@ -134,7 +140,9 @@
 				</span>
 
 				<!-- Method Icon -->
-				<span class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 rounded-lg">
+				<span
+					class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 rounded-lg"
+				>
 					<svg
 						class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
 						fill="none"
@@ -160,7 +168,9 @@
 
 				<!-- Checkmark for selected -->
 				{#if (props.value ?? '') === method.id}
-					<span class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center">
+					<span
+						class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center"
+					>
 						<svg
 							class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
 							viewBox="0 0 24 24"
@@ -182,9 +192,21 @@
 			<!-- Card Icons - Responsive grid -->
 			<div class="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
 				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType}
-					<span class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200">
-						<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+					<span
+						class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200"
+					>
+						<svg
+							class="w-3.5 h-3.5 sm:w-4 sm:h-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+							/>
 						</svg>
 						{cardType}
 					</span>

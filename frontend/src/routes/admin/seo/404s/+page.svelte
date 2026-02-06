@@ -175,9 +175,13 @@
 <ConfirmationModal
 	isOpen={showDeleteModal}
 	title="Delete 404 Errors"
-	message={pendingDeleteResolvedOnly ? 'Delete all resolved 404 errors?' : 'Delete all 404 errors? This action cannot be undone.'}
+	message={pendingDeleteResolvedOnly
+		? 'Delete all resolved 404 errors?'
+		: 'Delete all 404 errors? This action cannot be undone.'}
 	confirmText="Delete"
 	variant="danger"
 	onConfirm={confirmBulkDelete}
-	onCancel={() => { showDeleteModal = false; }}
+	onCancel={() => {
+		showDeleteModal = false;
+	}}
 />

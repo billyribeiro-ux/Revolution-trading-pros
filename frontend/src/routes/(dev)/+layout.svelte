@@ -29,9 +29,7 @@
 				<span class="nav-icon">📦</span>
 				Component Workbench
 			</a>
-			<a href="/" class="dev-nav-link dev-nav-link--secondary">
-				← Back to App
-			</a>
+			<a href="/" class="dev-nav-link dev-nav-link--secondary"> ← Back to App </a>
 		</nav>
 	</header>
 

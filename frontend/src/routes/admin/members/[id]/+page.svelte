@@ -918,7 +918,8 @@
 				<div class="form-group">
 					<label for="email-subject-detail">Subject</label>
 					<input
-						id="email-subject-detail" name="email-subject-detail"
+						id="email-subject-detail"
+						name="email-subject-detail"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."
@@ -1041,7 +1042,9 @@
 					<span class="tags-label">Custom Tag</span>
 					<div class="custom-tag-input">
 						<input
-							id="page-newtag" name="page-newtag" type="text"
+							id="page-newtag"
+							name="page-newtag"
+							type="text"
 							bind:value={newTag}
 							placeholder="Enter custom tag..."
 							onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && addCustomTag()}
@@ -1101,7 +1104,8 @@
 						{/each}
 					</div>
 					<input
-						id="extend-days" name="extend-days"
+						id="extend-days"
+						name="extend-days"
 						type="number"
 						bind:value={extendDays}
 						min="1"
@@ -1175,7 +1179,8 @@
 				<div class="form-group">
 					<label for="grant-expires">Expiration Date (optional)</label>
 					<input
-						id="grant-expires" name="grant-expires"
+						id="grant-expires"
+						name="grant-expires"
 						type="date"
 						bind:value={grantExpiresAt}
 						min={new Date().toISOString().split('T')[0]}
@@ -1193,6 +1198,19 @@
 		</div>
 	</div>
 {/if}
+
+<ConfirmationModal
+	isOpen={showRevokeModal}
+	title="Revoke Membership"
+	message="Are you sure you want to revoke this membership?"
+	confirmText="Revoke"
+	variant="danger"
+	onConfirm={confirmRevoke}
+	onCancel={() => {
+		showRevokeModal = false;
+		pendingRevokeSubId = null;
+	}}
+/>
 
 <style>
 	.member-detail-page {
@@ -2229,13 +2247,3 @@
 		color: #64748b;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showRevokeModal}
-	title="Revoke Membership"
-	message="Are you sure you want to revoke this membership?"
-	confirmText="Revoke"
-	variant="danger"
-	onConfirm={confirmRevoke}
-	onCancel={() => { showRevokeModal = false; pendingRevokeSubId = null; }}
-/>

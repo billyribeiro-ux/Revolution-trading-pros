@@ -4,7 +4,11 @@
  * Composable logic for AI content generation, summarization, and translation
  */
 
-import { getBlockStateManager, type BlockId, type AIBlockState } from '$lib/stores/blockState.svelte';
+import {
+	getBlockStateManager,
+	type BlockId,
+	type AIBlockState
+} from '$lib/stores/blockState.svelte';
 
 // ============================================================================
 // Types
@@ -126,7 +130,9 @@ export function useAIGeneration(options: AIGenerationOptions) {
 				// Handle rate limiting
 				if (response.status === 429 && retryCount < MAX_RETRIES) {
 					const retryAfter = response.headers.get('Retry-After');
-					const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : RETRY_DELAY * (retryCount + 1);
+					const delay = retryAfter
+						? parseInt(retryAfter, 10) * 1000
+						: RETRY_DELAY * (retryCount + 1);
 					await sleep(delay);
 					return callAPI(request, signal, retryCount + 1);
 				}
@@ -250,9 +256,7 @@ export function useAIGeneration(options: AIGenerationOptions) {
 			});
 		}
 
-		const sourceLanguageClause = config.sourceLanguage
-			? `from ${config.sourceLanguage} `
-			: '';
+		const sourceLanguageClause = config.sourceLanguage ? `from ${config.sourceLanguage} ` : '';
 
 		const prompt = `Translate the following text ${sourceLanguageClause}to ${config.targetLanguage}. Preserve the original formatting and tone.\n\nText:\n${sourceText}`;
 

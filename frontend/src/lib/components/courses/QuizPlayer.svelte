@@ -74,19 +74,19 @@
 		if (!quizData || !quizData.questions) return undefined;
 		return quizData.questions[currentQuestionIndex];
 	});
-	
+
 	const isLastQuestion = $derived.by(() => {
 		if (!quizData || !quizData.questions) return false;
 		return currentQuestionIndex === quizData.questions.length - 1;
 	});
-	
+
 	const progress = $derived.by(() => {
 		if (!quizData || !quizData.questions) return 0;
 		return Math.round(((currentQuestionIndex + 1) / quizData.questions.length) * 100);
 	});
-	
+
 	const answeredCount = $derived(selectedAnswers.size);
-	
+
 	const totalQuestions = $derived.by(() => {
 		if (!quizData || !quizData.questions) return 0;
 		return quizData.questions.length;
@@ -102,9 +102,12 @@
 		try {
 			isLoading = true;
 			error = '';
-			const res = await apiFetch<QuizStartResponse>(`/member/courses/${props.courseSlug}/quizzes/${props.quizId}/start`, {
-				method: 'POST'
-			});
+			const res = await apiFetch<QuizStartResponse>(
+				`/member/courses/${props.courseSlug}/quizzes/${props.quizId}/start`,
+				{
+					method: 'POST'
+				}
+			);
 			if (res.success && res.data) {
 				quizData = res.data;
 				if (res.data.time_limit_minutes) {
@@ -203,8 +206,21 @@
 		</div>
 	{:else if error}
 		<div class="error">
-			<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="48"
+				height="48"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line
+					x1="12"
+					y1="16"
+					x2="12.01"
+					y2="16"
+				/>
 			</svg>
 			<p>{error}</p>
 			<button class="btn secondary" onclick={props.onClose}>Close</button>
@@ -213,12 +229,35 @@
 		<div class="result">
 			<div class="result-icon" class:passed={result.passed} class:failed={!result.passed}>
 				{#if result.passed}
-					<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="64"
+						height="64"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline
+							points="22 4 12 14.01 9 11.01"
+						/>
 					</svg>
 				{:else}
-					<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="64"
+						height="64"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line
+							x1="9"
+							y1="9"
+							x2="15"
+							y2="15"
+						/>
 					</svg>
 				{/if}
 			</div>
@@ -263,8 +302,16 @@
 			</div>
 			{#if timeRemaining > 0}
 				<div class="timer" class:warning={timeRemaining < 60}>
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
 					</svg>
 					<span>{formatTime(timeRemaining)}</span>
 				</div>
@@ -291,7 +338,9 @@
 
 		<div class="question-card">
 			<div class="question-header">
-				<span class="points">{currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}</span>
+				<span class="points"
+					>{currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}</span
+				>
 				<span class="q-type">{currentQuestion.question_type.replace('_', ' ')}</span>
 			</div>
 			<h3 class="question-text">{currentQuestion.question_text}</h3>
@@ -324,9 +373,7 @@
 						{isSubmitting ? 'Submitting...' : 'Submit Quiz'}
 					</button>
 				{:else}
-					<button class="btn primary" onclick={nextQuestion}>
-						Next
-					</button>
+					<button class="btn primary" onclick={nextQuestion}> Next </button>
 				{/if}
 			</div>
 			<p class="answer-status">{answeredCount} of {totalQuestions} answered</p>
@@ -342,7 +389,8 @@
 		min-height: 500px;
 	}
 
-	.loading, .error {
+	.loading,
+	.error {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -362,10 +410,14 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
-	.error svg { color: #ef4444; }
+	.error svg {
+		color: #ef4444;
+	}
 
 	.quiz-header {
 		display: flex;
@@ -405,7 +457,9 @@
 	}
 
 	@keyframes pulse {
-		50% { opacity: 0.7; }
+		50% {
+			opacity: 0.7;
+		}
 	}
 
 	.progress-bar {
@@ -442,10 +496,23 @@
 		transition: all 0.2s;
 	}
 
-	.nav-dot:hover { border-color: #143e59; }
-	.nav-dot.current { border-color: #143e59; background: #143e59; color: #fff; }
-	.nav-dot.answered { border-color: #10b981; background: #d1fae5; color: #10b981; }
-	.nav-dot.current.answered { background: #10b981; color: #fff; }
+	.nav-dot:hover {
+		border-color: #143e59;
+	}
+	.nav-dot.current {
+		border-color: #143e59;
+		background: #143e59;
+		color: #fff;
+	}
+	.nav-dot.answered {
+		border-color: #10b981;
+		background: #d1fae5;
+		color: #10b981;
+	}
+	.nav-dot.current.answered {
+		background: #10b981;
+		color: #fff;
+	}
 
 	.question-card {
 		background: #fff;
@@ -503,8 +570,13 @@
 		transition: all 0.2s;
 	}
 
-	.answer-option:hover { border-color: #143e59; }
-	.answer-option.selected { border-color: #143e59; background: #f0f7ff; }
+	.answer-option:hover {
+		border-color: #143e59;
+	}
+	.answer-option.selected {
+		border-color: #143e59;
+		background: #f0f7ff;
+	}
 
 	.answer-radio {
 		width: 20px;
@@ -569,8 +641,13 @@
 		color: #fff;
 	}
 
-	.btn.primary:hover:not(:disabled) { background: #0f2f45; }
-	.btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+	.btn.primary:hover:not(:disabled) {
+		background: #0f2f45;
+	}
+	.btn.primary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 
 	.btn.secondary {
 		background: #fff;
@@ -578,8 +655,13 @@
 		border: 1px solid #e5e7eb;
 	}
 
-	.btn.secondary:hover:not(:disabled) { background: #f9fafb; }
-	.btn.secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+	.btn.secondary:hover:not(:disabled) {
+		background: #f9fafb;
+	}
+	.btn.secondary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 
 	/* Results styling */
 	.result {
@@ -591,8 +673,12 @@
 		margin-bottom: 24px;
 	}
 
-	.result-icon.passed svg { color: #10b981; }
-	.result-icon.failed svg { color: #ef4444; }
+	.result-icon.passed svg {
+		color: #10b981;
+	}
+	.result-icon.failed svg {
+		color: #ef4444;
+	}
 
 	.result h2 {
 		font-size: 28px;
@@ -677,11 +763,21 @@
 		font-size: 12px;
 	}
 
-	.question-result.correct { background: #d1fae5; color: #10b981; }
-	.question-result.incorrect { background: #fee2e2; color: #ef4444; }
+	.question-result.correct {
+		background: #d1fae5;
+		color: #10b981;
+	}
+	.question-result.incorrect {
+		background: #fee2e2;
+		color: #ef4444;
+	}
 
-	.q-num { font-weight: 600; }
-	.q-status { font-size: 11px; }
+	.q-num {
+		font-weight: 600;
+	}
+	.q-status {
+		font-size: 11px;
+	}
 
 	.result-actions {
 		display: flex;
@@ -691,16 +787,39 @@
 
 	/* Responsive */
 	@media (max-width: 639px) {
-		.quiz-player { padding: 16px; }
-		.quiz-header { flex-direction: column; gap: 12px; }
-		.question-card { padding: 16px; }
-		.question-text { font-size: 16px; }
-		.answer-option { padding: 12px; }
-		.answer-text { font-size: 14px; }
-		.quiz-footer { flex-direction: column; }
-		.nav-buttons { width: 100%; }
-		.nav-buttons .btn { flex: 1; }
-		.score-display { flex-direction: column; }
-		.score-details { text-align: center; }
+		.quiz-player {
+			padding: 16px;
+		}
+		.quiz-header {
+			flex-direction: column;
+			gap: 12px;
+		}
+		.question-card {
+			padding: 16px;
+		}
+		.question-text {
+			font-size: 16px;
+		}
+		.answer-option {
+			padding: 12px;
+		}
+		.answer-text {
+			font-size: 14px;
+		}
+		.quiz-footer {
+			flex-direction: column;
+		}
+		.nav-buttons {
+			width: 100%;
+		}
+		.nav-buttons .btn {
+			flex: 1;
+		}
+		.score-display {
+			flex-direction: column;
+		}
+		.score-details {
+			text-align: center;
+		}
 	}
 </style>

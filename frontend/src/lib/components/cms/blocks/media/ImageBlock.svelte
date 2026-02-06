@@ -72,9 +72,7 @@
 
 	// Lightbox state from manager
 	const lightboxState = $derived(stateManager.getLightboxState());
-	const isLightboxOpen = $derived(
-		lightboxState.open && lightboxState.blockId === props.blockId
-	);
+	const isLightboxOpen = $derived(lightboxState.open && lightboxState.blockId === props.blockId);
 
 	// Unique IDs for ARIA
 	const captionId = $derived(`image-caption-${props.blockId}`);
@@ -183,7 +181,8 @@
 
 			updateContent({
 				mediaUrl: objectUrl,
-				mediaAlt: validation.sanitizedName?.replace(/\.[^/.]+$/, '') || file.name.replace(/\.[^/.]+$/, '')
+				mediaAlt:
+					validation.sanitizedName?.replace(/\.[^/.]+$/, '') || file.name.replace(/\.[^/.]+$/, '')
 			});
 
 			uploadError = null;
@@ -398,7 +397,7 @@
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 			<img
 				src={sanitizedURL}
-				srcset={srcset}
+				{srcset}
 				sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
 				alt={imageAlt}
 				loading="lazy"
@@ -421,9 +420,7 @@
 		<!-- Alt Text Editor (Edit Mode & Selected) -->
 		{#if props.isEditing && props.isSelected}
 			<div class="image-block__alt-editor">
-				<label class="image-block__alt-label" for={descriptionId}>
-					Alt text (accessibility)
-				</label>
+				<label class="image-block__alt-label" for={descriptionId}> Alt text (accessibility) </label>
 				<input
 					id={descriptionId}
 					type="text"
@@ -493,11 +490,7 @@
 					<span class="image-block__upload-hint">Drag and drop or click to upload</span>
 
 					<div class="image-block__upload-actions">
-						<button
-							type="button"
-							class="image-block__upload-btn"
-							onclick={triggerFileInput}
-						>
+						<button type="button" class="image-block__upload-btn" onclick={triggerFileInput}>
 							Upload File
 						</button>
 
@@ -614,7 +607,9 @@
 		height: auto;
 		max-height: 70vh;
 		opacity: 0;
-		transition: opacity 0.3s ease, transform 0.2s ease;
+		transition:
+			opacity 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.image-block__image--loaded {
@@ -629,7 +624,9 @@
 		cursor: zoom-in;
 	}
 
-	.image-block:not(.image-block--editing) .image-block__container:hover .image-block__image--loaded {
+	.image-block:not(.image-block--editing)
+		.image-block__container:hover
+		.image-block__image--loaded {
 		transform: scale(1.02);
 	}
 
@@ -711,7 +708,9 @@
 		z-index: 5;
 	}
 
-	.image-block:not(.image-block--editing) .image-block__container:hover .image-block__hover-overlay {
+	.image-block:not(.image-block--editing)
+		.image-block__container:hover
+		.image-block__hover-overlay {
 		opacity: 1;
 	}
 

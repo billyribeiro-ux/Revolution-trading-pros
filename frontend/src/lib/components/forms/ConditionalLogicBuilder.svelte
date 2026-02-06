@@ -74,7 +74,9 @@
 
 	// Get available fields for rules
 	function getAvailableFields(): FormField[] {
-		return props.fields.filter((f) => f.name !== props.currentFieldName && !isLayoutField(f.field_type));
+		return props.fields.filter(
+			(f) => f.name !== props.currentFieldName && !isLayoutField(f.field_type)
+		);
 	}
 
 	// Check if field type is layout-only

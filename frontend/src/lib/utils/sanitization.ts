@@ -101,7 +101,7 @@ const DANGEROUS_CSS_PATTERNS = [
 	/<\/script/gi,
 	/<!--/g,
 	/-->/g,
-	/\\[0-9a-f]{1,6}/gi, // Encoded characters
+	/\\[0-9a-f]{1,6}/gi // Encoded characters
 ] as const;
 
 /** XSS attack patterns for detection */
@@ -118,7 +118,7 @@ const XSS_PATTERNS = [
 	/<base[\s\S]*?>/gi,
 	/data\s*:\s*text\/html/gi,
 	/expression\s*\(/gi,
-	/vbscript\s*:/gi,
+	/vbscript\s*:/gi
 ] as const;
 
 /** Default DOMPurify configuration for standard content */
@@ -356,10 +356,7 @@ function addSecureLinkAttributes(html: string): string {
  * @param additionalSafeProtocols - Additional protocols to allow beyond defaults
  * @returns Sanitized URL or empty string if invalid/unsafe
  */
-export function sanitizeURL(
-	url: string,
-	additionalSafeProtocols: string[] = []
-): string {
+export function sanitizeURL(url: string, additionalSafeProtocols: string[] = []): string {
 	if (!url || typeof url !== 'string') {
 		return '';
 	}
@@ -538,11 +535,7 @@ export function validateFile(
 	file: File,
 	options: FileValidationOptions = {}
 ): FileValidationResult {
-	const {
-		maxSize = DEFAULT_MAX_FILE_SIZE,
-		allowedTypes,
-		allowedExtensions
-	} = options;
+	const { maxSize = DEFAULT_MAX_FILE_SIZE, allowedTypes, allowedExtensions } = options;
 
 	// Check if file exists
 	if (!file || !(file instanceof File)) {
@@ -660,9 +653,7 @@ export function sanitizeFilename(filename: string): string {
 	}
 
 	// Sanitize extension
-	const cleanExtension = extension
-		.replace(/[^a-z0-9]/g, '')
-		.slice(0, 10); // Limit extension length
+	const cleanExtension = extension.replace(/[^a-z0-9]/g, '').slice(0, 10); // Limit extension length
 
 	// Combine and limit total length (255 is common filesystem limit)
 	const maxBaseLength = 255 - (cleanExtension ? cleanExtension.length + 1 : 0);
@@ -908,7 +899,8 @@ export function isValidEmail(email: string): boolean {
 	}
 
 	// RFC 5322 compliant email regex (simplified but robust)
-	const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+	const emailRegex =
+		/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 	// Basic length checks
 	if (email.length > 254) return false;

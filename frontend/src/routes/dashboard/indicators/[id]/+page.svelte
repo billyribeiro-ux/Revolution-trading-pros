@@ -23,15 +23,14 @@
 	const platformLogos: Record<string, string> = {
 		thinkorswim: '/logos/platforms/thinkorswim.png',
 		tradingview: '/logos/platforms/tradingview.png',
-		tradestation: '/logos/platforms/tradestation.png',
-	
+		tradestation: '/logos/platforms/tradestation.png'
 	};
 
 	// Platform display names
 	const platformNames: Record<string, string> = {
 		thinkorswim: 'ThinkorSwim',
 		tradingview: 'TradingView',
-		tradestation: 'TradeStation',
+		tradestation: 'TradeStation'
 	};
 
 	interface IndicatorFile {
@@ -206,7 +205,9 @@
 		loadingGuide = true;
 
 		try {
-			const res = await fetch(`/api/my/indicators/${indicatorSlug}/guide/${platform.toLowerCase()}`);
+			const res = await fetch(
+				`/api/my/indicators/${indicatorSlug}/guide/${platform.toLowerCase()}`
+			);
 			const data = await res.json();
 
 			if (data.success) {
@@ -360,7 +361,8 @@
 								</table>
 							{:else}
 								<p class="platform_notes">
-									No files currently available for {platformDownload.platform}. Please contact support for assistance.
+									No files currently available for {platformDownload.platform}. Please contact
+									support for assistance.
 								</p>
 							{/if}
 
@@ -376,7 +378,8 @@
 					{#if downloadsByPlatform.length === 0}
 						<section class="st_box">
 							<p class="platform_notes">
-								No download files are currently available for this indicator. Please contact support if you need assistance.
+								No download files are currently available for this indicator. Please contact support
+								if you need assistance.
 							</p>
 						</section>
 					{/if}
@@ -392,7 +395,12 @@
 									<tr>
 										<td>Official Documentation</td>
 										<td class="text-right">
-											<a class="orng_btn" href={indicator.documentation_url} target="_blank" rel="noopener noreferrer">
+											<a
+												class="orng_btn"
+												href={indicator.documentation_url}
+												target="_blank"
+												rel="noopener noreferrer"
+											>
 												<span class="fa fa-external-link"></span>
 												View Documentation
 											</a>
@@ -416,10 +424,7 @@
 									{/if}
 								</div>
 								<div class="license-key-actions">
-									<button
-										class="btn btn-small"
-										onclick={() => (showLicenseKey = !showLicenseKey)}
-									>
+									<button class="btn btn-small" onclick={() => (showLicenseKey = !showLicenseKey)}>
 										{showLicenseKey ? 'Hide' : 'Show'}
 									</button>
 									<button
@@ -435,11 +440,7 @@
 								This license key is tied to your account. Do not share it with others.
 							</p>
 						{:else}
-							<button
-								class="orng_btn"
-								onclick={fetchLicenseKey}
-								disabled={loadingLicense}
-							>
+							<button class="orng_btn" onclick={fetchLicenseKey} disabled={loadingLicense}>
 								{loadingLicense ? 'Loading...' : 'Get License Key'}
 							</button>
 						{/if}

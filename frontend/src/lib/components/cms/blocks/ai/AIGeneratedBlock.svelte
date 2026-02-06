@@ -44,12 +44,12 @@
 
 		try {
 			// Simulated API call - replace with actual AI service integration
-			await new Promise(resolve => setTimeout(resolve, 2000));
-			
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+
 			const simulatedOutput = `AI-generated content based on your prompt: "${prompt}"\n\nThis is a placeholder response. In production, this would connect to your AI service (OpenAI, Claude, etc.) to generate real content based on the prompt and selected model (${model}).`;
-			
-			stateManager.setAIGeneratedState(props.blockId, { 
-				loading: false, 
+
+			stateManager.setAIGeneratedState(props.blockId, {
+				loading: false,
 				output: simulatedOutput,
 				lastGenerated: Date.now()
 			});
@@ -65,7 +65,9 @@
 		if (output) {
 			await navigator.clipboard.writeText(output);
 			copied = true;
-			setTimeout(() => { copied = false; }, 2000);
+			setTimeout(() => {
+				copied = false;
+			}, 2000);
 		}
 	}
 
@@ -104,7 +106,10 @@
 			<div class="ai-controls">
 				<label class="model-select">
 					<span>Model:</span>
-					<select value={model} onchange={(e) => updateContent({ aiModel: (e.target as HTMLSelectElement).value })}>
+					<select
+						value={model}
+						onchange={(e) => updateContent({ aiModel: (e.target as HTMLSelectElement).value })}
+					>
 						<option value="gpt-4">GPT-4</option>
 						<option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
 						<option value="claude-3">Claude 3</option>
@@ -143,11 +148,22 @@
 				<span class="output-label">Generated Content</span>
 				<div class="output-actions">
 					{#if props.isEditing}
-						<button type="button" class="action-btn" onclick={generateContent} disabled={aiState.loading} aria-label="Regenerate">
+						<button
+							type="button"
+							class="action-btn"
+							onclick={generateContent}
+							disabled={aiState.loading}
+							aria-label="Regenerate"
+						>
 							<IconRefresh size={16} aria-hidden="true" />
 						</button>
 					{/if}
-					<button type="button" class="action-btn" onclick={copyOutput} aria-label={copied ? 'Copied!' : 'Copy'}>
+					<button
+						type="button"
+						class="action-btn"
+						onclick={copyOutput}
+						aria-label={copied ? 'Copied!' : 'Copy'}
+					>
 						{#if copied}
 							<IconCheck size={16} aria-hidden="true" />
 						{:else}
@@ -176,82 +192,223 @@
 </div>
 
 <style>
-	.ai-generated-block { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+	.ai-generated-block {
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		overflow: hidden;
+	}
 
 	.ai-header {
-		display: flex; align-items: center; gap: 0.75rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 		padding: 1rem 1.25rem;
 		background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
 		color: white;
 	}
-	.ai-icon { display: flex; }
-	.ai-title { font-weight: 600; font-size: 0.9375rem; }
+	.ai-icon {
+		display: flex;
+	}
+	.ai-title {
+		font-weight: 600;
+		font-size: 0.9375rem;
+	}
 
-	.ai-input-section { padding: 1.25rem; background: #faf5ff; border-bottom: 1px solid #e9d5ff; }
-	.prompt-label { display: block; }
-	.prompt-label span { display: block; font-size: 0.8125rem; font-weight: 600; color: #6b21a8; margin-bottom: 0.5rem; }
+	.ai-input-section {
+		padding: 1.25rem;
+		background: #faf5ff;
+		border-bottom: 1px solid #e9d5ff;
+	}
+	.prompt-label {
+		display: block;
+	}
+	.prompt-label span {
+		display: block;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: #6b21a8;
+		margin-bottom: 0.5rem;
+	}
 	.prompt-label textarea {
-		width: 100%; padding: 0.75rem;
-		border: 1px solid #d8b4fe; border-radius: 8px;
-		font-size: 0.9375rem; resize: vertical;
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid #d8b4fe;
+		border-radius: 8px;
+		font-size: 0.9375rem;
+		resize: vertical;
 		background: white;
 	}
-	.prompt-label textarea:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
+	.prompt-label textarea:focus {
+		outline: none;
+		border-color: #8b5cf6;
+		box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+	}
 
-	.ai-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
-	.model-select { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b21a8; }
-	.model-select select { padding: 0.5rem 0.75rem; border: 1px solid #d8b4fe; border-radius: 6px; font-size: 0.875rem; background: white; }
+	.ai-controls {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+		flex-wrap: wrap;
+	}
+	.model-select {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		color: #6b21a8;
+	}
+	.model-select select {
+		padding: 0.5rem 0.75rem;
+		border: 1px solid #d8b4fe;
+		border-radius: 6px;
+		font-size: 0.875rem;
+		background: white;
+	}
 
 	.generate-btn {
-		display: inline-flex; align-items: center; gap: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
 		background: linear-gradient(135deg, #8b5cf6, #6366f1);
-		border: none; border-radius: 8px;
-		color: white; font-size: 0.9375rem; font-weight: 600;
-		cursor: pointer; transition: all 0.15s;
+		border: none;
+		border-radius: 8px;
+		color: white;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.15s;
 	}
-	.generate-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
-	.generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-	.generate-btn :global(.spinning) { animation: spin 1s linear infinite; }
-	@keyframes spin { to { transform: rotate(360deg); } }
+	.generate-btn:hover:not(:disabled) {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+	}
+	.generate-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	.generate-btn :global(.spinning) {
+		animation: spin 1s linear infinite;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
-	.ai-error { padding: 0.75rem 1.25rem; background: #fef2f2; color: #dc2626; font-size: 0.875rem; }
+	.ai-error {
+		padding: 0.75rem 1.25rem;
+		background: #fef2f2;
+		color: #dc2626;
+		font-size: 0.875rem;
+	}
 
-	.ai-output-section { padding: 1.25rem; }
-	.output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
-	.output-label { font-size: 0.8125rem; font-weight: 600; color: #6b7280; }
-	.output-actions { display: flex; gap: 0.5rem; }
+	.ai-output-section {
+		padding: 1.25rem;
+	}
+	.output-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+	.output-label {
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: #6b7280;
+	}
+	.output-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
 	.action-btn {
-		width: 32px; height: 32px;
-		display: flex; align-items: center; justify-content: center;
-		background: #f3f4f6; border: none; border-radius: 6px;
-		color: #6b7280; cursor: pointer; transition: all 0.15s;
+		width: 32px;
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #f3f4f6;
+		border: none;
+		border-radius: 6px;
+		color: #6b7280;
+		cursor: pointer;
+		transition: all 0.15s;
 	}
-	.action-btn:hover { background: #e5e7eb; color: #374151; }
-	.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+	.action-btn:hover {
+		background: #e5e7eb;
+		color: #374151;
+	}
+	.action-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 
 	.output-content {
 		padding: 1rem;
-		background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
-		font-size: 0.9375rem; line-height: 1.7; color: #374151;
-		white-space: pre-wrap; outline: none;
+		background: #f9fafb;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		font-size: 0.9375rem;
+		line-height: 1.7;
+		color: #374151;
+		white-space: pre-wrap;
+		outline: none;
 		min-height: 100px;
 	}
-	.output-content:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
-
-	.ai-empty {
-		display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
-		padding: 3rem; color: #9ca3af;
+	.output-content:focus {
+		border-color: #8b5cf6;
+		box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 	}
 
-	:global(.dark) .ai-generated-block { border-color: #374151; }
-	:global(.dark) .ai-input-section { background: #1e1b4b; border-color: #4c1d95; }
-	:global(.dark) .prompt-label span { color: #c4b5fd; }
-	:global(.dark) .prompt-label textarea { background: #0f172a; border-color: #4c1d95; color: #e2e8f0; }
-	:global(.dark) .model-select { color: #c4b5fd; }
-	:global(.dark) .model-select select { background: #0f172a; border-color: #4c1d95; color: #e2e8f0; }
-	:global(.dark) .ai-error { background: #450a0a; color: #fca5a5; }
-	:global(.dark) .output-content { background: #1e293b; border-color: #334155; color: #e2e8f0; }
-	:global(.dark) .action-btn { background: #1e293b; color: #94a3b8; }
-	:global(.dark) .action-btn:hover { background: #334155; color: #e2e8f0; }
+	.ai-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 3rem;
+		color: #9ca3af;
+	}
+
+	:global(.dark) .ai-generated-block {
+		border-color: #374151;
+	}
+	:global(.dark) .ai-input-section {
+		background: #1e1b4b;
+		border-color: #4c1d95;
+	}
+	:global(.dark) .prompt-label span {
+		color: #c4b5fd;
+	}
+	:global(.dark) .prompt-label textarea {
+		background: #0f172a;
+		border-color: #4c1d95;
+		color: #e2e8f0;
+	}
+	:global(.dark) .model-select {
+		color: #c4b5fd;
+	}
+	:global(.dark) .model-select select {
+		background: #0f172a;
+		border-color: #4c1d95;
+		color: #e2e8f0;
+	}
+	:global(.dark) .ai-error {
+		background: #450a0a;
+		color: #fca5a5;
+	}
+	:global(.dark) .output-content {
+		background: #1e293b;
+		border-color: #334155;
+		color: #e2e8f0;
+	}
+	:global(.dark) .action-btn {
+		background: #1e293b;
+		color: #94a3b8;
+	}
+	:global(.dark) .action-btn:hover {
+		background: #334155;
+		color: #e2e8f0;
+	}
 </style>
