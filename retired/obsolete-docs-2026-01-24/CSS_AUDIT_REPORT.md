@@ -45,9 +45,6 @@
 | `src/lib/styles/dashboard.css` | 311 | Dashboard-specific styles | - | dashboard/+layout.svelte |
 | `src/lib/styles/print.css` | 376 | Print stylesheet | - | blog/[slug]/+page.svelte |
 | `src/routes/live-trading-rooms/performance.css` | 297 | Page-specific styles | - | (local import) |
-| `src/stories/page.css` | 68 | Storybook | - | Page.svelte |
-| `src/stories/header.css` | 32 | Storybook | - | Header.svelte |
-| `src/stories/button.css` | 30 | Storybook | - | Button.svelte |
 
 ---
 

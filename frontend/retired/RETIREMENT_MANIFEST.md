@@ -17,7 +17,6 @@
 | Dead Routes (No Links)                   | 54+   | Review/Retire           |
 | Unused CSS Files                         | 10    | Retire                  |
 | Deprecated Syntax Files                  | 2     | Migrate                 |
-| Storybook Files                          | 9     | Keep (Dev Only)         |
 | Implementation Reference Files           | 93    | Keep (Design Reference) |
 
 ---
@@ -332,21 +331,6 @@ Files using Svelte 4 syntax that need migration.
 | src/routes/+layout.svelte                      | Uses `<slot>`             | Expected for root layout |
 
 ---
-
-## 8. STORYBOOK FILES (KEEP - Dev Only)
-
-These are for Storybook development and should **NOT** be retired.
-
-| File                              | Purpose             |
-| --------------------------------- | ------------------- |
-| src/stories/Button.svelte         | Storybook component |
-| src/stories/Button.stories.svelte | Storybook story     |
-| src/stories/Header.svelte         | Storybook component |
-| src/stories/Header.stories.svelte | Storybook story     |
-| src/stories/Page.svelte           | Storybook component |
-| src/stories/Page.stories.svelte   | Storybook story     |
-| src/stories/\*.css                | Storybook styles    |
-| src/stories/assets/\*             | Storybook assets    |
 
 ---
 

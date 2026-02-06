@@ -17,14 +17,6 @@ All dependencies updated to latest compatible versions across the entire stack. 
 
 ### ✅ Updated Packages (24 packages)
 
-**Storybook Ecosystem:**
-- `@storybook/addon-a11y`: 10.2.0 → 10.2.1
-- `@storybook/addon-docs`: 10.2.0 → 10.2.1
-- `@storybook/addon-vitest`: 10.2.0 → 10.2.1
-- `@storybook/sveltekit`: 10.2.0 → 10.2.1
-- `eslint-plugin-storybook`: 10.2.0 → 10.2.1
-- `storybook`: 10.2.0 → 10.2.1
-
 **Core Framework:**
 - `svelte`: 5.48.2 → 5.48.5 ✨ (Latest Svelte 5)
 
@@ -159,7 +151,6 @@ All dependencies updated to latest compatible versions across the entire stack. 
 #### **eslint.config.js**
 - ✅ TypeScript ESLint configured
 - ✅ Svelte plugin with flat config
-- ✅ Storybook plugin integrated
 - ✅ Prettier integration
 - ✅ Unused vars as warnings (not errors)
 - ✅ Sensible rule overrides for Svelte 5

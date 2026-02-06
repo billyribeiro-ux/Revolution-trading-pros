@@ -434,13 +434,6 @@ npm run check
    - **Estimate:** 2-3 hours
    - **Impact:** Performance insights
 
-10. **Storybook Integration**
-    - **Files:** All components
-    - **Action:** Create Storybook stories for visual testing
-    - **Priority:** LOW
-    - **Estimate:** 6-8 hours
-    - **Impact:** Component development, QA
-
 ---
 
 ## Next Steps
@@ -484,7 +477,6 @@ npm run check
 
 7. **Component Library**
    - Document all components
-   - Create Storybook stories
    - Add unit tests
 
 8. **Performance Optimization**
