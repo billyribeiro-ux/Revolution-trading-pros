@@ -64,6 +64,7 @@ export default [
       'no-useless-catch': 'warn',
       'no-control-regex': 'warn',
       'no-empty': 'warn',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'svelte/no-navigation-without-resolve': 'warn'
     }
   },
@@ -114,6 +115,7 @@ export default [
       'no-useless-catch': 'warn',
       'no-control-regex': 'warn',
       'no-empty': 'warn',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'svelte/no-unused-svelte-ignore': 'warn',
       'svelte/no-shorthand-style-property-overrides': 'warn',
       'svelte/no-at-html-tags': 'warn',
