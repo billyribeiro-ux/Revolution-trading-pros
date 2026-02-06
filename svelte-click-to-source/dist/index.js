@@ -1,5 +1,6 @@
 // src/index.ts
 import { exec } from "child_process";
+import { existsSync } from "fs";
 
 // src/runtime.ts
 var RUNTIME_SCRIPT = `
@@ -237,15 +238,19 @@ function detectEditor() {
   return "vscode";
 }
 function getEditorCommand(editor) {
-  const commands = {
-    vscode: "code",
-    cursor: "cursor",
-    windsurf: "windsurf",
-    webstorm: "webstorm",
-    vim: "vim",
-    neovim: "nvim"
+  const editorPaths = {
+    vscode: ["code", "/usr/local/bin/code", "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"],
+    cursor: ["cursor", "/usr/local/bin/cursor", "/Applications/Cursor.app/Contents/Resources/app/bin/cursor"],
+    windsurf: ["windsurf", "/usr/local/bin/windsurf", "/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf"],
+    webstorm: ["webstorm", "/usr/local/bin/webstorm"],
+    vim: ["vim"],
+    neovim: ["nvim"]
   };
-  return commands[editor] || commands.vscode;
+  const paths = editorPaths[editor] || editorPaths.vscode;
+  for (const p of paths) {
+    if (p.startsWith("/") && existsSync(p)) return p;
+  }
+  return paths[0];
 }
 function clickToSource(options = {}) {
   const {
@@ -274,10 +279,12 @@ function clickToSource(options = {}) {
         if (!req.url?.startsWith(OPEN_ENDPOINT)) {
           return next();
         }
-        const url = new URL(req.url, "http://localhost");
-        const file = url.searchParams.get("file");
-        const line = url.searchParams.get("line") || "1";
-        const col = url.searchParams.get("col") || "1";
+        const queryString = req.url.split("?")[1] || "";
+        const params = new URLSearchParams(queryString);
+        const rawFile = queryString.match(/file=([^&]*)/)?.[1];
+        const file = rawFile ? decodeURIComponent(rawFile.replace(/\+/g, "%2B")) : params.get("file");
+        const line = params.get("line") || "1";
+        const col = params.get("col") || "1";
         if (!file) {
           res.statusCode = 400;
           res.end("Missing file parameter");
@@ -288,8 +295,11 @@ function clickToSource(options = {}) {
         console.log(`[click-to-source] Opening: ${absolutePath}:${line}:${col}`);
         exec(cmd, (error) => {
           if (error) {
-            console.warn(`[click-to-source] Failed to open editor:`, error.message);
-            exec(`open -a "Windsurf" "${absolutePath}"`, (err2) => {
+            console.warn(`[click-to-source] Primary command failed:`, error.message);
+            const appName = editor.charAt(0).toUpperCase() + editor.slice(1);
+            const fallbackCmd = `open -a "${appName}" "${absolutePath}"`;
+            console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
+            exec(fallbackCmd, (err2) => {
               if (err2) {
                 console.error(`[click-to-source] Fallback also failed:`, err2.message);
               }

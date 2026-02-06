@@ -11,6 +11,7 @@
 
 import type { Plugin } from 'vite';
 import { exec } from 'child_process';
+import { existsSync } from 'fs';
 import { RUNTIME_SCRIPT } from './runtime';
 
 export interface ClickToSourceOptions {
@@ -40,15 +41,21 @@ function detectEditor(): string {
 }
 
 function getEditorCommand(editor: string): string {
-  const commands: Record<string, string> = {
-    vscode: 'code',
-    cursor: 'cursor',
-    windsurf: 'windsurf',
-    webstorm: 'webstorm',
-    vim: 'vim',
-    neovim: 'nvim',
+  const editorPaths: Record<string, string[]> = {
+    vscode: ['code', '/usr/local/bin/code', '/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'],
+    cursor: ['cursor', '/usr/local/bin/cursor', '/Applications/Cursor.app/Contents/Resources/app/bin/cursor'],
+    windsurf: ['windsurf', '/usr/local/bin/windsurf', '/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf'],
+    webstorm: ['webstorm', '/usr/local/bin/webstorm'],
+    vim: ['vim'],
+    neovim: ['nvim'],
   };
-  return commands[editor] || commands.vscode;
+
+  const paths = editorPaths[editor] || editorPaths.vscode;
+  for (const p of paths) {
+    if (p.startsWith('/') && existsSync(p)) return p;
+  }
+  // Fallback to short name (hope it's in PATH)
+  return paths[0];
 }
 
 export function clickToSource(options: ClickToSourceOptions = {}): Plugin {
@@ -85,10 +92,14 @@ export function clickToSource(options: ClickToSourceOptions = {}): Plugin {
           return next();
         }
 
-        const url = new URL(req.url, 'http://localhost');
-        const file = url.searchParams.get('file');
-        const line = url.searchParams.get('line') || '1';
-        const col = url.searchParams.get('col') || '1';
+        // Parse URL manually to avoid + being decoded as space
+        const queryString = req.url.split('?')[1] || '';
+        const params = new URLSearchParams(queryString);
+        // URLSearchParams decodes + as space, so re-decode from the raw query
+        const rawFile = queryString.match(/file=([^&]*)/)?.[1];
+        const file = rawFile ? decodeURIComponent(rawFile.replace(/\+/g, '%2B')) : params.get('file');
+        const line = params.get('line') || '1';
+        const col = params.get('col') || '1';
 
         if (!file) {
           res.statusCode = 400;
@@ -103,9 +114,12 @@ export function clickToSource(options: ClickToSourceOptions = {}): Plugin {
 
         exec(cmd, (error) => {
           if (error) {
-            console.warn(`[click-to-source] Failed to open editor:`, error.message);
-            // Fallback: try open command on Mac
-            exec(`open -a "Windsurf" "${absolutePath}"`, (err2) => {
+            console.warn(`[click-to-source] Primary command failed:`, error.message);
+            // Fallback: try open -a on Mac with just the file (no --goto)
+            const appName = editor.charAt(0).toUpperCase() + editor.slice(1);
+            const fallbackCmd = `open -a "${appName}" "${absolutePath}"`;
+            console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
+            exec(fallbackCmd, (err2) => {
               if (err2) {
                 console.error(`[click-to-source] Fallback also failed:`, err2.message);
               }
