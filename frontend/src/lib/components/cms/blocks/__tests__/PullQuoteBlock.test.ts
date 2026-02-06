@@ -534,7 +534,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		});
 
 		const pullquote = container.querySelector('.pullquote-block');
-		expect(pullquote).toHaveStyle({ '--accent-color': '#ef4444' });
+		expect(pullquote).toHaveStyle({ '--accent-color': '#ef4444' } as any);
 	});
 
 	it('should show color picker trigger in controls', () => {

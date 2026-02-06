@@ -9,7 +9,7 @@
 // Import setup first to initialize mocks
 import './setup';
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ============================================================================
 // Import Hook and Types
@@ -19,10 +19,7 @@ import {
 	useBlockValidation,
 	PRESET_RULES,
 	BLOCK_VALIDATION_RULES,
-	type ValidationRule,
-	type ValidationError,
-	type ValidationResult,
-	type ValidationOptions
+	type ValidationRule
 } from '../useBlockValidation.svelte';
 
 import type { Block } from '../../types';
@@ -125,7 +122,7 @@ describe('useBlockValidation', () => {
 
 		it('validates required fields - fails for null value', () => {
 			const block = createMockBlock({
-				content: { text: null }
+				content: { text: null as any }
 			});
 
 			const rules: ValidationRule[] = [
@@ -939,7 +936,6 @@ describe('useBlockValidation', () => {
 				content: { username: 'test' }
 			});
 
-			let validatingDuringAsync = false;
 			const asyncValidator = vi.fn().mockImplementation(async () => {
 				await new Promise((resolve) => setTimeout(resolve, 10));
 				return true;
