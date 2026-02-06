@@ -63,22 +63,20 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		return null;
 	};
 
-	// DEV MODE: Bypass auth for development (REMOVE IN PRODUCTION)
-	// ICT 7: Check for protected routes in dev mode and provide full access
-	const isDev = process.env.NODE_ENV === 'development';
-	const DEV_BYPASS_EMAIL = 'welberribeirodrums@gmail.com';
-	
-	if (isDev && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
-		// Mock user for development with full admin/developer access
-		event.locals.user = {
-			id: 999,
-			email: DEV_BYPASS_EMAIL,
-			name: 'Developer',
-			role: 'developer'
-		};
-		event.locals.accessToken = 'dev-token';
-		return resolve(event);
-	}
+	// DEV MODE BYPASS DISABLED - Using real authentication
+	// const isDev = process.env.NODE_ENV === 'development';
+	// const DEV_BYPASS_EMAIL = 'welberribeirodrums@gmail.com';
+	// 
+	// if (isDev && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
+	// 	event.locals.user = {
+	// 		id: 999,
+	// 		email: DEV_BYPASS_EMAIL,
+	// 		name: 'Developer',
+	// 		role: 'developer'
+	// 	};
+	// 	event.locals.accessToken = 'dev-token';
+	// 	return resolve(event);
+	// }
 
 	// Check if this is a protected route
 	const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
@@ -105,6 +103,8 @@ const authHandler: Handle = async ({ event, resolve }) => {
 						name: userData.name,
 						role: userData.role
 					};
+					// ICT 7 FIX: Set accessToken in locals for non-protected routes too
+					event.locals.accessToken = token;
 				}
 			} catch {
 				// Ignore errors on non-protected routes
