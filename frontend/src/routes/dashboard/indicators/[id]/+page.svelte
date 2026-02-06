@@ -23,24 +23,15 @@
 	const platformLogos: Record<string, string> = {
 		thinkorswim: '/logos/platforms/thinkorswim.png',
 		tradingview: '/logos/platforms/tradingview.png',
-		metatrader: '/logos/platforms/metatrader.png',
-		ninjatrader: '/logos/platforms/ninjatrader.png',
 		tradestation: '/logos/platforms/tradestation.png',
-		sierrachart: '/logos/platforms/sierrachart.png',
-		ctrader: '/logos/platforms/ctrader.png'
+	
 	};
 
 	// Platform display names
 	const platformNames: Record<string, string> = {
 		thinkorswim: 'ThinkorSwim',
 		tradingview: 'TradingView',
-		metatrader: 'MetaTrader',
-		mt4: 'MetaTrader 4',
-		mt5: 'MetaTrader 5',
-		ninjatrader: 'NinjaTrader 8',
 		tradestation: 'TradeStation',
-		sierrachart: 'Sierra Chart',
-		ctrader: 'cTrader'
 	};
 
 	interface IndicatorFile {
@@ -494,7 +485,14 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal install-guide-modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal install-guide-modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key === 'Escape' && (showInstallGuide = false)}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2>{selectedPlatform} Installation Guide</h2>
 				<button class="btn-close" onclick={() => (showInstallGuide = false)}>X</button>

@@ -23,7 +23,6 @@
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
 	// --- DOM REFS FOR GSAP ---
-	let heroContainer: HTMLElement | undefined;
 	let heroBadge: HTMLElement | undefined;
 	let heroTitle: HTMLElement | undefined;
 	let heroDesc: HTMLElement | undefined;
@@ -171,7 +170,7 @@
 			</div>
 		</nav>
 
-		<section class="pt-48 pb-32 px-6 border-b border-white/10" bind:this={heroContainer}>
+		<section class="pt-48 pb-32 px-6 border-b border-white/10">
 			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-16">
 				<div class="lg:col-span-8">
 					<div

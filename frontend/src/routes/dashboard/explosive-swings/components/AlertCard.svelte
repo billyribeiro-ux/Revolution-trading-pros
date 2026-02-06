@@ -90,6 +90,7 @@
 	class:is-new={alert.isNew}
 	class:has-notes-open={isNotesExpanded}
 	aria-label="{alert.ticker} {alert.type} alert"
+	style="animation-delay: {index * 50}ms"
 >
 	<!-- NEW Badge -->
 	{#if alert.isNew}
@@ -272,6 +273,18 @@
 		padding: var(--card-padding-sm);
 		margin-bottom: var(--space-2);
 		transition: all 0.2s ease-out;
+		animation: cardFadeIn 0.3s ease-out both;
+	}
+
+	@keyframes cardFadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.alert-card:hover {

@@ -12,6 +12,14 @@
 
 	let { alert, query }: Props = $props();
 
+	// Highlight matching search terms in text
+	function highlightMatch(text: string): string {
+		if (!query || !text) return text;
+		const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const regex = new RegExp(`(${escaped})`, 'gi');
+		return text.replace(regex, '<mark>$1</mark>');
+	}
+
 	// Alert type styling
 	const typeStyles: Record<string, { bg: string; text: string; border: string }> = {
 		ENTRY: { bg: 'bg-teal', text: 'text-teal', border: 'border-teal' },
@@ -53,7 +61,7 @@
 	</div>
 
 	{#if alert.title}
-		<h3 class="card-title">{alert.title}</h3>
+		<h3 class="card-title">{@html highlightMatch(alert.title)}</h3>
 	{/if}
 
 	<div class="card-highlight">
@@ -61,7 +69,7 @@
 	</div>
 
 	<div class="card-message">
-		{alert.message}
+		{@html highlightMatch(alert.message)}
 	</div>
 </article>
 

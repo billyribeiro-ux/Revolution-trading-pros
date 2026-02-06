@@ -12,6 +12,14 @@
 
 	let { plan, query }: Props = $props();
 
+	// Highlight matching search terms in text
+	function highlightMatch(text: string): string {
+		if (!query || !text) return text;
+		const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const regex = new RegExp(`(${escaped})`, 'gi');
+		return text.replace(regex, '<mark>$1</mark>');
+	}
+
 	// Bias styling
 	const biasStyles: Record<string, { bg: string; text: string }> = {
 		BULLISH: { bg: 'bg-bullish', text: 'text-bullish' },
@@ -78,7 +86,7 @@
 
 	{#if plan.notes}
 		<div class="card-highlight">
-			{@html plan.highlight}
+			{@html highlightMatch(plan.highlight)}
 		</div>
 	{/if}
 </article>

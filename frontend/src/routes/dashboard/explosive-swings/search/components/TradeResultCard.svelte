@@ -12,6 +12,14 @@
 
 	let { trade, query }: Props = $props();
 
+	// Highlight matching search terms in text
+	function highlightMatch(text: string): string {
+		if (!query || !text) return text;
+		const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const regex = new RegExp(`(${escaped})`, 'gi');
+		return text.replace(regex, '<mark>$1</mark>');
+	}
+
 	// Determine if trade was a win/loss
 	const isWin = $derived(trade.result === 'WIN' || (trade.pnl_percent ?? 0) > 0);
 	const isOpen = $derived(trade.status === 'open');
@@ -106,7 +114,7 @@
 
 	{#if trade.notes}
 		<div class="card-highlight">
-			{@html trade.highlight}
+			{@html highlightMatch(trade.highlight)}
 		</div>
 	{/if}
 </article>
