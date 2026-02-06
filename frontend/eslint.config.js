@@ -17,7 +17,15 @@ export default [
         ...globals.node,
         gapi: 'readonly',
         ServiceWorkerGlobalScope: 'readonly',
-        FetchEvent: 'readonly'
+        FetchEvent: 'readonly',
+        Disposable: 'readonly',
+        $state: 'readonly',
+        $derived: 'readonly',
+        $effect: 'readonly',
+        $props: 'readonly',
+        $bindable: 'readonly',
+        $inspect: 'readonly',
+        $host: 'readonly'
       }
     }
   },
@@ -55,7 +63,8 @@ export default [
       'no-import-assign': 'warn',
       'no-useless-catch': 'warn',
       'no-control-regex': 'warn',
-      'no-empty': 'warn'
+      'no-empty': 'warn',
+      'svelte/no-navigation-without-resolve': 'warn'
     }
   },
   {
@@ -106,6 +115,7 @@ export default [
       'no-control-regex': 'warn',
       'no-empty': 'warn',
       'svelte/no-unused-svelte-ignore': 'warn',
+      'svelte/no-shorthand-style-property-overrides': 'warn',
       'svelte/no-at-html-tags': 'warn',
       'svelte/require-each-key': 'warn',
       'svelte/no-navigation-without-resolve': 'warn',
