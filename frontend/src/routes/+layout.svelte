@@ -33,7 +33,8 @@
 	import type { Snippet } from 'svelte';
 	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
-	import { RenderScan } from 'svelte-render-scan';
+	// ICT 7: Dynamic import — svelte-render-scan is dev-only and must not run during SSR
+	let RenderScanComponent = $state<any>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() Pattern (no destructuring)
@@ -50,9 +51,9 @@
 	const isAdminArea = $derived(pathname.startsWith('/admin'));
 	const isEmbedArea = $derived(pathname.startsWith('/embed'));
 
-	// ICT Level 7: AdminToolbar wrapped in ClientOnly - no mounted state needed
-	// Svelte 5: Use .current for rune-based stores (NOT $ prefix)
-	const showAdminToolbar = $derived(isAdminUser.current);
+	// ICT Level 7: Hydration-safe — mounted guard prevents class mismatch on SSR
+	let mounted = $state(false);
+	const showAdminToolbar = $derived(mounted && isAdminUser.current);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SIDE EFFECTS - SvelteKit Navigation Lifecycle
@@ -71,7 +72,17 @@
 	// LIFECYCLE - onMount (client-only by definition, no browser check needed)
 	// ═══════════════════════════════════════════════════════════════════════════
 	onMount(() => {
-		// onMount ONLY runs in browser - no redundant check needed
+		mounted = true;
+
+		// ICT 7: Load dev tooling client-side only (prevents hydration mismatch)
+		if (dev) {
+			import('svelte-render-scan').then((mod) => {
+				RenderScanComponent = mod.RenderScan;
+			}).catch(() => {
+				// Package not installed — silently skip
+			});
+		}
+
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
 			console.debug('[Layout] Auth init failed (non-critical):', err);
@@ -120,8 +131,8 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      DEVELOPMENT TOOLS - Svelte DevTools (development only)
      ═══════════════════════════════════════════════════════════════════════════ -->
-{#if dev}
-	<RenderScan 
+{#if dev && RenderScanComponent}
+	<RenderScanComponent 
 		initialEnabled={false}
 		offsetLeft={60}
 		duration={1500}
