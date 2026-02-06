@@ -2,9 +2,11 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
+import { clickToSource } from './src/lib/dev/click-to-source';
 
 export default defineConfig({
   plugins: [
+    ...clickToSource({ editor: 'windsurf' }),
     sveltekit(),
     svelteInspector({
       toggleKeyCombo: 'meta-shift',

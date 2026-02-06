@@ -1,9 +1,10 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { createPreprocessor } from './src/lib/dev/click-to-source.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: vitePreprocess(),
+  preprocess: [createPreprocessor(), vitePreprocess()],
   dynamicCompileOptions({ filename }) {
     if (filename.includes('node_modules')) {
       return { runes: false };
