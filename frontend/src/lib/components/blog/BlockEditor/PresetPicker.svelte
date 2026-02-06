@@ -1,6 +1,6 @@
 <!--
 /**
- * Preset Picker - Storyblok-Style Component Presets/Templates
+ * Preset Picker - Component Presets/Templates
  * ═══════════════════════════════════════════════════════════════════════════
  * Advanced preset selection UI for quick block configuration
  *

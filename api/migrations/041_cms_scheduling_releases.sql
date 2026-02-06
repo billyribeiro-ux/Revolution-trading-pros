@@ -2,7 +2,7 @@
 -- Migration 041: CMS Content Scheduling and Releases System
 -- Apple Principal Engineer ICT Level 7+ - February 2026
 --
--- PURPOSE: Storyblok-style content scheduling and release bundles
+-- PURPOSE: Content scheduling and release bundles
 -- - Schedule single content publish/unpublish operations
 -- - Bundle multiple content changes into releases
 -- - Timezone-aware scheduling with cron job support

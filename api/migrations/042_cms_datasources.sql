@@ -1,5 +1,5 @@
 -- ===============================================================================================
--- CMS DATASOURCES SYSTEM - Storyblok-Style Reusable Option Lists
+-- CMS DATASOURCES SYSTEM - Reusable Option Lists
 -- Apple ICT 7+ Principal Engineer Grade
 -- Revolution Trading Pros - February 2026
 --
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS cms_datasources (
     CONSTRAINT cms_datasources_slug_check CHECK (slug ~ '^[a-z0-9-]+$')
 );
 
-COMMENT ON TABLE cms_datasources IS 'Storyblok-style datasources for reusable option lists';
+COMMENT ON TABLE cms_datasources IS 'Datasources for reusable option lists';
 COMMENT ON COLUMN cms_datasources.slug IS 'URL-friendly unique identifier for API access';
 COMMENT ON COLUMN cms_datasources.is_system IS 'System datasources cannot be deleted';
 COMMENT ON COLUMN cms_datasources.is_locked IS 'Locked datasources cannot be edited by non-admins';
@@ -562,4 +562,4 @@ CREATE POLICY cms_datasource_entries_delete ON cms_datasource_entries
 -- MIGRATION COMPLETE
 -- -----------------------------------------------------------------------------------------------
 
-COMMENT ON TABLE cms_datasources IS 'CMS Datasources System - Storyblok-style reusable option lists for dropdowns and selections';
+COMMENT ON TABLE cms_datasources IS 'CMS Datasources System - Reusable option lists for dropdowns and selections';

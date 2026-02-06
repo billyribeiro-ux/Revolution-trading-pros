@@ -61,9 +61,7 @@
 		"db:studio": "prisma studio",
 		"db:migrate": "prisma migrate dev",
 		"deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare",
-		"deploy:preview": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview",
-		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build"
+		"deploy:preview": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.73.0",
@@ -105,16 +103,11 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.11.0",
-		"@chromatic-com/storybook": "^5.0.0",
 		"@eslint/js": "^9.39.2",
 		"@internationalized/date": "^3.11.0",
 		"@lucide/svelte": "^0.563.1",
 		"@opentelemetry/api": "^1.9.0",
 		"@playwright/test": "^1.58.0",
-		"@storybook/addon-a11y": "^10.2.7",
-		"@storybook/addon-docs": "^10.2.7",
-		"@storybook/addon-svelte-csf": "^5.0.10",
-		"@storybook/sveltekit": "^10.2.7",
 		"@sveltejs/adapter-cloudflare": "^7.2.6",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.50.2",
@@ -137,7 +130,6 @@
 		"dotenv": "^17.2.4",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-storybook": "^10.2.7",
 		"eslint-plugin-svelte": "^3.14.0",
 		"globals": "^14.0.0",
 		"jest-image-snapshot": "^6.4.0",
@@ -147,7 +139,6 @@
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",
 		"prisma": "^7.3.0",
-		"storybook": "^10.2.7",
 		"super-sitemap": "^1.0.7",
 		"svelte": "^5.48.2",
 		"svelte-check": "^4.3.5",

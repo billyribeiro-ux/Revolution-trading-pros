@@ -1,6 +1,6 @@
 <!--
 /**
- * AssetManager - Storyblok-Style Digital Asset Manager
+ * AssetManager - Digital Asset Manager
  * =====================================================
  * Enterprise-grade DAM with:
  * - Grid/List view modes

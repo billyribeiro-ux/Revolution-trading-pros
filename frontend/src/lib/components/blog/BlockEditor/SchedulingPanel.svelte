@@ -1,6 +1,6 @@
 <!--
 /**
- * SchedulingPanel - Storyblok-style Content Scheduling
+ * SchedulingPanel - Content Scheduling
  * =====================================================
  * Enterprise-grade content scheduling with timezone support,
  * release bundles, and calendar visualization.

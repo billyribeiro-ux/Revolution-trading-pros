@@ -1,6 +1,6 @@
 <!--
 /**
- * Global Component Library - Storyblok-Style Component Browser
+ * Global Component Library - Component Browser
  * ===============================================================================
  * Modal/sidebar browser for managing global components (headers, footers, CTAs, etc.)
  * Enables managing repeated elements from one centralized place.

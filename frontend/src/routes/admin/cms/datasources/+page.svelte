@@ -1,5 +1,5 @@
 <!--
-	/admin/cms/datasources - Storyblok-Style Datasources Management
+	/admin/cms/datasources - Datasources Management
 	Apple Principal Engineer ICT 7 Grade - February 2026
 
 	Features:

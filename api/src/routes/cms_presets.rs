@@ -1,4 +1,4 @@
-//! CMS Presets API Routes - Storyblok-Style Component Presets/Templates
+//! CMS Presets API Routes - Component Presets/Templates
 //!
 //! Apple ICT 7+ Principal Engineer Grade - February 2026
 //!

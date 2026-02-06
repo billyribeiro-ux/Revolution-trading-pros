@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════════════════
--- CMS PRESETS/TEMPLATES SYSTEM - Storyblok-Style Component Presets
+-- CMS PRESETS/TEMPLATES SYSTEM - Component Presets
 -- Apple ICT 7+ Principal Engineer Grade
 -- Revolution Trading Pros - February 2026
 --
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS cms_presets (
     CONSTRAINT cms_presets_slug_check CHECK (slug ~ '^[a-z0-9-]+$')
 );
 
-COMMENT ON TABLE cms_presets IS 'Storyblok-style component presets/templates for quick block insertion';
+COMMENT ON TABLE cms_presets IS 'Component presets/templates for quick block insertion';
 COMMENT ON COLUMN cms_presets.block_type IS 'The block type this preset applies to (e.g., button, heading)';
 COMMENT ON COLUMN cms_presets.preset_data IS 'JSON containing content and settings for the preset';
 COMMENT ON COLUMN cms_presets.is_default IS 'Whether this preset appears as the default for its block type';
@@ -428,4 +428,4 @@ CREATE POLICY cms_presets_delete ON cms_presets
 -- MIGRATION COMPLETE
 -- ─────────────────────────────────────────────────────────────────────────────────────────
 
-COMMENT ON TABLE cms_presets IS 'CMS Presets/Templates System - Storyblok-style component presets for the block editor';
+COMMENT ON TABLE cms_presets IS 'CMS Presets/Templates System - Component presets for the block editor';

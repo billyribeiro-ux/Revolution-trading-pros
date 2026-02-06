@@ -1,6 +1,6 @@
 //! CMS Scheduling Routes - Apple ICT 7+ Principal Engineer Grade
 //!
-//! Storyblok-style content scheduling and releases system:
+//! Content scheduling and releases system:
 //! - Schedule single content publish/unpublish operations
 //! - Bundle multiple content changes into releases
 //! - Timezone-aware scheduling with cron job support

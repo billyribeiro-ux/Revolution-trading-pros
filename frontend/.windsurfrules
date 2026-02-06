@@ -126,8 +126,7 @@ RIPPLE EFFECT - ALL THESE MUST BE UPDATED:
 ├── +page.svelte (x14)     ← Add variant prop to all usages
 ├── LoginForm.svelte       ← Add variant prop
 ├── SignupForm.svelte      ← Add variant prop
-├── types/components.ts    ← Update ButtonProps type
-└── stories/Button.stories.svelte ← Update Storybook
+└── types/components.ts    ← Update ButtonProps type
 ```
 
 ### Scenario: Changing a Type Definition
@@ -345,7 +344,7 @@ import something from './module';
 4. **IDENTIFY all type definitions** - follow the type chain to its source
 5. **MAP the component/function hierarchy** - understand the call stack
 6. **MAP state flow** - where does data come from? Where does it go? What transforms it?
-7. **CHECK for related files** - tests, types, stores, utilities, stories
+7. **CHECK for related files** - tests, types, stores, utilities
 8. **CHECK for side effects** - does this code trigger other code?
 9. **UNDERSTAND the business logic** - what is this feature trying to accomplish?
 10. **VERIFY current state** - run `pnpm run check` BEFORE making changes
@@ -1424,7 +1423,6 @@ src/lib/components/
 │   ├── Button/
 │   │   ├── Button.svelte
 │   │   ├── Button.test.ts
-│   │   ├── Button.stories.svelte
 │   │   └── index.ts
 │   └── ...
 ├── features/              # Feature-specific components

@@ -1,4 +1,4 @@
-//! CMS Datasources API Routes - Storyblok-Style Reusable Option Lists
+//! CMS Datasources API Routes - Reusable Option Lists
 //!
 //! Apple ICT 7+ Principal Engineer Grade - February 2026
 //!

@@ -46,12 +46,12 @@ pub mod admin_page_layouts;
 pub mod admin_videos;
 pub mod bunny_upload; // ICT 7: Bunny.net video upload API
 pub mod cms_ai_assist; // ICT 7+: AI-powered content assistance
-pub mod cms_assets; // ICT 11+: Storyblok-style centralized Asset Manager (DAM)
-pub mod cms_datasources; // ICT 7+: Storyblok-style datasources for reusable option lists
-pub mod cms_presets; // ICT 7+: Storyblok-style component presets/templates
-pub mod cms_global_components; // ICT 11+: Storyblok-style Global Components Library
+pub mod cms_assets; // ICT 11+: Centralized Asset Manager (DAM)
+pub mod cms_datasources; // ICT 7+: Datasources for reusable option lists
+pub mod cms_presets; // ICT 7+: Component presets/templates
+pub mod cms_global_components; // ICT 11+: Global Components Library
 pub mod cms_reusable_blocks;
-pub mod cms_scheduling; // ICT 7+: Storyblok-style content scheduling and releases
+pub mod cms_scheduling; // ICT 7+: Content scheduling and releases
 pub mod cms_seo; // ICT 11+: Server-side SEO validation
 pub mod connections;
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
@@ -111,7 +111,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())
-        // CMS v2 - Custom CMS Implementation (surpasses Storyblok)
+        // CMS v2 - Custom CMS Implementation
         .nest("/admin/cms-v2", cms_v2::admin_router())
         .nest("/cms", cms_v2::public_router())
         // CMS v2 Enterprise - Audit, Workflow, Preview Tokens
@@ -205,17 +205,17 @@ pub fn api_router() -> Router<AppState> {
             "/cms/reusable-blocks/public",
             cms_reusable_blocks::public_router(),
         )
-        // CMS Presets - ICT 7+ Storyblok-style component presets/templates
+        // CMS Presets - ICT 7+ Component presets/templates
         .nest("/cms/presets", cms_presets::admin_router())
         .nest("/cms/presets/public", cms_presets::public_router())
-        // CMS Assets - ICT 11+ Storyblok-style centralized Asset Manager (DAM)
+        // CMS Assets - ICT 11+ Centralized Asset Manager (DAM)
         .nest("/cms/assets", cms_assets::router())
-        // CMS Scheduling - ICT 7+ Storyblok-style content scheduling and releases
+        // CMS Scheduling - ICT 7+ Content scheduling and releases
         .nest("/cms/scheduling", cms_scheduling::router())
-        // CMS Datasources - ICT 7+ Storyblok-style reusable option lists
+        // CMS Datasources - ICT 7+ Reusable option lists
         .nest("/cms/datasources", cms_datasources::admin_router())
         .nest("/cms/datasources/public", cms_datasources::public_router())
-        // CMS Global Components - ICT 11+ Storyblok-style Global Components Library
+        // CMS Global Components - ICT 11+ Global Components Library
         .nest("/cms/global-components", cms_global_components::admin_router())
         .nest(
             "/cms/global-components/public",

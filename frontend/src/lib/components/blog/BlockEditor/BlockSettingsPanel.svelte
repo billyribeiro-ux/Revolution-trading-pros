@@ -6,7 +6,7 @@
 	 * borders, animations, and responsive controls.
 	 *
 	 * Features:
-	 * - Storyblok-style datasource integration for dropdown fields
+	 * - Datasource integration for dropdown fields
 	 * - Dynamic option loading from datasources
 	 * - Full typography, colors, spacing controls
 	 *

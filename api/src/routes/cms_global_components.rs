@@ -1,4 +1,4 @@
-//! CMS Global Components Library API Routes - Storyblok-Style
+//! CMS Global Components Library API Routes
 //!
 //! Comprehensive API for managing global components in the CMS.
 //! Enables managing headers, footers, CTAs, and other repeated elements from one place.

@@ -2,7 +2,7 @@
 -- CUSTOM CMS IMPLEMENTATION - Apple ICT 7+ Principal Engineer Grade
 -- Revolution Trading Pros - January 2026
 --
--- This migration creates the comprehensive custom CMS to surpass Storyblok.
+-- This migration creates the comprehensive custom CMS.
 -- Features:
 -- - Unified content storage with all content types
 -- - Block-based page builder support

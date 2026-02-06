@@ -1,4 +1,4 @@
-//! CMS Asset Manager API - Storyblok-Style DAM
+//! CMS Asset Manager API - Digital Asset Manager
 //! ============================================
 //! Apple ICT 11+ Principal Engineer Grade
 //!
@@ -1375,7 +1375,7 @@ async fn get_cms_user_id(
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-/// Build the CMS Assets router - Storyblok-style DAM API
+/// Build the CMS Assets router - DAM API
 pub fn router() -> Router<AppState> {
     Router::new()
         // Asset listing & search
