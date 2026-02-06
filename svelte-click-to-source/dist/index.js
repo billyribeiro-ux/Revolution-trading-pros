@@ -95,7 +95,7 @@ var RUNTIME_SCRIPT = `
   function openInEditor(source) {
     if (!source) return;
 
-    const match = source.match(/^(.+):(\\\\d+):(\\\\d+)$/);
+    const match = source.match(/^(.+):(\\d+):(\\d+)$/);
     if (!match) {
       console.warn('[click-to-source] Invalid source format:', source);
       return;
@@ -114,7 +114,12 @@ var RUNTIME_SCRIPT = `
     }
 
     console.log('[click-to-source] Opening:', url);
-    window.open(url, '_self');
+    var a = document.createElement('a');
+    a.href = url;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); }, 100);
   }
 
   function handleKeyDown(e) {
