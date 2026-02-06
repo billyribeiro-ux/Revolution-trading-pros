@@ -3,7 +3,12 @@ import { PreprocessorGroup } from 'svelte/compiler';
 
 /**
  * Svelte Preprocessor for click-to-source
- * Adds data-source="filepath:line:col" to every element in dev mode.
+ * Adds data-source="filepath:line:col" to HTML elements in the markup section only.
+ *
+ * Skips:
+ * - <script> and <style> blocks (avoids breaking TypeScript generics)
+ * - Special elements: <title>, <script>, <style>, <svelte:*>, <slot>
+ * - Self-closing tags inside excluded zones
  */
 
 interface PreprocessorOptions {

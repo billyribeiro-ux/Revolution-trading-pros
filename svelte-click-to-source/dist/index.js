@@ -175,6 +175,35 @@ var RUNTIME_SCRIPT = `
 
 // src/preprocessor.ts
 import MagicString from "magic-string";
+var EXCLUDED_TAGS = /* @__PURE__ */ new Set([
+  "script",
+  "style",
+  "title",
+  "slot",
+  "head",
+  "svelte:head",
+  "svelte:body",
+  "svelte:window",
+  "svelte:document",
+  "svelte:component",
+  "svelte:self",
+  "svelte:fragment",
+  "svelte:element",
+  "svelte:options",
+  "svelte:boundary"
+]);
+function findExcludedRanges(content) {
+  const ranges = [];
+  const blockRegex = /<(script|style)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
+  let match;
+  while ((match = blockRegex.exec(content)) !== null) {
+    ranges.push({ start: match.index, end: match.index + match[0].length });
+  }
+  return ranges;
+}
+function isInsideExcludedRange(pos, ranges) {
+  return ranges.some((r) => pos >= r.start && pos < r.end);
+}
 function createPreprocessor(options = {}) {
   const { enabled = process.env.NODE_ENV !== "production" } = options;
   return {
@@ -189,11 +218,19 @@ function createPreprocessor(options = {}) {
       try {
         const s = new MagicString(content);
         const insertions = [];
-        const tagRegex = /<([a-z][a-z0-9]*)([\s>])/gi;
+        const excludedRanges = findExcludedRanges(content);
+        const tagRegex = /<([a-z][a-z0-9-]*)([\s>\/])/gi;
         let match;
         while ((match = tagRegex.exec(content)) !== null) {
           const tagStart = match.index;
+          const tagName = match[1].toLowerCase();
           const afterTagName = match.index + match[0].length - 1;
+          if (isInsideExcludedRange(tagStart, excludedRanges)) {
+            continue;
+          }
+          if (EXCLUDED_TAGS.has(tagName)) {
+            continue;
+          }
           const beforeTag = content.slice(0, tagStart);
           const lines = beforeTag.split("\n");
           const line = lines.length;

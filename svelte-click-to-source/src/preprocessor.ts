@@ -1,6 +1,11 @@
 /**
  * Svelte Preprocessor for click-to-source
- * Adds data-source="filepath:line:col" to every element in dev mode.
+ * Adds data-source="filepath:line:col" to HTML elements in the markup section only.
+ * 
+ * Skips:
+ * - <script> and <style> blocks (avoids breaking TypeScript generics)
+ * - Special elements: <title>, <script>, <style>, <svelte:*>, <slot>
+ * - Self-closing tags inside excluded zones
  */
 
 import type { PreprocessorGroup } from 'svelte/compiler';
@@ -8,6 +13,35 @@ import MagicString from 'magic-string';
 
 export interface PreprocessorOptions {
   enabled?: boolean;
+}
+
+// Elements that must NOT receive data-source attributes
+const EXCLUDED_TAGS = new Set([
+  'script', 'style', 'title', 'slot', 'head',
+  'svelte:head', 'svelte:body', 'svelte:window', 'svelte:document',
+  'svelte:component', 'svelte:self', 'svelte:fragment', 'svelte:element',
+  'svelte:options', 'svelte:boundary',
+]);
+
+/**
+ * Find all ranges in the source that are inside <script> or <style> blocks.
+ * We must not inject data-source attributes inside these blocks.
+ */
+function findExcludedRanges(content: string): Array<{ start: number; end: number }> {
+  const ranges: Array<{ start: number; end: number }> = [];
+  const blockRegex = /<(script|style)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
+  let match;
+  while ((match = blockRegex.exec(content)) !== null) {
+    ranges.push({ start: match.index, end: match.index + match[0].length });
+  }
+  return ranges;
+}
+
+function isInsideExcludedRange(
+  pos: number,
+  ranges: Array<{ start: number; end: number }>
+): boolean {
+  return ranges.some((r) => pos >= r.start && pos < r.end);
 }
 
 export function createPreprocessor(options: PreprocessorOptions = {}): PreprocessorGroup {
@@ -28,15 +62,27 @@ export function createPreprocessor(options: PreprocessorOptions = {}): Preproces
       try {
         const s = new MagicString(content);
         const insertions: Array<{ pos: number; text: string }> = [];
+        const excludedRanges = findExcludedRanges(content);
 
-        // Match opening tags: <div, <span, <button, etc. (lowercase = HTML elements)
-        const tagRegex = /<([a-z][a-z0-9]*)([\s>])/gi;
+        // Match opening HTML tags (lowercase only = native HTML elements)
+        const tagRegex = /<([a-z][a-z0-9-]*)([\s>\/])/gi;
         let match;
 
         while ((match = tagRegex.exec(content)) !== null) {
           const tagStart = match.index;
+          const tagName = match[1].toLowerCase();
           const afterTagName = match.index + match[0].length - 1;
-          
+
+          // Skip if inside <script> or <style> block
+          if (isInsideExcludedRange(tagStart, excludedRanges)) {
+            continue;
+          }
+
+          // Skip excluded tags
+          if (EXCLUDED_TAGS.has(tagName)) {
+            continue;
+          }
+
           // Calculate line and column
           const beforeTag = content.slice(0, tagStart);
           const lines = beforeTag.split('\n');
