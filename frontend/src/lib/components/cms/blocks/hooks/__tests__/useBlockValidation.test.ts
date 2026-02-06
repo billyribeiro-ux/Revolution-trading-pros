@@ -247,12 +247,12 @@ describe('useBlockValidation', () => {
 
 		it('validates minLength on arrays', () => {
 			const block = createMockBlock({
-				content: { items: ['a', 'b'] }
+				content: { listItems: ['a', 'b'] }
 			});
 
 			const rules: ValidationRule[] = [
 				{
-					field: 'content.items',
+					field: 'content.listItems',
 					minLength: 3,
 					message: 'Need at least 3 items'
 				}
@@ -330,12 +330,12 @@ describe('useBlockValidation', () => {
 
 		it('validates maxLength on arrays', () => {
 			const block = createMockBlock({
-				content: { items: ['a', 'b', 'c', 'd', 'e'] }
+				content: { listItems: ['a', 'b', 'c', 'd', 'e'] }
 			});
 
 			const rules: ValidationRule[] = [
 				{
-					field: 'content.items',
+					field: 'content.listItems',
 					maxLength: 3,
 					message: 'Maximum 3 items allowed'
 				}

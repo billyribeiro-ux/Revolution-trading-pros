@@ -88,7 +88,7 @@ export interface BlockContent {
 	// Checklist
 	items?: Array<{
 		id: string;
-		content: string;
+		text: string;
 		checked?: boolean;
 	}>;
 
@@ -229,8 +229,8 @@ export interface BlockSettings {
 
 // Block metadata
 export interface BlockMetadata {
-	createdAt?: number;
-	updatedAt?: number;
+	createdAt?: number | string;
+	updatedAt?: number | string;
 	createdBy?: string;
 	version?: number;
 	locked?: boolean;
