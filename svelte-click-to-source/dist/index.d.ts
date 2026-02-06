@@ -20,6 +20,11 @@ declare function createPreprocessor(options?: PreprocessorOptions): Preprocessor
  * svelte-click-to-source
  *
  * Alt+Click any element in dev mode → Opens source in your editor
+ *
+ * Architecture:
+ * 1. Preprocessor adds data-source="file:line:col" to HTML elements
+ * 2. Runtime script highlights elements on hotkey+hover, sends fetch to dev server on click
+ * 3. Vite middleware receives the request and opens the file via CLI command
  */
 
 interface ClickToSourceOptions {
