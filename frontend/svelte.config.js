@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { createPreprocessor } from './src/lib/dev/click-to-source.js';
+import { createPreprocessor } from 'svelte-click-to-source';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
