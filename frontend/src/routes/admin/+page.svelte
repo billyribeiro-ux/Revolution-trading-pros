@@ -45,7 +45,7 @@
 		IconExternalLink,
 		IconPlugConnected
 	} from '$lib/icons';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		connections,
 		getIsAnalyticsConnected,
@@ -349,9 +349,8 @@
 		Object.values(connections.connectionsList).filter((c) => c.isConnected).length
 	);
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (!browser) return;
+	// Svelte 5: Initialize on mount (NOT $effect — fetchDashboardStats mutates state which would re-trigger)
+	onMount(() => {
 		mounted = true;
 		// Check real connection status from store
 		analyticsConnected = getIsAnalyticsConnected();
