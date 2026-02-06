@@ -8,8 +8,6 @@
 
 	// Icons
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
@@ -23,7 +21,6 @@
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconChevronUp from '@tabler/icons-svelte-runes/icons/chevron-up';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';

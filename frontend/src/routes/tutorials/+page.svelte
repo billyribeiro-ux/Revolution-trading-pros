@@ -14,7 +14,6 @@
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { Tutorial } from './+page.server';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Svelte 5 props with SvelteKit typing

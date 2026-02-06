@@ -6,7 +6,7 @@
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
 	import { preloadData } from '$app/navigation';
-	import { untrack, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
