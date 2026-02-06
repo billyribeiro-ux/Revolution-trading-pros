@@ -5,12 +5,13 @@
  */
 
 import type { Block, BlockType, CreateBlockPayload } from '$lib/components/cms/blocks/types';
+import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 
 /**
  * Generate a unique block ID
  */
-export function generateBlockId(): string {
-	return `block_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+export function generateBlockId(): BlockId {
+	return toBlockId(`block_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
 }
 
 /**

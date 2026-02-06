@@ -3,6 +3,8 @@
  * Complete type system for all blocks
  */
 
+import type { BlockId } from '$lib/stores/blockState.svelte';
+
 // Base block type
 export type BlockType =
 	// Content
@@ -237,7 +239,7 @@ export interface BlockMetadata {
 
 // Complete block interface
 export interface Block {
-	id: string;
+	id: BlockId;
 	type: BlockType;
 	content: BlockContent;
 	settings: BlockSettings;

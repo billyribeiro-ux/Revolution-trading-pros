@@ -21,6 +21,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import SpacerBlock from '../layout/SpacerBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -37,7 +38,7 @@ interface SpacerBlockOverrides {
 
 function createSpacerBlock(overrides: SpacerBlockOverrides = {}): Block {
 	return {
-		id: overrides.id || 'test-spacer',
+		id: toBlockId(overrides.id || 'test-spacer'),
 		type: 'spacer',
 		content: {
 			...overrides.content
@@ -69,7 +70,7 @@ describe('SpacerBlock - Basic Rendering', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'spacer-1',
+				blockId: toBlockId('spacer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -85,7 +86,7 @@ describe('SpacerBlock - Basic Rendering', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'spacer-2',
+				blockId: toBlockId('spacer-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -102,7 +103,7 @@ describe('SpacerBlock - Basic Rendering', () => {
 			render(SpacerBlock, {
 				props: {
 					block,
-					blockId: 'spacer-3',
+					blockId: toBlockId('spacer-3'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -128,7 +129,7 @@ describe('SpacerBlock - Height Control', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'height-1',
+				blockId: toBlockId('height-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -146,7 +147,7 @@ describe('SpacerBlock - Height Control', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'height-2',
+				blockId: toBlockId('height-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -164,7 +165,7 @@ describe('SpacerBlock - Height Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'height-3',
+				blockId: toBlockId('height-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -190,7 +191,7 @@ describe('SpacerBlock - Height Presets', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'preset-1',
+				blockId: toBlockId('preset-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -210,7 +211,7 @@ describe('SpacerBlock - Height Presets', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'preset-2',
+				blockId: toBlockId('preset-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -236,7 +237,7 @@ describe('SpacerBlock - Height Presets', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'preset-3',
+				blockId: toBlockId('preset-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -253,7 +254,7 @@ describe('SpacerBlock - Height Presets', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'preset-4',
+				blockId: toBlockId('preset-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -277,7 +278,7 @@ describe('SpacerBlock - Height Presets', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'preset-5',
+				blockId: toBlockId('preset-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -310,7 +311,7 @@ describe('SpacerBlock - Slider Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'slider-1',
+				blockId: toBlockId('slider-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -326,7 +327,7 @@ describe('SpacerBlock - Slider Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'slider-2',
+				blockId: toBlockId('slider-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -343,7 +344,7 @@ describe('SpacerBlock - Slider Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'slider-3',
+				blockId: toBlockId('slider-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -360,7 +361,7 @@ describe('SpacerBlock - Slider Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'slider-4',
+				blockId: toBlockId('slider-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -380,7 +381,7 @@ describe('SpacerBlock - Slider Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'slider-5',
+				blockId: toBlockId('slider-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -399,7 +400,7 @@ describe('SpacerBlock - Slider Control', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'slider-6',
+				blockId: toBlockId('slider-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -425,7 +426,7 @@ describe('SpacerBlock - Drag Resize', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'drag-1',
+				blockId: toBlockId('drag-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -441,7 +442,7 @@ describe('SpacerBlock - Drag Resize', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'drag-2',
+				blockId: toBlockId('drag-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -457,7 +458,7 @@ describe('SpacerBlock - Drag Resize', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'drag-3',
+				blockId: toBlockId('drag-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -473,7 +474,7 @@ describe('SpacerBlock - Drag Resize', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'drag-4',
+				blockId: toBlockId('drag-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -490,7 +491,7 @@ describe('SpacerBlock - Drag Resize', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'drag-5',
+				blockId: toBlockId('drag-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -521,7 +522,7 @@ describe('SpacerBlock - Keyboard Navigation', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-1',
+				blockId: toBlockId('keyboard-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -542,7 +543,7 @@ describe('SpacerBlock - Keyboard Navigation', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-2',
+				blockId: toBlockId('keyboard-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -563,7 +564,7 @@ describe('SpacerBlock - Keyboard Navigation', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-3',
+				blockId: toBlockId('keyboard-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -582,7 +583,7 @@ describe('SpacerBlock - Keyboard Navigation', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-4',
+				blockId: toBlockId('keyboard-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate
@@ -609,7 +610,7 @@ describe('SpacerBlock - Edit vs View Mode', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'mode-1',
+				blockId: toBlockId('mode-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -625,7 +626,7 @@ describe('SpacerBlock - Edit vs View Mode', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'mode-2',
+				blockId: toBlockId('mode-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -641,7 +642,7 @@ describe('SpacerBlock - Edit vs View Mode', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'mode-3',
+				blockId: toBlockId('mode-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -657,7 +658,7 @@ describe('SpacerBlock - Edit vs View Mode', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'mode-4',
+				blockId: toBlockId('mode-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -673,7 +674,7 @@ describe('SpacerBlock - Edit vs View Mode', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'mode-5',
+				blockId: toBlockId('mode-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -699,7 +700,7 @@ describe('SpacerBlock - Styling Classes', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'style-1',
+				blockId: toBlockId('style-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -715,7 +716,7 @@ describe('SpacerBlock - Styling Classes', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'style-2',
+				blockId: toBlockId('style-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -731,7 +732,7 @@ describe('SpacerBlock - Styling Classes', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'style-3',
+				blockId: toBlockId('style-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -757,7 +758,7 @@ describe('SpacerBlock - Accessibility', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-1',
+				blockId: toBlockId('a11y-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -773,7 +774,7 @@ describe('SpacerBlock - Accessibility', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-2',
+				blockId: toBlockId('a11y-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -789,7 +790,7 @@ describe('SpacerBlock - Accessibility', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-3',
+				blockId: toBlockId('a11y-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -805,7 +806,7 @@ describe('SpacerBlock - Accessibility', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-4',
+				blockId: toBlockId('a11y-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -823,7 +824,7 @@ describe('SpacerBlock - Accessibility', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-5',
+				blockId: toBlockId('a11y-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -846,7 +847,7 @@ describe('SpacerBlock - Error Handling', () => {
 
 	it('should handle missing settings gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'spacer',
 			content: {},
 			settings: {},
@@ -861,7 +862,7 @@ describe('SpacerBlock - Error Handling', () => {
 			render(SpacerBlock, {
 				props: {
 					block,
-					blockId: 'error-1',
+					blockId: toBlockId('error-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -872,7 +873,7 @@ describe('SpacerBlock - Error Handling', () => {
 
 	it('should use default height for undefined settings', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'spacer',
 			content: {},
 			settings: {},
@@ -886,7 +887,7 @@ describe('SpacerBlock - Error Handling', () => {
 		const { container } = render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'error-2',
+				blockId: toBlockId('error-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -906,7 +907,7 @@ describe('SpacerBlock - Error Handling', () => {
 			render(SpacerBlock, {
 				props: {
 					block,
-					blockId: 'error-3',
+					blockId: toBlockId('error-3'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -922,7 +923,7 @@ describe('SpacerBlock - Error Handling', () => {
 		render(SpacerBlock, {
 			props: {
 				block,
-				blockId: 'error-4',
+				blockId: toBlockId('error-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),

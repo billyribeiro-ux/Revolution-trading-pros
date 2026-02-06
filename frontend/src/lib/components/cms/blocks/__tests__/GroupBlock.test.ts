@@ -22,6 +22,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import GroupBlock from '../layout/GroupBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -44,7 +45,7 @@ interface GroupBlockOverrides {
 
 function createGroupBlock(overrides: GroupBlockOverrides = {}): Block {
 	return {
-		id: overrides.id || 'test-group',
+		id: toBlockId(overrides.id || 'test-group'),
 		type: 'group',
 		content: {
 			children: [],
@@ -81,7 +82,7 @@ describe('GroupBlock - Basic Rendering', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'group-1',
+				blockId: toBlockId('group-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -98,7 +99,7 @@ describe('GroupBlock - Basic Rendering', () => {
 			render(GroupBlock, {
 				props: {
 					block,
-					blockId: 'group-2',
+					blockId: toBlockId('group-2'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -112,7 +113,7 @@ describe('GroupBlock - Basic Rendering', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'group-3',
+				blockId: toBlockId('group-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -140,7 +141,7 @@ describe('GroupBlock - Background Color', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'bg-1',
+				blockId: toBlockId('bg-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -158,7 +159,7 @@ describe('GroupBlock - Background Color', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'bg-2',
+				blockId: toBlockId('bg-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -174,7 +175,7 @@ describe('GroupBlock - Background Color', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'bg-3',
+				blockId: toBlockId('bg-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -191,7 +192,7 @@ describe('GroupBlock - Background Color', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'bg-4',
+				blockId: toBlockId('bg-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -217,7 +218,7 @@ describe('GroupBlock - Background Color', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'bg-5',
+				blockId: toBlockId('bg-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -236,7 +237,7 @@ describe('GroupBlock - Background Color', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'bg-6',
+				blockId: toBlockId('bg-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -272,7 +273,7 @@ describe('GroupBlock - Padding Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'padding-1',
+				blockId: toBlockId('padding-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -290,7 +291,7 @@ describe('GroupBlock - Padding Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'padding-2',
+				blockId: toBlockId('padding-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -308,7 +309,7 @@ describe('GroupBlock - Padding Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'padding-3',
+				blockId: toBlockId('padding-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -326,7 +327,7 @@ describe('GroupBlock - Padding Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'padding-4',
+				blockId: toBlockId('padding-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -342,7 +343,7 @@ describe('GroupBlock - Padding Settings', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'padding-5',
+				blockId: toBlockId('padding-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -361,7 +362,7 @@ describe('GroupBlock - Padding Settings', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'padding-6',
+				blockId: toBlockId('padding-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -394,7 +395,7 @@ describe('GroupBlock - Border Radius', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'radius-1',
+				blockId: toBlockId('radius-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -412,7 +413,7 @@ describe('GroupBlock - Border Radius', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'radius-2',
+				blockId: toBlockId('radius-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -428,7 +429,7 @@ describe('GroupBlock - Border Radius', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'radius-3',
+				blockId: toBlockId('radius-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -445,7 +446,7 @@ describe('GroupBlock - Border Radius', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'radius-4',
+				blockId: toBlockId('radius-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -469,7 +470,7 @@ describe('GroupBlock - Border Radius', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'radius-5',
+				blockId: toBlockId('radius-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -497,7 +498,7 @@ describe('GroupBlock - Max Width Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'width-1',
+				blockId: toBlockId('width-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -515,7 +516,7 @@ describe('GroupBlock - Max Width Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'width-2',
+				blockId: toBlockId('width-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -533,7 +534,7 @@ describe('GroupBlock - Max Width Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'width-3',
+				blockId: toBlockId('width-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -551,7 +552,7 @@ describe('GroupBlock - Max Width Settings', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'width-4',
+				blockId: toBlockId('width-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -567,7 +568,7 @@ describe('GroupBlock - Max Width Settings', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'width-5',
+				blockId: toBlockId('width-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -602,7 +603,7 @@ describe('GroupBlock - Alignment', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'align-1',
+				blockId: toBlockId('align-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -620,7 +621,7 @@ describe('GroupBlock - Alignment', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'align-2',
+				blockId: toBlockId('align-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -638,7 +639,7 @@ describe('GroupBlock - Alignment', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'align-3',
+				blockId: toBlockId('align-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -654,7 +655,7 @@ describe('GroupBlock - Alignment', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'align-4',
+				blockId: toBlockId('align-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -672,7 +673,7 @@ describe('GroupBlock - Alignment', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'align-5',
+				blockId: toBlockId('align-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -698,7 +699,7 @@ describe('GroupBlock - Alignment', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'align-6',
+				blockId: toBlockId('align-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -726,7 +727,7 @@ describe('GroupBlock - Nested Content', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'nest-1',
+				blockId: toBlockId('nest-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -743,7 +744,7 @@ describe('GroupBlock - Nested Content', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'nest-2',
+				blockId: toBlockId('nest-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -758,14 +759,14 @@ describe('GroupBlock - Nested Content', () => {
 			content: {
 				children: [
 					{
-						id: 'child-1',
+						id: toBlockId('child-1'),
 						type: 'paragraph',
 						content: { text: 'Test' },
 						settings: {},
 						metadata: { createdAt: '', updatedAt: '', version: 1 }
 					},
 					{
-						id: 'child-2',
+						id: toBlockId('child-2'),
 						type: 'paragraph',
 						content: { text: 'Test 2' },
 						settings: {},
@@ -777,7 +778,7 @@ describe('GroupBlock - Nested Content', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'nest-3',
+				blockId: toBlockId('nest-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -792,7 +793,7 @@ describe('GroupBlock - Nested Content', () => {
 			content: {
 				children: [
 					{
-						id: 'child-1',
+						id: toBlockId('child-1'),
 						type: 'paragraph',
 						content: { text: 'Test' },
 						settings: {},
@@ -804,7 +805,7 @@ describe('GroupBlock - Nested Content', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'nest-4',
+				blockId: toBlockId('nest-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -829,7 +830,7 @@ describe('GroupBlock - Edit Mode Toolbar', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-1',
+				blockId: toBlockId('toolbar-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -845,7 +846,7 @@ describe('GroupBlock - Edit Mode Toolbar', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-2',
+				blockId: toBlockId('toolbar-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -861,7 +862,7 @@ describe('GroupBlock - Edit Mode Toolbar', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-3',
+				blockId: toBlockId('toolbar-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -887,7 +888,7 @@ describe('GroupBlock - Styling Classes', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'style-1',
+				blockId: toBlockId('style-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -903,7 +904,7 @@ describe('GroupBlock - Styling Classes', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'style-2',
+				blockId: toBlockId('style-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -919,7 +920,7 @@ describe('GroupBlock - Styling Classes', () => {
 		const { container } = render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'style-3',
+				blockId: toBlockId('style-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -945,7 +946,7 @@ describe('GroupBlock - Accessibility', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'a11y-1',
+				blockId: toBlockId('a11y-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -961,7 +962,7 @@ describe('GroupBlock - Accessibility', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'a11y-2',
+				blockId: toBlockId('a11y-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -977,7 +978,7 @@ describe('GroupBlock - Accessibility', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'a11y-3',
+				blockId: toBlockId('a11y-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -993,7 +994,7 @@ describe('GroupBlock - Accessibility', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'a11y-4',
+				blockId: toBlockId('a11y-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -1009,7 +1010,7 @@ describe('GroupBlock - Accessibility', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'a11y-5',
+				blockId: toBlockId('a11y-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -1039,7 +1040,7 @@ describe('GroupBlock - Error Handling', () => {
 
 	it('should handle missing content gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'group',
 			content: {},
 			settings: {},
@@ -1054,7 +1055,7 @@ describe('GroupBlock - Error Handling', () => {
 			render(GroupBlock, {
 				props: {
 					block,
-					blockId: 'error-1',
+					blockId: toBlockId('error-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -1065,7 +1066,7 @@ describe('GroupBlock - Error Handling', () => {
 
 	it('should handle missing settings gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'group',
 			content: { children: [] },
 			settings: {},
@@ -1080,7 +1081,7 @@ describe('GroupBlock - Error Handling', () => {
 			render(GroupBlock, {
 				props: {
 					block,
-					blockId: 'error-2',
+					blockId: toBlockId('error-2'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -1096,7 +1097,7 @@ describe('GroupBlock - Error Handling', () => {
 		render(GroupBlock, {
 			props: {
 				block,
-				blockId: 'error-3',
+				blockId: toBlockId('error-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),

@@ -21,6 +21,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import CalloutBlock from '../advanced/CalloutBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -28,7 +29,7 @@ import type { Block } from '../types';
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: 'callout-1',
+		id: toBlockId('callout-1'),
 		type: 'callout',
 		content: {
 			calloutType: 'info',
@@ -71,7 +72,7 @@ describe('CalloutBlock - Info Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -90,7 +91,7 @@ describe('CalloutBlock - Info Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -109,7 +110,7 @@ describe('CalloutBlock - Info Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -134,7 +135,7 @@ describe('CalloutBlock - Success Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -153,7 +154,7 @@ describe('CalloutBlock - Success Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -172,7 +173,7 @@ describe('CalloutBlock - Success Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -197,7 +198,7 @@ describe('CalloutBlock - Warning Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -216,7 +217,7 @@ describe('CalloutBlock - Warning Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -235,7 +236,7 @@ describe('CalloutBlock - Warning Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -260,7 +261,7 @@ describe('CalloutBlock - Error Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -279,7 +280,7 @@ describe('CalloutBlock - Error Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -298,7 +299,7 @@ describe('CalloutBlock - Error Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -323,7 +324,7 @@ describe('CalloutBlock - Tip Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -342,7 +343,7 @@ describe('CalloutBlock - Tip Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -361,7 +362,7 @@ describe('CalloutBlock - Tip Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -395,7 +396,7 @@ describe('CalloutBlock - All Types With Correct Colors', () => {
 			const { container } = render(CalloutBlock, {
 				props: {
 					block,
-					blockId: 'callout-1',
+					blockId: toBlockId('callout-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -421,7 +422,7 @@ describe('CalloutBlock - Dismissible Functionality', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -440,7 +441,7 @@ describe('CalloutBlock - Dismissible Functionality', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -458,7 +459,7 @@ describe('CalloutBlock - Dismissible Functionality', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -480,7 +481,7 @@ describe('CalloutBlock - Dismissible Functionality', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -498,7 +499,7 @@ describe('CalloutBlock - Dismissible Functionality', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -520,7 +521,7 @@ describe('CalloutBlock - Dismissible Functionality', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -545,7 +546,7 @@ describe('CalloutBlock - Title and Content Rendering', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -566,7 +567,7 @@ describe('CalloutBlock - Title and Content Rendering', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -587,7 +588,7 @@ describe('CalloutBlock - Title and Content Rendering', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -609,7 +610,7 @@ describe('CalloutBlock - Title and Content Rendering', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -632,7 +633,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -651,7 +652,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -668,7 +669,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -684,7 +685,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -704,7 +705,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -721,7 +722,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -741,7 +742,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -761,7 +762,7 @@ describe('CalloutBlock - Edit Mode', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -793,7 +794,7 @@ describe('CalloutBlock - Accessibility', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -810,7 +811,7 @@ describe('CalloutBlock - Accessibility', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -829,7 +830,7 @@ describe('CalloutBlock - Accessibility', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -854,7 +855,7 @@ describe('CalloutBlock - ARIA Role Based on Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -873,7 +874,7 @@ describe('CalloutBlock - ARIA Role Based on Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -892,7 +893,7 @@ describe('CalloutBlock - ARIA Role Based on Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -911,7 +912,7 @@ describe('CalloutBlock - ARIA Role Based on Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -930,7 +931,7 @@ describe('CalloutBlock - ARIA Role Based on Type', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -955,7 +956,7 @@ describe('CalloutBlock - Default Values', () => {
 		const { container } = render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -974,7 +975,7 @@ describe('CalloutBlock - Default Values', () => {
 		render(CalloutBlock, {
 			props: {
 				block,
-				blockId: 'callout-1',
+				blockId: toBlockId('callout-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()

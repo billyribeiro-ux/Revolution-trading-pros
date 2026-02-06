@@ -22,6 +22,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import PullQuoteBlock from '../content/PullQuoteBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -43,7 +44,7 @@ interface PullQuoteBlockOverrides {
 
 function createPullQuoteBlock(overrides: PullQuoteBlockOverrides = {}): Block {
 	return {
-		id: overrides.id || 'test-pullquote',
+		id: toBlockId(overrides.id || 'test-pullquote'),
 		type: 'pullquote',
 		content: {
 			text: 'The only way to do great work is to love what you do.',
@@ -80,7 +81,7 @@ describe('PullQuoteBlock - Basic Rendering', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'quote-1',
+				blockId: toBlockId('quote-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -98,7 +99,7 @@ describe('PullQuoteBlock - Basic Rendering', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'quote-2',
+				blockId: toBlockId('quote-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -113,7 +114,7 @@ describe('PullQuoteBlock - Basic Rendering', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'quote-3',
+				blockId: toBlockId('quote-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -130,7 +131,7 @@ describe('PullQuoteBlock - Basic Rendering', () => {
 			render(PullQuoteBlock, {
 				props: {
 					block,
-					blockId: 'quote-4',
+					blockId: toBlockId('quote-4'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -156,7 +157,7 @@ describe('PullQuoteBlock - Attribution and Source', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'attr-1',
+				blockId: toBlockId('attr-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -173,7 +174,7 @@ describe('PullQuoteBlock - Attribution and Source', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'attr-2',
+				blockId: toBlockId('attr-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -190,7 +191,7 @@ describe('PullQuoteBlock - Attribution and Source', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'attr-3',
+				blockId: toBlockId('attr-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -208,7 +209,7 @@ describe('PullQuoteBlock - Attribution and Source', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'attr-4',
+				blockId: toBlockId('attr-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -227,7 +228,7 @@ describe('PullQuoteBlock - Attribution and Source', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'attr-5',
+				blockId: toBlockId('attr-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -245,7 +246,7 @@ describe('PullQuoteBlock - Attribution and Source', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'attr-6',
+				blockId: toBlockId('attr-6'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -273,7 +274,7 @@ describe('PullQuoteBlock - Alignment Options', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'align-1',
+				blockId: toBlockId('align-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -291,7 +292,7 @@ describe('PullQuoteBlock - Alignment Options', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'align-2',
+				blockId: toBlockId('align-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -309,7 +310,7 @@ describe('PullQuoteBlock - Alignment Options', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'align-3',
+				blockId: toBlockId('align-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -325,7 +326,7 @@ describe('PullQuoteBlock - Alignment Options', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'align-4',
+				blockId: toBlockId('align-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -345,7 +346,7 @@ describe('PullQuoteBlock - Alignment Options', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'align-5',
+				blockId: toBlockId('align-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -371,7 +372,7 @@ describe('PullQuoteBlock - Alignment Options', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'align-6',
+				blockId: toBlockId('align-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -399,7 +400,7 @@ describe('PullQuoteBlock - Border Styles', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'border-1',
+				blockId: toBlockId('border-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -417,7 +418,7 @@ describe('PullQuoteBlock - Border Styles', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'border-2',
+				blockId: toBlockId('border-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -435,7 +436,7 @@ describe('PullQuoteBlock - Border Styles', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'border-3',
+				blockId: toBlockId('border-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -451,7 +452,7 @@ describe('PullQuoteBlock - Border Styles', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'border-4',
+				blockId: toBlockId('border-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -471,7 +472,7 @@ describe('PullQuoteBlock - Border Styles', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'border-5',
+				blockId: toBlockId('border-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -497,7 +498,7 @@ describe('PullQuoteBlock - Border Styles', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'border-6',
+				blockId: toBlockId('border-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -525,7 +526,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-1',
+				blockId: toBlockId('color-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -541,7 +542,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-2',
+				blockId: toBlockId('color-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -559,7 +560,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-3',
+				blockId: toBlockId('color-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -575,7 +576,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-4',
+				blockId: toBlockId('color-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -594,7 +595,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-5',
+				blockId: toBlockId('color-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -614,7 +615,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-6',
+				blockId: toBlockId('color-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -636,7 +637,7 @@ describe('PullQuoteBlock - Accent Color', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'color-7',
+				blockId: toBlockId('color-7'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -665,7 +666,7 @@ describe('PullQuoteBlock - Style Controls', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'ctrl-1',
+				blockId: toBlockId('ctrl-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -681,7 +682,7 @@ describe('PullQuoteBlock - Style Controls', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'ctrl-2',
+				blockId: toBlockId('ctrl-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -697,7 +698,7 @@ describe('PullQuoteBlock - Style Controls', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'ctrl-3',
+				blockId: toBlockId('ctrl-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -713,7 +714,7 @@ describe('PullQuoteBlock - Style Controls', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'ctrl-4',
+				blockId: toBlockId('ctrl-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -729,7 +730,7 @@ describe('PullQuoteBlock - Style Controls', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'ctrl-5',
+				blockId: toBlockId('ctrl-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -745,7 +746,7 @@ describe('PullQuoteBlock - Style Controls', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'ctrl-6',
+				blockId: toBlockId('ctrl-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -771,7 +772,7 @@ describe('PullQuoteBlock - Content Editing', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'edit-1',
+				blockId: toBlockId('edit-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -787,7 +788,7 @@ describe('PullQuoteBlock - Content Editing', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'edit-2',
+				blockId: toBlockId('edit-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -805,7 +806,7 @@ describe('PullQuoteBlock - Content Editing', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'edit-3',
+				blockId: toBlockId('edit-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -821,7 +822,7 @@ describe('PullQuoteBlock - Content Editing', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'edit-4',
+				blockId: toBlockId('edit-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -837,7 +838,7 @@ describe('PullQuoteBlock - Content Editing', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'edit-5',
+				blockId: toBlockId('edit-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -863,7 +864,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'a11y-1',
+				blockId: toBlockId('a11y-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -879,7 +880,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'a11y-2',
+				blockId: toBlockId('a11y-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -895,7 +896,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'a11y-3',
+				blockId: toBlockId('a11y-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -913,7 +914,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'a11y-4',
+				blockId: toBlockId('a11y-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -929,7 +930,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'a11y-5',
+				blockId: toBlockId('a11y-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -945,7 +946,7 @@ describe('PullQuoteBlock - Accessibility', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'a11y-6',
+				blockId: toBlockId('a11y-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -971,7 +972,7 @@ describe('PullQuoteBlock - Error Handling', () => {
 
 	it('should handle missing content gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'pullquote',
 			content: {},
 			settings: {},
@@ -986,7 +987,7 @@ describe('PullQuoteBlock - Error Handling', () => {
 			render(PullQuoteBlock, {
 				props: {
 					block,
-					blockId: 'error-1',
+					blockId: toBlockId('error-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -997,7 +998,7 @@ describe('PullQuoteBlock - Error Handling', () => {
 
 	it('should use default values for undefined content', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'pullquote',
 			content: {},
 			settings: {},
@@ -1011,7 +1012,7 @@ describe('PullQuoteBlock - Error Handling', () => {
 		const { container } = render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'error-2',
+				blockId: toBlockId('error-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1030,7 +1031,7 @@ describe('PullQuoteBlock - Error Handling', () => {
 		render(PullQuoteBlock, {
 			props: {
 				block,
-				blockId: 'error-3',
+				blockId: toBlockId('error-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),

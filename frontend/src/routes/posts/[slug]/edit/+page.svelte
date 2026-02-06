@@ -6,6 +6,7 @@
 	import { createBlock, serializeBlocks, deserializeBlocks } from '$lib/utils/blocks';
 	import { IconPlus } from '$lib/icons';
 	import type { Block } from '$lib/components/cms/blocks/types';
+import type { BlockId } from '$lib/stores/blockState.svelte';
 
 	// Initialize state manager
 	const stateManager = new BlockStateManager();
@@ -14,7 +15,7 @@
 	// State
 	let title = $state('');
 	let blocks = $state<Block[]>([]);
-	let selectedBlockId = $state<string | null>(null);
+	let selectedBlockId = $state<BlockId | null>(null);
 	let isEditing = $state(true);
 	let isSaving = $state(false);
 
@@ -61,11 +62,11 @@
 		}
 	}
 
-	function handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
+	function handleBlockUpdate(blockId: BlockId, updates: Partial<Block>): void {
 		blocks = blocks.map((block) => (block.id === blockId ? { ...block, ...updates } : block));
 	}
 
-	function selectBlock(blockId: string): void {
+	function selectBlock(blockId: BlockId): void {
 		selectedBlockId = blockId;
 	}
 
@@ -81,14 +82,14 @@
 		}, 100);
 	}
 
-	function deleteBlock(blockId: string): void {
+	function deleteBlock(blockId: BlockId): void {
 		blocks = blocks.filter((b) => b.id !== blockId);
 		if (selectedBlockId === blockId) {
 			selectedBlockId = null;
 		}
 	}
 
-	function moveBlockUp(blockId: string): void {
+	function moveBlockUp(blockId: BlockId): void {
 		const index = blocks.findIndex((b) => b.id === blockId);
 		if (index > 0) {
 			const newBlocks = [...blocks];
@@ -97,7 +98,7 @@
 		}
 	}
 
-	function moveBlockDown(blockId: string): void {
+	function moveBlockDown(blockId: BlockId): void {
 		const index = blocks.findIndex((b) => b.id === blockId);
 		if (index < blocks.length - 1) {
 			const newBlocks = [...blocks];
@@ -106,7 +107,7 @@
 		}
 	}
 
-	function duplicateBlock(blockId: string): void {
+	function duplicateBlock(blockId: BlockId): void {
 		const index = blocks.findIndex((b) => b.id === blockId);
 		if (index !== -1) {
 			const original = blocks[index];

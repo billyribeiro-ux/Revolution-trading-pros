@@ -23,6 +23,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import ButtonBlock from '../advanced/ButtonBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -30,7 +31,7 @@ import type { Block } from '../types';
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: 'button-1',
+		id: toBlockId('button-1'),
 		type: 'button',
 		content: {
 			buttonText: 'Click Here',
@@ -78,7 +79,7 @@ describe('ButtonBlock - Primary Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -97,7 +98,7 @@ describe('ButtonBlock - Primary Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -122,7 +123,7 @@ describe('ButtonBlock - Secondary Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -147,7 +148,7 @@ describe('ButtonBlock - Outline Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -166,7 +167,7 @@ describe('ButtonBlock - Outline Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -191,7 +192,7 @@ describe('ButtonBlock - Ghost Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -210,7 +211,7 @@ describe('ButtonBlock - Ghost Variant', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -238,7 +239,7 @@ describe('ButtonBlock - All Variants', () => {
 			const { container } = render(ButtonBlock, {
 				props: {
 					block,
-					blockId: 'button-1',
+					blockId: toBlockId('button-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -264,7 +265,7 @@ describe('ButtonBlock - Small Size', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -289,7 +290,7 @@ describe('ButtonBlock - Medium Size', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -314,7 +315,7 @@ describe('ButtonBlock - Large Size', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -342,7 +343,7 @@ describe('ButtonBlock - All Sizes', () => {
 			const { container } = render(ButtonBlock, {
 				props: {
 					block,
-					blockId: 'button-1',
+					blockId: toBlockId('button-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -371,7 +372,7 @@ describe('ButtonBlock - Icon Position Left', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -409,7 +410,7 @@ describe('ButtonBlock - Icon Position Right', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -441,7 +442,7 @@ describe('ButtonBlock - No Icon', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -467,7 +468,7 @@ describe('ButtonBlock - Link Target New Tab', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -486,7 +487,7 @@ describe('ButtonBlock - Link Target New Tab', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -505,7 +506,7 @@ describe('ButtonBlock - Link Target New Tab', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -530,7 +531,7 @@ describe('ButtonBlock - Link Target Same Window', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -549,7 +550,7 @@ describe('ButtonBlock - Link Target Same Window', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -574,7 +575,7 @@ describe('ButtonBlock - Full Width', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -593,7 +594,7 @@ describe('ButtonBlock - Full Width', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -612,7 +613,7 @@ describe('ButtonBlock - Full Width', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -637,7 +638,7 @@ describe('ButtonBlock - Disabled State', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -656,7 +657,7 @@ describe('ButtonBlock - Disabled State', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -675,7 +676,7 @@ describe('ButtonBlock - Disabled State', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -694,7 +695,7 @@ describe('ButtonBlock - Disabled State', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -724,7 +725,7 @@ describe('ButtonBlock - URL Sanitization', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -743,7 +744,7 @@ describe('ButtonBlock - URL Sanitization', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -762,7 +763,7 @@ describe('ButtonBlock - URL Sanitization', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -781,7 +782,7 @@ describe('ButtonBlock - URL Sanitization', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -804,7 +805,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -824,7 +825,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -841,7 +842,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -859,7 +860,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -876,7 +877,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -894,7 +895,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -910,7 +911,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -926,7 +927,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -942,7 +943,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -959,7 +960,7 @@ describe('ButtonBlock - Edit Mode', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -984,7 +985,7 @@ describe('ButtonBlock - Accessibility', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1001,7 +1002,7 @@ describe('ButtonBlock - Accessibility', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1018,7 +1019,7 @@ describe('ButtonBlock - Accessibility', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1037,7 +1038,7 @@ describe('ButtonBlock - Accessibility', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1054,7 +1055,7 @@ describe('ButtonBlock - Accessibility', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1071,7 +1072,7 @@ describe('ButtonBlock - Accessibility', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1096,7 +1097,7 @@ describe('ButtonBlock - Button Text', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1114,7 +1115,7 @@ describe('ButtonBlock - Button Text', () => {
 		render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1131,7 +1132,7 @@ describe('ButtonBlock - Button Text', () => {
 		const { container } = render(ButtonBlock, {
 			props: {
 				block,
-				blockId: 'button-1',
+				blockId: toBlockId('button-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -1173,7 +1174,7 @@ describe('ButtonBlock - Icon Types', () => {
 			const { container } = render(ButtonBlock, {
 				props: {
 					block,
-					blockId: 'button-1',
+					blockId: toBlockId('button-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()

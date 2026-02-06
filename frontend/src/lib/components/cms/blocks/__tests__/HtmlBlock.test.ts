@@ -24,6 +24,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import HtmlBlock from '../advanced/HtmlBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // MOCKS
@@ -54,7 +55,7 @@ vi.mock('$lib/utils/sanitization', () => ({
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: 'html-1',
+		id: toBlockId('html-1'),
 		type: 'html',
 		content: {
 			html: '<p>Safe content</p>',
@@ -96,7 +97,7 @@ describe('HtmlBlock - HTML Sanitization', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -115,7 +116,7 @@ describe('HtmlBlock - HTML Sanitization', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -134,7 +135,7 @@ describe('HtmlBlock - HTML Sanitization', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -154,7 +155,7 @@ describe('HtmlBlock - HTML Sanitization', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -174,7 +175,7 @@ describe('HtmlBlock - HTML Sanitization', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -197,7 +198,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -214,7 +215,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -232,7 +233,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -251,7 +252,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -269,7 +270,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -288,7 +289,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -305,7 +306,7 @@ describe('HtmlBlock - Editor in Edit Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -328,7 +329,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -346,7 +347,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -365,7 +366,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -384,7 +385,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -398,7 +399,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -412,7 +413,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -440,7 +441,7 @@ describe('HtmlBlock - Split View Mode', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -460,7 +461,7 @@ describe('HtmlBlock - Split View Mode', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -480,7 +481,7 @@ describe('HtmlBlock - Split View Mode', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -508,7 +509,7 @@ describe('HtmlBlock - XSS Warning Banner', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -526,7 +527,7 @@ describe('HtmlBlock - XSS Warning Banner', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -544,7 +545,7 @@ describe('HtmlBlock - XSS Warning Banner', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -563,7 +564,7 @@ describe('HtmlBlock - XSS Warning Banner', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -587,7 +588,7 @@ describe('HtmlBlock - Character Count', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -606,7 +607,7 @@ describe('HtmlBlock - Character Count', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -624,7 +625,7 @@ describe('HtmlBlock - Character Count', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -649,7 +650,7 @@ describe('HtmlBlock - Editor Height Settings', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -665,7 +666,7 @@ describe('HtmlBlock - Editor Height Settings', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -686,7 +687,7 @@ describe('HtmlBlock - Editor Height Settings', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -705,7 +706,7 @@ describe('HtmlBlock - Editor Height Settings', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -724,7 +725,7 @@ describe('HtmlBlock - Editor Height Settings', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -742,7 +743,7 @@ describe('HtmlBlock - Editor Height Settings', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -767,7 +768,7 @@ describe('HtmlBlock - Settings Panel', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -784,7 +785,7 @@ describe('HtmlBlock - Settings Panel', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -801,7 +802,7 @@ describe('HtmlBlock - Settings Panel', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -818,7 +819,7 @@ describe('HtmlBlock - Settings Panel', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -843,7 +844,7 @@ describe('HtmlBlock - Expand/Collapse Editor', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -860,7 +861,7 @@ describe('HtmlBlock - Expand/Collapse Editor', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -880,7 +881,7 @@ describe('HtmlBlock - Expand/Collapse Editor', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -909,7 +910,7 @@ describe('HtmlBlock - Tab Key Handling', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -942,7 +943,7 @@ describe('HtmlBlock - View Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -958,7 +959,7 @@ describe('HtmlBlock - View Mode', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -975,7 +976,7 @@ describe('HtmlBlock - View Mode', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -994,7 +995,7 @@ describe('HtmlBlock - View Mode', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1016,7 +1017,7 @@ describe('HtmlBlock - Accessibility', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1033,7 +1034,7 @@ describe('HtmlBlock - Accessibility', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1050,7 +1051,7 @@ describe('HtmlBlock - Accessibility', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1067,7 +1068,7 @@ describe('HtmlBlock - Accessibility', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1093,7 +1094,7 @@ describe('HtmlBlock - Sanitization Badge', () => {
 		const { container } = render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1112,7 +1113,7 @@ describe('HtmlBlock - Sanitization Badge', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1136,7 +1137,7 @@ describe('HtmlBlock - Preview Placeholder', () => {
 		render(HtmlBlock, {
 			props: {
 				block,
-				blockId: 'html-1',
+				blockId: toBlockId('html-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()

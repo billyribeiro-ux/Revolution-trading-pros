@@ -8,11 +8,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Block, BlockType } from '$lib/components/cms/blocks/types';
+import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 	import BlockLoader from '$lib/components/cms/blocks/BlockLoader.svelte';
 
 	// State
 	let blocks = $state<Block[]>([]);
-	let selectedBlockId = $state<string | null>(null);
+	let selectedBlockId = $state<BlockId | null>(null);
 	let isEditing = $state(false);
 
 	// Derived
@@ -20,8 +21,8 @@
 	const blockCount = $derived(blocks.length);
 
 	// Generate unique ID
-	function generateId(): string {
-		return `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+	function generateId(): BlockId {
+		return toBlockId(`block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
 	}
 
 	// Create a new block
@@ -47,7 +48,7 @@
 	}
 
 	// Update block
-	function updateBlock(blockId: string, updates: Partial<Block>): void {
+	function updateBlock(blockId: BlockId, updates: Partial<Block>): void {
 		blocks = blocks.map((block) =>
 			block.id === blockId
 				? { ...block, ...updates, metadata: { ...block.metadata, updatedAt: Date.now() } }
@@ -56,7 +57,7 @@
 	}
 
 	// Delete block
-	function deleteBlock(blockId: string): void {
+	function deleteBlock(blockId: BlockId): void {
 		blocks = blocks.filter((b) => b.id !== blockId);
 		if (selectedBlockId === blockId) {
 			selectedBlockId = null;
@@ -64,12 +65,12 @@
 	}
 
 	// Select block
-	function selectBlock(blockId: string): void {
+	function selectBlock(blockId: BlockId): void {
 		selectedBlockId = blockId;
 	}
 
 	// Handle delete with stop propagation
-	function handleDelete(event: MouseEvent, blockId: string): void {
+	function handleDelete(event: MouseEvent, blockId: BlockId): void {
 		event.stopPropagation();
 		deleteBlock(blockId);
 	}

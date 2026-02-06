@@ -23,6 +23,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
 import ChartBlock from '../trading/ChartBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -30,7 +31,7 @@ import type { Block } from '../types';
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: 'chart-1',
+		id: toBlockId('chart-1'),
 		type: 'chart',
 		content: {
 			chartMode: 'embed',
@@ -98,7 +99,7 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -122,7 +123,7 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -141,7 +142,7 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -156,7 +157,7 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -176,7 +177,7 @@ describe('ChartBlock - TradingView Embed Mode', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -199,7 +200,7 @@ describe('ChartBlock - Image Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -217,7 +218,7 @@ describe('ChartBlock - Image Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -234,7 +235,7 @@ describe('ChartBlock - Image Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -255,7 +256,7 @@ describe('ChartBlock - Image Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -276,7 +277,7 @@ describe('ChartBlock - Image Mode', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -298,7 +299,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -315,7 +316,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -333,7 +334,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -350,7 +351,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -367,7 +368,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -383,7 +384,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -402,7 +403,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -421,7 +422,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -437,7 +438,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -454,7 +455,7 @@ describe('ChartBlock - Edit Mode Controls', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -487,7 +488,7 @@ describe('ChartBlock - Symbol Validation', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -506,7 +507,7 @@ describe('ChartBlock - Symbol Validation', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -523,7 +524,7 @@ describe('ChartBlock - Symbol Validation', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -554,7 +555,7 @@ describe('ChartBlock - Toolbar and Actions', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -573,7 +574,7 @@ describe('ChartBlock - Toolbar and Actions', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -590,7 +591,7 @@ describe('ChartBlock - Toolbar and Actions', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -609,7 +610,7 @@ describe('ChartBlock - Toolbar and Actions', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -629,7 +630,7 @@ describe('ChartBlock - Toolbar and Actions', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -653,7 +654,7 @@ describe('ChartBlock - Accessibility', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -672,7 +673,7 @@ describe('ChartBlock - Accessibility', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -689,7 +690,7 @@ describe('ChartBlock - Accessibility', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-2',
+				blockId: toBlockId('chart-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -706,7 +707,7 @@ describe('ChartBlock - Accessibility', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -724,7 +725,7 @@ describe('ChartBlock - Accessibility', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -741,7 +742,7 @@ describe('ChartBlock - Accessibility', () => {
 		render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -767,7 +768,7 @@ describe('ChartBlock - Error Handling', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -788,7 +789,7 @@ describe('ChartBlock - Error Handling', () => {
 		const { container } = render(ChartBlock, {
 			props: {
 				block,
-				blockId: 'chart-1',
+				blockId: toBlockId('chart-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),
@@ -828,7 +829,7 @@ describe('ChartBlock - Interval Mapping', () => {
 			render(ChartBlock, {
 				props: {
 					block,
-					blockId: 'chart-1',
+					blockId: toBlockId('chart-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()

@@ -21,6 +21,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import ColumnsBlock from '../layout/ColumnsBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -42,7 +43,7 @@ interface ColumnsBlockOverrides {
 
 function createColumnsBlock(overrides: ColumnsBlockOverrides = {}): Block {
 	return {
-		id: overrides.id || 'test-columns',
+		id: toBlockId(overrides.id || 'test-columns'),
 		type: 'columns',
 		content: {
 			columnCount: 2,
@@ -78,7 +79,7 @@ describe('ColumnsBlock - Basic Rendering', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'columns-1',
+				blockId: toBlockId('columns-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -96,7 +97,7 @@ describe('ColumnsBlock - Basic Rendering', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'columns-2',
+				blockId: toBlockId('columns-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -114,7 +115,7 @@ describe('ColumnsBlock - Basic Rendering', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'columns-3',
+				blockId: toBlockId('columns-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -132,7 +133,7 @@ describe('ColumnsBlock - Basic Rendering', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'columns-4',
+				blockId: toBlockId('columns-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -150,7 +151,7 @@ describe('ColumnsBlock - Basic Rendering', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'columns-5',
+				blockId: toBlockId('columns-5'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -178,7 +179,7 @@ describe('ColumnsBlock - Preset Layouts', () => {
 		const { container } = render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'preset-1',
+				blockId: toBlockId('preset-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -196,7 +197,7 @@ describe('ColumnsBlock - Preset Layouts', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'preset-2',
+				blockId: toBlockId('preset-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -214,7 +215,7 @@ describe('ColumnsBlock - Preset Layouts', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'preset-3',
+				blockId: toBlockId('preset-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -232,7 +233,7 @@ describe('ColumnsBlock - Preset Layouts', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'preset-4',
+				blockId: toBlockId('preset-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -258,7 +259,7 @@ describe('ColumnsBlock - Edit Mode', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'edit-1',
+				blockId: toBlockId('edit-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -274,7 +275,7 @@ describe('ColumnsBlock - Edit Mode', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'edit-2',
+				blockId: toBlockId('edit-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -290,7 +291,7 @@ describe('ColumnsBlock - Edit Mode', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'edit-3',
+				blockId: toBlockId('edit-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -306,7 +307,7 @@ describe('ColumnsBlock - Edit Mode', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'edit-4',
+				blockId: toBlockId('edit-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -325,7 +326,7 @@ describe('ColumnsBlock - Edit Mode', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'edit-5',
+				blockId: toBlockId('edit-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -341,7 +342,7 @@ describe('ColumnsBlock - Edit Mode', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'edit-6',
+				blockId: toBlockId('edit-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -368,7 +369,7 @@ describe('ColumnsBlock - Preset Selection', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'select-1',
+				blockId: toBlockId('select-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -388,7 +389,7 @@ describe('ColumnsBlock - Preset Selection', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'select-2',
+				blockId: toBlockId('select-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -405,7 +406,7 @@ describe('ColumnsBlock - Preset Selection', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'select-3',
+				blockId: toBlockId('select-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -441,7 +442,7 @@ describe('ColumnsBlock - Gap Control', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'gap-1',
+				blockId: toBlockId('gap-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -465,7 +466,7 @@ describe('ColumnsBlock - Gap Control', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'gap-2',
+				blockId: toBlockId('gap-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -483,7 +484,7 @@ describe('ColumnsBlock - Gap Control', () => {
 		const { container } = render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'gap-3',
+				blockId: toBlockId('gap-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -510,7 +511,7 @@ describe('ColumnsBlock - Custom Column Count', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'custom-1',
+				blockId: toBlockId('custom-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -529,7 +530,7 @@ describe('ColumnsBlock - Custom Column Count', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'custom-2',
+				blockId: toBlockId('custom-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -556,7 +557,7 @@ describe('ColumnsBlock - Column Content', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'content-1',
+				blockId: toBlockId('content-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -572,7 +573,7 @@ describe('ColumnsBlock - Column Content', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'content-2',
+				blockId: toBlockId('content-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -590,7 +591,7 @@ describe('ColumnsBlock - Column Content', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'content-3',
+				blockId: toBlockId('content-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -618,7 +619,7 @@ describe('ColumnsBlock - Styling', () => {
 		const { container } = render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'style-1',
+				blockId: toBlockId('style-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -634,7 +635,7 @@ describe('ColumnsBlock - Styling', () => {
 		const { container } = render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'style-2',
+				blockId: toBlockId('style-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -650,7 +651,7 @@ describe('ColumnsBlock - Styling', () => {
 		const { container } = render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'style-3',
+				blockId: toBlockId('style-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -676,7 +677,7 @@ describe('ColumnsBlock - Accessibility', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'a11y-1',
+				blockId: toBlockId('a11y-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -695,7 +696,7 @@ describe('ColumnsBlock - Accessibility', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'a11y-2',
+				blockId: toBlockId('a11y-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -714,7 +715,7 @@ describe('ColumnsBlock - Accessibility', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'a11y-3',
+				blockId: toBlockId('a11y-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -737,7 +738,7 @@ describe('ColumnsBlock - Error Handling', () => {
 
 	it('should handle missing content gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'columns',
 			content: {},
 			settings: {},
@@ -752,7 +753,7 @@ describe('ColumnsBlock - Error Handling', () => {
 			render(ColumnsBlock, {
 				props: {
 					block,
-					blockId: 'error-1',
+					blockId: toBlockId('error-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -769,7 +770,7 @@ describe('ColumnsBlock - Error Handling', () => {
 			render(ColumnsBlock, {
 				props: {
 					block,
-					blockId: 'error-2',
+					blockId: toBlockId('error-2'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -785,7 +786,7 @@ describe('ColumnsBlock - Error Handling', () => {
 		render(ColumnsBlock, {
 			props: {
 				block,
-				blockId: 'error-3',
+				blockId: toBlockId('error-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),

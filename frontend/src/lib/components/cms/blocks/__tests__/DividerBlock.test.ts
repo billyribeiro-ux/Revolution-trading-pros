@@ -21,6 +21,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import DividerBlock from '../layout/DividerBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -41,7 +42,7 @@ interface DividerBlockOverrides {
 
 function createDividerBlock(overrides: DividerBlockOverrides = {}): Block {
 	return {
-		id: overrides.id || 'test-divider',
+		id: toBlockId(overrides.id || 'test-divider'),
 		type: 'divider',
 		content: {
 			...overrides.content
@@ -77,7 +78,7 @@ describe('DividerBlock - Basic Rendering', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'divider-1',
+				blockId: toBlockId('divider-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -93,7 +94,7 @@ describe('DividerBlock - Basic Rendering', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'divider-2',
+				blockId: toBlockId('divider-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -110,7 +111,7 @@ describe('DividerBlock - Basic Rendering', () => {
 			render(DividerBlock, {
 				props: {
 					block,
-					blockId: 'divider-3',
+					blockId: toBlockId('divider-3'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -136,7 +137,7 @@ describe('DividerBlock - Border Styles', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'style-1',
+				blockId: toBlockId('style-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -154,7 +155,7 @@ describe('DividerBlock - Border Styles', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'style-2',
+				blockId: toBlockId('style-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -172,7 +173,7 @@ describe('DividerBlock - Border Styles', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'style-3',
+				blockId: toBlockId('style-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -190,7 +191,7 @@ describe('DividerBlock - Border Styles', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'style-4',
+				blockId: toBlockId('style-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -218,7 +219,7 @@ describe('DividerBlock - Width Variations', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'width-1',
+				blockId: toBlockId('width-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -236,7 +237,7 @@ describe('DividerBlock - Width Variations', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'width-2',
+				blockId: toBlockId('width-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -254,7 +255,7 @@ describe('DividerBlock - Width Variations', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'width-3',
+				blockId: toBlockId('width-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -272,7 +273,7 @@ describe('DividerBlock - Width Variations', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'width-4',
+				blockId: toBlockId('width-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -300,7 +301,7 @@ describe('DividerBlock - Color Customization', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'color-1',
+				blockId: toBlockId('color-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -318,7 +319,7 @@ describe('DividerBlock - Color Customization', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'color-2',
+				blockId: toBlockId('color-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -334,7 +335,7 @@ describe('DividerBlock - Color Customization', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'color-3',
+				blockId: toBlockId('color-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -351,7 +352,7 @@ describe('DividerBlock - Color Customization', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'color-4',
+				blockId: toBlockId('color-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -377,7 +378,7 @@ describe('DividerBlock - Color Customization', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'color-5',
+				blockId: toBlockId('color-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -404,7 +405,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'spacing-1',
+				blockId: toBlockId('spacing-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -422,7 +423,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'spacing-2',
+				blockId: toBlockId('spacing-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -440,7 +441,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'spacing-3',
+				blockId: toBlockId('spacing-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -456,7 +457,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'spacing-4',
+				blockId: toBlockId('spacing-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -485,7 +486,7 @@ describe('DividerBlock - Thickness Control', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'thick-1',
+				blockId: toBlockId('thick-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -503,7 +504,7 @@ describe('DividerBlock - Thickness Control', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'thick-2',
+				blockId: toBlockId('thick-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -521,7 +522,7 @@ describe('DividerBlock - Thickness Control', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'thick-3',
+				blockId: toBlockId('thick-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -537,7 +538,7 @@ describe('DividerBlock - Thickness Control', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'thick-4',
+				blockId: toBlockId('thick-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -554,7 +555,7 @@ describe('DividerBlock - Thickness Control', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'thick-5',
+				blockId: toBlockId('thick-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -580,7 +581,7 @@ describe('DividerBlock - Thickness Control', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'thick-6',
+				blockId: toBlockId('thick-6'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -607,7 +608,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-1',
+				blockId: toBlockId('toolbar-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -623,7 +624,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-2',
+				blockId: toBlockId('toolbar-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -639,7 +640,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-3',
+				blockId: toBlockId('toolbar-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -655,7 +656,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-4',
+				blockId: toBlockId('toolbar-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -672,7 +673,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-5',
+				blockId: toBlockId('toolbar-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -693,7 +694,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-6',
+				blockId: toBlockId('toolbar-6'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -714,7 +715,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'toolbar-7',
+				blockId: toBlockId('toolbar-7'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -748,7 +749,7 @@ describe('DividerBlock - Styling Classes', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'class-1',
+				blockId: toBlockId('class-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -764,7 +765,7 @@ describe('DividerBlock - Styling Classes', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'class-2',
+				blockId: toBlockId('class-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -782,7 +783,7 @@ describe('DividerBlock - Styling Classes', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'class-3',
+				blockId: toBlockId('class-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -800,7 +801,7 @@ describe('DividerBlock - Styling Classes', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'class-4',
+				blockId: toBlockId('class-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -826,7 +827,7 @@ describe('DividerBlock - Accessibility', () => {
 		const { container } = render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-1',
+				blockId: toBlockId('a11y-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -842,7 +843,7 @@ describe('DividerBlock - Accessibility', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-2',
+				blockId: toBlockId('a11y-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -858,7 +859,7 @@ describe('DividerBlock - Accessibility', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-3',
+				blockId: toBlockId('a11y-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -874,7 +875,7 @@ describe('DividerBlock - Accessibility', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-4',
+				blockId: toBlockId('a11y-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -890,7 +891,7 @@ describe('DividerBlock - Accessibility', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'a11y-5',
+				blockId: toBlockId('a11y-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -913,7 +914,7 @@ describe('DividerBlock - Error Handling', () => {
 
 	it('should handle missing settings gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'divider',
 			content: {},
 			settings: {},
@@ -928,7 +929,7 @@ describe('DividerBlock - Error Handling', () => {
 			render(DividerBlock, {
 				props: {
 					block,
-					blockId: 'error-1',
+					blockId: toBlockId('error-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -939,7 +940,7 @@ describe('DividerBlock - Error Handling', () => {
 
 	it('should use default values for undefined settings', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'divider',
 			content: {},
 			settings: {},
@@ -953,7 +954,7 @@ describe('DividerBlock - Error Handling', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'error-2',
+				blockId: toBlockId('error-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -971,7 +972,7 @@ describe('DividerBlock - Error Handling', () => {
 		render(DividerBlock, {
 			props: {
 				block,
-				blockId: 'error-3',
+				blockId: toBlockId('error-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),

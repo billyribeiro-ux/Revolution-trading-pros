@@ -21,6 +21,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import RiskDisclaimerBlock from '../trading/RiskDisclaimerBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -28,7 +29,7 @@ import type { Block } from '../types';
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: 'disclaimer-1',
+		id: toBlockId('disclaimer-1'),
 		type: 'riskDisclaimer',
 		content: {
 			disclaimerText: 'Trading involves substantial risk of loss.',
@@ -88,7 +89,7 @@ describe('RiskDisclaimerBlock - Warning Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -107,7 +108,7 @@ describe('RiskDisclaimerBlock - Warning Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -126,7 +127,7 @@ describe('RiskDisclaimerBlock - Warning Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -151,7 +152,7 @@ describe('RiskDisclaimerBlock - Danger Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -170,7 +171,7 @@ describe('RiskDisclaimerBlock - Danger Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -189,7 +190,7 @@ describe('RiskDisclaimerBlock - Danger Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -214,7 +215,7 @@ describe('RiskDisclaimerBlock - Info Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -233,7 +234,7 @@ describe('RiskDisclaimerBlock - Info Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -260,7 +261,7 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -280,7 +281,7 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -300,7 +301,7 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -324,7 +325,7 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -350,7 +351,7 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -376,7 +377,7 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -403,7 +404,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -421,7 +422,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -441,7 +442,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -465,7 +466,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -486,7 +487,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -505,7 +506,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -535,7 +536,7 @@ describe('RiskDisclaimerBlock - Preset Disclaimers', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -556,7 +557,7 @@ describe('RiskDisclaimerBlock - Preset Disclaimers', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -579,7 +580,7 @@ describe('RiskDisclaimerBlock - Preset Disclaimers', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -600,7 +601,7 @@ describe('RiskDisclaimerBlock - Preset Disclaimers', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -622,7 +623,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -638,7 +639,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -655,7 +656,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -671,7 +672,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -687,7 +688,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -705,7 +706,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -726,7 +727,7 @@ describe('RiskDisclaimerBlock - Edit Mode', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -750,7 +751,7 @@ describe('RiskDisclaimerBlock - Accessibility', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -767,7 +768,7 @@ describe('RiskDisclaimerBlock - Accessibility', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -788,7 +789,7 @@ describe('RiskDisclaimerBlock - Accessibility', () => {
 		render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -809,7 +810,7 @@ describe('RiskDisclaimerBlock - Accessibility', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-test',
+				blockId: toBlockId('disclaimer-test'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -837,7 +838,7 @@ describe('RiskDisclaimerBlock - ARIA Role Based on Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -856,7 +857,7 @@ describe('RiskDisclaimerBlock - ARIA Role Based on Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -875,7 +876,7 @@ describe('RiskDisclaimerBlock - ARIA Role Based on Style', () => {
 		const { container } = render(RiskDisclaimerBlock, {
 			props: {
 				block,
-				blockId: 'disclaimer-1',
+				blockId: toBlockId('disclaimer-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()

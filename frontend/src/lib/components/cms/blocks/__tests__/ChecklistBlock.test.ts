@@ -24,6 +24,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import ChecklistBlock from '../content/ChecklistBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -49,13 +50,13 @@ interface ChecklistBlockOverrides {
 
 function createChecklistBlock(overrides: ChecklistBlockOverrides = {}): Block {
 	return {
-		id: overrides.id || 'test-checklist',
+		id: toBlockId(overrides.id || 'test-checklist'),
 		type: 'checklist',
 		content: {
 			items: [
-				{ id: '1', text: 'First item', checked: false },
-				{ id: '2', text: 'Second item', checked: true },
-				{ id: '3', text: 'Third item', checked: false }
+				{ id: toBlockId('1'), text: 'First item', checked: false },
+				{ id: toBlockId('2'), text: 'Second item', checked: true },
+				{ id: toBlockId('3'), text: 'Third item', checked: false }
 			],
 			showProgress: true,
 			strikethrough: true,
@@ -88,7 +89,7 @@ describe('ChecklistBlock - Basic Rendering', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'checklist-1',
+				blockId: toBlockId('checklist-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -104,7 +105,7 @@ describe('ChecklistBlock - Basic Rendering', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'checklist-2',
+				blockId: toBlockId('checklist-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -121,7 +122,7 @@ describe('ChecklistBlock - Basic Rendering', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'checklist-3',
+				blockId: toBlockId('checklist-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -141,7 +142,7 @@ describe('ChecklistBlock - Basic Rendering', () => {
 			render(ChecklistBlock, {
 				props: {
 					block,
-					blockId: 'checklist-4',
+					blockId: toBlockId('checklist-4'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -165,7 +166,7 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'toggle-1',
+				blockId: toBlockId('toggle-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -180,15 +181,15 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Unchecked', checked: false },
-					{ id: '2', text: 'Checked', checked: true }
+					{ id: toBlockId('1'), text: 'Unchecked', checked: false },
+					{ id: toBlockId('2'), text: 'Checked', checked: true }
 				]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'toggle-2',
+				blockId: toBlockId('toggle-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -204,13 +205,13 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		const onUpdate = vi.fn();
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Item 1', checked: false }]
+				items: [{ id: toBlockId('1'), text: 'Item 1', checked: false }]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'toggle-3',
+				blockId: toBlockId('toggle-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -223,7 +224,7 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		expect(onUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({
 				content: expect.objectContaining({
-					items: [{ id: '1', text: 'Item 1', checked: true }]
+					items: [{ id: toBlockId('1'), text: 'Item 1', checked: true }]
 				})
 			})
 		);
@@ -234,7 +235,7 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'toggle-4',
+				blockId: toBlockId('toggle-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -251,13 +252,13 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		const onUpdate = vi.fn();
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Item 1', checked: false }]
+				items: [{ id: toBlockId('1'), text: 'Item 1', checked: false }]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'toggle-5',
+				blockId: toBlockId('toggle-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -274,13 +275,13 @@ describe('ChecklistBlock - Checkbox Toggling', () => {
 		const onUpdate = vi.fn();
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Item 1', checked: false }]
+				items: [{ id: toBlockId('1'), text: 'Item 1', checked: false }]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'toggle-6',
+				blockId: toBlockId('toggle-6'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -307,8 +308,8 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: true },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: true },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				],
 				showProgress: true
 			}
@@ -316,7 +317,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-1',
+				blockId: toBlockId('progress-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -330,8 +331,8 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: true },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: true },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				],
 				showProgress: true
 			}
@@ -339,7 +340,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-2',
+				blockId: toBlockId('progress-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -356,7 +357,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-3',
+				blockId: toBlockId('progress-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -371,10 +372,10 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: true },
-					{ id: '2', text: 'Item 2', checked: true },
-					{ id: '3', text: 'Item 3', checked: false },
-					{ id: '4', text: 'Item 4', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: true },
+					{ id: toBlockId('2'), text: 'Item 2', checked: true },
+					{ id: toBlockId('3'), text: 'Item 3', checked: false },
+					{ id: toBlockId('4'), text: 'Item 4', checked: false }
 				],
 				showProgress: true
 			}
@@ -382,7 +383,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-4',
+				blockId: toBlockId('progress-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -400,7 +401,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-5',
+				blockId: toBlockId('progress-5'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -415,8 +416,8 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: true },
-					{ id: '2', text: 'Item 2', checked: true }
+					{ id: toBlockId('1'), text: 'Item 1', checked: true },
+					{ id: toBlockId('2'), text: 'Item 2', checked: true }
 				],
 				showProgress: true
 			}
@@ -424,7 +425,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-6',
+				blockId: toBlockId('progress-6'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -444,7 +445,7 @@ describe('ChecklistBlock - Progress Indicator', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'progress-7',
+				blockId: toBlockId('progress-7'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -470,7 +471,7 @@ describe('ChecklistBlock - Adding Items', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'add-1',
+				blockId: toBlockId('add-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -486,7 +487,7 @@ describe('ChecklistBlock - Adding Items', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'add-2',
+				blockId: toBlockId('add-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -501,13 +502,13 @@ describe('ChecklistBlock - Adding Items', () => {
 		const onUpdate = vi.fn();
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Existing item', checked: false }]
+				items: [{ id: toBlockId('1'), text: 'Existing item', checked: false }]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'add-3',
+				blockId: toBlockId('add-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -530,13 +531,13 @@ describe('ChecklistBlock - Adding Items', () => {
 		const onUpdate = vi.fn();
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'First item', checked: false }]
+				items: [{ id: toBlockId('1'), text: 'First item', checked: false }]
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'add-4',
+				blockId: toBlockId('add-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -564,15 +565,15 @@ describe('ChecklistBlock - Removing Items', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: false },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: false },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'remove-1',
+				blockId: toBlockId('remove-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -588,7 +589,7 @@ describe('ChecklistBlock - Removing Items', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'remove-2',
+				blockId: toBlockId('remove-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -604,15 +605,15 @@ describe('ChecklistBlock - Removing Items', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: false },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: false },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'remove-3',
+				blockId: toBlockId('remove-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -625,7 +626,7 @@ describe('ChecklistBlock - Removing Items', () => {
 		expect(onUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({
 				content: expect.objectContaining({
-					items: [{ id: '2', text: 'Item 2', checked: false }]
+					items: [{ id: toBlockId('2'), text: 'Item 2', checked: false }]
 				})
 			})
 		);
@@ -636,15 +637,15 @@ describe('ChecklistBlock - Removing Items', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: '', checked: false },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: '', checked: false },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				]
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'remove-4',
+				blockId: toBlockId('remove-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -671,14 +672,14 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 	it('should apply strikethrough class to checked items', () => {
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Checked item', checked: true }],
+				items: [{ id: toBlockId('1'), text: 'Checked item', checked: true }],
 				strikethrough: true
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'strike-1',
+				blockId: toBlockId('strike-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -692,14 +693,14 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 	it('should not apply strikethrough when disabled', () => {
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Checked item', checked: true }],
+				items: [{ id: toBlockId('1'), text: 'Checked item', checked: true }],
 				strikethrough: false
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'strike-2',
+				blockId: toBlockId('strike-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -713,13 +714,13 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 	it('should apply checked class to checked items', () => {
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Checked item', checked: true }]
+				items: [{ id: toBlockId('1'), text: 'Checked item', checked: true }]
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'strike-3',
+				blockId: toBlockId('strike-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -733,14 +734,14 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 	it('should not apply strikethrough to unchecked items', () => {
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Unchecked item', checked: false }],
+				items: [{ id: toBlockId('1'), text: 'Unchecked item', checked: false }],
 				strikethrough: true
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'strike-4',
+				blockId: toBlockId('strike-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -765,15 +766,15 @@ describe('ChecklistBlock - Keyboard Navigation', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: false },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: false },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				]
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-1',
+				blockId: toBlockId('keyboard-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -791,15 +792,15 @@ describe('ChecklistBlock - Keyboard Navigation', () => {
 		const block = createChecklistBlock({
 			content: {
 				items: [
-					{ id: '1', text: 'Item 1', checked: false },
-					{ id: '2', text: 'Item 2', checked: false }
+					{ id: toBlockId('1'), text: 'Item 1', checked: false },
+					{ id: toBlockId('2'), text: 'Item 2', checked: false }
 				]
 			}
 		});
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-2',
+				blockId: toBlockId('keyboard-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -818,7 +819,7 @@ describe('ChecklistBlock - Keyboard Navigation', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-3',
+				blockId: toBlockId('keyboard-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -836,7 +837,7 @@ describe('ChecklistBlock - Keyboard Navigation', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'keyboard-4',
+				blockId: toBlockId('keyboard-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -866,7 +867,7 @@ describe('ChecklistBlock - Title Editing', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'title-1',
+				blockId: toBlockId('title-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -883,7 +884,7 @@ describe('ChecklistBlock - Title Editing', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'title-2',
+				blockId: toBlockId('title-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -899,7 +900,7 @@ describe('ChecklistBlock - Title Editing', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'title-3',
+				blockId: toBlockId('title-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -915,7 +916,7 @@ describe('ChecklistBlock - Title Editing', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'title-4',
+				blockId: toBlockId('title-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -941,7 +942,7 @@ describe('ChecklistBlock - Settings Toggles', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'settings-1',
+				blockId: toBlockId('settings-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -957,7 +958,7 @@ describe('ChecklistBlock - Settings Toggles', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'settings-2',
+				blockId: toBlockId('settings-2'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -972,7 +973,7 @@ describe('ChecklistBlock - Settings Toggles', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'settings-3',
+				blockId: toBlockId('settings-3'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -990,7 +991,7 @@ describe('ChecklistBlock - Settings Toggles', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'settings-4',
+				blockId: toBlockId('settings-4'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -1012,7 +1013,7 @@ describe('ChecklistBlock - Settings Toggles', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'settings-5',
+				blockId: toBlockId('settings-5'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -1043,7 +1044,7 @@ describe('ChecklistBlock - Empty State', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'empty-1',
+				blockId: toBlockId('empty-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1060,7 +1061,7 @@ describe('ChecklistBlock - Empty State', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'empty-2',
+				blockId: toBlockId('empty-2'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1077,7 +1078,7 @@ describe('ChecklistBlock - Empty State', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'empty-3',
+				blockId: toBlockId('empty-3'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1103,7 +1104,7 @@ describe('ChecklistBlock - Accessibility', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'a11y-1',
+				blockId: toBlockId('a11y-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1121,7 +1122,7 @@ describe('ChecklistBlock - Accessibility', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'a11y-2',
+				blockId: toBlockId('a11y-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1139,7 +1140,7 @@ describe('ChecklistBlock - Accessibility', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'a11y-3',
+				blockId: toBlockId('a11y-3'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1153,13 +1154,13 @@ describe('ChecklistBlock - Accessibility', () => {
 	it('should have proper checkbox role and aria-checked', () => {
 		const block = createChecklistBlock({
 			content: {
-				items: [{ id: '1', text: 'Test', checked: true }]
+				items: [{ id: toBlockId('1'), text: 'Test', checked: true }]
 			}
 		});
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'a11y-4',
+				blockId: toBlockId('a11y-4'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1175,7 +1176,7 @@ describe('ChecklistBlock - Accessibility', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'a11y-5',
+				blockId: toBlockId('a11y-5'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1195,7 +1196,7 @@ describe('ChecklistBlock - Accessibility', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'a11y-6',
+				blockId: toBlockId('a11y-6'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1218,7 +1219,7 @@ describe('ChecklistBlock - Error Handling', () => {
 
 	it('should handle missing content gracefully', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'checklist',
 			content: {},
 			settings: {},
@@ -1233,7 +1234,7 @@ describe('ChecklistBlock - Error Handling', () => {
 			render(ChecklistBlock, {
 				props: {
 					block,
-					blockId: 'error-1',
+					blockId: toBlockId('error-1'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -1244,7 +1245,7 @@ describe('ChecklistBlock - Error Handling', () => {
 
 	it('should use default values for undefined content', () => {
 		const block: Block = {
-			id: 'test',
+			id: toBlockId('test'),
 			type: 'checklist',
 			content: {},
 			settings: {},
@@ -1258,7 +1259,7 @@ describe('ChecklistBlock - Error Handling', () => {
 		const { container } = render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'error-2',
+				blockId: toBlockId('error-2'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1278,7 +1279,7 @@ describe('ChecklistBlock - Error Handling', () => {
 			render(ChecklistBlock, {
 				props: {
 					block,
-					blockId: 'error-3',
+					blockId: toBlockId('error-3'),
 					isEditing: false,
 					isSelected: false,
 					onUpdate: vi.fn()
@@ -1294,7 +1295,7 @@ describe('ChecklistBlock - Error Handling', () => {
 		render(ChecklistBlock, {
 			props: {
 				block,
-				blockId: 'error-4',
+				blockId: toBlockId('error-4'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn(),

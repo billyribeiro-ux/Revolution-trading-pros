@@ -22,6 +22,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import RelatedPostsBlock from '../advanced/RelatedPostsBlock.svelte';
 import type { Block } from '../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -29,7 +30,7 @@ import type { Block } from '../types';
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: 'related-1',
+		id: toBlockId('related-1'),
 		type: 'relatedPosts',
 		content: {
 			relatedPostsTitle: 'Related Articles',
@@ -73,7 +74,7 @@ describe('RelatedPostsBlock - Grid Layout', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -92,7 +93,7 @@ describe('RelatedPostsBlock - Grid Layout', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -111,7 +112,7 @@ describe('RelatedPostsBlock - Grid Layout', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -136,7 +137,7 @@ describe('RelatedPostsBlock - List Layout', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -155,7 +156,7 @@ describe('RelatedPostsBlock - List Layout', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -174,7 +175,7 @@ describe('RelatedPostsBlock - List Layout', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -197,7 +198,7 @@ describe('RelatedPostsBlock - Edit Mode Placeholders', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -214,7 +215,7 @@ describe('RelatedPostsBlock - Edit Mode Placeholders', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -231,7 +232,7 @@ describe('RelatedPostsBlock - Edit Mode Placeholders', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -248,7 +249,7 @@ describe('RelatedPostsBlock - Edit Mode Placeholders', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -265,7 +266,7 @@ describe('RelatedPostsBlock - Edit Mode Placeholders', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -291,7 +292,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -310,7 +311,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -329,7 +330,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -348,7 +349,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -367,7 +368,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -386,7 +387,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -405,7 +406,7 @@ describe('RelatedPostsBlock - Post Count', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -430,7 +431,7 @@ describe('RelatedPostsBlock - Category Display', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -449,7 +450,7 @@ describe('RelatedPostsBlock - Category Display', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -468,7 +469,7 @@ describe('RelatedPostsBlock - Category Display', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -493,7 +494,7 @@ describe('RelatedPostsBlock - Excerpt Display', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -512,7 +513,7 @@ describe('RelatedPostsBlock - Excerpt Display', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -537,7 +538,7 @@ describe('RelatedPostsBlock - Title', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -553,7 +554,7 @@ describe('RelatedPostsBlock - Title', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -571,7 +572,7 @@ describe('RelatedPostsBlock - Title', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: false,
 				onUpdate
@@ -598,7 +599,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -615,7 +616,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -631,7 +632,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -647,7 +648,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -663,7 +664,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -680,7 +681,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -700,7 +701,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -725,7 +726,7 @@ describe('RelatedPostsBlock - Layout Toggle', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -742,7 +743,7 @@ describe('RelatedPostsBlock - Layout Toggle', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -761,7 +762,7 @@ describe('RelatedPostsBlock - Layout Toggle', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -781,7 +782,7 @@ describe('RelatedPostsBlock - Layout Toggle', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate
@@ -812,7 +813,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -829,7 +830,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -846,7 +847,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -863,7 +864,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -882,7 +883,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -899,7 +900,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -918,7 +919,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -937,7 +938,7 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: true,
 				isSelected: true,
 				onUpdate: vi.fn()
@@ -960,7 +961,7 @@ describe('RelatedPostsBlock - Post Card Content', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -977,7 +978,7 @@ describe('RelatedPostsBlock - Post Card Content', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -994,7 +995,7 @@ describe('RelatedPostsBlock - Post Card Content', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1013,7 +1014,7 @@ describe('RelatedPostsBlock - Post Card Content', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1038,7 +1039,7 @@ describe('RelatedPostsBlock - Default Values', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1057,7 +1058,7 @@ describe('RelatedPostsBlock - Default Values', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1076,7 +1077,7 @@ describe('RelatedPostsBlock - Default Values', () => {
 		render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1094,7 +1095,7 @@ describe('RelatedPostsBlock - Default Values', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()
@@ -1113,7 +1114,7 @@ describe('RelatedPostsBlock - Default Values', () => {
 		const { container } = render(RelatedPostsBlock, {
 			props: {
 				block,
-				blockId: 'related-1',
+				blockId: toBlockId('related-1'),
 				isEditing: false,
 				isSelected: false,
 				onUpdate: vi.fn()

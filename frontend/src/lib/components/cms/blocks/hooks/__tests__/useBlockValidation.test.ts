@@ -26,6 +26,7 @@ import {
 } from '../useBlockValidation.svelte';
 
 import type { Block } from '../../types';
+import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // ============================================================================
 // Test Utilities
@@ -33,7 +34,7 @@ import type { Block } from '../../types';
 
 function createMockBlock(overrides: Partial<Block> = {}): Block {
 	return {
-		id: `test-${Date.now()}` as any,
+		id: toBlockId(`test-${Date.now()}`),
 		type: 'paragraph',
 		content: { text: '' },
 		settings: {},
@@ -43,7 +44,7 @@ function createMockBlock(overrides: Partial<Block> = {}): Block {
 			version: 1
 		},
 		...overrides
-	} as Block;
+	};
 }
 
 // ============================================================================
@@ -606,7 +607,7 @@ describe('useBlockValidation', () => {
 
 		it('custom function receives block context', () => {
 			const block = createMockBlock({
-				id: 'test-123',
+				id: toBlockId('test-123'),
 				content: { value: 'check' }
 			});
 
