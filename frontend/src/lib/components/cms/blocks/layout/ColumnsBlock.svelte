@@ -50,7 +50,7 @@
 	const children = $derived((props.block.content.children || []) as Block[]);
 
 	// Compute grid template from preset
-	const gridTemplate = $derived(() => {
+	const gridTemplate = $derived.by(() => {
 		const preset = PRESET_LAYOUTS[columnLayout];
 		if (preset && preset.length > 0) {
 			return preset.join(' ');
@@ -60,7 +60,7 @@
 	});
 
 	// Generate column array for rendering
-	const columns = $derived(() => {
+	const columns = $derived.by(() => {
 		const count = PRESET_LAYOUTS[columnLayout]?.length || columnCount;
 		return Array.from({ length: count }, (_, i) => ({
 			index: i,
@@ -102,7 +102,7 @@
 	class:editing={props.isEditing}
 	class:selected={props.isSelected}
 	role="group"
-	aria-label="Column layout with {columns().length} columns"
+	aria-label="Column layout with {columns.length} columns"
 >
 	{#if props.isEditing && props.isSelected}
 		<div class="columns-toolbar" role="toolbar" aria-label="Column settings">
@@ -159,10 +159,10 @@
 
 	<div
 		class="columns-container"
-		style:grid-template-columns={gridTemplate()}
+		style:grid-template-columns={gridTemplate}
 		style:gap={gap}
 	>
-		{#each columns() as column (column.index)}
+		{#each columns as column (column.index)}
 			<div
 				class="column"
 				class:empty={!column.content}

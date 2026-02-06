@@ -80,7 +80,7 @@
 	}
 
 	// Calculate overall status - only if we have connected services
-	let overallStatus = $derived(() => {
+	let overallStatus = $derived.by(() => {
 		if (!hasConnectedServices || rateLimits.length === 0) return 'none';
 		if (rateLimits.some((r) => r.status === 'critical')) return 'critical';
 		if (rateLimits.some((r) => r.status === 'warning')) return 'warning';
@@ -88,7 +88,7 @@
 	});
 
 	// Calculate lowest percentage - only if we have connected services
-	let lowestPercentage = $derived(() => {
+	let lowestPercentage = $derived.by(() => {
 		if (!hasConnectedServices || rateLimits.length === 0) return null;
 		return Math.min(...rateLimits.map((r) => r.percentage));
 	});
@@ -159,9 +159,9 @@
 <div class="rate-limit-container">
 	<button
 		class="rate-limit-btn"
-		class:warning={overallStatus() === 'warning'}
-		class:critical={overallStatus() === 'critical'}
-		class:disconnected={overallStatus() === 'none'}
+		class:warning={overallStatus === 'warning'}
+		class:critical={overallStatus === 'critical'}
+		class:disconnected={overallStatus === 'none'}
 		onclick={(e: MouseEvent) => {
 			e.stopPropagation();
 			toggle();
@@ -171,7 +171,7 @@
 		{#if hasConnectedServices}
 			<IconPlugConnected size={18} />
 			<span class="limit-percentage"
-				>{lowestPercentage() !== null ? Math.round(lowestPercentage() ?? 0) : '--'}%</span
+				>{lowestPercentage !== null ? Math.round(lowestPercentage ?? 0) : '--'}%</span
 			>
 		{:else}
 			<IconPlugConnectedX size={18} />
@@ -183,7 +183,7 @@
 	</button>
 
 	{#if isOpen}
-		{@const status = overallStatus()}
+		{@const status = overallStatus}
 		{@const StatusIcon = getStatusIcon(status)}
 		<div
 			class="rate-limit-dropdown"

@@ -364,7 +364,7 @@
 	<title>Email Templates - FluentCRM Pro</title>
 </svelte:head>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="admin-crm-templates" role="main" aria-label="Email Templates">
 	<!-- Animated Background -->

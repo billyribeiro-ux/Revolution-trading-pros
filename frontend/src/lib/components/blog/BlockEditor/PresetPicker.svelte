@@ -18,7 +18,7 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -91,6 +91,14 @@
 		position?: { x: number; y: number } | null;
 		/** Show save as preset option */
 		showSaveOption?: boolean;
+		/** Called when a preset is selected */
+		onselect?: (data: { preset: FullPreset }) => void;
+		/** Called when a preset is applied */
+		onapply?: (data: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }) => void;
+		/** Called when the picker is closed */
+		onclose?: () => void;
+		/** Called when saving current block as preset */
+		onsaveaspreset?: (data: { block: Block }) => void;
 	}
 
 	let props: Props = $props();
@@ -99,17 +107,6 @@
 	const isModal = $derived(props.isModal ?? false);
 	const position = $derived(props.position ?? null);
 	const showSaveOption = $derived(props.showSaveOption ?? true);
-
-	// ==========================================================================
-	// Events
-	// ==========================================================================
-
-	const dispatch = createEventDispatcher<{
-		select: { preset: FullPreset };
-		apply: { content: Partial<BlockContent>; settings: Partial<BlockSettings> };
-		close: void;
-		saveAsPreset: { block: Block };
-	}>();
 
 	// ==========================================================================
 	// State
@@ -143,7 +140,7 @@
 	// Computed
 	// ==========================================================================
 
-	let filteredCategories = $derived(() => {
+	let filteredCategories = $derived.by(() => {
 		if (!groupedPresets) return [];
 
 		const query = searchQuery.toLowerCase().trim();
@@ -172,11 +169,11 @@
 			.filter((cat) => cat.presets.length > 0);
 	});
 
-	let totalPresets = $derived(() => {
-		return filteredCategories().reduce((sum, cat) => sum + cat.presets.length, 0);
+	let totalPresets = $derived.by(() => {
+		return filteredCategories.reduce((sum, cat) => sum + cat.presets.length, 0);
 	});
 
-	let allCategories = $derived(() => {
+	let allCategories = $derived.by(() => {
 		if (!groupedPresets) return [];
 		return groupedPresets.categories.map((c) => c.category);
 	});
@@ -237,8 +234,8 @@
 			credentials: 'include'
 		}).catch(console.error);
 
-		dispatch('select', { preset: fullPreset });
-		dispatch('apply', {
+		props.onselect?.({ preset: fullPreset });
+		props.onapply?.({
 			content: fullPreset.preset_data.content,
 			settings: fullPreset.preset_data.settings
 		});
@@ -299,13 +296,13 @@
 			if (showSaveModal) {
 				showSaveModal = false;
 			} else {
-				dispatch('close');
+				props.onclose?.();
 			}
 		}
 	}
 
 	function handleBlankOption() {
-		dispatch('apply', { content: {}, settings: {} });
+		props.onapply?.({ content: {}, settings: {} });
 	}
 
 	function handleSaveAsPreset() {
@@ -336,7 +333,7 @@
 	<!-- Modal Overlay -->
 	<div
 		class="preset-overlay"
-		onclick={() => dispatch('close')}
+		onclick={() => props.onclose?.()}
 		onkeydown={handleKeydown}
 		role="button"
 		tabindex="0"
@@ -360,7 +357,7 @@
 					<IconTemplate size={20} />
 					<span>Presets for <strong>{blockType}</strong></span>
 				</div>
-				<button type="button" class="close-btn" onclick={() => dispatch('close')}>
+				<button type="button" class="close-btn" onclick={() => props.onclose?.()}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -390,7 +387,7 @@
 			</div>
 
 			<!-- Category Tabs -->
-			{#if allCategories().length > 1}
+			{#if allCategories.length > 1}
 				<div class="category-tabs">
 					<button
 						type="button"
@@ -400,7 +397,7 @@
 					>
 						All
 					</button>
-					{#each allCategories() as cat}
+					{#each allCategories as cat}
 						{@const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.custom}
 						{@const Icon = config.icon}
 						<button
@@ -428,7 +425,7 @@
 						<p>{error}</p>
 						<button type="button" onclick={loadPresets}>Retry</button>
 					</div>
-				{:else if totalPresets() === 0}
+				{:else if totalPresets === 0}
 					<div class="empty-state">
 						<IconTemplate size={48} stroke={1.5} />
 						<p>No presets found</p>
@@ -448,7 +445,7 @@
 					</div>
 
 					<!-- Presets by Category -->
-					{#each filteredCategories() as category}
+					{#each filteredCategories as category}
 						{@const config = CATEGORY_CONFIG[category.category] || CATEGORY_CONFIG.custom}
 						{@const Icon = config.icon}
 						<div class="category-section" transition:fly={{ y: -10, duration: 200 }}>

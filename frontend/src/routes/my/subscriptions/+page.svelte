@@ -516,7 +516,7 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>Cancel Subscription</h2>
 				<button class="modal-close" onclick={() => (showCancelModal = false)}>x</button>
@@ -571,7 +571,7 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal modal-lg" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div class="modal modal-lg" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>Change Plan</h2>
 				<button class="modal-close" onclick={() => (showUpgradeModal = false)}>x</button>

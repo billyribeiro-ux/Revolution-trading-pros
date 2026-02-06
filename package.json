@@ -4,7 +4,8 @@
   "private": true,
   "packageManager": "npm@10.9.2",
   "workspaces": [
-    "frontend"
+    "frontend",
+    "svelte-click-to-source"
   ],
   "scripts": {
     "dev": "npm run dev --workspace=frontend",

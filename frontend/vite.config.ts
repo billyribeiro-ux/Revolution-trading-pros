@@ -44,7 +44,8 @@ export default defineConfig({
   resolve: {
     alias: {
       $lib: '/src/lib'
-    }
+    },
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.svelte.ts', '.svelte.js']
   },
   build: {
     target: 'es2022',

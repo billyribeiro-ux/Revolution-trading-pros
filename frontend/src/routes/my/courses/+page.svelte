@@ -50,7 +50,7 @@
 		}
 	};
 
-	const filteredEnrollments = $derived(() => {
+	const filteredEnrollments = $derived.by(() => {
 		if (activeTab === 'in-progress') {
 			return enrollments.filter((e) => e.status === 'active' && e.progress_percent < 100);
 		} else if (activeTab === 'completed') {
@@ -59,7 +59,7 @@
 		return enrollments;
 	});
 
-	const stats = $derived(() => {
+	const stats = $derived.by(() => {
 		const inProgress = enrollments.filter(
 			(e) => e.status === 'active' && e.progress_percent < 100
 		).length;
@@ -84,28 +84,28 @@
 
 	<div class="stats-bar">
 		<div class="stat">
-			<span class="stat-value">{stats().total}</span>
+			<span class="stat-value">{stats.total}</span>
 			<span class="stat-label">Total Enrolled</span>
 		</div>
 		<div class="stat">
-			<span class="stat-value">{stats().inProgress}</span>
+			<span class="stat-value">{stats.inProgress}</span>
 			<span class="stat-label">In Progress</span>
 		</div>
 		<div class="stat">
-			<span class="stat-value">{stats().completed}</span>
+			<span class="stat-value">{stats.completed}</span>
 			<span class="stat-label">Completed</span>
 		</div>
 	</div>
 
 	<nav class="tabs">
 		<button class:active={activeTab === 'in-progress'} onclick={() => (activeTab = 'in-progress')}>
-			In Progress ({stats().inProgress})
+			In Progress ({stats.inProgress})
 		</button>
 		<button class:active={activeTab === 'completed'} onclick={() => (activeTab = 'completed')}>
-			Completed ({stats().completed})
+			Completed ({stats.completed})
 		</button>
 		<button class:active={activeTab === 'all'} onclick={() => (activeTab = 'all')}>
-			All Courses ({stats().total})
+			All Courses ({stats.total})
 		</button>
 	</nav>
 
@@ -114,7 +114,7 @@
 			<div class="spinner"></div>
 			<p>Loading your courses...</p>
 		</div>
-	{:else if filteredEnrollments().length === 0}
+	{:else if filteredEnrollments.length === 0}
 		<div class="empty-state">
 			{#if activeTab === 'in-progress'}
 				<svg
@@ -162,7 +162,7 @@
 		</div>
 	{:else}
 		<div class="courses-grid">
-			{#each filteredEnrollments() as enrollment}
+			{#each filteredEnrollments as enrollment}
 				<div class="enrollment-card">
 					<CourseCard
 						course={enrollment.course}

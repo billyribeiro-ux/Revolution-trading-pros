@@ -39,7 +39,7 @@
 	const textColor = $derived(props.block.settings.textColor || '');
 
 	// Build inline styles for quote text
-	const quoteStyles = $derived(() => {
+	const quoteStyles = $derived.by(() => {
 		const styles: string[] = [];
 		if (!isPullQuote && textAlign !== 'left') {
 			styles.push(`text-align: ${textAlign}`);
@@ -110,7 +110,7 @@
 			class="quote-block__pullquote-text"
 			class:quote-block__pullquote-text--editing={props.isEditing}
 			class:quote-block__pullquote-text--placeholder={!props.block.content.text}
-			style={quoteStyles()}
+			style={quoteStyles}
 			oninput={handleTextInput}
 			onpaste={handlePaste}
 			onkeydown={handleKeydown}
@@ -150,7 +150,7 @@
 			class="quote-block__text"
 			class:quote-block__text--editing={props.isEditing}
 			class:quote-block__text--placeholder={!props.block.content.text}
-			style={quoteStyles()}
+			style={quoteStyles}
 			oninput={handleTextInput}
 			onpaste={handlePaste}
 			onkeydown={handleKeydown}

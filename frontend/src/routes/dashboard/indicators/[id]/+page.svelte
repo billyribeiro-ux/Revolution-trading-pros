@@ -146,7 +146,7 @@
 	};
 
 	// Group files by platform for display
-	const downloadsByPlatform = $derived(() => {
+	const downloadsByPlatform = $derived.by(() => {
 		const grouped: Record<string, PlatformDownloads> = {};
 
 		for (const file of files) {
@@ -169,7 +169,7 @@
 	});
 
 	// Available platforms list
-	const availablePlatforms = $derived(() => {
+	const availablePlatforms = $derived.by(() => {
 		const platforms = new Set<string>();
 		for (const file of files) {
 			platforms.add(platformNames[file.platform.toLowerCase()] || file.platform);
@@ -274,7 +274,7 @@
 					<section class="indicator-detail__platforms">
 						<p class="platforms">
 							<strong>Available Platforms:</strong>
-							{availablePlatforms().join(', ') || indicator.platform || 'Multiple Platforms'}
+							{availablePlatforms.join(', ') || indicator.platform || 'Multiple Platforms'}
 						</p>
 						<hr />
 					</section>
@@ -314,7 +314,7 @@
 					{/if}
 
 					<!-- Download Sections by Platform - ICT 7: From real API -->
-					{#each downloadsByPlatform() as platformDownload}
+					{#each downloadsByPlatform as platformDownload}
 						<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
 							<div class="platform-header">
 								<img
@@ -374,7 +374,7 @@
 					{/each}
 
 					<!-- No downloads available message -->
-					{#if downloadsByPlatform().length === 0}
+					{#if downloadsByPlatform.length === 0}
 						<section class="st_box">
 							<p class="platform_notes">
 								No download files are currently available for this indicator. Please contact support if you need assistance.
@@ -447,11 +447,11 @@
 					</section>
 
 					<!-- Installation Guide Buttons - ICT 7 -->
-					{#if downloadsByPlatform().length > 0}
+					{#if downloadsByPlatform.length > 0}
 						<section class="st_box">
 							<h2><strong>Installation Guides</strong></h2>
 							<div class="install-guide-buttons">
-								{#each downloadsByPlatform() as platformDownload}
+								{#each downloadsByPlatform as platformDownload}
 									<button
 										class="btn btn-outline"
 										onclick={() => fetchInstallGuide(platformDownload.platform)}
@@ -486,7 +486,7 @@
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal install-guide-modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div class="modal install-guide-modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>{selectedPlatform} Installation Guide</h2>
 				<button class="btn-close" onclick={() => (showInstallGuide = false)}>X</button>

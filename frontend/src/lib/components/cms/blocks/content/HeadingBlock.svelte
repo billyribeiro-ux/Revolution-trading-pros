@@ -44,7 +44,7 @@
 	 * - Removes non-alphanumeric characters (except hyphens)
 	 * - Removes consecutive hyphens
 	 */
-	const anchorSlug = $derived(() => {
+	const anchorSlug = $derived.by(() => {
 		const text = props.block.content.text || '';
 		if (!text.trim()) return '';
 
@@ -59,10 +59,10 @@
 	});
 
 	// Use custom anchor from settings if provided, otherwise use auto-generated
-	const anchor = $derived(props.block.settings.anchor || anchorSlug());
+	const anchor = $derived(props.block.settings.anchor || anchorSlug);
 
 	// Build inline styles for custom settings
-	const inlineStyles = $derived(() => {
+	const inlineStyles = $derived.by(() => {
 		const styles: string[] = [];
 		if (textAlign !== 'left') {
 			styles.push(`text-align: ${textAlign}`);
@@ -148,7 +148,7 @@
 		class:heading-block__content--editing={props.isEditing}
 		class:heading-block__content--selected={props.isSelected}
 		class:heading-block__content--placeholder={!props.block.content.text}
-		style={inlineStyles()}
+		style={inlineStyles}
 		oninput={handleTextInput}
 		onpaste={handlePaste}
 		onkeydown={handleKeydown}

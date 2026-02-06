@@ -34,7 +34,7 @@
 	let filterType = $state<'all' | 'manual' | 'autosave'>('all');
 
 	// Filtered revisions
-	let filteredRevisions = $derived(() => {
+	let filteredRevisions = $derived.by(() => {
 		let filtered = [...revisions];
 
 		// Filter by type
@@ -315,12 +315,12 @@
 
 	<!-- Revision List -->
 	<div class="revision-list">
-		{#if filteredRevisions().length === 0}
+		{#if filteredRevisions.length === 0}
 			<div class="empty-state">
 				<p>No revisions found</p>
 			</div>
 		{:else}
-			{#each filteredRevisions() as revision, index}
+			{#each filteredRevisions as revision, index}
 				{@const diff = getDiff(revision)}
 				{@const isSelected = compareMode
 					? compareRevisionA?.id === revision.id || compareRevisionB?.id === revision.id

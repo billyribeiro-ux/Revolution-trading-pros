@@ -35,7 +35,7 @@
 
 	// ICT 11+ FIX: Track mount state for hydration-safe rendering
 	let mounted = $state(false);
-	let elementRef: HTMLSpanElement;
+	let elementRef: HTMLSpanElement = $state(null!);
 	let typed: Typed;
 
 	onMount(() => {

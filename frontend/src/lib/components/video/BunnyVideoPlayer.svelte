@@ -134,7 +134,7 @@
 	// ═══════════════════════════════════════════════════════════════════════
 
 	// Bunny.net optimized embed URL with resume support
-	let embedUrl = $derived(() => {
+	let embedUrl = $derived.by(() => {
 		const params = new URLSearchParams({
 			autoplay: autoplay ? 'true' : 'false',
 			loop: loop ? 'true' : 'false',
@@ -162,7 +162,7 @@
 	);
 
 	// Aspect ratio padding
-	let aspectRatioPadding = $derived(() => {
+	let aspectRatioPadding = $derived.by(() => {
 		const ratios: Record<string, string> = {
 			'16:9': '56.25%',
 			'4:3': '75%',
@@ -345,7 +345,7 @@
 	class="bunny-player {className}"
 	class:is-loaded={isLoaded}
 	class:is-playing={isPlaying}
-	style="--aspect-ratio: {aspectRatioPadding()}"
+	style="--aspect-ratio: {aspectRatioPadding}"
 	role="region"
 	aria-label="Video player: {title}"
 >
@@ -389,7 +389,7 @@
 		{#if hasInteracted || autoplay}
 			<iframe
 				bind:this={iframeElement}
-				src={embedUrl()}
+				src={embedUrl}
 				{title}
 				loading="eager"
 				allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"

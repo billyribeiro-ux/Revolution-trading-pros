@@ -183,7 +183,7 @@
 	// Derived
 	// ==========================================================================
 
-	let filteredComponents = $derived(() => {
+	let filteredComponents = $derived.by(() => {
 		let result = components;
 
 		if (selectedCategory) {
@@ -642,7 +642,7 @@
 							<span>{error}</span>
 							<button type="button" onclick={() => loadComponents()}>Try Again</button>
 						</div>
-					{:else if filteredComponents().length === 0}
+					{:else if filteredComponents.length === 0}
 						<div class="empty-state">
 							<IconLayoutDashboard size={48} />
 							<h3>No components found</h3>
@@ -654,7 +654,7 @@
 						</div>
 					{:else}
 						<div class="components-grid">
-							{#each filteredComponents() as component (component.id)}
+							{#each filteredComponents as component (component.id)}
 								{@const config = categoryConfig[component.category]}
 								{@const Icon = config.icon}
 								<div

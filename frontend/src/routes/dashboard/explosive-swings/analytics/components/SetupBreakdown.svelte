@@ -60,7 +60,7 @@
 	}
 
 	// Pie slices with angles
-	const pieSlices = $derived(() => {
+	const pieSlices = $derived.by(() => {
 		let currentAngle = -Math.PI / 2;
 		return pieData.map((d) => {
 			const sliceAngle = (d.percentage / 100) * Math.PI * 2;
@@ -111,7 +111,7 @@
 			<!-- Pie Chart -->
 			<div class="pie-chart-container">
 				<svg viewBox="0 0 160 160" class="pie-chart">
-					{#each pieSlices() as slice}
+					{#each pieSlices as slice}
 						<path
 							d={slice.path}
 							fill={slice.color}

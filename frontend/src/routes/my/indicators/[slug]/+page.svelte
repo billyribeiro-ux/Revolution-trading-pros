@@ -135,7 +135,7 @@
 	};
 
 	// Group files by platform
-	const filesByPlatform = $derived(() => {
+	const filesByPlatform = $derived.by(() => {
 		const grouped: Record<string, IndicatorFile[]> = {};
 		for (const file of files) {
 			if (!grouped[file.platform]) grouped[file.platform] = [];
@@ -227,7 +227,7 @@
 				</div>
 			{:else}
 				<div class="platforms-grid">
-					{#each Object.entries(filesByPlatform()) as [platform, platformFiles]}
+					{#each Object.entries(filesByPlatform) as [platform, platformFiles]}
 						<div class="platform-card">
 							<div class="platform-header">
 								<span class="platform-icon">{platformIcons[platform] || '📦'}</span>

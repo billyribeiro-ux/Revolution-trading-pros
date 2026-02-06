@@ -123,49 +123,51 @@
 <div class="tabs-block" class:vertical={orientation === 'vertical'} role="region" aria-label="Tabbed content">
 	<div class="tabs-list" role="tablist" aria-orientation={orientation}>
 		{#each tabs as tab, index (tab.id)}
-			<button
-				type="button"
-				id="tab-btn-{props.blockId}-{tab.id}"
-				class="tab-button"
-				class:active={activeTab === tab.id}
-				role="tab"
-				aria-selected={activeTab === tab.id}
-				aria-controls="tab-panel-{props.blockId}-{tab.id}"
-				tabindex={activeTab === tab.id ? 0 : -1}
-				onclick={() => setActiveTab(tab.id)}
-				onkeydown={(e) => handleKeyDown(e, index)}
-			>
-				{#if props.isEditing}
-					<span
-						contenteditable="true"
-						class="tab-label editable-content"
-						role="textbox"
-						tabindex="0"
-						aria-label="Tab label"
-						onclick={(e) => e.stopPropagation()}
-						onkeydown={(e) => e.stopPropagation()}
-						oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
-						onpaste={handlePaste}
-					>
-						{tab.label}
-					</span>
-				{:else}
-					<span class="tab-label">{tab.label}</span>
-				{/if}
-			</button>
-			{#if props.isEditing && tabs.length > 1}
+			<div class="tab-button-wrapper">
 				<button
 					type="button"
-					class="remove-tab-btn"
-					onclick={(e) => {
-						e.stopPropagation();
-						removeTab(index);
-					}}
-					aria-label="Remove tab"
+					id="tab-btn-{props.blockId}-{tab.id}"
+					class="tab-button"
+					class:active={activeTab === tab.id}
+					role="tab"
+					aria-selected={activeTab === tab.id}
+					aria-controls="tab-panel-{props.blockId}-{tab.id}"
+					tabindex={activeTab === tab.id ? 0 : -1}
+					onclick={() => setActiveTab(tab.id)}
+					onkeydown={(e) => handleKeyDown(e, index)}
 				>
-					<IconX size={12} />
+					{#if props.isEditing}
+						<span
+							contenteditable="true"
+							class="tab-label editable-content"
+							role="textbox"
+							tabindex="0"
+							aria-label="Tab label"
+							onclick={(e) => e.stopPropagation()}
+							onkeydown={(e) => e.stopPropagation()}
+							oninput={(e) => updateTab(index, 'label', (e.target as HTMLElement).textContent || '')}
+							onpaste={handlePaste}
+						>
+							{tab.label}
+						</span>
+					{:else}
+						<span class="tab-label">{tab.label}</span>
+					{/if}
 				</button>
-			{/if}
+				{#if props.isEditing && tabs.length > 1}
+					<button
+						type="button"
+						class="remove-tab-btn"
+						onclick={(e) => {
+							e.stopPropagation();
+							removeTab(index);
+						}}
+						aria-label="Remove tab"
+					>
+						<IconX size={12} />
+					</button>
+				{/if}
+			</div>
 		{/each}
 
 		{#if props.isEditing}
@@ -331,7 +333,13 @@
 		transition: all 0.15s;
 	}
 
-	.tab-button:hover .remove-tab-btn {
+	.tab-button-wrapper {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.tab-button-wrapper:hover .remove-tab-btn {
 		opacity: 1;
 	}
 

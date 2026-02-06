@@ -248,7 +248,7 @@
 	// COMPUTED
 	// ===============================================================================
 
-	const formattedEventTime = $derived(() => {
+	const formattedEventTime = $derived.by(() => {
 		if (!nextEvent) return '';
 		try {
 			const date = new Date(nextEvent.date_time);
@@ -305,7 +305,7 @@
 				<span class="notification-label">Next Session</span>
 				<span class="notification-title">{nextEvent.title}</span>
 				<span class="notification-time">
-					{formattedEventTime()}
+					{formattedEventTime}
 					{#if nextEvent.trader_name}
 						with {nextEvent.trader_name}
 					{/if}

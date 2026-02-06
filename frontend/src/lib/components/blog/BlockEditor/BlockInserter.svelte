@@ -156,7 +156,7 @@
 	// Computed
 	// ==========================================================================
 
-	let filteredBlocks = $derived(() => {
+	let filteredBlocks = $derived.by(() => {
 		const query = localSearch.toLowerCase().trim();
 		if (!query) return null;
 
@@ -189,9 +189,9 @@
 		}
 	}
 
-	function handlePresetApply(event: CustomEvent<{ content: Partial<BlockContent>; settings: Partial<BlockSettings> }>) {
+	function handlePresetApply(data: { content: Partial<BlockContent>; settings: Partial<BlockSettings> }) {
 		if (selectedBlockType) {
-			oninsert(selectedBlockType, event.detail);
+			oninsert(selectedBlockType, data);
 			showPresetPicker = false;
 			selectedBlockType = null;
 			onclose?.();
@@ -230,8 +230,8 @@
 			isModal={true}
 			position={null}
 			showSaveOption={false}
-			on:apply={handlePresetApply}
-			on:close={handlePresetClose}
+			onapply={handlePresetApply}
+			onclose={handlePresetClose}
 		/>
 	{:else}
 		<!-- Block Inserter Modal -->
@@ -277,16 +277,16 @@
 				</div>
 
 				<div class="inserter-content">
-				{#if displayMode === 'search' && filteredBlocks()}
+				{#if displayMode === 'search' && filteredBlocks}
 					<!-- Search Results -->
 					<div class="search-results">
-						{#if (filteredBlocks()?.length ?? 0) === 0}
+						{#if (filteredBlocks?.length ?? 0) === 0}
 							<div class="no-results">
 								<p>No blocks found for "{localSearch}"</p>
 							</div>
 						{:else}
 							<div class="blocks-grid">
-								{#each filteredBlocks() as type}
+								{#each filteredBlocks as type}
 									{@const def = BLOCK_DEFINITIONS[type]}
 									{@const Icon = BLOCK_ICONS[type] || IconBox}
 									<button

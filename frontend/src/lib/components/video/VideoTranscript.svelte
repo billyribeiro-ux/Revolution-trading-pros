@@ -68,7 +68,7 @@
 	// COMPUTED
 	// ═══════════════════════════════════════════════════════════════════════
 
-	let activeCueId = $derived(() => {
+	let activeCueId = $derived.by(() => {
 		for (const cue of transcriptCues) {
 			if (currentTime >= cue.startTime && currentTime < cue.endTime) {
 				return cue.id;
@@ -77,7 +77,7 @@
 		return null;
 	});
 
-	let filteredCues = $derived(() => {
+	let filteredCues = $derived.by(() => {
 		if (!searchQuery.trim()) return transcriptCues;
 		const query = searchQuery.toLowerCase();
 		return transcriptCues.filter((cue) => cue.text.toLowerCase().includes(query));
@@ -99,7 +99,7 @@
 
 	// Auto-scroll to active line
 	$effect(() => {
-		const activeId = activeCueId();
+		const activeId = activeCueId;
 		if (activeId && containerElement && !searchQuery) {
 			const element = containerElement.querySelector(`[data-cue-id="${activeId}"]`);
 			if (element) {
@@ -292,7 +292,7 @@
 			</div>
 		{:else if error}
 			<div class="transcript__error">{error}</div>
-		{:else if filteredCues().length === 0}
+		{:else if filteredCues.length === 0}
 			<div class="transcript__empty">
 				{#if searchQuery}
 					No results found for "{searchQuery}"
@@ -302,10 +302,10 @@
 			</div>
 		{:else}
 			<div class="transcript__list">
-				{#each filteredCues() as cue (cue.id)}
+				{#each filteredCues as cue (cue.id)}
 					<button
 						class="transcript__cue"
-						class:transcript__cue--active={activeCueId() === cue.id}
+						class:transcript__cue--active={activeCueId === cue.id}
 						data-cue-id={cue.id}
 						onclick={() => handleCueClick(cue)}
 					>

@@ -81,7 +81,7 @@
 	);
 
 	// X-axis labels (show ~5 labels)
-	const xLabels = $derived(() => {
+	const xLabels = $derived.by(() => {
 		if (data.length === 0) return [];
 		const step = Math.ceil(data.length / 5);
 		return data.filter((_, i) => i % step === 0 || i === data.length - 1);
@@ -213,7 +213,7 @@
 				{/each}
 
 				<!-- X-axis labels -->
-				{#each xLabels() as item}
+				{#each xLabels as item}
 					{@const index = data.indexOf(item)}
 					<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="axis-label">
 						{formatDate(item.date)}
