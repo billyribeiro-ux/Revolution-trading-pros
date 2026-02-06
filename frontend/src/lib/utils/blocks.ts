@@ -48,6 +48,7 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		code: { code: '', language: 'javascript' },
 		list: { listItems: [''], listType: 'bullet' },
 		checklist: { items: [{ id: '1', text: '', checked: false }] },
+		preformatted: { text: '' },
 
 		// Media
 		image: { mediaUrl: '', mediaAlt: '', mediaCaption: '' },
@@ -77,10 +78,12 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		// Layout
 		columns: { columns: [{ blocks: [], width: 50 }] },
 		group: { blocks: [] },
+		row: { blocks: [] },
 		divider: {},
 
 		// Trading
 		ticker: { symbol: 'SPY', exchange: 'NYSE' },
+		chart: { symbol: 'SPY', chartType: 'candlestick' },
 		priceAlert: { symbol: '', targetPrice: 0, direction: 'above' },
 		tradingIdea: {
 			symbol: '',
@@ -120,7 +123,9 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		riskDisclaimer: {
 			text: 'Trading involves substantial risk of loss and is not suitable for all investors.'
 		},
-		buttons: { buttons: [{ text: 'Button', url: '#' }] }
+		buttons: { buttons: [{ text: 'Button', url: '#' }] },
+		shortcode: { code: '' },
+		reusable: { referenceId: '' }
 	};
 
 	return defaults[type] || {};

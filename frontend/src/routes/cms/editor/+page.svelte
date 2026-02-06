@@ -17,7 +17,6 @@ import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 	let isEditing = $state(false);
 
 	// Derived
-	const selectedBlock = $derived(blocks.find((b) => b.id === selectedBlockId));
 	const blockCount = $derived(blocks.length);
 
 	// Generate unique ID
