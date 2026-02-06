@@ -134,7 +134,7 @@
 	// Derived values
 	// ==========================================================================
 
-	let rateLimitMessage = $derived(() => {
+	let rateLimitMessage = $derived.by(() => {
 		if (!rateLimit.isLimited || !rateLimit.resetTime) return '';
 		const now = new Date();
 		const diff = Math.ceil((rateLimit.resetTime.getTime() - now.getTime()) / 1000);
@@ -511,7 +511,7 @@
 		}
 
 		if (rateLimit.isLimited) {
-			error = rateLimitMessage();
+			error = rateLimitMessage;
 			return;
 		}
 
@@ -639,7 +639,7 @@
 	{#if rateLimit.isLimited}
 		<div class="rate-limit-warning" transition:slide>
 			<IconClock size={16} />
-			<span>{rateLimitMessage()}</span>
+			<span>{rateLimitMessage}</span>
 		</div>
 	{/if}
 

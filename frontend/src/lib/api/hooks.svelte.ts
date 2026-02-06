@@ -721,7 +721,7 @@ export function createInfiniteQuery<T, TPageParam = number>(
 
 	const flatData = $derived(pages?.flat() ?? null);
 
-	const hasNextPage = $derived(() => {
+	const hasNextPage = $derived.by(() => {
 		if (!pages || pages.length === 0) return false;
 		const lastPage = pages[pages.length - 1];
 		const lastPageParam = pageParams[pageParams.length - 1];
@@ -729,7 +729,7 @@ export function createInfiniteQuery<T, TPageParam = number>(
 		return getNextPageParam(lastPage, pages, lastPageParam) !== null;
 	});
 
-	const hasPreviousPage = $derived(() => {
+	const hasPreviousPage = $derived.by(() => {
 		if (!pages || pages.length === 0 || !getPreviousPageParam) return false;
 		const firstPage = pages[0];
 		const firstPageParam = pageParams[0];
@@ -917,10 +917,10 @@ export function createInfiniteQuery<T, TPageParam = number>(
 			return isFetching;
 		},
 		get hasNextPage() {
-			return hasNextPage();
+			return hasNextPage;
 		},
 		get hasPreviousPage() {
-			return hasPreviousPage();
+			return hasPreviousPage;
 		},
 		get isFetchingNextPage() {
 			return isFetchingNextPage;

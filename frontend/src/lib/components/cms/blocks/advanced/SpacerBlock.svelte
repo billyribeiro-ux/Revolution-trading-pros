@@ -33,7 +33,7 @@
 	type HeightSize = keyof typeof HEIGHT_PRESETS;
 
 	// Derived state
-	const currentSize = $derived<HeightSize>(() => {
+	const currentSize = $derived.by<HeightSize>(() => {
 		const height = props.block.settings.height as string;
 		for (const [size, value] of Object.entries(HEIGHT_PRESETS)) {
 			if (height === value) return size as HeightSize;
@@ -41,10 +41,10 @@
 		return 'medium';
 	});
 
-	const height = $derived(HEIGHT_PRESETS[currentSize()] || HEIGHT_PRESETS.medium);
+	const height = $derived(HEIGHT_PRESETS[currentSize] || HEIGHT_PRESETS.medium);
 
 	// Convert height to pixels for display
-	const heightInPx = $derived(() => {
+	const heightInPx = $derived.by(() => {
 		const remValue = parseFloat(height);
 		return Math.round(remValue * 16);
 	});
@@ -74,11 +74,11 @@
 	class:selected={props.isSelected}
 	style:height={height}
 	role="separator"
-	aria-label="Vertical spacing: {currentSize()}"
+	aria-label="Vertical spacing: {currentSize}"
 >
 	{#if props.isEditing}
 		<div class="spacer-indicator">
-			<span class="spacer-label">{heightInPx()}px</span>
+			<span class="spacer-label">{heightInPx}px</span>
 		</div>
 
 		{#if props.isSelected}
@@ -87,9 +87,9 @@
 					<button
 						type="button"
 						class="size-btn"
-						class:active={currentSize() === size}
+						class:active={currentSize === size}
 						onclick={() => setSize(size as HeightSize)}
-						aria-pressed={currentSize() === size}
+						aria-pressed={currentSize === size}
 						title="{size} ({HEIGHT_PRESETS[size as HeightSize]})"
 					>
 						{getSizeLabel(size as HeightSize)}

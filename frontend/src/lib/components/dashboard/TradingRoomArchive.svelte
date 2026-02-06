@@ -144,7 +144,7 @@
 	}
 
 	// Group sessions by date
-	let groupedSessions = $derived(() => {
+	let groupedSessions = $derived.by(() => {
 		const groups: DateGroup[] = [];
 		const dateMap = new Map<string, ArchiveSession[]>();
 
@@ -174,7 +174,7 @@
 	});
 
 	// Paginated groups
-	let paginatedGroups = $derived(groupedSessions());
+	let paginatedGroups = $derived(groupedSessions);
 
 	// Handle search - navigate to update URL params
 	let searchTimeout: ReturnType<typeof setTimeout>;

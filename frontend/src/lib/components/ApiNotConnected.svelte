@@ -41,11 +41,7 @@
 		compact = false
 	}: Props = $props();
 
-	let finalDescription = $state('');
-
-	$effect(() => {
-		finalDescription = description || `Connect ${serviceName} to enable this feature`;
-	});
+	let finalDescription = $derived(description || `Connect ${serviceName} to enable this feature`);
 
 	function handleConnect() {
 		if (serviceKey) {

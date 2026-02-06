@@ -65,7 +65,7 @@
 	const canRetry = $derived(showRetry && isApiError(error) && error.isRetryable);
 
 	// Icon based on severity
-	const IconComponent = $derived(() => {
+	const IconComponent = $derived.by(() => {
 		switch (severity) {
 			case 'critical':
 			case 'error':
@@ -79,7 +79,7 @@
 </script>
 
 {#if error}
-	{@const Icon = IconComponent()}
+	{@const Icon = IconComponent}
 	<div
 		class="api-error {variant}"
 		class:critical={severity === 'critical'}

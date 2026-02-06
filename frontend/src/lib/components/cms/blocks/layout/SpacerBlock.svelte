@@ -43,14 +43,14 @@
 	const height = $derived((props.block.settings.height || '2.5rem') as string);
 
 	// Parse height value for slider and display
-	const heightInRem = $derived(() => {
+	const heightInRem = $derived.by(() => {
 		const match = height.match(/^([\d.]+)rem$/);
 		return match ? parseFloat(match[1]) : 2.5;
 	});
 
 	// Computed pixel height for display
-	const heightInPx = $derived(() => {
-		return Math.round(heightInRem() * 16);
+	const heightInPx = $derived.by(() => {
+		return Math.round(heightInRem * 16);
 	});
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
@@ -77,7 +77,7 @@
 		e.preventDefault();
 		isDragging = true;
 		dragStartY = e.clientY;
-		dragStartHeight = heightInRem();
+		dragStartHeight = heightInRem;
 
 		// Add event listeners to document
 		document.addEventListener('mousemove', handleDragMove);
@@ -109,11 +109,11 @@
 		switch (e.key) {
 			case 'ArrowUp':
 				e.preventDefault();
-				setHeightFromRem(heightInRem() + step);
+				setHeightFromRem(heightInRem + step);
 				break;
 			case 'ArrowDown':
 				e.preventDefault();
-				setHeightFromRem(heightInRem() - step);
+				setHeightFromRem(heightInRem - step);
 				break;
 		}
 	}
@@ -157,15 +157,15 @@
 							min="1"
 							max="10"
 							step="0.25"
-							value={heightInRem()}
+							value={heightInRem}
 							oninput={handleSliderInput}
 							aria-label="Spacer height"
 							aria-valuemin={1}
 							aria-valuemax={10}
-							aria-valuenow={heightInRem()}
-							aria-valuetext="{heightInRem()} rem"
+							aria-valuenow={heightInRem}
+							aria-valuetext="{heightInRem} rem"
 						/>
-						<span class="height-value">{heightInRem().toFixed(1)}rem ({heightInPx()}px)</span>
+						<span class="height-value">{heightInRem.toFixed(1)}rem ({heightInPx}px)</span>
 					</div>
 				</div>
 			</div>
@@ -177,7 +177,7 @@
 			role="presentation"
 		>
 			<div class="spacer-outline">
-				<span class="spacer-label">{heightInPx()}px</span>
+				<span class="spacer-label">{heightInPx}px</span>
 			</div>
 
 			<!-- Drag handle -->
@@ -188,8 +188,8 @@
 				aria-label="Resize spacer height"
 				aria-valuemin={16}
 				aria-valuemax={160}
-				aria-valuenow={heightInPx()}
-				aria-valuetext="{heightInPx()} pixels"
+				aria-valuenow={heightInPx}
+				aria-valuetext="{heightInPx} pixels"
 				onmousedown={handleDragStart}
 				onkeydown={handleKeyDown}
 			>

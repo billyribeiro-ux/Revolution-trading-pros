@@ -94,7 +94,7 @@
 	);
 
 	// TradingView interval mapping
-	let tvInterval = $derived(() => {
+	let tvInterval = $derived.by(() => {
 		const intervalMap: Record<string, string> = {
 			'1D': 'D',
 			'1W': 'W',
@@ -108,7 +108,7 @@
 	// Construct TradingView embed URL
 	let embedUrl = $derived(
 		mode === 'embed' && symbol
-			? `https://s.tradingview.com/widgetembed/?symbol=${encodeURIComponent(symbol)}&interval=${tvInterval()}&theme=${resolvedTheme}&style=1&toolbar_bg=${resolvedTheme === 'dark' ? '1e293b' : 'f8fafc'}&hide_side_toolbar=0&allow_symbol_change=1&save_image=0&studies=[]&show_popup_button=1&popup_width=1000&popup_height=650`
+			? `https://s.tradingview.com/widgetembed/?symbol=${encodeURIComponent(symbol)}&interval=${tvInterval}&theme=${resolvedTheme}&style=1&toolbar_bg=${resolvedTheme === 'dark' ? '1e293b' : 'f8fafc'}&hide_side_toolbar=0&allow_symbol_change=1&save_image=0&studies=[]&show_popup_button=1&popup_width=1000&popup_height=650`
 			: ''
 	);
 

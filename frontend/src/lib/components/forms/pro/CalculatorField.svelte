@@ -25,7 +25,7 @@
 	const showFormula = $derived(props.field.attributes?.show_formula || false);
 	const variables = $derived<CalculationVariable[]>(props.field.attributes?.variables || []);
 
-	const calculatedValue = $derived(() => {
+	const calculatedValue = $derived.by(() => {
 		if (!formula) return 0;
 
 		try {
@@ -64,7 +64,7 @@
 	}
 
 	$effect(() => {
-		const newValue = calculatedValue();
+		const newValue = calculatedValue;
 		if (newValue !== value) {
 			props.onchange?.(newValue);
 		}
@@ -84,7 +84,7 @@
 	{/if}
 
 	<div class="calculator-display">
-		<span class="calculator-value">{formatValue(calculatedValue())}</span>
+		<span class="calculator-value">{formatValue(calculatedValue)}</span>
 		<span class="calculator-badge">Auto-calculated</span>
 	</div>
 
@@ -121,7 +121,7 @@
 		</div>
 	{/if}
 
-	<input id="calculator-{props.field.name}" type="hidden" name={props.field.name} value={calculatedValue()} />
+	<input id="calculator-{props.field.name}" type="hidden" name={props.field.name} value={calculatedValue} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

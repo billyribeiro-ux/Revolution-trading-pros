@@ -135,7 +135,7 @@
 	// @ts-expect-error Reserved for future progress counter
 	const completedCount = $derived(uploadQueue.filter((item) => item.status === 'complete').length);
 	// @ts-expect-error Reserved for future progress bar
-	const totalProgress = $derived(() => {
+	const totalProgress = $derived.by(() => {
 		if (uploadQueue.length === 0) return 0;
 		const sum = uploadQueue.reduce((acc, item) => acc + item.progress, 0);
 		return Math.round(sum / uploadQueue.length);

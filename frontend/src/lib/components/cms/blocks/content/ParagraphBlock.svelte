@@ -35,7 +35,7 @@
 	const textColor = $derived(props.block.settings.textColor || '');
 
 	// Build inline styles for custom settings
-	const inlineStyles = $derived(() => {
+	const inlineStyles = $derived.by(() => {
 		const styles: string[] = [];
 		if (textAlign !== 'left') {
 			styles.push(`text-align: ${textAlign}`);
@@ -91,7 +91,7 @@
 	class:paragraph-block--align-center={textAlign === 'center'}
 	class:paragraph-block--align-right={textAlign === 'right'}
 	class:paragraph-block--align-justify={textAlign === 'justify'}
-	style={inlineStyles()}
+	style={inlineStyles}
 	oninput={handleTextInput}
 	onpaste={handlePaste}
 	onkeydown={handleKeydown}

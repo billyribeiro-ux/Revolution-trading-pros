@@ -108,7 +108,7 @@
 	const metaKeywords = $derived(keywords.join(', '));
 
 	// Robots meta
-	const robotsContent = $derived(() => {
+	const robotsContent = $derived.by(() => {
 		const directives: string[] = [];
 		if (noindex) directives.push('noindex');
 		if (nofollow) directives.push('nofollow');
@@ -128,7 +128,7 @@
 	const finalTwitterImage = $derived(twitterImage || finalOgImage);
 
 	// Structured Data JSON
-	const structuredDataJson = $derived(() => {
+	const structuredDataJson = $derived.by(() => {
 		if (!structuredData) return null;
 		const configs = Array.isArray(structuredData) ? structuredData : [structuredData];
 		return configs.map((config) => generateStructuredData(config));
@@ -146,7 +146,7 @@
 	{/if}
 
 	<!-- Robots -->
-	<meta name="robots" content={robotsContent()} />
+	<meta name="robots" content={robotsContent} />
 
 	<!-- Canonical URL -->
 	{#if canonicalUrl}
@@ -212,8 +212,8 @@
 	{/if}
 
 	<!-- Structured Data / JSON-LD -->
-	{#if structuredDataJson()}
-		{#each structuredDataJson() as jsonLd}
+	{#if structuredDataJson}
+		{#each structuredDataJson as jsonLd}
 			{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
 		{/each}
 	{/if}

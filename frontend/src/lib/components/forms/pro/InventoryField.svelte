@@ -145,7 +145,7 @@
 		}).format(price);
 	}
 
-	const totalAmount = $derived(() => {
+	const totalAmount = $derived.by(() => {
 		let total = 0;
 		for (const [productId, quantity] of selections) {
 			const product = products.find((p) => p.id === productId);
@@ -156,7 +156,7 @@
 		return total;
 	});
 
-	const totalItems = $derived(() => {
+	const totalItems = $derived.by(() => {
 		let count = 0;
 		for (const quantity of selections.values()) {
 			count += quantity;
@@ -304,12 +304,12 @@
 		<div class="selection-summary">
 			<div class="summary-row">
 				<span class="summary-label">Selected Items:</span>
-				<span class="summary-value">{totalItems()}</span>
+				<span class="summary-value">{totalItems}</span>
 			</div>
 			{#if showPrice}
 				<div class="summary-row total">
 					<span class="summary-label">Total:</span>
-					<span class="summary-value">{formatPrice(totalAmount())}</span>
+					<span class="summary-value">{formatPrice(totalAmount)}</span>
 				</div>
 			{/if}
 		</div>

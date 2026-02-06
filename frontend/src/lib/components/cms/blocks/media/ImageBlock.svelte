@@ -61,7 +61,7 @@
 	const sanitizedURL = $derived(imageUrl ? sanitizeURL(imageUrl) : '');
 
 	// Generate srcset for responsive images using performance utility
-	const srcset = $derived(() => {
+	const srcset = $derived.by(() => {
 		if (!sanitizedURL) return '';
 		// If it's a blob URL or data URL, don't generate srcset
 		if (sanitizedURL.startsWith('blob:') || sanitizedURL.startsWith('data:')) {
@@ -398,7 +398,7 @@
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 			<img
 				src={sanitizedURL}
-				srcset={srcset()}
+				srcset={srcset}
 				sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
 				alt={imageAlt}
 				loading="lazy"

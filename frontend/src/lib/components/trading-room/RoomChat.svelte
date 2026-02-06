@@ -184,7 +184,7 @@
 	// DISCORD EMBED URL
 	// ===============================================================================
 
-	const discordWidgetUrl = $derived(() => {
+	const discordWidgetUrl = $derived.by(() => {
 		if (provider !== 'discord' || !discordServerId) return '';
 		const params = new URLSearchParams({
 			id: discordServerId,
@@ -239,9 +239,9 @@
 		<div class="chat-body">
 			{#if provider === 'discord'}
 				<!-- Discord Widget Embed -->
-				{#if discordWidgetUrl()}
+				{#if discordWidgetUrl}
 					<iframe
-						src={discordWidgetUrl()}
+						src={discordWidgetUrl}
 						width="100%"
 						height="100%"
 						sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"

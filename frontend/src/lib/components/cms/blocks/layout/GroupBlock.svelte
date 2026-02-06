@@ -66,7 +66,7 @@
 	const maxWidthValue = $derived(MAX_WIDTH_VALUES[maxWidthSize] || maxWidthSize);
 
 	// Compute margin for alignment
-	const marginStyle = $derived(() => {
+	const marginStyle = $derived.by(() => {
 		switch (alignment) {
 			case 'center':
 				return '0 auto';
@@ -253,7 +253,7 @@
 		style:padding={paddingValue}
 		style:border-radius={borderRadius}
 		style:max-width={maxWidthValue}
-		style:margin={marginStyle()}
+		style:margin={marginStyle}
 		role="group"
 		aria-label="Content group"
 	>

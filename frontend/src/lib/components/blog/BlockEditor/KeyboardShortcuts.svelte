@@ -148,7 +148,7 @@
 	];
 
 	// Filter shortcuts based on search
-	let filteredCategories = $derived(() => {
+	let filteredCategories = $derived.by(() => {
 		if (!searchQuery) return shortcutCategories;
 
 		const query = searchQuery.toLowerCase();
@@ -205,7 +205,7 @@
 			</div>
 
 			<div class="shortcuts-content">
-				{#each filteredCategories() as category}
+				{#each filteredCategories as category}
 					<div class="category">
 						<h3 class="category-name">{category.name}</h3>
 						<div class="shortcuts-list">
@@ -226,7 +226,7 @@
 					</div>
 				{/each}
 
-				{#if filteredCategories().length === 0}
+				{#if filteredCategories.length === 0}
 					<div class="no-results">
 						<p>No shortcuts found for "{searchQuery}"</p>
 					</div>

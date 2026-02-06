@@ -100,7 +100,7 @@
 	let requireAcknowledgment = $derived(props.block.content.disclaimerRequireAck === true);
 
 	// Style configurations
-	let styleConfig = $derived(() => {
+	let styleConfig = $derived.by(() => {
 		const configs = {
 			warning: {
 				icon: IconAlertTriangle,
@@ -148,8 +148,8 @@
 		return configs[style];
 	});
 
-	let IconComponent = $derived(styleConfig().icon);
-	let ariaRole = $derived(styleConfig().role);
+	let IconComponent = $derived(styleConfig.icon);
+	let ariaRole = $derived(styleConfig.role);
 
 	// Check if there's expanded content to show
 	let hasExpandedContent = $derived(expandedText && expandedText.length > 0);
@@ -274,11 +274,11 @@
 	role={ariaRole}
 	aria-labelledby={contentId}
 	style="
-		--bg-gradient: {styleConfig().bgLight};
-		--border-color: {styleConfig().borderLight};
-		--text-color: {styleConfig().textLight};
-		--accent-color: {styleConfig().accentLight};
-		--icon-bg: {styleConfig().iconBg};
+		--bg-gradient: {styleConfig.bgLight};
+		--border-color: {styleConfig.borderLight};
+		--text-color: {styleConfig.textLight};
+		--accent-color: {styleConfig.accentLight};
+		--icon-bg: {styleConfig.iconBg};
 	"
 >
 	<!-- Settings Panel (Edit Mode) -->
