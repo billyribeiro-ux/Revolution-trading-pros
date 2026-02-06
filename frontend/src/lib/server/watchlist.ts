@@ -62,10 +62,6 @@ export async function getLatestWatchlist(
 			headers['Authorization'] = `Bearer ${accessToken}`;
 		}
 
-		// DEBUG: Log accessToken and headers
-		console.log('[Watchlist Debug] accessToken parameter:', !!accessToken);
-		console.log('[Watchlist Debug] Authorization header:', headers['Authorization'] ? 'set' : 'not set');
-
 		const response = await fetchFn(`${apiBaseUrl}/api/watchlist?${params}`, {
 			headers
 		});

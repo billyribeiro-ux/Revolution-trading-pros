@@ -45,10 +45,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	const accessToken = event.cookies.get('rtp_access_token');
 	const refreshToken = event.cookies.get('rtp_refresh_token');
 
-	// DEBUG: Log cookie presence
-	console.log('[Auth Debug] Cookie rtp_access_token exists:', !!accessToken);
-	console.log('[Auth Debug] Cookie rtp_refresh_token exists:', !!refreshToken);
-
 	// Also check Authorization header (for API calls)
 	const authHeader = event.request.headers.get('Authorization');
 	const headerToken = authHeader?.replace('Bearer ', '');
@@ -125,8 +121,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-		console.log('[Auth Debug] Calling /api/auth/me with token:', !!(token || refreshToken));
-
 		// ICT7 FIX: Backend /me endpoint is under /auth router
 		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 			method: 'GET',
@@ -140,13 +134,10 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 		clearTimeout(timeoutId);
 
-		console.log('[Auth Debug] /api/auth/me response status:', response.status);
-
 		if (response.ok) {
 			const json = await response.json();
 			// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
 			const userData = json.data || json;
-			console.log('[Auth Debug] User data received:', !!userData);
 
 			// Set user in locals for use in load functions
 			event.locals.user = {
@@ -159,7 +150,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// ICT 7 FIX: Store token in locals for server-side API calls
 			// This allows +page.server.ts load functions to make authenticated API calls
 			event.locals.accessToken = token || refreshToken;
-			console.log('[Auth Debug] Setting locals.accessToken:', !!event.locals.accessToken);
 		} else if (response.status === 401) {
 			// ICT 7: 401 = Invalid/expired token - attempt refresh if available
 			if (!refreshToken) {
@@ -225,7 +215,6 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 					// ICT 7 FIX: Store refreshed token in locals for server-side API calls
 					event.locals.accessToken = newToken;
-					console.log('[Auth Debug] Setting locals.accessToken (after refresh):', !!event.locals.accessToken);
 				}
 			} else {
 				// Refresh failed - permanent auth failure
