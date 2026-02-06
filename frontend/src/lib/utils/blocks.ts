@@ -47,7 +47,7 @@ function getDefaultContent(type: BlockType): Record<string, any> {
 		pullquote: { text: '', title: '' },
 		code: { code: '', language: 'javascript' },
 		list: { listItems: [''], listType: 'bullet' },
-		checklist: { items: [{ id: '1', content: '', checked: false }] },
+		checklist: { items: [{ id: '1', text: '', checked: false }] },
 
 		// Media
 		image: { mediaUrl: '', mediaAlt: '', mediaCaption: '' },
