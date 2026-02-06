@@ -7,6 +7,8 @@ import globals from 'globals';
 
 export default [
   js.configs.recommended,
+  ...svelte.configs['flat/recommended'],
+  ...svelte.configs['flat/prettier'],
   {
     files: ['**/*.{js,ts,svelte}'],
     languageOptions: {
@@ -17,7 +19,7 @@ export default [
     }
   },
   {
-    files: ['**/*.{ts,svelte}'],
+    files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -37,20 +39,47 @@ export default [
     }
   },
   {
-    files: ['**/*.svelte'],
+    files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
     languageOptions: {
-      parser: svelte.parser,
       parserOptions: {
-        parser: tsParser
+        parser: tsParser,
+        project: './tsconfig.json',
+        extraFileExtensions: ['.svelte'],
+        svelteFeatures: {
+          experimentalGenerics: true
+        }
+      },
+      globals: {
+        $state: 'readonly',
+        $derived: 'readonly',
+        $effect: 'readonly',
+        $props: 'readonly',
+        $bindable: 'readonly',
+        $inspect: 'readonly',
+        $host: 'readonly'
       }
     },
     plugins: {
-      svelte
+      '@typescript-eslint': ts
     },
     rules: {
-      ...svelte.configs.recommended.rules,
-      'svelte/no-at-html-tags': 'error'
+      ...ts.configs.strict.rules,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      'svelte/no-at-html-tags': 'warn',
+      'svelte/require-each-key': 'warn',
+      'svelte/no-navigation-without-resolve': 'warn',
+      'svelte/prefer-svelte-reactivity': 'warn',
+      'svelte/no-unused-props': 'warn',
+      'svelte/prefer-writable-derived': 'warn',
+      'svelte/no-dom-manipulating': 'warn',
+      'svelte/no-object-in-text-mustaches': 'warn'
     }
   },
-  prettier
+  prettier,
+  {
+    ignores: ['.svelte-kit/**', 'build/**', 'node_modules/**', 'retired/**']
+  }
 ];
