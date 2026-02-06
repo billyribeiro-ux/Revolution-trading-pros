@@ -94,7 +94,7 @@
 		video_title: '',
 		video_url: '',
 		video_guid: '',
-		video_platform: 'bunny' as 'bunny',
+		video_platform: 'bunny' as const,
 		thumbnail_url: '',
 		duration: '',
 		description: ''

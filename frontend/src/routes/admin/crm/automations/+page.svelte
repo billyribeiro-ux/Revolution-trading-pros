@@ -815,7 +815,7 @@
 						<label for="import-json">Paste JSON Data</label>
 						<textarea
 							id="import-json"
-							placeholder={'Paste JSON automation config here...'}
+							placeholder="Paste JSON automation config here..."
 							bind:value={importForm.jsonData}
 							disabled={importForm.isLoading}
 							rows="8"
