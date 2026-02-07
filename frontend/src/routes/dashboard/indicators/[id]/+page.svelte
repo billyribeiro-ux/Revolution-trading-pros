@@ -223,12 +223,25 @@
 		}
 	};
 
+	// ICT 7: Sanitize HTML to prevent XSS from API content
+	function sanitizeHtml(html: string): string {
+		return html
+			.replace(/<script[\s\S]*?<\/script>/gi, '')
+			.replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+			.replace(/<object[\s\S]*?<\/object>/gi, '')
+			.replace(/<embed[\s\S]*?\/?>|<form[\s\S]*?<\/form>/gi, '')
+			.replace(/<style[\s\S]*?<\/style>/gi, '')
+			.replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '');
+	}
+
 	// ICT 7: Format install guide markdown to HTML
 	function formatGuideHtml(text: string): string {
-		return text
-			.replace(/\n/g, '<br>')
-			.replace(/##\s*(.*?)(<br>|$)/g, '<h3>$1</h3>')
-			.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+		return sanitizeHtml(
+			text
+				.replace(/\n/g, '<br>')
+				.replace(/##\s*(.*?)(<br>|$)/g, '<h3>$1</h3>')
+				.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+		);
 	}
 
 	onMount(fetchIndicator);
@@ -368,7 +381,7 @@
 
 							{#if platformDownload.notes}
 								<div class="platform_notes">
-									{@html platformDownload.notes}
+									{@html sanitizeHtml(platformDownload.notes)}
 								</div>
 							{/if}
 						</section>
