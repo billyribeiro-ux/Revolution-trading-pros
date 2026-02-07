@@ -603,7 +603,7 @@ class PopupEngagementService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -870,7 +870,7 @@ class PopupEngagementService {
 
 			// Process popups
 			this.processActivePopups(popups);
-		} catch (error) {
+		} catch (_error) {
 			// Gracefully handle missing endpoint
 			console.debug('[PopupService] Popups not available');
 		}

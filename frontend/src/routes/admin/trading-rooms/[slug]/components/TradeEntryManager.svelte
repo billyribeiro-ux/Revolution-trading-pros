@@ -211,7 +211,7 @@
 			});
 			onSuccess?.(`${entry.ticker} duplicated`);
 			await loadEntries();
-		} catch (err) {
+		} catch (_err) {
 			onError?.('Failed to duplicate entry');
 		}
 	}

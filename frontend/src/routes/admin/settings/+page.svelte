@@ -129,12 +129,9 @@
 		return result;
 	});
 
-	// @ts-expect-error write-only state
-	let connectedServices = $derived(allServices.filter((s) => s.is_connected));
-	// @ts-expect-error write-only state
-	let disconnectedServices = $derived(allServices.filter((s) => !s.is_connected));
-	// @ts-expect-error write-only state
-	let errorServices = $derived(allServices.filter((s) => s.status === 'error'));
+	let _connectedServices = $derived(allServices.filter((s) => s.is_connected));
+	let _disconnectedServices = $derived(allServices.filter((s) => !s.is_connected));
+	let _errorServices = $derived(allServices.filter((s) => s.status === 'error'));
 	let categoryList = $derived(Object.entries(categories) as [string, Category][]);
 
 	// Google-specific services for quick access
@@ -518,7 +515,7 @@
 					latency
 				};
 			}
-		} catch (error) {
+		} catch (_error) {
 			testResult = { success: false, error: 'Network error. Please check your connection.' };
 		} finally {
 			isConnecting = false;
@@ -545,7 +542,7 @@
 				latency,
 				message: data.success ? `Connection verified in ${latency}ms` : data.error
 			};
-		} catch (error) {
+		} catch (_error) {
 			testResult = { success: false, error: 'Test failed. Network error.' };
 		} finally {
 			isTesting = false;
@@ -582,7 +579,7 @@
 			} else {
 				toastStore.error(data.error || 'Failed to disconnect');
 			}
-		} catch (error) {
+		} catch (_error) {
 			toastStore.error('Network error. Please try again.');
 		} finally {
 			isDisconnecting = false;

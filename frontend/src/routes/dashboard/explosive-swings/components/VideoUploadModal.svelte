@@ -388,7 +388,6 @@
 		throw new Error(`Video processing timed out after ${totalSeconds} seconds. Please try again.`);
 	}
 
-	// @ts-expect-error write-only state
 	function _selectThumbnail(index: number) {
 		selectedThumbnailIndex = index;
 		form.thumbnail_url = generatedThumbnails[index] || '';
@@ -488,7 +487,6 @@
 		{statusAnnouncement}
 	</div>
 
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-portal"
 		role="dialog"

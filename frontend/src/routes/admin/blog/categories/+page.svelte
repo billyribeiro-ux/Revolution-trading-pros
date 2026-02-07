@@ -90,7 +90,7 @@
 		loading = true;
 		try {
 			await Promise.all([loadCategories(), loadTags()]);
-		} catch (error) {
+		} catch (_error) {
 			showToastMessage('Failed to load data', 'error');
 		} finally {
 			loading = false;

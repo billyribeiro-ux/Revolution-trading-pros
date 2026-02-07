@@ -67,7 +67,7 @@
 		isLoadingEvents = true;
 		try {
 			availableEvents = await crmAPI.getWebhookEvents();
-		} catch (err) {
+		} catch (_err) {
 			showToast('error', 'Failed to load webhook events');
 			// Provide default events as fallback
 			availableEvents = {

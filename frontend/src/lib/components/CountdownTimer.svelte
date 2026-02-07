@@ -209,14 +209,12 @@
 	let rafId: number | null = null;
 	let isRunning: boolean = $state(false);
 	let isPaused: boolean = $state(false);
-	// @ts-expect-error write-only state
-	let hasStarted: boolean = $state(false);
+	let _hasStarted: boolean = $state(false);
 	let timeOffset: number = 0;
 	let totalDuration: number = 0;
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
-	// @ts-expect-error write-only state
-	let lastUpdateTime: number = 0;
+	let _lastUpdateTime: number = 0;
 	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};
 	let milestonesReached: Set<number> = new Set();
@@ -338,7 +336,7 @@
 	export function start() {
 		if (isRunning || timeData.isExpired) return;
 
-		hasStarted = true;
+		_hasStarted = true;
 		isRunning = true;
 		isPaused = false;
 
@@ -394,7 +392,7 @@
 			isExpired: false
 		};
 
-		hasStarted = false;
+		_hasStarted = false;
 		isPaused = false;
 		elapsedPauseTime = 0;
 		lastPauseTime = 0;
@@ -514,7 +512,7 @@
 		if (onUpdate) onUpdate(timeData);
 
 		// Update last update time
-		lastUpdateTime = now;
+		_lastUpdateTime = now;
 
 		// Apply urgency animation
 		if (urgencyAnimation && isDanger) {

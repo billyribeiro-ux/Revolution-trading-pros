@@ -47,7 +47,7 @@
 		// Track download
 		try {
 			await trackDownload(resource.id);
-		} catch (e) {
+		} catch (_e) {
 			// Silent fail for tracking
 		}
 		onDownload?.(resource);
@@ -62,7 +62,7 @@
 		// Track access for recently accessed feature
 		try {
 			await trackAccess(resource.id);
-		} catch (e) {
+		} catch (_e) {
 			// Silent fail for tracking
 		}
 		onClick?.(resource);

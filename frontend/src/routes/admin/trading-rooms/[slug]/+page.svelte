@@ -1479,14 +1479,12 @@
      TRADE PLAN MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showTradePlanModal}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showTradePlanModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showTradePlanModal = false)}
 		aria-hidden="true"
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1649,14 +1647,12 @@
      ALERT MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showAlertModal}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showAlertModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showAlertModal = false)}
 		aria-hidden="true"
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1892,14 +1888,12 @@
      WEEKLY VIDEO MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showVideoModal}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showVideoModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showVideoModal = false)}
 		aria-hidden="true"
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -2014,14 +2008,12 @@
      CLOSE TRADE MODAL
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showCloseTradeModal && closingTrade}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showCloseTradeModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
 		aria-hidden="true"
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}

@@ -511,7 +511,7 @@ export class BehaviorTracker {
 			const batches = stored ? JSON.parse(stored) : [];
 			batches.push(batch);
 			localStorage.setItem('behavior_failed_batches', JSON.stringify(batches.slice(-5)));
-		} catch (e) {
+		} catch (_e) {
 			// Ignore storage errors
 		}
 	}

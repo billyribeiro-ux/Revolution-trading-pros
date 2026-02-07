@@ -9,6 +9,7 @@ import type { Block, BlockContent } from '$lib/components/cms/blocks/types';
 export class WorkerManager {
 	private worker: Worker | null = null;
 	private messageId = 0;
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	private pendingMessages = new Map<number, { resolve: Function; reject: Function }>();
 
 	constructor() {
@@ -35,7 +36,7 @@ export class WorkerManager {
 			this.worker.onerror = (e) => {
 				console.error('Worker error:', e);
 			};
-		} catch (error) {
+		} catch (_error) {
 			console.warn('Web Workers not available, falling back to main thread');
 		}
 	}

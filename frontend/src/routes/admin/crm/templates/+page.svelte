@@ -266,7 +266,7 @@
 
 		try {
 			previewTemplate = await crmAPI.getEmailTemplate(template.id);
-		} catch (err) {
+		} catch (_err) {
 			previewTemplate = template;
 			showToast('error', 'Failed to load full template preview');
 		} finally {
@@ -731,14 +731,12 @@
 
 <!-- Preview Modal -->
 {#if showPreview}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 	<div
 		class="modal-backdrop"
 		onclick={closePreview}
 		onkeydown={(e) => e.key === 'Escape' && closePreview()}
 		role="presentation"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content preview-modal"
 			onclick={(e) => e.stopPropagation()}

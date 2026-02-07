@@ -52,7 +52,7 @@
 			} else {
 				recordings = [];
 			}
-		} catch (e) {
+		} catch (_e) {
 			// For now, set empty array since API might not exist yet
 			recordings = [];
 		} finally {

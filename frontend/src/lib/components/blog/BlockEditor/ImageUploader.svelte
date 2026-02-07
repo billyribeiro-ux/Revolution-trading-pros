@@ -102,7 +102,6 @@
 	let uploadQueue = $state<UploadItem[]>([]);
 	let fileInput = $state<HTMLInputElement | null>(null);
 	// Bound via bind:this in template for future DOM operations
-	// @ts-expect-error Used via bind:this directive
 	let dropZone = $state<HTMLDivElement | null>(null);
 
 	// Asset Manager state
@@ -110,8 +109,7 @@
 	let recentAssets = $state<RecentAsset[]>([]);
 	let showRecentPanel = $state(false);
 	// Tracks loading state for async operation (for future loading indicator)
-	// @ts-expect-error Reserved for future loading indicator UI
-	let isLoadingRecent = $state(false);
+	let _isLoadingRecent = $state(false);
 
 	interface RecentAsset {
 		id: string;
@@ -126,16 +124,12 @@
 	}
 
 	// Derived state for progress tracking
-	// @ts-expect-error Reserved for future progress UI
-	const isUploading = $derived(
+	const _isUploading = $derived(
 		uploadQueue.some((item) => item.status === 'processing' || item.status === 'uploading')
 	);
-	// @ts-expect-error Reserved for future error display
-	const hasErrors = $derived(uploadQueue.some((item) => item.status === 'error'));
-	// @ts-expect-error Reserved for future progress counter
-	const completedCount = $derived(uploadQueue.filter((item) => item.status === 'complete').length);
-	// @ts-expect-error Reserved for future progress bar
-	const totalProgress = $derived.by(() => {
+	const _hasErrors = $derived(uploadQueue.some((item) => item.status === 'error'));
+	const _completedCount = $derived(uploadQueue.filter((item) => item.status === 'complete').length);
+	const _totalProgress = $derived.by(() => {
 		if (uploadQueue.length === 0) return 0;
 		const sum = uploadQueue.reduce((acc, item) => acc + item.progress, 0);
 		return Math.round(sum / uploadQueue.length);
@@ -175,7 +169,7 @@
 	async function loadRecentAssets() {
 		if (!showRecent) return;
 
-		isLoadingRecent = true;
+		_isLoadingRecent = true;
 		try {
 			const response = await fetch('/api/cms/assets/recent?limit=8', {
 				credentials: 'include'
@@ -187,7 +181,7 @@
 		} catch (error) {
 			console.error('Failed to load recent assets:', error);
 		} finally {
-			isLoadingRecent = false;
+			_isLoadingRecent = false;
 		}
 	}
 
@@ -244,7 +238,7 @@
 					field_name: 'image_block'
 				})
 			});
-		} catch (error) {
+		} catch (_error) {
 			// Silent fail - usage tracking is not critical
 		}
 	}

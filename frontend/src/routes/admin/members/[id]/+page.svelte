@@ -3,8 +3,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { membersApi } from '$lib/api/members';
-	// @ts-expect-error - Order type is used in member.orders array but TypeScript doesn't detect it
-	import type { Member, Subscription, Order } from '$lib/api/members';
+	import type { Member, Subscription } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconArrowLeft,

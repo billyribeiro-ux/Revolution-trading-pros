@@ -92,7 +92,7 @@
 			});
 
 			loading = false;
-		} catch (err) {
+		} catch (_err) {
 			loading = false;
 			paymentError = 'Failed to load payment system';
 			if (onerror) onerror('Failed to initialize Paddle');

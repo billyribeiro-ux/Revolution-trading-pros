@@ -224,7 +224,7 @@ export const cartStore = {
 	 */
 	removeCoupon() {
 		cartState.items = cartState.items.map((item) => {
-			const { couponCode, discount, ...rest } = item;
+			const { couponCode: _couponCode, discount: _discount, ...rest } = item;
 			return rest as CartItem;
 		});
 	},

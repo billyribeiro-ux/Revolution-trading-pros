@@ -94,7 +94,7 @@
 			const data = await response.json();
 			suggestions = data.predictions || [];
 			showSuggestions = suggestions.length > 0;
-		} catch (err) {
+		} catch (_err) {
 			// Fallback: Use mock suggestions for demo
 			suggestions = [
 				{ description: `${query}, New York, NY, USA`, place_id: 'mock_1' },
@@ -140,7 +140,7 @@
 				address = parseAddressComponents(data.result);
 				props.onchange?.(address);
 			}
-		} catch (err) {
+		} catch (_err) {
 			// Parse from description for demo
 			address = parseFromDescription(suggestion.description);
 			props.onchange?.(address);

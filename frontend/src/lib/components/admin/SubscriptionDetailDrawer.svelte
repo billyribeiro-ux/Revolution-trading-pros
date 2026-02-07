@@ -104,7 +104,7 @@
 				dueDate: h.createdAt,
 				paymentMethod: typeof h.method === 'string' ? h.method : h.method?.type || 'card'
 			}));
-		} catch (err) {
+		} catch (_err) {
 			// Use existing payment history from subscription if API fails
 			paymentHistory = subscription.paymentHistory || [];
 		} finally {

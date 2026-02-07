@@ -991,7 +991,6 @@ class EnterpriseApiClient {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// ICT 11+ Performance: WebSocket reconnection state (reserved for future use)
-	// @ts-expect-error Reserved for future WebSocket reconnection implementation
 	private _wsReconnectAttempts = 0;
 
 	private setupWebSocket(): void {
@@ -1026,7 +1025,7 @@ class EnterpriseApiClient {
 				(this.wsConnection as WebSocket | undefined) = undefined;
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -1138,7 +1137,7 @@ class EnterpriseApiClient {
 			this.sseConnection.onopen = () => {
 				console.debug('[ApiClient] SSE connected');
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - SSE is optional
 		}
 	}

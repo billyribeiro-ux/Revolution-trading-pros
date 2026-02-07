@@ -327,11 +327,9 @@
 	let isPlaying: boolean = $state(false);
 	let isPaused: boolean = $state(false);
 	let isEnded: boolean = $state(false);
-	// @ts-expect-error write-only state
-	let isBuffering: boolean = $state(false);
+	let _isBuffering: boolean = $state(false);
 	let isFullscreen: boolean = $state(false);
-	// @ts-expect-error write-only state
-	let isPictureInPicture: boolean = $state(false);
+	let _isPictureInPicture: boolean = $state(false);
 	let isMuted: boolean = $state(false);
 	let hasError: boolean = $state(false);
 
@@ -358,12 +356,10 @@
 	let showControls: boolean = $state(true);
 	let showSettings: boolean = $state(false);
 	let controlsTimer: number | null = $state(null);
-	// @ts-expect-error write-only state
-	let isHovering: boolean = $state(false);
+	let _isHovering: boolean = $state(false);
 	let thumbnailLoaded: boolean = $state(false);
 	let hasInteracted: boolean = $state(false);
-	// @ts-expect-error write-only state
-	let showCallToAction: boolean = $state(false);
+	let _showCallToAction: boolean = $state(false);
 
 	// Quality options
 	let availableQualities: string[] = $state([]);
@@ -443,7 +439,7 @@
 
 	$effect(() => {
 		if (callToAction && shouldShowCTA()) {
-			showCallToAction = true;
+			_showCallToAction = true;
 		}
 	});
 
@@ -703,8 +699,8 @@
 		videoElement.addEventListener('progress', handleProgress);
 		videoElement.addEventListener('error', (e) => handleError(e));
 		videoElement.addEventListener('volumechange', handleVolumeChange);
-		videoElement.addEventListener('waiting', () => (isBuffering = true));
-		videoElement.addEventListener('playing', () => (isBuffering = false));
+		videoElement.addEventListener('waiting', () => (_isBuffering = true));
+		videoElement.addEventListener('playing', () => (_isBuffering = false));
 
 		if (startTime > 0) {
 			videoElement.currentTime = startTime;
@@ -863,7 +859,7 @@
 				handleEnded();
 				break;
 			case window.YT.PlayerState.BUFFERING:
-				isBuffering = true;
+				_isBuffering = true;
 				// Update base state, not derived analytics
 				analyticsBase.bufferEvents++;
 				break;
@@ -1041,10 +1037,10 @@
 		try {
 			if (document.pictureInPictureElement) {
 				await document.exitPictureInPicture();
-				isPictureInPicture = false;
+				_isPictureInPicture = false;
 			} else {
 				await videoElement.requestPictureInPicture();
-				isPictureInPicture = true;
+				_isPictureInPicture = true;
 			}
 			analytics.interactions++;
 		} catch (error) {
@@ -1129,8 +1125,8 @@
 
 		// Picture-in-Picture (store references for cleanup to prevent memory leaks)
 		if (videoElement) {
-			handleEnterPiP = () => (isPictureInPicture = true);
-			handleLeavePiP = () => (isPictureInPicture = false);
+			handleEnterPiP = () => (_isPictureInPicture = true);
+			handleLeavePiP = () => (_isPictureInPicture = false);
 			videoElement.addEventListener('enterpictureinpicture', handleEnterPiP);
 			videoElement.addEventListener('leavepictureinpicture', handleLeavePiP);
 		}
@@ -1286,8 +1282,8 @@
 	"
 	role="region"
 	aria-label="Video player"
-	onmouseenter={() => (isHovering = true)}
-	onmouseleave={() => (isHovering = false)}
+	onmouseenter={() => (_isHovering = true)}
+	onmouseleave={() => (_isHovering = false)}
 	onmousemove={handleMouseMove}
 >
 	<!-- Video Container -->

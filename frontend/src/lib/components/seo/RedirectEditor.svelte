@@ -73,7 +73,7 @@
 				const data = await response.json();
 				error = data.message || 'Failed to save redirect';
 			}
-		} catch (err) {
+		} catch (_err) {
 			error = 'An error occurred while saving';
 		} finally {
 			saving = false;

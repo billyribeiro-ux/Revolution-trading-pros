@@ -109,7 +109,6 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	// @ts-expect-error write-only state
 	let containerElement: HTMLDivElement | null = $state(null);
 	let iframeElement = $state<HTMLIFrameElement | null>(null);
 	let isLoaded = $state(false);

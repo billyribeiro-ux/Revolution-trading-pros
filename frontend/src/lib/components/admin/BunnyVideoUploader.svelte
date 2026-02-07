@@ -171,7 +171,7 @@
 						throw new Error('Video processing failed');
 					}
 				}
-			} catch (e) {
+			} catch (_e) {
 				// Continue waiting
 			}
 		}

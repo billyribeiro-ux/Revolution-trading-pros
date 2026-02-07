@@ -156,7 +156,7 @@
 			setTimeout(() => {
 				copySuccess = null;
 			}, 2000);
-		} catch (err) {
+		} catch (_err) {
 			error = 'Failed to copy to clipboard';
 		}
 	}

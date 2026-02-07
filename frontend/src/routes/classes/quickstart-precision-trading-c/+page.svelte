@@ -8,12 +8,10 @@
 	// SVELTE 5 RUNES - Reactive State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 	let viewportWidth = $state(0);
-	// @ts-expect-error write-only state
-	let prefersReducedMotion = $state(false);
+	let _prefersReducedMotion = $state(false);
 	let isClient = $state(false);
 
-	// @ts-expect-error write-only state
-	const breakpoint: string = $derived.by(() => {
+	const _breakpoint: string = $derived.by(() => {
 		if (viewportWidth === 0) return 'mobile';
 		if (viewportWidth < 428) return 'mobile-small';
 		if (viewportWidth < 744) return 'mobile';
@@ -30,10 +28,10 @@
 		};
 
 		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-		prefersReducedMotion = mediaQuery.matches;
+		_prefersReducedMotion = mediaQuery.matches;
 
 		const handleMotionChange = (e: MediaQueryListEvent) => {
-			prefersReducedMotion = e.matches;
+			_prefersReducedMotion = e.matches;
 		};
 
 		updateViewport();

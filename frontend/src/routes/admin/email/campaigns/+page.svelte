@@ -292,6 +292,7 @@
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to create campaign');
 		} finally {
+			// loading state already handled
 		}
 	}
 

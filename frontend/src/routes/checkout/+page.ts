@@ -33,7 +33,7 @@ export const load: Load = async ({ url }) => {
 		// Verify token is still valid by fetching user
 		const user = await getUser();
 		return { user, requiresAuth: true };
-	} catch (error) {
+	} catch (_error) {
 		// Token invalid - let client-side handle the redirect
 		return { requiresAuth: true, authError: true };
 	}

@@ -184,7 +184,7 @@
 			a.download = `subscribers-${new Date().toISOString().split('T')[0]}.csv`;
 			a.click();
 			window.URL.revokeObjectURL(url);
-		} catch (err) {
+		} catch (_err) {
 			toastStore.error('Failed to export subscribers');
 		}
 	}

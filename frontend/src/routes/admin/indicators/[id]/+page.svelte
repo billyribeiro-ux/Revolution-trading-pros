@@ -182,7 +182,7 @@
 			} else {
 				error = data.error || 'Failed to save';
 			}
-		} catch (e) {
+		} catch (_e) {
 			error = 'Failed to save indicator';
 		} finally {
 			saving = false;
@@ -200,7 +200,7 @@
 				success = indicator?.is_active ? 'Indicator activated!' : 'Indicator deactivated!';
 				setTimeout(() => (success = ''), 3000);
 			}
-		} catch (e) {
+		} catch (_e) {
 			error = 'Failed to toggle status';
 		}
 	};
@@ -263,7 +263,7 @@
 			} else {
 				error = data.error || 'Failed to delete file';
 			}
-		} catch (e) {
+		} catch (_e) {
 			error = 'Failed to delete file';
 		}
 	};
@@ -282,7 +282,7 @@
 			if (data.success) {
 				files = files.map((f) => (f.id === fileId ? data.data : f));
 			}
-		} catch (e) {
+		} catch (_e) {
 			error = 'Failed to update file status';
 		}
 	};
@@ -336,7 +336,7 @@
 			} else {
 				error = data.error || 'Failed to delete video';
 			}
-		} catch (e) {
+		} catch (_e) {
 			error = 'Failed to delete video';
 		}
 	};

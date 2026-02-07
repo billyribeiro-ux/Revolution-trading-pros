@@ -3,7 +3,7 @@
  * The package has incomplete TS definitions - this fixes all icon imports
  */
 declare module '@tabler/icons-svelte' {
-	import type { SvelteComponent } from 'svelte';
+	import type { Component } from 'svelte';
 
 	interface IconProps {
 		size?: number | string;
@@ -13,10 +13,10 @@ declare module '@tabler/icons-svelte' {
 		style?: string;
 		'aria-hidden'?: boolean | string;
 		'aria-label'?: string;
-		[key: string]: any;
+		[key: string]: unknown;
 	}
 
-	type IconComponent = typeof SvelteComponent<IconProps>;
+	type IconComponent = Component<IconProps>;
 
 	// Export all icons as any to bypass TS checking
 	export const IconAB: IconComponent;

@@ -42,8 +42,7 @@
 	const lessonTitle = $derived(props.lessonTitle ?? 'Video');
 
 	let file = $state<File | null>(null);
-	// @ts-expect-error write-only state
-	let uploading = $state(false);
+	let _uploading = $state(false);
 	let progress = $state(0);
 	let status = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete' | 'error'>(
 		'idle'
@@ -79,7 +78,7 @@
 		if (!file) return;
 
 		status = 'preparing';
-		uploading = true;
+		_uploading = true;
 		progress = 0;
 
 		try {
@@ -134,7 +133,7 @@
 					console.error('TUS upload error:', error);
 					errorMessage = error.message || 'Upload failed';
 					status = 'error';
-					uploading = false;
+					_uploading = false;
 					props.onError?.(errorMessage);
 				},
 				onProgress: (bytesUploaded: number, bytesTotal: number) => {
@@ -161,7 +160,7 @@
 			const msg = e instanceof Error ? e.message : 'Upload failed';
 			errorMessage = msg;
 			status = 'error';
-			uploading = false;
+			_uploading = false;
 			props.onError?.(msg);
 		}
 	};
@@ -175,7 +174,7 @@
 		// In production, poll Bunny API for encoding status
 		setTimeout(() => {
 			status = 'complete';
-			uploading = false;
+			_uploading = false;
 			props.onUploadComplete?.(result);
 		}, 2000);
 	};
@@ -185,7 +184,7 @@
 			uploadInstance.abort();
 			uploadInstance = null;
 		}
-		uploading = false;
+		_uploading = false;
 		progress = 0;
 		status = 'idle';
 		file = null;

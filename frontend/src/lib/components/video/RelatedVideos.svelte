@@ -61,8 +61,7 @@
 
 	let videos = $state<Video[]>([]);
 	let isLoading = $state(true);
-	// @ts-expect-error write-only state
-	let error = $state<string | null>(null);
+	let _error = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
@@ -87,7 +86,7 @@
 	async function fetchRelated() {
 		try {
 			isLoading = true;
-			error = null;
+			_error = null;
 			const response = await fetch(`/api/videos/${videoId}/related`);
 			const data = await response.json();
 
@@ -95,7 +94,7 @@
 				videos = data.data.slice(0, limit);
 			}
 		} catch (e) {
-			error = 'Failed to load related videos';
+			_error = 'Failed to load related videos';
 			console.error('Related videos fetch error:', e);
 		} finally {
 			isLoading = false;

@@ -54,8 +54,7 @@
 	let searchQuery = $state('');
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
-	// @ts-expect-error write-only state
-	let activeLineElement = $state<HTMLElement | null>(null);
+	let _activeLineElement = $state<HTMLElement | null>(null);
 	let containerElement = $state<HTMLElement | null>(null);
 	let copied = $state(false);
 

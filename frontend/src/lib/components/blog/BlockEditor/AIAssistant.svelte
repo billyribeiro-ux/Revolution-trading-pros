@@ -411,7 +411,7 @@
 									remaining: parsed.usage.requests_remaining ?? rateLimit.remaining
 								};
 							}
-						} catch (parseError) {
+						} catch (_parseError) {
 							// If it's not JSON, treat it as raw text content
 							if (event.data !== '[DONE]') {
 								generatedContent += event.data;
@@ -526,11 +526,7 @@
 			} catch (streamError) {
 				// If streaming fails, try non-streaming as fallback
 				console.warn('Streaming failed, trying non-streaming:', streamError);
-				try {
-					await nonStreamingGenerate();
-				} catch (fallbackError) {
-					throw fallbackError;
-				}
+				await nonStreamingGenerate();
 			}
 		};
 

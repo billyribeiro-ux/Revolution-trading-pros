@@ -79,8 +79,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	/** Active collaborators (with valid cursors or selections) */
-	// @ts-expect-error Reserved for future filtering functionality
-	const activeCollaborators = $derived(
+	const _activeCollaborators = $derived(
 		collaborators.filter((c) => c.cursor || c.selectedBlockId || c.selection)
 	);
 

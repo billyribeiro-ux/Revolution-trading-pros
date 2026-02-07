@@ -595,7 +595,7 @@ class SubscriptionService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -739,7 +739,7 @@ class SubscriptionService {
 			if (revenue) this.revenueMetrics.set(revenue);
 			if (churn) this.churnMetrics.set(churn);
 			if (stats) this.stats.set(stats);
-		} catch (error) {
+		} catch (_error) {
 			// Gracefully handle missing endpoints
 			console.debug('[SubscriptionService] Metrics not available');
 		}
@@ -770,7 +770,7 @@ class SubscriptionService {
 					await this.executeRequest(item.url, item.options, false);
 					// Remove from queue on success
 					this.retryQueue = this.retryQueue.filter((i) => i !== item);
-				} catch (error) {
+				} catch (_error) {
 					item.attempts++;
 					if (item.attempts >= RETRY_ATTEMPTS) {
 						// Remove after max attempts

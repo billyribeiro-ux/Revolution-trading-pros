@@ -203,7 +203,7 @@ class PerformanceMetricsStore {
 			});
 
 			this.longTaskObserver.observe({ entryTypes: ['longtask'] });
-		} catch (e) {
+		} catch (_e) {
 			console.debug('[PerformanceMetrics] Long task observer not supported');
 		}
 	}
@@ -231,7 +231,7 @@ class PerformanceMetricsStore {
 				type: 'layout-shift',
 				buffered: true
 			});
-		} catch (e) {
+		} catch (_e) {
 			console.debug('[PerformanceMetrics] Layout shift observer not supported');
 		}
 	}

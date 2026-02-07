@@ -71,8 +71,7 @@
 	let modalRef = $state<HTMLDivElement | null>(null);
 
 	// Current step (for mobile accordion)
-	// @ts-expect-error write-only state
-	let activeSection = $state<'video' | 'trades' | 'review'>('video');
+	let _activeSection = $state<'video' | 'trades' | 'review'>('video');
 
 	// Video form state
 	let videoForm = $state({
@@ -111,8 +110,7 @@
 		tradePlanRows.filter((row) => isValidTicker(row.ticker)).length
 	);
 
-	// @ts-expect-error write-only state
-	const hasTradePlanEntries = $derived(validTradePlanCount > 0);
+	const _hasTradePlanEntries = $derived(validTradePlanCount > 0);
 
 	const canPublish = $derived(isVideoValid && !isPublishing);
 
@@ -157,7 +155,6 @@
 		return /^[A-Z]{1,5}$/.test(cleaned);
 	}
 
-	// @ts-expect-error write-only state
 	function _isValidPrice(price: string): boolean {
 		if (!price || price.trim() === '') return true;
 		const cleaned = price.replace(/[$,]/g, '');
@@ -347,7 +344,7 @@
 		tradePlanRows = [createEmptyRow()];
 		errorMessage = '';
 		successMessage = '';
-		activeSection = 'video';
+		_activeSection = 'video';
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -390,7 +387,6 @@
 	</div>
 
 	<!-- Modal Backdrop -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-backdrop"
 		role="dialog"

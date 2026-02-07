@@ -312,8 +312,7 @@
 		formData.trigger_type ? getTriggerInfo(formData.trigger_type) : null
 	);
 
-	// @ts-expect-error write-only state
-	let requiresTriggerSettings = $derived(
+	let _requiresTriggerSettings = $derived(
 		['tag_applied', 'tag_removed', 'list_applied', 'list_removed', 'form_submitted'].includes(
 			formData.trigger_type
 		)

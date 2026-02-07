@@ -38,7 +38,6 @@ const config = {
         throw new Error(`${status} ${path}`);
       },
       handleMissingId: 'ignore',
-      handleUnseenRoutes: 'ignore',
       concurrency: 8,
       crawl: true,
       entries: ['*', '/robots.txt']
@@ -70,10 +69,11 @@ const config = {
           'self',
           'ws:',
           'wss:',
-          'https:',
           'https://revolution-trading-pros-api.fly.dev',
           'https://revolution-trading-pros.pages.dev',
           'https://www.googleapis.com',
+          'https://www.google-analytics.com',
+          'https://static.cloudflareinsights.com',
           'https://*.mediadelivery.net',
           'https://vz-5a23b520-193.b-cdn.net'
         ],
@@ -92,8 +92,6 @@ const config = {
     output: {
       preloadStrategy: 'modulepreload'
     }
-  },
-  compilerOptions: {
   }
 };
 

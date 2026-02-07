@@ -418,7 +418,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 			window.clarity!('set', 'clickPosition', `${x},${y}`);
 
 			this._metrics.eventsTracked++;
-		} catch (error) {
+		} catch (_error) {
 			this._metrics.eventsFailed++;
 		}
 	}

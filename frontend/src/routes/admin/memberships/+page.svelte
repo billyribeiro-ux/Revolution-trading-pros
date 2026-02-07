@@ -399,7 +399,6 @@
 		}).format(amount);
 	}
 
-	// @ts-expect-error write-only state
 	function _formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
 			year: 'numeric',

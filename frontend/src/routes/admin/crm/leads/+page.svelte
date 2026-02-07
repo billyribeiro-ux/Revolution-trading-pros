@@ -971,7 +971,6 @@
 
 <!-- Add Lead Modal -->
 {#if showAddModal}
-	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showAddModal = false)}
@@ -1095,7 +1094,6 @@
 
 <!-- Edit Lead Modal -->
 {#if showEditModal && editingLead}
-	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showEditModal = false)}
@@ -1225,7 +1223,6 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingLead}
-	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showDeleteModal = false)}
@@ -1269,7 +1266,6 @@
 
 <!-- Convert to Contact Modal -->
 {#if showConvertModal && convertingLead}
-	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showConvertModal = false)}

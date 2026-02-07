@@ -75,7 +75,7 @@
 		if (savedPosition) {
 			try {
 				position = JSON.parse(savedPosition);
-			} catch (e) {
+			} catch (_e) {
 				// Ignore
 			}
 		}

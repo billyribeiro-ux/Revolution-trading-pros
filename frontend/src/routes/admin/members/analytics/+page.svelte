@@ -20,8 +20,7 @@
 	let dateRange = '30d';
 
 	// Connection status - NO MOCK DATA
-	// @ts-expect-error write-only state
-	let isConnected = false;
+	let _isConnected = false;
 	let connectionError: string | null = null;
 	let hasData = false;
 
@@ -134,7 +133,7 @@
 				}
 			}
 
-			isConnected = dataReceived;
+			_isConnected = dataReceived;
 			hasData = dataReceived;
 
 			if (!dataReceived) {
@@ -143,7 +142,7 @@
 			}
 		} catch (err) {
 			console.error('Failed to load member analytics:', err);
-			isConnected = false;
+			_isConnected = false;
 			hasData = false;
 			connectionError =
 				'Failed to connect to analytics service. Please check your connection settings.';

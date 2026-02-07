@@ -229,7 +229,7 @@ async function fetchExperimentConfig(): Promise<void> {
 				});
 			}
 		}
-	} catch (error) {
+	} catch (_error) {
 		// Silently fail - use local defaults
 		console.debug('[Experiments] Failed to fetch config from server, using defaults');
 	}

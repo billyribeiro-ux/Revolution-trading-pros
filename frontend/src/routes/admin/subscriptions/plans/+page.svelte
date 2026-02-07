@@ -191,7 +191,6 @@
 		}).format(price);
 	}
 
-	// @ts-expect-error write-only state
 	function _formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
 			year: 'numeric',
@@ -537,7 +536,6 @@
 		aria-label="Close modal"
 		tabindex="0"
 	>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="modal" onmousedown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Edit Plan</h2>

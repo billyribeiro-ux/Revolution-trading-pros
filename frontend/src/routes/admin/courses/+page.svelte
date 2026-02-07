@@ -115,7 +115,7 @@
 			} else {
 				quickCreateError = data.error || 'Failed to create course';
 			}
-		} catch (e) {
+		} catch (_e) {
 			quickCreateError = 'Failed to connect to server';
 		} finally {
 			quickCreateLoading = false;
@@ -161,7 +161,7 @@
 			} else {
 				error = data.error || 'Failed to fetch courses';
 			}
-		} catch (e) {
+		} catch (_e) {
 			error = 'Failed to connect to server';
 		} finally {
 			loading = false;

@@ -102,10 +102,8 @@
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state('all');
-	// @ts-expect-error write-only state
-	let showSearchDropdown = $state(false);
-	// @ts-expect-error write-only state
-	let searchInputFocused = $state(false);
+	let _showSearchDropdown = $state(false);
+	let _searchInputFocused = $state(false);
 
 	// Stats
 	let stats = $state({
@@ -133,7 +131,6 @@
 	// SIDEBAR NAVIGATION (FluentCRM Pro Style)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// @ts-expect-error write-only state
 	const _sidebarNav = [
 		{ name: 'Contacts', href: '/admin/crm', icon: IconUsers, active: true },
 		{ name: 'Leads', href: '/admin/crm/leads', icon: IconTarget },
@@ -238,18 +235,16 @@
 		});
 	}
 
-	// @ts-expect-error write-only state
 	function _handleSearchFocus() {
-		showSearchDropdown = true;
-		searchInputFocused = true;
+		_showSearchDropdown = true;
+		_searchInputFocused = true;
 	}
 
-	// @ts-expect-error write-only state
 	function _handleSearchBlur() {
 		// Delay to allow clicking on dropdown items
 		setTimeout(() => {
-			showSearchDropdown = false;
-			searchInputFocused = false;
+			_showSearchDropdown = false;
+			_searchInputFocused = false;
 		}, 200);
 	}
 

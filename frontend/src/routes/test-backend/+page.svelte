@@ -101,7 +101,7 @@
 				newsletterStatus = 'error';
 				newsletterMessage = data.message || 'Failed to subscribe. Please try again.';
 			}
-		} catch (error) {
+		} catch (_error) {
 			newsletterStatus = 'error';
 			newsletterMessage = 'Network error. Please try again.';
 		}
@@ -140,7 +140,7 @@
 				popupStatus = 'error';
 				popupMessage = data.message || 'Failed to subscribe.';
 			}
-		} catch (error) {
+		} catch (_error) {
 			popupStatus = 'error';
 			popupMessage = 'Network error. Please try again.';
 		}

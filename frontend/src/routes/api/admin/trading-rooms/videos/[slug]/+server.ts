@@ -147,7 +147,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 
 		if (!response.ok) return null;
 		return await response.json();
-	} catch (error) {
+	} catch (_error) {
 		return null;
 	}
 }

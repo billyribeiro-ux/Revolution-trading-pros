@@ -50,7 +50,7 @@
 				} else {
 					error = data.message || 'Verification failed. The link may be invalid or expired.';
 				}
-			} catch (err: any) {
+			} catch (_err: any) {
 				error = 'Network error. Please check your connection and try again.';
 			} finally {
 				verifying = false;

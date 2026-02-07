@@ -50,7 +50,7 @@
 					total: response.meta.total
 				};
 			}
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to load contacts' });
 		} finally {
 			loading = false;

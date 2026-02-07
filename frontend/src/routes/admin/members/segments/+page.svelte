@@ -516,7 +516,6 @@
 		// TODO: Implement actual CSV export
 	}
 
-	// @ts-expect-error write-only state
 	function _viewSegmentAnalytics(segment: Segment) {
 		// Show analytics modal or navigate to analytics page
 		toastStore.info(`Analytics for "${segment.name}" - Coming soon`);

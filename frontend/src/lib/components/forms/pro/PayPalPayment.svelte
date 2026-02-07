@@ -89,7 +89,7 @@
 					renderButtons();
 				}
 			}, 100);
-		} catch (err) {
+		} catch (_err) {
 			loading = false;
 			paypalError = 'Failed to load PayPal';
 			if (onerror) onerror('Failed to initialize PayPal');
@@ -135,7 +135,7 @@
 						};
 
 						if (onpayment) onpayment(result);
-					} catch (err) {
+					} catch (_err) {
 						paypalError = 'Payment failed to complete';
 						if (onerror) onerror('Payment capture failed');
 					}

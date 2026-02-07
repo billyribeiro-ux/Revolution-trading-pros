@@ -38,8 +38,7 @@ const MAX_RECONNECT_ATTEMPTS = 15;
 const JITTER_FACTOR = 0.3;
 
 /** Sync timeout in milliseconds */
-// @ts-expect-error Reserved for future sync timeout implementation
-const SYNC_TIMEOUT = 10000;
+const _SYNC_TIMEOUT = 10000;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES

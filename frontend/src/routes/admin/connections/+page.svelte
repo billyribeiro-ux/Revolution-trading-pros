@@ -146,7 +146,7 @@
 				testResult = { success: false, error: data.error || 'Connection failed' };
 				toastStore.error(data.error || 'Connection failed. Please check your credentials.');
 			}
-		} catch (error) {
+		} catch (_error) {
 			testResult = { success: false, error: 'Network error. Please try again.' };
 			toastStore.error('Network error. Please check your connection and try again.');
 		} finally {
@@ -167,7 +167,7 @@
 				body: JSON.stringify({ credentials: credentialValues })
 			});
 			testResult = data;
-		} catch (error) {
+		} catch (_error) {
 			testResult = { success: false, error: 'Network error. Please try again.' };
 		} finally {
 			isTesting = false;
@@ -191,7 +191,7 @@
 			} else {
 				toastStore.error(data.error || 'Failed to disconnect');
 			}
-		} catch (error) {
+		} catch (_error) {
 			toastStore.error('Network error');
 		}
 	}

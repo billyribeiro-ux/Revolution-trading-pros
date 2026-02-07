@@ -25,7 +25,6 @@ afterEach(() => {
 
 // Mock the Svelte 5 runes at the global level
 // These are compile-time macros in Svelte 5, so we need to provide runtime equivalents
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const globalAny = globalThis as any;
 
 // Mock $state - creates a simple reactive-like wrapper
@@ -96,7 +95,6 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
-	constructor() {}
 	disconnect() {}
 	observe() {}
 	takeRecords() {
@@ -107,7 +105,6 @@ global.IntersectionObserver = class IntersectionObserver {
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-	constructor() {}
 	disconnect() {}
 	observe() {}
 	unobserve() {}

@@ -244,11 +244,11 @@ const URL_PATTERNS: UrlPattern[] = [
 			// Player URL: player.vimeo.com/video/VIDEO_ID
 			/(?:https?:\/\/)?player\.vimeo\.com\/video\/(\d+)(?:\?[^\s]*)?/i,
 			// Channel video: vimeo.com/channels/CHANNEL/VIDEO_ID
-			/(?:https?:\/\/)?(?:www\.)?vimeo\.com\/channels\/[^\/]+\/(\d+)(?:\?[^\s]*)?/i,
+			/(?:https?:\/\/)?(?:www\.)?vimeo\.com\/channels\/[^/]+\/(\d+)(?:\?[^\s]*)?/i,
 			// Groups video: vimeo.com/groups/GROUP/videos/VIDEO_ID
-			/(?:https?:\/\/)?(?:www\.)?vimeo\.com\/groups\/[^\/]+\/videos\/(\d+)(?:\?[^\s]*)?/i,
+			/(?:https?:\/\/)?(?:www\.)?vimeo\.com\/groups\/[^/]+\/videos\/(\d+)(?:\?[^\s]*)?/i,
 			// Showcase video: vimeo.com/showcase/SHOWCASE_ID/video/VIDEO_ID
-			/(?:https?:\/\/)?(?:www\.)?vimeo\.com\/showcase\/[^\/]+\/video\/(\d+)(?:\?[^\s]*)?/i
+			/(?:https?:\/\/)?(?:www\.)?vimeo\.com\/showcase\/[^/]+\/video\/(\d+)(?:\?[^\s]*)?/i
 		],
 		extractor: (match, url) => {
 			const videoId = match[1];

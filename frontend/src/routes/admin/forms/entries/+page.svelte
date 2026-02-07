@@ -33,7 +33,7 @@
 				selectedFormId = firstForm.id;
 				await loadEntries(firstForm.id);
 			}
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to load forms' });
 		} finally {
 			loading = false;
@@ -51,7 +51,7 @@
 				data: s.data || {},
 				created_at: s.created_at ?? ''
 			}));
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to load entries' });
 			entries = [];
 		} finally {
@@ -78,7 +78,7 @@
 			a.click();
 			window.URL.revokeObjectURL(url);
 			addToast({ type: 'success', message: 'Entries exported successfully' });
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to export entries' });
 		}
 	}

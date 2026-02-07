@@ -121,7 +121,6 @@ export interface FormField {
 	placeholder?: string;
 	help_text?: string;
 	default_value?: any;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	options?: any;
 	validation?: FieldValidation | null;
 	conditional_logic?: ConditionalLogic | null;
@@ -648,7 +647,7 @@ class FormsService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -819,7 +818,7 @@ class FormsService {
 				body: JSON.stringify({ events: batch }),
 				skipCache: true
 			});
-		} catch (error) {
+		} catch (_error) {
 			// Re-queue on failure
 			this.analyticsQueue.unshift(...batch);
 		}

@@ -96,7 +96,6 @@
 	// ERROR BOUNDARY
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// @ts-expect-error write-only state
 	function _handleRenderError(error: Error) {
 		renderError = error.message;
 		console.error('[Workbench] Render error:', error);

@@ -43,8 +43,7 @@
 	let isExiting = $state(false);
 	let exitIntentTriggered = $state(false);
 	let scrollTriggered = $state(false);
-	// @ts-expect-error write-only state
-	let timerTriggered = $state(false);
+	let _timerTriggered = $state(false);
 
 	// Refs
 	let popupElement: HTMLDivElement | null = $state(null);

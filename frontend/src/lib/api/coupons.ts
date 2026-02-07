@@ -444,9 +444,7 @@ class CouponManagementService {
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
 
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
-	// @ts-expect-error Reserved for future WebSocket reconnection implementation
 	private _wsReconnectAttempts = 0;
-	// @ts-expect-error Reserved for future WebSocket reconnection implementation
 	private _wsReconnectDelay = WS_RECONNECT_DELAY;
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;
@@ -634,7 +632,7 @@ class CouponManagementService {
 				this.stopHeartbeat();
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 			this.wsConnectionState.set('disconnected');
 		}
@@ -882,7 +880,7 @@ class CouponManagementService {
 			try {
 				await this.getCampaigns();
 				console.debug('[CouponService] Campaigns loaded');
-			} catch (error) {
+			} catch (_error) {
 				console.debug('[CouponService] Campaigns endpoint not available');
 			}
 
@@ -1322,7 +1320,7 @@ class CouponManagementService {
 			);
 			this.campaigns.set(response.campaigns || []);
 			return response.campaigns || [];
-		} catch (error) {
+		} catch (_error) {
 			// Campaigns endpoint may not be implemented yet
 			console.debug('[CouponService] Campaigns not available');
 			this.campaigns.set([]);

@@ -61,8 +61,7 @@
 
 	let history = $state<WatchHistoryItem[]>([]);
 	let isLoading = $state(true);
-	// @ts-expect-error write-only state
-	let error = $state<string | null>(null);
+	let _error = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
@@ -87,7 +86,7 @@
 				history = data.data.filter((item: WatchHistoryItem) => !item.completed);
 			}
 		} catch (e) {
-			error = 'Failed to load watch history';
+			_error = 'Failed to load watch history';
 			console.error('Watch history fetch error:', e);
 		} finally {
 			isLoading = false;

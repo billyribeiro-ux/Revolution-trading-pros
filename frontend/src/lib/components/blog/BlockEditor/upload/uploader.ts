@@ -291,7 +291,7 @@ async function uploadMultipart(
 					};
 
 					resolve(result);
-				} catch (parseError) {
+				} catch (_parseError) {
 					reject(new Error('Failed to parse upload response'));
 				}
 			} else {

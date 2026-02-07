@@ -104,7 +104,7 @@
 			if (!response.ok) throw new Error('Failed to load order details');
 			const data = await response.json();
 			orderDetail = data.data;
-		} catch (err) {
+		} catch (_err) {
 			toastStore.error('Failed to load order details');
 		} finally {
 			loadingDetail = false;

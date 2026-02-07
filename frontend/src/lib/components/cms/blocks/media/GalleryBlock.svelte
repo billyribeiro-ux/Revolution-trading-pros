@@ -411,7 +411,6 @@
 		{#if layout === 'grid' || layout === 'masonry'}
 			<div class="gallery-grid" class:masonry={layout === 'masonry'} role="list" style={gridStyle}>
 				{#each images as image, index (image.id)}
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
 						class="gallery-item"
 						class:dragging={draggedIndex === index}

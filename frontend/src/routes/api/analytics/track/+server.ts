@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 
 		const data = await response.json();
 		return json({ ...data, requestId }, { status: 200 });
-	} catch (error) {
+	} catch (_error) {
 		// ICT 7: Silent failure - analytics errors never affect UX
 		return json({ success: true, requestId }, { status: 200 });
 	}

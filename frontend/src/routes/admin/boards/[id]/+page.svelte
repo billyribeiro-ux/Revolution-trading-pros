@@ -46,8 +46,7 @@
 	let tasks = $state<Task[]>([]);
 	let labels = $state<Label[]>([]);
 	let members = $state<BoardMember[]>([]);
-			// @ts-expect-error write-only state
-	let customFields = $state<CustomFieldDefinition[]>([]);
+		let _customFields = $state<CustomFieldDefinition[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
 	let filterAssignee = $state<string | null>(null);
@@ -154,8 +153,8 @@
 			stages = stagesRes;
 			tasks = tasksRes.data;
 			labels = labelsRes;
-			customFields = fieldsRes;
-			// Suppress unused warning - customFields loaded for future use
+			_customFields = fieldsRes;
+			// Suppress unused warning - _customFields loaded for future use
 		} catch (error) {
 			console.error('Failed to load board:', error);
 		} finally {

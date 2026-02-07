@@ -162,7 +162,7 @@
 			stageChangeReason = '';
 			showToast('success', 'Deal stage updated successfully');
 			await loadDeal();
-		} catch (e) {
+		} catch (_e) {
 			showToast('error', 'Failed to update deal stage');
 		} finally {
 			processingAction = false;
@@ -179,7 +179,7 @@
 			winDetails = '';
 			showToast('success', 'Deal marked as won!');
 			await loadDeal();
-		} catch (e) {
+		} catch (_e) {
 			showToast('error', 'Failed to mark deal as won');
 		} finally {
 			processingAction = false;
@@ -196,7 +196,7 @@
 			lostReason = '';
 			showToast('success', 'Deal marked as lost');
 			await loadDeal();
-		} catch (e) {
+		} catch (_e) {
 			showToast('error', 'Failed to mark deal as lost');
 		} finally {
 			processingAction = false;
@@ -213,7 +213,7 @@
 			showAddNoteModal = false;
 			showToast('success', 'Note added successfully');
 			await loadDeal();
-		} catch (e) {
+		} catch (_e) {
 			showToast('error', 'Failed to add note');
 		} finally {
 			processingAction = false;
@@ -233,7 +233,7 @@
 			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
 			showToast('success', 'Deal deleted');
 			goto('/admin/crm/deals');
-		} catch (e) {
+		} catch (_e) {
 			showToast('error', 'Failed to delete deal');
 		}
 	}

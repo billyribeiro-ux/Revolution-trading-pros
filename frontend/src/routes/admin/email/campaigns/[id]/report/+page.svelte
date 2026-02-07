@@ -150,8 +150,7 @@
 	let error = $state<string | null>(null);
 	let report = $state<CampaignReport | null>(null);
 	let activeChartView = $state<'opens' | 'clicks'>('opens');
-	// @ts-expect-error write-only state
-	let isExporting = $state(false);
+	let _isExporting = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State
@@ -246,7 +245,7 @@
 		try {
 			const response = await adminFetch(`/api/admin/email/campaigns/${campaignId}/report`);
 			report = response.data || response;
-		} catch (err) {
+		} catch (_err) {
 			// If no real data, use demo data for display
 			report = generateDemoReport();
 		} finally {

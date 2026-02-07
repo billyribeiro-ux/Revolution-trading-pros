@@ -179,7 +179,7 @@
 		try {
 			const dataToSave = {
 				...formData,
-				fields: fields.map(({ id, created_at, updated_at, ...field }) => field)
+				fields: fields.map(({ id: _id, created_at: _created_at, updated_at: _updated_at, ...field }) => field)
 			};
 
 			if (props.isEditing && props.form?.id) {

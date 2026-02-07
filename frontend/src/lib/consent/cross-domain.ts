@@ -168,7 +168,7 @@ function getDomainCookie(): Partial<ConsentState> | null {
 		if (name === 'rtp_consent_shared' && value) {
 			try {
 				return JSON.parse(decodeURIComponent(value));
-			} catch (e) {
+			} catch (_e) {
 				console.debug('[CrossDomain] Failed to parse domain cookie');
 			}
 		}
@@ -302,7 +302,7 @@ function broadcastConsentUpdate(consent: ConsentState): void {
 			if (iframe.contentWindow) {
 				iframe.contentWindow.postMessage(message, '*');
 			}
-		} catch (e) {
+		} catch (_e) {
 			// Cross-origin iframe, skip
 		}
 	});
@@ -347,7 +347,7 @@ function checkUrlParameters(): void {
 				url.searchParams.delete('rtp_consent');
 				window.history.replaceState({}, '', url.toString());
 			}
-		} catch (e) {
+		} catch (_e) {
 			console.debug('[CrossDomain] Failed to decode URL consent param');
 		}
 	}
@@ -380,7 +380,7 @@ function decodeConsentParam(param: string): Partial<ConsentState> | null {
 			consentId: data.i,
 			hasInteracted: true
 		};
-	} catch (e) {
+	} catch (_e) {
 		return null;
 	}
 }
