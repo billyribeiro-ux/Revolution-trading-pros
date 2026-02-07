@@ -9,9 +9,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	let viewportWidth = $state(0);
 	let prefersReducedMotion = $state(false);
+	void prefersReducedMotion;
 	let isClient = $state(false);
 
-	const breakpoint = $derived.by(() => {
+	const breakpoint: string = $derived.by(() => {
 		if (viewportWidth === 0) return 'mobile';
 		if (viewportWidth < 428) return 'mobile-small';
 		if (viewportWidth < 744) return 'mobile';
@@ -19,6 +20,7 @@
 		if (viewportWidth < 1366) return 'desktop';
 		return 'desktop-large';
 	});
+	void breakpoint;
 
 	$effect(() => {
 		if (!isClient) return;

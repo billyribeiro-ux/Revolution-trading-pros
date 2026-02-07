@@ -85,7 +85,7 @@
 
 	// ICT 7: Type-safe stage value calculation
 	function getStageValue(stage: Stage): number {
-		return crmStore.dealsByStage[stage.id]?.reduce((sum, d) => sum + d.amount, 0) ?? 0;
+		return crmStore.dealsByStage[stage.id]?.reduce((sum: number, d) => sum + d.amount, 0) ?? 0;
 	}
 </script>
 

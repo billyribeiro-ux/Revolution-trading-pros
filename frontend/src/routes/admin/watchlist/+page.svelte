@@ -24,7 +24,7 @@
 
 	import { browser } from '$app/environment';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
-	import { ROOMS, ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
+	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';

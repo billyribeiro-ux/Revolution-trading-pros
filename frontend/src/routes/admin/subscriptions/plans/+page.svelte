@@ -191,13 +191,14 @@
 		}).format(price);
 	}
 
-	function formatDate(dateString: string): string {
+	function _formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric'
 		});
 	}
+	void _formatDate;
 
 	function getBillingCycleLabel(cycle: string): string {
 		switch (cycle) {

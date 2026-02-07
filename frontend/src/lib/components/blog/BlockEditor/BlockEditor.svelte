@@ -88,8 +88,7 @@
 		readOnly?: boolean;
 	}
 
-	let props: Props = $props();
-	let blocks = $derived(props.blocks ?? []);
+	let { blocks = $bindable([]), ...props }: Props = $props();
 	const contentId = $derived(props.contentId ?? '');
 	const postTitle = $derived(props.postTitle ?? '');
 	const postSlug = $derived(props.postSlug ?? '');

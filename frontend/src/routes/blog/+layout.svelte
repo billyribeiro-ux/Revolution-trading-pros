@@ -18,6 +18,7 @@
 
 	// Track if component has mounted (for hydration-safe rendering)
 	let mounted = $state(false);
+	void mounted;
 
 	onMount(() => {
 		mounted = true;

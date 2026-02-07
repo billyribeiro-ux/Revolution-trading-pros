@@ -7,7 +7,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
-	import { crmStore } from '$lib/stores/crm';
+	import { crmStore } from '$lib/stores/crm.svelte';
 	import type { Contact, ContactStatus, LifecycleStage } from '$lib/crm/types';
 	import { IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
 

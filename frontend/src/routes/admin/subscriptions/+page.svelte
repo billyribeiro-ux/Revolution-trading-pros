@@ -66,7 +66,7 @@
 			connectionLoading = false;
 
 			// Only load data if payment is connected
-			if (getIsPaymentConnected) {
+			if (getIsPaymentConnected()) {
 				await loadData();
 			} else {
 				loading = false;
@@ -319,7 +319,7 @@
 		<header class="page-header">
 			<h1>Subscription Management</h1>
 			<p class="subtitle">Monitor and manage all customer subscriptions</p>
-			{#if getIsPaymentConnected}
+			{#if getIsPaymentConnected()}
 				<div class="header-actions">
 					<button class="btn-primary" onclick={openCreateModal}>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

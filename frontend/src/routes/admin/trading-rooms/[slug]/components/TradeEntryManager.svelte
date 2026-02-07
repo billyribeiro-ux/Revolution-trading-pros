@@ -22,8 +22,6 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
-	import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 

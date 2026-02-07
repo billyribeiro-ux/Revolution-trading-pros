@@ -21,18 +21,7 @@
 		disabled?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Bindable state for two-way binding - sync with props
-	let selectedRooms = $state<string[]>(props.selectedRooms ?? []);
-	const disabled = $derived(props.disabled ?? false);
-
-	// Sync selectedRooms back to parent via effect
-	$effect(() => {
-		if (props.selectedRooms !== undefined) {
-			selectedRooms = props.selectedRooms;
-		}
-	});
+	let { selectedRooms = $bindable([]), disabled = false }: Props = $props();
 
 	// State
 	let isExpanded = $state(false);

@@ -103,6 +103,7 @@
 		'video/x-matroska'
 	];
 	const _documentTypes = [
+		void _documentTypes;
 		'application/pdf',
 		'application/msword',
 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
