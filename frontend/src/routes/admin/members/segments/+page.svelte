@@ -516,12 +516,12 @@
 		// TODO: Implement actual CSV export
 	}
 
+	// @ts-ignore write-only state
 	function _viewSegmentAnalytics(segment: Segment) {
 		// Show analytics modal or navigate to analytics page
 		toastStore.info(`Analytics for "${segment.name}" - Coming soon`);
 		// TODO: Implement analytics view
 	}
-	void _viewSegmentAnalytics;
 
 	function handleSaveFilter() {
 		if (!newFilter.name) {

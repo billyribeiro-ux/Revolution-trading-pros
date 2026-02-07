@@ -20,8 +20,8 @@
 	let dateRange = '30d';
 
 	// Connection status - NO MOCK DATA
+	// @ts-ignore write-only state
 	let isConnected = false;
-	void isConnected;
 	let connectionError: string | null = null;
 	let hasData = false;
 

@@ -92,6 +92,7 @@
 		searchQuery = target.value;
 	}
 
+	// @ts-ignore write-only state
 	function _submitSearch() {
 		const url = new URL(window.location.href);
 		if (searchQuery) {
@@ -102,7 +103,6 @@
 		url.searchParams.set('page', '1');
 		goto(url.toString(), { invalidateAll: true });
 	}
-	void _submitSearch;
 
 	function goToPage(pageNum: number) {
 		if (pageNum >= 1 && pageNum <= totalPages) {

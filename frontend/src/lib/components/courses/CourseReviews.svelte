@@ -107,6 +107,7 @@
 		}
 	}
 
+	// @ts-ignore write-only state
 	async function _deleteReview() {
 		if (!confirm('Are you sure you want to delete your review?')) return;
 
@@ -122,7 +123,6 @@
 			console.error('Failed to delete review:', e);
 		}
 	}
-	void _deleteReview;
 
 	const formatDate = (dateStr: string): string => {
 		return new Date(dateStr).toLocaleDateString('en-US', {

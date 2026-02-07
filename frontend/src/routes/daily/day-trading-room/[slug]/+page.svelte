@@ -37,8 +37,8 @@
 	let previousVideo = $state<DailyVideo | null>(null);
 	let nextVideo = $state<DailyVideo | null>(null);
 	let loading = $state(true);
+	// @ts-ignore write-only state
 	let videoElement = $state<HTMLVideoElement | undefined>(undefined);
-	void videoElement;
 
 	// Video ended redirect handler
 	function handleVideoEnded() {

@@ -40,8 +40,8 @@
 	let loading = $state(false);
 	let initialLoading = $state(true);
 	let errors = $state<Record<string, string>>({});
+	// @ts-ignore write-only state
 	let showAbTestModal = $state(false);
-	void showAbTestModal;
 
 	// Trigger rules based on type
 	let timedDelay = $state(5000);

@@ -33,8 +33,8 @@
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
 	let showLinkedWarningModal = $state(false);
+	// @ts-ignore write-only state
 	let pendingDeleteMethod = $state<PaymentMethod | null>(null);
-	void pendingDeleteMethod;
 	let deleteFormElement = $state<HTMLFormElement | null>(null);
 
 	function confirmDelete(event: Event, method: PaymentMethod): boolean {

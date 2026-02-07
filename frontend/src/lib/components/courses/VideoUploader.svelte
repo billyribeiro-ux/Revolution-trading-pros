@@ -42,8 +42,8 @@
 	const lessonTitle = $derived(props.lessonTitle ?? 'Video');
 
 	let file = $state<File | null>(null);
+	// @ts-ignore write-only state
 	let uploading = $state(false);
-	void uploading;
 	let progress = $state(0);
 	let status = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete' | 'error'>(
 		'idle'

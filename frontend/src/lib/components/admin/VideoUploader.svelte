@@ -58,8 +58,8 @@
 	let videoFile = $state<File | null>(null);
 	let thumbnailFile = $state<File | null>(null);
 	let uploadProgress = $state(0);
+	// @ts-ignore write-only state
 	let thumbnailProgress = $state(0);
-	void thumbnailProgress;
 	let isUploading = $state(false);
 	let error = $state<string | null>(null);
 	let uploadSessionId = $state<string | null>(null);

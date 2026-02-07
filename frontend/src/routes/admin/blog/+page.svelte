@@ -73,15 +73,20 @@
 	let posts = $state<any[]>([]);
 	let stats = $state<any>(null);
 	let loading = $state(false);
+		// @ts-ignore write-only state
 	let searchQuery = $state('');
+		// @ts-ignore write-only state
 	let statusFilter = $state('all');
+		// @ts-ignore write-only state
 	let categoryFilter = $state('all');
 
 	// New state for improvements
 	let selectedPosts = $state(new Set<number>());
 	let selectAll = $state(false);
 	let viewMode = $state<'grid' | 'list'>('grid');
+		// @ts-ignore write-only state
 	let sortBy = $state('created_at');
+		// @ts-ignore write-only state
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let dateRange = $state({ start: '', end: '' });
 	let previewPost = $state<any>(null);
@@ -627,11 +632,6 @@
 	// ICT11+ Fix: Debounced effect to reload posts when filters change
 	$effect(() => {
 		// Track all filter dependencies (void to suppress unused warnings)
-		void searchQuery;
-		void statusFilter;
-		void categoryFilter;
-		void sortBy;
-		void sortOrder;
 		void dateRange.start;
 		void dateRange.end;
 

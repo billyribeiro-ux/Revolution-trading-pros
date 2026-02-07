@@ -8,10 +8,11 @@
 	// SVELTE 5 RUNES - Reactive State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 	let viewportWidth = $state(0);
+	// @ts-ignore write-only state
 	let prefersReducedMotion = $state(false);
-	void prefersReducedMotion;
 	let isClient = $state(false);
 
+	// @ts-ignore write-only state
 	const breakpoint: string = $derived.by(() => {
 		if (viewportWidth === 0) return 'mobile';
 		if (viewportWidth < 428) return 'mobile-small';
@@ -20,7 +21,6 @@
 		if (viewportWidth < 1366) return 'desktop';
 		return 'desktop-large';
 	});
-	void breakpoint;
 
 	$effect(() => {
 		if (!isClient) return;

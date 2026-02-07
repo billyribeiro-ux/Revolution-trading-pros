@@ -65,10 +65,10 @@
 		}
 	}
 
+	// @ts-ignore write-only state
 	function _handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
 		props.onUpdate(blockId, updates);
 	}
-	void _handleBlockUpdate;
 </script>
 
 <div

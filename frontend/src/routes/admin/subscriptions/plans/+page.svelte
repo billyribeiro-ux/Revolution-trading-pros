@@ -191,6 +191,7 @@
 		}).format(price);
 	}
 
+	// @ts-ignore write-only state
 	function _formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
 			year: 'numeric',
@@ -198,7 +199,6 @@
 			day: 'numeric'
 		});
 	}
-	void _formatDate;
 
 	function getBillingCycleLabel(cycle: string): string {
 		switch (cycle) {

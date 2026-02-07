@@ -44,8 +44,8 @@
 	});
 
 	let content = $state('');
+	// @ts-ignore write-only state
 	let analyzing = $state(false);
-	void analyzing;
 	let saving = $state(false);
 
 	const tabs = [

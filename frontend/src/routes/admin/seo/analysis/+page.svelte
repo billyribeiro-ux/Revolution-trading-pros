@@ -14,8 +14,8 @@
 	let analyzing = $state(false);
 
 	// For content selector
+	// @ts-ignore write-only state
 	let forms: Form[] = $state([]);
-	void forms;
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },

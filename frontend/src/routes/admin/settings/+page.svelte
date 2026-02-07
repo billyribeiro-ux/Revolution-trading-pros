@@ -129,12 +129,12 @@
 		return result;
 	});
 
+	// @ts-ignore write-only state
 	let connectedServices = $derived(allServices.filter((s) => s.is_connected));
-	void connectedServices;
+	// @ts-ignore write-only state
 	let disconnectedServices = $derived(allServices.filter((s) => !s.is_connected));
-	void disconnectedServices;
+	// @ts-ignore write-only state
 	let errorServices = $derived(allServices.filter((s) => s.status === 'error'));
-	void errorServices;
 	let categoryList = $derived(Object.entries(categories) as [string, Category][]);
 
 	// Google-specific services for quick access

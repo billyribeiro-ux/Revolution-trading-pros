@@ -16,8 +16,8 @@
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);
 	let selectedTab = $state<'active' | 'inactive' | 'all'>('all');
+	// @ts-ignore write-only state
 	let showDeleteModal = $state(false);
-	void showDeleteModal;
 	let pendingDeleteId = $state<string | null>(null);
 
 	// Svelte 5: Initialize on mount
@@ -64,6 +64,7 @@
 		showDeleteModal = true;
 	}
 
+	// @ts-ignore write-only state
 	async function _confirmDeletePopup() {
 		if (!pendingDeleteId) return;
 		showDeleteModal = false;
@@ -76,7 +77,6 @@
 			console.error('Error deleting popup:', error);
 		}
 	}
-	void _confirmDeletePopup;
 
 	async function handleDuplicate(popupId: string) {
 		try {

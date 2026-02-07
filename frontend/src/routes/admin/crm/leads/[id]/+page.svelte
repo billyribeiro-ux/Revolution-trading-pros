@@ -312,6 +312,7 @@
 		return 'text-red-400';
 	}
 
+	// @ts-ignore write-only state
 	function _getTimelineIcon(type: string): string {
 		const icons: Record<string, string> = {
 			email: 'mail',
@@ -323,7 +324,6 @@
 		};
 		return icons[type] || 'activity';
 	}
-	void _getTimelineIcon;
 
 	function goBack() {
 		goto('/admin/crm/leads');

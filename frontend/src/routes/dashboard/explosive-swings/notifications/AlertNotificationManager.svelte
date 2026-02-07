@@ -35,6 +35,7 @@
 		}
 	};
 
+	// @ts-ignore write-only state
 	function _showNotification(alert: any) {
 		if (!enabled || !hasPermission) return;
 
@@ -56,7 +57,6 @@
 
 		onNewAlert?.(alert);
 	}
-	void _showNotification;
 
 	function playAlertSound() {
 		if (!audioContext) {

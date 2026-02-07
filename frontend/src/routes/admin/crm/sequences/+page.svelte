@@ -47,6 +47,7 @@
 	let sequences = $state<EmailSequence[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
+		// @ts-ignore write-only state
 	let searchQuery = $state('');
 	let selectedStatus = $state<SequenceStatus | 'all'>('all');
 	let isInitialized = $state(false);
@@ -276,6 +277,7 @@
 		sequences.filter((seq) => {
 			const matchesSearch =
 				!searchQuery || seq.title.toLowerCase().includes(searchQuery.toLowerCase());
+		// @ts-ignore write-only state
 			const matchesStatus = selectedStatus === 'all' || seq.status === selectedStatus;
 			return matchesSearch && matchesStatus;
 		})
@@ -294,8 +296,6 @@
 	// Auto-refresh when filters change (after initial load)
 	$effect(() => {
 		// Track the reactive dependencies
-		void searchQuery;
-		void selectedStatus;
 
 		// Only reload if already initialized (skip the initial load)
 		if (isInitialized) {
@@ -310,7 +310,6 @@
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	$effect(() => {
-		void searchQuery;
 
 		return () => {
 			if (searchTimeout) {

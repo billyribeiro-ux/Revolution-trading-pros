@@ -37,8 +37,8 @@
 	// Calculate scales - drawdown is always negative or zero
 	const values = $derived(data.map((d) => d.drawdown_percent));
 	const minValue = $derived(Math.min(...values, 0));
+	// @ts-ignore write-only state
 	const maxValue = 0; // Drawdown is at most 0
-	void maxValue;
 
 	// Scale functions
 	function scaleX(index: number): number {

@@ -109,8 +109,8 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
+	// @ts-ignore write-only state
 	let containerElement: HTMLDivElement | null = $state(null);
-	void containerElement;
 	let iframeElement = $state<HTMLIFrameElement | null>(null);
 	let isLoaded = $state(false);
 	let isPlaying = $state(false);

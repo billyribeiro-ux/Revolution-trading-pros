@@ -36,8 +36,8 @@
 	const url = $derived(props.url ?? (typeof window !== 'undefined' ? window.location.href : ''));
 	const title = $derived(props.title);
 	const description = $derived(props.description ?? '');
+	// @ts-ignore write-only state
 	const _image = $derived(props.image ?? '');
-	void _image;
 	const hashtags = $derived(props.hashtags ?? '');
 	const via = $derived(props.via ?? 'RevTradingPros');
 	const layout = $derived(props.layout ?? 'horizontal');

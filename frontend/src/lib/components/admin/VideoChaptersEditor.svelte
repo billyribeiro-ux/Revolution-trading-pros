@@ -26,8 +26,8 @@
 
 	// Destructure with defaults for internal use
 	const videoId = $derived(props.videoId);
+	// @ts-ignore write-only state
 	const videoDuration = $derived(props.videoDuration ?? 0);
-	void videoDuration;
 	const onClose = $derived(props.onClose);
 
 	let chapters = $state<VideoChapter[]>([]);

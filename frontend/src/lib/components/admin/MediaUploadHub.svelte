@@ -102,6 +102,7 @@
 		'video/x-msvideo',
 		'video/x-matroska'
 	];
+	// @ts-ignore write-only state
 	const _documentTypes = [
 		'application/pdf',
 		'application/msword',
@@ -111,7 +112,6 @@
 		'text/plain',
 		'text/csv'
 	];
-	void _documentTypes;
 
 	function getFileType(file: File): 'image' | 'video' | 'document' {
 		if (imageTypes.includes(file.type) || file.name.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i)) {

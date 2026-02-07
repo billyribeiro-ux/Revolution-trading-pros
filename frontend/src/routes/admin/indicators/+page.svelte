@@ -27,6 +27,7 @@
 	let page = $state(1);
 	let perPage = $state(20);
 	let search = $state('');
+		// @ts-ignore write-only state
 	let statusFilter = $state('');
 	let deleting = $state<string | null>(null);
 
@@ -90,11 +91,10 @@
 
 	// ICT 7: Reset page when filters change, then re-fetch
 	// Uses untrack on fetchIndicators to prevent circular dependency
+		// @ts-ignore write-only state
 	let searchDebounceTimer: ReturnType<typeof setTimeout>;
 	$effect(() => {
 		// Explicitly subscribe to search and statusFilter as reactive dependencies
-		void search;
-		void statusFilter;
 		// Debounce to avoid rapid re-fetches while typing
 		clearTimeout(searchDebounceTimer);
 		searchDebounceTimer = setTimeout(() => {

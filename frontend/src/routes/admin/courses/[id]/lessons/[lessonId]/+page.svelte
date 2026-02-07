@@ -62,8 +62,8 @@
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
+	// @ts-ignore write-only state
 	let errorMessage = $state('');
-	void errorMessage;
 
 	// Delete confirmation modal state
 	let showDeleteLessonModal = $state(false);

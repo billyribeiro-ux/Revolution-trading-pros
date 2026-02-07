@@ -61,8 +61,8 @@
 
 	let history = $state<WatchHistoryItem[]>([]);
 	let isLoading = $state(true);
+	// @ts-ignore write-only state
 	let error = $state<string | null>(null);
-	void error;
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
@@ -354,6 +354,7 @@
 		line-height: 1.3;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

@@ -96,11 +96,11 @@
 	// ERROR BOUNDARY
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// @ts-ignore write-only state
 	function _handleRenderError(error: Error) {
 		renderError = error.message;
 		console.error('[Workbench] Render error:', error);
 	}
-	void _handleRenderError;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPUTED STYLES

@@ -46,6 +46,7 @@
 	let tasks = $state<Task[]>([]);
 	let labels = $state<Label[]>([]);
 	let members = $state<BoardMember[]>([]);
+			// @ts-ignore write-only state
 	let customFields = $state<CustomFieldDefinition[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
@@ -155,7 +156,6 @@
 			labels = labelsRes;
 			customFields = fieldsRes;
 			// Suppress unused warning - customFields loaded for future use
-			void customFields;
 		} catch (error) {
 			console.error('Failed to load board:', error);
 		} finally {
