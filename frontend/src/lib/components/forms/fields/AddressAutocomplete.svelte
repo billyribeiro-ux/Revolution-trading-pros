@@ -296,7 +296,7 @@
 					onfocus={() => (showSuggestions = suggestions.length > 0)}
 					placeholder={props.field.placeholder || 'Start typing an address...'}
 					class="search-input"
-					class:has-error={props.error && error.length > 0}
+					class:has-error={props.error && props.error.length > 0}
 					autocomplete="off"
 				/>
 				{#if isLoading}
@@ -438,7 +438,7 @@
 		</div>
 	{/if}
 
-	{#if props.error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="field-errors">
 			{#each props.error as err}
 				<p>{err}</p>

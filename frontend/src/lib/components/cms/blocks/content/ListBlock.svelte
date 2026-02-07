@@ -117,10 +117,10 @@
 		updateContent({ items });
 	}
 
-	function updateCheckItemContent(itemId: string, content: string): void {
+	function updateCheckItemText(itemId: string, text: string): void {
 		const items =
 			props.block.content.items?.map((item) =>
-				item.id === itemId ? { ...item, content } : item
+				item.id === itemId ? { ...item, text } : item
 			) || [];
 		updateContent({ items });
 	}
@@ -128,7 +128,7 @@
 	function addCheckItem(afterIndex?: number): void {
 		const newItem = {
 			id: `item_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-			content: '',
+			text: '',
 			checked: false
 		};
 
@@ -173,7 +173,7 @@
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			addCheckItem(index);
-		} else if (e.key === 'Backspace' && !currentItem?.content && items.length > 1) {
+		} else if (e.key === 'Backspace' && !currentItem?.text && items.length > 1) {
 			e.preventDefault();
 			removeCheckItem(itemId, index);
 		} else if (e.key === 'ArrowUp' && index > 0) {
@@ -230,7 +230,7 @@
 						onchange={() => toggleCheckItem(item.id)}
 						disabled={!props.isEditing}
 						class="list-block__checkbox-input"
-						aria-label={item.content || 'Checklist item'}
+						aria-label={item.text || 'Checklist item'}
 					/>
 					<span class="list-block__checkbox" aria-hidden="true">
 						{#if item.checked}
@@ -240,9 +240,9 @@
 					<span
 						contenteditable={props.isEditing}
 						class="list-block__check-text"
-						class:list-block__check-text--placeholder={!item.content}
+						class:list-block__check-text--placeholder={!item.text}
 						oninput={(e) =>
-							updateCheckItemContent(item.id, (e.target as HTMLElement).textContent || '')}
+							updateCheckItemText(item.id, (e.target as HTMLElement).textContent || '')}
 						onkeydown={(e) => handleCheckKeyDown(e, item.id, index)}
 						onpaste={handlePaste}
 						data-placeholder="List item..."
@@ -251,7 +251,7 @@
 						aria-label={props.isEditing ? 'Checklist item text' : undefined}
 						spellcheck="true"
 					>
-						{item.content}
+						{item.text}
 					</span>
 					{#if props.isEditing && checklistItems.length > 1}
 						<button

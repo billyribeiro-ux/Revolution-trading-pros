@@ -10,7 +10,6 @@
 
 import type { PageServerLoad } from './$types';
 
-const _API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 export interface VideoResponse {
 	id: number;
@@ -47,44 +46,10 @@ export interface ApiResponse {
 	};
 }
 
-// Category mapping from WordPress IDs to tags
-const _CATEGORY_TAG_MAP: Record<string, string> = {
-	'529': 'trade-setups',
-	'528': 'methodology',
-	'329': 'member-webinar',
-	'2932': 'trade-management',
-	'531': 'indicators',
-	'3260': 'options',
-	'469': 'foundation',
-	'527': 'fundamentals',
-	'522': 'simpler-tech',
-	'2929': 'charting-indicators-tools',
-	'530': 'charting',
-	'3515': 'drama-free-daytrades',
-	'3516': 'quick-hits-daytrades',
-	'537': 'psychology',
-	'775': 'trading-platform',
-	'3055': 'calls',
-	'447': 'thinkorswim',
-	'446': 'tradestation',
-	'776': 'charting-software',
-	'772': 'trading-computer',
-	'3057': 'calls-puts-credit-spreads',
-	'3056': 'puts',
-	'3514': 'profit-recycling',
-	'791': 'trade-strategies',
-	'774': 'website-support',
-	'2927': 'options-strategies',
-	'457': 'crypto',
-	'2931': 'fibonacci-options',
-	'2928': 'pricing-volatility',
-	'459': 'crypto-indicators',
-	'771': 'browser-support',
-	'2930': 'earnings-expiration'
-};
 
 export const load: PageServerLoad = async ({ url }) => {
-	const _page = parseInt(url.searchParams.get('page') || '1');
+	const page = parseInt(url.searchParams.get('page') || '1');
+	void page;
 	const category = url.searchParams.get('category');
 	const perPage = 9;
 

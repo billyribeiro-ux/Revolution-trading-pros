@@ -13,7 +13,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import type { RoomAlert, AlertCreateInput, AlertType } from '$lib/types/trading';
+import type { RoomAlert, AlertCreateInput } from '$lib/types/trading';
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
 
 // ═══════════════════════════════════════════════════════════════════════════

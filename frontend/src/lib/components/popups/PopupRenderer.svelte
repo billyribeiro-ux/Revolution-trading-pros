@@ -45,6 +45,7 @@
 	let exitIntentTriggered = $state(false);
 	let scrollTriggered = $state(false);
 	let timerTriggered = $state(false);
+	void timerTriggered;
 
 	// Refs
 	let popupElement: HTMLDivElement | null = $state(null);
@@ -130,7 +131,7 @@
 		// For now, rely on the popups service
 	}
 
-	function checkScrollPopups(depth: number) {
+	function checkScrollPopups(_depth: number) {
 		// This would check the popup queue for scroll-triggered popups
 		// For now, rely on the popups service
 	}

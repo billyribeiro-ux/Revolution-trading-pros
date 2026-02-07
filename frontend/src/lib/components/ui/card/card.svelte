@@ -3,7 +3,7 @@
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
-	let ref = $state<HTMLDivElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
 	let className = $derived(props.class);
 
 	// Sync ref back to parent

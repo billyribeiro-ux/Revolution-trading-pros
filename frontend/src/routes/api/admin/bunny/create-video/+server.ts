@@ -15,44 +15,6 @@ import { env } from '$env/dynamic/private';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-async function fetchFromBackend(
-	endpoint: string,
-	options: RequestInit = {},
-	cookies?: { get: (name: string) => string | undefined }
-): Promise<any | null> {
-	try {
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			...((options.headers as Record<string, string>) || {})
-		};
-
-		if (cookies) {
-			const session = cookies.get('session');
-			if (session) {
-				headers['Cookie'] = `session=${session}`;
-			}
-		}
-
-		console.log(`[Bunny API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers
-		});
-
-		if (!response.ok) {
-			const errorText = await response.text();
-			console.error(`[Bunny API] Backend error: ${response.status}`, errorText);
-			return { error: errorText, status: response.status };
-		}
-
-		return await response.json();
-	} catch (err) {
-		console.error('[Bunny API] Backend fetch failed:', err);
-		return null;
-	}
-}
-
 // POST - Create video entry on Bunny.net
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');

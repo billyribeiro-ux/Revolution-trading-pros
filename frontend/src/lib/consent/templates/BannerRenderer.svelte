@@ -10,7 +10,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { consentStore, openPreferencesModal } from '../store.svelte.ts';
+	import { consentStore, openPreferencesModal } from '../store.svelte';
 	import { activeTemplate, isPreviewMode } from './store';
 	import { t } from '../i18n';
 	import { recordImpression, recordDecision } from '../ab-testing';

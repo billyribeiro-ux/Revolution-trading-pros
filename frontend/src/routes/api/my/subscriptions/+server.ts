@@ -34,7 +34,7 @@ interface SubscriptionsResponse {
  *
  * @returns {SubscriptionsResponse} User's subscriptions or empty array
  */
-export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
+export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	// ICT 7: Request tracing for debugging
 	const requestId = crypto.randomUUID().slice(0, 8);
 	const startTime = performance.now();

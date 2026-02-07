@@ -10,7 +10,6 @@
 
 import type { PageServerLoad } from './$types';
 
-const _API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 export interface VideoResponse {
 	id: number;
@@ -47,16 +46,10 @@ export interface ApiResponse {
 	};
 }
 
-// Category mapping from WordPress IDs to tags (SPX-specific categories)
-const _CATEGORY_TAG_MAP: Record<string, string> = {
-	'2929': 'charting-indicators-tools',
-	'329': 'member-webinar',
-	'528': 'methodology',
-	'529': 'trade-setups'
-};
 
 export const load: PageServerLoad = async ({ url }) => {
-	const _page = parseInt(url.searchParams.get('page') || '1');
+	const page = parseInt(url.searchParams.get('page') || '1');
+	void page;
 	const category = url.searchParams.get('category');
 	const perPage = 9;
 

@@ -19,7 +19,7 @@ export function initSentry(): void {
 		replaysOnErrorSampleRate: 1.0,
 
 		integrations: [
-			new Sentry.Replay({
+			Sentry.replayIntegration({
 				maskAllText: false,
 				blockAllMedia: false
 			})

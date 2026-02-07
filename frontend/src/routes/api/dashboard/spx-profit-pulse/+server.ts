@@ -185,7 +185,7 @@ function getTradingRooms() {
 // REQUEST HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async () => {
 	try {
 		// Build full dashboard response
 		const dashboardData = {

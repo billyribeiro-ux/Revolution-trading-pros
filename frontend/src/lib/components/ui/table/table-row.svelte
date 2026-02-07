@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let props: WithElementRef<HTMLAttributes<HTMLTableRowElement>> = $props();
-	let ref = $state<HTMLTableRowElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
 	let className = $derived(props.class);
 
 	$effect(() => {

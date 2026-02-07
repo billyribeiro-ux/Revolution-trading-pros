@@ -8,7 +8,6 @@
  * @version 1.0.0 - January 2026
  */
 
-import { browser } from '$app/environment';
 import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
 
 // ═══════════════════════════════════════════════════════════════════════════

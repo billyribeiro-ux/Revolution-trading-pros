@@ -103,7 +103,7 @@
 		loading = true;
 		await Promise.all([
 			fetchRelatedForms(),
-			showTrending ? fetchTrendingForms() : Promise.resolve()
+			props.showTrending ? fetchTrendingForms() : Promise.resolve()
 		]);
 		loading = false;
 	});
@@ -114,7 +114,7 @@
 		<h3>Discover More</h3>
 	</div>
 
-	{#if showTrending}
+	{#if props.showTrending}
 		<div class="tabs">
 			<button
 				class="tab"

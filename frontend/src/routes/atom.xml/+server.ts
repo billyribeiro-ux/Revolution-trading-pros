@@ -279,20 +279,6 @@ function generateEntryId(post: FeedPost): string {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Generate link element
- * @param link - Link configuration
- * @returns XML string for the link
- */
-function generateLink(link: AtomLink): string {
-	let attrs = `href="${escapeXml(link.href)}" rel="${link.rel}"`;
-	if (link.type) attrs += ` type="${link.type}"`;
-	if (link.hreflang) attrs += ` hreflang="${link.hreflang}"`;
-	if (link.title) attrs += ` title="${escapeXml(link.title)}"`;
-	if (link.length) attrs += ` length="${link.length}"`;
-	return `<link ${attrs} />`;
-}
-
-/**
  * Generate a single Atom entry
  * @param post - Blog post data
  * @returns XML string for the entry

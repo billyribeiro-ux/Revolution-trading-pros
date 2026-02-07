@@ -274,7 +274,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const paginatedItems = items.slice(start, start + perPage);
 
 	// Add previous/next links
-	const itemsWithNav = paginatedItems.map((item, index) => {
+	const itemsWithNav = paginatedItems.map((item) => {
 		const globalIndex = items.findIndex((i) => i.id === item.id);
 		return {
 			...item,

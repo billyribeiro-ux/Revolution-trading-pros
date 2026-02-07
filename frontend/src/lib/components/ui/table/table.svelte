@@ -3,7 +3,7 @@
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLTableAttributes> = $props();
-	let ref = $state<HTMLTableElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(props.ref ?? null);
 	let className = $derived(props.class);
 
 	$effect(() => {

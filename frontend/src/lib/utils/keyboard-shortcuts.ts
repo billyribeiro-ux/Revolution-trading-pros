@@ -846,7 +846,6 @@ export class ShortcutRegistry {
 		}
 
 		// Check that no extra modifiers are pressed
-		const cmdModifier = isMac ? event.metaKey : event.ctrlKey;
 		const expectedCmd = modifiers.includes('cmd');
 		const expectedCtrl = modifiers.includes('ctrl');
 		const expectedShift = modifiers.includes('shift');
