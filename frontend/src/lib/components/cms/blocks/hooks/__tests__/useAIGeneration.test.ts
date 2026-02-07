@@ -118,7 +118,7 @@ describe('useAIGeneration', () => {
 		});
 
 		it('registers cleanup callback on creation', () => {
-			const hook = useAIGeneration({
+			void useAIGeneration({
 				blockId: mockBlockId,
 				type: 'generate',
 				onSuccess: vi.fn()
@@ -357,7 +357,6 @@ describe('useAIGeneration', () => {
 		});
 
 		it('calls onError callback with error', async () => {
-			const errorMessage = 'API error: 500';
 			(global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
 				ok: false,
 				status: 500,
@@ -458,7 +457,7 @@ describe('useAIGeneration', () => {
 
 	describe('Generation Types', () => {
 		it('supports generate type', () => {
-			const hook = useAIGeneration({
+			void useAIGeneration({
 				blockId: mockBlockId,
 				type: 'generate',
 				onSuccess: vi.fn()
@@ -468,7 +467,7 @@ describe('useAIGeneration', () => {
 		});
 
 		it('supports summary type', () => {
-			const hook = useAIGeneration({
+			void useAIGeneration({
 				blockId: mockBlockId,
 				type: 'summary',
 				onSuccess: vi.fn()
@@ -478,7 +477,7 @@ describe('useAIGeneration', () => {
 		});
 
 		it('supports translation type', () => {
-			const hook = useAIGeneration({
+			void useAIGeneration({
 				blockId: mockBlockId,
 				type: 'translation',
 				onSuccess: vi.fn()
@@ -704,7 +703,7 @@ describe('useAIGeneration', () => {
 		it('cancels pending request', async () => {
 			let abortSignal: AbortSignal | undefined;
 
-			(global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url, options) => {
+			(global.fetch as ReturnType<typeof vi.fn>).mockImplementation((_url, options) => {
 				abortSignal = options?.signal;
 				return new Promise((resolve, reject) => {
 					options?.signal?.addEventListener('abort', () => {
@@ -761,7 +760,7 @@ describe('useAIGeneration', () => {
 				error: 'Previous error',
 				output: null,
 				lastGenerated: null
-			});
+			} as any);
 
 			(global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
 				ok: true,
@@ -785,7 +784,7 @@ describe('useAIGeneration', () => {
 				error: null,
 				output: 'Previous output',
 				lastGenerated: Date.now()
-			});
+			} as any);
 
 			const hook = useAIGeneration({
 				blockId: mockBlockId,
@@ -810,7 +809,7 @@ describe('useAIGeneration', () => {
 				error: null,
 				output: 'Content to copy',
 				lastGenerated: Date.now()
-			});
+			} as any);
 
 			const hook = useAIGeneration({
 				blockId: mockBlockId,

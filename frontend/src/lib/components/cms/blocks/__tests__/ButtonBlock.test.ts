@@ -332,7 +332,7 @@ describe('ButtonBlock - Large Size', () => {
 // ===============================================================================
 
 describe('ButtonBlock - All Sizes', () => {
-	const sizes = ['small', 'medium', 'large'];
+	const sizes = ['small', 'medium', 'large'] as const;
 
 	sizes.forEach((size) => {
 		it(`should render ${size} size with correct class`, () => {

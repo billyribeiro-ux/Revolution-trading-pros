@@ -302,7 +302,7 @@ describe('useImageUpload', () => {
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
 
 			// Start upload (don't await yet)
-			const uploadPromise = hook.upload(file);
+			void hook.upload(file);
 
 			// Allow async operations to start
 			await vi.advanceTimersByTimeAsync(10);
@@ -377,7 +377,7 @@ describe('useImageUpload', () => {
 			});
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			const uploadPromise = hook.upload(file);
+			void hook.upload(file);
 
 			await vi.advanceTimersByTimeAsync(10);
 

@@ -42,9 +42,7 @@ vi.mock('$lib/api/config', () => ({
 
 import {
 	AnalyticsEvents,
-	type AnalyticsAdapter,
 	type AnalyticsConfig,
-	type AdapterState,
 	type PageViewPayload,
 	type CustomEventPayload,
 	type PurchasePayload,

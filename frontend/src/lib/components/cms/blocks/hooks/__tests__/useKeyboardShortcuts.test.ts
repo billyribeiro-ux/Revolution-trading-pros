@@ -165,7 +165,7 @@ describe('useKeyboardShortcuts', () => {
 	describe('Single Key Matching', () => {
 		it('matches single key', () => {
 			const handler = vi.fn();
-			const hook = useKeyboardShortcuts({
+			void useKeyboardShortcuts({
 				shortcuts: [{ key: 'Escape', handler }]
 			});
 
@@ -651,7 +651,7 @@ describe('useKeyboardShortcuts', () => {
 			const editorHandler = vi.fn();
 			const globalHandler = vi.fn();
 
-			const hook = useKeyboardShortcuts({
+			void useKeyboardShortcuts({
 				shortcuts: [
 					{ key: 's', ctrl: true, handler: editorHandler, scope: 'editor' },
 					{ key: 's', ctrl: true, handler: globalHandler, scope: 'global' }

@@ -20,7 +20,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
+import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import ChartBlock from '../trading/ChartBlock.svelte';
 import type { Block } from '../types';
 import { toBlockId } from '$lib/stores/blockState.svelte';

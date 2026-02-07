@@ -7,7 +7,7 @@
  * which cannot be used outside Svelte component context.
  */
 
-import { expect, afterEach, vi, beforeAll, afterAll, beforeEach } from 'vitest';
+import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
 

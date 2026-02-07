@@ -1002,7 +1002,6 @@ describe('RelatedPostsBlock - Post Card Content', () => {
 			}
 		});
 
-		const images = container.querySelectorAll('.post-image img');
 		// Images may not load due to placeholder paths, but image elements should exist
 		const postImages = container.querySelectorAll('.post-image');
 		expect(postImages.length).toBeGreaterThan(0);

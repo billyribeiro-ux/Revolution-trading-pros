@@ -43,20 +43,21 @@ global.ResizeObserver = class ResizeObserver {
 } as any;
 
 // Mock performance APIs
-if (!('mark' in performance)) {
-	performance.mark = vi.fn();
+const perf = performance as any;
+if (!('mark' in perf)) {
+	perf.mark = vi.fn();
 }
-if (!('measure' in performance)) {
-	performance.measure = vi.fn();
+if (!('measure' in perf)) {
+	perf.measure = vi.fn();
 }
-if (!('getEntriesByName' in performance)) {
-	performance.getEntriesByName = vi.fn().mockReturnValue([]);
+if (!('getEntriesByName' in perf)) {
+	perf.getEntriesByName = vi.fn().mockReturnValue([]);
 }
-if (!('clearMarks' in performance)) {
-	performance.clearMarks = vi.fn();
+if (!('clearMarks' in perf)) {
+	perf.clearMarks = vi.fn();
 }
-if (!('clearMeasures' in performance)) {
-	performance.clearMeasures = vi.fn();
+if (!('clearMeasures' in perf)) {
+	perf.clearMeasures = vi.fn();
 }
 
 // Mock crypto

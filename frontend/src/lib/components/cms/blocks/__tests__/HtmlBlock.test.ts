@@ -20,7 +20,7 @@
  * - Accessibility
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import HtmlBlock from '../advanced/HtmlBlock.svelte';
 import type { Block } from '../types';
@@ -32,7 +32,7 @@ import { toBlockId } from '$lib/stores/blockState.svelte';
 
 // Mock the sanitization module
 vi.mock('$lib/utils/sanitization', () => ({
-	sanitizeHTML: vi.fn((html: string, options?: { mode?: string }) => {
+	sanitizeHTML: vi.fn((html: string, _options?: { mode?: string }) => {
 		// Simplified sanitization for testing - removes script tags
 		if (!html || typeof html !== 'string') return '';
 
@@ -344,7 +344,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 	it('should start in edit view mode', () => {
 		const block = createMockBlock();
 
-		const { container } = render(HtmlBlock, {
+		render(HtmlBlock, {
 			props: {
 				block,
 				blockId: toBlockId('html-1'),
@@ -396,7 +396,7 @@ describe('HtmlBlock - Preview Toggle', () => {
 		await fireEvent.click(previewButton);
 
 		// Look for the preview label element
-		const { container } = render(HtmlBlock, {
+		render(HtmlBlock, {
 			props: {
 				block,
 				blockId: toBlockId('html-1'),
