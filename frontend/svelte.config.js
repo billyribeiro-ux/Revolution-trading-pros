@@ -32,6 +32,9 @@ const config = {
         if (status === 500 && path.startsWith('/dashboard')) {
           return;
         }
+        if (status === 500 && path.startsWith('/tools/options-calculator')) {
+          return;
+        }
         throw new Error(`${status} ${path}`);
       },
       handleMissingId: 'ignore',
