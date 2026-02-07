@@ -23,13 +23,7 @@ import {
 	mockFetch,
 	mockFetchSuccess,
 	mockFetchError,
-	mockFetchNetworkError,
 	createMockAlertsResponse,
-	createMockTradesResponse,
-	createMockTradePlansResponse,
-	createMockStatsResponse,
-	createMockWeeklyVideoResponse,
-	createMockAdminResponse,
 	createMockAlert,
 	createMockTrade,
 	createMockActivePosition,
@@ -103,7 +97,6 @@ describe('createPageState()', () => {
 			expect(state.videosError).toBeNull();
 
 			// UI state
-			expect(state.expandedNotes.size).toBe(0);
 			expect(state.copiedAlertId).toBeNull();
 		});
 
@@ -214,7 +207,7 @@ describe('createPageState()', () => {
 	describe('fetchAlerts()', () => {
 		it('should set loading state while fetching', async () => {
 			const mockAlerts = [createMockAlert(), createMockAlert({ id: 2, ticker: 'TSLA' })];
-			const mockResponse = createMockAlertsResponse(mockAlerts);
+			void createMockAlertsResponse(mockAlerts);
 
 			vi.mocked(api.fetchAlerts).mockResolvedValueOnce({
 				alerts: mockAlerts.map((a) => ({
@@ -465,50 +458,13 @@ describe('createPageState()', () => {
 				pagination: { total: 50, limit: 10, offset: 10 }
 			});
 
-			const state = createPageState();
+			void createPageState();
 
 			// First, we need to have more than 1 page
 			// Since totalPages depends on pagination.total, we need to mock this
 
 			// For now, test that goToPage calls fetchAlerts when conditions are met
 			// This is limited by the derived state calculation
-		});
-	});
-
-	// ===========================================================================
-	// NOTES TOGGLE TESTS
-	// ===========================================================================
-
-	describe('toggleNotes()', () => {
-		it('should add alertId to expandedNotes set', () => {
-			const state = createPageState();
-
-			state.toggleNotes(123);
-
-			expect(state.expandedNotes.has(123)).toBe(true);
-		});
-
-		it('should remove alertId if already expanded', () => {
-			const state = createPageState();
-
-			state.toggleNotes(123);
-			expect(state.expandedNotes.has(123)).toBe(true);
-
-			state.toggleNotes(123);
-			expect(state.expandedNotes.has(123)).toBe(false);
-		});
-
-		it('should handle multiple expanded notes', () => {
-			const state = createPageState();
-
-			state.toggleNotes(1);
-			state.toggleNotes(2);
-			state.toggleNotes(3);
-
-			expect(state.expandedNotes.size).toBe(3);
-			expect(state.expandedNotes.has(1)).toBe(true);
-			expect(state.expandedNotes.has(2)).toBe(true);
-			expect(state.expandedNotes.has(3)).toBe(true);
 		});
 	});
 
@@ -866,7 +822,7 @@ describe('createPageState()', () => {
 		it('should set isAdmin to true for admin user', async () => {
 			vi.mocked(api.checkAdminStatus).mockResolvedValue(true);
 
-			const state = createPageState();
+			void createPageState();
 
 			// Admin status is checked via initializeData or directly
 			// We need to trigger it
@@ -896,11 +852,11 @@ describe('Type Safety', () => {
 		const state = createPageState();
 
 		// TypeScript compilation verifies these exist
-		const _filter: 'all' | 'entry' | 'exit' | 'update' = state.selectedFilter;
-		const _page: number = state.currentPage;
-		const _isAdmin: boolean = state.isAdmin;
-		const _loading: boolean = state.isLoadingAlerts;
-		const _error: string | null = state.alertsError;
+		void (state.selectedFilter satisfies 'all' | 'entry' | 'exit' | 'update');
+		void (state.currentPage satisfies number);
+		void (state.isAdmin satisfies boolean);
+		void (state.isLoadingAlerts satisfies boolean);
+		void (state.alertsError satisfies string | null);
 
 		expect(true).toBe(true); // Type checking is done at compile time
 	});

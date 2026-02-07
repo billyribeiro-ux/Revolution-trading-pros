@@ -17,8 +17,6 @@ import { vi } from 'vitest';
 import type {
 	ApiTrade,
 	ApiWeeklyVideo,
-	Alert,
-	TradePlanEntry,
 	QuickStats,
 	PaginationMeta
 } from '../../types';

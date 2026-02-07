@@ -23,7 +23,7 @@ import { vi } from 'vitest';
  * Creates a mock Svelte component that renders a simple div
  * and captures props for assertion
  */
-export function createMockComponent(name: string) {
+export function createMockComponent(_name: string) {
 	const capturedProps: unknown[] = [];
 	const capturedEvents: Array<{ event: string; detail: unknown }> = [];
 
@@ -39,7 +39,7 @@ export function createMockComponent(name: string) {
 					capturedProps.push(newProps);
 				}),
 				$destroy: vi.fn(),
-				$on: vi.fn((event: string, callback: (e: CustomEvent) => void) => {
+				$on: vi.fn((_event: string, _callback: (e: CustomEvent) => void) => {
 					// Store event listener reference
 					return () => {};
 				})

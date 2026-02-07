@@ -17,9 +17,8 @@
  * - Accessibility (ARIA attributes)
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
 import AlertCard from '../AlertCard.svelte';
 import type { Alert } from '../../types';
 

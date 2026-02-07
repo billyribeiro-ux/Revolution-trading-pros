@@ -18,7 +18,7 @@
  * - Responsive design considerations
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import PerformanceSummary from '../PerformanceSummary.svelte';
 import type { WeeklyPerformance, ClosedTrade, ActivePosition } from '../../types';

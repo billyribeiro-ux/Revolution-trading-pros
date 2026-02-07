@@ -25,11 +25,6 @@ import {
 	mockFetchSuccess,
 	mockFetchError,
 	mockFetchNetworkError,
-	createMockAlert,
-	createMockTrade,
-	createMockTradePlanEntry,
-	createMockStats,
-	createMockWeeklyVideo,
 	resetAllMocks
 } from './setup';
 

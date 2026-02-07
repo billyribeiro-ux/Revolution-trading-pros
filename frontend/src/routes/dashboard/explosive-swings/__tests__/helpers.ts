@@ -387,10 +387,6 @@ export function cleanup(): void {
 export function setupCleanup(): () => void {
 	const cleanupFns: Array<() => void> = [];
 
-	const register = (fn: () => void) => {
-		cleanupFns.push(fn);
-	};
-
 	const runCleanup = () => {
 		cleanupFns.forEach((fn) => fn());
 		cleanupFns.length = 0;
