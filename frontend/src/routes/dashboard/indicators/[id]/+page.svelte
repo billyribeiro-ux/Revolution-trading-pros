@@ -16,7 +16,7 @@
 -->
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	// Platform logo mapping
@@ -89,7 +89,7 @@
 	let loadingGuide = $state(false);
 
 	// Get indicator slug from URL params
-	const indicatorSlug = $derived($page.params.id);
+	const indicatorSlug = $derived(page.params.id);
 
 	// ICT 7: Fetch indicator data from real API
 	const fetchIndicator = async () => {

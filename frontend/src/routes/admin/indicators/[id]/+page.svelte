@@ -6,7 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ICT 7: Match actual backend schema
@@ -109,7 +109,7 @@
 	];
 
 	// ICT 7: Use SvelteKit's $page.params instead of fragile window.location parsing
-	let indicatorId = $derived($page.params.id ?? '');
+	let indicatorId = $derived(page.params.id ?? '');
 
 	onMount(() => {
 		fetchIndicator();
