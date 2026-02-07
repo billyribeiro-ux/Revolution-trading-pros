@@ -38,6 +38,7 @@
 	const values = $derived(data.map((d) => d.drawdown_percent));
 	const minValue = $derived(Math.min(...values, 0));
 	const maxValue = 0; // Drawdown is at most 0
+	void maxValue;
 
 	// Scale functions
 	function scaleX(index: number): number {
@@ -53,9 +54,8 @@
 	const areaPath = $derived(
 		data.length > 0
 			? data
-					.map((d, i) => {
+					.map((_d, i) => {
 						const x = scaleX(i);
-						const y = scaleY(d.drawdown_percent);
 						return i === 0 ? `M ${x} ${padding.top}` : `L ${x} ${padding.top}`;
 					})
 					.join(' ') +
@@ -63,8 +63,7 @@
 					data
 						.map((d, i) => {
 							const x = scaleX(i);
-							const y = scaleY(d.drawdown_percent);
-							return `L ${x} ${y}`;
+							return `L ${x} ${scaleY(d.drawdown_percent)}`;
 						})
 						.reverse()
 						.join(' ') +

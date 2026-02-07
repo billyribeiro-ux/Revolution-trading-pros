@@ -64,6 +64,7 @@
 	}
 
 	let props: Props = $props();
+	const previewMode = $derived(props.previewMode ?? false);
 
 	let currentSettings = $state<StyleSettings>({});
 	let activeTab = $state<'container' | 'inputs' | 'buttons' | 'typography'>('container');
@@ -95,8 +96,8 @@
 
 	function updateSetting<K extends keyof StyleSettings>(key: K, value: StyleSettings[K]) {
 		currentSettings = { ...currentSettings, [key]: value };
-		if (onSettingsChange) {
-			onSettingsChange(currentSettings);
+		if (props.onSettingsChange) {
+			props.onSettingsChange(currentSettings);
 		}
 	}
 
@@ -178,8 +179,8 @@
 
 	function resetToDefaults() {
 		currentSettings = {};
-		if (onSettingsChange) {
-			onSettingsChange(currentSettings);
+		if (props.onSettingsChange) {
+			props.onSettingsChange(currentSettings);
 		}
 	}
 

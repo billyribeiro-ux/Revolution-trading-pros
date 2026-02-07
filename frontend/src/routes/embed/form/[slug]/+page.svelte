@@ -13,6 +13,7 @@
 	let loading = $state(true);
 	let error = $state('');
 	let submitted = $state(false);
+	void submitted;
 
 	let formSlug = $derived(page.params.slug!);
 

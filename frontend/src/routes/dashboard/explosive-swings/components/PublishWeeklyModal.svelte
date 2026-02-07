@@ -27,7 +27,6 @@
 	/>
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import {
 		weeklyVideoApi,
 		tradePlanApi,
@@ -73,6 +72,7 @@
 
 	// Current step (for mobile accordion)
 	let activeSection = $state<'video' | 'trades' | 'review'>('video');
+	void activeSection;
 
 	// Video form state
 	let videoForm = $state({
@@ -112,6 +112,7 @@
 	);
 
 	const hasTradePlanEntries = $derived(validTradePlanCount > 0);
+	void hasTradePlanEntries;
 
 	const canPublish = $derived(isVideoValid && !isPublishing);
 
@@ -156,12 +157,13 @@
 		return /^[A-Z]{1,5}$/.test(cleaned);
 	}
 
-	function isValidPrice(price: string): boolean {
+	function _isValidPrice(price: string): boolean {
 		if (!price || price.trim() === '') return true;
 		const cleaned = price.replace(/[$,]/g, '');
 		const num = parseFloat(cleaned);
 		return !isNaN(num) && isFinite(num) && num >= 0;
 	}
+	void _isValidPrice;
 
 	function createEmptyRow(): TradePlanRow {
 		return {

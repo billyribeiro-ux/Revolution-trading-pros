@@ -20,46 +20,6 @@
 	let analytics = $state<any>(null);
 	let loading = $state(true);
 
-	interface _AnalyticsData {
-		views: {
-			total: number;
-			today: number;
-			this_week: number;
-			this_month: number;
-			trend: 'up' | 'down' | 'stable';
-			trend_percentage: number;
-		};
-		conversions: {
-			total: number;
-			today: number;
-			this_week: number;
-			this_month: number;
-			trend: 'up' | 'down' | 'stable';
-			trend_percentage: number;
-		};
-		conversion_rate: {
-			overall: number;
-			today: number;
-			this_week: number;
-			this_month: number;
-		};
-		device_breakdown: {
-			desktop: number;
-			tablet: number;
-			mobile: number;
-		};
-		top_pages: Array<{
-			url: string;
-			views: number;
-			conversions: number;
-			conversion_rate: number;
-		}>;
-		timeline: {
-			views: Array<{ date: string; count: number }>;
-			conversions: Array<{ date: string; count: number }>;
-		};
-	}
-
 	onMount(async () => {
 		await loadAnalytics();
 	});

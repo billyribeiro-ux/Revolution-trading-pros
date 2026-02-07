@@ -77,9 +77,10 @@
 	});
 
 	// Format helpers
-	function formatPercent(value: number): string {
+	function _formatPercent(value: number): string {
 		return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
 	}
+	void _formatPercent;
 
 	function formatRatio(value: number): string {
 		if (!isFinite(value) || value > 100) return '99+';

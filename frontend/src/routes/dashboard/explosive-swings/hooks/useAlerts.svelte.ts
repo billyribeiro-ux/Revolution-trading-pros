@@ -16,7 +16,7 @@
 
 import { getEnterpriseClient } from '$lib/api/enterprise/client';
 import { ROOM_SLUG, ALERTS_PER_PAGE } from '../constants';
-import type { FormattedAlert, AlertsResponse } from '../page.api';
+import type { FormattedAlert } from '../page.api';
 import type { PaginationState, AlertFilter } from '../types';
 
 // ═══════════════════════════════════════════════════════════════════════════════

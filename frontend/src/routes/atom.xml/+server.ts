@@ -59,15 +59,6 @@ interface FeedPost extends Post {
 	tags?: string[];
 }
 
-interface _AtomLink {
-	href: string;
-	rel: 'self' | 'alternate' | 'enclosure' | 'related' | 'via' | 'hub';
-	type?: string;
-	hreflang?: string;
-	title?: string;
-	length?: number;
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // Utility Functions
 // ═══════════════════════════════════════════════════════════════════════════

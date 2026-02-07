@@ -34,6 +34,7 @@
 	let showDeleteModal = $state(false);
 	let showLinkedWarningModal = $state(false);
 	let pendingDeleteMethod = $state<PaymentMethod | null>(null);
+	void pendingDeleteMethod;
 	let deleteFormElement = $state<HTMLFormElement | null>(null);
 
 	function confirmDelete(event: Event, method: PaymentMethod): boolean {

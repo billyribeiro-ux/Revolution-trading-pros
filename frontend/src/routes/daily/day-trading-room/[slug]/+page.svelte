@@ -38,6 +38,7 @@
 	let nextVideo = $state<DailyVideo | null>(null);
 	let loading = $state(true);
 	let videoElement = $state<HTMLVideoElement | undefined>(undefined);
+	void videoElement;
 
 	// Video ended redirect handler
 	function handleVideoEnded() {

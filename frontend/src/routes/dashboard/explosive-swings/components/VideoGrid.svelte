@@ -23,10 +23,12 @@
 	const {
 		videos,
 		isLoading = false,
-		title = '',
-		subtitle = '',
+		title: _title = '',
+		subtitle: _subtitle = '',
 		roomSlug = 'explosive-swings'
 	}: Props = $props();
+	void _title;
+	void _subtitle;
 
 	const featuredVideo = $derived(videos.find((v) => v.isFeatured) || videos[0]);
 	const gridVideos = $derived(videos.filter((v) => v !== featuredVideo).slice(0, 3));

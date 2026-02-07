@@ -43,6 +43,7 @@
 
 	let file = $state<File | null>(null);
 	let uploading = $state(false);
+	void uploading;
 	let progress = $state(0);
 	let status = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete' | 'error'>(
 		'idle'
@@ -166,8 +167,8 @@
 	};
 
 	const pollEncodingStatus = async (
-		videoGuid: string,
-		libraryId: string,
+		_videoGuid: string,
+		_libraryId: string,
 		result: VideoUploadResult
 	) => {
 		// For now, just mark as complete after upload

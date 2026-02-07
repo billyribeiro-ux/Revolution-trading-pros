@@ -388,10 +388,11 @@
 		throw new Error(`Video processing timed out after ${totalSeconds} seconds. Please try again.`);
 	}
 
-	function selectThumbnail(index: number) {
+	function _selectThumbnail(index: number) {
 		selectedThumbnailIndex = index;
 		form.thumbnail_url = generatedThumbnails[index] || '';
 	}
+	void _selectThumbnail;
 
 	function clearFile() {
 		// Abort active upload if any

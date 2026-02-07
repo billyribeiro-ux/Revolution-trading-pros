@@ -13,7 +13,6 @@
 	 * @version 2.0.0 - Hydration-safe
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import Typed from 'typed.js';
 
 	interface Props {

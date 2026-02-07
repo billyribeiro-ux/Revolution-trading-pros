@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
+	import { browser } from '$app/environment';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// API URL

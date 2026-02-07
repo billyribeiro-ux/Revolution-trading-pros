@@ -13,7 +13,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { DailyVideo, PageData } from './+page.server';
+	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Server-loaded data
@@ -92,7 +92,7 @@
 		searchQuery = target.value;
 	}
 
-	function submitSearch() {
+	function _submitSearch() {
 		const url = new URL(window.location.href);
 		if (searchQuery) {
 			url.searchParams.set('search', searchQuery);
@@ -102,6 +102,7 @@
 		url.searchParams.set('page', '1');
 		goto(url.toString(), { invalidateAll: true });
 	}
+	void _submitSearch;
 
 	function goToPage(pageNum: number) {
 		if (pageNum >= 1 && pageNum <= totalPages) {

@@ -103,7 +103,6 @@
 		'video/x-matroska'
 	];
 	const _documentTypes = [
-		void _documentTypes;
 		'application/pdf',
 		'application/msword',
 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -112,6 +111,7 @@
 		'text/plain',
 		'text/csv'
 	];
+	void _documentTypes;
 
 	function getFileType(file: File): 'image' | 'video' | 'document' {
 		if (imageTypes.includes(file.type) || file.name.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i)) {

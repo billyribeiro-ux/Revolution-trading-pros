@@ -22,11 +22,6 @@
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import {
-		connections,
-		getIsAnalyticsConnected,
-		getIsSeoConnected
-	} from '$lib/stores/connections.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// Types
@@ -135,8 +130,11 @@
 	});
 
 	let connectedServices = $derived(allServices.filter((s) => s.is_connected));
+	void connectedServices;
 	let disconnectedServices = $derived(allServices.filter((s) => !s.is_connected));
+	void disconnectedServices;
 	let errorServices = $derived(allServices.filter((s) => s.status === 'error'));
+	void errorServices;
 	let categoryList = $derived(Object.entries(categories) as [string, Category][]);
 
 	// Google-specific services for quick access

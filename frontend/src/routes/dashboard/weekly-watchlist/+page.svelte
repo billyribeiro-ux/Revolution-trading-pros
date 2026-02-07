@@ -11,26 +11,6 @@
 	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
 	import RightSidebar from '$lib/components/dashboard/RightSidebar.svelte';
 
-	// Type definitions for component data
-	interface FeaturedCard {
-		id: number;
-		title: string;
-		description: string;
-		href: string;
-		bgImage: string;
-		cardClass: string;
-		titleClass: string;
-	}
-
-	interface ArchiveItem {
-		id: number;
-		title: string;
-		date: string;
-		weekOf: string;
-		image: string;
-		href: string;
-	}
-
 	// Featured cards configuration
 	const cards = [
 		{

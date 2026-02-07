@@ -103,7 +103,7 @@
 					applePayAvailable = true;
 					await applePay.attach(applePayContainerRef);
 
-					applePay.addEventListener('payment', async (event: any) => {
+					applePay.addEventListener('payment', async (_event: any) => {
 						processing = true;
 						try {
 							const result = await applePay.tokenize();
@@ -136,7 +136,7 @@
 					googlePayAvailable = true;
 					await googlePay.attach(googlePayContainerRef);
 
-					googlePay.addEventListener('payment', async (event: any) => {
+					googlePay.addEventListener('payment', async (_event: any) => {
 						processing = true;
 						try {
 							const result = await googlePay.tokenize();

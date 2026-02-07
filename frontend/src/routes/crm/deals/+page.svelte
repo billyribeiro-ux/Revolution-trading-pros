@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
-	import { crmStore } from '$lib/stores/crm';
+	import { crmStore } from '$lib/stores/crm.svelte';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 

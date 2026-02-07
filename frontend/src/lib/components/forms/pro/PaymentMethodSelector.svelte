@@ -113,7 +113,7 @@
 				class="flex items-center gap-3 sm:gap-4 w-full min-h-[56px] sm:min-h-[64px] md:min-h-[72px] p-3 sm:p-4 border-2 rounded-lg bg-white cursor-pointer transition-all duration-200 text-left touch-manipulation active:scale-[0.98] hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 				class:border-blue-600={(props.value ?? '') === method.id}
 				class:bg-blue-50={(props.value ?? '') === method.id}
-				class:border-gray-200={value !== method.id}
+				class:border-gray-200={(props.value ?? '') !== method.id}
 				onclick={() => handleSelect(method.id)}
 			>
 				<!-- Hidden radio for accessibility -->
@@ -132,7 +132,7 @@
 					class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
 					class:border-blue-600={(props.value ?? '') === method.id}
 					class:bg-blue-600={(props.value ?? '') === method.id}
-					class:border-gray-300={value !== method.id}
+					class:border-gray-300={(props.value ?? '') !== method.id}
 				>
 					{#if (props.value ?? '') === method.id}
 						<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></span>
@@ -245,7 +245,7 @@
 	{/if}
 
 	<!-- Error Messages -->
-	{#if props.error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="mt-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
 			{#each props.error as err}
 				<p class="text-xs sm:text-sm text-red-600 m-0">{err}</p>

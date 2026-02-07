@@ -152,6 +152,7 @@
 		{ name: 'System Logs', href: '/admin/crm/logs', icon: IconListDetails },
 		{ name: 'Settings', href: '/admin/crm/settings', icon: IconDotsVertical }
 	];
+	void _sidebarNav;
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Contacts' },

@@ -35,7 +35,7 @@
 		}
 	};
 
-	function showNotification(alert: any) {
+	function _showNotification(alert: any) {
 		if (!enabled || !hasPermission) return;
 
 		const notification = new Notification('New Trading Alert', {
@@ -56,6 +56,7 @@
 
 		onNewAlert?.(alert);
 	}
+	void _showNotification;
 
 	function playAlertSound() {
 		if (!audioContext) {

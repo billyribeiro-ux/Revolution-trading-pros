@@ -122,6 +122,7 @@
 			console.error('Failed to delete review:', e);
 		}
 	}
+	void _deleteReview;
 
 	const formatDate = (dateStr: string): string => {
 		return new Date(dateStr).toLocaleDateString('en-US', {

@@ -16,12 +16,11 @@
  */
 
 import { browser } from '$app/environment';
-import { api, getApiClient, type RequestOptions } from '$lib/api/client';
+import { api, type RequestOptions } from '$lib/api/client';
 import {
 	ApiError,
 	isApiError,
-	getUserFriendlyMessage,
-	createErrorFromStatus
+	getUserFriendlyMessage
 } from '$lib/api/errors';
 import { getCache, type CacheConfig } from '$lib/api/cache';
 import type {
@@ -179,7 +178,7 @@ export function createAlertsQuery(
 	options?: { enabled?: boolean; refetchInterval?: number }
 ) {
 	// Lazy import to avoid circular dependencies
-	return import('$lib/api/hooks').then(({ createQuery }) =>
+	return import('$lib/api/hooks.svelte').then(({ createQuery }) =>
 		createQuery(() => fetchAlerts(roomSlug, page, limit), {
 			enabled: options?.enabled ?? true,
 			refetchInterval: options?.refetchInterval ?? 30_000, // 30 second polling

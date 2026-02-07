@@ -13,8 +13,6 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import CourseCard from '$lib/components/courses/CourseCard.svelte';
-
 	interface EnrolledCourse {
 		id: number;
 		course_id: string;

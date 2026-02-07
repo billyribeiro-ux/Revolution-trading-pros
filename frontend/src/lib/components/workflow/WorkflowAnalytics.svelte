@@ -204,7 +204,7 @@
 			<div class="chart-card">
 				<h3>Execution Trend</h3>
 				<div class="line-chart">
-					{#each analytics.runs_by_day as day, _i}
+					{#each analytics.runs_by_day as day}
 						{@const maxCount = Math.max(...analytics.runs_by_day.map((d) => d.count))}
 						{@const height = (day.count / maxCount) * 100}
 						<div class="chart-bar" style="height: {height}%;" title="{day.date}: {day.count} runs">

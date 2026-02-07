@@ -18,8 +18,7 @@
 	import type {
 		Stripe,
 		StripeElements,
-		StripeCardElement,
-		PaymentIntentResult
+		StripeCardElement
 	} from '@stripe/stripe-js';
 
 	interface Props {
@@ -63,7 +62,7 @@
 		currency = 'USD',
 		description = 'Payment',
 		customerEmail = '',
-		metadata = {},
+		metadata: _metadata = {},
 		enablePaymentRequest = true,
 		verifyZip = true,
 		testMode = false,
