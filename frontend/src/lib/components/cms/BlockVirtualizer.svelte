@@ -65,7 +65,6 @@
 		}
 	}
 
-	// @ts-expect-error write-only state
 	function _handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
 		props.onUpdate(blockId, updates);
 	}

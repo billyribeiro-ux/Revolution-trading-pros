@@ -147,7 +147,7 @@ function getAttributionData(): Record<string, unknown> {
 	try {
 		const stored = sessionStorage.getItem(STORAGE_KEY);
 		return stored ? JSON.parse(stored) : {};
-	} catch (e) {
+	} catch (_e) {
 		return {};
 	}
 }

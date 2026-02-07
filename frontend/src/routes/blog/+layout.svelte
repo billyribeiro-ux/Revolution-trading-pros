@@ -7,36 +7,35 @@
 	 * - Error boundary for blog routes
 	 * - Future: shared blog context (categories, tags)
 	 *
-	 * @version 1.0.0 - January 2026
+	 * @version 1.1.0 - January 2026
 	 */
 	import type { Snippet } from 'svelte';
-	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 
-	// Svelte 5 props pattern
-	let { children }: { children: Snippet } = $props();
+	// Svelte 5 props pattern with typed interface
+	interface Props {
+		children: Snippet;
+	}
+	let { children }: Props = $props();
 
 	// Track if component has mounted (for hydration-safe rendering)
-	// @ts-expect-error write-only state
-	let mounted = $state(false);
+	let _mounted = $state(false);
 
+	// onMount only runs client-side; browser guard is redundant here
 	onMount(() => {
-		mounted = true;
+		_mounted = true;
 
 		// Track blog section visit for analytics
-		if (browser) {
-			try {
-				// Send page category for analytics segmentation
-				if (typeof window !== 'undefined' && 'gtag' in window) {
-					(window as { gtag: (...args: unknown[]) => void }).gtag('event', 'page_view', {
-						page_category: 'blog'
-					});
-				}
-			} catch (error) {
-				// Silently fail analytics - non-critical
-				if (import.meta.env.DEV) {
-					console.debug('[BlogLayout] Analytics tracking failed:', error);
-				}
+		try {
+			if ('gtag' in window) {
+				(window as { gtag: (...args: unknown[]) => void }).gtag('event', 'page_view', {
+					page_category: 'blog'
+				});
+			}
+		} catch (error) {
+			// Silently fail analytics - non-critical
+			if (import.meta.env.DEV) {
+				console.debug('[BlogLayout] Analytics tracking failed:', error);
 			}
 		}
 	});

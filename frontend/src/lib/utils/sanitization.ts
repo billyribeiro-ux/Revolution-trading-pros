@@ -191,7 +191,7 @@ const DEFAULT_CONFIG: Config = {
 		'open'
 	],
 	ALLOWED_URI_REGEXP:
-		/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+		/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
 	ALLOW_DATA_ATTR: false,
 	ALLOW_UNKNOWN_PROTOCOLS: false,
 	SAFE_FOR_TEMPLATES: true,

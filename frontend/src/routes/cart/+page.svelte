@@ -100,7 +100,7 @@
 			} else {
 				couponError = result.message || 'Invalid coupon code';
 			}
-		} catch (error) {
+		} catch (_error) {
 			couponError = 'Failed to apply coupon. Please try again.';
 		} finally {
 			applyingCoupon = false;

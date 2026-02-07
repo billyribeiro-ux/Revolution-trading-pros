@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	// Re-export types from the dedicated types file
+	// eslint-disable-next-line no-import-assign -- Svelte module context re-export
 	export { badgeVariants, type BadgeVariant } from './badge.types';
 </script>
 

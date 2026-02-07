@@ -411,7 +411,7 @@ class BannedEmailManagementService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}

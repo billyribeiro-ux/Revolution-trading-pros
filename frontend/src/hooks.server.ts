@@ -16,7 +16,7 @@
  */
 
 import type { Handle } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
+import { redirect, isRedirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/private';
 
@@ -185,7 +185,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				// Set new access token cookie (backend sends access_token, not token)
 				const newToken = refreshData.access_token || refreshData.token;
 				const isSecure =
-					process.env.NODE_ENV === 'production' || !event.url.hostname.includes('localhost');
+					import.meta.env.PROD || !event.url.hostname.includes('localhost');
 				event.cookies.set('rtp_access_token', newToken, {
 					path: '/',
 					httpOnly: true,
@@ -242,7 +242,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		// ICT 7: Sophisticated error handling with transient vs permanent failure detection
 
 		// If it's a redirect, rethrow it (permanent auth failure)
-		if (error instanceof Response || (error as any)?.status === 303) {
+		if (isRedirect(error)) {
 			throw error;
 		}
 
@@ -467,9 +467,10 @@ const performanceHandler: Handle = async ({ event, resolve }) => {
 		},
 		// Transform HTML for performance optimizations
 		transformPageChunk: ({ html }) => {
-			// Minify HTML in production (remove extra whitespace)
+			// Light minification: collapse whitespace between tags only
+			// Preserves whitespace inside <pre>, <code>, <textarea>, <script>
 			if (import.meta.env.PROD) {
-				return html.replace(/\s+/g, ' ').replace(/>\s+</g, '><');
+				return html.replace(/>\s+</g, '> <');
 			}
 			return html;
 		}

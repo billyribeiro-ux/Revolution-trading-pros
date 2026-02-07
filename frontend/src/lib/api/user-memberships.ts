@@ -454,7 +454,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			// STRATEGY 3: Return mock data — backend not ready yet (expected)
 			console.debug('[Developer] API endpoints not ready, using mock memberships');
 			return getDeveloperMockMemberships();
-		} catch (error) {
+		} catch (_error) {
 			console.debug('[Developer] API unavailable, using mock memberships');
 			return getDeveloperMockMemberships();
 		} finally {

@@ -14,6 +14,7 @@
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Svelte 5 props with SvelteKit typing
@@ -44,13 +45,13 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Platform Tutorials - Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms."
-	/>
-</svelte:head>
+<SEOHead
+	title="Platform Tutorials - ThinkorSwim & TradeStation"
+	description="Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels."
+	canonical="/tutorials"
+	ogType="website"
+	keywords={['ThinkorSwim tutorials', 'TradeStation tutorials', 'trading platform setup', 'platform tips', 'trading tools']}
+/>
 
 <div class="fl-builder-content">
 	<!-- Header Section -->
@@ -88,7 +89,7 @@
 		<div class="fl-row-content-wrap">
 			<div class="fl-row-content fl-row-fixed-width">
 				<div class="fl-rich-text">
-					<h1 class="section-title"><strong>ThinkorSwim Tutorials</strong></h1>
+					<h2 class="section-title"><strong>ThinkorSwim Tutorials</strong></h2>
 				</div>
 				<div class="fl-separator"></div>
 
@@ -153,7 +154,7 @@
 		<div class="fl-row-content-wrap">
 			<div class="fl-row-content fl-row-fixed-width">
 				<div class="fl-rich-text">
-					<h1 class="section-title"><strong>TradeStation Tutorials</strong></h1>
+					<h2 class="section-title"><strong>TradeStation Tutorials</strong></h2>
 				</div>
 				<div class="fl-separator"></div>
 

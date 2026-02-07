@@ -1,11 +1,13 @@
 <script lang="ts" module>
 	// Re-export types from the dedicated types file
+	/* eslint-disable no-import-assign -- Svelte module context re-export */
 	export {
 		buttonVariants,
 		type ButtonVariant,
 		type ButtonSize,
 		type ButtonProps
 	} from './button.types';
+	/* eslint-enable no-import-assign */
 </script>
 
 <script lang="ts">

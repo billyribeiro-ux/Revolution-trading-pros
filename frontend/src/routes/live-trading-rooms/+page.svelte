@@ -10,7 +10,15 @@
 	/**
 	 * Svelte 5 Runes & SSR/SSG Pattern
 	 */
-	let { data } = $props<{ data: any }>();
+	interface Props {
+		data: {
+			rooms: any[];
+			benefits: any[];
+			symbols: any[];
+			seo: any;
+		};
+	}
+	let { data }: Props = $props();
 
 	// Use server-loaded data for SSR/SSG
 	let rooms = $derived(data.rooms);

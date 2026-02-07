@@ -1,6 +1,7 @@
 import { cartStore, type CartItem } from '$lib/stores/cart.svelte';
 import { addToCart as addToCartApi } from '$lib/api/cart';
 import { goto } from '$app/navigation';
+import { base } from '$app/paths';
 
 /**
  * Add a product/membership to cart and optionally navigate to cart page
@@ -25,7 +26,8 @@ export async function addItemToCart(
 
 	// Navigate to cart if requested
 	if (navigateToCart) {
-		await goto('/cart');
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- base path is prepended
+		await goto(`${base}/cart`);
 	}
 }
 

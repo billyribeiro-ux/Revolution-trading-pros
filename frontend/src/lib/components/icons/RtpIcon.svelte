@@ -118,7 +118,6 @@
 	// Trading platform icons matching Simpler Trading aesthetic
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const iconMap: Record<string, any> = {
 		// Navigation
 		home: IconDashboard,

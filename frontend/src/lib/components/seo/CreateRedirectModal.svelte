@@ -49,7 +49,7 @@
 				const data = await response.json();
 				error = data.message || 'Failed to create redirect';
 			}
-		} catch (err) {
+		} catch (_err) {
 			error = 'An error occurred while creating redirect';
 		} finally {
 			saving = false;

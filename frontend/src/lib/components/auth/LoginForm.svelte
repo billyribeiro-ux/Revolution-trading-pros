@@ -177,7 +177,7 @@
 
 			if (isValid) {
 				// Additional check: ensure it's a valid path format
-				if (/^\/([-\w\/]*)(\?.*)?$/.test(decoded)) {
+				if (/^\/([-\w/]*)(\?.*)?$/.test(decoded)) {
 					return decoded;
 				}
 			}

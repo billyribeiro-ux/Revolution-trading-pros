@@ -45,7 +45,7 @@
     }
   });
 })();
-<\/script>`);
+${"</"}script>`);
 
 	let directLinkCode = $derived(`<a href="${directUrl}" target="_blank">Fill out our form</a>`);
 

@@ -65,8 +65,7 @@
 	let scheduleLoading = $state(true);
 	let scheduleError = $state(false);
 	let isStaleData = $state(false);
-	// @ts-expect-error write-only state
-	let lastFetchTime = $state<number>(0);
+	let _lastFetchTime = $state<number>(0);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Per-room schedule support
@@ -196,7 +195,7 @@
 			}
 
 			return null; // Cache too old
-		} catch (error) {
+		} catch (_error) {
 			logCalendarAPI({
 				timestamp: new Date().toISOString(),
 				action: 'error',
@@ -216,7 +215,7 @@
 				ttl: CACHE_CONFIG.ttl
 			};
 			localStorage.setItem(CACHE_CONFIG.key, JSON.stringify(entry));
-		} catch (error) {
+		} catch (_error) {
 			logCalendarAPI({
 				timestamp: new Date().toISOString(),
 				action: 'error',
@@ -357,11 +356,11 @@
 			scheduleLoading = false;
 			scheduleError = false;
 			isStaleData = false;
-			lastFetchTime = Date.now();
+			_lastFetchTime = Date.now();
 
 			// Update cache
 			setCachedSchedule(events);
-		} catch (error) {
+		} catch (_error) {
 			// Graceful degradation: Use cached data if available
 			if (cached && cached.length > 0) {
 				scheduleEvents = cached;

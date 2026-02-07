@@ -417,7 +417,6 @@ export function combineSchemas(schemas: object[]): object {
 	return {
 		'@context': 'https://schema.org',
 		'@graph': schemas.map((s) => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { '@context': _, ...rest } = s as Record<string, unknown>;
 			return rest;
 		})

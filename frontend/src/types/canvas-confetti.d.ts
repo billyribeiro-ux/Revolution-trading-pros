@@ -24,9 +24,9 @@ declare module 'canvas-confetti' {
 		reset(): void;
 	}
 
-	function create(options?: Options): Promise<void>;
-	function create(canvas: HTMLCanvasElement, options?: Options): Promise<void>;
-	function reset(): void;
+	function _create(options?: Options): Promise<void>;
+	function _create(canvas: HTMLCanvasElement, options?: Options): Promise<void>;
+	function _reset(): void;
 
 	const confetti: CreateTypes;
 	export = confetti;

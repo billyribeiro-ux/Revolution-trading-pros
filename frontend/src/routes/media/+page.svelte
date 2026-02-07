@@ -87,7 +87,7 @@
 
 		try {
 			await mediaStore.bulkDelete(false);
-		} catch (error) {
+		} catch (_error) {
 			showDeleteErrorModal = true;
 		}
 	}

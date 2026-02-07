@@ -210,7 +210,7 @@ export const subscriptionStore = {
 				filters: filters || {},
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to load subscriptions',
@@ -237,7 +237,7 @@ export const subscriptionStore = {
 				),
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to update subscription',
@@ -261,7 +261,7 @@ export const subscriptionStore = {
 				),
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to pause subscription',
@@ -285,7 +285,7 @@ export const subscriptionStore = {
 				),
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to resume subscription',
@@ -309,7 +309,7 @@ export const subscriptionStore = {
 				),
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to cancel subscription',
@@ -333,7 +333,7 @@ export const subscriptionStore = {
 				),
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to reactivate subscription',
@@ -359,7 +359,7 @@ export const subscriptionStore = {
 				subscriptions: subscriptions as Subscription[],
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to retry payment',
@@ -383,7 +383,7 @@ export const subscriptionStore = {
 				),
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to update payment method',
@@ -409,7 +409,7 @@ export const subscriptionStore = {
 				subscriptions: subscriptions as Subscription[],
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to process renewal',
@@ -433,7 +433,7 @@ export const subscriptionStore = {
 				subscriptions: subscriptions as Subscription[],
 				loading: false
 			};
-		} catch (error) {
+		} catch (_error) {
 			subscriptionState = {
 				...subscriptionState,
 				error: 'Failed to record payment failure',

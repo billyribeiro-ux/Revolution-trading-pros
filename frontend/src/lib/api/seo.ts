@@ -641,7 +641,7 @@ class SeoManagementService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -1095,7 +1095,7 @@ class SeoManagementService {
 			const response = await api.get<ApiResponse<Redirect[]>>('/admin/redirects', { params });
 			this.redirects.set(response.data);
 			return response.data;
-		} catch (error) {
+		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
 			console.debug('[SeoService] loadRedirects endpoint not available');
 			return [];
@@ -1172,7 +1172,7 @@ class SeoManagementService {
 			const response = await api.get<ApiResponse<Error404[]>>('/admin/404-errors', { params });
 			this.errors404.set(response.data);
 			return response.data;
-		} catch (error) {
+		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
 			console.debug('[SeoService] load404Errors endpoint not available');
 			return [];
@@ -1241,7 +1241,7 @@ class SeoManagementService {
 			});
 			this.rankings.set(response.rankings);
 			return response.rankings;
-		} catch (error) {
+		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
 			console.debug('[SeoService] loadRankings endpoint not available');
 			return [];
@@ -1287,7 +1287,7 @@ class SeoManagementService {
 			const response = await api.get<{ profile: BacklinkProfile }>('/admin/seo/backlinks');
 			this.backlinks.set(response.profile);
 			return response.profile;
-		} catch (error) {
+		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
 			console.debug('[SeoService] loadBacklinks endpoint not available');
 			return null;

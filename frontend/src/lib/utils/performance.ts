@@ -428,7 +428,7 @@ export function debounce<T extends (...args: any[]) => any>(
 		const isInvoking = shouldInvoke(time);
 
 		lastArgs = args;
-		lastThis = this;
+		lastThis = this; // eslint-disable-line @typescript-eslint/no-this-alias -- debounce pattern requires capturing this
 		lastCallTime = time;
 
 		if (isInvoking) {
@@ -505,7 +505,7 @@ export function throttle<T extends (...args: any[]) => any>(
 		const remaining = limit - (now - lastCallTime);
 
 		lastArgs = args;
-		lastThis = this;
+		lastThis = this; // eslint-disable-line @typescript-eslint/no-this-alias -- throttle pattern requires capturing this
 
 		if (remaining <= 0 || remaining > limit) {
 			if (timeoutId) {

@@ -11,6 +11,7 @@
 
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import { goto } from '$app/navigation';
+import { base } from '$app/paths';
 import { browser } from '$app/environment';
 // ICT 11+ CORB Fix: Use same-origin endpoints
 
@@ -92,7 +93,8 @@ export async function adminFetch<T = any>(
 		if (response.status === 401 && !skipAuthRedirect && browser) {
 			// Redirect to login with return URL
 			const returnUrl = encodeURIComponent(window.location.pathname);
-			goto(`/login?redirect=${returnUrl}`);
+			// eslint-disable-next-line svelte/no-navigation-without-resolve -- base path is prepended
+			goto(`${base}/login?redirect=${returnUrl}`);
 			throw new AdminApiError('Unauthorized', 401);
 		}
 

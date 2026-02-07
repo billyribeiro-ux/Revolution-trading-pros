@@ -36,7 +36,6 @@
 	const url = $derived(props.url ?? (typeof window !== 'undefined' ? window.location.href : ''));
 	const title = $derived(props.title);
 	const description = $derived(props.description ?? '');
-	// @ts-expect-error write-only state
 	const _image = $derived(props.image ?? '');
 	const hashtags = $derived(props.hashtags ?? '');
 	const via = $derived(props.via ?? 'RevTradingPros');
