@@ -18,7 +18,7 @@
 -->
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+	import { watchlistApi } from '$lib/api/watchlist';
 
 	interface WatchlistData {
 		id: number;
@@ -60,6 +60,7 @@
 	// Computed display values
 	const displayTitle = $derived(watchlist?.title || 'Weekly Watchlist');
 	const displayTrader = $derived(watchlist?.trader || 'Trading Team');
+	void displayTrader;
 	const displayWeekOf = $derived(formatWeekOf(watchlist?.weekOf));
 	const displayImage = $derived(
 		watchlist?.video?.poster ||

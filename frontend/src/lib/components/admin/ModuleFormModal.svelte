@@ -11,7 +11,7 @@
 		type CreateModuleRequest,
 		type UpdateModuleRequest
 	} from '$lib/api/courses';
-	import { IconX, IconFolder, IconPlus, IconEdit, IconCalendar, IconClock } from '$lib/icons';
+	import { IconX, IconPlus, IconEdit, IconClock } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

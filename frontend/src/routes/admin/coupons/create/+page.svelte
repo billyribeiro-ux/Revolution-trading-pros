@@ -277,7 +277,7 @@
 			};
 
 			// Call the API using couponsApi
-			const response = await couponsApi.create(payload);
+			await couponsApi.create(payload);
 
 			successMessage = `Coupon "${formData.code}" created successfully!`;
 

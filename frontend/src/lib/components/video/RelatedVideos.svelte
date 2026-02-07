@@ -62,6 +62,7 @@
 	let videos = $state<Video[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
+	void error;
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// LIFECYCLE

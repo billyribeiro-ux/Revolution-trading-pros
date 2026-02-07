@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { Card, Button, Badge, Table, Input, Select } from '$lib/components/ui';
+	import { Card, Badge, Table, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, ContactStatus } from '$lib/crm/types';

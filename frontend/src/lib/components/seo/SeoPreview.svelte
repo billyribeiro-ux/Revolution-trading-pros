@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconSearch, IconBrandGoogle } from '$lib/icons';
+	import { IconSearch } from '$lib/icons';
 
 	interface Props {
 		title?: string;

@@ -12,7 +12,6 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
-		getConsentAnalytics,
 		getAnalyticsSummary,
 		getAuditLog,
 		getAuditStats,

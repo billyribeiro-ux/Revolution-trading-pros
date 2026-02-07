@@ -65,7 +65,7 @@
 		activeTab = tabId;
 	}
 
-	function handleKeyDown(event: KeyboardEvent, tabId: string, index: number) {
+	function handleKeyDown(event: KeyboardEvent, _tabId: string, index: number) {
 		if (event.key === 'ArrowRight') {
 			event.preventDefault();
 			const nextIndex = (index + 1) % tabs.length;

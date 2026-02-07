@@ -59,7 +59,7 @@ interface FeedPost extends Post {
 	tags?: string[];
 }
 
-interface AtomLink {
+interface _AtomLink {
 	href: string;
 	rel: 'self' | 'alternate' | 'enclosure' | 'related' | 'via' | 'hub';
 	type?: string;

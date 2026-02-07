@@ -17,7 +17,6 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 
 	interface Lesson {

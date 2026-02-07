@@ -317,6 +317,7 @@
 			formData.trigger_type
 		)
 	);
+	void requiresTriggerSettings;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE

@@ -17,7 +17,7 @@
  */
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -55,6 +55,7 @@
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
 	let activeLineElement = $state<HTMLElement | null>(null);
+	void activeLineElement;
 	let containerElement = $state<HTMLElement | null>(null);
 	let copied = $state(false);
 

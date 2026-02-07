@@ -14,8 +14,6 @@
 	import { onMount } from 'svelte';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-	import IconFileSpreadsheet from '@tabler/icons-svelte-runes/icons/file-spreadsheet';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
 	import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';

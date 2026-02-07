@@ -5,11 +5,8 @@
 	import {
 		IconClock,
 		IconArrowLeft,
-		IconCalendar,
-		IconUser,
 		IconLayoutKanban,
 		IconCurrencyDollar,
-		IconFilter,
 		IconDownload,
 		IconRefresh
 	} from '$lib/icons';

@@ -29,7 +29,7 @@
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
-	import { IconChartBar, IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
+	import { IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
 
 	// State
 	let dashboardData: DashboardData | null = $state(null);
@@ -89,9 +89,6 @@
 		];
 	});
 
-	// Subscribe to connection status - for future store subscriptions
-	let unsubscribe = $state<(() => void) | null>(null);
-
 	// Navigation tabs
 	const tabs = [
 		{ id: 'overview', label: 'Overview', icon: '📊' },
@@ -135,10 +132,8 @@
 	$effect(() => {
 		if (!browser) return;
 
-		// Subscribe to analytics connection status
-		unsubscribe = getIsAnalyticsConnected.subscribe((connected) => {
-			isConnected = connected;
-		});
+		// Check analytics connection status
+		isConnected = getIsAnalyticsConnected();
 
 		// Load connection status
 		const initDashboard = async () => {
@@ -146,19 +141,15 @@
 			await connections.load();
 			connectionsLoading = false;
 
+			// Re-check after load
+			isConnected = getIsAnalyticsConnected();
+
 			// Load dashboard if connected
 			if (isConnected) {
 				loadDashboard();
 			}
 		};
 		initDashboard();
-
-		// Cleanup on destroy
-		return () => {
-			if (unsubscribe !== null) {
-				unsubscribe();
-			}
-		};
 	});
 
 	// Format time series data

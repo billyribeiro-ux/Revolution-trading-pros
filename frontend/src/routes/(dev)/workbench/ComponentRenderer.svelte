@@ -100,6 +100,7 @@
 		renderError = error.message;
 		console.error('[Workbench] Render error:', error);
 	}
+	void _handleRenderError;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPUTED STYLES

@@ -8,12 +8,10 @@
 	import { browser } from '$app/environment';
 	import {
 		analyticsApi,
-		type AttributionReport,
-		type ChannelAttribution
+		type AttributionReport
 	} from '$lib/api/analytics';
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
-	import TimeSeriesChart from '$lib/components/analytics/TimeSeriesChart.svelte';
 
 	let report = $state<AttributionReport | null>(null);
 	let loading = $state(true);

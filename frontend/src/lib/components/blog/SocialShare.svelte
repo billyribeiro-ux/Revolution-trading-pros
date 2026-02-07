@@ -37,6 +37,7 @@
 	const title = $derived(props.title);
 	const description = $derived(props.description ?? '');
 	const _image = $derived(props.image ?? '');
+	void _image;
 	const hashtags = $derived(props.hashtags ?? '');
 	const via = $derived(props.via ?? 'RevTradingPros');
 	const layout = $derived(props.layout ?? 'horizontal');

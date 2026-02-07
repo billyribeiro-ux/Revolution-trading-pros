@@ -65,7 +65,7 @@
 		}
 	}
 
-	function handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
+	function _handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
 		props.onUpdate(blockId, updates);
 	}
 </script>

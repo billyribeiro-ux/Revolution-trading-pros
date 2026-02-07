@@ -38,7 +38,6 @@
 		IconEdit,
 		IconTrash,
 		IconTag,
-		IconSend,
 		IconPlus,
 		IconX,
 		IconCheck,
@@ -313,7 +312,7 @@
 		return 'text-red-400';
 	}
 
-	function getTimelineIcon(type: string): string {
+	function _getTimelineIcon(type: string): string {
 		const icons: Record<string, string> = {
 			email: 'mail',
 			call: 'phone',

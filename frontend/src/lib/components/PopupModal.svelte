@@ -76,7 +76,9 @@
 	let previousFocus: HTMLElement | null = null;
 	let scrollPosition = 0;
 	let mousePosition = { x: 0, y: 0 };
+	void mousePosition;
 	let viewportSize = { width: 0, height: 0 };
+	void viewportSize;
 	let deviceType = $state<'mobile' | 'tablet' | 'desktop'>('desktop');
 	let userInteracted = false;
 	let impressionTime = 0;

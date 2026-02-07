@@ -6,7 +6,6 @@
 
 	import {
 		chaptersApi,
-		formatDuration,
 		parseTimeToSeconds,
 		type VideoChapter
 	} from '$lib/api/video-advanced';
@@ -28,6 +27,7 @@
 	// Destructure with defaults for internal use
 	const videoId = $derived(props.videoId);
 	const videoDuration = $derived(props.videoDuration ?? 0);
+	void videoDuration;
 	const onClose = $derived(props.onClose);
 
 	let chapters = $state<VideoChapter[]>([]);

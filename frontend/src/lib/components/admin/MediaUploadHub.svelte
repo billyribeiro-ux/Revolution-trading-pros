@@ -21,7 +21,7 @@
 	 */
 
 	import { fly, fade, scale, slide } from 'svelte/transition';
-	import { cubicOut, elasticOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
@@ -102,7 +102,7 @@
 		'video/x-msvideo',
 		'video/x-matroska'
 	];
-	const documentTypes = [
+	const _documentTypes = [
 		'application/pdf',
 		'application/msword',
 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

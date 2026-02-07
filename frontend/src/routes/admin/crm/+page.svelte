@@ -44,7 +44,6 @@
 		IconRepeat,
 		IconBook,
 		IconPlayerPlay,
-		IconExternalLink,
 		IconLink,
 		IconRobot,
 		IconTarget
@@ -104,7 +103,9 @@
 	let searchQuery = $state('');
 	let selectedStatus = $state('all');
 	let showSearchDropdown = $state(false);
+	void showSearchDropdown;
 	let searchInputFocused = $state(false);
+	void searchInputFocused;
 
 	// Stats
 	let stats = $state({
@@ -132,7 +133,7 @@
 	// SIDEBAR NAVIGATION (FluentCRM Pro Style)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const sidebarNav = [
+	const _sidebarNav = [
 		{ name: 'Contacts', href: '/admin/crm', icon: IconUsers, active: true },
 		{ name: 'Leads', href: '/admin/crm/leads', icon: IconTarget },
 		{ name: 'Lists', href: '/admin/crm/lists', icon: IconListDetails },
@@ -236,18 +237,20 @@
 		});
 	}
 
-	function handleSearchFocus() {
+	function _handleSearchFocus() {
 		showSearchDropdown = true;
 		searchInputFocused = true;
 	}
+	void _handleSearchFocus;
 
-	function handleSearchBlur() {
+	function _handleSearchBlur() {
 		// Delay to allow clicking on dropdown items
 		setTimeout(() => {
 			showSearchDropdown = false;
 			searchInputFocused = false;
 		}, 200);
 	}
+	void _handleSearchBlur;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE

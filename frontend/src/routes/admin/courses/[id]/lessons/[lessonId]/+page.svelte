@@ -63,6 +63,7 @@
 	let loading = $state(true);
 	let saving = $state(false);
 	let errorMessage = $state('');
+	void errorMessage;
 
 	// Delete confirmation modal state
 	let showDeleteLessonModal = $state(false);

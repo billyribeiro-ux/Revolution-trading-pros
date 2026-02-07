@@ -66,6 +66,7 @@
 	let scheduleError = $state(false);
 	let isStaleData = $state(false);
 	let lastFetchTime = $state<number>(0);
+	void lastFetchTime;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Per-room schedule support

@@ -59,6 +59,7 @@
 	let thumbnailFile = $state<File | null>(null);
 	let uploadProgress = $state(0);
 	let thumbnailProgress = $state(0);
+	void thumbnailProgress;
 	let isUploading = $state(false);
 	let error = $state<string | null>(null);
 	let uploadSessionId = $state<string | null>(null);

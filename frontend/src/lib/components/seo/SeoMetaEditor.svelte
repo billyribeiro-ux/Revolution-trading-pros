@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import {
 		IconFileText,
-		IconPhoto,
 		IconBrandTwitter,
 		IconBrandFacebook,
 		IconRobot,
@@ -46,6 +45,7 @@
 
 	let content = $state('');
 	let analyzing = $state(false);
+	void analyzing;
 	let saving = $state(false);
 
 	const tabs = [

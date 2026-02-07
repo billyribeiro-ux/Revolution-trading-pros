@@ -210,11 +210,13 @@
 	let isRunning: boolean = $state(false);
 	let isPaused: boolean = $state(false);
 	let hasStarted: boolean = $state(false);
+	void hasStarted;
 	let timeOffset: number = 0;
 	let totalDuration: number = 0;
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
 	let lastUpdateTime: number = 0;
+	void lastUpdateTime;
 	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};
 	let milestonesReached: Set<number> = new Set();
