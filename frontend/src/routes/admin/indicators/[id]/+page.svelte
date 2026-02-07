@@ -6,6 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ICT 7: Match actual backend schema
@@ -107,12 +108,10 @@
 		{ value: 'sierrachart', label: 'Sierra Chart' }
 	];
 
-	// Extract indicator ID from URL pathname
-	let indicatorId = $state('');
+	// ICT 7: Use SvelteKit's $page.params instead of fragile window.location parsing
+	let indicatorId = $derived($page.params.id ?? '');
 
 	onMount(() => {
-		const pathParts = window.location.pathname.split('/');
-		indicatorId = pathParts[pathParts.length - 1];
 		fetchIndicator();
 	});
 

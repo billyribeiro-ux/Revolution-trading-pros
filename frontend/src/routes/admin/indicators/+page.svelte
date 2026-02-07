@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount, untrack } from 'svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
@@ -83,15 +83,26 @@
 		return new Date(date).toLocaleDateString();
 	};
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (browser) fetchIndicators();
+	// ICT 7: Initial fetch on mount — avoids $effect infinite loop
+	onMount(() => {
+		fetchIndicators();
 	});
 
+	// ICT 7: Reset page when filters change, then re-fetch
+	// Uses untrack on fetchIndicators to prevent circular dependency
+	let searchDebounceTimer: ReturnType<typeof setTimeout>;
 	$effect(() => {
-		if (search !== undefined || statusFilter !== undefined) {
-			page = 1;
-		}
+		// Explicitly subscribe to search and statusFilter as reactive dependencies
+		void search;
+		void statusFilter;
+		// Debounce to avoid rapid re-fetches while typing
+		clearTimeout(searchDebounceTimer);
+		searchDebounceTimer = setTimeout(() => {
+			untrack(() => {
+				page = 1;
+				fetchIndicators();
+			});
+		}, 300);
 	});
 </script>
 

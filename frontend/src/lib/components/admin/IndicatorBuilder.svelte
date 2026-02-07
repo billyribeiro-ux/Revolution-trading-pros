@@ -10,6 +10,7 @@
 	 * - TradingView Access Management
 	 */
 
+	import { onMount } from 'svelte';
 	import {
 		indicatorsApi,
 		platformsApi,
@@ -117,7 +118,9 @@
 	});
 	let tvAccesses = $state<TradingViewAccess[]>([]);
 
-	$effect(() => {
+	// ICT 7: Use onMount instead of bare $effect to prevent infinite loop.
+	// loadData() reads/writes multiple $state vars which would re-trigger $effect endlessly.
+	onMount(() => {
 		loadData();
 	});
 

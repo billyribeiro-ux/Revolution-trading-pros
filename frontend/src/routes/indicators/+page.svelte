@@ -265,8 +265,6 @@
 	};
 
 	onMount(() => {
-		if (!browser) return;
-
 		let heroObserver: IntersectionObserver;
 		let cardObserver: IntersectionObserver;
 		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
