@@ -11,7 +11,7 @@
 
 import type { PageServerLoad } from './$types';
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
+const _API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 // Room slug to room ID mapping
 const ROOM_IDS: Record<string, number> = {
@@ -47,21 +47,21 @@ export interface PageData {
 	error?: string;
 }
 
-export const load: PageServerLoad = async ({ params, url, fetch, cookies }): Promise<PageData> => {
+export const load: PageServerLoad = async ({ params, url }): Promise<PageData> => {
 	const { room_slug } = params;
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
 	const perPage = 12;
 
 	// Get room ID from slug
-	const roomId = ROOM_IDS[room_slug as string] || 1;
+	const _roomId = ROOM_IDS[room_slug as string] || 1;
 
 	// TODO: Implement new video fetching approach
 	// Using mock data until new implementation is ready
 	return getMockData(room_slug as string, page, perPage, search);
 };
 
-function formatDate(dateStr: string): string {
+function _formatDate(dateStr: string): string {
 	try {
 		const date = new Date(dateStr);
 		return date.toLocaleDateString('en-US', {

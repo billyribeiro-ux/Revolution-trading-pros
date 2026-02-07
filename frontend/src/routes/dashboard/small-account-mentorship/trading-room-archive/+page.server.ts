@@ -40,7 +40,7 @@ interface VideoResponse {
 }
 
 // API response structure
-interface ApiResponse {
+interface _ApiResponse {
 	success: boolean;
 	data: VideoResponse[];
 	meta: {
@@ -64,11 +64,11 @@ export interface ArchivePageData {
 	error: string | null;
 }
 
-export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageData> => {
-	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+export const load: PageServerLoad = async ({ url }): Promise<ArchivePageData> => {
+	const _API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 	// Get query params
-	const page = url.searchParams.get('page') || '1';
+	const _page = url.searchParams.get('page') || '1';
 	const search = url.searchParams.get('search') || '';
 
 	// TODO: Implement new video fetching approach

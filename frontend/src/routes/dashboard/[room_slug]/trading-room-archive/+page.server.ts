@@ -57,7 +57,7 @@ interface VideoResponse {
 }
 
 // API response structure
-interface ApiResponse {
+interface _ApiResponse {
 	success: boolean;
 	data: VideoResponse[];
 	meta: {
@@ -86,10 +86,9 @@ export interface DynamicArchivePageData {
 
 export const load: PageServerLoad = async ({
 	url,
-	fetch,
 	params
 }): Promise<DynamicArchivePageData> => {
-	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
+	const _API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 	const roomSlug = params.room_slug;
 
 	// Get room config
@@ -102,7 +101,7 @@ export const load: PageServerLoad = async ({
 	};
 
 	// Get query params
-	const page = url.searchParams.get('page') || '1';
+	const _page = url.searchParams.get('page') || '1';
 	const search = url.searchParams.get('search') || '';
 
 	// TODO: Implement new video fetching approach
