@@ -21,14 +21,14 @@
 
 	// Initialize signature canvas when field type is signature
 	onMount(() => {
-		if (props.props.field.field_type === 'signature') {
+		if (props.field.field_type === 'signature') {
 			initSignatureCanvas();
 		}
 	});
 
 	function initSignatureCanvas() {
 		signatureCanvas = document.getElementById(
-			`field-${props.props.field.name}`
+			`field-${props.field.name}`
 		) as HTMLCanvasElement;
 		if (!signatureCanvas) return;
 
@@ -121,14 +121,14 @@
 			isDrawing = false;
 			// Save signature as base64 data URL
 			const dataUrl = signatureCanvas.toDataURL('image/png');
-			props.props.onchange?.(dataUrl);
+			props.onchange?.(dataUrl);
 		}
 	}
 
 	function clearSignature() {
 		if (!signatureCtx || !signatureCanvas) return;
 		signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
-		props.props.onchange?.('');
+		props.onchange?.('');
 	}
 
 	function handleChange(event: Event) {
@@ -138,7 +138,7 @@
 
 		if (target instanceof HTMLInputElement) {
 			if (target.type === 'checkbox') {
-				if (props.props.field.field_type === 'checkbox') {
+				if (props.field.field_type === 'checkbox') {
 					// Multiple checkboxes - array
 					const currentValues = Array.isArray(props.value) ? props.value : [];
 					if (target.checked) {
@@ -161,7 +161,7 @@
 			newValue = target.value;
 		}
 
-		props.props.onchange?.(newValue);
+		props.onchange?.(newValue);
 	}
 
 	function handleCheckboxChange(optionValue: string, checked: boolean) {
@@ -170,7 +170,7 @@
 			? [...currentValues, optionValue]
 			: currentValues.filter((v: string) => v !== optionValue);
 
-		props.props.onchange?.(newValue);
+		props.onchange?.(newValue);
 	}
 
 	function isChecked(optionValue: string): boolean {
@@ -441,7 +441,7 @@
 						: 1}
 					{...(props.field.attributes as Record<string, any>) || {}}
 				/>
-				<output class="range-value">{value || props.field.validation?.min || 0}</output>
+				<output class="range-value">{props.value || props.field.validation?.min || 0}</output>
 			</div>
 
 			<!-- Color Picker -->
@@ -473,7 +473,7 @@
 					<button
 						type="button"
 						class="star-button"
-						class:active={value > i}
+						class:active={props.value > i}
 						onclick={() => props.onchange?.(i + 1)}
 						aria-label={`Rate ${i + 1} stars`}
 					>
@@ -496,7 +496,7 @@
 					<button type="button" class="btn-clear-signature" onclick={clearSignature}>
 						Clear Signature
 					</button>
-					{#if value}
+					{#if props.value}
 						<span class="signature-status">Signature captured</span>
 					{/if}
 				</div>
@@ -504,7 +504,7 @@
 
 			<!-- ICT 7 Fix: Address Field - Complete multi-part address input -->
 		{:else if props.field.field_type === 'address'}
-			{@const addressValue = typeof value === 'object' && value !== null ? value : {}}
+			{@const addressValue = typeof props.value === 'object' && props.value !== null ? props.value : {}}
 			<div class="address-wrapper">
 				<div class="address-fields">
 					<div class="address-row full-width">
@@ -670,7 +670,7 @@
 						type="checkbox"
 						id={`field-${props.field.name}`}
 						name={props.field.name}
-						checked={props.value === true || value === '1' || value === 'yes' || value === 'on'}
+						checked={props.value === true || props.value === '1' || props.value === 'yes' || props.value === 'on'}
 						onchange={(e: Event) => props.onchange?.((e.currentTarget as HTMLInputElement).checked)}
 						{...(props.field.attributes as Record<string, any>) || {}}
 					/>
@@ -766,7 +766,7 @@
 			</select>
 		{/if}
 
-		{#if props.error && error.length > 0}
+		{#if props.error && props.error.length > 0}
 			<div class="field-error">
 				{#each props.error as err}
 					<p>{err}</p>

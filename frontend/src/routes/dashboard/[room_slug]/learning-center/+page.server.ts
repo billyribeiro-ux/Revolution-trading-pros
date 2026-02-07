@@ -12,10 +12,10 @@
 
 import type { PageServerLoad } from './$types';
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
+const _API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 // Room slug to room ID mapping
-const ROOM_IDS: Record<string, number> = {
+const _ROOM_IDS: Record<string, number> = {
 	'day-trading-room': 1,
 	'swing-trading-room': 2,
 	'small-accounts-room': 3,
@@ -60,7 +60,7 @@ export interface ApiResponse {
 }
 
 // Category mapping from WordPress IDs to tags
-const CATEGORY_TAG_MAP: Record<string, string> = {
+const _CATEGORY_TAG_MAP: Record<string, string> = {
 	'529': 'trade-setups',
 	'528': 'methodology',
 	'329': 'member-webinar',
@@ -112,9 +112,9 @@ function getRoomName(slug: string): string {
 	);
 }
 
-export const load: PageServerLoad = async ({ params, url, fetch, cookies }) => {
+export const load: PageServerLoad = async ({ params, url }) => {
 	const { room_slug } = params;
-	const page = parseInt(url.searchParams.get('page') || '1');
+	const _page = parseInt(url.searchParams.get('page') || '1');
 	const category = url.searchParams.get('category');
 	const perPage = 9;
 

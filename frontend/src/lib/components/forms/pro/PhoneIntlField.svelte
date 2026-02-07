@@ -89,11 +89,11 @@
 
 	$effect(() => {
 		selectedCountry =
-			countries.find((c) => c.code === (value.country_code || defaultCountry)) || countries[0];
+			countries.find((c) => c.code === (props.value?.country_code || defaultCountry)) || countries[0];
 	});
 
 	$effect(() => {
-		phoneNumber = value.number || '';
+		phoneNumber = props.value?.number || '';
 	});
 
 	const filteredCountries = $derived(
@@ -226,7 +226,7 @@
 			value={phoneNumber}
 			required={props.field.required}
 			class="phone-input"
-			class:input-error={error && error.length > 0}
+			class:input-error={props.error && props.error.length > 0}
 			oninput={handlePhoneInput}
 		/>
 	</div>
@@ -238,9 +238,9 @@
 	/>
 	<input type="hidden" name={`${props.field.name}_country`} value={selectedCountry.code} />
 
-	{#if error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each props.error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

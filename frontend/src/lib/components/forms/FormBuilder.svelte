@@ -182,8 +182,8 @@
 				fields: fields.map(({ id, created_at, updated_at, ...field }) => field)
 			};
 
-			if (props.isEditing && form?.id) {
-				await updateForm(form.id, dataToSave);
+			if (props.isEditing && props.form?.id) {
+				await updateForm(props.form.id, dataToSave);
 			} else {
 				await createForm(dataToSave);
 			}
@@ -388,7 +388,7 @@
 		<div class="builder-actions">
 			<button class="btn btn-secondary" onclick={handleCancel}> Cancel </button>
 			<button class="btn btn-primary" onclick={handleSaveForm} disabled={isSaving}>
-				{isSaving ? 'Saving...' : isEditing ? 'Update Form' : 'Create Form'}
+				{isSaving ? 'Saving...' : props.isEditing ? 'Update Form' : 'Create Form'}
 			</button>
 		</div>
 	{:else}

@@ -33,16 +33,16 @@
 	}
 
 	let {
-		submissionId,
-		formId,
+		submissionId: _submissionId,
+		formId: _formId,
 		email,
 		data = { status: 'pending', email: '' },
 		showStatus = true,
 		allowResend = true,
 		resendCooldown = 60,
-		expirationHours = 24,
+		expirationHours: _expirationHours = 24,
 		onResend,
-		onConfirm,
+		onConfirm: _onConfirm,
 		error = ''
 	}: Props = $props();
 

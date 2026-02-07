@@ -47,9 +47,9 @@
 		<button
 			type="button"
 			class={`toggle-switch ${size}`}
-			class:active={value}
+			class:active={props.value}
 			role="switch"
-			aria-checked={value}
+			aria-checked={props.value}
 			aria-label="{props.field.label} toggle"
 			onclick={handleToggle}
 			onkeydown={handleKeyDown}
@@ -60,7 +60,7 @@
 		</button>
 
 		{#if showLabels}
-			<span class="toggle-label on" class:active={value}>{onLabel}</span>
+			<span class="toggle-label on" class:active={props.value}>{onLabel}</span>
 		{/if}
 	</div>
 
@@ -68,12 +68,12 @@
 		id="toggle-{props.field.name}"
 		type="hidden"
 		name={props.field.name}
-		value={value ? '1' : '0'}
+		value={props.value ? '1' : '0'}
 	/>
 
-	{#if error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each props.error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

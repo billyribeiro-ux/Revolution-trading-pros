@@ -82,7 +82,6 @@
 	let loading = $state(true);
 	let fetchError = $state('');
 	let searchQuery = $state('');
-	let showDropdown = $state(false);
 	let selectedValues = $state<string[]>([]);
 
 	// Sync with prop value changes
@@ -212,7 +211,6 @@
 					placeholder="Search options..."
 					value={searchQuery}
 					oninput={(e: Event) => (searchQuery = (e.target as HTMLInputElement).value)}
-					onfocus={() => (showDropdown = true)}
 				/>
 			{/if}
 			<select

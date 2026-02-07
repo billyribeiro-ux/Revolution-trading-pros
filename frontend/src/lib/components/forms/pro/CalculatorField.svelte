@@ -65,7 +65,7 @@
 
 	$effect(() => {
 		const newValue = calculatedValue;
-		if (newValue !== value) {
+		if (newValue !== props.value) {
 			props.onchange?.(newValue);
 		}
 	});
@@ -128,9 +128,9 @@
 		value={calculatedValue}
 	/>
 
-	{#if error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each props.error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

@@ -35,30 +35,30 @@
 	}
 
 	function handleMultiSelect(item: PaymentItem, checked: boolean) {
-		const currentItems = Array.isArray(props.value) ? value : [];
+		const currentItems = Array.isArray(props.value) ? props.value : [];
 		if (checked) {
 			props.onchange?.([...currentItems, { ...item, quantity: 1 }]);
 		} else {
-			props.onchange?.(currentItems.filter((i) => i.id !== item.id));
+			props.onchange?.(currentItems.filter((i: PaymentItem) => i.id !== item.id));
 		}
 	}
 
 	function handleQuantityChange(itemId: string, quantity: number) {
 		if (!Array.isArray(props.value)) return;
-		const updatedItems = value.map((i) => (i.id === itemId ? { ...i, quantity } : i));
+		const updatedItems = props.value.map((i: PaymentItem) => (i.id === itemId ? { ...i, quantity } : i));
 		props.onchange?.(updatedItems);
 	}
 
 	function isSelected(itemId: string): boolean {
 		if (Array.isArray(props.value)) {
-			return value.some((i) => i.id === itemId);
+			return props.value.some((i: PaymentItem) => i.id === itemId);
 		}
 		return props.value?.id === itemId;
 	}
 
 	function getQuantity(itemId: string): number {
 		if (Array.isArray(props.value)) {
-			const item = value.find((i) => i.id === itemId);
+			const item = props.value.find((i: PaymentItem) => i.id === itemId);
 			return item?.quantity || 1;
 		}
 		return 1;
@@ -66,7 +66,7 @@
 
 	function calculateTotal(): number {
 		if (Array.isArray(props.value)) {
-			return value.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+			return props.value.reduce((sum: number, item: PaymentItem) => sum + item.price * (item.quantity || 1), 0);
 		}
 		return props.value?.price || 0;
 	}
@@ -179,9 +179,9 @@
 		<span class="total-amount">{formatCurrency(calculateTotal())}</span>
 	</div>
 
-	{#if error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each props.error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

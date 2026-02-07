@@ -99,7 +99,7 @@
 				placeholder="Street address"
 				value={addressData.address_line_1}
 				required={props.field.required}
-				class={getInputClasses(!!error)}
+				class={getInputClasses(!!props.error)}
 				autocomplete={enableAutocomplete ? 'address-line1' : 'off'}
 				oninput={(e: Event) =>
 					handleFieldChange('address_line_1', (e.currentTarget as HTMLInputElement).value)}
@@ -135,7 +135,7 @@
 					placeholder="City"
 					value={addressData.city}
 					required={props.field.required}
-					class={getInputClasses(!!error)}
+					class={getInputClasses(!!props.error)}
 					autocomplete={enableAutocomplete ? 'address-level2' : 'off'}
 					oninput={(e: Event) =>
 						handleFieldChange('city', (e.currentTarget as HTMLInputElement).value)}
@@ -150,7 +150,7 @@
 					placeholder="State / Province"
 					value={addressData.state}
 					required={props.field.required}
-					class={getInputClasses(!!error)}
+					class={getInputClasses(!!props.error)}
 					autocomplete={enableAutocomplete ? 'address-level1' : 'off'}
 					oninput={(e: Event) =>
 						handleFieldChange('state', (e.currentTarget as HTMLInputElement).value)}
@@ -169,7 +169,7 @@
 					placeholder="ZIP / Postal Code"
 					value={addressData.zip}
 					required={props.field.required}
-					class={getInputClasses(!!error)}
+					class={getInputClasses(!!props.error)}
 					autocomplete={enableAutocomplete ? 'postal-code' : 'off'}
 					oninput={(e: Event) =>
 						handleFieldChange('zip', (e.currentTarget as HTMLInputElement).value)}
@@ -183,7 +183,7 @@
 						name={`${props.field.name}[country]`}
 						value={addressData.country}
 						required={props.field.required}
-						class={getInputClasses(!!error)}
+						class={getInputClasses(!!props.error)}
 						autocomplete={enableAutocomplete ? 'country' : 'off'}
 						onchange={(e: Event) =>
 							handleFieldChange('country', (e.currentTarget as HTMLInputElement).value)}
@@ -198,7 +198,7 @@
 		</div>
 	</div>
 
-	{#if props.error && error.length > 0}
+	{#if props.error && props.error.length > 0}
 		<div class="field-error">
 			{#each props.error as err}
 				<p>{err}</p>

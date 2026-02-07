@@ -81,7 +81,7 @@
 	}
 
 	function getMaxQuantity(product: ProductOption): number {
-		const currentSelection = selections.get(product.id) ?? 0;
+		const _currentSelection = selections.get(product.id) ?? 0;
 		const availableStock = product.stock;
 		const maxPerOrder = product.maxPerOrder ?? availableStock;
 		return Math.min(availableStock, maxPerOrder);

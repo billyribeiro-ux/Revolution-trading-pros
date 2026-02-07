@@ -137,7 +137,7 @@
 			email: customerEmail || undefined,
 			country: customerCountry || undefined,
 			passthrough: JSON.stringify(passthrough),
-			successCallback: (data: any) => {
+			successCallback: (_data: any) => {
 				processing = false;
 			},
 			closeCallback: () => {

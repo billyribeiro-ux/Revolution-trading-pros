@@ -53,7 +53,7 @@
 		testMode = false,
 		label = 'Payment Details',
 		description = '',
-		billingAddress = {},
+		billingAddress: _billingAddress = {},
 		disabled = false,
 		error = '',
 		onPaymentReady,
