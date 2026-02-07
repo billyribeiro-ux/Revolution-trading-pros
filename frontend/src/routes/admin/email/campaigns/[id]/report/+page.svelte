@@ -22,7 +22,6 @@
 
 	import type { PageData } from './$types';
 	import { fade, fly, scale } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ExportButton from '$lib/components/ExportButton.svelte';
@@ -44,8 +43,7 @@
 		IconDeviceMobile,
 		IconDevices,
 		IconBrowser,
-		IconTrendingUp,
-		IconArrowUpRight
+		IconTrendingUp
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════

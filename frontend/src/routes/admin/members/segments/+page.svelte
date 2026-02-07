@@ -521,6 +521,7 @@
 		toastStore.info(`Analytics for "${segment.name}" - Coming soon`);
 		// TODO: Implement analytics view
 	}
+	void _viewSegmentAnalytics;
 
 	function handleSaveFilter() {
 		if (!newFilter.name) {

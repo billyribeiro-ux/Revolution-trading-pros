@@ -15,6 +15,7 @@
 
 	// For content selector
 	let forms: Form[] = $state([]);
+	void forms;
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },

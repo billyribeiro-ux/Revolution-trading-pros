@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconSearch, IconFileText, IconEye, IconDeviceFloppy, IconRefresh } from '$lib/icons';
+	import { IconSearch, IconFileText, IconEye } from '$lib/icons';
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
-	import SeoAnalyzer from '$lib/components/seo/SeoAnalyzer.svelte';
 
 	let entities: any[] = $state([]);
 	let selectedEntity: any = $state(null);

@@ -41,6 +41,7 @@
 	let initialLoading = $state(true);
 	let errors = $state<Record<string, string>>({});
 	let showAbTestModal = $state(false);
+	void showAbTestModal;
 
 	// Trigger rules based on type
 	let timedDelay = $state(5000);

@@ -27,7 +27,7 @@
 		connectionLoading = false;
 
 		// Only load data if SEO is connected
-		if (getIsSeoConnected) {
+		if (getIsSeoConnected()) {
 			loadData();
 		}
 	});
@@ -107,7 +107,7 @@
 			<h1>SEO Analytics</h1>
 			<p>Track search performance and insights</p>
 		</div>
-		{#if getIsSeoConnected}
+		{#if getIsSeoConnected()}
 			<button class="btn-secondary" onclick={loadData} disabled={loading}>
 				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 				Refresh

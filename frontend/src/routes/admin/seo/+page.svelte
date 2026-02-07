@@ -289,7 +289,7 @@
 
 	function handleRefresh() {
 		connections.load(true);
-		if (getIsSeoConnected) {
+		if (getIsSeoConnected()) {
 			loadSeoData();
 		}
 	}

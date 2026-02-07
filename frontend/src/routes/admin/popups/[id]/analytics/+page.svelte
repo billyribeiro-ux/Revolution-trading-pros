@@ -20,7 +20,7 @@
 	let analytics = $state<any>(null);
 	let loading = $state(true);
 
-	interface AnalyticsData {
+	interface _AnalyticsData {
 		views: {
 			total: number;
 			today: number;

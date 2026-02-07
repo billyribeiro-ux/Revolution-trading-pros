@@ -4,7 +4,6 @@
 	import {
 		IconWorld as IconBrandBing,
 		IconRocket,
-		IconChartBar,
 		IconCheck,
 		IconX,
 		IconRefresh,
