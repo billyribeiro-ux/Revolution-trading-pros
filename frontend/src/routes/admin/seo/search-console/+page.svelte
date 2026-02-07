@@ -11,7 +11,7 @@
 	// State using Svelte 5 runes
 	let status = $state<any>(null);
 	let sites = $state<any[]>([]);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let loading = $state(false);
 	let importing = $state(false);
 

@@ -312,7 +312,7 @@
 		return 'text-red-400';
 	}
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	function _getTimelineIcon(type: string): string {
 		const icons: Record<string, string> = {
 			email: 'mail',

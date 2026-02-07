@@ -61,7 +61,7 @@
 
 	let videos = $state<Video[]>([]);
 	let isLoading = $state(true);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let error = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════

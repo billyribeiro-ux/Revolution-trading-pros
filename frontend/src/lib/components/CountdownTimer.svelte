@@ -209,13 +209,13 @@
 	let rafId: number | null = null;
 	let isRunning: boolean = $state(false);
 	let isPaused: boolean = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let hasStarted: boolean = $state(false);
 	let timeOffset: number = 0;
 	let totalDuration: number = 0;
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let lastUpdateTime: number = 0;
 	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};

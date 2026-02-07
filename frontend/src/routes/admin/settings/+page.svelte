@@ -129,11 +129,11 @@
 		return result;
 	});
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let connectedServices = $derived(allServices.filter((s) => s.is_connected));
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let disconnectedServices = $derived(allServices.filter((s) => !s.is_connected));
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let errorServices = $derived(allServices.filter((s) => s.status === 'error'));
 	let categoryList = $derived(Object.entries(categories) as [string, Category][]);
 

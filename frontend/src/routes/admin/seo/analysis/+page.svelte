@@ -14,7 +14,7 @@
 	let analyzing = $state(false);
 
 	// For content selector
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let forms: Form[] = $state([]);
 
 	const contentTypes = [

@@ -107,7 +107,7 @@
 		}
 	}
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	async function _deleteReview() {
 		if (!confirm('Are you sure you want to delete your review?')) return;
 

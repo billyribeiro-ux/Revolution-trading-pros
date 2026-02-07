@@ -59,7 +59,7 @@
 
 	// Computed display values
 	const displayTitle = $derived(watchlist?.title || 'Weekly Watchlist');
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	const displayTrader = $derived(watchlist?.trader || 'Trading Team');
 	const displayWeekOf = $derived(formatWeekOf(watchlist?.weekOf));
 	const displayImage = $derived(

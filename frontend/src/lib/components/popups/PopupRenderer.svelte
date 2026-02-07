@@ -43,7 +43,7 @@
 	let isExiting = $state(false);
 	let exitIntentTriggered = $state(false);
 	let scrollTriggered = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let timerTriggered = $state(false);
 
 	// Refs

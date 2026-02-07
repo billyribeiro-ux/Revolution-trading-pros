@@ -12,7 +12,7 @@
 	let form = $state<Form | null>(null);
 	let loading = $state(true);
 	let error = $state('');
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let submitted = $state(false);
 
 	let formSlug = $derived(page.params.slug!);

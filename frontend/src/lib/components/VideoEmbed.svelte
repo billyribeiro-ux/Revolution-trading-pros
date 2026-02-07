@@ -327,10 +327,10 @@
 	let isPlaying: boolean = $state(false);
 	let isPaused: boolean = $state(false);
 	let isEnded: boolean = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let isBuffering: boolean = $state(false);
 	let isFullscreen: boolean = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let isPictureInPicture: boolean = $state(false);
 	let isMuted: boolean = $state(false);
 	let hasError: boolean = $state(false);
@@ -358,11 +358,11 @@
 	let showControls: boolean = $state(true);
 	let showSettings: boolean = $state(false);
 	let controlsTimer: number | null = $state(null);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let isHovering: boolean = $state(false);
 	let thumbnailLoaded: boolean = $state(false);
 	let hasInteracted: boolean = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let showCallToAction: boolean = $state(false);
 
 	// Quality options

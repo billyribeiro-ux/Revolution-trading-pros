@@ -62,7 +62,7 @@
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let errorMessage = $state('');
 
 	// Delete confirmation modal state

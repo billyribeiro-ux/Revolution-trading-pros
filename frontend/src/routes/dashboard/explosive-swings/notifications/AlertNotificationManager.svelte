@@ -35,7 +35,7 @@
 		}
 	};
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	function _showNotification(alert: any) {
 		if (!enabled || !hasPermission) return;
 

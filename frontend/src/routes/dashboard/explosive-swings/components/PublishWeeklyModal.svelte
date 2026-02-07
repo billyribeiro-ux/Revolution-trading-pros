@@ -71,7 +71,7 @@
 	let modalRef = $state<HTMLDivElement | null>(null);
 
 	// Current step (for mobile accordion)
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let activeSection = $state<'video' | 'trades' | 'review'>('video');
 
 	// Video form state
@@ -111,7 +111,7 @@
 		tradePlanRows.filter((row) => isValidTicker(row.ticker)).length
 	);
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	const hasTradePlanEntries = $derived(validTradePlanCount > 0);
 
 	const canPublish = $derived(isVideoValid && !isPublishing);
@@ -157,7 +157,7 @@
 		return /^[A-Z]{1,5}$/.test(cleaned);
 	}
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	function _isValidPrice(price: string): boolean {
 		if (!price || price.trim() === '') return true;
 		const cleaned = price.replace(/[$,]/g, '');

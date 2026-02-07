@@ -58,7 +58,7 @@
 	let videoFile = $state<File | null>(null);
 	let thumbnailFile = $state<File | null>(null);
 	let uploadProgress = $state(0);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let thumbnailProgress = $state(0);
 	let isUploading = $state(false);
 	let error = $state<string | null>(null);

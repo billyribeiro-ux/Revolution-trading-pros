@@ -75,9 +75,9 @@
 	let modalElement = $state<HTMLDivElement>();
 	let previousFocus: HTMLElement | null = null;
 	let scrollPosition = 0;
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let mousePosition = { x: 0, y: 0 };
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let viewportSize = { width: 0, height: 0 };
 	let deviceType = $state<'mobile' | 'tablet' | 'desktop'>('desktop');
 	let userInteracted = false;

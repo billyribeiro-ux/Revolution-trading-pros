@@ -150,7 +150,7 @@
 	let error = $state<string | null>(null);
 	let report = $state<CampaignReport | null>(null);
 	let activeChartView = $state<'opens' | 'clicks'>('opens');
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let isExporting = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════════

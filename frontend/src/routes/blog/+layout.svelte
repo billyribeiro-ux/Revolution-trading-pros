@@ -17,7 +17,7 @@
 	let { children }: { children: Snippet } = $props();
 
 	// Track if component has mounted (for hydration-safe rendering)
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let mounted = $state(false);
 
 	onMount(() => {

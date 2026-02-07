@@ -65,7 +65,7 @@
 	let scheduleLoading = $state(true);
 	let scheduleError = $state(false);
 	let isStaleData = $state(false);
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let lastFetchTime = $state<number>(0);
 
 	// ═══════════════════════════════════════════════════════════════════════════

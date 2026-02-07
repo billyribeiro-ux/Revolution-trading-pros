@@ -92,7 +92,7 @@
 		searchQuery = target.value;
 	}
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	function _submitSearch() {
 		const url = new URL(window.location.href);
 		if (searchQuery) {

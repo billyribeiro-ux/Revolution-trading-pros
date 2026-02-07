@@ -16,7 +16,7 @@
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);
 	let selectedTab = $state<'active' | 'inactive' | 'all'>('all');
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let showDeleteModal = $state(false);
 	let pendingDeleteId = $state<string | null>(null);
 
@@ -64,7 +64,7 @@
 		showDeleteModal = true;
 	}
 
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	async function _confirmDeletePopup() {
 		if (!pendingDeleteId) return;
 		showDeleteModal = false;

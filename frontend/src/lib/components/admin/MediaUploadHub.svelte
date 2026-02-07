@@ -102,7 +102,7 @@
 		'video/x-msvideo',
 		'video/x-matroska'
 	];
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	const _documentTypes = [
 		'application/pdf',
 		'application/msword',

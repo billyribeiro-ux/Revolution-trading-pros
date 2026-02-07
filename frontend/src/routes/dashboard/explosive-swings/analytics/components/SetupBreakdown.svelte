@@ -77,7 +77,7 @@
 	});
 
 	// Format helpers
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	function _formatPercent(value: number): string {
 		return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
 	}

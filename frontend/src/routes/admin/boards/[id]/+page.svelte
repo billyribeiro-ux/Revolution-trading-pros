@@ -46,7 +46,7 @@
 	let tasks = $state<Task[]>([]);
 	let labels = $state<Label[]>([]);
 	let members = $state<BoardMember[]>([]);
-			// @ts-ignore write-only state
+			// @ts-expect-error write-only state
 	let customFields = $state<CustomFieldDefinition[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');

@@ -40,7 +40,7 @@
 	let loading = $state(false);
 	let initialLoading = $state(true);
 	let errors = $state<Record<string, string>>({});
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let showAbTestModal = $state(false);
 
 	// Trigger rules based on type

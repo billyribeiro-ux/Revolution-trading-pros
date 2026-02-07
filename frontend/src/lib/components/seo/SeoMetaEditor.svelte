@@ -44,7 +44,7 @@
 	});
 
 	let content = $state('');
-	// @ts-ignore write-only state
+	// @ts-expect-error write-only state
 	let analyzing = $state(false);
 	let saving = $state(false);
 
