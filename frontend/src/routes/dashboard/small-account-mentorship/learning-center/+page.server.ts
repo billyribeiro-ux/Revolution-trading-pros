@@ -10,7 +10,7 @@
 
 import type { PageServerLoad } from './$types';
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
+const _API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 export interface VideoResponse {
 	id: number;
@@ -48,7 +48,7 @@ export interface ApiResponse {
 }
 
 // Category mapping from WordPress IDs to tags
-const CATEGORY_TAG_MAP: Record<string, string> = {
+const _CATEGORY_TAG_MAP: Record<string, string> = {
 	'529': 'trade-setups',
 	'528': 'methodology',
 	'329': 'member-webinar',
@@ -83,8 +83,8 @@ const CATEGORY_TAG_MAP: Record<string, string> = {
 	'2930': 'earnings-expiration'
 };
 
-export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
-	const page = parseInt(url.searchParams.get('page') || '1');
+export const load: PageServerLoad = async ({ url }) => {
+	const _page = parseInt(url.searchParams.get('page') || '1');
 	const category = url.searchParams.get('category');
 	const perPage = 9;
 
