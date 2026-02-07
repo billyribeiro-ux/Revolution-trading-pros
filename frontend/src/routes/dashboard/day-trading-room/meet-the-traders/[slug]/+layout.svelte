@@ -8,7 +8,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { getTraderBySlug, type Trader } from '$lib/data/traders';
+	import { getTraderBySlug } from '$lib/data/traders';
 	import TraderHeader from '$lib/components/traders/TraderHeader.svelte';
 	import TraderNav from '$lib/components/traders/TraderNav.svelte';
 	import type { Snippet } from 'svelte';
