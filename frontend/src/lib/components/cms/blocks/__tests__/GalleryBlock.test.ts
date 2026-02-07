@@ -24,7 +24,6 @@ import './setup';
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
 import { BlockStateManager, createBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 import type { Block } from '../types';
 
@@ -94,7 +93,7 @@ function createTestBlockId(id: string): BlockId {
 // ===============================================================================
 
 describe('GalleryBlock - Basic Rendering', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		testStateManager = new BlockStateManager();
@@ -193,7 +192,7 @@ describe('GalleryBlock - Basic Rendering', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Grid Layout', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -293,7 +292,7 @@ describe('GalleryBlock - Grid Layout', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Image Display', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -372,7 +371,7 @@ describe('GalleryBlock - Image Display', () => {
 
 describe('GalleryBlock - Lightbox', () => {
 	let stateManager: BlockStateManager;
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		stateManager = new BlockStateManager();
@@ -543,7 +542,7 @@ describe('GalleryBlock - Lightbox', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Keyboard Navigation', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -633,7 +632,7 @@ describe('GalleryBlock - Keyboard Navigation', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Edit Mode Add Image', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -823,7 +822,7 @@ describe('GalleryBlock - Edit Mode Add Image', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Edit Mode Remove Image', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -908,7 +907,7 @@ describe('GalleryBlock - Edit Mode Remove Image', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Edit Mode Image Metadata', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -992,7 +991,7 @@ describe('GalleryBlock - Edit Mode Image Metadata', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Settings', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1145,7 +1144,7 @@ describe('GalleryBlock - Settings', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Accessibility', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1281,7 +1280,7 @@ describe('GalleryBlock - Accessibility', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Focus Management', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1344,7 +1343,7 @@ describe('GalleryBlock - Focus Management', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Lightbox Caption', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1414,7 +1413,7 @@ describe('GalleryBlock - Lightbox Caption', () => {
 // ===============================================================================
 
 describe('GalleryBlock - Editing State', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();

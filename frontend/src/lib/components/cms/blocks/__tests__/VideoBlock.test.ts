@@ -81,7 +81,7 @@ function createTestBlockId(id: string): BlockId {
 // ===============================================================================
 
 describe('VideoBlock - YouTube URL Parsing', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		testStateManager = new BlockStateManager();
@@ -201,7 +201,7 @@ describe('VideoBlock - YouTube URL Parsing', () => {
 // ===============================================================================
 
 describe('VideoBlock - Vimeo URL Parsing', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -277,7 +277,7 @@ describe('VideoBlock - Vimeo URL Parsing', () => {
 // ===============================================================================
 
 describe('VideoBlock - Native Video Parsing', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -409,7 +409,7 @@ describe('VideoBlock - Native Video Parsing', () => {
 // ===============================================================================
 
 describe('VideoBlock - Empty and Edit States', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -500,7 +500,7 @@ describe('VideoBlock - Empty and Edit States', () => {
 // ===============================================================================
 
 describe('VideoBlock - URL Input', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -616,7 +616,7 @@ describe('VideoBlock - URL Input', () => {
 // ===============================================================================
 
 describe('VideoBlock - Loading State', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -689,8 +689,8 @@ describe('VideoBlock - Loading State', () => {
 // ===============================================================================
 
 describe('VideoBlock - Error Handling', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
-	let onError: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
+	let onError: ReturnType<typeof vi.fn<(error: Error) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -791,7 +791,7 @@ describe('VideoBlock - Error Handling', () => {
 // ===============================================================================
 
 describe('VideoBlock - Caption Editing', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -872,7 +872,7 @@ describe('VideoBlock - Caption Editing', () => {
 // ===============================================================================
 
 describe('VideoBlock - Edit Mode Controls', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -899,7 +899,7 @@ describe('VideoBlock - Edit Mode Controls', () => {
 
 		// Clear button appears after loading
 		// It has aria-label="Remove video"
-		const clearButton = screen.queryByLabelText('Remove video');
+		void screen.queryByLabelText('Remove video');
 		// May or may not be visible depending on loading state
 	});
 
@@ -951,7 +951,7 @@ describe('VideoBlock - Edit Mode Controls', () => {
 // ===============================================================================
 
 describe('VideoBlock - Accessibility', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1071,7 +1071,7 @@ describe('VideoBlock - Accessibility', () => {
 // ===============================================================================
 
 describe('VideoBlock - Iframe Attributes', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1166,7 +1166,7 @@ describe('VideoBlock - Iframe Attributes', () => {
 // ===============================================================================
 
 describe('VideoBlock - Selection State', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();

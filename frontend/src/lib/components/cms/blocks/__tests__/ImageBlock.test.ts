@@ -25,10 +25,9 @@ import './setup';
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
 import { BlockStateManager, createBlockId, type BlockId } from '$lib/stores/blockState.svelte';
 import type { Block } from '../types';
-import { createMockFile, waitForState } from './setup';
+import { createMockFile } from './setup';
 
 // ===============================================================================
 // MOCK BLOCK STATE MANAGER
@@ -88,7 +87,7 @@ function createTestBlockId(id: string): BlockId {
 // ===============================================================================
 
 describe('ImageBlock - Basic Rendering', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		// Reset the shared state manager
@@ -191,7 +190,7 @@ describe('ImageBlock - Basic Rendering', () => {
 // ===============================================================================
 
 describe('ImageBlock - Edit Mode Upload UI', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -281,8 +280,8 @@ describe('ImageBlock - Edit Mode Upload UI', () => {
 // ===============================================================================
 
 describe('ImageBlock - File Upload Validation', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
-	let onError: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
+	let onError: ReturnType<typeof vi.fn<(error: Error) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -406,7 +405,7 @@ describe('ImageBlock - File Upload Validation', () => {
 // ===============================================================================
 
 describe('ImageBlock - URL Input', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -521,7 +520,7 @@ describe('ImageBlock - URL Input', () => {
 
 describe('ImageBlock - Lightbox', () => {
 	let stateManager: BlockStateManager;
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		stateManager = new BlockStateManager();
@@ -620,7 +619,7 @@ describe('ImageBlock - Lightbox', () => {
 // ===============================================================================
 
 describe('ImageBlock - Alt Text Editing', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -703,7 +702,7 @@ describe('ImageBlock - Alt Text Editing', () => {
 // ===============================================================================
 
 describe('ImageBlock - Caption Editing', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -785,7 +784,7 @@ describe('ImageBlock - Caption Editing', () => {
 // ===============================================================================
 
 describe('ImageBlock - Object Fit Controls', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -860,7 +859,7 @@ describe('ImageBlock - Object Fit Controls', () => {
 // ===============================================================================
 
 describe('ImageBlock - Edit Mode Actions', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -945,7 +944,7 @@ describe('ImageBlock - Edit Mode Actions', () => {
 // ===============================================================================
 
 describe('ImageBlock - Accessibility', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1063,7 +1062,7 @@ describe('ImageBlock - Accessibility', () => {
 // ===============================================================================
 
 describe('ImageBlock - Responsive Images', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1136,8 +1135,8 @@ describe('ImageBlock - Responsive Images', () => {
 // ===============================================================================
 
 describe('ImageBlock - Loading and Error States', () => {
-	let onUpdate: ReturnType<typeof vi.fn>;
-	let onError: ReturnType<typeof vi.fn>;
+	let onUpdate: ReturnType<typeof vi.fn<(updates: Partial<Block>) => void>>;
+	let onError: ReturnType<typeof vi.fn<(error: Error) => void>>;
 
 	beforeEach(() => {
 		onUpdate = vi.fn();
@@ -1178,7 +1177,7 @@ describe('ImageBlock - Loading and Error States', () => {
 
 			// Loading state should appear briefly
 			// Note: The loading state is very quick (500ms simulated), so we check the container
-			const loadingContainer = container.querySelector('.image-block__loading');
+			void container.querySelector('.image-block__loading');
 			// This may or may not catch it depending on timing
 		}
 	});
