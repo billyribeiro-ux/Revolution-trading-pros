@@ -131,6 +131,17 @@ export default [
   },
   prettier,
   {
-    ignores: ['.svelte-kit/**', 'build/**', 'node_modules/**', 'retired/**']
+    ignores: [
+      '.svelte-kit/**',
+      'build/**',
+      'node_modules/**',
+      'retired/**',
+      'playwright-report/**',
+      'e2e/**',
+      'tests/**',
+      'scripts/**',
+      'test-icons-import.ts',
+      'playwright.config.ts'
+    ]
   }
 ];

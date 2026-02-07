@@ -183,6 +183,7 @@
 	     STRUCTURED DATA - JSON-LD for Google Rich Snippets
 	     Google Dec 2025: Critical for product listings
 	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<!-- eslint-disable-next-line -->
 	{@html `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>`}
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════

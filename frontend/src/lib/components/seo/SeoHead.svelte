@@ -214,6 +214,7 @@
 	<!-- Structured Data / JSON-LD -->
 	{#if structuredDataJson}
 		{#each structuredDataJson as jsonLd}
+			<!-- eslint-disable-next-line -->
 			{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
 		{/each}
 	{/if}
