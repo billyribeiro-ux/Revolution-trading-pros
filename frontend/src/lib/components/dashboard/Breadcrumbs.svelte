@@ -70,8 +70,7 @@
 
 <!-- JSON-LD Schema Markup -->
 <svelte:head>
-	<!-- eslint-disable-next-line -->
-	{@html `<script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>`}
+	{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(breadcrumbSchema) + '</scr' + 'ipt>'}
 </svelte:head>
 
 <!-- Breadcrumbs Navigation -->
