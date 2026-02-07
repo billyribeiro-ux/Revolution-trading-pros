@@ -211,7 +211,7 @@
 
 <div class="indicators-page antialiased">
 	<div
-		class="fixed inset-0 pointer-events-none opacity-[0.03] z-[1] mix-blend-overlay"
+		class="fixed inset-0 pointer-events-none opacity-[0.03] z-1 mix-blend-overlay"
 		style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+');"
 	></div>
 
@@ -252,7 +252,7 @@
 			<h1 class="hero-title tracking-tight">
 				Master the Tools<br />
 				<span
-					class="gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-emerald-400 to-blue-400 bg-[length:200%_auto]"
+					class="gradient-text bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-emerald-400 to-blue-400 bg-size-[200%_auto]"
 					>Pro Traders Use</span
 				>
 			</h1>
@@ -347,7 +347,7 @@
 
 	<section class="truth-section relative overflow-hidden">
 		<div
-			class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-blue-900/10 to-transparent pointer-events-none"
+			class="absolute right-0 top-0 w-1/3 h-full bg-linear-to-l from-blue-900/10 to-transparent pointer-events-none"
 		></div>
 
 		<div class="section-container relative z-10">
@@ -488,13 +488,13 @@
 
 						<div class="card-content bg-[#0B101E]">
 							<h3
-								class="card-title text-white group-hover:text-[var(--card-color)] transition-colors duration-300"
+								class="card-title text-white group-hover:text-(--card-color) transition-colors duration-300"
 							>
 								{indicator.name}
 							</h3>
 							<p class="card-description">{indicator.description}</p>
 
-							<div class="card-use-case bg-white/5 border-l-2 border-[var(--card-color)]">
+							<div class="card-use-case bg-white/5 border-l-2 border-(--card-color)">
 								<IconTarget size={18} stroke={2} />
 								<span>{indicator.useCase}</span>
 							</div>
@@ -532,7 +532,7 @@
 
 	<section class="confluence-section relative">
 		<div
-			class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none"
+			class="absolute inset-0 bg-linear-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none"
 		></div>
 		<div class="section-container relative z-10">
 			<h2 class="section-title tracking-tight">
@@ -630,7 +630,7 @@
 
 		<div class="cta-content relative z-10">
 			<div class="inline-block p-4 rounded-full bg-blue-500/10 mb-6">
-				<IconSchool size={48} class="cta-icon text-blue-400 !mb-0" />
+				<IconSchool size={48} class="cta-icon text-blue-400 mb-0!" />
 			</div>
 			<h2 class="tracking-tight">Stop Learning Alone. Start Trading Together.</h2>
 			<p>

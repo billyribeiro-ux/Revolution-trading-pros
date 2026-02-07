@@ -27,7 +27,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores'; // FIXED: Use $app/stores for consistency with Admin Layout
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import {
@@ -408,7 +408,7 @@
 
 	// Get current membership route data (if on a membership page)
 	let currentMembershipData = $derived.by(() => {
-		const currentPath = $page.url.pathname; // FIXED: Use $page from stores
+		const currentPath = page.url.pathname;
 		for (const [route, routeData] of Object.entries(membershipRoutes)) {
 			if (currentPath.startsWith(route)) {
 				return routeData;
@@ -422,7 +422,7 @@
 
 	// Dashboard home should never start in collapsed state
 	let isDashboardHome = $derived.by(() => {
-		const path = $page.url.pathname; // FIXED: Use $page from stores
+		const path = page.url.pathname;
 		return path === '/dashboard' || path === '/dashboard/';
 	});
 
@@ -489,7 +489,7 @@
 		// If user logs out while on dashboard (client-side action), redirect to login
 		// Server auth is already validated, this is for client-side logout
 		if (!$isAuthenticated && !data.user) {
-			const currentPath = $page.url.pathname;
+			const currentPath = page.url.pathname;
 			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
 		}
 	});

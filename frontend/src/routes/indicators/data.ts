@@ -4,7 +4,7 @@
  * Apple Principal Engineer ICT 7 Grade - February 2026
  *
  * Extracted from +page.svelte for maintainability.
- * Static data that doesn't need reactivity — imported as constants.
+ * Static data that doesn't need reactivity - imported as constants.
  */
 
 import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
@@ -58,7 +58,7 @@ export const indicators: Indicator[] = [
 		slug: 'rsi',
 		category: 'Momentum',
 		description:
-			'Don't just spot overbought conditions—identify divergence. The RSI is our primary tool for spotting exhaustion before the price turns.',
+			"Don't just spot overbought conditions-identify divergence. The RSI is our primary tool for spotting exhaustion before the price turns.",
 		useCase: 'Spotting reversals and confirming trend weakness (Divergence)',
 		difficulty: 'Beginner',
 		icon: IconActivity,
@@ -173,7 +173,7 @@ export const faqs: FaqItem[] = [
 	{
 		question: 'Are these indicators lagging?',
 		answer:
-			'Most indicators are lagging because they rely on past price data. However, we teach specific techniques—like divergence and multi-timeframe analysis—that turn these lagging tools into leading signals for future price action. Divergence often precedes price turns.'
+			'Most indicators are lagging because they rely on past price data. However, we teach specific techniques - like divergence and multi-timeframe analysis - that turn these lagging tools into leading signals for future price action. Divergence often precedes price turns.'
 	},
 	{
 		question: 'Which indicator is best for beginners?',

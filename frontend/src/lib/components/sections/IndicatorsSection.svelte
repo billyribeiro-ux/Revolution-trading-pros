@@ -12,7 +12,6 @@
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { browser } from '$app/environment';
 	import { cubicOut, backOut } from 'svelte/easing';
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
@@ -213,8 +212,6 @@
 	let resizeObserver: ResizeObserver | null = null;
 
 	onMount(() => {
-		if (!browser) return;
-
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

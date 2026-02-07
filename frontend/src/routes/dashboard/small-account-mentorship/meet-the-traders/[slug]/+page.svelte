@@ -6,11 +6,11 @@
 	@version 2.0.0
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { getTraderBySlug } from '$lib/data/traders';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
-	let trader = $derived(getTraderBySlug($page.params.slug ?? ''));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 </script>
 
 <!-- Who is Section -->

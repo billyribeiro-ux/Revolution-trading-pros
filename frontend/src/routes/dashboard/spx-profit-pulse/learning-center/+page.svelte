@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import type { VideoResponse } from './+page.server';
@@ -55,7 +55,7 @@
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
-		const url = new URL($page.url);
+		const url = new URL(page.url);
 		if (categoryId === 'all' || categoryId === '0') {
 			url.searchParams.delete('category');
 		} else {
@@ -69,7 +69,7 @@
 	function goToPage(pageNum: number) {
 		if (!browser) return;
 		if (pageNum >= 1 && pageNum <= totalPages) {
-			const url = new URL($page.url);
+			const url = new URL(page.url);
 			if (pageNum === 1) {
 				url.searchParams.delete('page');
 			} else {

@@ -9,7 +9,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	interface Product {
@@ -309,7 +309,7 @@
 
 	// Svelte 5: Use $effect for reactive slug changes
 	$effect(() => {
-		const slug = $page.params.slug;
+		const slug = page.params.slug;
 		if (slug !== currentSlug) {
 			currentSlug = slug ?? '';
 			const trader = traderData[slug ?? ''];

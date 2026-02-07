@@ -7,7 +7,7 @@
 	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
@@ -33,7 +33,7 @@
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
 
-	const slug = $derived($page.params.slug);
+	const slug = $derived(page.params.slug);
 
 	async function fetchVideo() {
 		isLoading = true;
