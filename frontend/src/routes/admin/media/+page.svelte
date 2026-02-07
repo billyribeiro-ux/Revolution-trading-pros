@@ -137,7 +137,7 @@
 			currentPage = response.meta.current_page;
 			totalPages = response.meta.last_page;
 			totalItems = response.meta.total;
-		} catch (e: any) {
+		} catch (_e: any) {
 			showToast('Failed to load media', 'error');
 		} finally {
 			isLoading = false;
@@ -1030,7 +1030,6 @@
 				{:else}
 					<div class="media-{viewMode}">
 						{#each items as item (item.id)}
-							<!-- svelte-ignore a11y_click_events_have_key_events -->
 							<div
 								class="media-item"
 								class:selected={selectedIds.has(item.id)}
@@ -1638,7 +1637,6 @@
 
 <!-- Responsive Preview Modal -->
 {#if showPreviewModal && detailItem}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showPreviewModal = false)}

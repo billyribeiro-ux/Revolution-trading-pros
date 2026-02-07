@@ -203,7 +203,7 @@
 			entries = data.data || [];
 			entriesPagination = data.meta || entriesPagination;
 			dimensions = data.dimensions || ['default'];
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to load entries', 'error');
 		} finally {
 			isLoading = false;
@@ -283,7 +283,7 @@
 
 			showToastMessage('Datasource deleted successfully', 'success');
 			await fetchDatasources();
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to delete datasource', 'error');
 		}
 	}
@@ -302,7 +302,7 @@
 
 			showToastMessage('Datasource duplicated successfully', 'success');
 			await fetchDatasources();
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to duplicate datasource', 'error');
 		}
 	}
@@ -378,7 +378,7 @@
 
 			showToastMessage('Entry deleted successfully', 'success');
 			await fetchEntries();
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to delete entry', 'error');
 		}
 	}
@@ -407,7 +407,7 @@
 				.map((id) => entries.find((e) => e.id === id))
 				.filter((e): e is DatasourceEntry => e !== undefined);
 			entries = orderedEntries;
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to reorder entries', 'error');
 			await fetchEntries(); // Refresh to get correct order
 		}
@@ -440,7 +440,7 @@
 			URL.revokeObjectURL(url);
 
 			showToastMessage('CSV exported successfully', 'success');
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to export CSV', 'error');
 		}
 	}
@@ -475,7 +475,7 @@
 			showImportModal = false;
 			importFile = null;
 			await fetchEntries();
-		} catch (err) {
+		} catch (_err) {
 			showToastMessage('Failed to import CSV', 'error');
 		} finally {
 			isSaving = false;

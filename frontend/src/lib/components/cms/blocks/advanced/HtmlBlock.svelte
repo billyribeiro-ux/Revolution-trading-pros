@@ -195,7 +195,6 @@
 			{#if viewMode === 'edit' || viewMode === 'split'}
 				<div class="editor-pane">
 					<label class="sr-only" for="html-editor-{props.blockId}"> HTML Code Editor </label>
-					<!-- svelte-ignore a11y_autocomplete_valid -->
 					<textarea
 						id="html-editor-{props.blockId}"
 						class="html-textarea"

@@ -40,8 +40,7 @@
 	let loading = $state(false);
 	let initialLoading = $state(true);
 	let errors = $state<Record<string, string>>({});
-	// @ts-expect-error write-only state
-	let showAbTestModal = $state(false);
+	let _showAbTestModal = $state(false);
 
 	// Trigger rules based on type
 	let timedDelay = $state(5000);
@@ -789,7 +788,7 @@
 								Create an A/B test to compare different versions of this popup and find what works
 								best.
 							</p>
-							<Button variant="outline" type="button" onclick={() => (showAbTestModal = true)}>
+							<Button variant="outline" type="button" onclick={() => (_showAbTestModal = true)}>
 								Create A/B Test
 							</Button>
 						</div>

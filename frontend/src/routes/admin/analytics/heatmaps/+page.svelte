@@ -42,7 +42,7 @@
 			} else {
 				pages = [];
 			}
-		} catch (e) {
+		} catch (_e) {
 			// For now, set empty array since API might not exist yet
 			pages = [];
 		} finally {
@@ -59,7 +59,7 @@
 			if (response.ok) {
 				await response.json();
 			}
-		} catch (e) {
+		} catch (_e) {
 			// Handle gracefully
 		}
 	}

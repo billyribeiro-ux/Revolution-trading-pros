@@ -49,7 +49,7 @@
 
 			message = 'Settings saved successfully!';
 			messageType = 'success';
-		} catch (error) {
+		} catch (_error) {
 			message = 'Failed to save settings';
 			messageType = 'error';
 		} finally {

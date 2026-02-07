@@ -373,7 +373,7 @@
 				const text = await file.text();
 				importForm.jsonData = text;
 				importForm.error = '';
-			} catch (err) {
+			} catch (_err) {
 				importForm.error = 'Failed to read file';
 			}
 		}

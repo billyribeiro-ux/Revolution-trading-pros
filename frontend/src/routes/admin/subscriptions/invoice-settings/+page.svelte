@@ -140,7 +140,7 @@
 			settings.logo_path = null;
 			success = 'Logo removed';
 			setTimeout(() => (success = ''), 3000);
-		} catch (err) {
+		} catch (_err) {
 			error = 'Failed to remove logo';
 		}
 	}
@@ -151,7 +151,7 @@
 			const data = await response.json();
 			previewHtml = data.html;
 			showPreviewModal = true;
-		} catch (err) {
+		} catch (_err) {
 			error = 'Failed to load preview';
 		}
 	}
@@ -173,7 +173,7 @@
 			settings = { ...settings, ...data.settings };
 			success = 'Settings reset to defaults';
 			setTimeout(() => (success = ''), 3000);
-		} catch (err) {
+		} catch (_err) {
 			error = 'Failed to reset settings';
 		}
 	}

@@ -342,7 +342,7 @@ class PerformanceReporter {
 			if ((navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl) {
 				return false;
 			}
-		} catch (e) {
+		} catch (_e) {
 			// If we can't determine, default to allowing
 		}
 

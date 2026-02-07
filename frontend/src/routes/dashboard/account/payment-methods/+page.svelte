@@ -33,8 +33,7 @@
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
 	let showLinkedWarningModal = $state(false);
-	// @ts-expect-error write-only state
-	let pendingDeleteMethod = $state<PaymentMethod | null>(null);
+	let _pendingDeleteMethod = $state<PaymentMethod | null>(null);
 	let deleteFormElement = $state<HTMLFormElement | null>(null);
 
 	function confirmDelete(event: Event, method: PaymentMethod): boolean {
@@ -45,7 +44,7 @@
 			return false;
 		}
 
-		pendingDeleteMethod = method;
+		_pendingDeleteMethod = method;
 		deleteFormElement = (event.target as HTMLButtonElement).closest('form');
 		showDeleteModal = true;
 		return false;
@@ -56,7 +55,7 @@
 		if (deleteFormElement) {
 			deleteFormElement.submit();
 		}
-		pendingDeleteMethod = null;
+		_pendingDeleteMethod = null;
 		deleteFormElement = null;
 	}
 
@@ -238,7 +237,7 @@
 	onConfirm={handleConfirmDelete}
 	onCancel={() => {
 		showDeleteModal = false;
-		pendingDeleteMethod = null;
+		_pendingDeleteMethod = null;
 		deleteFormElement = null;
 	}}
 />

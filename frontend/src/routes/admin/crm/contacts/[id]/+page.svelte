@@ -1007,7 +1007,6 @@
 
 <!-- Add Tag Modal -->
 {#if showAddTagModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showAddTagModal = false)}
@@ -1091,7 +1090,6 @@
 
 <!-- Add Note Modal -->
 {#if showAddNoteModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={() => (showAddNoteModal = false)}
@@ -1134,7 +1132,6 @@
 
 <!-- Send Email Modal -->
 {#if showSendEmailModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
 	<div
 		class="modal-overlay"
 		onclick={closeSendEmailModal}

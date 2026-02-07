@@ -1,3 +1,5 @@
+import type { PageServerLoad } from './$types';
+
 // ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
 // Cloudflare Pages secrets not available via import.meta.env on server
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
@@ -6,7 +8,7 @@ const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
  * ICT11+ Performance: Simple server load without streaming
  * Streaming was causing hydration issues with __sveltekit variable
  */
-export const load = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
+export const load: PageServerLoad = async ({ fetch }) => {
 	// Fetch posts with timeout - don't block too long
 	const posts = await fetchPosts(fetch);
 

@@ -20,7 +20,7 @@
 
 	// Tracking
 	let scrollDepth = $state(0);
-	let timeOnPage = $state(0);
+	let _timeOnPage = $state(0);
 	let exitIntentTriggered = $state(false);
 
 	// Timers
@@ -102,7 +102,7 @@
 	function setupTracking() {
 		// Track time on page
 		timeInterval = setInterval(() => {
-			timeOnPage += 1000;
+			_timeOnPage += 1000;
 		}, 1000);
 
 		// Track scroll depth

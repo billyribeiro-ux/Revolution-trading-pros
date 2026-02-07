@@ -62,8 +62,7 @@
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
-	// @ts-expect-error write-only state
-	let errorMessage = $state('');
+	let _errorMessage = $state('');
 
 	// Delete confirmation modal state
 	let showDeleteLessonModal = $state(false);
@@ -105,10 +104,10 @@
 			if (data.success) {
 				lesson = data.data;
 			} else {
-				errorMessage = data.error || 'Failed to save lesson';
+				_errorMessage = data.error || 'Failed to save lesson';
 			}
 		} catch {
-			errorMessage = 'Failed to save lesson';
+			_errorMessage = 'Failed to save lesson';
 		} finally {
 			saving = false;
 		}
@@ -125,7 +124,7 @@
 			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
 			goto(`/admin/courses/${courseId}`);
 		} catch {
-			errorMessage = 'Failed to delete lesson';
+			_errorMessage = 'Failed to delete lesson';
 		}
 	};
 
@@ -154,7 +153,7 @@
 
 	// Handle video upload error
 	const handleVideoUploadError = (error: string) => {
-		errorMessage = `Video upload failed: ${error}`;
+		_errorMessage = `Video upload failed: ${error}`;
 	};
 
 	// Add download to lesson
@@ -179,10 +178,10 @@
 			if (data.success) {
 				downloads = [...downloads, data.data];
 			} else {
-				errorMessage = data.error || 'Failed to add download';
+				_errorMessage = data.error || 'Failed to add download';
 			}
 		} catch {
-			errorMessage = 'Failed to add download';
+			_errorMessage = 'Failed to add download';
 		}
 	};
 
@@ -207,7 +206,7 @@
 			);
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			errorMessage = 'Failed to remove download';
+			_errorMessage = 'Failed to remove download';
 		}
 	};
 </script>

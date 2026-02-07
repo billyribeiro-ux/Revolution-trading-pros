@@ -1102,7 +1102,7 @@
 		try {
 			await onpublish?.(editorState.blocks);
 			editorState.hasUnsavedChanges = false;
-		} catch (err) {
+		} catch (_err) {
 			saveError = 'Failed to publish.';
 		} finally {
 			isSaving = false;
@@ -1714,7 +1714,6 @@
 					</div>
 				{:else}
 					<!-- Block List -->
-					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 					<div
 						class="blocks-container"
 						class:drag-active={editorState.isDragging}
@@ -1735,7 +1734,6 @@
 								index === editorState.dropTargetIndex && editorState.dropPosition === 'before'}
 							{@const isDropAfter =
 								index === editorState.dropTargetIndex && editorState.dropPosition === 'after'}
-							<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 							<div
 								class="block-wrapper"
 								class:selected={block.id === editorState.selectedBlockId}

@@ -75,10 +75,8 @@
 	let modalElement = $state<HTMLDivElement>();
 	let previousFocus: HTMLElement | null = null;
 	let scrollPosition = 0;
-	// @ts-expect-error write-only state
-	let mousePosition = { x: 0, y: 0 };
-	// @ts-expect-error write-only state
-	let viewportSize = { width: 0, height: 0 };
+	let _mousePosition = { x: 0, y: 0 };
+	let _viewportSize = { width: 0, height: 0 };
 	let deviceType = $state<'mobile' | 'tablet' | 'desktop'>('desktop');
 	let userInteracted = false;
 	let impressionTime = 0;
@@ -711,7 +709,7 @@
 	}
 
 	function updateViewportSize() {
-		viewportSize = {
+		_viewportSize = {
 			width: window.innerWidth,
 			height: window.innerHeight
 		};
@@ -748,7 +746,7 @@
 	}
 
 	function trackMousePosition(e: MouseEvent) {
-		mousePosition = { x: e.clientX, y: e.clientY };
+		_mousePosition = { x: e.clientX, y: e.clientY };
 	}
 
 	function getTriggerType(): string {
@@ -773,7 +771,7 @@
 	}
 
 	function isValidPhone(phone: string): boolean {
-		return /^[\d\s\-\+\(\)]+$/.test(phone) && phone.replace(/\D/g, '').length >= 10;
+		return /^[\d\s\-+()]+$/.test(phone) && phone.replace(/\D/g, '').length >= 10;
 	}
 
 	function isValidUrl(url: string): boolean {
@@ -1030,7 +1028,6 @@
 				max-width: {currentPopup.design.maxWidth};
 				height: {currentPopup.design.height};
 				padding: {currentPopup.design.padding};
-				background-color: {currentPopup.design.backgroundColor};
 				color: {currentPopup.design.textColor};
 				border-radius: {currentPopup.design.borderRadius};
 				border: {currentPopup.design.borderWidth} {currentPopup.design.borderStyle} {currentPopup.design
@@ -1039,7 +1036,7 @@
 				box-shadow: {currentPopup.design.boxShadow};
 				{currentPopup.design.backgroundGradient
 				? `background: ${currentPopup.design.backgroundGradient};`
-				: ''}
+				: `background-color: ${currentPopup.design.backgroundColor};`}
 				{currentPopup.design.backgroundImage
 				? `background-image: url(${currentPopup.design.backgroundImage}); background-size: cover; background-position: center;`
 				: ''}

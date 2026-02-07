@@ -158,7 +158,7 @@
 			}
 
 			loading = false;
-		} catch (err) {
+		} catch (_err) {
 			loading = false;
 			cardError = 'Failed to load payment form';
 			if (onerror) onerror('Failed to initialize Square');

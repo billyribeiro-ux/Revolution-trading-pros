@@ -103,7 +103,7 @@
 		storageTestResult = null;
 		try {
 			storageTestResult = await boardsAPI.testStorageConfig(storageConfig);
-		} catch (error) {
+		} catch (_error) {
 			storageTestResult = { success: false, message: 'Connection test failed' };
 		} finally {
 			testingStorage = false;

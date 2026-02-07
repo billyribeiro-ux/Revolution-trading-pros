@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 
 		const data = await response.json();
 		return json(data);
-	} catch (error) {
+	} catch (_error) {
 		// Silent fallback - don't log expected errors
 		return json(mockData);
 	}

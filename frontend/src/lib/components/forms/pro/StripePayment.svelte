@@ -182,7 +182,7 @@
 						};
 						event.complete('success');
 						if (onpayment) onpayment(result);
-					} catch (err) {
+					} catch (_err) {
 						event.complete('fail');
 						if (onerror) onerror('Payment failed');
 					} finally {
@@ -192,7 +192,7 @@
 			}
 
 			loading = false;
-		} catch (err) {
+		} catch (_err) {
 			loading = false;
 			cardError = 'Failed to load payment system';
 			if (onerror) onerror('Failed to initialize Stripe');

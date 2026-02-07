@@ -74,7 +74,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			return null;
 		}
 		return await response.json();
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }

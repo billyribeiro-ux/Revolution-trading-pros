@@ -36,7 +36,6 @@ import { vi } from 'vitest';
  * ```
  */
 export function renderWithProviders<T extends Record<string, unknown>>(
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	component: any,
 	props: T = {} as T,
 	options: RenderOptions = {}
@@ -45,7 +44,6 @@ export function renderWithProviders<T extends Record<string, unknown>>(
 	document.body.appendChild(container);
 
 	// Create component instance
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const instance = new (component as any)({
 		target: container,
 		props

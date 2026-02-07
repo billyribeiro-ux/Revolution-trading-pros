@@ -36,7 +36,7 @@
 			loading = true;
 			// list404s returns Error404[] directly
 			errors = (await seoApi.list404s()) || [];
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to load 404 errors' });
 		} finally {
 			loading = false;
@@ -66,7 +66,7 @@
 			addToast({ type: 'success', message: '404 errors deleted successfully' });
 			await loadErrors();
 			await loadStats();
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to delete 404 errors' });
 		}
 	}

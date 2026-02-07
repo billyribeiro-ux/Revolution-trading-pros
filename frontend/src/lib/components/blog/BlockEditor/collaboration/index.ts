@@ -214,8 +214,7 @@ export function useCollaboration(
 	let yBlocks: Y.Array<Block>;
 
 	// Track if we're observing the yBlocks array
-	// @ts-expect-error Set during initialization, used for cleanup tracking
-	let isObserving = false;
+	let _isObserving = false;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// INITIALIZATION
@@ -267,7 +266,7 @@ export function useCollaboration(
 		};
 
 		yBlocks.observe(observeChanges);
-		isObserving = true;
+		_isObserving = true;
 
 		// Create awareness manager
 		const awareness = provider.getAwareness();

@@ -14,8 +14,7 @@
 	let analyzing = $state(false);
 
 	// For content selector
-	// @ts-expect-error write-only state
-	let forms: Form[] = $state([]);
+	let _forms: Form[] = $state([]);
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },
@@ -30,7 +29,7 @@
 	async function loadForms() {
 		try {
 			const response = await getForms();
-			forms = response.forms || [];
+			_forms = response.forms || [];
 		} catch (error) {
 			console.error('Failed to load forms:', error);
 		}
@@ -51,7 +50,7 @@
 			);
 			analysis = result;
 			addToast({ type: 'success', message: 'SEO analysis completed!' });
-		} catch (error) {
+		} catch (_error) {
 			addToast({ type: 'error', message: 'Failed to analyze content' });
 		} finally {
 			analyzing = false;
@@ -65,7 +64,7 @@
 			loading = true;
 			const response = await seoApi.getAnalysis(contentType, parseInt(contentId));
 			analysis = response;
-		} catch (error) {
+		} catch (_error) {
 			analysis = null;
 		} finally {
 			loading = false;

@@ -86,7 +86,7 @@
 				// Fallback to empty for demo
 				goals = [];
 			}
-		} catch (e) {
+		} catch (_e) {
 			// For now, set empty goals array since API might not exist yet
 			goals = [];
 		} finally {

@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			received: batch.events.length,
 			timestamp: Date.now()
 		});
-	} catch (error) {
+	} catch (_error) {
 		// Silently handle malformed requests
 		return json({ error: 'Failed to process events' }, { status: 400 });
 	}

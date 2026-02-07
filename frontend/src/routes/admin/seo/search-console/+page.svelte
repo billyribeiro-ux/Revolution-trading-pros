@@ -11,8 +11,7 @@
 	// State using Svelte 5 runes
 	let status = $state<any>(null);
 	let sites = $state<any[]>([]);
-	// @ts-expect-error write-only state
-	let loading = $state(false);
+	let _loading = $state(false);
 	let importing = $state(false);
 
 	onMount(() => {
@@ -20,7 +19,7 @@
 	});
 
 	async function checkStatus() {
-		loading = true;
+		_loading = true;
 		try {
 			const response = await fetch('/api/seo/gsc/status');
 			status = await response.json();
@@ -31,7 +30,7 @@
 		} catch (error) {
 			console.error('Failed to check status:', error);
 		} finally {
-			loading = false;
+			_loading = false;
 		}
 	}
 

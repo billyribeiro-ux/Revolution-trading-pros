@@ -17,16 +17,6 @@
  */
 -->
 
-<script lang="ts" module>
-	// Re-export types from the dedicated types file
-	export type {
-		VirtualBlockListProps,
-		VisibleRange,
-		BlockMeasurement,
-		PerformanceMetrics
-	} from './VirtualBlockList.types';
-</script>
-
 <script lang="ts">
 	import { tick, onMount, onDestroy } from 'svelte';
 	import {
@@ -697,7 +687,6 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 <div
 	bind:this={containerRef}
 	class="virtual-block-list"
@@ -718,7 +707,6 @@
 	<div class="virtual-spacer" style:height="{totalHeight}px">
 		<!-- Render only visible blocks -->
 		{#each visibleBlocks as { block, index, position } (block.id)}
-			<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 			<div
 				class="virtual-block-wrapper"
 				class:is-selected={selectedBlockId === block.id}

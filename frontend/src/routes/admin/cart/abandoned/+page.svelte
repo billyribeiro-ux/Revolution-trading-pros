@@ -156,7 +156,7 @@
 			await abandonedCartsApi.markAsRecovered(cartId);
 			toastStore.success('Cart marked as recovered');
 			await loadDashboard();
-		} catch (error) {
+		} catch (_error) {
 			toastStore.error('Failed to mark as recovered');
 		}
 	}
