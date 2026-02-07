@@ -237,20 +237,15 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 	function getWebSocketUrl(): string {
 		if (!browser) return '';
 
-		// Check for explicit WebSocket URL from environment
+		// ICT 7: Only connect when VITE_WS_URL is explicitly configured.
+		// Do NOT construct a fallback URL — the API server may not have a WS endpoint,
+		// which causes 10 failed reconnection attempts and noisy console errors.
 		const envWsUrl = import.meta.env['VITE_WS_URL'];
-		if (envWsUrl) return envWsUrl;
-
-		// Construct URL from current location
-		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-		const host = import.meta.env['VITE_API_URL']
-			? new URL(import.meta.env['VITE_API_URL']).host
-			: window.location.host;
+		if (!envWsUrl) return '';
 
 		// Add rooms as query parameter
 		const roomsParam = rooms.length > 0 ? `?rooms=${rooms.join(',')}` : '';
-
-		return `${protocol}//${host}/api/ws/ws${roomsParam}`;
+		return `${envWsUrl}${roomsParam}`;
 	}
 
 	/**
@@ -469,7 +464,7 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 
 		const url = getWebSocketUrl();
 		if (!url) {
-			console.warn('[WebSocket] No WebSocket URL configured');
+			console.debug('[WebSocket] No VITE_WS_URL configured — skipping connection');
 			return;
 		}
 

@@ -258,7 +258,7 @@ export async function getUserMemberships(options?: {
 		storeUser && (isDeveloperEmail(storeUser.email) || isSuperadminEmail(storeUser.email));
 
 	if (isDeveloper) {
-		console.log('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
+		console.debug('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
 		// Skip cache to always get latest products
 		return await getDeveloperMemberships();
 	}
@@ -413,139 +413,112 @@ let developerMembershipsPromise: Promise<UserMembershipsResponse> | null = null;
 async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 	// Deduplicate concurrent requests
 	if (developerMembershipsPromise) {
-		console.log('[Developer] ⏳ Reusing in-flight request...');
 		return developerMembershipsPromise;
 	}
-
-	console.log('[Developer] 🔓 Fetching all available memberships for developer access...');
 
 	// Create promise and store it for deduplication
 	developerMembershipsPromise = (async () => {
 		try {
-			// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
+			// ICT 7: Try API endpoints silently — backend may not be ready yet
 			// STRATEGY 1: Try membership plans proxy endpoint
-			let response = await fetch('/api/admin/membership-plans', {
+			const plansResponse = await fetch('/api/admin/membership-plans', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
 
+			if (plansResponse.ok) {
+				const plansData = await plansResponse.json();
+				const plans = plansData.plans || plansData.data || (Array.isArray(plansData) ? plansData : []);
+				if (plans.length > 0) {
+					return transformDeveloperProducts(plans);
+				}
+			}
+
 			// STRATEGY 2: Fallback to products proxy endpoint
-			if (!response.ok || (await response.clone().json()).plans?.length === 0) {
-				console.warn(
-					'[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...'
-				);
-				response = await fetch('/api/products?product_type=membership&per_page=100', {
-					method: 'GET',
-					headers: await getAuthHeaders(),
-					credentials: 'include'
-				});
-			}
-
-			// Check if we got valid data
-			const responseData = await response.clone().json();
-			if (
-				!response.ok ||
-				(!responseData.data?.length &&
-					!responseData.products?.length &&
-					!responseData.plans?.length)
-			) {
-				console.log('[Developer] API returned no products, using mock data');
-				// STRATEGY 3: Return mock data for development
-				return getDeveloperMockMemberships();
-			}
-
-			const data = await response.json();
-			// ICT 11+ FIX: Handle multiple response formats from different endpoints
-			// - /api/admin/membership-plans returns { plans: [...] }
-			// - /api/products returns { data: [...] }
-			const products =
-				data.plans || data.data || data.products || (Array.isArray(data) ? data : []);
-
-			console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
-
-			if (products.length === 0) {
-				console.warn('[Developer] ⚠️ No products returned from API, using mock data');
-				return getDeveloperMockMemberships();
-			}
-
-			// Transform membership plans/products into active memberships for developer
-			const memberships: UserMembership[] = products.map((item: any) => {
-				// Handle both membership_plans and products structures
-				const name = item.name || item.title || 'Unnamed Membership';
-				const slug = item.slug || `membership-${item.id}`;
-				const price = item.price || item.price_monthly || 0;
-
-				// Determine membership type from name, slug, or metadata
-				let membershipType: MembershipType = 'trading-room';
-				const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
-
-				if (
-					searchText.includes('course') ||
-					searchText.includes('class') ||
-					searchText.includes('mastery')
-				) {
-					membershipType = 'course';
-				} else if (searchText.includes('indicator')) {
-					membershipType = 'indicator';
-				} else if (searchText.includes('alert')) {
-					membershipType = 'alert-service';
-				} else if (searchText.includes('watchlist') || searchText.includes('weekly')) {
-					membershipType = 'weekly-watchlist';
-				} else if (searchText.includes('report') || searchText.includes('premium')) {
-					membershipType = 'premium-report';
-				}
-
-				// Extract icon from metadata if available
-				let icon = getDefaultIcon(membershipType);
-				if (item.metadata && typeof item.metadata === 'object') {
-					icon = item.metadata.icon || icon;
-				} else if (item.features && typeof item.features === 'object') {
-					icon = item.features.icon || icon;
-				}
-
-				return {
-					id: String(item.id),
-					name,
-					type: membershipType,
-					slug,
-					status: 'active' as MembershipStatus,
-					membershipType: 'complimentary' as MembershipSubscriptionType,
-					icon,
-					startDate: new Date().toISOString(),
-					nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-					price,
-					interval: 'monthly' as BillingInterval,
-					roomLabel: name,
-					features: Array.isArray(item.features) ? item.features : []
-				};
+			console.debug('[Developer] membership-plans empty, trying products endpoint');
+			const productsResponse = await fetch('/api/products?product_type=membership&per_page=100', {
+				method: 'GET',
+				headers: await getAuthHeaders(),
+				credentials: 'include'
 			});
 
-			console.log('[Developer] 📊 Membership breakdown:', {
-				total: memberships.length,
-				tradingRooms: memberships.filter((m) => m.type === 'trading-room').length,
-				courses: memberships.filter((m) => m.type === 'course').length,
-				indicators: memberships.filter((m) => m.type === 'indicator').length,
-				weeklyWatchlist: memberships.filter((m) => m.type === 'weekly-watchlist').length,
-				premiumReports: memberships.filter((m) => m.type === 'premium-report').length
-			});
+			if (productsResponse.ok) {
+				const productsData = await productsResponse.json();
+				const products = productsData.data || productsData.products || (Array.isArray(productsData) ? productsData : []);
+				if (products.length > 0) {
+					return transformDeveloperProducts(products);
+				}
+			}
 
-			const enhanced = enhanceMemberships(memberships);
-			const categorized = categorizeMemberships(enhanced);
-
-			console.log('[Developer] ✅ Successfully loaded all memberships');
-			return categorized;
+			// STRATEGY 3: Return mock data — backend not ready yet (expected)
+			console.debug('[Developer] API endpoints not ready, using mock memberships');
+			return getDeveloperMockMemberships();
 		} catch (error) {
-			console.error('[Developer] ❌ Critical error fetching memberships:', error);
-			// STRATEGY 3: Return mock data on error
+			console.debug('[Developer] API unavailable, using mock memberships');
 			return getDeveloperMockMemberships();
 		} finally {
-			// Clear cached promise after completion
 			developerMembershipsPromise = null;
 		}
 	})();
 
 	return developerMembershipsPromise;
+}
+
+/**
+ * ICT 7: Transform raw API products/plans into developer memberships
+ */
+function transformDeveloperProducts(products: any[]): UserMembershipsResponse {
+	const memberships: UserMembership[] = products.map((item: any) => {
+		const name = item.name || item.title || 'Unnamed Membership';
+		const slug = item.slug || `membership-${item.id}`;
+		const price = item.price || item.price_monthly || 0;
+
+		let membershipType: MembershipType = 'trading-room';
+		const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
+
+		if (
+			searchText.includes('course') ||
+			searchText.includes('class') ||
+			searchText.includes('mastery')
+		) {
+			membershipType = 'course';
+		} else if (searchText.includes('indicator')) {
+			membershipType = 'indicator';
+		} else if (searchText.includes('alert')) {
+			membershipType = 'alert-service';
+		} else if (searchText.includes('watchlist') || searchText.includes('weekly')) {
+			membershipType = 'weekly-watchlist';
+		} else if (searchText.includes('report') || searchText.includes('premium')) {
+			membershipType = 'premium-report';
+		}
+
+		let icon = getDefaultIcon(membershipType);
+		if (item.metadata && typeof item.metadata === 'object') {
+			icon = item.metadata.icon || icon;
+		} else if (item.features && typeof item.features === 'object') {
+			icon = item.features.icon || icon;
+		}
+
+		return {
+			id: String(item.id),
+			name,
+			type: membershipType,
+			slug,
+			status: 'active' as MembershipStatus,
+			membershipType: 'complimentary' as MembershipSubscriptionType,
+			icon,
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price,
+			interval: 'monthly' as BillingInterval,
+			roomLabel: name,
+			features: Array.isArray(item.features) ? item.features : []
+		};
+	});
+
+	const enhanced = enhanceMemberships(memberships);
+	return categorizeMemberships(enhanced);
 }
 
 /**
@@ -569,7 +542,7 @@ function getDefaultIcon(type: MembershipType): string {
  * Ensures developers always have access even if API is down
  */
 function getDeveloperMockMemberships(): UserMembershipsResponse {
-	console.log('[Developer] 🔧 Using mock membership data (API unavailable)');
+	console.debug('[Developer] Using mock membership data (API not ready)');
 
 	const mockMemberships: UserMembership[] = [
 		// ═══════════════════════════════════════════════════════════════════════════
