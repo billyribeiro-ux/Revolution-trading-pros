@@ -34,9 +34,6 @@
 		IconCurrencyDollar,
 		IconCalendar,
 		IconTrendingUp,
-		IconDotsVertical,
-		IconFileSpreadsheet,
-		IconPdf
 	} from '$lib/icons';
 	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -519,7 +516,7 @@
 		// TODO: Implement actual CSV export
 	}
 
-	function viewSegmentAnalytics(segment: Segment) {
+	function _viewSegmentAnalytics(segment: Segment) {
 		// Show analytics modal or navigate to analytics page
 		toastStore.info(`Analytics for "${segment.name}" - Coming soon`);
 		// TODO: Implement analytics view

@@ -12,10 +12,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
-	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';

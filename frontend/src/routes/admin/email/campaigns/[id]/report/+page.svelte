@@ -22,10 +22,9 @@
 
 	import type { PageData } from './$types';
 	import { fade, fly, scale } from 'svelte/transition';
-	import { cubicOut, quintOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { toastStore } from '$lib/stores/toast.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import {
 		IconMail,
@@ -39,7 +38,6 @@
 		IconUserMinus,
 		IconUsers,
 		IconCalendar,
-		IconClock,
 		IconChartBar,
 		IconLink,
 		IconWorld,
@@ -47,8 +45,7 @@
 		IconDevices,
 		IconBrowser,
 		IconTrendingUp,
-		IconArrowUpRight,
-		IconDownload
+		IconArrowUpRight
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -156,6 +153,7 @@
 	let report = $state<CampaignReport | null>(null);
 	let activeChartView = $state<'opens' | 'clicks'>('opens');
 	let isExporting = $state(false);
+	void isExporting;
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Derived State

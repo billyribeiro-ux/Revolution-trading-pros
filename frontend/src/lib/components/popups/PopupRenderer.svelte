@@ -18,7 +18,6 @@
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import { page } from '$app/state';
 	import { IconX } from '$lib/icons';
 	import {
 		activePopup,

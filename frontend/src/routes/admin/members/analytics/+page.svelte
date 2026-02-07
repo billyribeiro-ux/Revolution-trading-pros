@@ -12,7 +12,6 @@
 		IconRefresh,
 		IconDownload,
 		IconCalendar,
-		IconFilter,
 		IconSettings
 	} from '$lib/icons';
 
@@ -22,6 +21,7 @@
 
 	// Connection status - NO MOCK DATA
 	let isConnected = false;
+	void isConnected;
 	let connectionError: string | null = null;
 	let hasData = false;
 

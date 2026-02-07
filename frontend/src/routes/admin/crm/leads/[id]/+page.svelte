@@ -323,6 +323,7 @@
 		};
 		return icons[type] || 'activity';
 	}
+	void _getTimelineIcon;
 
 	function goBack() {
 		goto('/admin/crm/leads');

@@ -22,7 +22,6 @@
 		type DashboardOverview,
 		type ChurnReason,
 		type PeriodStats,
-		type PaginatedResponse,
 		TIME_PERIOD_LABELS,
 		invalidateDashboardCache
 	} from '$lib/api/past-members-dashboard';
