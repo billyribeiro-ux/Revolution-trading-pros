@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import type { SEOInput } from '$lib/seo/types';
 
 // ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
 // Cloudflare Pages secrets not available via import.meta.env on server
@@ -12,8 +13,17 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	// Fetch posts with timeout - don't block too long
 	const posts = await fetchPosts(fetch);
 
+	const seo: SEOInput = {
+		title: null,
+		titleTemplate: null,
+		og: {
+			type: 'website'
+		}
+	};
+
 	return {
-		posts
+		posts,
+		seo
 	};
 };
 

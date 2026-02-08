@@ -21,6 +21,9 @@
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
+	import Seo from '$lib/seo/Seo.svelte';
+	import { resolveSEO } from '$lib/seo/resolve';
+	import type { SEOInput, RouteSEOContext, SEODefaults } from '$lib/seo/types';
 	import { NavBar } from '$lib/components/nav';
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
@@ -41,6 +44,13 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	interface Props {
 		children: Snippet;
+		data: {
+			initialConsent?: unknown;
+			hasConsentInteraction?: boolean;
+			seoContext: RouteSEOContext;
+			seoDefaults: SEODefaults;
+			seo?: SEOInput;
+		};
 	}
 	let props: Props = $props();
 
@@ -50,6 +60,19 @@
 	const pathname = $derived(page.url.pathname);
 	const isAdminArea = $derived(pathname.startsWith('/admin'));
 	const isEmbedArea = $derived(pathname.startsWith('/embed'));
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// SEO - Unified SEO resolution (single ownership layer)
+	// Page-level SEO overrides come from page.data.seo (set in +page.server.ts)
+	// ═══════════════════════════════════════════════════════════════════════════
+	const pageSeo = $derived((page.data as { seo?: SEOInput })?.seo);
+	const resolvedSeo = $derived(
+		resolveSEO(
+			{ ...props.data.seoContext, pathname: page.url.pathname },
+			props.data.seoDefaults,
+			pageSeo
+		)
+	);
 
 	// ICT Level 7: Hydration-safe — mounted guard prevents class mismatch on SSR
 	let mounted = $state(false);
@@ -110,9 +133,13 @@
 	});
 </script>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SEO - Single ownership layer for all <head> SEO output
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<Seo seo={resolvedSeo} />
+
 <svelte:head>
-	<!-- ICT 11 Fix: Font loading handled in app.html - no duplicates -->
-	<!-- Viewport already in app.html, theme-color set per page preference -->
+	<!-- Non-SEO head tags (theme-color, RSS feeds) stay here -->
 	<meta name="theme-color" content="#FFFFFF" />
 
 	<!-- RSS/Atom Feed Discovery Links (SEO: Auto-discovery for feed readers) -->
