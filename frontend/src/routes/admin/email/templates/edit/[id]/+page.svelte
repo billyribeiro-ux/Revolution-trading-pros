@@ -4,9 +4,9 @@
 	import TemplateForm from '$lib/components/admin/TemplateForm.svelte';
 	import { page } from '$app/state';
 
-	let loading = true;
-	let error = '';
-	let template: Record<string, unknown> | null = null;
+	let loading = $state(true);
+	let error = $state('');
+	let template: Record<string, unknown> | null = $state(null);
 
 	const id = page.params['id']!;
 

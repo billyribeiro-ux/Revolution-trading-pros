@@ -945,9 +945,10 @@
 							{#if resource.thumbnail_url}
 								<img src={resource.thumbnail_url} alt={resource.title} />
 							{:else}
+								{@const SvelteComponent = getResourceIcon(resource.resource_type)}
 								<div class="thumbnail-placeholder">
 									<!-- svelte-ignore svelte_component_deprecated -->
-									<svelte:component this={getResourceIcon(resource.resource_type)} size={32} />
+									<SvelteComponent size={32} />
 								</div>
 							{/if}
 

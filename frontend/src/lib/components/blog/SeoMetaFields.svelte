@@ -216,7 +216,7 @@
 			color: var(--seo-text-secondary);
 		}
 
-		.form-group label:has(input[type='checkbox']) {
+		.form-group label:has(:global(input[type='checkbox'])) {
 			display: flex;
 			align-items: center;
 			gap: 0.5rem;

@@ -161,6 +161,8 @@
 	function getFieldError(field: string): string | undefined {
 		return validationErrors[field]?.[0];
 	}
+
+	const SvelteComponent_1 = $derived(previewTypeIcon);
 </script>
 
 <svelte:head>
@@ -462,15 +464,16 @@
 						<img src={formData.thumbnail} alt={formData.name || 'Product'} />
 					</div>
 				{:else}
+					{@const SvelteComponent = previewTypeIcon}
 					<div class="preview-thumbnail placeholder">
 						<!-- svelte-ignore svelte_component_deprecated -->
-						<svelte:component this={previewTypeIcon} size={48} />
+						<SvelteComponent size={48} />
 					</div>
 				{/if}
 
 				<div class="preview-badge" style="background: {previewTypeColor}">
 					<!-- svelte-ignore svelte_component_deprecated -->
-					<svelte:component this={previewTypeIcon} size={14} />
+					<SvelteComponent_1 size={14} />
 					{formData.type}
 				</div>
 

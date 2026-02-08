@@ -22,15 +22,15 @@
 	import { getVersionInfo } from '$lib/consent/versioning';
 	import type { ConsentAnalytics, ConsentAuditEntry } from '$lib/consent';
 
-	let analytics: ConsentAnalytics | null = null;
-	let auditLog: ConsentAuditEntry[] = [];
-	let auditStats: ReturnType<typeof getAuditStats> | null = null;
-	let cookieScan: ReturnType<typeof scanCookies> | null = null;
-	let abTestAnalytics: ReturnType<typeof getABTestAnalytics> = [];
+	let analytics: ConsentAnalytics | null = $state(null);
+	let auditLog: ConsentAuditEntry[] = $state([]);
+	let auditStats: ReturnType<typeof getAuditStats> | null = $state(null);
+	let cookieScan: ReturnType<typeof scanCookies> | null = $state(null);
+	let abTestAnalytics: ReturnType<typeof getABTestAnalytics> = $state([]);
 	let versionInfo = getVersionInfo();
-	let insights: string[] = [];
+	let insights: string[] = $state([]);
 
-	let activeTab: 'overview' | 'audit' | 'cookies' | 'ab-tests' = 'overview';
+	let activeTab: 'overview' | 'audit' | 'cookies' | 'ab-tests' = $state('overview');
 
 	onMount(() => {
 		if (browser) {

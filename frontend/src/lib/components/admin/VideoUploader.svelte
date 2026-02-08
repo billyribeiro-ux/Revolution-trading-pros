@@ -903,7 +903,7 @@
 		cursor: pointer;
 	}
 
-	.checkbox-label:has(input:checked) {
+	.checkbox-label:has(:global(input:checked)) {
 		background: rgba(59, 130, 246, 0.2);
 		color: #60a5fa;
 	}

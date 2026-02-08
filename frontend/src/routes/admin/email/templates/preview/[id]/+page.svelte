@@ -5,9 +5,9 @@
 	import { page } from '$app/state';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 
-	let loading = true;
-	let error = '';
-	let preview: { subject?: string; body_html?: string } | null = null;
+	let loading = $state(true);
+	let error = $state('');
+	let preview: { subject?: string; body_html?: string } | null = $state(null);
 	const id = page.params['id']!;
 
 	onMount(async () => {

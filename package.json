@@ -16,6 +16,5 @@
     "format": "npm run format --workspace=frontend",
     "test": "npm run test --workspace=frontend"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

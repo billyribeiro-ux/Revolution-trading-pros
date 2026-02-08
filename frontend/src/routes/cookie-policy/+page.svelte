@@ -23,8 +23,8 @@
 	import type { CookieScanResult } from '$lib/consent';
 	import type { SupportedLanguage } from '$lib/consent/i18n';
 
-	let cookieScan: CookieScanResult | null = null;
-	let vendorList: ReturnType<typeof getVendorInfo> = [];
+	let cookieScan: CookieScanResult | null = $state(null);
+	let vendorList: ReturnType<typeof getVendorInfo> = $state([]);
 	let versionInfo = getVersionInfo();
 
 	const languageNames: Record<SupportedLanguage, string> = {

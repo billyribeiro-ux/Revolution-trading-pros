@@ -20,7 +20,7 @@
 	} from '$lib/icons';
 
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
-		'campaigns';
+		$state('campaigns');
 
 	onMount(() => {
 		loadData();

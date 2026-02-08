@@ -1152,7 +1152,7 @@
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
-	.category-card:has(input:checked) {
+	.category-card:has(:global(input:checked)) {
 		border-color: #2563eb;
 		border-left-color: currentColor;
 		background-color: #eff6ff;

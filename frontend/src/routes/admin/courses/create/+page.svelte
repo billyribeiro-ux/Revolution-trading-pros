@@ -4642,7 +4642,7 @@
 		margin: 0;
 	}
 
-	.toggle-item:has(input[type='checkbox']:checked) span {
+	.toggle-item:has(:global(input[type='checkbox']:checked)) span {
 		color: #10b981;
 	}
 

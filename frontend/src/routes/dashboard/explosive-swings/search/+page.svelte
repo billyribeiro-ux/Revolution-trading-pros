@@ -23,7 +23,7 @@
 	import SearchEmptyState from './components/SearchEmptyState.svelte';
 
 	// Initialize search state
-	const search = createSearchState();
+	const search = $state(createSearchState());
 
 	onMount(() => {
 		search.initialize();

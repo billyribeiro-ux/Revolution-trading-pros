@@ -6,7 +6,7 @@
 	import InputPanel from '$lib/options-calculator/components/InputPanel.svelte';
 	import ResultsBar from '$lib/options-calculator/components/ResultsBar.svelte';
 
-	const calc = createCalculatorState();
+	const calc = $state(createCalculatorState());
 
 	onMount(() => {
 		const params = $page.url.searchParams;

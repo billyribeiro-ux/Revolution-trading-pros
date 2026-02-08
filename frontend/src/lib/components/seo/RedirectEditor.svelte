@@ -313,7 +313,7 @@
 		cursor: pointer;
 	}
 
-	.form-group label:has(input[type='checkbox']) {
+	.form-group label:has(:global(input[type='checkbox'])) {
 		display: flex;
 		align-items: center;
 		cursor: pointer;

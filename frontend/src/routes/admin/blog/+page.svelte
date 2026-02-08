@@ -2629,7 +2629,7 @@
 		border-color: rgba(59, 130, 246, 0.3);
 	}
 
-	.export-options label:has(input[type='radio']:checked) {
+	.export-options label:has(:global(input[type='radio']:checked)) {
 		background: rgba(59, 130, 246, 0.1);
 		border-color: #3b82f6;
 		color: #3b82f6;

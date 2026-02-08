@@ -10,25 +10,25 @@
 	import { IconMail, IconUser, IconCheck } from '$lib/icons';
 
 	// Form state
-	let formData = {
+	let formData = $state({
 		name: '',
 		email: '',
 		message: ''
-	};
-	let formStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
-	let formMessage = '';
-	let formErrors: Record<string, string[]> = {};
+	});
+	let formStatus: 'idle' | 'submitting' | 'success' | 'error' = $state('idle');
+	let formMessage = $state('');
+	let formErrors: Record<string, string[]> = $state({});
 
 	// Popup state
-	let showPopup = false;
-	let popupEmail = '';
-	let popupStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
-	let popupMessage = '';
+	let showPopup = $state(false);
+	let popupEmail = $state('');
+	let popupStatus: 'idle' | 'submitting' | 'success' | 'error' = $state('idle');
+	let popupMessage = $state('');
 
 	// Newsletter form
-	let newsletterEmail = '';
-	let newsletterStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
-	let newsletterMessage = '';
+	let newsletterEmail = $state('');
+	let newsletterStatus: 'idle' | 'submitting' | 'success' | 'error' = $state('idle');
+	let newsletterMessage = $state('');
 
 	// Load active popups on mount
 	onMount(async () => {
