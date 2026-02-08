@@ -15,10 +15,10 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
+use chrono::Datelike;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
-use chrono::Datelike;
 
 // ICT 7 SECURITY FIX: Changed from User to AdminUser for all CRM endpoints
 use crate::{middleware::admin::AdminUser, AppState};
@@ -1692,7 +1692,16 @@ async fn list_leads(
     let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
 
     // Lead statuses from the frontend Lead interface
-    let lead_statuses = vec!["new", "contacted", "qualified", "proposal", "negotiation", "won", "lost", "lead"];
+    let lead_statuses = [
+        "new",
+        "contacted",
+        "qualified",
+        "proposal",
+        "negotiation",
+        "won",
+        "lost",
+        "lead",
+    ];
 
     let leads: Vec<CrmLead> = sqlx::query_as(
         r#"
@@ -1718,37 +1727,40 @@ async fn list_leads(
     .unwrap_or_default();
 
     // Transform to match frontend Lead interface
-    let transformed_leads: Vec<serde_json::Value> = leads.iter().map(|lead| {
-        let full_name = match (&lead.first_name, &lead.last_name) {
-            (Some(f), Some(l)) => format!("{} {}", f, l),
-            (Some(f), None) => f.clone(),
-            (None, Some(l)) => l.clone(),
-            (None, None) => lead.email.clone(),
-        };
-        let is_hot = lead.score.unwrap_or(0) >= 75;
-        json!({
-            "id": lead.id.to_string(),
-            "email": lead.email,
-            "phone": lead.phone,
-            "first_name": lead.first_name,
-            "last_name": lead.last_name,
-            "full_name": full_name,
-            "company_name": lead.company,
-            "job_title": lead.job_title,
-            "status": lead.status,
-            "source": lead.source.clone().unwrap_or_else(|| "other".to_string()),
-            "lead_score": lead.score.unwrap_or(0),
-            "is_hot": is_hot,
-            "is_starred": false,
-            "tags": lead.tags,
-            "estimated_value": 0,
-            "notes_count": 0,
-            "activities_count": 0,
-            "last_contacted_at": lead.last_contacted_at,
-            "created_at": lead.created_at,
-            "updated_at": lead.updated_at
+    let transformed_leads: Vec<serde_json::Value> = leads
+        .iter()
+        .map(|lead| {
+            let full_name = match (&lead.first_name, &lead.last_name) {
+                (Some(f), Some(l)) => format!("{} {}", f, l),
+                (Some(f), None) => f.clone(),
+                (None, Some(l)) => l.clone(),
+                (None, None) => lead.email.clone(),
+            };
+            let is_hot = lead.score.unwrap_or(0) >= 75;
+            json!({
+                "id": lead.id.to_string(),
+                "email": lead.email,
+                "phone": lead.phone,
+                "first_name": lead.first_name,
+                "last_name": lead.last_name,
+                "full_name": full_name,
+                "company_name": lead.company,
+                "job_title": lead.job_title,
+                "status": lead.status,
+                "source": lead.source.clone().unwrap_or_else(|| "other".to_string()),
+                "lead_score": lead.score.unwrap_or(0),
+                "is_hot": is_hot,
+                "is_starred": false,
+                "tags": lead.tags,
+                "estimated_value": 0,
+                "notes_count": 0,
+                "activities_count": 0,
+                "last_contacted_at": lead.last_contacted_at,
+                "created_at": lead.created_at,
+                "updated_at": lead.updated_at
+            })
         })
-    }).collect();
+        .collect();
 
     // Get total count
     let total: (i64,) = sqlx::query_as(
@@ -1785,29 +1797,55 @@ async fn get_lead_stats(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get counts by status
     let new_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'new'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
-    let contacted_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'contacted'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
-    let qualified_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'qualified'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
-    let proposal_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'proposal'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
-    let negotiation_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'negotiation'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+    let contacted_count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'contacted'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
+    let qualified_count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'qualified'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
+    let proposal_count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'proposal'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
+    let negotiation_count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'negotiation'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
     let won_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'won'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
     let lost_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'lost'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
     let lead_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'lead'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
 
     // Hot leads (score >= 75)
     let hot_leads: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM contacts WHERE status IN ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'lead') AND score >= 75"
     ).fetch_one(&state.db.pool).await.unwrap_or((0,));
 
-    let total = new_count.0 + contacted_count.0 + qualified_count.0 + proposal_count.0 +
-                negotiation_count.0 + won_count.0 + lost_count.0 + lead_count.0;
+    let total = new_count.0
+        + contacted_count.0
+        + qualified_count.0
+        + proposal_count.0
+        + negotiation_count.0
+        + won_count.0
+        + lost_count.0
+        + lead_count.0;
 
     // Calculate conversion rate (won / total closed)
     let total_closed = won_count.0 + lost_count.0;
@@ -2073,7 +2111,7 @@ async fn get_crm_stats(
 
     // Get active contacts (not churned/unqualified)
     let active_contacts: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM contacts WHERE status NOT IN ('churned', 'unqualified')"
+        "SELECT COUNT(*) FROM contacts WHERE status NOT IN ('churned', 'unqualified')",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -2081,41 +2119,36 @@ async fn get_crm_stats(
 
     // Get new contacts this month
     let new_this_month: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM contacts WHERE created_at >= date_trunc('month', CURRENT_DATE)"
+        "SELECT COUNT(*) FROM contacts WHERE created_at >= date_trunc('month', CURRENT_DATE)",
     )
     .fetch_one(&state.db.pool)
     .await
     .unwrap_or((0,));
 
     // Get leads stats (leads are contacts with status 'lead')
-    let total_leads: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM contacts WHERE status = 'lead'"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_leads: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'lead'")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
 
     // Get campaigns stats
-    let campaigns_sent: (i64,) = sqlx::query_as(
-        "SELECT COALESCE(SUM(emails_sent), 0) FROM crm_campaigns"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let campaigns_sent: (i64,) =
+        sqlx::query_as("SELECT COALESCE(SUM(emails_sent), 0) FROM crm_campaigns")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let campaigns_opened: (i64,) = sqlx::query_as(
-        "SELECT COALESCE(SUM(opens), 0) FROM crm_campaigns"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let campaigns_opened: (i64,) =
+        sqlx::query_as("SELECT COALESCE(SUM(opens), 0) FROM crm_campaigns")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let campaigns_clicked: (i64,) = sqlx::query_as(
-        "SELECT COALESCE(SUM(clicks), 0) FROM crm_campaigns"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let campaigns_clicked: (i64,) =
+        sqlx::query_as("SELECT COALESCE(SUM(clicks), 0) FROM crm_campaigns")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "total_contacts": total_contacts.0,
@@ -2309,14 +2342,15 @@ async fn list_pipelines(
         .await
         .unwrap_or_default();
 
-        let deals_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM crm_deals WHERE pipeline_id = $1")
-            .bind(pipeline.id)
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+        let deals_count: (i64,) =
+            sqlx::query_as("SELECT COUNT(*) FROM crm_deals WHERE pipeline_id = $1")
+                .bind(pipeline.id)
+                .fetch_one(&state.db.pool)
+                .await
+                .unwrap_or((0,));
 
         let total_value: (Option<sqlx::types::Decimal>,) = sqlx::query_as(
-            "SELECT SUM(amount) FROM crm_deals WHERE pipeline_id = $1 AND status = 'open'"
+            "SELECT SUM(amount) FROM crm_deals WHERE pipeline_id = $1 AND status = 'open'",
         )
         .bind(pipeline.id)
         .fetch_one(&state.db.pool)
@@ -2496,14 +2530,22 @@ async fn delete_pipeline(
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Pipeline not found"}))))?;
 
     if pipeline.is_default {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Cannot delete default pipeline"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Cannot delete default pipeline"})),
+        ));
     }
 
     sqlx::query("DELETE FROM crm_pipelines WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Pipeline deleted successfully"})))
 }
@@ -2611,32 +2653,37 @@ async fn list_deals(
     .await
     .unwrap_or((0,));
 
-    let deal_data: Vec<serde_json::Value> = deals.iter().map(|d| json!({
-        "id": d.id.to_string(),
-        "name": d.name,
-        "contact_id": d.contact_id.map(|id| id.to_string()),
-        "company_id": d.company_id.map(|id| id.to_string()),
-        "pipeline_id": d.pipeline_id.to_string(),
-        "stage_id": d.stage_id.to_string(),
-        "owner_id": d.owner_id.map(|id| id.to_string()),
-        "amount": d.amount.to_string().parse::<f64>().unwrap_or(0.0),
-        "currency": d.currency,
-        "probability": d.probability,
-        "status": d.status,
-        "expected_close_date": d.expected_close_date,
-        "close_date": d.close_date,
-        "lost_reason": d.lost_reason,
-        "won_details": d.won_details,
-        "priority": d.priority,
-        "source_channel": d.source_channel,
-        "source_campaign": d.source_campaign,
-        "tags": d.tags,
-        "custom_fields": d.custom_fields,
-        "stage_entered_at": d.stage_entered_at,
-        "closed_at": d.closed_at,
-        "created_at": d.created_at,
-        "updated_at": d.updated_at
-    })).collect();
+    let deal_data: Vec<serde_json::Value> = deals
+        .iter()
+        .map(|d| {
+            json!({
+                "id": d.id.to_string(),
+                "name": d.name,
+                "contact_id": d.contact_id.map(|id| id.to_string()),
+                "company_id": d.company_id.map(|id| id.to_string()),
+                "pipeline_id": d.pipeline_id.to_string(),
+                "stage_id": d.stage_id.to_string(),
+                "owner_id": d.owner_id.map(|id| id.to_string()),
+                "amount": d.amount.to_string().parse::<f64>().unwrap_or(0.0),
+                "currency": d.currency,
+                "probability": d.probability,
+                "status": d.status,
+                "expected_close_date": d.expected_close_date,
+                "close_date": d.close_date,
+                "lost_reason": d.lost_reason,
+                "won_details": d.won_details,
+                "priority": d.priority,
+                "source_channel": d.source_channel,
+                "source_campaign": d.source_campaign,
+                "tags": d.tags,
+                "custom_fields": d.custom_fields,
+                "stage_entered_at": d.stage_entered_at,
+                "closed_at": d.closed_at,
+                "created_at": d.created_at,
+                "updated_at": d.updated_at
+            })
+        })
+        .collect();
 
     Ok(Json(json!({
         "data": deal_data,
@@ -2667,8 +2714,18 @@ async fn get_deal(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Deal not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Deal not found"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": deal.id.to_string(),
@@ -2710,7 +2767,8 @@ async fn create_deal(
     let priority = input.priority.unwrap_or_else(|| "medium".to_string());
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
 
-    let expected_close_date: Option<chrono::NaiveDate> = input.expected_close_date
+    let expected_close_date: Option<chrono::NaiveDate> = input
+        .expected_close_date
         .and_then(|d| chrono::NaiveDate::parse_from_str(&d, "%Y-%m-%d").ok());
 
     let deal: CrmDeal = sqlx::query_as(
@@ -2761,7 +2819,8 @@ async fn update_deal(
     Json(input): Json<UpdateDealInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
-    let expected_close_date: Option<chrono::NaiveDate> = input.expected_close_date
+    let expected_close_date: Option<chrono::NaiveDate> = input
+        .expected_close_date
         .and_then(|d| chrono::NaiveDate::parse_from_str(&d, "%Y-%m-%d").ok());
 
     let deal: CrmDeal = sqlx::query_as(
@@ -2792,7 +2851,12 @@ async fn update_deal(
     .bind(&input.custom_fields)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": deal.id.to_string(),
@@ -2820,7 +2884,9 @@ async fn update_deal_stage(
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Deal not found"}))))?;
 
     // Record stage history
-    let duration = chrono::Utc::now().naive_utc().signed_duration_since(current_deal.stage_entered_at);
+    let duration = chrono::Utc::now()
+        .naive_utc()
+        .signed_duration_since(current_deal.stage_entered_at);
     sqlx::query(
         r#"
         INSERT INTO crm_deal_stage_history (deal_id, from_stage_id, to_stage_id, reason, duration_in_stage, created_at)
@@ -2854,7 +2920,12 @@ async fn update_deal_stage(
     .bind(input.stage_id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": deal.id.to_string(),
@@ -2871,7 +2942,8 @@ async fn win_deal(
     Path(id): Path<i64>,
     Json(input): Json<WinDealInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let close_date: Option<chrono::NaiveDate> = input.close_date
+    let close_date: Option<chrono::NaiveDate> = input
+        .close_date
         .and_then(|d| chrono::NaiveDate::parse_from_str(&d, "%Y-%m-%d").ok())
         .or_else(|| Some(chrono::Utc::now().date_naive()));
 
@@ -2919,7 +2991,12 @@ async fn win_deal(
     .bind(close_date)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": updated_deal.id.to_string(),
@@ -2981,7 +3058,12 @@ async fn lose_deal(
     .bind(&input.lost_reason)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": updated_deal.id.to_string(),
@@ -3001,7 +3083,12 @@ async fn delete_deal(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Deal deleted successfully"})))
 }
@@ -3012,7 +3099,10 @@ async fn get_deal_forecast(
     _admin: AdminUser,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let period = params.get("period").map(|s| s.as_str()).unwrap_or("this_month");
+    let period = params
+        .get("period")
+        .map(|s| s.as_str())
+        .unwrap_or("this_month");
 
     let (start_date, end_date) = match period {
         "this_week" => {
@@ -3020,24 +3110,34 @@ async fn get_deal_forecast(
             let start = now - chrono::Duration::days(now.weekday().num_days_from_monday() as i64);
             let end = start + chrono::Duration::days(6);
             (start, end)
-        },
+        }
         "this_month" => {
             let now = chrono::Utc::now().date_naive();
             let start = chrono::NaiveDate::from_ymd_opt(now.year(), now.month(), 1).unwrap_or(now);
-            let end = (start + chrono::Duration::days(31)).with_day(1).unwrap_or(now) - chrono::Duration::days(1);
+            let end = (start + chrono::Duration::days(31))
+                .with_day(1)
+                .unwrap_or(now)
+                - chrono::Duration::days(1);
             (start, end)
-        },
+        }
         "this_quarter" => {
             let now = chrono::Utc::now().date_naive();
             let quarter_start_month = ((now.month() - 1) / 3) * 3 + 1;
-            let start = chrono::NaiveDate::from_ymd_opt(now.year(), quarter_start_month, 1).unwrap_or(now);
-            let end = (start + chrono::Duration::days(92)).with_day(1).unwrap_or(now) - chrono::Duration::days(1);
+            let start =
+                chrono::NaiveDate::from_ymd_opt(now.year(), quarter_start_month, 1).unwrap_or(now);
+            let end = (start + chrono::Duration::days(92))
+                .with_day(1)
+                .unwrap_or(now)
+                - chrono::Duration::days(1);
             (start, end)
-        },
+        }
         _ => {
             let now = chrono::Utc::now().date_naive();
             let start = chrono::NaiveDate::from_ymd_opt(now.year(), now.month(), 1).unwrap_or(now);
-            let end = (start + chrono::Duration::days(31)).with_day(1).unwrap_or(now) - chrono::Duration::days(1);
+            let end = (start + chrono::Duration::days(31))
+                .with_day(1)
+                .unwrap_or(now)
+                - chrono::Duration::days(1);
             (start, end)
         }
     };
@@ -3104,14 +3204,22 @@ async fn bulk_delete_leads(
     Json(input): Json<BulkDeleteInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.ids.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No IDs provided"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No IDs provided"})),
+        ));
     }
 
     let deleted = sqlx::query("DELETE FROM contacts WHERE id = ANY($1) AND status = 'lead'")
         .bind(&input.ids)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
         "message": "Leads deleted successfully",
@@ -3126,20 +3234,32 @@ async fn bulk_update_lead_status(
     Json(input): Json<BulkStatusInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.ids.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No IDs provided"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No IDs provided"})),
+        ));
     }
 
     let valid_statuses = ["new", "contacted", "qualified", "unqualified", "nurturing"];
     if !valid_statuses.contains(&input.status.as_str()) {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid status"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid status"})),
+        ));
     }
 
-    let updated = sqlx::query("UPDATE contacts SET status = $1, updated_at = NOW() WHERE id = ANY($2)")
-        .bind(&input.status)
-        .bind(&input.ids)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let updated =
+        sqlx::query("UPDATE contacts SET status = $1, updated_at = NOW() WHERE id = ANY($2)")
+            .bind(&input.status)
+            .bind(&input.ids)
+            .execute(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "message": "Lead statuses updated successfully",
@@ -3154,14 +3274,22 @@ async fn bulk_delete_abandoned_carts(
     Json(input): Json<BulkDeleteInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.ids.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No IDs provided"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No IDs provided"})),
+        ));
     }
 
     let deleted = sqlx::query("DELETE FROM crm_abandoned_carts WHERE id = ANY($1)")
         .bind(&input.ids)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
         "message": "Abandoned carts deleted successfully",

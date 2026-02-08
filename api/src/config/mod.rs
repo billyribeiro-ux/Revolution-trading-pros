@@ -3,7 +3,7 @@
 use anyhow::{Context, Result};
 
 /// Application configuration loaded from environment variables
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Config {
     // Server
     pub port: u16,
@@ -65,6 +65,71 @@ pub struct Config {
     pub apple_private_key: Option<String>,
 }
 
+impl std::fmt::Debug for Config {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Config")
+            // Non-sensitive: server configuration
+            .field("port", &self.port)
+            .field("environment", &self.environment)
+            // Sensitive: database credentials
+            .field("database_url", &"[REDACTED]")
+            .field("redis_url", &"[REDACTED]")
+            // Sensitive: R2 credentials (endpoint/bucket/public_url are non-sensitive)
+            .field("r2_endpoint", &self.r2_endpoint)
+            .field("r2_access_key_id", &"[REDACTED]")
+            .field("r2_secret_access_key", &"[REDACTED]")
+            .field("r2_bucket", &self.r2_bucket)
+            .field("r2_public_url", &self.r2_public_url)
+            // Sensitive: JWT
+            .field("jwt_secret", &"[REDACTED]")
+            .field("jwt_expires_in", &self.jwt_expires_in)
+            // Sensitive: Stripe
+            .field("stripe_secret_key", &"[REDACTED]")
+            .field("stripe_publishable_key", &"[REDACTED]")
+            .field("stripe_webhook_secret", &"[REDACTED]")
+            // Non-sensitive: CORS
+            .field("cors_origins", &self.cors_origins)
+            // Sensitive: Postmark token
+            .field(
+                "postmark_token",
+                &self.postmark_token.as_ref().map(|_| "[REDACTED]"),
+            )
+            .field("from_email", &self.from_email)
+            .field("app_url", &self.app_url)
+            // Sensitive: Meilisearch
+            .field("meilisearch_host", &self.meilisearch_host)
+            .field("meilisearch_api_key", &"[REDACTED]")
+            // Non-sensitive: admin/developer config
+            .field("superadmin_emails", &self.superadmin_emails)
+            .field("developer_emails", &self.developer_emails)
+            .field("developer_mode", &self.developer_mode)
+            // Sensitive: developer bootstrap
+            .field("developer_bootstrap_email", &self.developer_bootstrap_email)
+            .field(
+                "developer_bootstrap_password_hash",
+                &self
+                    .developer_bootstrap_password_hash
+                    .as_ref()
+                    .map(|_| "[REDACTED]"),
+            )
+            .field("developer_bootstrap_name", &self.developer_bootstrap_name)
+            // Sensitive: OAuth
+            .field("google_client_id", &self.google_client_id)
+            .field(
+                "google_client_secret",
+                &self.google_client_secret.as_ref().map(|_| "[REDACTED]"),
+            )
+            .field("apple_client_id", &self.apple_client_id)
+            .field("apple_team_id", &self.apple_team_id)
+            .field("apple_key_id", &"[REDACTED]")
+            .field(
+                "apple_private_key",
+                &self.apple_private_key.as_ref().map(|_| "[REDACTED]"),
+            )
+            .finish()
+    }
+}
+
 impl Config {
     pub fn from_env() -> Result<Self> {
         Ok(Self {
@@ -93,9 +158,18 @@ impl Config {
                 .parse()
                 .unwrap_or(24),
 
-            stripe_secret_key: std::env::var("STRIPE_SECRET").unwrap_or_default(),
-            stripe_publishable_key: std::env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_default(),
-            stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_default(),
+            stripe_secret_key: std::env::var("STRIPE_SECRET").unwrap_or_else(|_| {
+                tracing::warn!("STRIPE_SECRET not set - payment features will not work");
+                String::new()
+            }),
+            stripe_publishable_key: std::env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_else(|_| {
+                tracing::warn!("STRIPE_PUBLISHABLE_KEY not set - payment features will not work");
+                String::new()
+            }),
+            stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_else(|_| {
+                tracing::warn!("STRIPE_WEBHOOK_SECRET not set - webhook verification disabled");
+                String::new()
+            }),
 
             cors_origins: std::env::var("CORS_ORIGINS")
                 .unwrap_or_else(|_| {

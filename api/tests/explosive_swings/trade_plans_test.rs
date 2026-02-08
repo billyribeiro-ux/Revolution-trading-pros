@@ -19,8 +19,8 @@ use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    TradePlanBuilder, TestContext, TestTradingRoom, TestUser,
-    assert_status_and_json, body_to_json, cleanup_room_data,
+    assert_status_and_json, body_to_json, cleanup_room_data, TestContext, TestTradingRoom,
+    TestUser, TradePlanBuilder,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -180,7 +180,10 @@ async fn test_list_trade_plans_filter_by_week() {
     let plans = body["data"].as_array().unwrap();
     assert!(!plans.is_empty());
     for plan in plans {
-        assert!(plan["week_of"].as_str().unwrap().contains(&last_monday.format("%Y-%m-%d").to_string()));
+        assert!(plan["week_of"]
+            .as_str()
+            .unwrap()
+            .contains(&last_monday.format("%Y-%m-%d").to_string()));
     }
 }
 
@@ -272,11 +275,7 @@ async fn test_list_trade_plans_sorted_by_sort_order() {
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create plans with specific sort orders
-    let plans_data = [
-        ("SPY", 2),
-        ("AAPL", 0),
-        ("MSFT", 1),
-    ];
+    let plans_data = [("SPY", 2), ("AAPL", 0), ("MSFT", 1)];
 
     for (ticker, order) in plans_data {
         let plan = TradePlanBuilder::bullish(&room.slug, ticker)
@@ -318,7 +317,7 @@ async fn test_list_trade_plans_sorted_by_sort_order() {
     if plans.len() >= 3 {
         assert_eq!(plans[0]["ticker"], "AAPL"); // sort_order: 0
         assert_eq!(plans[1]["ticker"], "MSFT"); // sort_order: 1
-        assert_eq!(plans[2]["ticker"], "SPY");  // sort_order: 2
+        assert_eq!(plans[2]["ticker"], "SPY"); // sort_order: 2
     }
 }
 
@@ -937,15 +936,17 @@ async fn test_delete_trade_plan_soft_delete() {
     }
 
     // Verify it's soft deleted (still in DB with deleted_at set)
-    let result: Option<(i64,)> = sqlx::query_as(
-        "SELECT id FROM room_trade_plans WHERE id = $1 AND deleted_at IS NOT NULL"
-    )
-    .bind(plan_id)
-    .fetch_optional(&ctx.pool)
-    .await
-    .unwrap();
+    let result: Option<(i64,)> =
+        sqlx::query_as("SELECT id FROM room_trade_plans WHERE id = $1 AND deleted_at IS NOT NULL")
+            .bind(plan_id)
+            .fetch_optional(&ctx.pool)
+            .await
+            .unwrap();
 
-    assert!(result.is_some(), "Trade plan should be soft deleted in database");
+    assert!(
+        result.is_some(),
+        "Trade plan should be soft deleted in database"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -1349,8 +1350,8 @@ async fn test_reorder_trade_plans() {
     let plans = list_body["data"].as_array().unwrap();
 
     if plans.len() >= 3 {
-        assert_eq!(plans[0]["ticker"], "THIRD");  // sort_order: 0
-        assert_eq!(plans[1]["ticker"], "FIRST");  // sort_order: 1
+        assert_eq!(plans[0]["ticker"], "THIRD"); // sort_order: 0
+        assert_eq!(plans[1]["ticker"], "FIRST"); // sort_order: 1
         assert_eq!(plans[2]["ticker"], "SECOND"); // sort_order: 2
     }
 }
@@ -1407,7 +1408,10 @@ async fn test_only_active_plans_returned() {
         .oneshot(
             Request::builder()
                 .method("PUT")
-                .uri(format!("/api/admin/room-content/trade-plan/{}", inactive_id))
+                .uri(format!(
+                    "/api/admin/room-content/trade-plan/{}",
+                    inactive_id
+                ))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(json!({"is_active": false}).to_string()))

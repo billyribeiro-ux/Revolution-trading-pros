@@ -317,7 +317,12 @@ async fn get_related_videos(
 
     let (tags, content_type) = match video {
         Some((t, c)) => (t, c),
-        None => return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Video not found"}))))
+        None => {
+            return Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Video not found"})),
+            ))
+        }
     };
 
     // Find related videos with same content_type or overlapping tags
@@ -360,7 +365,7 @@ async fn get_weekly_videos(
              AND deleted_at IS NULL
              AND video_date >= date_trunc('week', CURRENT_DATE)
              AND video_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
-           ORDER BY video_date DESC, created_at DESC"#
+           ORDER BY video_date DESC, created_at DESC"#,
     )
     .fetch_all(&state.db.pool)
     .await
@@ -374,7 +379,7 @@ async fn get_weekly_videos(
                  AND is_published = true
                  AND deleted_at IS NULL
                ORDER BY video_date DESC
-               LIMIT 10"#
+               LIMIT 10"#,
         )
         .fetch_all(&state.db.pool)
         .await
@@ -400,14 +405,24 @@ async fn get_watch_history(
     let user_id = params.user_id.unwrap_or(0);
     let limit = params.limit.unwrap_or(20).min(50);
 
-    let history: Vec<(i64, i32, i32, bool, chrono::NaiveDateTime, String, Option<String>, Option<i32>)> = sqlx::query_as(
+    #[allow(clippy::type_complexity)]
+    let history: Vec<(
+        i64,
+        i32,
+        i32,
+        bool,
+        chrono::NaiveDateTime,
+        String,
+        Option<String>,
+        Option<i32>,
+    )> = sqlx::query_as(
         r#"SELECT wp.video_id, wp.current_time_seconds, wp.completion_percent, wp.completed,
                   wp.last_watched_at, v.title, v.thumbnail_url, v.duration
            FROM video_watch_progress wp
            JOIN unified_videos v ON v.id = wp.video_id
            WHERE wp.user_id = $1 AND v.deleted_at IS NULL
            ORDER BY wp.last_watched_at DESC
-           LIMIT $2"#
+           LIMIT $2"#,
     )
     .bind(user_id)
     .bind(limit as i32)

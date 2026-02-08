@@ -435,7 +435,9 @@ async fn create_subscription(
     if existing.is_some() {
         return Err((
             StatusCode::CONFLICT,
-            Json(json!({"error": "User already has an active subscription. Use upgrade/downgrade endpoint instead."})),
+            Json(
+                json!({"error": "User already has an active subscription. Use upgrade/downgrade endpoint instead."}),
+            ),
         ));
     }
 
@@ -487,7 +489,7 @@ async fn create_subscription(
         )
         VALUES ($1, $2, NOW(), $3, 'free', $4, $5, $6, false, NOW(), NOW())
         RETURNING *
-        "#
+        "#,
     )
     .bind(user.id)
     .bind(input.plan_id)
@@ -497,7 +499,12 @@ async fn create_subscription(
     .bind(period_end)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "subscription": subscription,
@@ -588,7 +595,6 @@ async fn get_metrics(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     // Basic counts
     let active: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
@@ -629,11 +635,12 @@ async fn get_metrics(
             .await
             .unwrap_or((0,));
 
-    let paused: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'paused' OR status = 'on-hold'")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+    let paused: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM user_memberships WHERE status = 'paused' OR status = 'on-hold'",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let pending_cancel: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE cancel_at_period_end = true AND status = 'active'")
@@ -657,7 +664,7 @@ async fn get_metrics(
         FROM user_memberships um
         JOIN membership_plans mp ON um.plan_id = mp.id
         WHERE um.status = 'active'
-        "#
+        "#,
     )
     .fetch_optional(&state.db.pool)
     .await
@@ -690,7 +697,7 @@ async fn get_metrics(
         WHERE starts_at < date_trunc('month', CURRENT_DATE)
         AND (cancelled_at IS NULL OR cancelled_at >= date_trunc('month', CURRENT_DATE))
         AND status IN ('active', 'cancelled')
-        "#
+        "#,
     )
     .fetch_one(&state.db.pool)
     .await
@@ -711,14 +718,18 @@ async fn get_metrics(
         ), 0)
         FROM user_memberships
         WHERE starts_at IS NOT NULL
-        "#
+        "#,
     )
     .fetch_optional(&state.db.pool)
     .await
     .unwrap_or(None);
 
     let avg_subscription_months = avg_duration_months.map(|r| r.0).unwrap_or(0.0);
-    let arpu = if active.0 > 0 { mrr / active.0 as f64 } else { 0.0 };
+    let arpu = if active.0 > 0 {
+        mrr / active.0 as f64
+    } else {
+        0.0
+    };
     let ltv = avg_subscription_months * arpu;
 
     // Failed payments (subscriptions in grace period or past_due)
@@ -908,36 +919,58 @@ async fn change_plan(
     let current_plan: MembershipPlanRow = sqlx::query_as(
         r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1"#
+           FROM membership_plans WHERE id = $1"#,
     )
     .bind(subscription.plan_id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Current plan not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Current plan not found"})),
+        )
+    })?;
 
     // Get new plan
     let new_plan: MembershipPlanRow = sqlx::query_as(
         r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1 AND is_active = true"#
+           FROM membership_plans WHERE id = $1 AND is_active = true"#,
     )
     .bind(input.new_plan_id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "New plan not found or inactive"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "New plan not found or inactive"})),
+        )
+    })?;
 
     if current_plan.id == new_plan.id {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Already on this plan"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Already on this plan"})),
+        ));
     }
 
     let prorate = input.prorate.unwrap_or(true);
     let now = chrono::Utc::now().naive_utc();
 
     // Calculate proration if enabled
-    let proration = if prorate && subscription.current_period_end.is_some() {
-        let period_end = subscription.current_period_end.unwrap();
+    let proration = if let (true, Some(period_end)) = (prorate, subscription.current_period_end) {
         let period_start = subscription.current_period_start.unwrap_or(now);
 
         // Days in billing cycle
@@ -976,13 +1009,18 @@ async fn change_plan(
         UPDATE user_memberships
         SET plan_id = $1, updated_at = NOW()
         WHERE id = $2
-        "#
+        "#,
     )
     .bind(new_plan.id)
     .bind(subscription_id)
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1013,43 +1051,72 @@ async fn preview_plan_change(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current subscription
     let subscription: UserSubscriptionRow = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status = 'active'"
+        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status = 'active'",
     )
     .bind(subscription_id)
     .bind(user.id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Active subscription not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Active subscription not found"})),
+        )
+    })?;
 
     // Get current plan
     let current_plan: MembershipPlanRow = sqlx::query_as(
         r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1"#
+           FROM membership_plans WHERE id = $1"#,
     )
     .bind(subscription.plan_id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Current plan not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Current plan not found"})),
+        )
+    })?;
 
     // Get new plan
     let new_plan: MembershipPlanRow = sqlx::query_as(
         r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
            is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE id = $1 AND is_active = true"#
+           FROM membership_plans WHERE id = $1 AND is_active = true"#,
     )
     .bind(input.new_plan_id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "New plan not found or inactive"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "New plan not found or inactive"})),
+        )
+    })?;
 
     let now = chrono::Utc::now().naive_utc();
 
-    let proration = if subscription.current_period_end.is_some() {
-        let period_end = subscription.current_period_end.unwrap();
+    let proration = if let Some(period_end) = subscription.current_period_end {
         let period_start = subscription.current_period_start.unwrap_or(now);
         let total_days = (period_end - period_start).num_days().max(1) as f64;
         let days_remaining = (period_end - now).num_days().max(0) as f64;
@@ -1109,18 +1176,30 @@ async fn reactivate_subscription(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get subscription
-    let subscription: UserSubscriptionRow = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2"
-    )
-    .bind(id)
-    .bind(user.id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
+    let subscription: UserSubscriptionRow =
+        sqlx::query_as("SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2")
+            .bind(id)
+            .bind(user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Subscription not found"})),
+                )
+            })?;
 
     if subscription.status == "active" {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Subscription is already active"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Subscription is already active"})),
+        ));
     }
 
     // If cancel_at_period_end was true, just unset it
@@ -1131,7 +1210,9 @@ async fn reactivate_subscription(
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-        return Ok(Json(json!({"success": true, "message": "Subscription reactivated"})));
+        return Ok(Json(
+            json!({"success": true, "message": "Subscription reactivated"}),
+        ));
     }
 
     // For fully cancelled subscriptions, need to re-subscribe
@@ -1150,14 +1231,19 @@ async fn reactivate_subscription(
             current_period_end = $2,
             updated_at = NOW()
         WHERE id = $3
-        "#
+        "#,
     )
     .bind(now)
     .bind(period_end)
     .bind(id)
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1213,7 +1299,7 @@ async fn send_renewal_reminders(
         AND um.renewal_reminder_sent_at IS NULL
         ORDER BY um.current_period_end ASC
         LIMIT 100
-        "#
+        "#,
     )
     .fetch_all(&state.db.pool)
     .await
@@ -1243,7 +1329,7 @@ async fn send_renewal_reminders(
             Ok(_) => {
                 // Mark as reminded
                 sqlx::query(
-                    "UPDATE user_memberships SET renewal_reminder_sent_at = NOW() WHERE id = $1"
+                    "UPDATE user_memberships SET renewal_reminder_sent_at = NOW() WHERE id = $1",
                 )
                 .bind(sub.id)
                 .execute(&state.db.pool)
@@ -1324,7 +1410,7 @@ async fn send_trial_ending_notifications(
         AND um.trial_ending_reminder_sent_at IS NULL
         ORDER BY um.trial_ends_at ASC
         LIMIT 100
-        "#
+        "#,
     )
     .fetch_all(&state.db.pool)
     .await
@@ -1421,7 +1507,7 @@ async fn send_cancellation_email(
         FROM user_memberships um
         JOIN membership_plans mp ON um.plan_id = mp.id
         WHERE um.id = $1 AND um.user_id = $2
-        "#
+        "#,
     )
     .bind(id)
     .bind(user.id)
@@ -1440,10 +1526,15 @@ async fn send_cancellation_email(
         )
     })?;
 
-    let user_name = if user.name.is_empty() { user.email.clone() } else { user.name.clone() };
+    let user_name = if user.name.is_empty() {
+        user.email.clone()
+    } else {
+        user.name.clone()
+    };
 
     // Determine if cancelled immediately or at period end
-    let cancel_immediately = sub.status == "cancelled" && !sub.cancel_at_period_end.unwrap_or(false);
+    let cancel_immediately =
+        sub.status == "cancelled" && !sub.cancel_at_period_end.unwrap_or(false);
 
     let access_end = if cancel_immediately {
         "immediately".to_string()
@@ -1454,7 +1545,13 @@ async fn send_cancellation_email(
     };
 
     email_service
-        .send_subscription_cancelled(&user.email, &user_name, &sub.plan_name, &access_end, cancel_immediately)
+        .send_subscription_cancelled(
+            &user.email,
+            &user_name,
+            &sub.plan_name,
+            &access_end,
+            cancel_immediately,
+        )
         .await
         .map_err(|e| {
             (
@@ -1482,11 +1579,20 @@ pub fn router() -> Router<AppState> {
         .route("/:id/change-plan", post(change_plan))
         .route("/:id/preview-change", post(preview_plan_change))
         .route("/:id/reactivate", post(reactivate_subscription))
-        .route("/:id/send-cancellation-email", post(send_cancellation_email))
+        .route(
+            "/:id/send-cancellation-email",
+            post(send_cancellation_email),
+        )
         .route("/metrics", get(get_metrics))
         // ICT 7 Fix: Notification scheduling endpoints (admin-only, for cron jobs)
-        .route("/notifications/renewal-reminders", post(send_renewal_reminders))
-        .route("/notifications/trial-ending", post(send_trial_ending_notifications))
+        .route(
+            "/notifications/renewal-reminders",
+            post(send_renewal_reminders),
+        )
+        .route(
+            "/notifications/trial-ending",
+            post(send_trial_ending_notifications),
+        )
 }
 
 /// Router for /my/subscriptions path (frontend compatibility)

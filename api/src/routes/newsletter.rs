@@ -11,12 +11,12 @@ use axum::{
     routing::{delete, get, post},
     Json, Router,
 };
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use hmac::{Hmac, Mac};
 use serde::Deserialize;
 use serde_json::json;
-use std::net::SocketAddr;
-use hmac::{Hmac, Mac};
 use sha2::Sha256;
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use std::net::SocketAddr;
 
 use crate::{middleware::admin::AdminUser, AppState};
 
@@ -221,23 +221,22 @@ async fn subscribe(
         .map(|s| s.to_string());
 
     // Check if already subscribed
-    let existing: Option<SubscriberRow> =
-        sqlx::query_as(
-            r#"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
+    let existing: Option<SubscriberRow> = sqlx::query_as(
+        r#"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                       COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                       confirmed_at, unsubscribed_at, created_at, updated_at
-               FROM newsletter_subscribers WHERE LOWER(email) = $1"#
+               FROM newsletter_subscribers WHERE LOWER(email) = $1"#,
+    )
+    .bind(&email)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error checking subscriber: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
         )
-        .bind(&email)
-        .fetch_optional(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Database error checking subscriber: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Database error"})),
-            )
-        })?;
+    })?;
 
     if let Some(subscriber) = existing {
         if subscriber.status == "confirmed" {
@@ -277,7 +276,7 @@ async fn subscribe(
         RETURNING id, email, name, status, source, ip_address, user_agent, tags, metadata,
                   COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                   confirmed_at, unsubscribed_at, created_at, updated_at
-        "#
+        "#,
     )
     .bind(&email)
     .bind(&input.name)
@@ -289,15 +288,22 @@ async fn subscribe(
     .await
     .map_err(|e| {
         if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
-            (StatusCode::CONFLICT, Json(json!({"error": "Email already subscribed"})))
+            (
+                StatusCode::CONFLICT,
+                Json(json!({"error": "Email already subscribed"})),
+            )
         } else {
             tracing::error!("Failed to create subscriber: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to subscribe"})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to subscribe"})),
+            )
         }
     })?;
 
     // Generate secure confirmation token
-    let confirm_token = generate_secure_token(subscriber.id, &email, "confirm", &get_token_secret());
+    let confirm_token =
+        generate_secure_token(subscriber.id, &email, "confirm", &get_token_secret());
 
     tracing::info!(
         target: "newsletter",
@@ -343,7 +349,7 @@ async fn confirm(
     let result = sqlx::query(
         r#"UPDATE newsletter_subscribers
            SET status = 'confirmed', confirmed_at = NOW(), updated_at = NOW()
-           WHERE id = $1 AND LOWER(email) = LOWER($2) AND status = 'pending'"#
+           WHERE id = $1 AND LOWER(email) = LOWER($2) AND status = 'pending'"#,
     )
     .bind(subscriber_id)
     .bind(&email)
@@ -351,7 +357,10 @@ async fn confirm(
     .await
     .map_err(|e| {
         tracing::error!("Database error confirming subscription: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     if result.rows_affected() == 0 {
@@ -381,8 +390,8 @@ async fn unsubscribe(
     Query(query): Query<UnsubscribeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Verify cryptographic token
-    let (subscriber_id, email) = verify_secure_token(&query.token, "unsubscribe", &get_token_secret())
-        .ok_or_else(|| {
+    let (subscriber_id, email) =
+        verify_secure_token(&query.token, "unsubscribe", &get_token_secret()).ok_or_else(|| {
             tracing::warn!(
                 target: "security",
                 event = "invalid_unsubscribe_token",
@@ -396,7 +405,10 @@ async fn unsubscribe(
         })?;
 
     // Store unsubscribe reason if provided (GDPR audit)
-    let metadata = query.reason.as_ref().map(|r| json!({"unsubscribe_reason": r}));
+    let metadata = query
+        .reason
+        .as_ref()
+        .map(|r| json!({"unsubscribe_reason": r}));
 
     let result = sqlx::query(
         r#"UPDATE newsletter_subscribers
@@ -404,7 +416,7 @@ async fn unsubscribe(
                unsubscribed_at = NOW(),
                updated_at = NOW(),
                metadata = COALESCE($3, metadata)
-           WHERE id = $1 AND LOWER(email) = LOWER($2)"#
+           WHERE id = $1 AND LOWER(email) = LOWER($2)"#,
     )
     .bind(subscriber_id)
     .bind(&email)
@@ -413,7 +425,10 @@ async fn unsubscribe(
     .await
     .map_err(|e| {
         tracing::error!("Database error unsubscribing: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     if result.rows_affected() == 0 {
@@ -462,12 +477,16 @@ async fn list_subscribers(
     // SECURITY: Use parameterized queries - NO string interpolation
     // Validate status is one of allowed values
     let valid_statuses = ["pending", "confirmed", "unsubscribed"];
-    let status_filter: Option<&str> = query.status.as_ref()
+    let status_filter: Option<&str> = query
+        .status
+        .as_ref()
         .filter(|s| valid_statuses.contains(&s.as_str()))
         .map(|s| s.as_str());
 
     // Search pattern for ILIKE (parameterized)
-    let search_pattern: Option<String> = query.search.as_ref()
+    let search_pattern: Option<String> = query
+        .search
+        .as_ref()
         .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
 
     let subscribers: Vec<SubscriberRow> = sqlx::query_as(
@@ -480,7 +499,7 @@ async fn list_subscribers(
           AND ($2::text IS NULL OR email ILIKE $2 OR name ILIKE $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#
+        "#,
     )
     .bind(status_filter)
     .bind(search_pattern.as_deref())
@@ -502,7 +521,7 @@ async fn list_subscribers(
         FROM newsletter_subscribers
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::text IS NULL OR email ILIKE $2 OR name ILIKE $2)
-        "#
+        "#,
     )
     .bind(status_filter)
     .bind(search_pattern.as_deref())
@@ -543,7 +562,7 @@ async fn get_stats(
             COUNT(*) FILTER (WHERE status = 'unsubscribed') as unsubscribed,
             COUNT(*) FILTER (WHERE gdpr_consent = true) as with_consent
         FROM newsletter_subscribers
-        "#
+        "#,
     )
     .fetch_one(&state.db.pool)
     .await
@@ -557,7 +576,7 @@ async fn get_stats(
 
     // Recent signups (last 7 days)
     let recent: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM newsletter_subscribers WHERE created_at > NOW() - INTERVAL '7 days'"
+        "SELECT COUNT(*) FROM newsletter_subscribers WHERE created_at > NOW() - INTERVAL '7 days'",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -632,16 +651,24 @@ async fn export_subscriber(
         r#"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                   COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                   confirmed_at, unsubscribed_at, created_at, updated_at
-           FROM newsletter_subscribers WHERE id = $1"#
+           FROM newsletter_subscribers WHERE id = $1"#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         tracing::error!("Database error exporting subscriber: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscriber not found"}))))?;
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Subscriber not found"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": subscriber,
@@ -672,27 +699,30 @@ async fn send_bulk_email(
 
     let recipient_count: (i64,) = match segment {
         "all" => {
-            sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status != 'unsubscribed'")
-                .fetch_one(&state.db.pool)
-                .await
+            sqlx::query_as(
+                "SELECT COUNT(*) FROM newsletter_subscribers WHERE status != 'unsubscribed'",
+            )
+            .fetch_one(&state.db.pool)
+            .await
         }
         "confirmed" => {
             sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
                 .fetch_one(&state.db.pool)
                 .await
         }
-        tag => {
-            sqlx::query_as(
-                "SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed' AND tags ? $1"
-            )
-            .bind(tag)
-            .fetch_one(&state.db.pool)
-            .await
-        }
+        tag => sqlx::query_as(
+            "SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed' AND tags ? $1",
+        )
+        .bind(tag)
+        .fetch_one(&state.db.pool)
+        .await,
     }
     .map_err(|e| {
         tracing::error!("Database error counting recipients: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     // Estimate send time

@@ -431,9 +431,15 @@ async fn update_course(
     );
 
     // Generate new slug if title is being updated
-    let new_slug = input.title.as_ref().map(|t| slugify(t));
-    let tags_json = input.tags.as_ref().map(|t| serde_json::to_value(t).unwrap_or_default());
-    let prereqs_json = input.prerequisite_course_ids.as_ref().map(|p| serde_json::to_value(p).unwrap_or_default());
+    let new_slug = input.title.as_ref().map(slugify);
+    let tags_json = input
+        .tags
+        .as_ref()
+        .map(|t| serde_json::to_value(t).unwrap_or_default());
+    let prereqs_json = input
+        .prerequisite_course_ids
+        .as_ref()
+        .map(|p| serde_json::to_value(p).unwrap_or_default());
     let should_publish = input.is_published.unwrap_or(false);
 
     // ICT 7+ SECURITY FIX: Parameterized query
@@ -461,7 +467,7 @@ async fn update_course(
             completion_threshold_percent = COALESCE($21, completion_threshold_percent),
             updated_at = NOW()
         WHERE id = $1 AND deleted_at IS NULL
-        RETURNING id, title"#
+        RETURNING id, title"#,
     )
     .bind(course_id)
     .bind(&input.title)
@@ -632,7 +638,7 @@ async fn update_section(
             unlock_date = COALESCE($8, unlock_date),
             is_published = COALESCE($9, is_published),
             updated_at = NOW()
-        WHERE id = $1 AND course_id = $2"#
+        WHERE id = $1 AND course_id = $2"#,
     )
     .bind(section_id)
     .bind(course_id)
@@ -815,7 +821,7 @@ async fn update_lesson(
             completion_type = COALESCE($14, completion_type),
             required_watch_percent = COALESCE($15, required_watch_percent),
             updated_at = NOW()
-        WHERE id = $1 AND course_id = $2"#
+        WHERE id = $1 AND course_id = $2"#,
     )
     .bind(lesson_id)
     .bind(course_id)

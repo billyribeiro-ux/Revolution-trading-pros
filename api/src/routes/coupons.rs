@@ -312,7 +312,7 @@ async fn list_coupons(
                FROM coupons
                WHERE is_active = true
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2"#
+               LIMIT $1 OFFSET $2"#,
         )
         .bind(limit)
         .bind(offset)
@@ -320,7 +320,10 @@ async fn list_coupons(
         .await
         .map_err(|e| {
             tracing::error!(target: "coupons", error = %e, "Failed to list coupons");
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to list coupons"})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to list coupons"})),
+            )
         })?
     } else {
         sqlx::query_as(
@@ -329,7 +332,7 @@ async fn list_coupons(
                       is_active, created_at, updated_at
                FROM coupons
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2"#
+               LIMIT $1 OFFSET $2"#,
         )
         .bind(limit)
         .bind(offset)
@@ -337,7 +340,10 @@ async fn list_coupons(
         .await
         .map_err(|e| {
             tracing::error!(target: "coupons", error = %e, "Failed to list coupons");
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to list coupons"})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to list coupons"})),
+            )
         })?
     };
 
@@ -609,7 +615,9 @@ async fn deactivate_coupon(
         ));
     }
 
-    Ok(Json(json!({"message": "Coupon deactivated successfully", "id": id})))
+    Ok(Json(
+        json!({"message": "Coupon deactivated successfully", "id": id}),
+    ))
 }
 
 /// Reactivate coupon (admin) - ICT 7 FIX: Restore coupon
@@ -648,7 +656,9 @@ async fn reactivate_coupon(
         ));
     }
 
-    Ok(Json(json!({"message": "Coupon reactivated successfully", "id": id})))
+    Ok(Json(
+        json!({"message": "Coupon reactivated successfully", "id": id}),
+    ))
 }
 
 /// Reset coupon usage count (admin) - ICT 7 FIX: Allow resetting usage
@@ -687,7 +697,9 @@ async fn reset_coupon_usage(
         ));
     }
 
-    Ok(Json(json!({"message": "Coupon usage reset successfully", "id": id})))
+    Ok(Json(
+        json!({"message": "Coupon usage reset successfully", "id": id}),
+    ))
 }
 
 /// Get single coupon by ID (admin)
@@ -701,7 +713,7 @@ async fn get_coupon(
         r#"SELECT id, code, type, value, max_uses, current_uses,
                   expiry_date, applicable_products, min_purchase_amount,
                   is_active, created_at, updated_at
-           FROM coupons WHERE id = $1"#
+           FROM coupons WHERE id = $1"#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -735,7 +747,10 @@ pub fn router() -> Router<AppState> {
         .route("/user/available", get(get_user_coupons)) // Frontend compatibility
         // Admin CRUD endpoints
         .route("/", get(list_coupons).post(create_coupon))
-        .route("/:id", get(get_coupon).put(update_coupon).delete(delete_coupon))
+        .route(
+            "/:id",
+            get(get_coupon).put(update_coupon).delete(delete_coupon),
+        )
         // Admin management endpoints - ICT 7 FIX
         .route("/:id/deactivate", post(deactivate_coupon))
         .route("/:id/reactivate", post(reactivate_coupon))

@@ -217,15 +217,15 @@ impl StripeService {
         }
 
         // Create new customer
-        let mut params: Vec<(&str, String)> = vec![("email", email.to_string())];
+        let mut params: Vec<(String, String)> = vec![("email".to_string(), email.to_string())];
 
         if let Some(n) = name {
-            params.push(("name", n.to_string()));
+            params.push(("name".to_string(), n.to_string()));
         }
 
         if let Some(meta) = metadata {
             for (k, v) in meta {
-                params.push(("metadata", format!("[{}]={}", k, v)));
+                params.push((format!("metadata[{}]", k), v));
             }
         }
 
@@ -237,7 +237,7 @@ impl StripeService {
             .form(
                 &params
                     .iter()
-                    .map(|(k, v)| (*k, v.as_str()))
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
                     .collect::<Vec<_>>(),
             )
             .send()
@@ -620,7 +620,12 @@ impl StripeService {
     ) -> Result<()> {
         // Attach payment method to customer
         self.client
-            .post(&format!("payment_methods/{}/attach", payment_method_id))
+            .post(format!(
+                "{}/payment_methods/{}/attach",
+                STRIPE_API_BASE, payment_method_id
+            ))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
             .form(&[("customer", customer_id)])
             .send()
             .await?
@@ -628,8 +633,13 @@ impl StripeService {
 
         // Set as default invoice payment method
         self.client
-            .post(&format!("customers/{}", customer_id))
-            .form(&[("invoice_settings[default_payment_method]", payment_method_id)])
+            .post(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
+            .form(&[(
+                "invoice_settings[default_payment_method]",
+                payment_method_id,
+            )])
             .send()
             .await?
             .error_for_status()?;
@@ -638,7 +648,10 @@ impl StripeService {
     }
 
     /// Retry a failed subscription payment
-    pub async fn retry_subscription_payment(&self, subscription_id: &str) -> Result<RetryPaymentResult> {
+    pub async fn retry_subscription_payment(
+        &self,
+        subscription_id: &str,
+    ) -> Result<RetryPaymentResult> {
         // Get the latest open invoice for this subscription
         #[derive(Deserialize)]
         struct InvoiceList {
@@ -653,7 +666,9 @@ impl StripeService {
 
         let invoices: InvoiceList = self
             .client
-            .get("invoices")
+            .get(format!("{}/invoices", STRIPE_API_BASE))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[
                 ("subscription", subscription_id),
                 ("status", "open"),
@@ -665,14 +680,17 @@ impl StripeService {
             .json()
             .await?;
 
-        let invoice = invoices.data.first().ok_or_else(|| {
-            anyhow::anyhow!("No open invoice found for subscription")
-        })?;
+        let invoice = invoices
+            .data
+            .first()
+            .ok_or_else(|| anyhow::anyhow!("No open invoice found for subscription"))?;
 
         // Pay the invoice
         let response = self
             .client
-            .post(&format!("invoices/{}/pay", invoice.id))
+            .post(format!("{}/invoices/{}/pay", STRIPE_API_BASE, invoice.id))
+            .basic_auth(&self.secret_key, None::<&str>)
+            .header("Stripe-Version", STRIPE_API_VERSION)
             .send()
             .await?;
 
@@ -701,7 +719,10 @@ impl StripeService {
 
     /// List payment methods for a customer
     /// GET /v1/payment_methods?customer={customer_id}&type=card
-    pub async fn list_payment_methods(&self, customer_id: &str) -> Result<Vec<StripePaymentMethod>> {
+    pub async fn list_payment_methods(
+        &self,
+        customer_id: &str,
+    ) -> Result<Vec<StripePaymentMethod>> {
         let response: PaymentMethodsList = self
             .client
             .get(format!("{}/payment_methods", STRIPE_API_BASE))
@@ -746,7 +767,10 @@ impl StripeService {
 
     /// Detach a payment method from a customer
     /// POST /v1/payment_methods/{id}/detach
-    pub async fn detach_payment_method(&self, payment_method_id: &str) -> Result<StripePaymentMethod> {
+    pub async fn detach_payment_method(
+        &self,
+        payment_method_id: &str,
+    ) -> Result<StripePaymentMethod> {
         let response: StripePaymentMethod = self
             .client
             .post(format!(
@@ -784,7 +808,10 @@ impl StripeService {
 
     /// Get customer's default payment method
     /// Returns the default payment method ID if set
-    pub async fn get_customer_default_payment_method(&self, customer_id: &str) -> Result<Option<String>> {
+    pub async fn get_customer_default_payment_method(
+        &self,
+        customer_id: &str,
+    ) -> Result<Option<String>> {
         let response: serde_json::Value = self
             .client
             .get(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))

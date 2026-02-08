@@ -292,12 +292,14 @@ impl RateLimitService {
         let mut cache = self.memory_cache.write().await;
         let now = Utc::now();
 
-        let entry = cache.entry(identifier.to_string()).or_insert(RateLimitEntry {
-            count: 0,
-            first_attempt: now,
-            last_attempt: now,
-            locked_until: None,
-        });
+        let entry = cache
+            .entry(identifier.to_string())
+            .or_insert(RateLimitEntry {
+                count: 0,
+                first_attempt: now,
+                last_attempt: now,
+                locked_until: None,
+            });
 
         // Check if window expired
         if (now - entry.first_attempt).num_seconds() > WINDOW_SECONDS {

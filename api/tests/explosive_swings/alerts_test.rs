@@ -20,8 +20,8 @@ use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    AlertBuilder, TestContext, TestTradingRoom, TestUser, TosFormatter,
-    assert_status_and_json, body_to_json, cleanup_room_data,
+    assert_status_and_json, body_to_json, cleanup_room_data, AlertBuilder, TestContext,
+    TestTradingRoom, TestUser, TosFormatter,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -406,8 +406,7 @@ async fn test_create_update_alert() {
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // First create an entry alert
-    let entry_alert = AlertBuilder::entry(&room.slug, "TSLA")
-        .build_json();
+    let entry_alert = AlertBuilder::entry(&room.slug, "TSLA").build_json();
 
     let entry_response = ctx
         .app
@@ -899,13 +898,12 @@ async fn test_delete_alert_soft_delete() {
     }
 
     // Verify it's soft deleted (still in DB with deleted_at set)
-    let result: Option<(i64,)> = sqlx::query_as(
-        "SELECT id FROM room_alerts WHERE id = $1 AND deleted_at IS NOT NULL"
-    )
-    .bind(alert_id)
-    .fetch_optional(&ctx.pool)
-    .await
-    .unwrap();
+    let result: Option<(i64,)> =
+        sqlx::query_as("SELECT id FROM room_alerts WHERE id = $1 AND deleted_at IS NOT NULL")
+            .bind(alert_id)
+            .fetch_optional(&ctx.pool)
+            .await
+            .unwrap();
 
     assert!(result.is_some(), "Alert should be soft deleted in database");
 }

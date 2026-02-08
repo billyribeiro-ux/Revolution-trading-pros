@@ -99,19 +99,19 @@ impl FromRequestParts<AppState> for User {
         let user: User = sqlx::query_as(
             r#"SELECT id, email, password_hash, name, role, email_verified_at, 
                       avatar_url, mfa_enabled, created_at, updated_at 
-               FROM users WHERE id = $1"#
+               FROM users WHERE id = $1"#,
         )
-            .bind(claims.sub)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                tracing::error!("Database error fetching user: {:?}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "Database error")
-            })?
-            .ok_or_else(|| {
-                tracing::warn!("User not found for id: {}", claims.sub);
-                (StatusCode::UNAUTHORIZED, "User not found")
-            })?;
+        .bind(claims.sub)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!("Database error fetching user: {:?}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, "Database error")
+        })?
+        .ok_or_else(|| {
+            tracing::warn!("User not found for id: {}", claims.sub);
+            (StatusCode::UNAUTHORIZED, "User not found")
+        })?;
 
         // ICT 7+: Cache user in Redis for subsequent requests
         if let Some(ref redis) = state.services.redis {

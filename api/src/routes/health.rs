@@ -155,10 +155,23 @@ async fn ready_check(
 /// Setup endpoint - creates missing tables
 /// POST /setup-db
 /// ICT 11+ SECURITY FIX: Now requires admin authentication
+/// SECURITY: Also gated to development — contains destructive DROP TABLE operations
 async fn setup_db(
     admin: AdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
+    // Only allow in development — this endpoint drops and recreates tables
+    let environment = std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
+    if environment != "development" && environment != "dev" {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(SetupResponse {
+                success: false,
+                message: "This endpoint is only available in development mode".to_string(),
+            }),
+        ));
+    }
+
     tracing::info!("Admin {} running setup-db", admin.0.email);
     // Create email_verification_tokens table
     let create_table = r#"
@@ -329,9 +342,22 @@ async fn run_migrations(
 }
 
 /// TEMP: Run migrations without auth
+/// SECURITY: Gated to development environment only
 async fn init_db(
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
+    // Only allow in development
+    let environment = std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
+    if environment != "development" && environment != "dev" {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(SetupResponse {
+                success: false,
+                message: "This endpoint is only available in development mode".to_string(),
+            }),
+        ));
+    }
+
     // Run migrations
     let _ = state.db.migrate().await;
 

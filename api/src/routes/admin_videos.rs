@@ -187,75 +187,135 @@ async fn list_videos(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from("SELECT * FROM unified_videos WHERE deleted_at IS NULL");
-    let mut count_sql =
-        String::from("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL");
+    // Build parameterized query to prevent SQL injection
+    let mut conditions = Vec::new();
+    let mut param_idx = 1usize;
 
-    // Apply filters
+    if query.content_type.is_some() {
+        conditions.push(format!("content_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.is_published.is_some() {
+        conditions.push(format!("is_published = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.is_featured.is_some() {
+        conditions.push(format!("is_featured = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.trader_id.is_some() {
+        conditions.push(format!("trader_id = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.search.is_some() {
+        conditions.push(format!(
+            "(title ILIKE ${} OR description ILIKE ${})",
+            param_idx, param_idx
+        ));
+        param_idx += 1;
+    }
+    // Tags: each tag gets its own JSONB containment check
+    let tag_list: Vec<String> = query
+        .tags
+        .as_ref()
+        .map(|t| t.split(',').map(|s| s.trim().to_string()).collect())
+        .unwrap_or_default();
+    for _ in &tag_list {
+        conditions.push(format!("tags @> ${}", param_idx));
+        param_idx += 1;
+    }
+
+    let where_clause = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!(" AND {}", conditions.join(" AND "))
+    };
+
+    // Whitelist validate sort_by and sort_dir to prevent ORDER BY injection
+    let valid_sort_columns = [
+        "video_date",
+        "title",
+        "created_at",
+        "updated_at",
+        "views_count",
+        "id",
+    ];
+    let sort_by = if valid_sort_columns.contains(&query.sort_by.as_deref().unwrap_or("video_date"))
+    {
+        query.sort_by.as_deref().unwrap_or("video_date")
+    } else {
+        "video_date"
+    };
+    let sort_dir = match query.sort_dir.as_deref() {
+        Some("ASC") | Some("asc") => "ASC",
+        _ => "DESC",
+    };
+
+    let sql = format!(
+        "SELECT * FROM unified_videos WHERE deleted_at IS NULL{} ORDER BY {} {} LIMIT ${} OFFSET ${}",
+        where_clause, sort_by, sort_dir, param_idx, param_idx + 1
+    );
+    let count_sql = format!(
+        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL{}",
+        where_clause
+    );
+
+    // Bind parameters for the main query
+    let mut q = sqlx::query_as::<_, UnifiedVideoRow>(&sql);
     if let Some(ref content_type) = query.content_type {
-        let filter = format!(" AND content_type = '{}'", content_type.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(content_type);
     }
-
     if let Some(is_published) = query.is_published {
-        let filter = format!(" AND is_published = {}", is_published);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(is_published);
     }
-
     if let Some(is_featured) = query.is_featured {
-        let filter = format!(" AND is_featured = {}", is_featured);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(is_featured);
     }
-
     if let Some(trader_id) = query.trader_id {
-        let filter = format!(" AND trader_id = {}", trader_id);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(trader_id);
     }
-
     if let Some(ref search) = query.search {
-        let search_term = search.replace('\'', "''");
-        let filter = format!(
-            " AND (title ILIKE '%{}%' OR description ILIKE '%{}%')",
-            search_term, search_term
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let search_pattern = format!("%{}%", search);
+        q = q.bind(search_pattern);
+    }
+    for tag in &tag_list {
+        let tag_json = serde_json::json!([tag]);
+        q = q.bind(tag_json);
+    }
+    q = q.bind(per_page);
+    q = q.bind(offset);
+
+    let videos: Vec<UnifiedVideoRow> = q.fetch_all(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
+
+    // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
+    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    if let Some(ref content_type) = query.content_type {
+        cq = cq.bind(content_type);
+    }
+    if let Some(is_published) = query.is_published {
+        cq = cq.bind(is_published);
+    }
+    if let Some(is_featured) = query.is_featured {
+        cq = cq.bind(is_featured);
+    }
+    if let Some(trader_id) = query.trader_id {
+        cq = cq.bind(trader_id);
+    }
+    if let Some(ref search) = query.search {
+        let search_pattern = format!("%{}%", search);
+        cq = cq.bind(search_pattern);
+    }
+    for tag in &tag_list {
+        let tag_json = serde_json::json!([tag]);
+        cq = cq.bind(tag_json);
     }
 
-    // ICT 7 FIX: Corrected JSONB containment syntax (was '[\"{}\"]]' - double bracket bug)
-    if let Some(ref tags) = query.tags {
-        let tag_list: Vec<&str> = tags.split(',').collect();
-        for tag in tag_list {
-            let filter = format!(" AND tags @> '[\"{}\"]'", tag.trim().replace('\'', "''"));
-            sql.push_str(&filter);
-            count_sql.push_str(&filter);
-        }
-    }
-
-    // Sorting
-    let sort_by = query.sort_by.as_deref().unwrap_or("video_date");
-    let sort_dir = query.sort_dir.as_deref().unwrap_or("DESC");
-    sql.push_str(&format!(" ORDER BY {} {}", sort_by, sort_dir));
-    sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
-
-    let videos: Vec<UnifiedVideoRow> = sqlx::query_as(&sql)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Database error: {}", e)})),
-            )
-        })?;
-
-    let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     // Fetch related data for each video
     let mut responses = Vec::new();
@@ -782,7 +842,10 @@ pub fn analytics_router() -> Router<AppState> {
         .route("/cdn/purge-all", post(purge_all_cdn))
         // ICT 7 ADDITIONS: Transcoding, Thumbnails, Embed, Bulk Operations
         .route("/bunny/webhook", post(bunny_webhook))
-        .route("/videos/:id/transcoding-status", get(get_transcoding_status))
+        .route(
+            "/videos/:id/transcoding-status",
+            get(get_transcoding_status),
+        )
         .route("/videos/:id/generate-thumbnail", post(generate_thumbnail))
         .route("/videos/:id/embed-code", get(get_embed_code))
         .route("/bulk/tags", post(bulk_update_tags))
@@ -859,9 +922,15 @@ async fn update_watch_progress(
     Json(input): Json<serde_json::Value>,
 ) -> Json<serde_json::Value> {
     let user_id = input.get("user_id").and_then(|v| v.as_i64()).unwrap_or(0);
-    let current_time = input.get("current_time").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+    let current_time = input
+        .get("current_time")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(0) as i32;
     let duration = input.get("duration").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
-    let completed = input.get("completed").and_then(|v| v.as_bool()).unwrap_or(false);
+    let completed = input
+        .get("completed")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
 
     // Calculate completion percentage
     let completion_percent = if duration > 0 {
@@ -896,7 +965,7 @@ async fn update_watch_progress(
                 "completed": completed
             }
         })),
-        Err(_) => Json(json!({"success": true})) // Graceful fallback
+        Err(_) => Json(json!({"success": true})), // Graceful fallback
     }
 }
 
@@ -1273,6 +1342,7 @@ async fn export_videos_csv(
     use axum::response::IntoResponse;
 
     // Fetch all videos for export
+    #[allow(clippy::type_complexity)]
     let videos: Vec<(i64, String, String, String, i32, i32, bool, chrono::NaiveDateTime)> = sqlx::query_as(
         r#"SELECT id, title, slug, content_type, views_count, COALESCE(duration, 0), is_published, created_at
            FROM unified_videos
@@ -1284,7 +1354,9 @@ async fn export_videos_csv(
     .unwrap_or_default();
 
     // Build CSV with headers
-    let mut csv = String::from("id,title,slug,content_type,views_count,duration_seconds,is_published,created_at\n");
+    let mut csv = String::from(
+        "id,title,slug,content_type,views_count,duration_seconds,is_published,created_at\n",
+    );
 
     for (id, title, slug, content_type, views, duration, published, created_at) in videos {
         // Escape CSV fields properly
@@ -1366,11 +1438,11 @@ async fn analytics_dashboard(
     .await
     .unwrap_or((0,));
 
-    // Videos created in period
-    let recent_videos: (i64,) = sqlx::query_as(&format!(
-        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL AND created_at >= NOW() - INTERVAL '{} days'",
-        days
-    ))
+    // Videos created in period (parameterized to prevent SQL injection)
+    let recent_videos: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL AND created_at >= NOW() - make_interval(days => $1)",
+    )
+    .bind(days)
     .fetch_one(&state.db.pool)
     .await
     .unwrap_or((0,));
@@ -1416,7 +1488,10 @@ async fn bunny_webhook(
     Json(payload): Json<serde_json::Value>,
 ) -> Json<serde_json::Value> {
     // Extract webhook data from Bunny.net
-    let video_guid = payload.get("VideoGuid").and_then(|v| v.as_str()).unwrap_or("");
+    let video_guid = payload
+        .get("VideoGuid")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
     let status = payload.get("Status").and_then(|v| v.as_i64()).unwrap_or(0);
 
     // Map Bunny status codes: 0=Queued, 1=Processing, 2=Encoding, 3=Finished, 4=Resolution Finished, 5=Failed
@@ -1426,18 +1501,29 @@ async fn bunny_webhook(
         2 => "encoding",
         3 | 4 => "completed",
         5 => "failed",
-        _ => "unknown"
+        _ => "unknown",
     };
 
     // Extract video metadata from webhook
-    let width = payload.get("Width").and_then(|v| v.as_i64()).map(|v| v as i32);
-    let height = payload.get("Height").and_then(|v| v.as_i64()).map(|v| v as i32);
-    let duration = payload.get("Length").and_then(|v| v.as_f64()).map(|v| v as i32);
+    let width = payload
+        .get("Width")
+        .and_then(|v| v.as_i64())
+        .map(|v| v as i32);
+    let height = payload
+        .get("Height")
+        .and_then(|v| v.as_i64())
+        .map(|v| v as i32);
+    let duration = payload
+        .get("Length")
+        .and_then(|v| v.as_f64())
+        .map(|v| v as i32);
     let thumbnail_url = payload.get("ThumbnailFileName").and_then(|v| v.as_str());
 
     // Update video record with transcoding status
     if !video_guid.is_empty() {
-        let mut query = String::from("UPDATE unified_videos SET bunny_encoding_status = $1, updated_at = NOW()");
+        let mut query = String::from(
+            "UPDATE unified_videos SET bunny_encoding_status = $1, updated_at = NOW()",
+        );
         let mut param_idx = 2;
 
         if duration.is_some() {
@@ -1448,8 +1534,12 @@ async fn bunny_webhook(
             query.push_str(&format!(", bunny_thumbnail_url = ${}", param_idx));
             param_idx += 1;
         }
-        if width.is_some() && height.is_some() {
-            query.push_str(&format!(", metadata = jsonb_set(COALESCE(metadata, '{{}}'::jsonb), '{{resolution}}', '{{\"width\": {}, \"height\": {}}}'::jsonb)", width.unwrap(), height.unwrap()));
+        if let (Some(_w), Some(_h)) = (width, height) {
+            query.push_str(&format!(
+                ", metadata = jsonb_set(COALESCE(metadata, '{{}}'::jsonb), '{{resolution}}', jsonb_build_object('width', ${}::int, 'height', ${}::int))",
+                param_idx, param_idx + 1
+            ));
+            param_idx += 2;
         }
 
         query.push_str(&format!(" WHERE bunny_video_guid = ${}", param_idx));
@@ -1461,6 +1551,10 @@ async fn bunny_webhook(
         }
         if let Some(thumb) = thumbnail_url {
             sqlx_query = sqlx_query.bind(thumb);
+        }
+        if let (Some(w), Some(h)) = (width, height) {
+            sqlx_query = sqlx_query.bind(w);
+            sqlx_query = sqlx_query.bind(h);
         }
         sqlx_query = sqlx_query.bind(video_guid);
 
@@ -1481,6 +1575,7 @@ async fn get_transcoding_status(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    #[allow(clippy::type_complexity)]
     let status: Option<(Option<String>, Option<String>, Option<i32>, Option<serde_json::Value>)> = sqlx::query_as(
         "SELECT bunny_encoding_status, bunny_thumbnail_url, duration, metadata FROM unified_videos WHERE id = $1"
     )
@@ -1504,8 +1599,11 @@ async fn get_transcoding_status(
                     "metadata": metadata
                 }
             })))
-        },
-        None => Err((StatusCode::NOT_FOUND, Json(json!({"error": "Video not found"}))))
+        }
+        None => Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Video not found"})),
+        )),
     }
 }
 
@@ -1518,7 +1616,7 @@ async fn generate_thumbnail(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get video's Bunny GUID and library ID
     let video: Option<(Option<String>, Option<i64>)> = sqlx::query_as(
-        "SELECT bunny_video_guid, bunny_library_id FROM unified_videos WHERE id = $1"
+        "SELECT bunny_video_guid, bunny_library_id FROM unified_videos WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -1528,7 +1626,10 @@ async fn generate_thumbnail(
     match video {
         Some((Some(guid), Some(library_id))) => {
             // Generate thumbnail URL from timestamp
-            let timestamp = input.get("timestamp_seconds").and_then(|v| v.as_i64()).unwrap_or(0);
+            let timestamp = input
+                .get("timestamp_seconds")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0);
             let thumbnail_url = format!(
                 "https://vz-{}.b-cdn.net/{}/thumbnail.jpg?time={}",
                 library_id, guid, timestamp
@@ -1551,8 +1652,11 @@ async fn generate_thumbnail(
                     "timestamp_seconds": timestamp
                 }
             })))
-        },
-        _ => Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Video does not have Bunny CDN configuration"}))))
+        }
+        _ => Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Video does not have Bunny CDN configuration"})),
+        )),
     }
 }
 
@@ -1598,10 +1702,18 @@ async fn get_embed_code(
                         };
                         (url, html)
                     } else {
-                        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Missing Bunny configuration"}))));
+                        return Err((
+                            StatusCode::BAD_REQUEST,
+                            Json(json!({"error": "Missing Bunny configuration"})),
+                        ));
                     }
-                },
-                _ => return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Platform not supported for embed code generation"}))))
+                }
+                _ => {
+                    return Err((
+                        StatusCode::BAD_REQUEST,
+                        Json(json!({"error": "Platform not supported for embed code generation"})),
+                    ))
+                }
             };
 
             Ok(Json(json!({
@@ -1620,8 +1732,11 @@ async fn get_embed_code(
                     }
                 }
             })))
-        },
-        None => Err((StatusCode::NOT_FOUND, Json(json!({"error": "Video not found"}))))
+        }
+        None => Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Video not found"})),
+        )),
     }
 }
 
@@ -1641,20 +1756,22 @@ async fn bulk_update_tags(
     Json(input): Json<BulkTagsRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.video_ids.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No video IDs provided"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No video IDs provided"})),
+        ));
     }
 
     let mut updated = 0;
 
     for video_id in &input.video_ids {
         // Get current tags
-        let current: Option<(Option<serde_json::Value>,)> = sqlx::query_as(
-            "SELECT tags FROM unified_videos WHERE id = $1 AND deleted_at IS NULL"
-        )
-        .bind(video_id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .unwrap_or(None);
+        let current: Option<(Option<serde_json::Value>,)> =
+            sqlx::query_as("SELECT tags FROM unified_videos WHERE id = $1 AND deleted_at IS NULL")
+                .bind(video_id)
+                .fetch_optional(&state.db.pool)
+                .await
+                .unwrap_or(None);
 
         if let Some((tags_json,)) = current {
             let mut tags: Vec<String> = tags_json
@@ -1678,7 +1795,7 @@ async fn bulk_update_tags(
             // Update
             let new_tags_json = serde_json::to_value(&tags).unwrap_or(json!([]));
             let result = sqlx::query(
-                "UPDATE unified_videos SET tags = $1, updated_at = NOW() WHERE id = $2"
+                "UPDATE unified_videos SET tags = $1, updated_at = NOW() WHERE id = $2",
             )
             .bind(&new_tags_json)
             .bind(video_id)
@@ -1713,7 +1830,10 @@ async fn bulk_feature(
     Json(input): Json<BulkFeatureRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.video_ids.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No video IDs provided"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No video IDs provided"})),
+        ));
     }
 
     sqlx::query(

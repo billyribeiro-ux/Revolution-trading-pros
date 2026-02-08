@@ -556,7 +556,11 @@ async fn create_datasource(
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    tracing::info!("Datasource created: {} ({})", datasource.name, datasource.id);
+    tracing::info!(
+        "Datasource created: {} ({})",
+        datasource.name,
+        datasource.id
+    );
 
     Ok((StatusCode::CREATED, Json(datasource)))
 }
@@ -653,7 +657,11 @@ async fn update_datasource(
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    tracing::info!("Datasource updated: {} ({})", datasource.name, datasource.id);
+    tracing::info!(
+        "Datasource updated: {} ({})",
+        datasource.name,
+        datasource.id
+    );
 
     Ok(Json(datasource))
 }
@@ -698,11 +706,10 @@ async fn delete_datasource(
     })?;
 
     if existing.is_system {
-        return Err(ApiError::new(
-            StatusCode::LOCKED,
-            "Cannot delete a system datasource",
-        )
-        .with_code("SYSTEM_DATASOURCE"));
+        return Err(
+            ApiError::new(StatusCode::LOCKED, "Cannot delete a system datasource")
+                .with_code("SYSTEM_DATASOURCE"),
+        );
     }
 
     // Soft delete
@@ -710,7 +717,9 @@ async fn delete_datasource(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .map_err(|e: sqlx::Error| {
+            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+        })?;
 
     tracing::info!("Datasource deleted: {} ({})", existing.name, id);
 
@@ -851,7 +860,10 @@ async fn list_entries(
 
     let limit = query.limit.unwrap_or(100).min(1000);
     let offset = query.offset.unwrap_or(0);
-    let dimension = query.dimension.clone().unwrap_or_else(|| "default".to_string());
+    let dimension = query
+        .dimension
+        .clone()
+        .unwrap_or_else(|| "default".to_string());
     let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
 
     // Verify datasource exists
@@ -984,7 +996,10 @@ async fn create_entry(
         );
     }
 
-    let dimension = request.dimension.clone().unwrap_or_else(|| "default".to_string());
+    let dimension = request
+        .dimension
+        .clone()
+        .unwrap_or_else(|| "default".to_string());
 
     // Get next sort order
     let next_sort: Option<i32> = sqlx::query_scalar(
@@ -1022,7 +1037,12 @@ async fn create_entry(
         }
     })?;
 
-    tracing::info!("Entry created: {} = {} in datasource {}", entry.name, entry.value, datasource_id);
+    tracing::info!(
+        "Entry created: {} = {} in datasource {}",
+        entry.name,
+        entry.value,
+        datasource_id
+    );
 
     Ok((StatusCode::CREATED, Json(entry)))
 }
@@ -1074,7 +1094,10 @@ async fn bulk_create_entries(
             continue;
         }
 
-        let dimension = entry.dimension.clone().unwrap_or_else(|| "default".to_string());
+        let dimension = entry
+            .dimension
+            .clone()
+            .unwrap_or_else(|| "default".to_string());
 
         let result = sqlx::query(
             r#"
@@ -1192,20 +1215,25 @@ async fn delete_entry(
 ) -> ApiResultEmpty {
     require_cms_editor(&user)?;
 
-    let result = sqlx::query(
-        "DELETE FROM cms_datasource_entries WHERE id = $1 AND datasource_id = $2",
-    )
-    .bind(entry_id)
-    .bind(datasource_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let result =
+        sqlx::query("DELETE FROM cms_datasource_entries WHERE id = $1 AND datasource_id = $2")
+            .bind(entry_id)
+            .bind(datasource_id)
+            .execute(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?;
 
     if result.rows_affected() == 0 {
         return Err(ApiError::new(StatusCode::NOT_FOUND, "Entry not found").with_code("NOT_FOUND"));
     }
 
-    tracing::info!("Entry deleted: {} from datasource {}", entry_id, datasource_id);
+    tracing::info!(
+        "Entry deleted: {} from datasource {}",
+        entry_id,
+        datasource_id
+    );
 
     Ok(Json(json!({
         "message": "Entry deleted successfully",
@@ -1293,7 +1321,14 @@ async fn export_entries_csv(
     State(state): State<AppState>,
     user: User,
     Path(datasource_id): Path<Uuid>,
-) -> Result<(StatusCode, [(axum::http::header::HeaderName, String); 2], String), ApiError> {
+) -> Result<
+    (
+        StatusCode,
+        [(axum::http::header::HeaderName, String); 2],
+        String,
+    ),
+    ApiError,
+> {
     require_cms_editor(&user)?;
 
     // Get datasource info for filename
@@ -1301,16 +1336,17 @@ async fn export_entries_csv(
     struct DatasourceSlug {
         slug: String,
     }
-    let datasource: DatasourceSlug = sqlx::query_as(
-        "SELECT slug FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL",
-    )
-    .bind(datasource_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .ok_or_else(|| {
-        ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
-    })?;
+    let datasource: DatasourceSlug =
+        sqlx::query_as("SELECT slug FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL")
+            .bind(datasource_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
+            .ok_or_else(|| {
+                ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
+            })?;
 
     // Fetch all entries
     let entries: Vec<CsvEntryRow> = sqlx::query_as(
@@ -1393,11 +1429,17 @@ async fn import_entries_csv(
     // Get the file from multipart
     let mut csv_content = String::new();
     while let Some(field) = multipart.next_field().await.map_err(|e| {
-        ApiError::new(StatusCode::BAD_REQUEST, format!("Failed to read file: {}", e))
+        ApiError::new(
+            StatusCode::BAD_REQUEST,
+            format!("Failed to read file: {}", e),
+        )
     })? {
         if field.name() == Some("file") {
             let bytes = field.bytes().await.map_err(|e| {
-                ApiError::new(StatusCode::BAD_REQUEST, format!("Failed to read file: {}", e))
+                ApiError::new(
+                    StatusCode::BAD_REQUEST,
+                    format!("Failed to read file: {}", e),
+                )
             })?;
             csv_content = String::from_utf8(bytes.to_vec()).map_err(|e| {
                 ApiError::new(StatusCode::BAD_REQUEST, format!("Invalid UTF-8: {}", e))
@@ -1406,8 +1448,7 @@ async fn import_entries_csv(
     }
 
     if csv_content.is_empty() {
-        return Err(ApiError::new(StatusCode::BAD_REQUEST, "No file uploaded")
-            .with_code("NO_FILE"));
+        return Err(ApiError::new(StatusCode::BAD_REQUEST, "No file uploaded").with_code("NO_FILE"));
     }
 
     // Parse CSV
@@ -1495,23 +1536,27 @@ async fn public_get_entries(
     Path(slug): Path<String>,
     Query(query): Query<ListEntriesQuery>,
 ) -> ApiResult<PublicDatasourceResponse> {
-    let dimension = query.dimension.clone().unwrap_or_else(|| "default".to_string());
+    let dimension = query
+        .dimension
+        .clone()
+        .unwrap_or_else(|| "default".to_string());
 
     // Get datasource name
     #[derive(Debug, sqlx::FromRow)]
     struct DatasourceName {
         name: String,
     }
-    let datasource: DatasourceName = sqlx::query_as(
-        "SELECT name FROM cms_datasources WHERE slug = $1 AND deleted_at IS NULL",
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .ok_or_else(|| {
-        ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
-    })?;
+    let datasource: DatasourceName =
+        sqlx::query_as("SELECT name FROM cms_datasources WHERE slug = $1 AND deleted_at IS NULL")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
+            .ok_or_else(|| {
+                ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
+            })?;
 
     // Fetch entries
     let entries: Vec<PublicEntryResponse> = sqlx::query_as(

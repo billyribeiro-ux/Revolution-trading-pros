@@ -370,7 +370,8 @@ async fn upload_avatar(
                 .unwrap_or_default();
 
             // Validate content type
-            if !["image/jpeg", "image/png", "image/gif", "image/webp"].contains(&content_type.as_str())
+            if !["image/jpeg", "image/png", "image/gif", "image/webp"]
+                .contains(&content_type.as_str())
             {
                 return Err((
                     StatusCode::BAD_REQUEST,
@@ -403,7 +404,12 @@ async fn upload_avatar(
                 "image/webp" => "webp",
                 _ => "jpg",
             };
-            let filename = format!("avatar_{}_{}.{}", user.id, chrono::Utc::now().timestamp(), ext);
+            let filename = format!(
+                "avatar_{}_{}.{}",
+                user.id,
+                chrono::Utc::now().timestamp(),
+                ext
+            );
 
             // Store avatar - use environment variable for upload path or default
             let upload_dir = std::env::var("AVATAR_UPLOAD_DIR")
@@ -594,10 +600,10 @@ async fn deactivate_account(
             "ICT 7 AUDIT: User account permanently deleted"
         );
 
-        return Ok(Json(json!({
+        Ok(Json(json!({
             "success": true,
             "message": "Your account has been permanently deleted. All personal data has been removed."
-        })));
+        })))
     } else {
         // Soft deactivation - keep data but disable account
         sqlx::query(
@@ -625,10 +631,10 @@ async fn deactivate_account(
             "ICT 7 AUDIT: User account deactivated"
         );
 
-        return Ok(Json(json!({
+        Ok(Json(json!({
             "success": true,
             "message": "Your account has been deactivated. You can reactivate it by logging in again."
-        })));
+        })))
     }
 }
 
@@ -729,17 +735,19 @@ async fn update_profile(
     }
 
     // Check if email is being changed
-    let email_changed = input.email.as_ref().map_or(false, |e| e != &user.email);
+    let email_changed = input.email.as_ref().is_some_and(|e| e != &user.email);
 
     // Build display_name from first_name + last_name if not provided
-    let display_name = input.display_name.clone().or_else(|| {
-        match (&input.first_name, &input.last_name) {
-            (Some(f), Some(l)) => Some(format!("{} {}", f, l)),
-            (Some(f), None) => Some(f.clone()),
-            (None, Some(l)) => Some(l.clone()),
-            (None, None) => None,
-        }
-    });
+    let display_name =
+        input
+            .display_name
+            .clone()
+            .or_else(|| match (&input.first_name, &input.last_name) {
+                (Some(f), Some(l)) => Some(format!("{} {}", f, l)),
+                (Some(f), None) => Some(f.clone()),
+                (None, Some(l)) => Some(l.clone()),
+                (None, None) => None,
+            });
 
     // Update profile fields in database
     sqlx::query(
@@ -903,7 +911,10 @@ async fn get_payment_methods(
         .await
         .map_err(|e| {
             tracing::error!("Failed to list payment methods: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": "Failed to retrieve payment methods"})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": "Failed to retrieve payment methods"})),
+            )
         })?;
 
     // Get default payment method for this customer
@@ -926,7 +937,7 @@ async fn get_payment_methods(
         r#"SELECT um.stripe_subscription_id, mp.name as plan_name
            FROM user_memberships um
            LEFT JOIN membership_plans mp ON um.plan_id = mp.id
-           WHERE um.user_id = $1 AND um.status IN ('active', 'trialing', 'past_due')"#
+           WHERE um.user_id = $1 AND um.status IN ('active', 'trialing', 'past_due')"#,
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
@@ -937,7 +948,7 @@ async fn get_payment_methods(
     let payment_methods: Vec<PaymentMethodResponse> = stripe_methods
         .into_iter()
         .map(|pm| {
-            let is_default = default_pm.as_ref().map_or(false, |d| d == &pm.id);
+            let is_default = default_pm.as_ref() == Some(&pm.id);
 
             // Find subscriptions using this payment method
             // Note: Stripe subscriptions don't directly link to payment methods easily,
@@ -998,7 +1009,10 @@ async fn add_payment_method(
         .await
         .map_err(|e| {
             tracing::error!("Failed to attach payment method: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": format!("Failed to add payment method: {}", e)})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Failed to add payment method: {}", e)})),
+            )
         })?;
 
     // Set as default if requested
@@ -1058,7 +1072,10 @@ async fn delete_payment_method(
     .flatten();
 
     let customer_id = customer_id.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "No payment methods on file"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "No payment methods on file"})),
+        )
     })?;
 
     // Get the payment method to verify it belongs to this customer
@@ -1069,7 +1086,10 @@ async fn delete_payment_method(
         .await
         .map_err(|e| {
             tracing::error!("Failed to get payment method: {}", e);
-            (StatusCode::NOT_FOUND, Json(json!({"error": "Payment method not found"})))
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Payment method not found"})),
+            )
         })?;
 
     // Verify ownership
@@ -1107,7 +1127,10 @@ async fn delete_payment_method(
         .await
         .map_err(|e| {
             tracing::error!("Failed to detach payment method: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": format!("Failed to delete payment method: {}", e)})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Failed to delete payment method: {}", e)})),
+            )
         })?;
 
     tracing::info!(
@@ -1151,7 +1174,10 @@ async fn get_or_create_stripe_customer(
         .await
         .map_err(|e| {
             tracing::error!("Failed to create Stripe customer: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": "Failed to create payment profile"})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": "Failed to create payment profile"})),
+            )
         })?;
 
     // Store the customer ID in a new user_memberships record (or user_payment_profiles table if exists)

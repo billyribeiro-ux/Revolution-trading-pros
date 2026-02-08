@@ -3,10 +3,10 @@
 
 pub mod auth;
 pub mod categories;
-pub mod oauth; // ICT 7: Google & Apple OAuth authentication
 pub mod health;
 pub mod media;
 pub mod members;
+pub mod oauth; // ICT 7: Google & Apple OAuth authentication
 pub mod redirects;
 pub mod robots;
 pub mod sitemap;
@@ -43,13 +43,14 @@ pub mod admin_indicators;
 pub mod admin_member_management; // ICT 11+: Full member CRUD, ban, export
 pub mod admin_members; // ICT 7: Member segments, tags, and filters
 pub mod admin_page_layouts;
+pub mod admin_popups;
 pub mod admin_videos;
 pub mod bunny_upload; // ICT 7: Bunny.net video upload API
 pub mod cms_ai_assist; // ICT 7+: AI-powered content assistance
 pub mod cms_assets; // ICT 11+: Centralized Asset Manager (DAM)
 pub mod cms_datasources; // ICT 7+: Datasources for reusable option lists
-pub mod cms_presets; // ICT 7+: Component presets/templates
 pub mod cms_global_components; // ICT 11+: Global Components Library
+pub mod cms_presets; // ICT 7+: Component presets/templates
 pub mod cms_reusable_blocks;
 pub mod cms_scheduling; // ICT 7+: Content scheduling and releases
 pub mod cms_seo; // ICT 11+: Server-side SEO validation
@@ -63,7 +64,6 @@ pub mod member_courses;
 pub mod member_indicators;
 pub mod migrate;
 pub mod organization;
-pub mod admin_popups;
 pub mod popups;
 pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics API
 pub mod room_content;
@@ -216,7 +216,10 @@ pub fn api_router() -> Router<AppState> {
         .nest("/cms/datasources", cms_datasources::admin_router())
         .nest("/cms/datasources/public", cms_datasources::public_router())
         // CMS Global Components - ICT 11+ Global Components Library
-        .nest("/cms/global-components", cms_global_components::admin_router())
+        .nest(
+            "/cms/global-components",
+            cms_global_components::admin_router(),
+        )
         .nest(
             "/cms/global-components/public",
             cms_global_components::public_router(),

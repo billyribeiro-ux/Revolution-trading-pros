@@ -55,7 +55,10 @@ pub fn init_test_env() {
             );
         }
         if std::env::var("DATABASE_URL").is_err() {
-            std::env::set_var("DATABASE_URL", "postgres://test:test@localhost:5432/test_db");
+            std::env::set_var(
+                "DATABASE_URL",
+                "postgres://test:test@localhost:5432/test_db",
+            );
         }
         if std::env::var("REDIS_URL").is_err() {
             std::env::set_var("REDIS_URL", "redis://localhost:6379");
@@ -510,7 +513,12 @@ impl AlertBuilder {
     fn default_expiration() -> String {
         let today = Utc::now().date_naive();
         let days_until_friday = (5 - today.weekday().num_days_from_monday() as i64 + 7) % 7;
-        let expiration = today + Duration::days(if days_until_friday == 0 { 7 } else { days_until_friday });
+        let expiration = today
+            + Duration::days(if days_until_friday == 0 {
+                7
+            } else {
+                days_until_friday
+            });
         expiration.format("%Y-%m-%d").to_string()
     }
 }
@@ -693,7 +701,12 @@ impl TradeBuilder {
     fn default_expiration() -> String {
         let today = Utc::now().date_naive();
         let days_until_friday = (5 - today.weekday().num_days_from_monday() as i64 + 7) % 7;
-        let expiration = today + Duration::days(if days_until_friday == 0 { 7 } else { days_until_friday });
+        let expiration = today
+            + Duration::days(if days_until_friday == 0 {
+                7
+            } else {
+                days_until_friday
+            });
         expiration.format("%Y-%m-%d").to_string()
     }
 }
@@ -862,7 +875,12 @@ impl TradePlanBuilder {
     fn default_expiration() -> String {
         let today = Utc::now().date_naive();
         let days_until_friday = (5 - today.weekday().num_days_from_monday() as i64 + 7) % 7;
-        let expiration = today + Duration::days(if days_until_friday == 0 { 7 } else { days_until_friday });
+        let expiration = today
+            + Duration::days(if days_until_friday == 0 {
+                7
+            } else {
+                days_until_friday
+            });
         expiration.format("%Y-%m-%d").to_string()
     }
 }
@@ -929,7 +947,10 @@ impl TosFormatter {
             _ => "@MKT".to_string(),
         };
 
-        format!("{} {}{} {} {}", action, qty_prefix, quantity, ticker, price_str)
+        format!(
+            "{} {}{} {} {}",
+            action, qty_prefix, quantity, ticker, price_str
+        )
     }
 }
 
@@ -940,7 +961,11 @@ impl TosFormatter {
 /// Convert response body to JSON Value
 pub async fn body_to_json(response: axum::http::Response<Body>) -> Value {
     let body = response.into_body();
-    let bytes = body.collect().await.expect("Failed to read body").to_bytes();
+    let bytes = body
+        .collect()
+        .await
+        .expect("Failed to read body")
+        .to_bytes();
     serde_json::from_slice(&bytes).unwrap_or_else(|_| {
         let text = String::from_utf8_lossy(&bytes);
         json!({"raw_response": text.to_string()})

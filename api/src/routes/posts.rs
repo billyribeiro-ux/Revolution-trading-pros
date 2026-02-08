@@ -9,7 +9,7 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, put, delete},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use serde::Deserialize;
@@ -231,7 +231,10 @@ async fn create_post(
 ) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 7: Validate title
     if input.title.trim().is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Title is required"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Title is required"})),
+        ));
     }
 
     // Generate slug and ensure uniqueness
@@ -245,7 +248,12 @@ async fn create_post(
             .bind(&final_slug)
             .fetch_one(&state.db.pool)
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
         if !exists {
             break;
@@ -253,14 +261,20 @@ async fn create_post(
         final_slug = format!("{}-{}", base_slug, counter);
         counter += 1;
         if counter > 100 {
-            return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Could not generate unique slug"}))));
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Could not generate unique slug"})),
+            ));
         }
     }
 
     // Validate status
     let status = input.status.unwrap_or_else(|| "draft".to_string());
     if !["draft", "published", "archived"].contains(&status.as_str()) {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid status. Must be draft, published, or archived"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid status. Must be draft, published, or archived"})),
+        ));
     }
 
     let post: PostRow = sqlx::query_as(
@@ -326,13 +340,18 @@ async fn update_post(
         let mut counter = 1;
         loop {
             let exists: bool = sqlx::query_scalar(
-                "SELECT EXISTS(SELECT 1 FROM posts WHERE slug = $1 AND id != $2)"
+                "SELECT EXISTS(SELECT 1 FROM posts WHERE slug = $1 AND id != $2)",
             )
             .bind(&candidate_slug)
             .bind(id)
             .fetch_one(&state.db.pool)
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
             if !exists {
                 break;
@@ -340,7 +359,10 @@ async fn update_post(
             candidate_slug = format!("{}-{}", base_slug, counter);
             counter += 1;
             if counter > 100 {
-                return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Could not generate unique slug"}))));
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Could not generate unique slug"})),
+                ));
             }
         }
         candidate_slug
@@ -351,7 +373,10 @@ async fn update_post(
     // Validate status if provided
     let status = input.status.unwrap_or(current.status);
     if !["draft", "published", "archived"].contains(&status.as_str()) {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid status. Must be draft, published, or archived"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid status. Must be draft, published, or archived"})),
+        ));
     }
 
     let excerpt = input.excerpt.or(current.excerpt);
@@ -408,10 +433,18 @@ async fn delete_post(
         .bind(id)
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if !exists {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Post not found"})),
+        ));
     }
 
     // Delete associated post_tags first
@@ -483,8 +516,18 @@ async fn publish_post(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Post not found"})),
+        )
+    })?;
 
     Ok(Json(post))
 }
@@ -501,8 +544,18 @@ async fn unpublish_post(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Post not found"})),
+        )
+    })?;
 
     Ok(Json(post))
 }
@@ -519,8 +572,18 @@ async fn archive_post(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Post not found"})),
+        )
+    })?;
 
     Ok(Json(post))
 }
@@ -531,17 +594,26 @@ async fn get_related_posts(
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // First get the current post to find its category/tags
-    let current: Option<PostRow> = sqlx::query_as(
-        "SELECT * FROM posts WHERE slug = $1 AND status = 'published'"
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let current: Option<PostRow> =
+        sqlx::query_as("SELECT * FROM posts WHERE slug = $1 AND status = 'published'")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     let current = match current {
         Some(p) => p,
-        None => return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"})))),
+        None => {
+            return Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Post not found"})),
+            ))
+        }
     };
 
     // Get related posts by shared tags (if post_tags table exists) or by category
@@ -698,7 +770,12 @@ async fn admin_list_posts(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts")
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let last_page = (total.0 as f64 / per_page as f64).ceil() as i64;
 
@@ -721,7 +798,10 @@ pub fn router() -> Router<AppState> {
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(admin_list_posts).post(create_post))
-        .route("/:id", get(get_post_by_id).put(update_post).delete(delete_post))
+        .route(
+            "/:id",
+            get(get_post_by_id).put(update_post).delete(delete_post),
+        )
         .route("/:id/publish", post(publish_post))
         .route("/:id/unpublish", post(unpublish_post))
         .route("/:id/archive", post(archive_post))

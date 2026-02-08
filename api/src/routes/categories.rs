@@ -76,7 +76,12 @@ pub async fn index(
     } else {
         "name"
     };
-    let sort_direction = if params.sort_dir.as_deref().unwrap_or("asc").eq_ignore_ascii_case("desc") {
+    let sort_direction = if params
+        .sort_dir
+        .as_deref()
+        .unwrap_or("asc")
+        .eq_ignore_ascii_case("desc")
+    {
         "DESC"
     } else {
         "ASC"
@@ -85,13 +90,24 @@ pub async fn index(
     // Build fully parameterized query
     let base_query = format!(
         "SELECT * FROM categories WHERE 1=1 {} {} {} ORDER BY {} {}",
-        if search_pattern.is_some() { "AND (name ILIKE $1 OR description ILIKE $1 OR slug ILIKE $1)" } else { "" },
-        if params.is_visible.is_some() && search_pattern.is_some() { "AND is_visible = $2" }
-        else if params.is_visible.is_some() { "AND is_visible = $1" } else { "" },
+        if search_pattern.is_some() {
+            "AND (name ILIKE $1 OR description ILIKE $1 OR slug ILIKE $1)"
+        } else {
+            ""
+        },
+        if params.is_visible.is_some() && search_pattern.is_some() {
+            "AND is_visible = $2"
+        } else if params.is_visible.is_some() {
+            "AND is_visible = $1"
+        } else {
+            ""
+        },
         if params.parent_id.is_some() {
             let idx = 1 + params.search.is_some() as usize + params.is_visible.is_some() as usize;
             format!("AND parent_id = ${}", idx)
-        } else { "".to_string() },
+        } else {
+            "".to_string()
+        },
         sort_column,
         sort_direction
     );
@@ -103,81 +119,131 @@ pub async fn index(
     let fetch_all = params.all.unwrap_or(false);
 
     // Execute with proper parameter binding
-    let categories: Vec<Category> = match (&search_pattern, params.is_visible, params.parent_id, fetch_all) {
+    let categories: Vec<Category> = match (
+        &search_pattern,
+        params.is_visible,
+        params.parent_id,
+        fetch_all,
+    ) {
         (Some(pattern), Some(vis), Some(pid), false) => {
             sqlx::query_as(&format!("{} LIMIT $4 OFFSET $5", base_query))
-                .bind(pattern).bind(vis).bind(pid).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(pattern)
+                .bind(vis)
+                .bind(pid)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (Some(pattern), Some(vis), None, false) => {
             sqlx::query_as(&format!("{} LIMIT $3 OFFSET $4", base_query))
-                .bind(pattern).bind(vis).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(pattern)
+                .bind(vis)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (Some(pattern), None, Some(pid), false) => {
             sqlx::query_as(&format!("{} LIMIT $3 OFFSET $4", base_query))
-                .bind(pattern).bind(pid).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(pattern)
+                .bind(pid)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (Some(pattern), None, None, false) => {
             sqlx::query_as(&format!("{} LIMIT $2 OFFSET $3", base_query))
-                .bind(pattern).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(pattern)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, Some(vis), Some(pid), false) => {
             sqlx::query_as(&format!("{} LIMIT $3 OFFSET $4", base_query))
-                .bind(vis).bind(pid).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(vis)
+                .bind(pid)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, Some(vis), None, false) => {
             sqlx::query_as(&format!("{} LIMIT $2 OFFSET $3", base_query))
-                .bind(vis).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(vis)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, None, Some(pid), false) => {
             sqlx::query_as(&format!("{} LIMIT $2 OFFSET $3", base_query))
-                .bind(pid).bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(pid)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, None, None, false) => {
             sqlx::query_as(&format!("{} LIMIT $1 OFFSET $2", base_query))
-                .bind(per_page).bind(offset)
-                .fetch_all(state.db.pool()).await
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(state.db.pool())
+                .await
         }
         // All=true variants (no pagination)
         (Some(pattern), Some(vis), Some(pid), true) => {
-            sqlx::query_as(&base_query).bind(pattern).bind(vis).bind(pid)
-                .fetch_all(state.db.pool()).await
+            sqlx::query_as(&base_query)
+                .bind(pattern)
+                .bind(vis)
+                .bind(pid)
+                .fetch_all(state.db.pool())
+                .await
         }
         (Some(pattern), Some(vis), None, true) => {
-            sqlx::query_as(&base_query).bind(pattern).bind(vis)
-                .fetch_all(state.db.pool()).await
+            sqlx::query_as(&base_query)
+                .bind(pattern)
+                .bind(vis)
+                .fetch_all(state.db.pool())
+                .await
         }
         (Some(pattern), None, Some(pid), true) => {
-            sqlx::query_as(&base_query).bind(pattern).bind(pid)
-                .fetch_all(state.db.pool()).await
+            sqlx::query_as(&base_query)
+                .bind(pattern)
+                .bind(pid)
+                .fetch_all(state.db.pool())
+                .await
         }
         (Some(pattern), None, None, true) => {
-            sqlx::query_as(&base_query).bind(pattern)
-                .fetch_all(state.db.pool()).await
+            sqlx::query_as(&base_query)
+                .bind(pattern)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, Some(vis), Some(pid), true) => {
-            sqlx::query_as(&base_query).bind(vis).bind(pid)
-                .fetch_all(state.db.pool()).await
+            sqlx::query_as(&base_query)
+                .bind(vis)
+                .bind(pid)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, Some(vis), None, true) => {
-            sqlx::query_as(&base_query).bind(vis)
-                .fetch_all(state.db.pool()).await
+            sqlx::query_as(&base_query)
+                .bind(vis)
+                .fetch_all(state.db.pool())
+                .await
         }
         (None, None, Some(pid), true) => {
-            sqlx::query_as(&base_query).bind(pid)
-                .fetch_all(state.db.pool()).await
-        }
-        (None, None, None, true) => {
             sqlx::query_as(&base_query)
-                .fetch_all(state.db.pool()).await
+                .bind(pid)
+                .fetch_all(state.db.pool())
+                .await
         }
-    }.map_err(|e| ApiError::database_error(&e.to_string()))?;
+        (None, None, None, true) => sqlx::query_as(&base_query).fetch_all(state.db.pool()).await,
+    }
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     Ok(Json(serde_json::json!({ "data": categories })))
 }
@@ -306,7 +372,9 @@ pub async fn update(
     // ICT 7: Prevent circular reference (parent cannot be self or descendant)
     if let Some(parent_id) = payload.parent_id {
         if parent_id == id {
-            return Err(ApiError::validation_error("Category cannot be its own parent"));
+            return Err(ApiError::validation_error(
+                "Category cannot be its own parent",
+            ));
         }
 
         // Check parent exists
@@ -329,7 +397,7 @@ pub async fn update(
                 SELECT c.id FROM categories c
                 JOIN descendants d ON c.parent_id = d.id
             )
-            SELECT EXISTS(SELECT 1 FROM descendants WHERE id = $2)"
+            SELECT EXISTS(SELECT 1 FROM descendants WHERE id = $2)",
         )
         .bind(id)
         .bind(parent_id)
@@ -338,7 +406,9 @@ pub async fn update(
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         if is_descendant {
-            return Err(ApiError::validation_error("Cannot set a descendant category as parent (circular reference)"));
+            return Err(ApiError::validation_error(
+                "Cannot set a descendant category as parent (circular reference)",
+            ));
         }
     }
 
@@ -418,11 +488,12 @@ pub async fn destroy(
     }
 
     // ICT 7: Check if category has child categories
-    let child_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM categories WHERE parent_id = $1")
-        .bind(id)
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let child_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM categories WHERE parent_id = $1")
+            .bind(id)
+            .fetch_one(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if child_count > 0 {
         return Err(ApiError::validation_error(
@@ -452,13 +523,12 @@ pub async fn get_children(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let children: Vec<Category> = sqlx::query_as(
-        "SELECT * FROM categories WHERE parent_id = $1 ORDER BY name ASC"
-    )
-    .bind(id)
-    .fetch_all(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let children: Vec<Category> =
+        sqlx::query_as("SELECT * FROM categories WHERE parent_id = $1 ORDER BY name ASC")
+            .bind(id)
+            .fetch_all(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     Ok(Json(serde_json::json!({ "data": children })))
 }
@@ -481,12 +551,10 @@ pub async fn get_tree(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Fetch all categories
-    let categories: Vec<Category> = sqlx::query_as(
-        "SELECT * FROM categories ORDER BY name ASC"
-    )
-    .fetch_all(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let categories: Vec<Category> = sqlx::query_as("SELECT * FROM categories ORDER BY name ASC")
+        .fetch_all(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     // Build tree structure
     fn build_tree(categories: &[Category], parent_id: Option<i64>) -> Vec<CategoryTreeNode> {

@@ -18,12 +18,7 @@
 //! - SQL injection prevention via parameterized queries
 //! - Caching support for duplicate detection
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    routing::post,
-    Json, Router,
-};
+use axum::{extract::State, http::StatusCode, routing::post, Json, Router};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
@@ -305,7 +300,8 @@ fn extract_html_from_blocks(blocks: &[JsonValue]) -> String {
         if let Some(content) = block.get("content") {
             // Add heading tags
             if block_type == "heading" {
-                let level = block.get("settings")
+                let level = block
+                    .get("settings")
                     .and_then(|s| s.get("level"))
                     .and_then(|l| l.as_u64())
                     .unwrap_or(2);
@@ -329,8 +325,14 @@ fn extract_html_from_blocks(blocks: &[JsonValue]) -> String {
 
             // Handle images
             if block_type == "image" {
-                let src = content.get("mediaUrl").and_then(|v| v.as_str()).unwrap_or("");
-                let alt = content.get("mediaAlt").and_then(|v| v.as_str()).unwrap_or("");
+                let src = content
+                    .get("mediaUrl")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
+                let alt = content
+                    .get("mediaAlt")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
                 html.push_str(&format!("<img src=\"{src}\" alt=\"{alt}\">\n"));
             }
 
@@ -362,7 +364,11 @@ fn count_words(text: &str) -> u32 {
 fn count_sentences(text: &str) -> u32 {
     let re = Regex::new(r"[.!?]+").unwrap();
     let count = re.find_iter(text).count();
-    if count == 0 { 1 } else { count as u32 }
+    if count == 0 {
+        1
+    } else {
+        count as u32
+    }
 }
 
 /// Count syllables in a word (approximation)
@@ -389,16 +395,18 @@ fn count_syllables(word: &str) -> u32 {
         }
     }
 
-    if count == 0 { 1 } else { count }
+    if count == 0 {
+        1
+    } else {
+        count
+    }
 }
 
 /// Calculate Flesch-Kincaid readability score
 fn calculate_flesch_kincaid(text: &str) -> f32 {
     let words = count_words(text);
     let sentences = count_sentences(text);
-    let syllables: u32 = text.split_whitespace()
-        .map(|word| count_syllables(word))
-        .sum();
+    let syllables: u32 = text.split_whitespace().map(count_syllables).sum();
 
     if words == 0 || sentences == 0 {
         return 0.0;
@@ -410,7 +418,7 @@ fn calculate_flesch_kincaid(text: &str) -> f32 {
         - (84.6 * (syllables as f32 / words as f32));
 
     // Clamp between 0 and 100
-    score.max(0.0).min(100.0)
+    score.clamp(0.0, 100.0)
 }
 
 /// Calculate keyword density
@@ -479,7 +487,7 @@ fn analyze_title(
             impact: Some("medium".to_string()),
         });
         score -= 15;
-    } else if title_len >= TITLE_OPTIMAL_MIN && title_len <= TITLE_OPTIMAL_MAX {
+    } else if (TITLE_OPTIMAL_MIN..=TITLE_OPTIMAL_MAX).contains(&title_len) {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Title,
@@ -510,11 +518,14 @@ fn analyze_title(
                 });
 
                 // Check if keyword is near the beginning
-                if title_lower.starts_with(&kw_lower) || title_lower.find(&kw_lower).unwrap_or(100) < 20 {
+                if title_lower.starts_with(&kw_lower)
+                    || title_lower.find(&kw_lower).unwrap_or(100) < 20
+                {
                     issues.push(SeoIssue {
                         severity: SeoIssueSeverity::Success,
                         category: SeoIssueCategory::Title,
-                        message: "Focus keyword appears near the beginning of the title".to_string(),
+                        message: "Focus keyword appears near the beginning of the title"
+                            .to_string(),
                         impact: None,
                     });
                 }
@@ -525,7 +536,8 @@ fn analyze_title(
                     message: "Focus keyword not found in title".to_string(),
                     impact: Some("high".to_string()),
                 });
-                suggestions.push("Add your focus keyword near the beginning of the title".to_string());
+                suggestions
+                    .push("Add your focus keyword near the beginning of the title".to_string());
                 score -= 15;
             }
         }
@@ -533,9 +545,21 @@ fn analyze_title(
 
     // Power words check
     let power_words = [
-        "ultimate", "complete", "essential", "proven", "best", "top",
-        "guide", "how to", "secrets", "tips", "definitive", "comprehensive",
-        "master", "expert", "professional"
+        "ultimate",
+        "complete",
+        "essential",
+        "proven",
+        "best",
+        "top",
+        "guide",
+        "how to",
+        "secrets",
+        "tips",
+        "definitive",
+        "comprehensive",
+        "master",
+        "expert",
+        "professional",
     ];
     let title_lower = title.to_lowercase();
     let has_power_word = power_words.iter().any(|w| title_lower.contains(w));
@@ -548,10 +572,11 @@ fn analyze_title(
             impact: None,
         });
     } else {
-        suggestions.push("Consider adding power words to make your title more compelling".to_string());
+        suggestions
+            .push("Consider adding power words to make your title more compelling".to_string());
     }
 
-    score.max(0).min(100) as u8
+    score.clamp(0, 100) as u8
 }
 
 /// Analyze meta description SEO
@@ -602,7 +627,7 @@ fn analyze_meta_description(
             impact: Some("low".to_string()),
         });
         score -= 10;
-    } else if meta_len >= META_OPTIMAL_MIN && meta_len <= META_OPTIMAL_MAX {
+    } else if (META_OPTIMAL_MIN..=META_OPTIMAL_MAX).contains(&meta_len) {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Meta,
@@ -645,7 +670,9 @@ fn analyze_meta_description(
     }
 
     // Call to action check
-    let cta_words = ["learn", "discover", "find out", "get", "start", "try", "read", "click", "explore", "see"];
+    let cta_words = [
+        "learn", "discover", "find out", "get", "start", "try", "read", "click", "explore", "see",
+    ];
     let meta_lower = meta_text.to_lowercase();
     let has_cta = cta_words.iter().any(|w| meta_lower.contains(w));
 
@@ -660,7 +687,7 @@ fn analyze_meta_description(
         suggestions.push("Add a call to action in your meta description".to_string());
     }
 
-    score.max(0).min(100) as u8
+    score.clamp(0, 100) as u8
 }
 
 /// Analyze content SEO
@@ -748,7 +775,9 @@ fn analyze_content(
                     impact: Some("medium".to_string()),
                 });
                 score -= 15;
-            } else if keyword_density >= KEYWORD_DENSITY_OPTIMAL_MIN && keyword_density <= KEYWORD_DENSITY_OPTIMAL_MAX {
+            } else if (KEYWORD_DENSITY_OPTIMAL_MIN..=KEYWORD_DENSITY_OPTIMAL_MAX)
+                .contains(&keyword_density)
+            {
                 issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Success,
                     category: SeoIssueCategory::Keyword,
@@ -765,7 +794,8 @@ fn analyze_content(
             }
 
             // Check keyword in first paragraph (first 100 words)
-            let first_100_words: String = text.split_whitespace()
+            let first_100_words: String = text
+                .split_whitespace()
                 .take(100)
                 .collect::<Vec<&str>>()
                 .join(" ")
@@ -791,7 +821,7 @@ fn analyze_content(
         }
     }
 
-    (score.max(0).min(100) as u8, keyword_density)
+    (score.clamp(0, 100) as u8, keyword_density)
 }
 
 /// Analyze readability
@@ -839,7 +869,10 @@ fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Readability,
-            message: format!("Good average sentence length ({:.0} words)", avg_sentence_length),
+            message: format!(
+                "Good average sentence length ({:.0} words)",
+                avg_sentence_length
+            ),
             impact: None,
         });
     }
@@ -849,7 +882,10 @@ fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Readability,
-            message: format!("Good readability score ({:.0} Flesch Reading Ease)", flesch_score),
+            message: format!(
+                "Good readability score ({:.0} Flesch Reading Ease)",
+                flesch_score
+            ),
             impact: None,
         });
     } else if flesch_score >= 30.0 {
@@ -862,7 +898,8 @@ fn analyze_readability(
             ),
             impact: Some("medium".to_string()),
         });
-        suggestions.push("Simplify your writing by using shorter sentences and simpler words".to_string());
+        suggestions
+            .push("Simplify your writing by using shorter sentences and simpler words".to_string());
         score -= 15;
     } else {
         issues.push(SeoIssue {
@@ -879,14 +916,34 @@ fn analyze_readability(
 
     // Transition words check
     let transition_words = [
-        "however", "therefore", "furthermore", "additionally", "moreover",
-        "consequently", "thus", "hence", "meanwhile", "nevertheless",
-        "although", "because", "since", "while", "whereas", "finally",
-        "first", "second", "third", "next", "then", "also", "besides"
+        "however",
+        "therefore",
+        "furthermore",
+        "additionally",
+        "moreover",
+        "consequently",
+        "thus",
+        "hence",
+        "meanwhile",
+        "nevertheless",
+        "although",
+        "because",
+        "since",
+        "while",
+        "whereas",
+        "finally",
+        "first",
+        "second",
+        "third",
+        "next",
+        "then",
+        "also",
+        "besides",
     ];
 
     let text_lower = text.to_lowercase();
-    let transition_count = transition_words.iter()
+    let transition_count = transition_words
+        .iter()
         .filter(|w| text_lower.contains(*w))
         .count();
 
@@ -921,7 +978,10 @@ fn analyze_readability(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Readability,
-            message: format!("Too much passive voice detected (~{:.0}%)", passive_percentage),
+            message: format!(
+                "Too much passive voice detected (~{:.0}%)",
+                passive_percentage
+            ),
             impact: Some("low".to_string()),
         });
         suggestions.push("Use more active voice for engaging content".to_string());
@@ -942,7 +1002,7 @@ fn analyze_readability(
         });
     }
 
-    (score.max(0).min(100) as u8, flesch_score)
+    (score.clamp(0, 100) as u8, flesch_score)
 }
 
 /// Analyze URL slug
@@ -969,7 +1029,11 @@ fn analyze_slug(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Slug,
-            message: format!("URL slug is too long ({}). Keep under {} characters.", slug.len(), SLUG_MAX_LENGTH),
+            message: format!(
+                "URL slug is too long ({}). Keep under {} characters.",
+                slug.len(),
+                SLUG_MAX_LENGTH
+            ),
             impact: Some("medium".to_string()),
         });
         score -= 15;
@@ -988,7 +1052,12 @@ fn analyze_slug(
             let slug_lower = slug.to_lowercase();
             let kw_slug = kw.to_lowercase().replace(' ', "-");
 
-            if slug_lower.contains(&kw_slug) || kw.to_lowercase().split_whitespace().all(|w| slug_lower.contains(w)) {
+            if slug_lower.contains(&kw_slug)
+                || kw
+                    .to_lowercase()
+                    .split_whitespace()
+                    .all(|w| slug_lower.contains(w))
+            {
                 issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Success,
                     category: SeoIssueCategory::Slug,
@@ -1009,7 +1078,9 @@ fn analyze_slug(
     }
 
     // Stop words check
-    let stop_words = ["a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for", "of"];
+    let stop_words = [
+        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for", "of",
+    ];
     let slug_parts: Vec<&str> = slug.split('-').collect();
     let has_stop_words = stop_words.iter().any(|w| slug_parts.contains(w));
 
@@ -1028,7 +1099,7 @@ fn analyze_slug(
         });
     }
 
-    score.max(0).min(100) as u8
+    score.clamp(0, 100) as u8
 }
 
 /// Analyze heading structure
@@ -1051,18 +1122,21 @@ fn analyze_structure(
 
     for block in blocks {
         if block.get("type").and_then(|v| v.as_str()) == Some("heading") {
-            let level = block.get("settings")
+            let level = block
+                .get("settings")
                 .and_then(|s| s.get("level"))
                 .and_then(|l| l.as_u64())
                 .unwrap_or(2) as u8;
 
-            let text = block.get("content")
+            let text = block
+                .get("content")
                 .and_then(|c| c.get("text"))
                 .and_then(|t| t.as_str())
                 .unwrap_or("")
                 .to_string();
 
-            let id = block.get("id")
+            let id = block
+                .get("id")
                 .and_then(|i| i.as_str())
                 .unwrap_or("")
                 .to_string();
@@ -1098,7 +1172,10 @@ fn analyze_structure(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Warning,
             category: SeoIssueCategory::Headings,
-            message: format!("Multiple H1 headings found ({}). Use only one H1 per page.", h1_count),
+            message: format!(
+                "Multiple H1 headings found ({}). Use only one H1 per page.",
+                h1_count
+            ),
             impact: Some("medium".to_string()),
         });
         score -= 15;
@@ -1118,7 +1195,10 @@ fn analyze_structure(
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Info,
             category: SeoIssueCategory::Structure,
-            message: format!("Only {} H2 subheading(s) found. Consider adding more.", h2_count),
+            message: format!(
+                "Only {} H2 subheading(s) found. Consider adding more.",
+                h2_count
+            ),
             impact: Some("low".to_string()),
         });
     } else {
@@ -1146,7 +1226,8 @@ fn analyze_structure(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             let kw_lower = kw.to_lowercase();
-            let has_keyword_in_heading = headings.iter()
+            let has_keyword_in_heading = headings
+                .iter()
                 .any(|h| h.text.to_lowercase().contains(&kw_lower));
 
             if has_keyword_in_heading {
@@ -1163,7 +1244,8 @@ fn analyze_structure(
                     message: "Focus keyword not found in any heading".to_string(),
                     impact: Some("medium".to_string()),
                 });
-                suggestions.push("Add your focus keyword to at least one subheading (H2)".to_string());
+                suggestions
+                    .push("Add your focus keyword to at least one subheading (H2)".to_string());
                 score -= 10;
             }
         }
@@ -1173,7 +1255,8 @@ fn analyze_structure(
     let mut images_without_alt: u32 = 0;
     for block in blocks {
         if block.get("type").and_then(|v| v.as_str()) == Some("image") {
-            let has_alt = block.get("content")
+            let has_alt = block
+                .get("content")
                 .and_then(|c| c.get("mediaAlt"))
                 .and_then(|a| a.as_str())
                 .map(|s| !s.is_empty())
@@ -1201,7 +1284,11 @@ fn analyze_structure(
         });
         suggestions.push("Add descriptive alt text to all images".to_string());
         score -= 10;
-    } else if total_img > 0 || blocks.iter().any(|b| b.get("type").and_then(|v| v.as_str()) == Some("image")) {
+    } else if total_img > 0
+        || blocks
+            .iter()
+            .any(|b| b.get("type").and_then(|v| v.as_str()) == Some("image"))
+    {
         issues.push(SeoIssue {
             severity: SeoIssueSeverity::Success,
             category: SeoIssueCategory::Images,
@@ -1210,7 +1297,7 @@ fn analyze_structure(
         });
     }
 
-    (score.max(0).min(100) as u8, headings, images_without_alt)
+    (score.clamp(0, 100) as u8, headings, images_without_alt)
 }
 
 /// Analyze links
@@ -1334,11 +1421,32 @@ async fn validate_seo(
     let mut suggestions: Vec<String> = Vec::new();
 
     // Run all analyses
-    let title_score = analyze_title(&request.title, &request.focus_keyword, &mut issues, &mut suggestions);
-    let meta_score = analyze_meta_description(&request.meta_description, &request.focus_keyword, &mut issues, &mut suggestions);
-    let (content_score, keyword_density) = analyze_content(&plain_text, &request.focus_keyword, &mut issues, &mut suggestions);
-    let (readability_score, flesch_score) = analyze_readability(&plain_text, &mut issues, &mut suggestions);
-    let slug_score = analyze_slug(&request.slug, &request.focus_keyword, &mut issues, &mut suggestions);
+    let title_score = analyze_title(
+        &request.title,
+        &request.focus_keyword,
+        &mut issues,
+        &mut suggestions,
+    );
+    let meta_score = analyze_meta_description(
+        &request.meta_description,
+        &request.focus_keyword,
+        &mut issues,
+        &mut suggestions,
+    );
+    let (content_score, keyword_density) = analyze_content(
+        &plain_text,
+        &request.focus_keyword,
+        &mut issues,
+        &mut suggestions,
+    );
+    let (readability_score, flesch_score) =
+        analyze_readability(&plain_text, &mut issues, &mut suggestions);
+    let slug_score = analyze_slug(
+        &request.slug,
+        &request.focus_keyword,
+        &mut issues,
+        &mut suggestions,
+    );
     let (structure_score, headings, images_without_alt) = analyze_structure(
         &html_content,
         &request.content_blocks,
@@ -1349,19 +1457,20 @@ async fn validate_seo(
     let links = analyze_links(&html_content, &mut issues, &mut suggestions);
 
     // Calculate overall score (weighted average)
-    let overall_score = (
-        (title_score as f32 * 0.20) +
-        (meta_score as f32 * 0.15) +
-        (content_score as f32 * 0.25) +
-        (readability_score as f32 * 0.20) +
-        (structure_score as f32 * 0.20)
-    ).round().max(0.0).min(100.0) as u8;
+    let overall_score = ((title_score as f32 * 0.20)
+        + (meta_score as f32 * 0.15)
+        + (content_score as f32 * 0.25)
+        + (readability_score as f32 * 0.20)
+        + (structure_score as f32 * 0.20))
+        .round()
+        .clamp(0.0, 100.0) as u8;
 
     let grade = calculate_grade(overall_score);
     let reading_time_minutes = (word_count / WORDS_PER_MINUTE).max(1);
 
     // Remove duplicate suggestions
-    let unique_suggestions: Vec<String> = suggestions.into_iter()
+    let unique_suggestions: Vec<String> = suggestions
+        .into_iter()
         .collect::<HashSet<_>>()
         .into_iter()
         .collect();
@@ -1407,7 +1516,11 @@ async fn validate_seo(
             meta_score,
             content_score,
             readability_score,
-            keyword_score: if request.focus_keyword.is_some() { content_score } else { 50 },
+            keyword_score: if request.focus_keyword.is_some() {
+                content_score
+            } else {
+                50
+            },
             structure_score,
         },
     }))
@@ -1419,6 +1532,5 @@ async fn validate_seo(
 
 /// CMS SEO validation routes (requires authentication)
 pub fn router() -> Router<AppState> {
-    Router::new()
-        .route("/validate", post(validate_seo))
+    Router::new().route("/validate", post(validate_seo))
 }

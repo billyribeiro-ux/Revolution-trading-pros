@@ -119,7 +119,7 @@ async fn create_checkout(
             price_id: None, // We create ad-hoc prices
             name: item.name.clone(),
             description: None,
-            amount: (item.price * 100.0) as i64, // Convert to cents
+            amount: (item.price * 100.0).round() as i64, // Convert to cents (round to avoid truncation)
             currency: "usd".to_string(),
             quantity: item.quantity as i64,
             is_subscription: item.is_subscription,
@@ -350,7 +350,11 @@ async fn webhook(
         })?;
 
     // ICT 7 Fix: Actually verify webhook signature for production security
-    match state.services.stripe.verify_webhook(body.as_bytes(), signature) {
+    match state
+        .services
+        .stripe
+        .verify_webhook(body.as_bytes(), signature)
+    {
         Ok(true) => {
             tracing::debug!(target: "payments", "Webhook signature verified successfully");
         }
@@ -362,11 +366,23 @@ async fn webhook(
             ));
         }
         Err(e) => {
-            // If webhook secret not configured, log warning but continue (dev mode)
+            // If webhook secret not configured, reject in production, warn in dev
             if e.to_string().contains("not configured") {
+                let environment =
+                    std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
+                if environment != "development" && environment != "dev" {
+                    tracing::error!(
+                        target: "payments",
+                        "Webhook secret not configured in production - rejecting webhook"
+                    );
+                    return Err((
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        Json(json!({"error": "Webhook secret not configured"})),
+                    ));
+                }
                 tracing::warn!(
                     target: "payments",
-                    "Webhook secret not configured - skipping signature verification (UNSAFE for production)"
+                    "Webhook secret not configured - skipping signature verification (dev mode)"
                 );
             } else {
                 tracing::error!(target: "payments", "Webhook verification error: {}", e);
@@ -1020,7 +1036,7 @@ async fn handle_payment_failed(
                payment_failure_count = $2,
                last_payment_failure = NOW(),
                updated_at = NOW()
-               WHERE stripe_subscription_id = $3"#
+               WHERE stripe_subscription_id = $3"#,
         )
         .bind(grace_period_end.naive_utc())
         .bind(attempt_count)
@@ -1048,7 +1064,7 @@ async fn handle_payment_failed(
                    JOIN users u ON um.user_id = u.id
                    LEFT JOIN membership_plans mp ON um.plan_id = mp.id
                    WHERE um.stripe_subscription_id = $1
-                   LIMIT 1"#
+                   LIMIT 1"#,
             )
             .bind(sub_id)
             .fetch_optional(&state.db.pool)
@@ -1058,7 +1074,11 @@ async fn handle_payment_failed(
 
             if let Some(info) = user_info {
                 // Use amount from invoice, fallback to plan price
-                let payment_amount = if amount_due > 0.0 { amount_due } else { info.price.unwrap_or(0.0) };
+                let payment_amount = if amount_due > 0.0 {
+                    amount_due
+                } else {
+                    info.price.unwrap_or(0.0)
+                };
                 let grace_end_str = grace_period_end.format("%B %d, %Y").to_string();
 
                 let _ = email_service
@@ -1140,7 +1160,7 @@ async fn handle_refund(
                refund_amount = COALESCE(refund_amount, 0) + $2,
                refunded_at = CASE WHEN $1 = 'refunded' THEN NOW() ELSE refunded_at END,
                updated_at = NOW()
-               WHERE payment_intent_id = $3"#
+               WHERE payment_intent_id = $3"#,
         )
         .bind(refund_status)
         .bind(refund_amount_dollars)
@@ -1224,7 +1244,8 @@ async fn generate_invoice(
     })?;
 
     // Check ownership unless admin
-    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    let is_admin =
+        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
     if order.user_id != user.id && !is_admin {
         return Err((
             StatusCode::FORBIDDEN,

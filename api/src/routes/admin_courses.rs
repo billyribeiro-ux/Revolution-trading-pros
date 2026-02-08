@@ -711,11 +711,13 @@ async fn enroll_user(
     })?;
 
     // Update course enrollment count
-    sqlx::query("UPDATE courses SET enrollment_count = COALESCE(enrollment_count, 0) + 1 WHERE id = $1")
-        .bind(course_id)
-        .execute(&state.db.pool)
-        .await
-        .ok();
+    sqlx::query(
+        "UPDATE courses SET enrollment_count = COALESCE(enrollment_count, 0) + 1 WHERE id = $1",
+    )
+    .bind(course_id)
+    .execute(&state.db.pool)
+    .await
+    .ok();
 
     Ok(Json(json!({
         "success": true,
@@ -737,7 +739,18 @@ async fn list_enrollments(
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let enrollments: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, i64, Option<i32>, String, NaiveDateTime, Option<NaiveDateTime>, Option<bool>)>(
+    let enrollments: Vec<serde_json::Value> = sqlx::query_as::<
+        _,
+        (
+            i64,
+            i64,
+            Option<i32>,
+            String,
+            NaiveDateTime,
+            Option<NaiveDateTime>,
+            Option<bool>,
+        ),
+    >(
         r#"
         SELECT e.id, e.user_id, e.progress_percent, e.status, e.enrolled_at,
                e.completed_at, e.certificate_issued
@@ -751,15 +764,17 @@ async fn list_enrollments(
     .await
     .unwrap_or_default()
     .into_iter()
-    .map(|e| json!({
-        "id": e.0,
-        "user_id": e.1,
-        "progress_percent": e.2.unwrap_or(0),
-        "status": e.3,
-        "enrolled_at": e.4.format("%Y-%m-%dT%H:%M:%S").to_string(),
-        "completed_at": e.5.map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
-        "certificate_issued": e.6.unwrap_or(false)
-    }))
+    .map(|e| {
+        json!({
+            "id": e.0,
+            "user_id": e.1,
+            "progress_percent": e.2.unwrap_or(0),
+            "status": e.3,
+            "enrolled_at": e.4.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            "completed_at": e.5.map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
+            "certificate_issued": e.6.unwrap_or(false)
+        })
+    })
     .collect();
 
     Ok(Json(json!({
@@ -1475,7 +1490,6 @@ async fn get_upload_url(
 
     let storage_zone =
         std::env::var("BUNNY_STORAGE_ZONE").unwrap_or_else(|_| "revolution-downloads".to_string());
-    let storage_key = std::env::var("BUNNY_STORAGE_API_KEY").unwrap_or_default();
     let cdn_url = std::env::var("BUNNY_CDN_URL")
         .unwrap_or_else(|_| "https://revolution-downloads.b-cdn.net".to_string());
 
@@ -1486,6 +1500,9 @@ async fn get_upload_url(
     );
     let download_url = format!("{}/{}", cdn_url, file_path);
 
+    // SECURITY: Do NOT return BUNNY_STORAGE_API_KEY to the client.
+    // File uploads should go through a backend proxy endpoint instead of
+    // exposing storage credentials to the frontend.
     Ok(Json(json!({
         "success": true,
         "data": {
@@ -1493,10 +1510,7 @@ async fn get_upload_url(
             "download_url": download_url,
             "file_path": file_path,
             "storage_zone": storage_zone,
-            "headers": {
-                "AccessKey": storage_key,
-                "Content-Type": file_type
-            }
+            "content_type": file_type
         }
     })))
 }
@@ -1551,10 +1565,15 @@ async fn create_quiz(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let title = input["title"].as_str().unwrap_or("Untitled Quiz");
     let description = input["description"].as_str();
-    let lesson_id = input["lesson_id"].as_str().and_then(|s| Uuid::parse_str(s).ok());
+    let lesson_id = input["lesson_id"]
+        .as_str()
+        .and_then(|s| Uuid::parse_str(s).ok());
     let module_id = input["module_id"].as_i64();
     let quiz_type = input["quiz_type"].as_str().unwrap_or("graded");
-    let passing_score = input["passing_score"].as_i64().map(|v| v as i32).unwrap_or(70);
+    let passing_score = input["passing_score"]
+        .as_i64()
+        .map(|v| v as i32)
+        .unwrap_or(70);
     let time_limit = input["time_limit_minutes"].as_i64().map(|v| v as i32);
     let max_attempts = input["max_attempts"].as_i64().map(|v| v as i32);
     let shuffle_questions = input["shuffle_questions"].as_bool().unwrap_or(false);
@@ -1562,11 +1581,12 @@ async fn create_quiz(
     let show_correct = input["show_correct_answers"].as_bool().unwrap_or(true);
     let is_required = input["is_required"].as_bool().unwrap_or(false);
 
-    let max_order: (Option<i32>,) = sqlx::query_as("SELECT MAX(sort_order) FROM course_quizzes WHERE course_id = $1")
-        .bind(course_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((None,));
+    let max_order: (Option<i32>,) =
+        sqlx::query_as("SELECT MAX(sort_order) FROM course_quizzes WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     let quiz = sqlx::query_as::<_, (i64, String, String, bool, NaiveDateTime)>(
         r#"
@@ -1620,7 +1640,25 @@ async fn get_quiz(
     State(state): State<AppState>,
     Path((course_id, quiz_id)): Path<(Uuid, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let quiz: serde_json::Value = sqlx::query_as::<_, (i64, Uuid, String, Option<String>, String, Option<i32>, Option<i32>, Option<i32>, bool, bool, bool, bool, bool, i32)>(
+    let quiz: serde_json::Value = sqlx::query_as::<
+        _,
+        (
+            i64,
+            Uuid,
+            String,
+            Option<String>,
+            String,
+            Option<i32>,
+            Option<i32>,
+            Option<i32>,
+            bool,
+            bool,
+            bool,
+            bool,
+            bool,
+            i32,
+        ),
+    >(
         r#"
         SELECT id, course_id, title, description, quiz_type, passing_score, time_limit_minutes,
                max_attempts, shuffle_questions, shuffle_answers, show_correct_answers, is_required,
@@ -1632,14 +1670,26 @@ async fn get_quiz(
     .bind(course_id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-    .map(|q| json!({
-        "id": q.0, "course_id": q.1, "title": q.2, "description": q.3, "quiz_type": q.4,
-        "passing_score": q.5, "time_limit_minutes": q.6, "max_attempts": q.7,
-        "shuffle_questions": q.8, "shuffle_answers": q.9, "show_correct_answers": q.10,
-        "is_required": q.11, "is_published": q.12, "sort_order": q.13
-    }))
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Quiz not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?
+    .map(|q| {
+        json!({
+            "id": q.0, "course_id": q.1, "title": q.2, "description": q.3, "quiz_type": q.4,
+            "passing_score": q.5, "time_limit_minutes": q.6, "max_attempts": q.7,
+            "shuffle_questions": q.8, "shuffle_answers": q.9, "show_correct_answers": q.10,
+            "is_required": q.11, "is_published": q.12, "sort_order": q.13
+        })
+    })
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Quiz not found"})),
+        )
+    })?;
 
     let questions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, Option<String>, i32, i32)>(
         r#"SELECT id, question_type, question_text, explanation, points, sort_order
@@ -1702,9 +1752,16 @@ async fn update_quiz(
     .bind(course_id)
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to update quiz: {}", e)}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to update quiz: {}", e)})),
+        )
+    })?;
 
-    Ok(Json(json!({"success": true, "message": "Quiz updated successfully"})))
+    Ok(Json(
+        json!({"success": true, "message": "Quiz updated successfully"}),
+    ))
 }
 
 /// Delete quiz
@@ -1718,9 +1775,16 @@ async fn delete_quiz(
         .bind(course_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to delete quiz: {}", e)}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete quiz: {}", e)})),
+            )
+        })?;
 
-    Ok(Json(json!({"success": true, "message": "Quiz deleted successfully"})))
+    Ok(Json(
+        json!({"success": true, "message": "Quiz deleted successfully"}),
+    ))
 }
 
 /// Add question to quiz
@@ -1735,11 +1799,12 @@ async fn add_quiz_question(
     let explanation = input["explanation"].as_str();
     let points = input["points"].as_i64().unwrap_or(1) as i32;
 
-    let max_order: (Option<i32>,) = sqlx::query_as("SELECT MAX(sort_order) FROM quiz_questions WHERE quiz_id = $1")
-        .bind(quiz_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((None,));
+    let max_order: (Option<i32>,) =
+        sqlx::query_as("SELECT MAX(sort_order) FROM quiz_questions WHERE quiz_id = $1")
+            .bind(quiz_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     let question = sqlx::query_as::<_, (i64, String, String, i32)>(
         r#"
@@ -1791,9 +1856,16 @@ async fn delete_quiz_question(
         .bind(question_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to delete question: {}", e)}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete question: {}", e)})),
+            )
+        })?;
 
-    Ok(Json(json!({"success": true, "message": "Question deleted successfully"})))
+    Ok(Json(
+        json!({"success": true, "message": "Question deleted successfully"}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -1824,8 +1896,14 @@ async fn create_category(
     State(state): State<AppState>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let name = input["name"].as_str().ok_or((StatusCode::BAD_REQUEST, Json(json!({"error": "Name is required"}))))?;
-    let slug = input["slug"].as_str().map(|s| s.to_string()).unwrap_or_else(|| slugify(name));
+    let name = input["name"].as_str().ok_or((
+        StatusCode::BAD_REQUEST,
+        Json(json!({"error": "Name is required"})),
+    ))?;
+    let slug = input["slug"]
+        .as_str()
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| slugify(name));
 
     let max_order: (Option<i32>,) = sqlx::query_as("SELECT MAX(sort_order) FROM course_categories")
         .fetch_one(&state.db.pool)
@@ -1846,7 +1924,9 @@ async fn create_category(
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to create category: {}", e)}))))?;
 
-    Ok(Json(json!({"success": true, "message": "Category created", "data": {"id": category.0, "name": category.1, "slug": category.2}})))
+    Ok(Json(
+        json!({"success": true, "message": "Category created", "data": {"id": category.0, "name": category.1, "slug": category.2}}),
+    ))
 }
 
 /// Delete category
@@ -1859,9 +1939,16 @@ async fn delete_category(
         .bind(category_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to delete category: {}", e)}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete category: {}", e)})),
+            )
+        })?;
 
-    Ok(Json(json!({"success": true, "message": "Category deleted"})))
+    Ok(Json(
+        json!({"success": true, "message": "Category deleted"}),
+    ))
 }
 
 /// List all tags
@@ -1869,15 +1956,16 @@ async fn list_tags(
     _admin: AdminUser,
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let tags: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, Option<String>, Option<i32>)>(
-        "SELECT id, name, slug, color, course_count FROM course_tags ORDER BY name"
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default()
-    .into_iter()
-    .map(|t| json!({"id": t.0, "name": t.1, "slug": t.2, "color": t.3, "course_count": t.4}))
-    .collect();
+    let tags: Vec<serde_json::Value> =
+        sqlx::query_as::<_, (i64, String, String, Option<String>, Option<i32>)>(
+            "SELECT id, name, slug, color, course_count FROM course_tags ORDER BY name",
+        )
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .map(|t| json!({"id": t.0, "name": t.1, "slug": t.2, "color": t.3, "course_count": t.4}))
+        .collect();
 
     Ok(Json(json!({"success": true, "data": tags})))
 }
@@ -1888,20 +1976,33 @@ async fn create_tag(
     State(state): State<AppState>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let name = input["name"].as_str().ok_or((StatusCode::BAD_REQUEST, Json(json!({"error": "Name is required"}))))?;
-    let slug = input["slug"].as_str().map(|s| s.to_string()).unwrap_or_else(|| slugify(name));
+    let name = input["name"].as_str().ok_or((
+        StatusCode::BAD_REQUEST,
+        Json(json!({"error": "Name is required"})),
+    ))?;
+    let slug = input["slug"]
+        .as_str()
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| slugify(name));
 
     let tag = sqlx::query_as::<_, (i64, String, String)>(
-        "INSERT INTO course_tags (name, slug, color) VALUES ($1, $2, $3) RETURNING id, name, slug"
+        "INSERT INTO course_tags (name, slug, color) VALUES ($1, $2, $3) RETURNING id, name, slug",
     )
     .bind(name)
     .bind(&slug)
     .bind(input["color"].as_str())
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to create tag: {}", e)}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to create tag: {}", e)})),
+        )
+    })?;
 
-    Ok(Json(json!({"success": true, "message": "Tag created", "data": {"id": tag.0, "name": tag.1, "slug": tag.2}})))
+    Ok(Json(
+        json!({"success": true, "message": "Tag created", "data": {"id": tag.0, "name": tag.1, "slug": tag.2}}),
+    ))
 }
 
 /// Delete tag
@@ -1914,7 +2015,12 @@ async fn delete_tag(
         .bind(tag_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to delete tag: {}", e)}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete tag: {}", e)})),
+            )
+        })?;
 
     Ok(Json(json!({"success": true, "message": "Tag deleted"})))
 }
@@ -1930,22 +2036,27 @@ async fn update_course_categories(
     sqlx::query("DELETE FROM course_category_mappings WHERE course_id = $1")
         .bind(course_id)
         .execute(&state.db.pool)
-        .await.ok();
+        .await
+        .ok();
 
     // Add new
     if let Some(category_ids) = input["category_ids"].as_array() {
         for cid in category_ids {
             if let Some(id) = cid.as_i64() {
-                let _ = sqlx::query("INSERT INTO course_category_mappings (course_id, category_id) VALUES ($1, $2)")
-                    .bind(course_id)
-                    .bind(id)
-                    .execute(&state.db.pool)
-                    .await;
+                let _ = sqlx::query(
+                    "INSERT INTO course_category_mappings (course_id, category_id) VALUES ($1, $2)",
+                )
+                .bind(course_id)
+                .bind(id)
+                .execute(&state.db.pool)
+                .await;
             }
         }
     }
 
-    Ok(Json(json!({"success": true, "message": "Course categories updated"})))
+    Ok(Json(
+        json!({"success": true, "message": "Course categories updated"}),
+    ))
 }
 
 /// Update course tags
@@ -1959,22 +2070,27 @@ async fn update_course_tags(
     sqlx::query("DELETE FROM course_tag_mappings WHERE course_id = $1")
         .bind(course_id)
         .execute(&state.db.pool)
-        .await.ok();
+        .await
+        .ok();
 
     // Add new
     if let Some(tag_ids) = input["tag_ids"].as_array() {
         for tid in tag_ids {
             if let Some(id) = tid.as_i64() {
-                let _ = sqlx::query("INSERT INTO course_tag_mappings (course_id, tag_id) VALUES ($1, $2)")
-                    .bind(course_id)
-                    .bind(id)
-                    .execute(&state.db.pool)
-                    .await;
+                let _ = sqlx::query(
+                    "INSERT INTO course_tag_mappings (course_id, tag_id) VALUES ($1, $2)",
+                )
+                .bind(course_id)
+                .bind(id)
+                .execute(&state.db.pool)
+                .await;
             }
         }
     }
 
-    Ok(Json(json!({"success": true, "message": "Course tags updated"})))
+    Ok(Json(
+        json!({"success": true, "message": "Course tags updated"}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -1990,7 +2106,11 @@ async fn update_lesson_prerequisites(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let prereq_ids: Vec<String> = input["prerequisite_lesson_ids"]
         .as_array()
-        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
         .unwrap_or_default();
 
     sqlx::query("UPDATE lessons SET prerequisite_lesson_ids = $1, updated_at = NOW() WHERE id = $2 AND course_id = $3")
@@ -2001,7 +2121,9 @@ async fn update_lesson_prerequisites(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to update prerequisites: {}", e)}))))?;
 
-    Ok(Json(json!({"success": true, "message": "Prerequisites updated"})))
+    Ok(Json(
+        json!({"success": true, "message": "Prerequisites updated"}),
+    ))
 }
 
 /// Get lesson prerequisites
@@ -2011,7 +2133,7 @@ async fn get_lesson_prerequisites(
     Path((course_id, lesson_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let prereqs: Option<(Option<serde_json::Value>,)> = sqlx::query_as(
-        "SELECT prerequisite_lesson_ids FROM lessons WHERE id = $1 AND course_id = $2"
+        "SELECT prerequisite_lesson_ids FROM lessons WHERE id = $1 AND course_id = $2",
     )
     .bind(lesson_id)
     .bind(course_id)
@@ -2022,7 +2144,9 @@ async fn get_lesson_prerequisites(
 
     let prerequisite_ids = prereqs.and_then(|p| p.0).unwrap_or(json!([]));
 
-    Ok(Json(json!({"success": true, "data": {"lesson_id": lesson_id, "prerequisite_lesson_ids": prerequisite_ids}})))
+    Ok(Json(
+        json!({"success": true, "data": {"lesson_id": lesson_id, "prerequisite_lesson_ids": prerequisite_ids}}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -2035,17 +2159,20 @@ async fn get_enrollment_stats(
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1")
-        .bind(course_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let active: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND status = 'active'")
-        .bind(course_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let active: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND status = 'active'",
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let completed: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND completed_at IS NOT NULL")
         .bind(course_id)
@@ -2053,11 +2180,13 @@ async fn get_enrollment_stats(
         .await
         .unwrap_or((0,));
 
-    let avg_progress: (Option<f64>,) = sqlx::query_as("SELECT AVG(progress_percent::float) FROM user_course_enrollments WHERE course_id = $1")
-        .bind(course_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((None,));
+    let avg_progress: (Option<f64>,) = sqlx::query_as(
+        "SELECT AVG(progress_percent::float) FROM user_course_enrollments WHERE course_id = $1",
+    )
+    .bind(course_id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((None,));
 
     let certificates: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND certificate_issued = true")
         .bind(course_id)
@@ -2115,8 +2244,14 @@ pub fn router() -> Router<AppState> {
         .route("/:id/archive", post(archive_course))
         .route("/:id/restore", post(restore_course))
         // Enrollments
-        .route("/:course_id/enrollments", get(list_enrollments).post(enroll_user))
-        .route("/:course_id/enrollments/:enrollment_id", axum::routing::delete(remove_enrollment))
+        .route(
+            "/:course_id/enrollments",
+            get(list_enrollments).post(enroll_user),
+        )
+        .route(
+            "/:course_id/enrollments/:enrollment_id",
+            axum::routing::delete(remove_enrollment),
+        )
         .route("/:course_id/stats", get(get_enrollment_stats))
         // Modules
         .route("/:course_id/modules", get(list_modules).post(create_module))
@@ -2132,12 +2267,24 @@ pub fn router() -> Router<AppState> {
             get(get_lesson).put(update_lesson).delete(delete_lesson),
         )
         .route("/:course_id/lessons/reorder", put(reorder_lessons))
-        .route("/:course_id/lessons/:lesson_id/prerequisites", get(get_lesson_prerequisites).put(update_lesson_prerequisites))
+        .route(
+            "/:course_id/lessons/:lesson_id/prerequisites",
+            get(get_lesson_prerequisites).put(update_lesson_prerequisites),
+        )
         // Quizzes - ICT 7 Grade
         .route("/:course_id/quizzes", get(list_quizzes).post(create_quiz))
-        .route("/:course_id/quizzes/:quiz_id", get(get_quiz).put(update_quiz).delete(delete_quiz))
-        .route("/:course_id/quizzes/:quiz_id/questions", post(add_quiz_question))
-        .route("/:course_id/quizzes/:quiz_id/questions/:question_id", axum::routing::delete(delete_quiz_question))
+        .route(
+            "/:course_id/quizzes/:quiz_id",
+            get(get_quiz).put(update_quiz).delete(delete_quiz),
+        )
+        .route(
+            "/:course_id/quizzes/:quiz_id/questions",
+            post(add_quiz_question),
+        )
+        .route(
+            "/:course_id/quizzes/:quiz_id/questions/:question_id",
+            axum::routing::delete(delete_quiz_question),
+        )
         // Categories & Tags - ICT 7 Grade
         .route("/:course_id/categories", put(update_course_categories))
         .route("/:course_id/tags", put(update_course_tags))

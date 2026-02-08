@@ -7,9 +7,9 @@ use http_body_util::BodyExt;
 use serde_json::Value;
 use std::sync::Once;
 
+use revolution_api::cache::{CacheInvalidator, CacheService};
 use revolution_api::routes::realtime::EventBroadcaster;
 use revolution_api::routes::websocket::WsConnectionManager;
-use revolution_api::cache::{CacheInvalidator, CacheService};
 use revolution_api::{config::Config, db::Database, routes, services::Services, AppState};
 
 static INIT: Once = Once::new();

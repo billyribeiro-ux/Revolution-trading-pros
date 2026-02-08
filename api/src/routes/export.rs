@@ -185,7 +185,10 @@ pub async fn export_alerts_csv(
         [
             (header::CONTENT_TYPE, "text/csv; charset=utf-8".to_string()),
             (header::CONTENT_DISPOSITION, content_disposition),
-            (header::CACHE_CONTROL, "private, no-cache, no-store".to_string()),
+            (
+                header::CACHE_CONTROL,
+                "private, no-cache, no-store".to_string(),
+            ),
         ],
         csv_data,
     ))
@@ -244,7 +247,10 @@ pub async fn export_trades_csv(
         [
             (header::CONTENT_TYPE, "text/csv; charset=utf-8".to_string()),
             (header::CONTENT_DISPOSITION, content_disposition),
-            (header::CACHE_CONTROL, "private, no-cache, no-store".to_string()),
+            (
+                header::CACHE_CONTROL,
+                "private, no-cache, no-store".to_string(),
+            ),
         ],
         csv_data,
     ))

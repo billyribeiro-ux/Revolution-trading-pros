@@ -123,9 +123,7 @@ fn decrypt_credentials(encrypted: &str) -> HashMap<String, String> {
     use base64::{engine::general_purpose::STANDARD, Engine};
     // In production, use proper AES-256-GCM decryption
     match STANDARD.decode(encrypted) {
-        Ok(bytes) => {
-            serde_json::from_slice(&bytes).unwrap_or_default()
-        }
+        Ok(bytes) => serde_json::from_slice(&bytes).unwrap_or_default(),
         Err(_) => HashMap::new(),
     }
 }
@@ -157,6 +155,7 @@ fn generate_webhook_secret() -> String {
 // AUDIT LOGGING
 // ═══════════════════════════════════════════════════════════════════════════
 
+#[allow(clippy::too_many_arguments)]
 async fn log_connection_audit(
     pool: &sqlx::PgPool,
     admin_id: i64,
@@ -408,7 +407,7 @@ async fn get_connections_status(
                last_error, last_verified_at, connected_at, created_at, updated_at
         FROM service_connections
         WHERE 1=1
-        "#
+        "#,
     );
 
     let mut bind_count = 0;
@@ -557,34 +556,28 @@ async fn get_connections_summary(
     State(state): State<AppState>,
     admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    tracing::info!(
-        admin_id = admin.0.id,
-        "Admin fetching connections summary"
-    );
+    tracing::info!(admin_id = admin.0.id, "Admin fetching connections summary");
 
-    let connected: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM service_connections WHERE status = 'connected'"
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
+    let connected: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM service_connections WHERE status = 'connected'")
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
-    let pending: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM service_connections WHERE status = 'pending'"
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
+    let pending: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM service_connections WHERE status = 'pending'")
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
-    let error: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM service_connections WHERE status = 'error'"
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
+    let error: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM service_connections WHERE status = 'error'")
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
     let avg_health: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(AVG(health_score), 0) FROM service_connections WHERE status = 'connected'"
+        "SELECT COALESCE(AVG(health_score), 0) FROM service_connections WHERE status = 'connected'",
     )
     .fetch_one(state.db.pool())
     .await
@@ -755,14 +748,13 @@ async fn connect_service(
     let encrypted_creds = encrypt_credentials(&input.credentials);
 
     // Check if connection already exists
-    let existing: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM service_connections WHERE service_key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let existing: Option<i64> =
+        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
+            .bind(&key)
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
     let connection: ServiceConnection = if let Some(id) = existing {
         // Update existing connection
@@ -895,7 +887,7 @@ async fn test_connection(
     } else {
         // Get from database
         let encrypted: Option<String> = sqlx::query_scalar(
-            "SELECT credentials_encrypted FROM service_connections WHERE service_key = $1"
+            "SELECT credentials_encrypted FROM service_connections WHERE service_key = $1",
         )
         .bind(&key)
         .fetch_optional(state.db.pool())
@@ -923,7 +915,11 @@ async fn test_connection(
                 if secret_key.starts_with("sk_") {
                     (true, 45, None)
                 } else {
-                    (false, 0, Some("Invalid Stripe secret key format".to_string()))
+                    (
+                        false,
+                        0,
+                        Some("Invalid Stripe secret key format".to_string()),
+                    )
                 }
             } else {
                 (false, 0, Some("Missing secret_key".to_string()))
@@ -943,7 +939,11 @@ async fn test_connection(
                 if api_key.starts_with("SG.") {
                     (true, 85, None)
                 } else {
-                    (false, 0, Some("Invalid SendGrid API key format".to_string()))
+                    (
+                        false,
+                        0,
+                        Some("Invalid SendGrid API key format".to_string()),
+                    )
                 }
             } else {
                 (false, 0, Some("Missing api_key".to_string()))
@@ -1041,14 +1041,13 @@ async fn disconnect_service(
     }
 
     // Get connection for audit
-    let connection: Option<ServiceConnection> = sqlx::query_as(
-        "SELECT * FROM service_connections WHERE service_key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let connection: Option<ServiceConnection> =
+        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1")
+            .bind(&key)
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
     if connection.is_none() {
         return Err((
@@ -1125,14 +1124,13 @@ async fn delete_connection(
     }
 
     // Get connection for audit
-    let connection: Option<ServiceConnection> = sqlx::query_as(
-        "SELECT * FROM service_connections WHERE service_key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let connection: Option<ServiceConnection> =
+        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1")
+            .bind(&key)
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
     if connection.is_none() {
         return Err((
@@ -1223,14 +1221,13 @@ async fn list_webhooks(
     );
 
     // Get connection ID
-    let connection_id: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM service_connections WHERE service_key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let connection_id: Option<i64> =
+        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
+            .bind(&key)
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
     let connection_id = connection_id.ok_or((
         StatusCode::NOT_FOUND,
@@ -1293,14 +1290,13 @@ async fn create_webhook(
     }
 
     // Get connection ID
-    let connection_id: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM service_connections WHERE service_key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let connection_id: Option<i64> =
+        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
+            .bind(&key)
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
     let connection_id = connection_id.ok_or((
         StatusCode::NOT_FOUND,
@@ -1377,14 +1373,13 @@ async fn delete_webhook(
     Path((key, webhook_id)): Path<(String, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Verify connection exists
-    let connection_id: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM service_connections WHERE service_key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let connection_id: Option<i64> =
+        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
+            .bind(&key)
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
     let connection_id = connection_id.ok_or((
         StatusCode::NOT_FOUND,
@@ -1392,19 +1387,18 @@ async fn delete_webhook(
     ))?;
 
     // Delete webhook
-    let result = sqlx::query(
-        "DELETE FROM integration_webhooks WHERE id = $1 AND connection_id = $2"
-    )
-    .bind(webhook_id)
-    .bind(connection_id)
-    .execute(state.db.pool())
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let result =
+        sqlx::query("DELETE FROM integration_webhooks WHERE id = $1 AND connection_id = $2")
+            .bind(webhook_id)
+            .bind(connection_id)
+            .execute(state.db.pool())
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     if result.rows_affected() == 0 {
         return Err((

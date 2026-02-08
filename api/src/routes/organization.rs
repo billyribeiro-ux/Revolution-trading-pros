@@ -158,6 +158,7 @@ pub struct ListQuery {
 // HELPER - AUDIT LOGGING
 // ═══════════════════════════════════════════════════════════════════════════
 
+#[allow(clippy::too_many_arguments)]
 async fn log_organization_audit(
     pool: &sqlx::PgPool,
     admin_id: i64,
@@ -274,18 +275,19 @@ async fn update_organization_profile(
     );
 
     // Get old profile for audit
-    let old_profile: Option<OrganizationProfile> = sqlx::query_as(
-        "SELECT * FROM organization_profile LIMIT 1"
-    )
-    .fetch_optional(state.db.pool())
-    .await
-    .ok()
-    .flatten();
+    let old_profile: Option<OrganizationProfile> =
+        sqlx::query_as("SELECT * FROM organization_profile LIMIT 1")
+            .fetch_optional(state.db.pool())
+            .await
+            .ok()
+            .flatten();
 
-    let old_value = old_profile.as_ref().map(|p| json!({
-        "name": p.name,
-        "contact_email": p.contact_email
-    }));
+    let old_value = old_profile.as_ref().map(|p| {
+        json!({
+            "name": p.name,
+            "contact_email": p.contact_email
+        })
+    });
 
     // Generate slug if name is provided
     let slug = input.name.as_ref().map(|n| generate_slug(n));
@@ -379,10 +381,7 @@ async fn update_organization_profile(
     )
     .await;
 
-    tracing::info!(
-        admin_id = admin.0.id,
-        "Organization profile updated"
-    );
+    tracing::info!(admin_id = admin.0.id, "Organization profile updated");
 
     Ok(Json(json!({
         "success": true,
@@ -459,11 +458,7 @@ async fn get_team(
     admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    tracing::info!(
-        admin_id = admin.0.id,
-        team_id = id,
-        "Admin fetching team"
-    );
+    tracing::info!(admin_id = admin.0.id, team_id = id, "Admin fetching team");
 
     let team: Option<Team> = sqlx::query_as(
         r#"
@@ -677,11 +672,7 @@ async fn update_team(
     )
     .await;
 
-    tracing::info!(
-        admin_id = admin.0.id,
-        team_id = team.id,
-        "Team updated"
-    );
+    tracing::info!(admin_id = admin.0.id, team_id = team.id, "Team updated");
 
     Ok(Json(json!({
         "success": true,
@@ -717,13 +708,12 @@ async fn delete_team(
     let old_team = old_team.unwrap();
 
     // Check if team has members
-    let member_count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM team_members WHERE team_id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
+    let member_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM team_members WHERE team_id = $1")
+            .bind(id)
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
     if member_count > 0 {
         return Err((
@@ -905,13 +895,12 @@ async fn create_department(
 
     // Validate parent_id if provided
     if let Some(parent_id) = input.parent_id {
-        let parent_exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM departments WHERE id = $1)"
-        )
-        .bind(parent_id)
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(false);
+        let parent_exists: bool =
+            sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM departments WHERE id = $1)")
+                .bind(parent_id)
+                .fetch_one(state.db.pool())
+                .await
+                .unwrap_or(false);
 
         if !parent_exists {
             return Err((
@@ -1008,13 +997,12 @@ async fn update_department(
         }
 
         // Check if parent exists
-        let parent_exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM departments WHERE id = $1)"
-        )
-        .bind(parent_id)
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(false);
+        let parent_exists: bool =
+            sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM departments WHERE id = $1)")
+                .bind(parent_id)
+                .fetch_one(state.db.pool())
+                .await
+                .unwrap_or(false);
 
         if !parent_exists {
             return Err((
@@ -1133,13 +1121,12 @@ async fn delete_department(
     let old_dept = old_dept.unwrap();
 
     // Check for child departments
-    let child_count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM departments WHERE parent_id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
+    let child_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM departments WHERE parent_id = $1")
+            .bind(id)
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
     if child_count > 0 {
         return Err((
@@ -1153,13 +1140,12 @@ async fn delete_department(
     }
 
     // Check for members
-    let member_count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM department_members WHERE department_id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
+    let member_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM department_members WHERE department_id = $1")
+            .bind(id)
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
     if member_count > 0 {
         return Err((
@@ -1236,14 +1222,19 @@ pub fn departments_router() -> Router<AppState> {
 
 /// Organization profile router
 pub fn profile_router() -> Router<AppState> {
-    Router::new()
-        .route("/", get(get_organization_profile).put(update_organization_profile))
+    Router::new().route(
+        "/",
+        get(get_organization_profile).put(update_organization_profile),
+    )
 }
 
 /// Full organization admin router (combined)
 pub fn admin_router() -> Router<AppState> {
     Router::new()
-        .route("/profile", get(get_organization_profile).put(update_organization_profile))
+        .route(
+            "/profile",
+            get(get_organization_profile).put(update_organization_profile),
+        )
         .nest("/teams", teams_router())
         .nest("/departments", departments_router())
 }

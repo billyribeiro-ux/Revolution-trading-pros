@@ -117,11 +117,19 @@ async fn list_indicators(
     Query(params): Query<IndicatorQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = params.page.unwrap_or(1).max(1);
-    let per_page = params.per_page.unwrap_or(20).min(100).max(1);
+    let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1) * per_page;
 
     // ICT 7: Validate platform against allowlist to prevent injection
-    let valid_platforms = ["tradingview", "thinkorswim", "metatrader", "ninjatrader", "tradestation", "sierrachart", "ctrader"];
+    let valid_platforms = [
+        "tradingview",
+        "thinkorswim",
+        "metatrader",
+        "ninjatrader",
+        "tradestation",
+        "sierrachart",
+        "ctrader",
+    ];
     let platform = params.platform.as_ref().and_then(|p| {
         let lower = p.to_lowercase();
         if valid_platforms.contains(&lower.as_str()) {
@@ -888,10 +896,19 @@ pub fn router() -> Router<AppState> {
         )
         .route("/:id/toggle", post(toggle_indicator))
         // ICT 7: File management
-        .route("/:id/files", get(list_indicator_files).post(create_indicator_file))
-        .route("/:id/files/:file_id", put(update_indicator_file).delete(delete_indicator_file))
+        .route(
+            "/:id/files",
+            get(list_indicator_files).post(create_indicator_file),
+        )
+        .route(
+            "/:id/files/:file_id",
+            put(update_indicator_file).delete(delete_indicator_file),
+        )
         // ICT 7: Video management
-        .route("/:id/videos", get(list_indicator_videos).post(create_indicator_video))
+        .route(
+            "/:id/videos",
+            get(list_indicator_videos).post(create_indicator_video),
+        )
         .route("/:id/videos/:video_id", delete(delete_indicator_video))
         // ICT 7: Analytics
         .route("/:id/analytics", get(get_download_analytics))

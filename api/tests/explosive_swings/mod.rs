@@ -19,26 +19,15 @@
 //! - Comprehensive: Covers happy paths, edge cases, and error scenarios
 //! - Well-documented: Clear test names and inline documentation
 
-pub mod fixtures;
 pub mod alerts_test;
-pub mod trades_test;
-pub mod trade_plans_test;
+pub mod fixtures;
 pub mod stats_test;
+pub mod trade_plans_test;
+pub mod trades_test;
 
 // Re-export common fixtures for easy access
 pub use fixtures::{
-    AlertBuilder,
-    TestContext,
-    TestTradingRoom,
-    TestUser,
-    TosFormatter,
-    TradeBuilder,
-    TradePlanBuilder,
-    assert_status_and_json,
-    body_to_json,
-    calculate_profit_factor,
-    calculate_win_rate,
-    cleanup_room_data,
-    cleanup_test_users,
-    init_test_env,
+    assert_status_and_json, body_to_json, calculate_profit_factor, calculate_win_rate,
+    cleanup_room_data, cleanup_test_users, init_test_env, AlertBuilder, TestContext,
+    TestTradingRoom, TestUser, TosFormatter, TradeBuilder, TradePlanBuilder,
 };

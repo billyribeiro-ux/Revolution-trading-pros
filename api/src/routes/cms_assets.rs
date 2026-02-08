@@ -26,7 +26,9 @@ use serde_json::{json, Value as JsonValue};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState, services::cms_content};
+use crate::{
+    middleware::admin::AdminUser, services::cms_content, utils::errors::ApiError, AppState,
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // DATA STRUCTURES
@@ -152,9 +154,9 @@ pub struct TypeStats {
 #[derive(Debug, Deserialize)]
 pub struct AssetListQuery {
     pub folder_id: Option<Uuid>,
-    pub r#type: Option<String>,  // image, video, audio, document
+    pub r#type: Option<String>, // image, video, audio, document
     pub search: Option<String>,
-    pub tags: Option<String>,    // comma-separated
+    pub tags: Option<String>, // comma-separated
     pub mime_type: Option<String>,
     pub min_width: Option<i32>,
     pub max_width: Option<i32>,
@@ -301,13 +303,12 @@ pub async fn create_folder(
 
     // Calculate path and depth
     let (path, depth) = if let Some(parent_id) = payload.parent_id {
-        let parent: Option<(String, i32)> = sqlx::query_as(
-            "SELECT path, depth FROM cms_asset_folders WHERE id = $1"
-        )
-        .bind(parent_id)
-        .fetch_optional(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+        let parent: Option<(String, i32)> =
+            sqlx::query_as("SELECT path, depth FROM cms_asset_folders WHERE id = $1")
+                .bind(parent_id)
+                .fetch_optional(state.db.pool())
+                .await
+                .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         match parent {
             Some((parent_path, parent_depth)) => {
@@ -376,7 +377,7 @@ pub async fn update_folder(
         updates.push(format!("icon = ${}", param_idx));
         param_idx += 1;
     }
-    updates.push(format!("updated_at = NOW()"));
+    updates.push("updated_at = NOW()".to_string());
     updates.push(format!("updated_by = ${}", param_idx));
     param_idx += 1;
 
@@ -541,19 +542,35 @@ pub async fn list_assets(
         conditions.push(format!("width <= ${}", param_idx));
         bind_values.push(max_w.to_string());
         #[allow(unused_assignments)]
-        { param_idx += 1; }
+        {
+            param_idx += 1;
+        }
     }
 
     // Sorting
-    let allowed_columns = ["created_at", "filename", "file_size", "usage_count", "updated_at"];
+    let allowed_columns = [
+        "created_at",
+        "filename",
+        "file_size",
+        "usage_count",
+        "updated_at",
+    ];
     let sort_by = params.sort_by.as_deref().unwrap_or("created_at");
     let sort_order = params.sort_order.as_deref().unwrap_or("desc");
 
-    let sort_column = if allowed_columns.contains(&sort_by) { sort_by } else { "created_at" };
-    let sort_direction = if sort_order.eq_ignore_ascii_case("asc") { "ASC" } else { "DESC" };
+    let sort_column = if allowed_columns.contains(&sort_by) {
+        sort_by
+    } else {
+        "created_at"
+    };
+    let sort_direction = if sort_order.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
 
     // Pagination
-    let per_page = params.per_page.unwrap_or(48).min(100).max(1);
+    let per_page = params.per_page.unwrap_or(48).clamp(1, 100);
     let page = params.page.unwrap_or(1).max(1);
     let offset = (page - 1) * per_page;
 
@@ -570,10 +587,7 @@ pub async fn list_assets(
     for val in &bind_values {
         count_q = count_q.bind(val);
     }
-    let total: i64 = count_q
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    let total: i64 = count_q.fetch_one(state.db.pool()).await.unwrap_or(0);
 
     // Get assets
     let query = format!(
@@ -619,7 +633,8 @@ pub async fn recent_assets(
     _admin: AdminUser,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<Vec<AssetSummary>>, ApiError> {
-    let limit: i64 = params.get("limit")
+    let limit: i64 = params
+        .get("limit")
         .and_then(|s| s.parse().ok())
         .unwrap_or(12)
         .min(50);
@@ -690,7 +705,8 @@ pub async fn create_asset(
         return Err(ApiError::validation_error("Invalid file key"));
     }
 
-    let extension = payload.original_filename
+    let extension = payload
+        .original_filename
         .rsplit('.')
         .next()
         .unwrap_or("bin")
@@ -726,7 +742,13 @@ pub async fn create_asset(
     )
     .bind(Uuid::new_v4())
     .bind(payload.folder_id)
-    .bind(&payload.file_key.split('/').last().unwrap_or(&payload.file_key))
+    .bind(
+        payload
+            .file_key
+            .split('/')
+            .next_back()
+            .unwrap_or(&payload.file_key),
+    )
     .bind(&payload.original_filename)
     .bind(&payload.mime_type)
     .bind(payload.file_size)
@@ -862,17 +884,19 @@ pub async fn delete_asset(
     Path(id): Path<Uuid>,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<JsonValue>, ApiError> {
-    let permanent = params.get("permanent").map(|v| v == "true").unwrap_or(false);
+    let permanent = params
+        .get("permanent")
+        .map(|v| v == "true")
+        .unwrap_or(false);
 
     if permanent {
         // Get storage key first
-        let asset: Option<(String,)> = sqlx::query_as(
-            "SELECT storage_key FROM cms_assets WHERE id = $1"
-        )
-        .bind(id)
-        .fetch_optional(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+        let asset: Option<(String,)> =
+            sqlx::query_as("SELECT storage_key FROM cms_assets WHERE id = $1")
+                .bind(id)
+                .fetch_optional(state.db.pool())
+                .await
+                .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         if let Some((storage_key,)) = asset {
             // Delete from storage
@@ -931,16 +955,16 @@ pub async fn replace_asset(
     Json(payload): Json<ReplaceAssetRequest>,
 ) -> Result<Json<Asset>, ApiError> {
     // Get old storage key
-    let old_key: Option<(String,)> = sqlx::query_as(
-        "SELECT storage_key FROM cms_assets WHERE id = $1"
-    )
-    .bind(id)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let old_key: Option<(String,)> =
+        sqlx::query_as("SELECT storage_key FROM cms_assets WHERE id = $1")
+            .bind(id)
+            .fetch_optional(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     let public_url = format!("{}/{}", state.config.r2_public_url, payload.file_key);
-    let extension = payload.original_filename
+    let extension = payload
+        .original_filename
         .rsplit('.')
         .next()
         .unwrap_or("bin")
@@ -1006,16 +1030,19 @@ pub async fn bulk_move(
         return Err(ApiError::validation_error("No assets specified"));
     }
     if payload.asset_ids.len() > 100 {
-        return Err(ApiError::validation_error("Maximum 100 assets per operation"));
+        return Err(ApiError::validation_error(
+            "Maximum 100 assets per operation",
+        ));
     }
 
     let mut moved = 0;
     for asset_id in &payload.asset_ids {
-        let result = sqlx::query("UPDATE cms_assets SET folder_id = $1, updated_at = NOW() WHERE id = $2")
-            .bind(payload.target_folder_id)
-            .bind(asset_id)
-            .execute(state.db.pool())
-            .await;
+        let result =
+            sqlx::query("UPDATE cms_assets SET folder_id = $1, updated_at = NOW() WHERE id = $2")
+                .bind(payload.target_folder_id)
+                .bind(asset_id)
+                .execute(state.db.pool())
+                .await;
         if result.is_ok() {
             moved += 1;
         }
@@ -1039,7 +1066,9 @@ pub async fn bulk_delete(
         return Err(ApiError::validation_error("No assets specified"));
     }
     if payload.asset_ids.len() > 100 {
-        return Err(ApiError::validation_error("Maximum 100 assets per operation"));
+        return Err(ApiError::validation_error(
+            "Maximum 100 assets per operation",
+        ));
     }
 
     let permanent = payload.permanent.unwrap_or(false);
@@ -1048,14 +1077,13 @@ pub async fn bulk_delete(
     for asset_id in &payload.asset_ids {
         if permanent {
             // Get storage key
-            let key: Option<(String,)> = sqlx::query_as(
-                "SELECT storage_key FROM cms_assets WHERE id = $1"
-            )
-            .bind(asset_id)
-            .fetch_optional(state.db.pool())
-            .await
-            .ok()
-            .flatten();
+            let key: Option<(String,)> =
+                sqlx::query_as("SELECT storage_key FROM cms_assets WHERE id = $1")
+                    .bind(asset_id)
+                    .fetch_optional(state.db.pool())
+                    .await
+                    .ok()
+                    .flatten();
 
             if let Some((storage_key,)) = key {
                 let storage = &state.services.storage;
@@ -1070,15 +1098,13 @@ pub async fn bulk_delete(
             {
                 deleted += 1;
             }
-        } else {
-            if sqlx::query("UPDATE cms_assets SET deleted_at = NOW() WHERE id = $1")
-                .bind(asset_id)
-                .execute(state.db.pool())
-                .await
-                .is_ok()
-            {
-                deleted += 1;
-            }
+        } else if sqlx::query("UPDATE cms_assets SET deleted_at = NOW() WHERE id = $1")
+            .bind(asset_id)
+            .execute(state.db.pool())
+            .await
+            .is_ok()
+        {
+            deleted += 1;
         }
     }
 
@@ -1100,25 +1126,24 @@ pub async fn bulk_tag(
         return Err(ApiError::validation_error("No assets specified"));
     }
     if payload.asset_ids.len() > 100 {
-        return Err(ApiError::validation_error("Maximum 100 assets per operation"));
+        return Err(ApiError::validation_error(
+            "Maximum 100 assets per operation",
+        ));
     }
 
     let mut updated = 0;
 
     for asset_id in &payload.asset_ids {
         // Get current tags
-        let current: Option<(Option<Vec<String>>,)> = sqlx::query_as(
-            "SELECT tags FROM cms_assets WHERE id = $1"
-        )
-        .bind(asset_id)
-        .fetch_optional(state.db.pool())
-        .await
-        .ok()
-        .flatten();
+        let current: Option<(Option<Vec<String>>,)> =
+            sqlx::query_as("SELECT tags FROM cms_assets WHERE id = $1")
+                .bind(asset_id)
+                .fetch_optional(state.db.pool())
+                .await
+                .ok()
+                .flatten();
 
-        let mut tags: Vec<String> = current
-            .and_then(|(t,)| t)
-            .unwrap_or_default();
+        let mut tags: Vec<String> = current.and_then(|(t,)| t).unwrap_or_default();
 
         // Add new tags
         if let Some(ref to_add) = payload.tags_to_add {
@@ -1191,9 +1216,18 @@ pub async fn track_usage(
     Path(id): Path<Uuid>,
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<JsonValue>, ApiError> {
-    let content_type = payload.get("content_type").and_then(|v| v.as_str()).unwrap_or("");
-    let content_id = payload.get("content_id").and_then(|v| v.as_str()).and_then(|s| Uuid::parse_str(s).ok());
-    let field_name = payload.get("field_name").and_then(|v| v.as_str()).unwrap_or("unknown");
+    let content_type = payload
+        .get("content_type")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    let content_id = payload
+        .get("content_id")
+        .and_then(|v| v.as_str())
+        .and_then(|s| Uuid::parse_str(s).ok());
+    let field_name = payload
+        .get("field_name")
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown");
 
     if let Some(content_id) = content_id {
         // Upsert usage record
@@ -1242,28 +1276,28 @@ pub async fn get_stats(
         .unwrap_or(0);
 
     let total_size: i64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(file_size), 0) FROM cms_assets WHERE deleted_at IS NULL"
+        "SELECT COALESCE(SUM(file_size), 0) FROM cms_assets WHERE deleted_at IS NULL",
     )
     .fetch_one(state.db.pool())
     .await
     .unwrap_or(0);
 
     let images: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM cms_assets WHERE mime_type LIKE 'image/%' AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_assets WHERE mime_type LIKE 'image/%' AND deleted_at IS NULL",
     )
     .fetch_one(state.db.pool())
     .await
     .unwrap_or(0);
 
     let videos: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM cms_assets WHERE mime_type LIKE 'video/%' AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_assets WHERE mime_type LIKE 'video/%' AND deleted_at IS NULL",
     )
     .fetch_one(state.db.pool())
     .await
     .unwrap_or(0);
 
     let audio: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM cms_assets WHERE mime_type LIKE 'audio/%' AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_assets WHERE mime_type LIKE 'audio/%' AND deleted_at IS NULL",
     )
     .fetch_one(state.db.pool())
     .await
@@ -1284,7 +1318,7 @@ pub async fn get_stats(
     .unwrap_or(0);
 
     let unused: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM cms_assets WHERE usage_count = 0 AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_assets WHERE usage_count = 0 AND deleted_at IS NULL",
     )
     .fetch_one(state.db.pool())
     .await
@@ -1359,10 +1393,7 @@ fn format_bytes(bytes: i64) -> String {
 }
 
 /// Get CMS user UUID from admin user
-async fn get_cms_user_id(
-    pool: &sqlx::PgPool,
-    admin: &AdminUser,
-) -> Option<Uuid> {
+async fn get_cms_user_id(pool: &sqlx::PgPool, admin: &AdminUser) -> Option<Uuid> {
     let user_id = admin.0.id;
     cms_content::get_cms_user_by_user_id(pool, user_id)
         .await
@@ -1388,7 +1419,10 @@ pub fn router() -> Router<AppState> {
         .route("/folders/:id", put(update_folder).delete(delete_folder))
         // Single asset operations
         .route("/upload", post(create_asset))
-        .route("/:id", get(get_asset).put(update_asset).delete(delete_asset))
+        .route(
+            "/:id",
+            get(get_asset).put(update_asset).delete(delete_asset),
+        )
         .route("/:id/restore", post(restore_asset))
         .route("/:id/replace", post(replace_asset))
         .route("/:id/usage", get(get_asset_usage))

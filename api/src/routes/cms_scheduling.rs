@@ -452,13 +452,12 @@ async fn create_schedule(
     require_cms_editor(&user)?;
 
     // Verify content exists
-    let content_exists: (bool,) = sqlx::query_as(
-        "SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1)",
-    )
-    .bind(req.content_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let content_exists: (bool,) =
+        sqlx::query_as("SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1)")
+            .bind(req.content_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     if !content_exists.0 {
         return Err(api_error(StatusCode::NOT_FOUND, "Content not found"));
@@ -569,7 +568,11 @@ async fn list_schedules(
         param_idx += 1;
     }
 
-    sql.push_str(&format!(" ORDER BY s.scheduled_at DESC LIMIT ${} OFFSET ${}", param_idx, param_idx + 1));
+    sql.push_str(&format!(
+        " ORDER BY s.scheduled_at DESC LIMIT ${} OFFSET ${}",
+        param_idx,
+        param_idx + 1
+    ));
 
     // Build and execute parameterized query
     let mut query_builder = sqlx::query_as::<_, CmsScheduleExtended>(&sql);
@@ -603,10 +606,7 @@ async fn list_schedules(
         count_query = count_query.bind(val);
     }
 
-    let total: (i64,) = count_query
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = count_query.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     Ok(Json(ScheduleListResponse {
         schedules,
@@ -686,15 +686,14 @@ async fn update_schedule(
     require_cms_editor(&user)?;
 
     // Verify schedule exists and is pending
-    let existing: Option<CmsSchedule> = sqlx::query_as(
-        "SELECT * FROM cms_schedules WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let existing: Option<CmsSchedule> = sqlx::query_as("SELECT * FROM cms_schedules WHERE id = $1")
+        .bind(id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let existing = existing.ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Schedule not found"))?;
+    let existing =
+        existing.ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Schedule not found"))?;
 
     if !matches!(existing.status, ScheduleStatus::Pending) {
         return Err(api_error(
@@ -727,7 +726,7 @@ async fn update_schedule(
     )
     .bind(id)
     .bind(&req.action)
-    .bind(&req.scheduled_at)
+    .bind(req.scheduled_at)
     .bind(&req.timezone)
     .bind(&req.staged_data)
     .bind(&req.notes)
@@ -903,7 +902,7 @@ async fn create_release(
     )
     .bind(&req.name)
     .bind(&req.description)
-    .bind(&req.scheduled_at)
+    .bind(req.scheduled_at)
     .bind(&req.timezone)
     .bind(&status)
     .bind(req.stop_on_error)
@@ -956,9 +955,7 @@ async fn list_releases(
 
     let limit = query.limit.min(100);
 
-    let mut sql = String::from(
-        "SELECT * FROM cms_releases WHERE 1=1",
-    );
+    let mut sql = String::from("SELECT * FROM cms_releases WHERE 1=1");
 
     // Build parameterized query to prevent SQL injection
     if let Some(ref status) = query.status {
@@ -1032,14 +1029,12 @@ async fn get_release(
 ) -> ApiResult<ReleaseDetailResponse> {
     require_cms_editor(&user)?;
 
-    let release: CmsRelease = sqlx::query_as(
-        "SELECT * FROM cms_releases WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
-    .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Release not found"))?;
+    let release: CmsRelease = sqlx::query_as("SELECT * FROM cms_releases WHERE id = $1")
+        .bind(id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Release not found"))?;
 
     let items: Vec<CmsReleaseItemExtended> = sqlx::query_as(
         r#"
@@ -1126,10 +1121,10 @@ async fn update_release(
     .bind(id)
     .bind(&req.name)
     .bind(&req.description)
-    .bind(&req.scheduled_at)
+    .bind(req.scheduled_at)
     .bind(&req.timezone)
-    .bind(&req.stop_on_error)
-    .bind(&req.notify_on_complete)
+    .bind(req.stop_on_error)
+    .bind(req.notify_on_complete)
     .bind(&new_status)
     .fetch_optional(&state.db.pool)
     .await
@@ -1169,17 +1164,18 @@ async fn add_release_item(
     require_cms_editor(&user)?;
 
     // Verify release exists and is draft/scheduled
-    let release: Option<CmsRelease> = sqlx::query_as(
-        "SELECT * FROM cms_releases WHERE id = $1",
-    )
-    .bind(release_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let release: Option<CmsRelease> = sqlx::query_as("SELECT * FROM cms_releases WHERE id = $1")
+        .bind(release_id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     let release = release.ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Release not found"))?;
 
-    if !matches!(release.status, ReleaseStatus::Draft | ReleaseStatus::Scheduled) {
+    if !matches!(
+        release.status,
+        ReleaseStatus::Draft | ReleaseStatus::Scheduled
+    ) {
         return Err(api_error(
             StatusCode::BAD_REQUEST,
             "Can only add items to draft or scheduled releases",
@@ -1187,13 +1183,12 @@ async fn add_release_item(
     }
 
     // Verify content exists
-    let content_exists: (bool,) = sqlx::query_as(
-        "SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1)",
-    )
-    .bind(req.content_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let content_exists: (bool,) =
+        sqlx::query_as("SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1)")
+            .bind(req.content_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     if !content_exists.0 {
         return Err(api_error(StatusCode::NOT_FOUND, "Content not found"));
@@ -1203,13 +1198,12 @@ async fn add_release_item(
     let order_index = if let Some(idx) = req.order_index {
         idx
     } else {
-        let max_order: (Option<i32>,) = sqlx::query_as(
-            "SELECT MAX(order_index) FROM cms_release_items WHERE release_id = $1",
-        )
-        .bind(release_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((None,));
+        let max_order: (Option<i32>,) =
+            sqlx::query_as("SELECT MAX(order_index) FROM cms_release_items WHERE release_id = $1")
+                .bind(release_id)
+                .fetch_one(&state.db.pool)
+                .await
+                .unwrap_or((None,));
         max_order.0.unwrap_or(-1) + 1
     };
 
@@ -1313,13 +1307,12 @@ async fn schedule_release(
     require_cms_editor(&user)?;
 
     // Verify release has items
-    let item_count: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_release_items WHERE release_id = $1",
-    )
-    .bind(id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let item_count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM cms_release_items WHERE release_id = $1")
+            .bind(id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     if item_count.0 == 0 {
         return Err(api_error(
@@ -1490,15 +1483,14 @@ async fn get_calendar(
 ) -> ApiResult<Vec<CalendarEntry>> {
     require_cms_editor(&user)?;
 
-    let entries: Vec<CalendarEntry> = sqlx::query_as(
-        "SELECT * FROM cms_get_schedule_calendar($1, $2, $3)",
-    )
-    .bind(query.start_date)
-    .bind(query.end_date)
-    .bind(query.content_type_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let entries: Vec<CalendarEntry> =
+        sqlx::query_as("SELECT * FROM cms_get_schedule_calendar($1, $2, $3)")
+            .bind(query.start_date)
+            .bind(query.end_date)
+            .bind(query.content_type_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(entries))
 }
@@ -1525,9 +1517,7 @@ async fn get_history(
 
     let limit = query.limit.min(100);
 
-    let mut sql = String::from(
-        "SELECT * FROM cms_schedule_history WHERE 1=1",
-    );
+    let mut sql = String::from("SELECT * FROM cms_schedule_history WHERE 1=1");
 
     // Build parameterized query to prevent SQL injection
     let mut param_idx = 1;
@@ -1554,7 +1544,11 @@ async fn get_history(
         param_idx += 1;
     }
 
-    sql.push_str(&format!(" ORDER BY created_at DESC LIMIT ${} OFFSET ${}", param_idx, param_idx + 1));
+    sql.push_str(&format!(
+        " ORDER BY created_at DESC LIMIT ${} OFFSET ${}",
+        param_idx,
+        param_idx + 1
+    ));
 
     // Build query with all bindings
     let mut query_builder = sqlx::query_as::<_, CmsScheduleHistory>(&sql);
@@ -1588,10 +1582,7 @@ async fn get_history(
         count_query = count_query.bind(release_id.to_string());
     }
 
-    let total: (i64,) = count_query
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = count_query.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     Ok(Json(HistoryListResponse {
         history,
@@ -1652,7 +1643,8 @@ async fn process_pending_schedules(
             .await;
 
         // Execute the action
-        let result = execute_schedule_action(&state, content_id, &action, staged_data.as_ref()).await;
+        let result =
+            execute_schedule_action(&state, content_id, &action, staged_data.as_ref()).await;
 
         match result {
             Ok(_) => {
@@ -1683,14 +1675,13 @@ async fn process_pending_schedules(
                 errors.push(format!("Schedule {}: {}", schedule_id, error_msg));
 
                 // Check retry count
-                let schedule: Option<CmsSchedule> = sqlx::query_as(
-                    "SELECT * FROM cms_schedules WHERE id = $1",
-                )
-                .bind(schedule_id)
-                .fetch_optional(&state.db.pool)
-                .await
-                .ok()
-                .flatten();
+                let schedule: Option<CmsSchedule> =
+                    sqlx::query_as("SELECT * FROM cms_schedules WHERE id = $1")
+                        .bind(schedule_id)
+                        .fetch_optional(&state.db.pool)
+                        .await
+                        .ok()
+                        .flatten();
 
                 if let Some(s) = schedule {
                     if s.retry_count < s.max_retries {
@@ -1857,7 +1848,8 @@ async fn process_pending_releases(
         let mut release_failed = false;
 
         for (item_id, content_id, action, staged_data) in items {
-            let result = execute_schedule_action(&state, content_id, &action, staged_data.as_ref()).await;
+            let result =
+                execute_schedule_action(&state, content_id, &action, staged_data.as_ref()).await;
 
             match result {
                 Ok(_) => {
@@ -1879,7 +1871,10 @@ async fn process_pending_releases(
                     .await;
 
                     release_failed = true;
-                    errors.push(format!("Release {} item {}: {}", release_id, item_id, error_msg));
+                    errors.push(format!(
+                        "Release {} item {}: {}",
+                        release_id, item_id, error_msg
+                    ));
 
                     if stop_on_error {
                         break;
@@ -1940,7 +1935,10 @@ pub fn router() -> Router<AppState> {
         .route("/releases/:id", put(update_release))
         .route("/releases/:id", delete(delete_release))
         .route("/releases/:id/items", post(add_release_item))
-        .route("/releases/:release_id/items/:item_id", delete(remove_release_item))
+        .route(
+            "/releases/:release_id/items/:item_id",
+            delete(remove_release_item),
+        )
         .route("/releases/:id/schedule", post(schedule_release))
         .route("/releases/:id/cancel", post(cancel_release))
 }

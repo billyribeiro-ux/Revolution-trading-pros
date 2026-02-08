@@ -130,7 +130,9 @@ pub async fn index(
             conditions.push(format!("collection = ${}", param_idx));
             bind_values.push(sanitized);
             #[allow(unused_assignments)]
-            { param_idx += 1; } // Keep for extensibility
+            {
+                param_idx += 1;
+            } // Keep for extensibility
         }
     }
 
@@ -168,7 +170,7 @@ pub async fn index(
     };
 
     // Pagination - validated integers
-    let per_page = params.per_page.unwrap_or(24).min(100).max(1);
+    let per_page = params.per_page.unwrap_or(24).clamp(1, 100);
     let page = params.page.unwrap_or(1).max(1);
     let offset = (page - 1) * per_page;
 
@@ -477,7 +479,9 @@ fn validate_file_signature(data: &[u8], content_type: &str) -> bool {
     match content_type {
         // Images
         "image/jpeg" => data.len() >= 2 && data[0] == 0xFF && data[1] == 0xD8,
-        "image/png" => data.len() >= 8 && data[..8] == [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
+        "image/png" => {
+            data.len() >= 8 && data[..8] == [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
+        }
         "image/gif" => data.len() >= 6 && (data[..6] == *b"GIF87a" || data[..6] == *b"GIF89a"),
         "image/webp" => data.len() >= 12 && data[..4] == *b"RIFF" && data[8..12] == *b"WEBP",
         "image/svg+xml" => {
@@ -489,7 +493,8 @@ fn validate_file_signature(data: &[u8], content_type: &str) -> bool {
         // Videos
         "video/mp4" => {
             // MP4/M4V: ftyp atom
-            data.len() >= 12 && (data[4..8] == *b"ftyp" || data[4..8] == *b"moov" || data[4..8] == *b"mdat")
+            data.len() >= 12
+                && (data[4..8] == *b"ftyp" || data[4..8] == *b"moov" || data[4..8] == *b"mdat")
         }
         "video/webm" => {
             // WebM: EBML header
@@ -497,7 +502,11 @@ fn validate_file_signature(data: &[u8], content_type: &str) -> bool {
         }
         "video/quicktime" => {
             // QuickTime: ftyp or moov atom
-            data.len() >= 8 && (data[4..8] == *b"ftyp" || data[4..8] == *b"moov" || data[4..8] == *b"wide" || data[4..8] == *b"free")
+            data.len() >= 8
+                && (data[4..8] == *b"ftyp"
+                    || data[4..8] == *b"moov"
+                    || data[4..8] == *b"wide"
+                    || data[4..8] == *b"free")
         }
 
         // Documents
@@ -1113,7 +1122,9 @@ pub async fn cleanup_orphaned_files(
                 .await
             {
                 Ok(_) => result.db_records_cleaned += 1,
-                Err(e) => result.errors.push(format!("Failed to delete record {}: {}", id, e)),
+                Err(e) => result
+                    .errors
+                    .push(format!("Failed to delete record {}: {}", id, e)),
             }
         }
     }
