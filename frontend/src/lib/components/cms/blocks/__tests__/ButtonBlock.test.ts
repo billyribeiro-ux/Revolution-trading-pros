@@ -233,7 +233,7 @@ describe('ButtonBlock - All Variants', () => {
 	variants.forEach((variant) => {
 		it(`should render ${variant} variant with correct class`, () => {
 			const block = createMockBlock({
-				content: { buttonStyle: variant as string }
+				content: { buttonStyle: variant }
 			});
 
 			const { container } = render(ButtonBlock, {

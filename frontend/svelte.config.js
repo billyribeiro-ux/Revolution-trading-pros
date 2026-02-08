@@ -11,6 +11,9 @@ const config = {
     return { runes: true };
   },
   kit: {
+    experimental: {
+      remoteFunctions: true
+    },
     adapter: adapter({
       routes: {
         include: ['/*'],

@@ -88,6 +88,7 @@
 		"three": "^0.182.0",
 		"tus-js-client": "^4.3.1",
 		"typed.js": "^3.0.0",
+		"valibot": "^1.2.0",
 		"vivus": "^0.4.6",
 		"web-vitals": "^5.1.0",
 		"y-indexeddb": "^9.0.12",
