@@ -240,8 +240,7 @@ async fn list_videos(
         "views_count",
         "id",
     ];
-    let sort_by = if valid_sort_columns
-        .contains(&query.sort_by.as_deref().unwrap_or("video_date"))
+    let sort_by = if valid_sort_columns.contains(&query.sort_by.as_deref().unwrap_or("video_date"))
     {
         query.sort_by.as_deref().unwrap_or("video_date")
     } else {
@@ -286,15 +285,12 @@ async fn list_videos(
     q = q.bind(per_page);
     q = q.bind(offset);
 
-    let videos: Vec<UnifiedVideoRow> = q
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Database error: {}", e)})),
-            )
-        })?;
+    let videos: Vec<UnifiedVideoRow> = q.fetch_all(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
     let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
@@ -319,10 +315,7 @@ async fn list_videos(
         cq = cq.bind(tag_json);
     }
 
-    let total: (i64,) = cq
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     // Fetch related data for each video
     let mut responses = Vec::new();

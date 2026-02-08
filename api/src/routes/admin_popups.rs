@@ -89,12 +89,11 @@ async fn list_popups(
         WHERE 1=1{}
         ORDER BY priority DESC, created_at DESC LIMIT ${} OFFSET ${}
         "#,
-        where_clause, param_idx, param_idx + 1
+        where_clause,
+        param_idx,
+        param_idx + 1
     );
-    let count_sql = format!(
-        "SELECT COUNT(*) FROM popups WHERE 1=1{}",
-        where_clause
-    );
+    let count_sql = format!("SELECT COUNT(*) FROM popups WHERE 1=1{}", where_clause);
 
     // Bind parameters for the main query
     let mut q = sqlx::query_as::<_, crate::models::popup::Popup>(&sql);
@@ -112,25 +111,24 @@ async fn list_popups(
     q = q.bind(offset);
 
     // Execute queries
-    let popups: Vec<crate::models::popup::Popup> =
-        match q.fetch_all(&state.db.pool).await {
-            Ok(rows) => rows,
-            Err(e) => {
-                // If table doesn't exist, return empty list
-                if e.to_string().contains("does not exist") {
-                    return Ok(Json(PopupListResponse {
-                        popups: vec![],
-                        total: 0,
-                        page,
-                        per_page,
-                    }));
-                }
-                return Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({ "error": format!("Database error: {}", e) })),
-                ));
+    let popups: Vec<crate::models::popup::Popup> = match q.fetch_all(&state.db.pool).await {
+        Ok(rows) => rows,
+        Err(e) => {
+            // If table doesn't exist, return empty list
+            if e.to_string().contains("does not exist") {
+                return Ok(Json(PopupListResponse {
+                    popups: vec![],
+                    total: 0,
+                    page,
+                    per_page,
+                }));
             }
-        };
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "error": format!("Database error: {}", e) })),
+            ));
+        }
+    };
 
     // Bind parameters for the count query
     let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
@@ -145,10 +143,7 @@ async fn list_popups(
         cq = cq.bind(search_pattern);
     }
 
-    let total: (i64,) = cq
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     let popup_summaries: Vec<PopupSummary> = popups.iter().map(PopupSummary::from_popup).collect();
 
@@ -300,9 +295,7 @@ async fn update_popup(
     // Handle isActive -> status conversion via parameterized query
     // If is_active is provided, it overrides the status field
     let effective_status: Option<String> = if let Some(is_active) = req.is_active {
-        Some(
-            if is_active { "published" } else { "paused" }.to_string(),
-        )
+        Some(if is_active { "published" } else { "paused" }.to_string())
     } else {
         req.status.clone()
     };

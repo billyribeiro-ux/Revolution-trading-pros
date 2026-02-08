@@ -406,10 +406,7 @@ fn count_syllables(word: &str) -> u32 {
 fn calculate_flesch_kincaid(text: &str) -> f32 {
     let words = count_words(text);
     let sentences = count_sentences(text);
-    let syllables: u32 = text
-        .split_whitespace()
-        .map(count_syllables)
-        .sum();
+    let syllables: u32 = text.split_whitespace().map(count_syllables).sum();
 
     if words == 0 || sentences == 0 {
         return 0.0;
@@ -778,7 +775,8 @@ fn analyze_content(
                     impact: Some("medium".to_string()),
                 });
                 score -= 15;
-            } else if (KEYWORD_DENSITY_OPTIMAL_MIN..=KEYWORD_DENSITY_OPTIMAL_MAX).contains(&keyword_density)
+            } else if (KEYWORD_DENSITY_OPTIMAL_MIN..=KEYWORD_DENSITY_OPTIMAL_MAX)
+                .contains(&keyword_density)
             {
                 issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Success,

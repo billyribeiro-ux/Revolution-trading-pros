@@ -509,15 +509,12 @@ async fn list_resources(
     q = q.bind(per_page);
     q = q.bind(offset);
 
-    let resources: Vec<RoomResource> = q
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let resources: Vec<RoomResource> = q.fetch_all(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
     let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
@@ -557,10 +554,7 @@ async fn list_resources(
         cq = cq.bind(lesson_id);
     }
 
-    let total: (i64,) = cq
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     let responses: Vec<ResourceResponse> =
         resources.into_iter().map(resource_to_response).collect();
@@ -713,15 +707,12 @@ async fn admin_list_resources(
     q = q.bind(per_page);
     q = q.bind(offset);
 
-    let resources: Vec<RoomResource> = q
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let resources: Vec<RoomResource> = q.fetch_all(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
     let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
@@ -745,10 +736,7 @@ async fn admin_list_resources(
         cq = cq.bind(search_pattern);
     }
 
-    let total: (i64,) = cq
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     let responses: Vec<ResourceResponse> =
         resources.into_iter().map(resource_to_response).collect();
@@ -1800,10 +1788,7 @@ async fn list_stock_lists(
         "SELECT * FROM stock_lists WHERE 1=1{} ORDER BY is_featured DESC, week_of DESC NULLS LAST, created_at DESC LIMIT ${} OFFSET ${}",
         where_clause, param_idx, param_idx + 1
     );
-    let count_sql = format!(
-        "SELECT COUNT(*) FROM stock_lists WHERE 1=1{}",
-        where_clause
-    );
+    let count_sql = format!("SELECT COUNT(*) FROM stock_lists WHERE 1=1{}", where_clause);
 
     // Bind parameters for the main query
     let mut q = sqlx::query_as::<_, StockList>(&sql);
@@ -1824,10 +1809,7 @@ async fn list_stock_lists(
     q = q.bind(per_page);
     q = q.bind(offset);
 
-    let lists: Vec<StockList> = q
-        .fetch_all(&state.db.pool)
-        .await
-        .unwrap_or_default();
+    let lists: Vec<StockList> = q.fetch_all(&state.db.pool).await.unwrap_or_default();
 
     // Bind parameters for the count query
     let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
@@ -1846,10 +1828,7 @@ async fn list_stock_lists(
         cq = cq.bind(week_date);
     }
 
-    let total: (i64,) = cq
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
 
     Ok(Json(json!({
         "success": true,
@@ -2377,7 +2356,10 @@ async fn get_resource_analytics(
     if let Some(rid) = room_id {
         totals_q = totals_q.bind(rid);
     }
-    let totals: (i64, i64, i64) = totals_q.fetch_one(&state.db.pool).await.unwrap_or((0, 0, 0));
+    let totals: (i64, i64, i64) = totals_q
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0, 0, 0));
 
     let total_favorites: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM resource_favorites")
         .fetch_one(&state.db.pool)
@@ -2393,7 +2375,10 @@ async fn get_resource_analytics(
     if let Some(rid) = room_id {
         by_type_q = by_type_q.bind(rid);
     }
-    let by_type: Vec<TypeStats> = by_type_q.fetch_all(&state.db.pool).await.unwrap_or_default();
+    let by_type: Vec<TypeStats> = by_type_q
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
 
     // By access level
     let by_access_sql = format!(
@@ -2404,7 +2389,10 @@ async fn get_resource_analytics(
     if let Some(rid) = room_id {
         by_access_q = by_access_q.bind(rid);
     }
-    let by_access_level: Vec<AccessStats> = by_access_q.fetch_all(&state.db.pool).await.unwrap_or_default();
+    let by_access_level: Vec<AccessStats> = by_access_q
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
 
     // Top viewed
     let top_viewed_sql = format!(
@@ -2415,7 +2403,10 @@ async fn get_resource_analytics(
     if let Some(rid) = room_id {
         top_viewed_q = top_viewed_q.bind(rid);
     }
-    let top_viewed: Vec<ResourceStats> = top_viewed_q.fetch_all(&state.db.pool).await.unwrap_or_default();
+    let top_viewed: Vec<ResourceStats> = top_viewed_q
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
 
     // Top downloaded
     let top_downloaded_sql = format!(
@@ -2426,7 +2417,10 @@ async fn get_resource_analytics(
     if let Some(rid) = room_id {
         top_downloaded_q = top_downloaded_q.bind(rid);
     }
-    let top_downloaded: Vec<ResourceStats> = top_downloaded_q.fetch_all(&state.db.pool).await.unwrap_or_default();
+    let top_downloaded: Vec<ResourceStats> = top_downloaded_q
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
 
     // Recent uploads
     let recent_uploads_sql = format!(
@@ -2437,7 +2431,10 @@ async fn get_resource_analytics(
     if let Some(rid) = room_id {
         recent_uploads_q = recent_uploads_q.bind(rid);
     }
-    let recent_uploads: Vec<ResourceStats> = recent_uploads_q.fetch_all(&state.db.pool).await.unwrap_or_default();
+    let recent_uploads: Vec<ResourceStats> = recent_uploads_q
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
 
     let analytics = ResourceAnalytics {
         total_resources: totals.0,

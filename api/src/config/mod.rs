@@ -90,7 +90,10 @@ impl std::fmt::Debug for Config {
             // Non-sensitive: CORS
             .field("cors_origins", &self.cors_origins)
             // Sensitive: Postmark token
-            .field("postmark_token", &self.postmark_token.as_ref().map(|_| "[REDACTED]"))
+            .field(
+                "postmark_token",
+                &self.postmark_token.as_ref().map(|_| "[REDACTED]"),
+            )
             .field("from_email", &self.from_email)
             .field("app_url", &self.app_url)
             // Sensitive: Meilisearch
@@ -102,15 +105,27 @@ impl std::fmt::Debug for Config {
             .field("developer_mode", &self.developer_mode)
             // Sensitive: developer bootstrap
             .field("developer_bootstrap_email", &self.developer_bootstrap_email)
-            .field("developer_bootstrap_password_hash", &self.developer_bootstrap_password_hash.as_ref().map(|_| "[REDACTED]"))
+            .field(
+                "developer_bootstrap_password_hash",
+                &self
+                    .developer_bootstrap_password_hash
+                    .as_ref()
+                    .map(|_| "[REDACTED]"),
+            )
             .field("developer_bootstrap_name", &self.developer_bootstrap_name)
             // Sensitive: OAuth
             .field("google_client_id", &self.google_client_id)
-            .field("google_client_secret", &self.google_client_secret.as_ref().map(|_| "[REDACTED]"))
+            .field(
+                "google_client_secret",
+                &self.google_client_secret.as_ref().map(|_| "[REDACTED]"),
+            )
             .field("apple_client_id", &self.apple_client_id)
             .field("apple_team_id", &self.apple_team_id)
             .field("apple_key_id", &"[REDACTED]")
-            .field("apple_private_key", &self.apple_private_key.as_ref().map(|_| "[REDACTED]"))
+            .field(
+                "apple_private_key",
+                &self.apple_private_key.as_ref().map(|_| "[REDACTED]"),
+            )
             .finish()
     }
 }

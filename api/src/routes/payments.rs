@@ -368,8 +368,8 @@ async fn webhook(
         Err(e) => {
             // If webhook secret not configured, reject in production, warn in dev
             if e.to_string().contains("not configured") {
-                let environment = std::env::var("ENVIRONMENT")
-                    .unwrap_or_else(|_| "production".to_string());
+                let environment =
+                    std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
                 if environment != "development" && environment != "dev" {
                     tracing::error!(
                         target: "payments",

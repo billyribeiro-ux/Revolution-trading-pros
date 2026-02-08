@@ -1692,14 +1692,16 @@ async fn list_leads(
     let search_pattern = filters.search.as_ref().map(|s| format!("%{}%", s));
 
     // Lead statuses from the frontend Lead interface
-    let lead_statuses = ["new",
+    let lead_statuses = [
+        "new",
         "contacted",
         "qualified",
         "proposal",
         "negotiation",
         "won",
         "lost",
-        "lead"];
+        "lead",
+    ];
 
     let leads: Vec<CrmLead> = sqlx::query_as(
         r#"

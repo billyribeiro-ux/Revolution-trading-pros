@@ -1257,13 +1257,15 @@ fn validate_form_submission(
             }
 
             // Email validation
-            if field_type == "email" && !value_str.is_empty()
-                && (!value_str.contains('@') || !value_str.contains('.')) {
-                    errors
-                        .entry(field_name.to_string())
-                        .or_default()
-                        .push(format!("{} must be a valid email address", field_label));
-                }
+            if field_type == "email"
+                && !value_str.is_empty()
+                && (!value_str.contains('@') || !value_str.contains('.'))
+            {
+                errors
+                    .entry(field_name.to_string())
+                    .or_default()
+                    .push(format!("{} must be a valid email address", field_label));
+            }
 
             // Min/max length validation
             if let Some(validation) = validation {

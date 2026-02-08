@@ -101,7 +101,6 @@ impl<'a> SubscriptionService<'a> {
         user_id: i64,
         subscription_id: i64,
     ) -> Result<Option<UserSubscriptionWithPlan>, ApiError> {
-
         let subscription = sqlx::query_as::<_, SubscriptionQueryRow>(
             r#"
             SELECT 

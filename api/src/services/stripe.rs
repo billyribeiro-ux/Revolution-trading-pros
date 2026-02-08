@@ -633,10 +633,7 @@ impl StripeService {
 
         // Set as default invoice payment method
         self.client
-            .post(format!(
-                "{}/customers/{}",
-                STRIPE_API_BASE, customer_id
-            ))
+            .post(format!("{}/customers/{}", STRIPE_API_BASE, customer_id))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .form(&[(
