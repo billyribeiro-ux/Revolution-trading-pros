@@ -31,6 +31,9 @@
 	import InvalidatePositionModal from './components/InvalidatePositionModal.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
+	// Remote Commands
+	import { saveAlert, deleteAlertCommand } from './commands.remote';
+
 	// Types
 	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
 	import type { WatchlistData } from '$lib/server/watchlist';
@@ -125,23 +128,12 @@
 	): Promise<void> {
 		saveAlertError = null;
 
-		const url =
-			isEdit && ps.editingAlert
-				? `/api/alerts/${ps.ROOM_SLUG}/${ps.editingAlert.id}`
-				: `/api/alerts/${ps.ROOM_SLUG}`;
-
 		try {
-			const response = await fetch(url, {
-				method: isEdit ? 'PUT' : 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify(alertData)
+			await saveAlert({
+				roomSlug: ps.ROOM_SLUG,
+				alertId: isEdit && ps.editingAlert ? ps.editingAlert.id : undefined,
+				alertData: alertData as unknown as Record<string, unknown>
 			});
-
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || `Failed to ${isEdit ? 'update' : 'create'} alert`);
-			}
 
 			await ps.fetchAlerts();
 
@@ -164,11 +156,15 @@
 	async function confirmDeleteAlert() {
 		if (!pendingDeleteAlertId) return;
 		showDeleteAlertModal = false;
-		const response = await fetch(`/api/alerts/${ps.ROOM_SLUG}/${pendingDeleteAlertId}`, {
-			method: 'DELETE',
-			credentials: 'include'
-		});
-		if (response.ok) await ps.fetchAlerts();
+		try {
+			await deleteAlertCommand({
+				roomSlug: ps.ROOM_SLUG,
+				alertId: pendingDeleteAlertId
+			});
+			await ps.fetchAlerts();
+		} catch (err) {
+			console.error('Failed to delete alert:', err);
+		}
 		pendingDeleteAlertId = null;
 	}
 

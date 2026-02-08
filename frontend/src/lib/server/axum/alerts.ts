@@ -72,3 +72,34 @@ export async function fetchAlert(
 		throw err;
 	}
 }
+
+/**
+ * Create a new alert.
+ */
+export async function createAlert(
+	roomSlug: string,
+	payload: Record<string, unknown>
+): Promise<AxumAlert> {
+	return axum.post<AxumAlert>(`/api/alerts/${roomSlug}`, payload);
+}
+
+/**
+ * Update an existing alert.
+ */
+export async function updateAlert(
+	roomSlug: string,
+	alertId: number,
+	payload: Record<string, unknown>
+): Promise<AxumAlert> {
+	return axum.put<AxumAlert>(`/api/alerts/${roomSlug}/${alertId}`, payload);
+}
+
+/**
+ * Delete an alert.
+ */
+export async function deleteAlert(
+	roomSlug: string,
+	alertId: number
+): Promise<void> {
+	await axum.delete(`/api/alerts/${roomSlug}/${alertId}`);
+}

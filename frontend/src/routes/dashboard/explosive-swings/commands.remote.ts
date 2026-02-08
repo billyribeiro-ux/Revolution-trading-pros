@@ -10,9 +10,10 @@
  * @boundary Remote Functions (command)
  */
 
+import * as v from 'valibot';
 import { error } from '@sveltejs/kit';
 import { command, getRequestEvent } from '$app/server';
-import { axumTrades, axumTradePlans, axumAuth } from '$lib/server/axum';
+import { axumAlerts, axumTrades, axumTradePlans, axumAuth } from '$lib/server/axum';
 import {
 	CreateTradeInputSchema,
 	CloseTradeInputSchema,
@@ -22,7 +23,7 @@ import {
 	UpdateTradePlanEntryInputSchema,
 	DeleteTradePlanEntryInputSchema
 } from '$lib/shared/schemas/trades';
-import { getTradePlan, getStats, getTrades } from './data.remote';
+import { getAlerts, getTradePlan, getStats, getTrades } from './data.remote';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Auth Guard
@@ -43,6 +44,51 @@ async function requireAdmin(): Promise<void> {
 		error(403, 'Admin access required');
 	}
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Alert Commands
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Save (create or update) an alert.
+ */
+export const saveAlert = command(
+	v.object({
+		roomSlug: v.pipe(v.string(), v.nonEmpty()),
+		alertId: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
+		alertData: v.record(v.string(), v.unknown())
+	}),
+	async ({ roomSlug, alertId, alertData }) => {
+		await requireAuth();
+
+		if (alertId) {
+			await axumAlerts.updateAlert(roomSlug, alertId, alertData);
+		} else {
+			await axumAlerts.createAlert(roomSlug, alertData);
+		}
+
+		// Invalidate alerts query
+		getAlerts({ roomSlug, page: 1, limit: 10 }).refresh();
+	}
+);
+
+/**
+ * Delete an alert.
+ */
+export const deleteAlertCommand = command(
+	v.object({
+		roomSlug: v.pipe(v.string(), v.nonEmpty()),
+		alertId: v.pipe(v.number(), v.integer(), v.minValue(1))
+	}),
+	async ({ roomSlug, alertId }) => {
+		await requireAuth();
+
+		await axumAlerts.deleteAlert(roomSlug, alertId);
+
+		// Invalidate alerts query
+		getAlerts({ roomSlug, page: 1, limit: 10 }).refresh();
+	}
+);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Trade Commands
