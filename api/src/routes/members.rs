@@ -113,9 +113,8 @@ pub async fn index(
 
     // Build dynamic query with parameterized bindings
     // Using a single query with COALESCE/NULL checks for optional filters
-    let members: Vec<Member> = sqlx::query_as(
-        &format!(
-            r#"
+    let members: Vec<Member> = sqlx::query_as(&format!(
+        r#"
             SELECT id, name, email, created_at, updated_at
             FROM users
             WHERE
@@ -125,9 +124,8 @@ pub async fn index(
             ORDER BY {} {}
             LIMIT $4 OFFSET $5
             "#,
-            sort_column, sort_direction
-        ),
-    )
+        sort_column, sort_direction
+    ))
     .bind(&search_pattern)
     .bind(&date_from)
     .bind(&date_to)
@@ -408,11 +406,9 @@ pub async fn members_by_service(
         .map(|s| format!("%{}%", s));
 
     // Validate status against allowlist
-    let status_filter = params.status.as_ref().and_then(|s| {
-        match s.as_str() {
-            "active" | "trial" | "cancelled" | "expired" | "pending" | "past_due" => Some(s.clone()),
-            _ => None,
-        }
+    let status_filter = params.status.as_ref().and_then(|s| match s.as_str() {
+        "active" | "trial" | "cancelled" | "expired" | "pending" | "past_due" => Some(s.clone()),
+        _ => None,
     });
 
     // Get members using parameterized queries

@@ -265,7 +265,7 @@ async fn update_product(
 
     // ICT 7 FIX: Use COALESCE pattern with proper binding for all optional fields
     // This ensures values are only updated when provided, and all bindings are correct
-    let slug = input.name.as_ref().map(|n| slug::slugify(n));
+    let slug = input.name.as_ref().map(slug::slugify);
 
     let product: ProductRow = sqlx::query_as(
         r#"
@@ -456,7 +456,9 @@ async fn archive_product(
         "Product archived successfully"
     );
 
-    Ok(Json(json!({"message": "Product archived successfully", "id": id})))
+    Ok(Json(
+        json!({"message": "Product archived successfully", "id": id}),
+    ))
 }
 
 /// Restore archived product - admin only
@@ -503,7 +505,9 @@ async fn restore_product(
         "Product restored successfully"
     );
 
-    Ok(Json(json!({"message": "Product restored successfully", "id": id})))
+    Ok(Json(
+        json!({"message": "Product restored successfully", "id": id}),
+    ))
 }
 
 /// List products for admin (includes inactive products)

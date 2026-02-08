@@ -168,14 +168,17 @@ async fn create_checkout(
             r#"SELECT id, code, type, value::FLOAT8 as value, max_uses, current_uses,
                       expiry_date, min_purchase_amount::FLOAT8 as min_purchase_amount
                FROM coupons
-               WHERE UPPER(code) = UPPER($1) AND is_active = true"#
+               WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
         )
         .bind(code)
         .fetch_optional(&state.db.pool)
         .await
         .map_err(|e| {
             tracing::error!(target: "checkout", error = %e, "Failed to fetch coupon");
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to validate coupon"})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to validate coupon"})),
+            )
         })?;
 
         if let Some(c) = coupon {
@@ -201,7 +204,9 @@ async fn create_checkout(
             if c.min_purchase_amount > 0.0 && subtotal < c.min_purchase_amount {
                 return Err((
                     StatusCode::BAD_REQUEST,
-                    Json(json!({"error": format!("Minimum purchase of ${:.2} required for this coupon", c.min_purchase_amount)})),
+                    Json(
+                        json!({"error": format!("Minimum purchase of ${:.2} required for this coupon", c.min_purchase_amount)}),
+                    ),
                 ));
             }
 
@@ -278,11 +283,13 @@ async fn create_checkout(
 
     // ICT 7 FIX: Increment coupon usage if applied
     if let Some(coupon_id) = applied_coupon_id {
-        sqlx::query("UPDATE coupons SET current_uses = current_uses + 1, updated_at = NOW() WHERE id = $1")
-            .bind(coupon_id)
-            .execute(&state.db.pool)
-            .await
-            .ok(); // Log but don't fail order creation
+        sqlx::query(
+            "UPDATE coupons SET current_uses = current_uses + 1, updated_at = NOW() WHERE id = $1",
+        )
+        .bind(coupon_id)
+        .execute(&state.db.pool)
+        .await
+        .ok(); // Log but don't fail order creation
     }
 
     // Insert order items
@@ -320,13 +327,21 @@ async fn create_checkout(
         let is_subscription = item.get("type").and_then(|t| t.as_str()) == Some("subscription");
         stripe_line_items.push(crate::services::stripe::LineItem {
             price_id: None, // Ad-hoc pricing
-            name: item.get("name").and_then(|n| n.as_str()).unwrap_or("Item").to_string(),
+            name: item
+                .get("name")
+                .and_then(|n| n.as_str())
+                .unwrap_or("Item")
+                .to_string(),
             description: None,
             amount: (item.get("price").and_then(|p| p.as_f64()).unwrap_or(0.0) * 100.0) as i64,
             currency: "usd".to_string(),
             quantity: item.get("quantity").and_then(|q| q.as_i64()).unwrap_or(1),
             is_subscription,
-            interval: if is_subscription { Some("month".to_string()) } else { None },
+            interval: if is_subscription {
+                Some("month".to_string())
+            } else {
+                None
+            },
             interval_count: if is_subscription { Some(1) } else { None },
         });
     }
@@ -338,7 +353,10 @@ async fn create_checkout(
     metadata.insert("user_id".to_string(), user.id.to_string());
 
     let config = crate::services::stripe::CheckoutConfig {
-        customer_email: input.billing_email.clone().unwrap_or_else(|| user.email.clone()),
+        customer_email: input
+            .billing_email
+            .clone()
+            .unwrap_or_else(|| user.email.clone()),
         customer_name: input.billing_name.clone(),
         line_items: stripe_line_items,
         success_url: format!("{}?order={}", success_url, order_number),

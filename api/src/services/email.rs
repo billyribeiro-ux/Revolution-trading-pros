@@ -375,6 +375,7 @@ impl EmailService {
     // ═══════════════════════════════════════════════════════════════════════════
 
     /// Send subscription confirmation email
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_subscription_confirmation(
         &self,
         to: &str,
@@ -507,7 +508,11 @@ impl EmailService {
                 html_escape(name),
                 html_escape(plan_name),
                 message,
-                if !cancel_immediately { format!("<br><strong>Access until:</strong> {}", end_date) } else { String::new() },
+                if !cancel_immediately {
+                    format!("<br><strong>Access until:</strong> {}", end_date)
+                } else {
+                    String::new()
+                },
                 resubscribe_url
             ),
         );
@@ -762,7 +767,10 @@ impl EmailService {
         name: &str,
         confirm_token: &str,
     ) -> Result<()> {
-        let confirm_url = format!("{}/newsletter/confirm?token={}", self.app_url, confirm_token);
+        let confirm_url = format!(
+            "{}/newsletter/confirm?token={}",
+            self.app_url, confirm_token
+        );
 
         let subject = "Confirm Your Newsletter Subscription";
 
@@ -802,7 +810,11 @@ impl EmailService {
                     If you didn't subscribe to our newsletter, you can safely ignore this email.
                 </p>
                 "#,
-                if name.is_empty() { String::new() } else { format!(" <strong>{}</strong>", html_escape(name)) },
+                if name.is_empty() {
+                    String::new()
+                } else {
+                    format!(" <strong>{}</strong>", html_escape(name))
+                },
                 confirm_url,
                 confirm_url
             ),
@@ -814,7 +826,11 @@ impl EmailService {
             Please confirm your subscription by visiting this link:\n{}\n\n\
             If you didn't subscribe, you can safely ignore this email.\n\n\
             - The Revolution Trading Pros Team",
-            if name.is_empty() { String::new() } else { format!(" {}", name) },
+            if name.is_empty() {
+                String::new()
+            } else {
+                format!(" {}", name)
+            },
             confirm_url
         );
 
@@ -860,14 +876,22 @@ impl EmailService {
                 </p>
                 {}
                 "#,
-                if name.is_empty() { String::new() } else { format!(" <strong>{}</strong>", html_escape(name)) },
+                if name.is_empty() {
+                    String::new()
+                } else {
+                    format!(" <strong>{}</strong>", html_escape(name))
+                },
                 html_with_footer
             ),
         );
 
         let text = format!(
             "Hi{},\n\n{}\n\n---\nUnsubscribe: {}\n\n- The Revolution Trading Pros Team",
-            if name.is_empty() { String::new() } else { format!(" {}", name) },
+            if name.is_empty() {
+                String::new()
+            } else {
+                format!(" {}", name)
+            },
             "View this email in your browser for the full content.",
             unsubscribe_url
         );

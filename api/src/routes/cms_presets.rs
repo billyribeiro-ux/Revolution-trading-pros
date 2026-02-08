@@ -507,7 +507,14 @@ async fn get_presets_by_block_type(
     }
 
     // Convert to response format with specific ordering
-    let category_order = ["default", "brand", "trading", "marketing", "seasonal", "custom"];
+    let category_order = [
+        "default",
+        "brand",
+        "trading",
+        "marketing",
+        "seasonal",
+        "custom",
+    ];
     let mut categories: Vec<PresetsByCategory> = Vec::new();
 
     for cat in category_order {
@@ -690,8 +697,10 @@ async fn create_preset(
     }
 
     if request.block_type.trim().is_empty() {
-        return Err(ApiError::new(StatusCode::BAD_REQUEST, "Block type is required")
-            .with_code("VALIDATION_ERROR"));
+        return Err(
+            ApiError::new(StatusCode::BAD_REQUEST, "Block type is required")
+                .with_code("VALIDATION_ERROR"),
+        );
     }
 
     // Generate or validate slug
@@ -702,20 +711,19 @@ async fn create_preset(
     let slug = ensure_unique_slug(&state.db.pool, &request.block_type, &base_slug, None).await?;
 
     // Get CMS user ID from platform user
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar(
-        "SELECT id FROM cms_users WHERE user_id = $1"
-    )
-    .bind(user.id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| {
-        ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-    })?;
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?;
 
     // If setting as default, clear other defaults for this block type
     if request.is_default {
         sqlx::query(
-            "UPDATE cms_presets SET is_default = false WHERE block_type = $1 AND is_default = true"
+            "UPDATE cms_presets SET is_default = false WHERE block_type = $1 AND is_default = true",
         )
         .bind(&request.block_type)
         .execute(&state.db.pool)
@@ -804,7 +812,7 @@ async fn update_preset(
     }
 
     let existing: ExistingPreset = sqlx::query_as(
-        "SELECT is_locked, block_type FROM cms_presets WHERE id = $1 AND deleted_at IS NULL"
+        "SELECT is_locked, block_type FROM cms_presets WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -827,15 +835,14 @@ async fn update_preset(
     };
 
     // Get CMS user ID
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar(
-        "SELECT id FROM cms_users WHERE user_id = $1"
-    )
-    .bind(user.id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| {
-        ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-    })?;
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?;
 
     // If setting as default, clear other defaults for this block type
     if request.is_default == Some(true) {
@@ -927,7 +934,7 @@ async fn delete_preset(
     }
 
     let existing: DeletePreset = sqlx::query_as(
-        "SELECT is_locked, name FROM cms_presets WHERE id = $1 AND deleted_at IS NULL"
+        "SELECT is_locked, name FROM cms_presets WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -950,7 +957,9 @@ async fn delete_preset(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .map_err(|e: sqlx::Error| {
+            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+        })?;
 
     tracing::info!("Preset deleted: {} ({})", existing.name, id);
 
@@ -1003,18 +1012,18 @@ async fn duplicate_preset(
     // Generate new name and slug
     let new_name = format!("{} (Copy)", original.name);
     let base_slug = generate_slug(&new_name);
-    let new_slug = ensure_unique_slug(&state.db.pool, &original.block_type, &base_slug, None).await?;
+    let new_slug =
+        ensure_unique_slug(&state.db.pool, &original.block_type, &base_slug, None).await?;
 
     // Get CMS user ID
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar(
-        "SELECT id FROM cms_users WHERE user_id = $1"
-    )
-    .bind(user.id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| {
-        ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-    })?;
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?;
 
     let dup_id = Uuid::new_v4();
     let duplicated: CmsPreset = sqlx::query_as(
@@ -1157,8 +1166,10 @@ async fn save_block_as_preset(
     }
 
     if request.block_type.trim().is_empty() {
-        return Err(ApiError::new(StatusCode::BAD_REQUEST, "Block type is required")
-            .with_code("VALIDATION_ERROR"));
+        return Err(
+            ApiError::new(StatusCode::BAD_REQUEST, "Block type is required")
+                .with_code("VALIDATION_ERROR"),
+        );
     }
 
     // Combine content and settings into preset_data
@@ -1172,15 +1183,14 @@ async fn save_block_as_preset(
     let slug = ensure_unique_slug(&state.db.pool, &request.block_type, &base_slug, None).await?;
 
     // Get CMS user ID
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar(
-        "SELECT id FROM cms_users WHERE user_id = $1"
-    )
-    .bind(user.id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| {
-        ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-    })?;
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?;
 
     let new_id = Uuid::new_v4();
     let category = request.category.unwrap_or(CmsPresetCategory::Custom);
@@ -1235,16 +1245,11 @@ pub fn admin_router() -> Router<AppState> {
         .route("/", get(list_presets).post(create_preset))
         .route("/block-types", get(get_block_types_with_presets))
         .route("/block/{block_type}", get(get_presets_by_block_type))
-        .route(
-            "/block/{block_type}/slug/{slug}",
-            get(get_preset_by_slug),
-        )
+        .route("/block/{block_type}/slug/{slug}", get(get_preset_by_slug))
         // CRUD by ID
         .route(
             "/{id}",
-            get(get_preset)
-                .put(update_preset)
-                .delete(delete_preset),
+            get(get_preset).put(update_preset).delete(delete_preset),
         )
         // Actions
         .route("/{id}/duplicate", post(duplicate_preset))
@@ -1255,8 +1260,7 @@ pub fn admin_router() -> Router<AppState> {
 
 /// Public router for read-only preset access
 pub fn public_router() -> Router<AppState> {
-    Router::new()
-        .route("/block/{block_type}", get(get_presets_by_block_type_public))
+    Router::new().route("/block/{block_type}", get(get_presets_by_block_type_public))
 }
 
 /// Public endpoint to get presets by block type (global only, no auth)
@@ -1294,7 +1298,14 @@ async fn get_presets_by_block_type_public(
     }
 
     // Convert to response format
-    let category_order = ["default", "brand", "trading", "marketing", "seasonal", "custom"];
+    let category_order = [
+        "default",
+        "brand",
+        "trading",
+        "marketing",
+        "seasonal",
+        "custom",
+    ];
     let mut categories: Vec<PresetsByCategory> = Vec::new();
 
     for cat in category_order {

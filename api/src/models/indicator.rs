@@ -128,7 +128,7 @@ pub struct IndicatorVideo {
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct UserIndicatorOwnership {
     pub id: i32,
-    pub user_id: i64, // ICT 7 FIX: Changed to i64 to match database BIGINT
+    pub user_id: i64,      // ICT 7 FIX: Changed to i64 to match database BIGINT
     pub indicator_id: i64, // ICT 7 FIX: Database uses BIGINT, not UUID
     pub order_id: Option<i32>,
     pub order_item_id: Option<i32>,
@@ -156,7 +156,7 @@ pub struct UserIndicatorOwnership {
 pub struct IndicatorDownload {
     pub id: i32,
     pub user_id: Option<i64>, // ICT 7 FIX: Changed to i64 to match database BIGINT
-    pub indicator_id: i64, // ICT 7 FIX: Database uses BIGINT, not UUID
+    pub indicator_id: i64,    // ICT 7 FIX: Database uses BIGINT, not UUID
     pub file_id: i32,
     pub ownership_id: Option<i32>,
     pub download_token: String,

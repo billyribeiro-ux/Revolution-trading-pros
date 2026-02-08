@@ -684,7 +684,11 @@ async fn duplicate_layout(
 
     // Create duplicate with new title and slug
     let new_title = format!("{} (Copy)", original.title);
-    let new_slug = format!("{}-copy-{}", original.slug.as_deref().unwrap_or("layout"), chrono::Utc::now().timestamp());
+    let new_slug = format!(
+        "{}-copy-{}",
+        original.slug.as_deref().unwrap_or("layout"),
+        chrono::Utc::now().timestamp()
+    );
 
     let layout: PageLayout = sqlx::query_as(
         r#"

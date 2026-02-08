@@ -607,10 +607,7 @@ impl RoomSearchService {
     /// Handles common query patterns and sanitizes input.
     fn prepare_tsquery(query: &str) -> String {
         // Normalize whitespace (split_whitespace already handles trimming)
-        let cleaned = query
-            .split_whitespace()
-            .collect::<Vec<_>>()
-            .join(" ");
+        let cleaned = query.split_whitespace().collect::<Vec<_>>().join(" ");
 
         // For simple queries, just return cleaned string
         // PostgreSQL's plainto_tsquery will handle the conversion

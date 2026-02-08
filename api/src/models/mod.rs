@@ -26,12 +26,12 @@ pub use course::*;
 pub use job::*;
 #[allow(unused_imports)]
 pub use membership::*;
-pub use popup::*;
 pub use order::{
     CheckoutSession, CreateOrder, CreateOrderItem, Order, OrderItem, OrderStatus,
     OrderWithItems as LegacyOrderWithItems,
 };
 pub use order_service_types::{OrderItemData, OrderSummary, OrderWithItems};
+pub use popup::*;
 pub use product::*;
 pub use subscription::*;
 pub use user::*;

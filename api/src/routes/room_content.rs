@@ -1459,8 +1459,8 @@ async fn list_trades(
     let cache_key = cache_keys::trades(&room_slug, query.status.as_deref(), page, per_page);
 
     // If ticker filter is used, bypass cache (rare use case)
-    if query.ticker.is_some() {
-        let ticker = query.ticker.as_ref().unwrap().to_uppercase();
+    if let Some(ticker_ref) = &query.ticker {
+        let ticker = ticker_ref.to_uppercase();
         let trades: Vec<RoomTrade> = match &query.status {
             Some(status) => {
                 sqlx::query_as(

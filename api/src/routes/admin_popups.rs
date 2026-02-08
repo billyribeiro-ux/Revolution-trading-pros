@@ -18,11 +18,12 @@ use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use crate::middleware::admin::AdminUser;
 use crate::models::popup::{
-    AbTestVariantMetrics, ConversionMetrics, ConversionRateMetrics, CreatePopupRequest,
-    DailyCount, DeviceBreakdown, DisplayRules, FrequencyRules, PagePerformance, PopupAnalytics,
-    PopupDesign, PopupDetail, PopupListResponse, PopupResponse, PopupSummary, TimelineData,
-    TriggerRules, UpdatePopupRequest, ViewMetrics,
+    AbTestVariantMetrics, ConversionMetrics, ConversionRateMetrics, CreatePopupRequest, DailyCount,
+    DeviceBreakdown, DisplayRules, FrequencyRules, PagePerformance, PopupAnalytics, PopupDesign,
+    PopupDetail, PopupListResponse, PopupResponse, PopupSummary, TimelineData, TriggerRules,
+    UpdatePopupRequest, ViewMetrics,
 };
 use crate::AppState;
 
@@ -39,6 +40,7 @@ pub struct ListPopupsQuery {
 
 /// List all popups (admin)
 async fn list_popups(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(query): Query<ListPopupsQuery>,
 ) -> Result<Json<PopupListResponse>, (StatusCode, Json<serde_json::Value>)> {
@@ -93,27 +95,25 @@ async fn list_popups(
     ));
 
     // Execute queries
-    let popups: Vec<crate::models::popup::Popup> = match sqlx::query_as(&sql)
-        .fetch_all(&state.db.pool)
-        .await
-    {
-        Ok(rows) => rows,
-        Err(e) => {
-            // If table doesn't exist, return empty list
-            if e.to_string().contains("does not exist") {
-                return Ok(Json(PopupListResponse {
-                    popups: vec![],
-                    total: 0,
-                    page,
-                    per_page,
-                }));
+    let popups: Vec<crate::models::popup::Popup> =
+        match sqlx::query_as(&sql).fetch_all(&state.db.pool).await {
+            Ok(rows) => rows,
+            Err(e) => {
+                // If table doesn't exist, return empty list
+                if e.to_string().contains("does not exist") {
+                    return Ok(Json(PopupListResponse {
+                        popups: vec![],
+                        total: 0,
+                        page,
+                        per_page,
+                    }));
+                }
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({ "error": format!("Database error: {}", e) })),
+                ));
             }
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({ "error": format!("Database error: {}", e) })),
-            ));
-        }
-    };
+        };
 
     let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)
@@ -132,6 +132,7 @@ async fn list_popups(
 
 /// Get single popup by ID
 async fn get_popup(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i32>,
 ) -> Result<Json<PopupResponse>, (StatusCode, Json<serde_json::Value>)> {
@@ -173,6 +174,7 @@ async fn get_popup(
 
 /// Create new popup
 async fn create_popup(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(req): Json<CreatePopupRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -260,6 +262,7 @@ async fn create_popup(
 
 /// Update popup
 async fn update_popup(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i32>,
     Json(req): Json<UpdatePopupRequest>,
@@ -318,8 +321,7 @@ async fn update_popup(
 
     // For simplicity, using a simpler approach with direct SQL
     // In production, you'd want to use query builder
-    let result = sqlx::query(&format!(
-        r#"
+    let result = sqlx::query(r#"
         UPDATE popups SET
             name = COALESCE($1, name),
             type = COALESCE($2, type),
@@ -334,8 +336,7 @@ async fn update_popup(
             animation = COALESCE($11, animation),
             updated_at = NOW()
         WHERE id = $12
-        "#
-    ))
+        "#)
     .bind(&req.name)
     .bind(&req.popup_type)
     .bind(&req.status)
@@ -365,6 +366,7 @@ async fn update_popup(
 
 /// Delete popup
 async fn delete_popup(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i32>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -398,6 +400,7 @@ async fn delete_popup(
 
 /// Duplicate popup
 async fn duplicate_popup(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i32>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -447,13 +450,20 @@ async fn duplicate_popup(
 
 /// Get popup analytics
 async fn get_popup_analytics(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i32>,
 ) -> Result<Json<PopupAnalytics>, (StatusCode, Json<serde_json::Value>)> {
     let now = Utc::now();
     let today_start = now.date_naive().and_hms_opt(0, 0, 0).unwrap();
-    let week_start = (now - Duration::days(7)).date_naive().and_hms_opt(0, 0, 0).unwrap();
-    let month_start = (now - Duration::days(30)).date_naive().and_hms_opt(0, 0, 0).unwrap();
+    let week_start = (now - Duration::days(7))
+        .date_naive()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
+    let month_start = (now - Duration::days(30))
+        .date_naive()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
 
     // Get popup basic stats
     let popup_stats: Option<(i64, i64, f64)> = sqlx::query_as(
@@ -665,11 +675,16 @@ async fn get_popup_analytics(
 
 /// Toggle popup status (activate/deactivate)
 async fn toggle_popup_status(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i32>,
     Json(body): Json<ToggleStatusRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let new_status = if body.is_active { "published" } else { "paused" };
+    let new_status = if body.is_active {
+        "published"
+    } else {
+        "paused"
+    };
 
     let result = sqlx::query("UPDATE popups SET status = $1, updated_at = NOW() WHERE id = $2")
         .bind(new_status)
@@ -704,6 +719,7 @@ pub struct ToggleStatusRequest {
 
 /// Create A/B test
 async fn create_ab_test(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(base_popup_id): Path<i32>,
     Json(body): Json<CreateAbTestRequest>,
@@ -728,8 +744,13 @@ async fn create_ab_test(
 
             // Create variant popups
             for (i, variant) in body.variants.iter().enumerate() {
-                let variant_name = variant.name.clone().unwrap_or_else(|| format!("Variant {}", i + 1));
-                let allocation = variant.allocation.unwrap_or(100 / (body.variants.len() as i32 + 1));
+                let variant_name = variant
+                    .name
+                    .clone()
+                    .unwrap_or_else(|| format!("Variant {}", i + 1));
+                let allocation = variant
+                    .allocation
+                    .unwrap_or(100 / (body.variants.len() as i32 + 1));
 
                 let _ = sqlx::query(
                     r#"
@@ -793,6 +814,7 @@ pub struct AbTestVariant {
 
 /// Get A/B test results
 async fn get_ab_test_results(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(test_id): Path<i32>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -817,15 +839,17 @@ async fn get_ab_test_results(
     let results: Vec<AbTestVariantMetrics> = variants
         .iter()
         .enumerate()
-        .map(|(i, (popup_id, name, views, conv, rate))| AbTestVariantMetrics {
-            popup_id: *popup_id,
-            variant_name: name.clone(),
-            impressions: *views,
-            conversions: *conv,
-            conversion_rate: *rate,
-            confidence: 0.0, // Would require statistical calculation
-            is_winner: i == 0 && *conv > 0,
-        })
+        .map(
+            |(i, (popup_id, name, views, conv, rate))| AbTestVariantMetrics {
+                popup_id: *popup_id,
+                variant_name: name.clone(),
+                impressions: *views,
+                conversions: *conv,
+                conversion_rate: *rate,
+                confidence: 0.0, // Would require statistical calculation
+                is_winner: i == 0 && *conv > 0,
+            },
+        )
         .collect();
 
     Ok(Json(json!({

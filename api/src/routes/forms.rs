@@ -603,7 +603,9 @@ async fn update_submission_status(
     );
 
     // Validate status value
-    let valid_statuses = ["unread", "read", "starred", "archived", "spam", "complete", "partial"];
+    let valid_statuses = [
+        "unread", "read", "starred", "archived", "spam", "complete", "partial",
+    ];
     if !valid_statuses.contains(&input.status.as_str()) {
         return Err((
             StatusCode::BAD_REQUEST,
@@ -611,20 +613,19 @@ async fn update_submission_status(
         ));
     }
 
-    let result = sqlx::query(
-        "UPDATE form_submissions SET status = $1 WHERE id = $2 AND form_id = $3"
-    )
-    .bind(&input.status)
-    .bind(submission_id)
-    .bind(form_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let result =
+        sqlx::query("UPDATE form_submissions SET status = $1 WHERE id = $2 AND form_id = $3")
+            .bind(&input.status)
+            .bind(submission_id)
+            .bind(form_id)
+            .execute(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     if result.rows_affected() == 0 {
         return Err((
@@ -657,7 +658,9 @@ async fn bulk_update_status(
     );
 
     // Validate status value
-    let valid_statuses = ["unread", "read", "starred", "archived", "spam", "complete", "partial"];
+    let valid_statuses = [
+        "unread", "read", "starred", "archived", "spam", "complete", "partial",
+    ];
     if !valid_statuses.contains(&input.status.as_str()) {
         return Err((
             StatusCode::BAD_REQUEST,
@@ -673,7 +676,8 @@ async fn bulk_update_status(
     }
 
     // Build IN clause for submission IDs
-    let placeholders: Vec<String> = input.submission_ids
+    let placeholders: Vec<String> = input
+        .submission_ids
         .iter()
         .enumerate()
         .map(|(i, _)| format!("${}", i + 3))
@@ -684,22 +688,18 @@ async fn bulk_update_status(
         placeholders.join(", ")
     );
 
-    let mut q = sqlx::query(&query)
-        .bind(&input.status)
-        .bind(form_id);
+    let mut q = sqlx::query(&query).bind(&input.status).bind(form_id);
 
     for id in &input.submission_ids {
         q = q.bind(id);
     }
 
-    let result = q.execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let result = q.execute(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -731,7 +731,8 @@ async fn bulk_delete_submissions(
     }
 
     // Build IN clause for submission IDs
-    let placeholders: Vec<String> = input.submission_ids
+    let placeholders: Vec<String> = input
+        .submission_ids
         .iter()
         .enumerate()
         .map(|(i, _)| format!("${}", i + 2))
@@ -748,14 +749,12 @@ async fn bulk_delete_submissions(
         q = q.bind(id);
     }
 
-    let result = q.execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let result = q.execute(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Update submission count
     sqlx::query("UPDATE forms SET submission_count = submission_count - $1 WHERE id = $2")
@@ -777,7 +776,14 @@ async fn export_submissions(
     AdminUser(user): AdminUser,
     Path(form_id): Path<i64>,
     Query(query): Query<ExportQuery>,
-) -> Result<(StatusCode, [(axum::http::header::HeaderName, String); 2], String), (StatusCode, Json<serde_json::Value>)> {
+) -> Result<
+    (
+        StatusCode,
+        [(axum::http::header::HeaderName, String); 2],
+        String,
+    ),
+    (StatusCode, Json<serde_json::Value>),
+> {
     tracing::info!(
         target: "security",
         event = "submission_export",
@@ -816,16 +822,20 @@ async fn export_submissions(
     .flatten();
 
     let form = form.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Form not found"})),
+        )
     })?;
 
     // Build CSV
     let mut csv = String::new();
 
     // Extract field names from form fields
-    let headers = vec!["ID", "Status", "IP Address", "User Agent", "Submitted At"];
+    let headers = ["ID", "Status", "IP Address", "User Agent", "Submitted At"];
     let field_names: Vec<String> = if let Some(fields) = form.fields.as_array() {
-        fields.iter()
+        fields
+            .iter()
             .filter_map(|f| f.get("name").and_then(|n| n.as_str()))
             .map(|s| s.to_string())
             .collect()
@@ -874,7 +884,10 @@ async fn export_submissions(
         StatusCode::OK,
         [
             (axum::http::header::CONTENT_TYPE, "text/csv".to_string()),
-            (axum::http::header::CONTENT_DISPOSITION, format!("attachment; filename=\"{}\"", filename)),
+            (
+                axum::http::header::CONTENT_DISPOSITION,
+                format!("attachment; filename=\"{}\"", filename),
+            ),
         ],
         csv,
     ))
@@ -1077,13 +1090,20 @@ async fn submit_form(
 
     // ICT 7 Fix: Email notification via Postmark
     if let Some(settings) = form.settings.as_object() {
-        if settings.get("send_email").and_then(|v| v.as_bool()).unwrap_or(false) {
+        if settings
+            .get("send_email")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false)
+        {
             if let Some(email_to) = settings.get("email_to").and_then(|v| v.as_str()) {
                 if let Some(ref email_service) = state.services.email {
                     let subject = format!("New Form Submission: {}", form.name);
                     let html_body = build_form_notification_email(&form.name, &clean_data);
 
-                    if let Err(e) = email_service.send(email_to, &subject, &html_body, None).await {
+                    if let Err(e) = email_service
+                        .send(email_to, &subject, &html_body, None)
+                        .await
+                    {
                         tracing::error!(
                             target: "forms",
                             event = "email_send_error",
@@ -1164,14 +1184,16 @@ async fn submit_form(
     }
 
     // Get success message from settings or use default
-    let success_message = form.settings
+    let success_message = form
+        .settings
         .as_object()
         .and_then(|s| s.get("success_message"))
         .and_then(|v| v.as_str())
         .unwrap_or("Form submitted successfully");
 
     // Get redirect URL if configured
-    let redirect_url = form.settings
+    let redirect_url = form
+        .settings
         .as_object()
         .and_then(|s| s.get("redirect_url"))
         .and_then(|v| v.as_str());
@@ -1194,25 +1216,37 @@ fn validate_form_submission(
     fields: &serde_json::Value,
     data: &serde_json::Value,
 ) -> std::collections::HashMap<String, Vec<String>> {
-    let mut errors: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+    let mut errors: std::collections::HashMap<String, Vec<String>> =
+        std::collections::HashMap::new();
 
     if let Some(fields_array) = fields.as_array() {
         for field in fields_array {
             let field_name = field.get("name").and_then(|v| v.as_str()).unwrap_or("");
-            let field_label = field.get("label").and_then(|v| v.as_str()).unwrap_or(field_name);
-            let required = field.get("required").and_then(|v| v.as_bool()).unwrap_or(false);
-            let field_type = field.get("field_type").and_then(|v| v.as_str()).unwrap_or("text");
+            let field_label = field
+                .get("label")
+                .and_then(|v| v.as_str())
+                .unwrap_or(field_name);
+            let required = field
+                .get("required")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let field_type = field
+                .get("field_type")
+                .and_then(|v| v.as_str())
+                .unwrap_or("text");
             let validation = field.get("validation");
 
             let value = data.get(field_name);
             let value_str = value.and_then(|v| v.as_str()).unwrap_or("");
-            let is_empty = value.is_none() || value_str.is_empty() ||
-                          (value.is_some() && value.unwrap().is_null());
+            let is_empty = value.is_none()
+                || value_str.is_empty()
+                || (value.is_some() && value.unwrap().is_null());
 
             // Required field validation
             if required && is_empty {
-                errors.entry(field_name.to_string())
-                    .or_insert_with(Vec::new)
+                errors
+                    .entry(field_name.to_string())
+                    .or_default()
                     .push(format!("{} is required", field_label));
                 continue;
             }
@@ -1223,29 +1257,37 @@ fn validate_form_submission(
             }
 
             // Email validation
-            if field_type == "email" && !value_str.is_empty() {
-                if !value_str.contains('@') || !value_str.contains('.') {
-                    errors.entry(field_name.to_string())
-                        .or_insert_with(Vec::new)
+            if field_type == "email" && !value_str.is_empty()
+                && (!value_str.contains('@') || !value_str.contains('.')) {
+                    errors
+                        .entry(field_name.to_string())
+                        .or_default()
                         .push(format!("{} must be a valid email address", field_label));
                 }
-            }
 
             // Min/max length validation
             if let Some(validation) = validation {
                 if let Some(min_length) = validation.get("min_length").and_then(|v| v.as_u64()) {
                     if (value_str.len() as u64) < min_length {
-                        errors.entry(field_name.to_string())
-                            .or_insert_with(Vec::new)
-                            .push(format!("{} must be at least {} characters", field_label, min_length));
+                        errors
+                            .entry(field_name.to_string())
+                            .or_default()
+                            .push(format!(
+                                "{} must be at least {} characters",
+                                field_label, min_length
+                            ));
                     }
                 }
 
                 if let Some(max_length) = validation.get("max_length").and_then(|v| v.as_u64()) {
                     if (value_str.len() as u64) > max_length {
-                        errors.entry(field_name.to_string())
-                            .or_insert_with(Vec::new)
-                            .push(format!("{} must be no more than {} characters", field_label, max_length));
+                        errors
+                            .entry(field_name.to_string())
+                            .or_default()
+                            .push(format!(
+                                "{} must be no more than {} characters",
+                                field_label, max_length
+                            ));
                     }
                 }
 
@@ -1253,11 +1295,13 @@ fn validate_form_submission(
                 if let Some(pattern) = validation.get("pattern").and_then(|v| v.as_str()) {
                     if let Ok(regex) = regex::Regex::new(pattern) {
                         if !regex.is_match(value_str) {
-                            let message = validation.get("pattern_message")
+                            let message = validation
+                                .get("pattern_message")
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Invalid format");
-                            errors.entry(field_name.to_string())
-                                .or_insert_with(Vec::new)
+                            errors
+                                .entry(field_name.to_string())
+                                .or_default()
                                 .push(message.to_string());
                         }
                     }
@@ -1268,15 +1312,17 @@ fn validate_form_submission(
                     if let Ok(num_value) = value_str.parse::<f64>() {
                         if let Some(min) = validation.get("min").and_then(|v| v.as_f64()) {
                             if num_value < min {
-                                errors.entry(field_name.to_string())
-                                    .or_insert_with(Vec::new)
+                                errors
+                                    .entry(field_name.to_string())
+                                    .or_default()
                                     .push(format!("{} must be at least {}", field_label, min));
                             }
                         }
                         if let Some(max) = validation.get("max").and_then(|v| v.as_f64()) {
                             if num_value > max {
-                                errors.entry(field_name.to_string())
-                                    .or_insert_with(Vec::new)
+                                errors
+                                    .entry(field_name.to_string())
+                                    .or_default()
                                     .push(format!("{} must be no more than {}", field_label, max));
                             }
                         }
@@ -1298,7 +1344,8 @@ fn build_form_notification_email(form_name: &str, data: &serde_json::Value) -> S
             let value_str = match value {
                 serde_json::Value::String(s) => s.clone(),
                 serde_json::Value::Null => "Not provided".to_string(),
-                serde_json::Value::Array(arr) => arr.iter()
+                serde_json::Value::Array(arr) => arr
+                    .iter()
                     .filter_map(|v| v.as_str())
                     .collect::<Vec<_>>()
                     .join(", "),
@@ -1369,7 +1416,7 @@ async fn track_form_view(
             (COALESCE((settings->>'view_count')::int, 0) + 1)::text::jsonb
         )
         WHERE slug = $1 AND is_published = true
-        "#
+        "#,
     )
     .bind(&slug)
     .execute(&state.db.pool)
@@ -1387,21 +1434,23 @@ async fn get_form_analytics(
     Path(form_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get form with settings
-    let form: Option<FormRow> = sqlx::query_as(
-        "SELECT * FROM forms WHERE id = $1"
-    )
-    .bind(form_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .ok()
-    .flatten();
+    let form: Option<FormRow> = sqlx::query_as("SELECT * FROM forms WHERE id = $1")
+        .bind(form_id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .ok()
+        .flatten();
 
     let form = form.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Form not found"})),
+        )
     })?;
 
     // Get view count from settings
-    let views = form.settings
+    let views = form
+        .settings
         .as_object()
         .and_then(|s| s.get("view_count"))
         .and_then(|v| v.as_i64())
@@ -1425,7 +1474,7 @@ async fn get_form_analytics(
         WHERE form_id = $1 AND created_at > NOW() - INTERVAL '30 days'
         GROUP BY DATE(created_at)
         ORDER BY date DESC
-        "#
+        "#,
     )
     .bind(form_id)
     .fetch_all(&state.db.pool)
@@ -1439,7 +1488,7 @@ async fn get_form_analytics(
         FROM form_submissions
         WHERE form_id = $1
         GROUP BY status
-        "#
+        "#,
     )
     .bind(form_id)
     .fetch_all(&state.db.pool)
@@ -1489,11 +1538,20 @@ pub fn admin_router() -> Router<AppState> {
         // Submissions
         .route("/:form_id/submissions", get(list_submissions))
         .route("/:form_id/submissions/export", get(export_submissions))
-        .route("/:form_id/submissions/bulk-update-status", post(bulk_update_status))
-        .route("/:form_id/submissions/bulk-delete", post(bulk_delete_submissions))
+        .route(
+            "/:form_id/submissions/bulk-update-status",
+            post(bulk_update_status),
+        )
+        .route(
+            "/:form_id/submissions/bulk-delete",
+            post(bulk_delete_submissions),
+        )
         .route(
             "/:form_id/submissions/:submission_id",
             get(get_submission).delete(delete_submission),
         )
-        .route("/:form_id/submissions/:submission_id/status", put(update_submission_status))
+        .route(
+            "/:form_id/submissions/:submission_id/status",
+            put(update_submission_status),
+        )
 }

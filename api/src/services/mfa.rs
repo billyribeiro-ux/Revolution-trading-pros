@@ -78,6 +78,7 @@ pub fn generate_backup_codes() -> Vec<String> {
 }
 
 /// Generate TOTP code for a given secret and time
+#[allow(clippy::result_large_err)]
 pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
     let secret_bytes = base32::decode(Alphabet::Rfc4648 { padding: false }, secret)
         .ok_or_else(|| ApiError::internal_error("Invalid TOTP secret"))?;
@@ -90,8 +91,8 @@ pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
     use sha1::Sha1;
 
     type HmacSha1 = Hmac<Sha1>;
-    let mut mac =
-        HmacSha1::new_from_slice(&secret_bytes).map_err(|_| ApiError::internal_error("HMAC error"))?;
+    let mut mac = HmacSha1::new_from_slice(&secret_bytes)
+        .map_err(|_| ApiError::internal_error("HMAC error"))?;
     mac.update(&counter_bytes);
     let result = mac.finalize().into_bytes();
 
@@ -107,6 +108,7 @@ pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
 }
 
 /// Verify TOTP code (allows 1 period drift)
+#[allow(clippy::result_large_err)]
 pub fn verify_totp(secret: &str, code: &str) -> Result<bool, ApiError> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -213,9 +215,8 @@ impl MfaService {
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-        let mfa_secret = mfa_secret.ok_or_else(|| {
-            ApiError::new(StatusCode::BAD_REQUEST, "MFA setup not initiated")
-        })?;
+        let mfa_secret = mfa_secret
+            .ok_or_else(|| ApiError::new(StatusCode::BAD_REQUEST, "MFA setup not initiated"))?;
 
         // Verify the code
         if !verify_totp(&mfa_secret.totp_secret, code)? {
@@ -268,8 +269,8 @@ impl MfaService {
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-        let mfa_secret = mfa_secret
-            .ok_or_else(|| ApiError::new(StatusCode::BAD_REQUEST, "MFA not enabled"))?;
+        let mfa_secret =
+            mfa_secret.ok_or_else(|| ApiError::new(StatusCode::BAD_REQUEST, "MFA not enabled"))?;
 
         // Try TOTP first
         if verify_totp(&mfa_secret.totp_secret, code)? {
@@ -285,8 +286,8 @@ impl MfaService {
         }
 
         // Try backup code
-        let backup_codes: Vec<String> = serde_json::from_value(mfa_secret.backup_codes.clone())
-            .unwrap_or_default();
+        let backup_codes: Vec<String> =
+            serde_json::from_value(mfa_secret.backup_codes.clone()).unwrap_or_default();
 
         let normalized_code = code.to_uppercase().replace("-", "");
         for (idx, bc) in backup_codes.iter().enumerate() {
@@ -372,12 +373,11 @@ impl MfaService {
 
     /// Check if user has MFA enabled
     pub async fn is_mfa_enabled(&self, user_id: i64) -> Result<bool, ApiError> {
-        let result: Option<(bool,)> =
-            sqlx::query_as("SELECT mfa_enabled FROM users WHERE id = $1")
-                .bind(user_id)
-                .fetch_optional(&self.pool)
-                .await
-                .map_err(|e| ApiError::database_error(&e.to_string()))?;
+        let result: Option<(bool,)> = sqlx::query_as("SELECT mfa_enabled FROM users WHERE id = $1")
+            .bind(user_id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         Ok(result.map(|(enabled,)| enabled).unwrap_or(false))
     }

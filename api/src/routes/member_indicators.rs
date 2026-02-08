@@ -34,11 +34,19 @@ async fn list_public_indicators(
     Query(params): Query<IndicatorQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = params.page.unwrap_or(1).max(1);
-    let per_page = params.per_page.unwrap_or(20).min(100).max(1);
+    let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1) * per_page;
 
     // ICT 7: Validate platform against allowlist
-    let valid_platforms = ["tradingview", "thinkorswim", "metatrader", "ninjatrader", "tradestation", "sierrachart", "ctrader"];
+    let valid_platforms = [
+        "tradingview",
+        "thinkorswim",
+        "metatrader",
+        "ninjatrader",
+        "tradestation",
+        "sierrachart",
+        "ctrader",
+    ];
     let platform = params.platform.as_ref().and_then(|p| {
         let lower = p.to_lowercase();
         if valid_platforms.contains(&lower.as_str()) {
@@ -184,12 +192,12 @@ async fn get_my_indicators(
     let indicators: Vec<serde_json::Value> = sqlx::query_as::<
         _,
         (
-            i64,           // id
-            String,        // name
-            String,        // slug
-            Option<String>, // description (was tagline)
-            Option<String>, // thumbnail (was logo_url)
-            Option<String>, // download_url (was card_image_url)
+            i64,                   // id
+            String,                // name
+            String,                // slug
+            Option<String>,        // description (was tagline)
+            Option<String>,        // thumbnail (was logo_url)
+            Option<String>,        // download_url (was card_image_url)
             chrono::NaiveDateTime, // purchased_at (was access_granted_at)
         ),
     >(
@@ -296,7 +304,7 @@ async fn get_indicator_downloads(
 
     // ICT 7 FIX: Get videos - use indicator_videos table if exists
     let videos: Vec<IndicatorVideo> = sqlx::query_as(
-        "SELECT * FROM indicator_videos WHERE indicator_id = $1 ORDER BY display_order"
+        "SELECT * FROM indicator_videos WHERE indicator_id = $1 ORDER BY display_order",
     )
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
@@ -621,7 +629,12 @@ async fn validate_license_key(
     };
 
     // Check if license key matches any user's ownership
-    let ownership: Option<(i64, i64, chrono::NaiveDateTime, Option<chrono::NaiveDateTime>)> = sqlx::query_as(
+    let ownership: Option<(
+        i64,
+        i64,
+        chrono::NaiveDateTime,
+        Option<chrono::NaiveDateTime>,
+    )> = sqlx::query_as(
         r#"
         SELECT id, user_id, purchased_at, expires_at
         FROM user_indicators
@@ -770,7 +783,7 @@ async fn get_download_history(
     let user_id: i64 = 1; // Placeholder
 
     let page = params.page.unwrap_or(1).max(1);
-    let per_page = params.per_page.unwrap_or(20).min(100).max(1);
+    let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1) * per_page;
 
     let downloads: Vec<DownloadHistoryRow> = sqlx::query_as(
@@ -800,13 +813,12 @@ async fn get_download_history(
     .await
     .unwrap_or_default();
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM indicator_downloads WHERE user_id = $1",
-    )
-    .bind(user_id as i32)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM indicator_downloads WHERE user_id = $1")
+            .bind(user_id as i32)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "success": true,
@@ -838,7 +850,15 @@ async fn check_updates(
     let user_id: i64 = 1; // Placeholder
 
     // Get user's owned indicators with update info
-    let updates: Vec<(i64, String, String, Option<String>, Option<String>, chrono::NaiveDateTime)> = sqlx::query_as(
+    #[allow(clippy::type_complexity)]
+    let updates: Vec<(
+        i64,
+        String,
+        String,
+        Option<String>,
+        Option<String>,
+        chrono::NaiveDateTime,
+    )> = sqlx::query_as(
         r#"
         SELECT
             i.id,
@@ -864,9 +884,10 @@ async fn check_updates(
         .into_iter()
         .filter_map(|(id, name, slug, version, file_version, updated_at)| {
             // Check if there's a newer version available
-            let has_update = version.as_ref().and_then(|v| {
-                file_version.as_ref().map(|fv| fv != v)
-            }).unwrap_or(false);
+            let has_update = version
+                .as_ref()
+                .and_then(|v| file_version.as_ref().map(|fv| fv != v))
+                .unwrap_or(false);
 
             if has_update {
                 Some(json!({
@@ -903,14 +924,13 @@ async fn get_installation_guide(
     Path((slug, platform)): Path<(String, String)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get indicator
-    let indicator: Option<(i64, Option<String>)> = sqlx::query_as(
-        "SELECT id, documentation_url FROM indicators WHERE slug = $1",
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .ok()
-    .flatten();
+    let indicator: Option<(i64, Option<String>)> =
+        sqlx::query_as("SELECT id, documentation_url FROM indicators WHERE slug = $1")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
     let (indicator_id, doc_url) = match indicator {
         Some(data) => data,

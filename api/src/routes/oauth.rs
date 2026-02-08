@@ -96,7 +96,7 @@ struct GoogleTokenResponse {
 /// Google user info
 #[derive(Debug, Deserialize)]
 struct GoogleUserInfo {
-    sub: String,           // Google user ID
+    sub: String, // Google user ID
     email: String,
     email_verified: bool,
     name: Option<String>,
@@ -109,9 +109,9 @@ struct GoogleUserInfo {
 /// Apple ID token claims
 #[derive(Debug, Deserialize)]
 struct AppleIdTokenClaims {
-    iss: String,           // https://appleid.apple.com
-    sub: String,           // Apple user ID
-    aud: String,           // Client ID
+    iss: String, // https://appleid.apple.com
+    sub: String, // Apple user ID
+    aud: String, // Client ID
     exp: i64,
     iat: i64,
     nonce: Option<String>,
@@ -130,8 +130,8 @@ struct AppleJwk {
     #[serde(rename = "use")]
     use_: String,
     alg: String,
-    n: String,   // RSA modulus
-    e: String,   // RSA exponent
+    n: String, // RSA modulus
+    e: String, // RSA exponent
 }
 
 /// Apple JWKS response
@@ -176,7 +176,7 @@ fn generate_code_challenge(verifier: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(verifier.as_bytes());
     let hash = hasher.finalize();
-    URL_SAFE_NO_PAD.encode(&hash)
+    URL_SAFE_NO_PAD.encode(hash)
 }
 
 /// Fetch Apple's public keys from JWKS endpoint
@@ -241,13 +241,14 @@ async fn validate_apple_id_token(
     })?;
 
     // Create decoding key from RSA components
-    let decoding_key = DecodingKey::from_rsa_components(&apple_key.n, &apple_key.e).map_err(|e| {
-        tracing::error!("Failed to create decoding key from Apple JWK: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({"error": "Failed to process signing key"})),
-        )
-    })?;
+    let decoding_key =
+        DecodingKey::from_rsa_components(&apple_key.n, &apple_key.e).map_err(|e| {
+            tracing::error!("Failed to create decoding key from Apple JWK: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Failed to process signing key"})),
+            )
+        })?;
 
     // Set up validation
     let mut validation = Validation::new(Algorithm::RS256);
@@ -255,18 +256,19 @@ async fn validate_apple_id_token(
     validation.set_audience(&[expected_audience]);
 
     // Decode and validate the token
-    let token_data = decode::<AppleIdTokenClaims>(id_token, &decoding_key, &validation).map_err(|e| {
-        tracing::error!(
-            target: "security_audit",
-            event = "apple_token_validation_failed",
-            error = %e,
-            "Apple ID token validation failed"
-        );
-        (
-            StatusCode::UNAUTHORIZED,
-            Json(serde_json::json!({"error": "Invalid or expired ID token"})),
-        )
-    })?;
+    let token_data =
+        decode::<AppleIdTokenClaims>(id_token, &decoding_key, &validation).map_err(|e| {
+            tracing::error!(
+                target: "security_audit",
+                event = "apple_token_validation_failed",
+                error = %e,
+                "Apple ID token validation failed"
+            );
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(serde_json::json!({"error": "Invalid or expired ID token"})),
+            )
+        })?;
 
     let claims = token_data.claims;
 
@@ -303,6 +305,7 @@ async fn validate_apple_id_token(
 }
 
 /// Create or get existing user from OAuth data
+#[allow(clippy::too_many_arguments)]
 async fn create_or_get_oauth_user(
     state: &AppState,
     provider: OAuthProvider,
@@ -676,18 +679,20 @@ async fn google_callback(
         )
     })?;
 
-    let code_verifier = state_record.ok_or_else(|| {
-        tracing::warn!(
-            target: "security_audit",
-            event = "google_oauth_invalid_state",
-            state = %oauth_state,
-            "Invalid or expired OAuth state"
-        );
-        (
-            StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": "Invalid or expired state"})),
-        )
-    })?.0;
+    let code_verifier = state_record
+        .ok_or_else(|| {
+            tracing::warn!(
+                target: "security_audit",
+                event = "google_oauth_invalid_state",
+                state = %oauth_state,
+                "Invalid or expired OAuth state"
+            );
+            (
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({"error": "Invalid or expired state"})),
+            )
+        })?
+        .0;
 
     // Mark state as used
     sqlx::query("UPDATE oauth_states SET used_at = NOW() WHERE state = $1")
@@ -705,7 +710,12 @@ async fn google_callback(
     })?;
 
     // Exchange code for tokens
-    let google_client_id = std::env::var("GOOGLE_CLIENT_ID").unwrap();
+    let google_client_id = std::env::var("GOOGLE_CLIENT_ID").map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": "OAuth not configured"})),
+        )
+    })?;
     let google_client_secret = std::env::var("GOOGLE_CLIENT_SECRET").map_err(|_| {
         (
             StatusCode::SERVICE_UNAVAILABLE,
@@ -788,13 +798,13 @@ async fn google_callback(
     }
 
     // Create or get user
-    let name = user_info.name.or_else(|| {
-        match (&user_info.given_name, &user_info.family_name) {
+    let name = user_info
+        .name
+        .or_else(|| match (&user_info.given_name, &user_info.family_name) {
             (Some(first), Some(last)) => Some(format!("{} {}", first, last)),
             (Some(first), None) => Some(first.clone()),
             _ => None,
-        }
-    });
+        });
 
     let user = create_or_get_oauth_user(
         &state,
@@ -827,7 +837,11 @@ async fn google_callback(
         "ICT 7 AUDIT: Google OAuth login successful"
     );
 
-    // Redirect to frontend callback with tokens
+    // SECURITY NOTE: Passing JWT tokens in URL query strings is a known security concern
+    // (tokens may be logged in server access logs, browser history, and Referer headers).
+    // This is an accepted trade-off for OAuth redirect flows where cookies cannot be set
+    // cross-origin. The frontend MUST extract these tokens immediately and remove them from
+    // the URL. Do not change this flow without a replacement mechanism (e.g., server-side sessions).
     let callback_url = format!(
         "{}/auth/callback?provider=google&token={}&refresh_token={}&session_id={}&expires_in={}",
         state.config.app_url,
@@ -866,7 +880,7 @@ async fn apple_init(
         let mut hasher = Sha256::new();
         hasher.update(nonce.as_bytes());
         let hash = hasher.finalize();
-        URL_SAFE_NO_PAD.encode(&hash)
+        URL_SAFE_NO_PAD.encode(hash)
     };
 
     // Store state and nonce in database
@@ -959,18 +973,20 @@ async fn apple_callback(
         )
     })?;
 
-    let stored_nonce = state_record.ok_or_else(|| {
-        tracing::warn!(
-            target: "security_audit",
-            event = "apple_oauth_invalid_state",
-            state = %oauth_state,
-            "Invalid or expired OAuth state"
-        );
-        (
-            StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": "Invalid or expired state"})),
-        )
-    })?.0;
+    let stored_nonce = state_record
+        .ok_or_else(|| {
+            tracing::warn!(
+                target: "security_audit",
+                event = "apple_oauth_invalid_state",
+                state = %oauth_state,
+                "Invalid or expired OAuth state"
+            );
+            (
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({"error": "Invalid or expired state"})),
+            )
+        })?
+        .0;
 
     // Mark state as used
     sqlx::query("UPDATE oauth_states SET used_at = NOW() WHERE state = $1")
@@ -1008,18 +1024,14 @@ async fn apple_callback(
     })?;
 
     // Parse user info if provided (only on first authentication)
-    let user_info: Option<AppleUserInfo> = body.user.and_then(|u| {
-        serde_json::from_str(&u).ok()
-    });
+    let user_info: Option<AppleUserInfo> = body.user.and_then(|u| serde_json::from_str(&u).ok());
 
     let name = user_info.and_then(|u| {
-        u.name.and_then(|n| {
-            match (n.first_name, n.last_name) {
-                (Some(first), Some(last)) => Some(format!("{} {}", first, last)),
-                (Some(first), None) => Some(first),
-                (None, Some(last)) => Some(last),
-                (None, None) => None,
-            }
+        u.name.and_then(|n| match (n.first_name, n.last_name) {
+            (Some(first), Some(last)) => Some(format!("{} {}", first, last)),
+            (Some(first), None) => Some(first),
+            (None, Some(last)) => Some(last),
+            (None, None) => None,
         })
     });
 
@@ -1055,7 +1067,11 @@ async fn apple_callback(
         "ICT 7 AUDIT: Apple Sign-In successful"
     );
 
-    // Redirect to frontend callback with tokens
+    // SECURITY NOTE: Passing JWT tokens in URL query strings is a known security concern
+    // (tokens may be logged in server access logs, browser history, and Referer headers).
+    // This is an accepted trade-off for OAuth redirect flows where cookies cannot be set
+    // cross-origin. The frontend MUST extract these tokens immediately and remove them from
+    // the URL. Do not change this flow without a replacement mechanism (e.g., server-side sessions).
     let callback_url = format!(
         "{}/auth/callback?provider=apple&token={}&refresh_token={}&session_id={}&expires_in={}",
         state.config.app_url,

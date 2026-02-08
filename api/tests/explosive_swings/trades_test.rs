@@ -19,9 +19,8 @@ use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    TradeBuilder, TestContext, TestTradingRoom, TestUser,
-    assert_status_and_json, body_to_json, cleanup_room_data,
-    calculate_win_rate, calculate_profit_factor,
+    assert_status_and_json, body_to_json, calculate_profit_factor, calculate_win_rate,
+    cleanup_room_data, TestContext, TestTradingRoom, TestUser, TradeBuilder,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -65,8 +64,9 @@ async fn test_list_trades_with_pagination() {
 
     // Create 15 trades for pagination testing
     for i in 0..15 {
-        let trade = TradeBuilder::long_call(&room.slug, &format!("TICK{}", i), 500.0 + i as f64, 2.50)
-            .build_json();
+        let trade =
+            TradeBuilder::long_call(&room.slug, &format!("TICK{}", i), 500.0 + i as f64, 2.50)
+                .build_json();
 
         ctx.app
             .clone()
@@ -374,8 +374,7 @@ async fn test_create_options_trade_long_put() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_put(&room.slug, "QQQ", 400.0, 3.25)
-        .build_json();
+    let trade = TradeBuilder::long_put(&room.slug, "QQQ", 400.0, 3.25).build_json();
 
     // Act
     let response = ctx
@@ -407,8 +406,7 @@ async fn test_create_shares_trade() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::shares(&room.slug, "GOOG", 100, 140.50)
-        .build_json();
+    let trade = TradeBuilder::shares(&room.slug, "GOOG", 100, 140.50).build_json();
 
     // Act
     let response = ctx
@@ -473,8 +471,7 @@ async fn test_create_trade_default_status_open() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "NVDA", 800.0, 15.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "NVDA", 800.0, 15.00).build_json();
 
     // Act
     let response = ctx
@@ -756,8 +753,7 @@ async fn test_close_trade_with_exit_alert_link() {
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // Create trade
-    let trade = TradeBuilder::long_call(&room.slug, "AMD", 150.0, 3.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "AMD", 150.0, 3.00).build_json();
 
     let create_response = ctx
         .app
@@ -838,8 +834,7 @@ async fn test_close_trade_with_custom_exit_date() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "INTC", 50.0, 1.50)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "INTC", 50.0, 1.50).build_json();
 
     let create_response = ctx
         .app
@@ -884,7 +879,10 @@ async fn test_close_trade_with_custom_exit_date() {
 
     // Assert
     let body = assert_status_and_json(response, StatusCode::OK).await;
-    assert!(body["exit_date"].as_str().unwrap().contains(&exit_date.format("%Y-%m-%d").to_string()));
+    assert!(body["exit_date"]
+        .as_str()
+        .unwrap()
+        .contains(&exit_date.format("%Y-%m-%d").to_string()));
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -898,8 +896,7 @@ async fn test_invalidate_trade() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "DIS", 100.0, 2.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "DIS", 100.0, 2.00).build_json();
 
     let create_response = ctx
         .app
@@ -931,7 +928,10 @@ async fn test_invalidate_trade() {
         .oneshot(
             Request::builder()
                 .method("POST")
-                .uri(format!("/api/admin/room-content/trades/{}/invalidate", trade_id))
+                .uri(format!(
+                    "/api/admin/room-content/trades/{}/invalidate",
+                    trade_id
+                ))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(invalidate_payload.to_string()))
@@ -943,7 +943,10 @@ async fn test_invalidate_trade() {
     // Assert
     let body = assert_status_and_json(response, StatusCode::OK).await;
     assert_eq!(body["status"], "invalidated");
-    assert_eq!(body["invalidation_reason"], "Setup never triggered - price reversed before entry");
+    assert_eq!(
+        body["invalidation_reason"],
+        "Setup never triggered - price reversed before entry"
+    );
 }
 
 #[tokio::test]
@@ -956,49 +959,70 @@ async fn test_invalidated_trade_not_counted_in_stats() {
 
     // Create and close a winning trade
     let winning_trade = TradeBuilder::long_call(&room.slug, "WIN1", 100.0, 2.00).build_json();
-    let create_resp = ctx.app.clone().oneshot(
-        Request::builder()
-            .method("POST")
-            .uri("/api/admin/room-content/trades")
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(winning_trade.to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    let create_resp = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/api/admin/room-content/trades")
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(winning_trade.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
     let win_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-    ctx.app.clone().oneshot(
-        Request::builder()
-            .method("PUT")
-            .uri(format!("/api/admin/room-content/trades/{}/close", win_id))
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(json!({"exit_price": 4.00}).to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    ctx.app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri(format!("/api/admin/room-content/trades/{}/close", win_id))
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(json!({"exit_price": 4.00}).to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
 
     // Create and invalidate a trade
     let invalid_trade = TradeBuilder::long_call(&room.slug, "INV1", 100.0, 2.00).build_json();
-    let create_resp = ctx.app.clone().oneshot(
-        Request::builder()
-            .method("POST")
-            .uri("/api/admin/room-content/trades")
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(invalid_trade.to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    let create_resp = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/api/admin/room-content/trades")
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(invalid_trade.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
     let inv_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-    ctx.app.clone().oneshot(
-        Request::builder()
-            .method("POST")
-            .uri(format!("/api/admin/room-content/trades/{}/invalidate", inv_id))
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(json!({"reason": "Never triggered"}).to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    ctx.app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri(format!(
+                    "/api/admin/room-content/trades/{}/invalidate",
+                    inv_id
+                ))
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(json!({"reason": "Never triggered"}).to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
 
     // Act - List only closed trades (not invalidated)
     let response = ctx
@@ -1034,8 +1058,7 @@ async fn test_update_trade() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "NFLX", 600.0, 20.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "NFLX", 600.0, 20.00).build_json();
 
     let create_response = ctx
         .app
@@ -1154,8 +1177,7 @@ async fn test_delete_trade() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "UBER", 70.0, 3.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "UBER", 70.0, 3.00).build_json();
 
     let create_response = ctx
         .app
@@ -1206,8 +1228,7 @@ async fn test_create_trade_requires_admin() {
     let member = TestUser::member(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "PYPL", 80.0, 2.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "PYPL", 80.0, 2.00).build_json();
 
     // Act - Try to create as regular member
     let response = ctx
@@ -1238,8 +1259,7 @@ async fn test_close_trade_requires_admin() {
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // Create trade as admin
-    let trade = TradeBuilder::long_call(&room.slug, "SQ", 75.0, 2.50)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "SQ", 75.0, 2.50).build_json();
 
     let create_response = ctx
         .app
@@ -1347,8 +1367,7 @@ async fn test_trade_status_transitions() {
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // Create trade (status: open)
-    let trade = TradeBuilder::long_call(&room.slug, "COIN", 200.0, 10.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "COIN", 200.0, 10.00).build_json();
 
     let create_response = ctx
         .app
@@ -1402,8 +1421,7 @@ async fn test_trade_cannot_transition_from_closed_to_invalidated() {
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // Create and close trade
-    let trade = TradeBuilder::long_call(&room.slug, "SHOP", 80.0, 5.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "SHOP", 80.0, 5.00).build_json();
 
     let create_response = ctx
         .app
@@ -1446,7 +1464,10 @@ async fn test_trade_cannot_transition_from_closed_to_invalidated() {
         .oneshot(
             Request::builder()
                 .method("POST")
-                .uri(format!("/api/admin/room-content/trades/{}/invalidate", trade_id))
+                .uri(format!(
+                    "/api/admin/room-content/trades/{}/invalidate",
+                    trade_id
+                ))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::from(json!({"reason": "Test"}).to_string()))

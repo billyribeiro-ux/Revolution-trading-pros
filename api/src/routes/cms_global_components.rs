@@ -631,7 +631,9 @@ async fn get_global_component(
             .bind(creator_id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
             .flatten()
     } else {
         None
@@ -643,7 +645,9 @@ async fn get_global_component(
             .bind(updater_id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
             .flatten()
     } else {
         None
@@ -739,9 +743,8 @@ async fn create_global_component(
 
     // Validate required fields
     if request.name.trim().is_empty() {
-        return Err(
-            ApiError::new(StatusCode::BAD_REQUEST, "Name is required").with_code("VALIDATION_ERROR")
-        );
+        return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
+            .with_code("VALIDATION_ERROR"));
     }
 
     // Generate or validate slug
@@ -980,7 +983,9 @@ async fn delete_global_component(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .map_err(|e: sqlx::Error| {
+            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+        })?;
 
     tracing::info!(
         "Global component deleted: {} ({}) by user {}",
@@ -1444,7 +1449,9 @@ async fn track_component_usage(
         .bind(request.component_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .map_err(|e: sqlx::Error| {
+            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+        })?;
 
     tracing::info!(
         "Component usage tracked: component {} in content {} (instance {}) by user {}",
@@ -1481,23 +1488,27 @@ async fn remove_component_usage(
     struct UsageRecord {
         component_id: Uuid,
     }
-    let usage: UsageRecord = sqlx::query_as(
-        "SELECT component_id FROM cms_global_component_usage WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .ok_or_else(|| {
-        ApiError::new(StatusCode::NOT_FOUND, "Usage record not found").with_code("NOT_FOUND")
-    })?;
+    let usage: UsageRecord =
+        sqlx::query_as("SELECT component_id FROM cms_global_component_usage WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
+            .ok_or_else(|| {
+                ApiError::new(StatusCode::NOT_FOUND, "Usage record not found")
+                    .with_code("NOT_FOUND")
+            })?;
 
     // Delete the usage record
     sqlx::query("DELETE FROM cms_global_component_usage WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .map_err(|e: sqlx::Error| {
+            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+        })?;
 
     // Decrement usage count on the component
     sqlx::query(
@@ -1625,22 +1636,25 @@ async fn detach_component_usage(
     struct ExistingUsage {
         is_synced: bool,
     }
-    let existing: ExistingUsage = sqlx::query_as(
-        "SELECT is_synced FROM cms_global_component_usage WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .ok_or_else(|| {
-        ApiError::new(StatusCode::NOT_FOUND, "Usage record not found").with_code("NOT_FOUND")
-    })?;
+    let existing: ExistingUsage =
+        sqlx::query_as("SELECT is_synced FROM cms_global_component_usage WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
+            .ok_or_else(|| {
+                ApiError::new(StatusCode::NOT_FOUND, "Usage record not found")
+                    .with_code("NOT_FOUND")
+            })?;
 
     if !existing.is_synced {
-        return Err(
-            ApiError::new(StatusCode::CONFLICT, "Component instance is already detached")
-                .with_code("ALREADY_DETACHED"),
-        );
+        return Err(ApiError::new(
+            StatusCode::CONFLICT,
+            "Component instance is already detached",
+        )
+        .with_code("ALREADY_DETACHED"));
     }
 
     // Get CMS user ID
@@ -1662,11 +1676,7 @@ async fn detach_component_usage(
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    tracing::info!(
-        "Component usage detached: {} by user {}",
-        id,
-        user.id
-    );
+    tracing::info!("Component usage detached: {} by user {}", id, user.id);
 
     Ok(Json(usage))
 }
@@ -1808,7 +1818,10 @@ async fn get_global_component_by_id_public(
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         // Component CRUD
-        .route("/", get(list_global_components).post(create_global_component))
+        .route(
+            "/",
+            get(list_global_components).post(create_global_component),
+        )
         .route(
             "/{id}",
             get(get_global_component)
@@ -1857,7 +1870,10 @@ mod tests {
         assert_eq!(format!("{}", GlobalComponentCategory::Footer), "footer");
         assert_eq!(format!("{}", GlobalComponentCategory::Cta), "cta");
         assert_eq!(format!("{}", GlobalComponentCategory::Form), "form");
-        assert_eq!(format!("{}", GlobalComponentCategory::Navigation), "navigation");
+        assert_eq!(
+            format!("{}", GlobalComponentCategory::Navigation),
+            "navigation"
+        );
     }
 
     #[test]

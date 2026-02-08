@@ -65,7 +65,12 @@ pub async fn index(
     } else {
         "id"
     };
-    let sort_direction = if params.sort_dir.as_deref().unwrap_or("asc").eq_ignore_ascii_case("desc") {
+    let sort_direction = if params
+        .sort_dir
+        .as_deref()
+        .unwrap_or("asc")
+        .eq_ignore_ascii_case("desc")
+    {
         "DESC"
     } else {
         "ASC"
@@ -314,23 +319,21 @@ pub async fn merge_tags(
     }
 
     // Verify both tags exist
-    let target_exists: bool =
-        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
-            .bind(payload.target_id)
-            .fetch_one(state.db.pool())
-            .await
-            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let target_exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
+        .bind(payload.target_id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if !target_exists {
         return Err(ApiError::not_found("Target tag not found"));
     }
 
-    let source_exists: bool =
-        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
-            .bind(payload.source_id)
-            .fetch_one(state.db.pool())
-            .await
-            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let source_exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
+        .bind(payload.source_id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if !source_exists {
         return Err(ApiError::not_found("Source tag not found"));
@@ -340,7 +343,7 @@ pub async fn merge_tags(
     let moved_count = sqlx::query(
         "UPDATE post_tags SET tag_id = $1
          WHERE tag_id = $2
-         AND post_id NOT IN (SELECT post_id FROM post_tags WHERE tag_id = $1)"
+         AND post_id NOT IN (SELECT post_id FROM post_tags WHERE tag_id = $1)",
     )
     .bind(payload.target_id)
     .bind(payload.source_id)
@@ -398,7 +401,7 @@ pub async fn get_usage(
          FROM tags t
          LEFT JOIN post_tags pt ON t.id = pt.tag_id
          WHERE t.id = $1
-         GROUP BY t.id, t.name, t.slug"
+         GROUP BY t.id, t.name, t.slug",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
@@ -420,7 +423,7 @@ pub async fn list_with_counts(
          FROM tags t
          LEFT JOIN post_tags pt ON t.id = pt.tag_id
          GROUP BY t.id, t.name, t.slug
-         ORDER BY post_count DESC, t.name ASC"
+         ORDER BY post_count DESC, t.name ASC",
     )
     .fetch_all(state.db.pool())
     .await

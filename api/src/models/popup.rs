@@ -27,7 +27,7 @@ pub struct Popup {
     #[serde(rename = "type")]
     #[sqlx(rename = "type")]
     pub popup_type: String, // newsletter, exit_intent, timed, scroll, click_trigger, content_locker
-    pub status: String,     // draft, published, paused, archived
+    pub status: String, // draft, published, paused, archived
     pub priority: i32,
 
     // Content
@@ -38,8 +38,8 @@ pub struct Popup {
     pub cta_new_tab: bool,
 
     // Display settings
-    pub position: String, // center, top, bottom, corner
-    pub size: String,     // sm, md, lg, xl, full
+    pub position: String,  // center, top, bottom, corner
+    pub size: String,      // sm, md, lg, xl, full
     pub animation: String, // fade, slide, zoom, bounce, rotate, flip
     pub show_close_button: bool,
     pub close_on_overlay_click: bool,
@@ -362,7 +362,7 @@ pub struct ViewMetrics {
     pub today: i64,
     pub this_week: i64,
     pub this_month: i64,
-    pub trend: String,           // up, down, stable
+    pub trend: String, // up, down, stable
     pub trend_percentage: f64,
 }
 

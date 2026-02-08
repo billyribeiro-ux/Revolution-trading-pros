@@ -16,9 +16,8 @@ use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    TradeBuilder, TestContext, TestTradingRoom, TestUser,
-    assert_status_and_json, body_to_json, cleanup_room_data,
-    calculate_win_rate, calculate_profit_factor,
+    assert_status_and_json, body_to_json, calculate_profit_factor, calculate_win_rate,
+    cleanup_room_data, TestContext, TestTradingRoom, TestUser, TradeBuilder,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -111,55 +110,75 @@ async fn test_win_rate_70_percent() {
 
     // Create 7 winning trades and 3 losing trades
     for i in 0..7 {
-        let trade = TradeBuilder::long_call(&room.slug, &format!("WIN{}", i), 100.0, 2.00).build_json();
-        let create_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let trade =
+            TradeBuilder::long_call(&room.slug, &format!("WIN{}", i), 100.0, 2.00).build_json();
+        let create_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let trade_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
         // Close as winner (entry 2.00, exit 4.00)
-        ctx.app.clone().oneshot(
-            Request::builder()
-                .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({"exit_price": 4.00}).to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        ctx.app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(json!({"exit_price": 4.00}).to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     for i in 0..3 {
-        let trade = TradeBuilder::long_call(&room.slug, &format!("LOSS{}", i), 100.0, 2.00).build_json();
-        let create_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let trade =
+            TradeBuilder::long_call(&room.slug, &format!("LOSS{}", i), 100.0, 2.00).build_json();
+        let create_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let trade_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
         // Close as loser (entry 2.00, exit 1.00)
-        ctx.app.clone().oneshot(
-            Request::builder()
-                .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({"exit_price": 1.00}).to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        ctx.app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(json!({"exit_price": 1.00}).to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     // Act - Calculate expected win rate
@@ -172,7 +191,10 @@ async fn test_win_rate_70_percent() {
         .clone()
         .oneshot(
             Request::builder()
-                .uri(format!("/api/room-content/rooms/{}/trades?status=closed", room.slug))
+                .uri(format!(
+                    "/api/room-content/rooms/{}/trades?status=closed",
+                    room.slug
+                ))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -200,28 +222,38 @@ async fn test_win_rate_100_percent() {
 
     // Create 5 winning trades
     for i in 0..5 {
-        let trade = TradeBuilder::long_call(&room.slug, &format!("ALLWIN{}", i), 100.0, 2.00).build_json();
-        let create_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let trade =
+            TradeBuilder::long_call(&room.slug, &format!("ALLWIN{}", i), 100.0, 2.00).build_json();
+        let create_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let trade_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-        ctx.app.clone().oneshot(
-            Request::builder()
-                .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({"exit_price": 5.00}).to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        ctx.app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(json!({"exit_price": 5.00}).to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     // Assert
@@ -233,7 +265,10 @@ async fn test_win_rate_100_percent() {
         .clone()
         .oneshot(
             Request::builder()
-                .uri(format!("/api/room-content/rooms/{}/trades?status=closed", room.slug))
+                .uri(format!(
+                    "/api/room-content/rooms/{}/trades?status=closed",
+                    room.slug
+                ))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -255,28 +290,38 @@ async fn test_win_rate_0_percent() {
 
     // Create 3 losing trades
     for i in 0..3 {
-        let trade = TradeBuilder::long_call(&room.slug, &format!("ALLLOSS{}", i), 100.0, 5.00).build_json();
-        let create_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let trade =
+            TradeBuilder::long_call(&room.slug, &format!("ALLLOSS{}", i), 100.0, 5.00).build_json();
+        let create_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let trade_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-        ctx.app.clone().oneshot(
-            Request::builder()
-                .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({"exit_price": 1.00}).to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        ctx.app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(json!({"exit_price": 1.00}).to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     // Assert
@@ -288,7 +333,10 @@ async fn test_win_rate_0_percent() {
         .clone()
         .oneshot(
             Request::builder()
-                .uri(format!("/api/room-content/rooms/{}/trades?status=closed", room.slug))
+                .uri(format!(
+                    "/api/room-content/rooms/{}/trades?status=closed",
+                    room.slug
+                ))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -441,7 +489,11 @@ async fn test_pnl_calculation_long_call_loss() {
     // Assert
     let body = assert_status_and_json(close_response, StatusCode::OK).await;
     let pnl = body["pnl"].as_f64().unwrap();
-    assert!((pnl - (-4.00)).abs() < 0.01, "Expected PnL ~-4.00, got {}", pnl);
+    assert!(
+        (pnl - (-4.00)).abs() < 0.01,
+        "Expected PnL ~-4.00, got {}",
+        pnl
+    );
 }
 
 #[tokio::test]
@@ -453,8 +505,7 @@ async fn test_pnl_percent_calculation() {
 
     // Entry: 4.00, Exit: 6.00
     // P&L % = ((6.00 - 4.00) / 4.00) * 100 = 50%
-    let trade = TradeBuilder::long_call(&room.slug, "PNLPCT", 500.0, 4.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "PNLPCT", 500.0, 4.00).build_json();
 
     let create_response = ctx
         .app
@@ -493,7 +544,11 @@ async fn test_pnl_percent_calculation() {
     // Assert
     let body = assert_status_and_json(close_response, StatusCode::OK).await;
     let pnl_percent = body["pnl_percent"].as_f64().unwrap();
-    assert!((pnl_percent - 50.0).abs() < 0.1, "Expected PnL% ~50, got {}", pnl_percent);
+    assert!(
+        (pnl_percent - 50.0).abs() < 0.1,
+        "Expected PnL% ~50, got {}",
+        pnl_percent
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -540,10 +595,13 @@ async fn test_holding_days_same_day() {
                 .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({
-                    "exit_price": 3.00,
-                    "exit_date": today.format("%Y-%m-%d").to_string()
-                }).to_string()))
+                .body(Body::from(
+                    json!({
+                        "exit_price": 3.00,
+                        "exit_date": today.format("%Y-%m-%d").to_string()
+                    })
+                    .to_string(),
+                ))
                 .unwrap(),
         )
         .await
@@ -597,10 +655,13 @@ async fn test_holding_days_multi_day() {
                 .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
                 .header(header::CONTENT_TYPE, "application/json")
                 .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({
-                    "exit_price": 3.00,
-                    "exit_date": exit_date.format("%Y-%m-%d").to_string()
-                }).to_string()))
+                .body(Body::from(
+                    json!({
+                        "exit_price": 3.00,
+                        "exit_date": exit_date.format("%Y-%m-%d").to_string()
+                    })
+                    .to_string(),
+                ))
                 .unwrap(),
         )
         .await
@@ -643,27 +704,37 @@ async fn test_average_win_calculation() {
             .with_quantity(1)
             .build_json();
 
-        let create_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let create_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let trade_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-        let close_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({"exit_price": exit}).to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let close_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(json!({"exit_price": exit}).to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let close_body = body_to_json(close_resp).await;
         total_pnl += close_body["pnl"].as_f64().unwrap();
@@ -699,27 +770,37 @@ async fn test_average_loss_calculation() {
             .with_quantity(1)
             .build_json();
 
-        let create_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let create_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let trade_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-        let close_resp = ctx.app.clone().oneshot(
-            Request::builder()
-                .method("PUT")
-                .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(json!({"exit_price": exit}).to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let close_resp = ctx
+            .app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri(format!("/api/admin/room-content/trades/{}/close", trade_id))
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(json!({"exit_price": exit}).to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
 
         let close_body = body_to_json(close_resp).await;
         total_loss += close_body["pnl"].as_f64().unwrap();
@@ -755,7 +836,7 @@ async fn test_stats_structure() {
         ON CONFLICT (room_slug) DO UPDATE SET
             win_rate = EXCLUDED.win_rate,
             calculated_at = NOW()
-        "#
+        "#,
     )
     .bind(room.id)
     .bind(&room.slug)
@@ -806,7 +887,7 @@ async fn test_stats_win_rate_value() {
         ON CONFLICT (room_slug) DO UPDATE SET
             win_rate = EXCLUDED.win_rate,
             calculated_at = NOW()
-        "#
+        "#,
     )
     .bind(room.id)
     .bind(&room.slug)
@@ -847,16 +928,21 @@ async fn test_stats_with_only_open_trades() {
 
     // Create only open trades (don't close them)
     for i in 0..3 {
-        let trade = TradeBuilder::long_call(&room.slug, &format!("OPEN{}", i), 100.0, 2.00).build_json();
-        ctx.app.clone().oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/room-content/trades")
-                .header(header::CONTENT_TYPE, "application/json")
-                .header(header::AUTHORIZATION, admin.auth_header())
-                .body(Body::from(trade.to_string()))
-                .unwrap(),
-        ).await.unwrap();
+        let trade =
+            TradeBuilder::long_call(&room.slug, &format!("OPEN{}", i), 100.0, 2.00).build_json();
+        ctx.app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/admin/room-content/trades")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .header(header::AUTHORIZATION, admin.auth_header())
+                    .body(Body::from(trade.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
     }
 
     // Get stats - should return OK with empty/null metrics
@@ -885,57 +971,88 @@ async fn test_stats_with_invalidated_trades_excluded() {
 
     // Create and close a winning trade
     let win_trade = TradeBuilder::long_call(&room.slug, "STATWIN", 100.0, 2.00).build_json();
-    let create_resp = ctx.app.clone().oneshot(
-        Request::builder()
-            .method("POST")
-            .uri("/api/admin/room-content/trades")
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(win_trade.to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    let create_resp = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/api/admin/room-content/trades")
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(win_trade.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
     let win_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-    ctx.app.clone().oneshot(
-        Request::builder()
-            .method("PUT")
-            .uri(format!("/api/admin/room-content/trades/{}/close", win_id))
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(json!({"exit_price": 4.00}).to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    ctx.app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri(format!("/api/admin/room-content/trades/{}/close", win_id))
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(json!({"exit_price": 4.00}).to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
 
     // Create and invalidate a trade
     let invalid_trade = TradeBuilder::long_call(&room.slug, "STATINV", 100.0, 2.00).build_json();
-    let create_resp = ctx.app.clone().oneshot(
-        Request::builder()
-            .method("POST")
-            .uri("/api/admin/room-content/trades")
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(invalid_trade.to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    let create_resp = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/api/admin/room-content/trades")
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(invalid_trade.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
     let inv_id = body_to_json(create_resp).await["id"].as_i64().unwrap();
 
-    ctx.app.clone().oneshot(
-        Request::builder()
-            .method("POST")
-            .uri(format!("/api/admin/room-content/trades/{}/invalidate", inv_id))
-            .header(header::CONTENT_TYPE, "application/json")
-            .header(header::AUTHORIZATION, admin.auth_header())
-            .body(Body::from(json!({"reason": "Test invalidation"}).to_string()))
-            .unwrap(),
-    ).await.unwrap();
+    ctx.app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri(format!(
+                    "/api/admin/room-content/trades/{}/invalidate",
+                    inv_id
+                ))
+                .header(header::CONTENT_TYPE, "application/json")
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::from(
+                    json!({"reason": "Test invalidation"}).to_string(),
+                ))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
 
     // List closed trades - should only have the winning trade
-    let list_resp = ctx.app.clone().oneshot(
-        Request::builder()
-            .uri(format!("/api/room-content/rooms/{}/trades?status=closed", room.slug))
-            .body(Body::empty())
-            .unwrap(),
-    ).await.unwrap();
+    let list_resp = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(format!(
+                    "/api/room-content/rooms/{}/trades?status=closed",
+                    room.slug
+                ))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
 
     let list_body = body_to_json(list_resp).await;
     let closed_trades = list_body["data"].as_array().unwrap();
@@ -952,8 +1069,7 @@ async fn test_stats_with_breakeven_trade() {
     let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    let trade = TradeBuilder::long_call(&room.slug, "BREAKEVEN", 100.0, 3.00)
-        .build_json();
+    let trade = TradeBuilder::long_call(&room.slug, "BREAKEVEN", 100.0, 3.00).build_json();
 
     let create_response = ctx
         .app
@@ -992,10 +1108,16 @@ async fn test_stats_with_breakeven_trade() {
     let body = assert_status_and_json(close_response, StatusCode::OK).await;
 
     let pnl = body["pnl"].as_f64().unwrap();
-    assert!((pnl - 0.0).abs() < 0.01, "Breakeven trade should have PnL ~0");
+    assert!(
+        (pnl - 0.0).abs() < 0.01,
+        "Breakeven trade should have PnL ~0"
+    );
 
     let pnl_percent = body["pnl_percent"].as_f64().unwrap();
-    assert!((pnl_percent - 0.0).abs() < 0.01, "Breakeven trade should have PnL% ~0");
+    assert!(
+        (pnl_percent - 0.0).abs() < 0.01,
+        "Breakeven trade should have PnL% ~0"
+    );
 
     // Breakeven is technically not a win (PnL <= 0), so result should be LOSS
     assert_eq!(body["result"], "LOSS");

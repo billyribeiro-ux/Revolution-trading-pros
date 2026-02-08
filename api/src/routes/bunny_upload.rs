@@ -114,7 +114,12 @@ fn is_valid_video_signature(data: &[u8]) -> bool {
     }
 
     // MP4/M4V/MOV: ftyp, moov, mdat atoms
-    if data[4..8] == *b"ftyp" || data[4..8] == *b"moov" || data[4..8] == *b"mdat" || data[4..8] == *b"wide" || data[4..8] == *b"free" {
+    if data[4..8] == *b"ftyp"
+        || data[4..8] == *b"moov"
+        || data[4..8] == *b"mdat"
+        || data[4..8] == *b"wide"
+        || data[4..8] == *b"free"
+    {
         return true;
     }
 
@@ -146,7 +151,10 @@ fn is_valid_video_signature(data: &[u8]) -> bool {
     // If content type is octet-stream (chunked upload), be more permissive
     // but still reject obvious non-video patterns
     let text_header = String::from_utf8_lossy(&data[..data.len().min(100)]);
-    if text_header.contains("<!DOCTYPE") || text_header.contains("<html") || text_header.contains("<?php") {
+    if text_header.contains("<!DOCTYPE")
+        || text_header.contains("<html")
+        || text_header.contains("<?php")
+    {
         return false;
     }
 
@@ -445,7 +453,11 @@ async fn upload_video(
     })?;
 
     // ICT 7 SECURITY: Validate video_guid format (should be UUID-like from Bunny.net)
-    if video_guid.len() < 10 || video_guid.len() > 50 || video_guid.contains("..") || video_guid.contains('/') {
+    if video_guid.len() < 10
+        || video_guid.len() > 50
+        || video_guid.contains("..")
+        || video_guid.contains('/')
+    {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"success": false, "error": "Invalid video_guid format"})),

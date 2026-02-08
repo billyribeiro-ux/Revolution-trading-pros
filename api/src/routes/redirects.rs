@@ -170,7 +170,9 @@ pub async fn store(
 
     // ICT 7: Prevent redirect loops
     if payload.from_path == payload.to_path {
-        return Err(ApiError::validation_error("Cannot redirect a path to itself"));
+        return Err(ApiError::validation_error(
+            "Cannot redirect a path to itself",
+        ));
     }
 
     let redirect_type = payload
@@ -245,7 +247,9 @@ pub async fn update(
     let final_from = payload.from_path.as_ref().unwrap_or(&current.from_path);
     let final_to = payload.to_path.as_ref().unwrap_or(&current.to_path);
     if final_from == final_to {
-        return Err(ApiError::validation_error("Cannot redirect a path to itself"));
+        return Err(ApiError::validation_error(
+            "Cannot redirect a path to itself",
+        ));
     }
 
     // Build dynamic update query
@@ -346,15 +350,16 @@ pub async fn resolve_redirect(
     State(state): State<AppState>,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let path = params.get("path").ok_or_else(|| ApiError::validation_error("path parameter required"))?;
+    let path = params
+        .get("path")
+        .ok_or_else(|| ApiError::validation_error("path parameter required"))?;
 
-    let redirect: Option<Redirect> = sqlx::query_as(
-        "SELECT * FROM redirects WHERE from_path = $1 AND is_active = true"
-    )
-    .bind(path)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let redirect: Option<Redirect> =
+        sqlx::query_as("SELECT * FROM redirects WHERE from_path = $1 AND is_active = true")
+            .bind(path)
+            .fetch_optional(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     match redirect {
         Some(r) => {
@@ -383,7 +388,10 @@ pub fn router() -> Router<AppState> {
     Router::new()
         // Admin routes (require auth)
         .route("/admin/redirects", get(index).post(store))
-        .route("/admin/redirects/:id", get(show).put(update).delete(destroy))
+        .route(
+            "/admin/redirects/:id",
+            get(show).put(update).delete(destroy),
+        )
         .route("/admin/redirects/:id/hit", post(increment_hit))
         // Public route for redirect resolution
         .route("/redirect/resolve", get(resolve_redirect))

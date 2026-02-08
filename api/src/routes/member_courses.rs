@@ -521,26 +521,26 @@ async fn get_certificate(
     let user_id = user.id;
 
     // Get course info
-    let course: (Uuid, String, Option<String>) = sqlx::query_as(
-        "SELECT id, title, instructor_name FROM courses WHERE slug = $1",
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Course not found"})),
-        )
-    })?;
+    let course: (Uuid, String, Option<String>) =
+        sqlx::query_as("SELECT id, title, instructor_name FROM courses WHERE slug = $1")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Database error: {}", e)})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Course not found"})),
+                )
+            })?;
 
     // Check enrollment and completion
+    #[allow(clippy::type_complexity)]
     let enrollment: Option<(i64, Option<i32>, Option<bool>, Option<String>)> = sqlx::query_as(
         r#"
         SELECT id, progress_percent, certificate_issued, certificate_url
@@ -588,22 +588,28 @@ async fn get_certificate(
     }
 
     // Get user info for certificate (name and email)
-    let user_info: (String, String) = sqlx::query_as(
-        "SELECT COALESCE(name, username), email FROM users WHERE id = $1",
-    )
-    .bind(user_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Failed to get user info: {}", e)})),
-        )
-    })?;
+    let user_info: (String, String) =
+        sqlx::query_as("SELECT COALESCE(name, username), email FROM users WHERE id = $1")
+            .bind(user_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Failed to get user info: {}", e)})),
+                )
+            })?;
 
     // Generate certificate ID
-    let cert_id = format!("CERT-{}-{}-{}",
-        course.0.simple().to_string().chars().take(8).collect::<String>(),
+    let cert_id = format!(
+        "CERT-{}-{}-{}",
+        course
+            .0
+            .simple()
+            .to_string()
+            .chars()
+            .take(8)
+            .collect::<String>(),
         user_id,
         chrono::Utc::now().timestamp()
     );
@@ -701,7 +707,12 @@ async fn resume_course(
     })?;
 
     // Get last accessed lesson with progress
-    let resume_lesson: Option<(Uuid, String, String, Option<i32>, Option<i32>)> = if let Some(lesson_id) = enrollment.1 {
+    #[allow(clippy::type_complexity)]
+    let resume_lesson: Option<(Uuid, String, String, Option<i32>, Option<i32>)> = if let Some(
+        lesson_id,
+    ) =
+        enrollment.1
+    {
         sqlx::query_as(
             r#"
             SELECT l.id, l.title, l.slug, p.video_position_seconds, l.duration_minutes
@@ -776,8 +787,18 @@ async fn get_course_reviews(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     let reviews: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, i64, i16, Option<String>, Option<String>, bool, NaiveDateTime)>(
         r#"SELECT r.id, r.user_id, r.rating, r.title, r.content, r.is_verified_purchase, r.created_at
@@ -841,7 +862,7 @@ async fn submit_review(
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let user_id = user.id;
-    let rating = input["rating"].as_i64().unwrap_or(5).min(5).max(1) as i16;
+    let rating = input["rating"].as_i64().unwrap_or(5).clamp(1, 5) as i16;
     let title = input["title"].as_str();
     let content = input["content"].as_str();
 
@@ -849,12 +870,22 @@ async fn submit_review(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     // Check if user is enrolled (verified purchase)
     let enrollment: Option<(i64,)> = sqlx::query_as(
-        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2"
+        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
     )
     .bind(user_id)
     .bind(course.0)
@@ -866,15 +897,14 @@ async fn submit_review(
     let is_verified = enrollment.is_some();
 
     // Check if already reviewed
-    let existing: Option<(i64,)> = sqlx::query_as(
-        "SELECT id FROM course_reviews WHERE user_id = $1 AND course_id = $2"
-    )
-    .bind(user_id)
-    .bind(course.0)
-    .fetch_optional(&state.db.pool)
-    .await
-    .ok()
-    .flatten();
+    let existing: Option<(i64,)> =
+        sqlx::query_as("SELECT id FROM course_reviews WHERE user_id = $1 AND course_id = $2")
+            .bind(user_id)
+            .bind(course.0)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
     if existing.is_some() {
         // Update existing review
@@ -888,7 +918,9 @@ async fn submit_review(
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to update review: {}", e)}))))?;
 
-        return Ok(Json(json!({"success": true, "message": "Review updated successfully"})));
+        return Ok(Json(
+            json!({"success": true, "message": "Review updated successfully"}),
+        ));
     }
 
     // Create new review
@@ -932,15 +964,30 @@ async fn delete_review(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     sqlx::query("DELETE FROM course_reviews WHERE user_id = $1 AND course_id = $2")
         .bind(user_id)
         .bind(course.0)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to delete review: {}", e)}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to delete review: {}", e)})),
+            )
+        })?;
 
     // Update course review count
     sqlx::query("UPDATE courses SET review_count = GREATEST(COALESCE(review_count, 1) - 1, 0) WHERE id = $1")
@@ -949,7 +996,9 @@ async fn delete_review(
         .await
         .ok();
 
-    Ok(Json(json!({"success": true, "message": "Review deleted successfully"})))
+    Ok(Json(
+        json!({"success": true, "message": "Review deleted successfully"}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -968,12 +1017,22 @@ async fn get_course_quizzes(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     // Check enrollment
     let enrollment: Option<(i64,)> = sqlx::query_as(
-        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2"
+        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
     )
     .bind(user_id)
     .bind(course.0)
@@ -983,7 +1042,10 @@ async fn get_course_quizzes(
     .flatten();
 
     if enrollment.is_none() {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Not enrolled in this course"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Not enrolled in this course"})),
+        ));
     }
 
     let quizzes: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<String>, String, Option<i32>, Option<i32>, Option<i32>, bool)>(
@@ -1013,19 +1075,39 @@ async fn start_quiz(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     // Get enrollment
     let enrollment: (i64,) = sqlx::query_as(
-        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2"
+        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
     )
     .bind(user_id)
     .bind(course.0)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-    .ok_or_else(|| (StatusCode::FORBIDDEN, Json(json!({"error": "Not enrolled in this course"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Not enrolled in this course"})),
+        )
+    })?;
 
     // Get quiz details
     let quiz: (i64, String, Option<i32>, Option<i32>, bool, bool) = sqlx::query_as(
@@ -1040,7 +1122,7 @@ async fn start_quiz(
 
     // Check attempt count
     let attempt_count: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM user_quiz_attempts WHERE user_id = $1 AND quiz_id = $2"
+        "SELECT COUNT(*) FROM user_quiz_attempts WHERE user_id = $1 AND quiz_id = $2",
     )
     .bind(user_id)
     .bind(quiz_id)
@@ -1050,7 +1132,10 @@ async fn start_quiz(
 
     if let Some(max) = quiz.2 {
         if attempt_count.0 >= max as i64 {
-            return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Maximum attempts reached", "max_attempts": max}))));
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(json!({"error": "Maximum attempts reached", "max_attempts": max})),
+            ));
         }
     }
 
@@ -1075,9 +1160,10 @@ async fn start_quiz(
     for mut question in questions {
         let question_id = question["id"].as_i64().unwrap_or(0);
         let answer_order = if quiz.5 { "RANDOM()" } else { "sort_order" };
-        let answers: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String)>(
-            &format!("SELECT id, answer_text FROM quiz_answers WHERE question_id = $1 ORDER BY {}", answer_order)
-        )
+        let answers: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String)>(&format!(
+            "SELECT id, answer_text FROM quiz_answers WHERE question_id = $1 ORDER BY {}",
+            answer_order
+        ))
         .bind(question_id)
         .fetch_all(&state.db.pool)
         .await
@@ -1090,11 +1176,12 @@ async fn start_quiz(
     }
 
     // Calculate max score
-    let max_score: (Option<i64>,) = sqlx::query_as("SELECT SUM(points) FROM quiz_questions WHERE quiz_id = $1")
-        .bind(quiz_id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((None,));
+    let max_score: (Option<i64>,) =
+        sqlx::query_as("SELECT SUM(points) FROM quiz_questions WHERE quiz_id = $1")
+            .bind(quiz_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     // Create attempt
     let attempt = sqlx::query_as::<_, (i64, i32, NaiveDateTime)>(
@@ -1147,7 +1234,7 @@ async fn submit_quiz(
 
     // Get quiz passing score
     let quiz: (Option<i32>, Option<bool>) = sqlx::query_as(
-        "SELECT passing_score, show_correct_answers FROM course_quizzes WHERE id = $1"
+        "SELECT passing_score, show_correct_answers FROM course_quizzes WHERE id = $1",
     )
     .bind(quiz_id)
     .fetch_one(&state.db.pool)
@@ -1165,33 +1252,42 @@ async fn submit_quiz(
         let answer_id = answer["answer_id"].as_i64();
 
         // Get correct answer and points
-        let question: Option<(i32,)> = sqlx::query_as("SELECT points FROM quiz_questions WHERE id = $1")
-            .bind(question_id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .ok()
-            .flatten();
+        let question: Option<(i32,)> =
+            sqlx::query_as("SELECT points FROM quiz_questions WHERE id = $1")
+                .bind(question_id)
+                .fetch_optional(&state.db.pool)
+                .await
+                .ok()
+                .flatten();
 
         if let Some(q) = question {
             if let Some(aid) = answer_id {
-                let is_correct: Option<(bool,)> = sqlx::query_as("SELECT is_correct FROM quiz_answers WHERE id = $1 AND question_id = $2")
-                    .bind(aid)
-                    .fetch_optional(&state.db.pool)
-                    .await
-                    .ok()
-                    .flatten();
+                let is_correct: Option<(bool,)> = sqlx::query_as(
+                    "SELECT is_correct FROM quiz_answers WHERE id = $1 AND question_id = $2",
+                )
+                .bind(aid)
+                .fetch_optional(&state.db.pool)
+                .await
+                .ok()
+                .flatten();
 
                 if is_correct.map(|c| c.0).unwrap_or(false) {
                     total_score += q.0;
-                    results.push(json!({"question_id": question_id, "correct": true, "points": q.0}));
+                    results
+                        .push(json!({"question_id": question_id, "correct": true, "points": q.0}));
                 } else {
-                    results.push(json!({"question_id": question_id, "correct": false, "points": 0}));
+                    results
+                        .push(json!({"question_id": question_id, "correct": false, "points": 0}));
                 }
             }
         }
     }
 
-    let score_percent = if attempt.1 > 0 { (total_score as f64 / attempt.1 as f64 * 100.0) } else { 0.0 };
+    let score_percent = if attempt.1 > 0 {
+        total_score as f64 / attempt.1 as f64 * 100.0
+    } else {
+        0.0
+    };
     let passed = score_percent >= quiz.0.unwrap_or(70) as f64;
     let time_spent = (chrono::Utc::now().naive_utc() - attempt.2).num_seconds() as i32;
 
@@ -1266,12 +1362,22 @@ async fn check_lesson_access(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Database error: {}", e)}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     // Get enrollment
     let enrollment: Option<(i64,)> = sqlx::query_as(
-        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2"
+        "SELECT id FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
     )
     .bind(user_id)
     .bind(course.0)
@@ -1281,7 +1387,10 @@ async fn check_lesson_access(
     .flatten();
 
     if enrollment.is_none() {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Not enrolled in this course"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Not enrolled in this course"})),
+        ));
     }
 
     // Get lesson prerequisites
@@ -1297,13 +1406,21 @@ async fn check_lesson_access(
 
     // Free or preview lessons always accessible
     if lesson.2.unwrap_or(false) || lesson.3.unwrap_or(false) {
-        return Ok(Json(json!({"success": true, "data": {"can_access": true, "reason": "Free/preview lesson"}})));
+        return Ok(Json(
+            json!({"success": true, "data": {"can_access": true, "reason": "Free/preview lesson"}}),
+        ));
     }
 
     // Check prerequisites
-    let prereq_ids = lesson.1.clone().and_then(|v| v.as_array().cloned()).unwrap_or_default();
+    let prereq_ids = lesson
+        .1
+        .clone()
+        .and_then(|v| v.as_array().cloned())
+        .unwrap_or_default();
     if prereq_ids.is_empty() {
-        return Ok(Json(json!({"success": true, "data": {"can_access": true, "reason": "No prerequisites"}})));
+        return Ok(Json(
+            json!({"success": true, "data": {"can_access": true, "reason": "No prerequisites"}}),
+        ));
     }
 
     let mut missing_prereqs = Vec::new();
@@ -1323,12 +1440,13 @@ async fn check_lesson_access(
 
                 if !completed.map(|c| c.0).unwrap_or(false) {
                     // Get lesson title
-                    let prereq_title: Option<(String,)> = sqlx::query_as("SELECT title FROM lessons WHERE id = $1")
-                        .bind(prereq_uuid)
-                        .fetch_optional(&state.db.pool)
-                        .await
-                        .ok()
-                        .flatten();
+                    let prereq_title: Option<(String,)> =
+                        sqlx::query_as("SELECT title FROM lessons WHERE id = $1")
+                            .bind(prereq_uuid)
+                            .fetch_optional(&state.db.pool)
+                            .await
+                            .ok()
+                            .flatten();
                     missing_prereqs.push(json!({"lesson_id": pid, "title": prereq_title.map(|t| t.0).unwrap_or_default()}));
                 }
             }
@@ -1336,7 +1454,9 @@ async fn check_lesson_access(
     }
 
     if missing_prereqs.is_empty() {
-        Ok(Json(json!({"success": true, "data": {"can_access": true, "reason": "Prerequisites completed"}})))
+        Ok(Json(
+            json!({"success": true, "data": {"can_access": true, "reason": "Prerequisites completed"}}),
+        ))
     } else {
         Ok(Json(json!({
             "success": true,
@@ -1361,7 +1481,7 @@ pub fn public_router() -> Router<AppState> {
 }
 
 pub fn member_router() -> Router<AppState> {
-    use axum::routing::{post, delete};
+    use axum::routing::{delete, post};
 
     Router::new()
         .route("/", get(get_my_courses))
@@ -1375,7 +1495,10 @@ pub fn member_router() -> Router<AppState> {
         // Quizzes
         .route("/:slug/quizzes", get(get_course_quizzes))
         .route("/:slug/quizzes/:quiz_id/start", post(start_quiz))
-        .route("/:slug/quizzes/:quiz_id/attempts/:attempt_id/submit", post(submit_quiz))
+        .route(
+            "/:slug/quizzes/:quiz_id/attempts/:attempt_id/submit",
+            post(submit_quiz),
+        )
         .route("/:slug/quizzes/:quiz_id/results", get(get_quiz_results))
         // Prerequisites
         .route("/:slug/lessons/:lesson_id/access", get(check_lesson_access))

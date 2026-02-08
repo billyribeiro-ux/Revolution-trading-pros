@@ -423,8 +423,7 @@ async fn list_reusable_blocks(
         ORDER BY {} {}
         LIMIT $5 OFFSET $6
         "#,
-        sort_column,
-        sort_order
+        sort_column, sort_order
     ))
     .bind(include_deleted)
     .bind(&query.category)

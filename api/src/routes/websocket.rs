@@ -32,6 +32,7 @@ use std::{collections::HashSet, sync::Arc, time::Duration};
 use tokio::sync::{broadcast, mpsc, RwLock};
 use tracing::{debug, error, info, warn};
 
+use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -340,6 +341,9 @@ pub struct WsParams {
     pub rooms: Option<String>,
 
     /// Authentication token (optional, for authenticated connections)
+    /// TODO: This token is currently accepted but never validated against JWT.
+    /// Implement proper JWT validation to authenticate WebSocket connections
+    /// and restrict room subscriptions based on user membership/permissions.
     pub token: Option<String>,
 }
 
@@ -586,11 +590,11 @@ pub struct TestBroadcastRequest {
 }
 
 async fn test_broadcast(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<TestBroadcastRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // In production, this should require admin authentication
-    // For now, we'll allow it for testing purposes
+    // SECURITY: Admin authentication required to prevent unauthorized broadcasts
 
     let message = match input.message_type.as_str() {
         "heartbeat" => WsMessage::Heartbeat {

@@ -243,7 +243,11 @@ impl ExportService {
                     .unwrap_or_default(),
                 alert.tos_string.as_deref().unwrap_or(""),
                 alert.notes.as_deref().unwrap_or(""),
-                &if alert.is_pinned { "Yes".to_string() } else { "No".to_string() },
+                &if alert.is_pinned {
+                    "Yes".to_string()
+                } else {
+                    "No".to_string()
+                },
             ])
             .map_err(|e| {
                 error!(error = ?e, alert_id = alert.id, "Failed to write alert row");

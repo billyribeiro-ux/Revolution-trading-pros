@@ -16,7 +16,9 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{middleware::admin::AdminUser, models::User, services::order_service::OrderService, AppState};
+use crate::{
+    middleware::admin::AdminUser, models::User, services::order_service::OrderService, AppState,
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Response Types - ICT 11+ Grade
@@ -489,7 +491,6 @@ pub async fn admin_index(
     _admin: AdminUser,
     Query(query): Query<AdminOrderListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(25).min(100);
     let offset = (page - 1) * per_page;
@@ -503,7 +504,7 @@ pub async fn admin_index(
            FROM orders o
            LEFT JOIN users u ON o.user_id = u.id
            LEFT JOIN order_items oi ON o.id = oi.order_id
-           WHERE 1=1"#
+           WHERE 1=1"#,
     );
 
     let mut bind_count = 0;
@@ -518,7 +519,10 @@ pub async fn admin_index(
     if let Some(ref search) = query.search {
         if !search.is_empty() {
             bind_count += 1;
-            sql.push_str(&format!(" AND (o.order_number ILIKE ${0} OR u.email ILIKE ${0} OR u.name ILIKE ${0})", bind_count));
+            sql.push_str(&format!(
+                " AND (o.order_number ILIKE ${0} OR u.email ILIKE ${0} OR u.name ILIKE ${0})",
+                bind_count
+            ));
         }
     }
 
@@ -574,7 +578,7 @@ pub async fn admin_index(
                    LEFT JOIN order_items oi ON o.id = oi.order_id
                    GROUP BY o.id, u.email, u.name
                    ORDER BY o.created_at DESC
-                   LIMIT $1 OFFSET $2"#
+                   LIMIT $1 OFFSET $2"#,
             )
             .bind(per_page)
             .bind(offset)
@@ -597,15 +601,17 @@ pub async fn admin_index(
         .unwrap_or(0);
 
     // Get stats
-    let stats = get_admin_order_stats(&state).await.unwrap_or(AdminOrderStats {
-        total_orders: 0,
-        completed_orders: 0,
-        pending_orders: 0,
-        refunded_orders: 0,
-        total_revenue: 0.0,
-        revenue_this_month: 0.0,
-        average_order_value: 0.0,
-    });
+    let stats = get_admin_order_stats(&state)
+        .await
+        .unwrap_or(AdminOrderStats {
+            total_orders: 0,
+            completed_orders: 0,
+            pending_orders: 0,
+            refunded_orders: 0,
+            total_revenue: 0.0,
+            revenue_this_month: 0.0,
+            average_order_value: 0.0,
+        });
 
     let order_responses: Vec<AdminOrderResponse> = orders
         .into_iter()
@@ -655,7 +661,7 @@ async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx
             COUNT(*) FILTER (WHERE status = 'pending') as pending_orders,
             COUNT(*) FILTER (WHERE status IN ('refunded', 'partial_refund')) as refunded_orders,
             COALESCE(SUM(total) FILTER (WHERE status = 'completed'), 0)::FLOAT8 as total_revenue
-           FROM orders"#
+           FROM orders"#,
     )
     .fetch_one(&state.db.pool)
     .await?;
@@ -664,7 +670,7 @@ async fn get_admin_order_stats(state: &AppState) -> Result<AdminOrderStats, sqlx
         r#"SELECT COALESCE(SUM(total), 0)::FLOAT8
            FROM orders
            WHERE status = 'completed'
-           AND created_at >= DATE_TRUNC('month', CURRENT_DATE)"#
+           AND created_at >= DATE_TRUNC('month', CURRENT_DATE)"#,
     )
     .fetch_one(&state.db.pool)
     .await
@@ -695,7 +701,6 @@ pub async fn admin_show(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-
     let order: Option<OrderRow> = sqlx::query_as::<_, OrderRow>(
         r#"SELECT id, order_number, status, subtotal::FLOAT8 as subtotal, discount::FLOAT8 as discount,
                   tax::FLOAT8 as tax, total::FLOAT8 as total, currency,
@@ -736,13 +741,19 @@ pub async fn admin_show(
 
 /// Valid order status transitions
 const VALID_STATUS_TRANSITIONS: &[(&str, &[&str])] = &[
-    ("pending", &["processing", "completed", "cancelled", "failed"]),
-    ("processing", &["completed", "cancelled", "failed", "refunded"]),
+    (
+        "pending",
+        &["processing", "completed", "cancelled", "failed"],
+    ),
+    (
+        "processing",
+        &["completed", "cancelled", "failed", "refunded"],
+    ),
     ("completed", &["refunded", "partial_refund"]),
-    ("failed", &["pending"]),  // Allow retry
-    ("cancelled", &[]),  // Terminal state
-    ("refunded", &[]),  // Terminal state
-    ("partial_refund", &["refunded"]),  // Can fully refund
+    ("failed", &["pending"]),          // Allow retry
+    ("cancelled", &[]),                // Terminal state
+    ("refunded", &[]),                 // Terminal state
+    ("partial_refund", &["refunded"]), // Can fully refund
 ];
 
 /// Check if status transition is valid
@@ -764,7 +775,7 @@ pub struct UpdateOrderStatusRequest {
 /// Refund order request
 #[derive(Debug, Deserialize)]
 pub struct RefundOrderRequest {
-    pub amount: Option<f64>,  // None = full refund
+    pub amount: Option<f64>, // None = full refund
     pub reason: Option<String>,
 }
 
@@ -778,11 +789,21 @@ pub async fn admin_update_status(
     Json(input): Json<UpdateOrderStatusRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Validate status value
-    let valid_statuses = ["pending", "processing", "completed", "cancelled", "failed", "refunded", "partial_refund"];
+    let valid_statuses = [
+        "pending",
+        "processing",
+        "completed",
+        "cancelled",
+        "failed",
+        "refunded",
+        "partial_refund",
+    ];
     if !valid_statuses.contains(&input.status.as_str()) {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": format!("Invalid status. Must be one of: {}", valid_statuses.join(", "))})),
+            Json(
+                serde_json::json!({"error": format!("Invalid status. Must be one of: {}", valid_statuses.join(", "))}),
+            ),
         ));
     }
 
@@ -799,7 +820,10 @@ pub async fn admin_update_status(
     })?;
 
     let current_status = current_status.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Order not found"})),
+        )
     })?;
 
     // Validate transition
@@ -884,7 +908,7 @@ async fn grant_order_products(state: &AppState, order_id: i64) -> Result<(), sql
     }
 
     let items: Vec<OrderProductItem> = sqlx::query_as(
-        "SELECT product_id FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL"
+        "SELECT product_id FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL",
     )
     .bind(order_id)
     .fetch_all(&state.db.pool)
@@ -935,24 +959,35 @@ pub async fn admin_refund(
     }
 
     let order: OrderInfo = sqlx::query_as(
-        "SELECT status, total::FLOAT8 as total, payment_intent_id FROM orders WHERE id = $1"
+        "SELECT status, total::FLOAT8 as total, payment_intent_id FROM orders WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         tracing::error!(target: "orders", error = %e, order_id = %id, "Failed to fetch order");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": "Database error"})),
+        )
     })?
     .ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Order not found"})),
+        )
     })?;
 
     // Validate order can be refunded
-    if order.status != "completed" && order.status != "processing" && order.status != "partial_refund" {
+    if order.status != "completed"
+        && order.status != "processing"
+        && order.status != "partial_refund"
+    {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": format!("Cannot refund order with status '{}'", order.status)})),
+            Json(
+                serde_json::json!({"error": format!("Cannot refund order with status '{}'", order.status)}),
+            ),
         ));
     }
 
@@ -975,11 +1010,15 @@ pub async fn admin_refund(
     // If we have a payment intent, attempt Stripe refund
     if let Some(ref payment_intent_id) = order.payment_intent_id {
         // Attempt Stripe refund
-        let refund_result = state.services.stripe.create_refund(
-            payment_intent_id,
-            Some((refund_amount * 100.0) as i64),
-            input.reason.as_deref(),
-        ).await;
+        let refund_result = state
+            .services
+            .stripe
+            .create_refund(
+                payment_intent_id,
+                Some((refund_amount * 100.0) as i64),
+                input.reason.as_deref(),
+            )
+            .await;
 
         if let Err(e) = refund_result {
             tracing::error!(
@@ -1043,39 +1082,48 @@ pub async fn admin_cancel(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current status
     let current_status: Option<String> = sqlx::query_scalar(
-        "SELECT status FROM orders WHERE id = $1"
+        "SELECT status FROM orders WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         tracing::error!(target: "orders", error = %e, order_id = %id, "Failed to fetch order");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": "Database error"})),
+        )
     })?;
 
     let current_status = current_status.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Order not found"})),
+        )
     })?;
 
     // Only pending or processing orders can be cancelled
     if current_status != "pending" && current_status != "processing" {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": format!("Cannot cancel order with status '{}'", current_status)})),
+            Json(
+                serde_json::json!({"error": format!("Cannot cancel order with status '{}'", current_status)}),
+            ),
         ));
     }
 
     // Update order status
-    sqlx::query(
-        "UPDATE orders SET status = 'cancelled', updated_at = NOW() WHERE id = $1"
-    )
-    .bind(id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        tracing::error!(target: "orders", error = %e, order_id = %id, "Failed to cancel order");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": "Failed to cancel order"})))
-    })?;
+    sqlx::query("UPDATE orders SET status = 'cancelled', updated_at = NOW() WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!(target: "orders", error = %e, order_id = %id, "Failed to cancel order");
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Failed to cancel order"})),
+            )
+        })?;
 
     tracing::info!(
         target: "orders",
@@ -1104,25 +1152,33 @@ pub async fn admin_fulfill(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current status
     let current_status: Option<String> = sqlx::query_scalar(
-        "SELECT status FROM orders WHERE id = $1"
+        "SELECT status FROM orders WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         tracing::error!(target: "orders", error = %e, order_id = %id, "Failed to fetch order");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": "Database error"})),
+        )
     })?;
 
     let current_status = current_status.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Order not found"})),
+        )
     })?;
 
     // Only pending or processing orders can be fulfilled
     if current_status != "pending" && current_status != "processing" {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": format!("Cannot fulfill order with status '{}'", current_status)})),
+            Json(
+                serde_json::json!({"error": format!("Cannot fulfill order with status '{}'", current_status)}),
+            ),
         ));
     }
 
@@ -1175,17 +1231,23 @@ pub async fn admin_resend_confirmation(
     }
 
     let order: OrderEmailInfo = sqlx::query_as(
-        "SELECT order_number, billing_email, user_id FROM orders WHERE id = $1"
+        "SELECT order_number, billing_email, user_id FROM orders WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         tracing::error!(target: "orders", error = %e, order_id = %id, "Failed to fetch order");
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": "Database error"})),
+        )
     })?
     .ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Order not found"})),
+        )
     })?;
 
     // Get user email if billing email not set

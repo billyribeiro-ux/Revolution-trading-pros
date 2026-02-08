@@ -25,6 +25,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
+use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -106,10 +107,10 @@ pub struct ResourceListQuery {
     pub difficulty_level: Option<String>,
     pub search: Option<String>,
     // ICT 7 NEW: Access control and versioning filters
-    pub access_level: Option<String>,     // free, member, premium, vip
-    pub course_id: Option<i64>,           // Filter by course
-    pub lesson_id: Option<i64>,           // Filter by lesson
-    pub latest_only: Option<bool>,        // Only latest versions (default true)
+    pub access_level: Option<String>, // free, member, premium, vip
+    pub course_id: Option<i64>,       // Filter by course
+    pub lesson_id: Option<i64>,       // Filter by lesson
+    pub latest_only: Option<bool>,    // Only latest versions (default true)
 }
 
 #[derive(Debug, Deserialize)]
@@ -139,11 +140,11 @@ pub struct CreateResourceRequest {
     pub tags: Option<Vec<String>>,
     pub difficulty_level: Option<String>,
     // ICT 7 NEW: Access control and linking
-    pub access_level: Option<String>,     // free, member, premium, vip (default: premium)
-    pub course_id: Option<i64>,           // Link to course
-    pub lesson_id: Option<i64>,           // Link to lesson
-    pub course_order: Option<i32>,        // Order in course
-    pub file_hash: Option<String>,        // SHA-256 for deduplication
+    pub access_level: Option<String>, // free, member, premium, vip (default: premium)
+    pub course_id: Option<i64>,       // Link to course
+    pub lesson_id: Option<i64>,       // Link to lesson
+    pub course_order: Option<i32>,    // Order in course
+    pub file_hash: Option<String>,    // SHA-256 for deduplication
     pub storage_provider: Option<String>, // r2, bunny, s3, local
 }
 
@@ -322,7 +323,10 @@ fn get_tags_vec(tags: &Option<serde_json::Value>) -> Vec<String> {
 }
 
 fn resource_to_response(resource: RoomResource) -> ResourceResponse {
-    let access_level = resource.access_level.clone().unwrap_or_else(|| "premium".to_string());
+    let access_level = resource
+        .access_level
+        .clone()
+        .unwrap_or_else(|| "premium".to_string());
     let requires_premium = access_level != "free";
 
     ResourceResponse {
@@ -385,112 +389,127 @@ async fn list_resources(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from(
-        "SELECT * FROM room_resources WHERE is_published = true AND deleted_at IS NULL",
-    );
-    let mut count_sql = String::from(
-        "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL",
-    );
+    // Build parameterized query to prevent SQL injection
+    let mut conditions = Vec::new();
+    let mut param_idx = 1usize;
 
-    // Room ID filter (required for most queries)
-    if let Some(room_id) = query.room_id {
-        let filter = format!(" AND trading_room_id = {}", room_id);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.room_id.is_some() {
+        conditions.push(format!("trading_room_id = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // Resource type filter (video, pdf, document, image)
-    if let Some(ref resource_type) = query.resource_type {
-        let filter = format!(
-            " AND resource_type = '{}'",
-            resource_type.replace('\'', "''")
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.resource_type.is_some() {
+        conditions.push(format!("resource_type = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // Content type filter (tutorial, daily_video, trade_plan, etc.)
-    if let Some(ref content_type) = query.content_type {
-        let filter = format!(" AND content_type = '{}'", content_type.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.content_type.is_some() {
+        conditions.push(format!("content_type = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // Featured filter
-    if let Some(is_featured) = query.is_featured {
-        let filter = format!(" AND is_featured = {}", is_featured);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.is_featured.is_some() {
+        conditions.push(format!("is_featured = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // Difficulty filter
-    if let Some(ref difficulty) = query.difficulty_level {
-        let filter = format!(
-            " AND difficulty_level = '{}'",
-            difficulty.replace('\'', "''")
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.difficulty_level.is_some() {
+        conditions.push(format!("difficulty_level = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // ICT 7: Section filter
-    if let Some(ref section) = query.section {
-        let filter = format!(" AND section = '{}'", section.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.section.is_some() {
+        conditions.push(format!("section = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // Tags filter
-    if let Some(ref tags) = query.tags {
-        let tag_list: Vec<&str> = tags.split(',').collect();
-        for tag in tag_list {
-            let filter = format!(" AND tags @> '[\"{}\"]'", tag.trim().replace('\'', "''"));
-            sql.push_str(&filter);
-            count_sql.push_str(&filter);
-        }
+    // Tags: each tag gets its own JSONB containment check
+    let tag_list: Vec<String> = query
+        .tags
+        .as_ref()
+        .map(|t| t.split(',').map(|s| s.trim().to_string()).collect())
+        .unwrap_or_default();
+    for _ in &tag_list {
+        conditions.push(format!("tags @> ${}", param_idx));
+        param_idx += 1;
     }
-
-    // Search
-    if let Some(ref search) = query.search {
-        let search_term = search.replace('\'', "''");
-        let filter = format!(
-            " AND (title ILIKE '%{}%' OR description ILIKE '%{}%')",
-            search_term, search_term
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.search.is_some() {
+        conditions.push(format!(
+            "(title ILIKE ${} OR description ILIKE ${})",
+            param_idx, param_idx
+        ));
+        param_idx += 1;
     }
-
-    // ICT 7 NEW: Access level filter
-    if let Some(ref access_level) = query.access_level {
-        let filter = format!(" AND access_level = '{}'", access_level.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.access_level.is_some() {
+        conditions.push(format!("access_level = ${}", param_idx));
+        param_idx += 1;
     }
-
-    // ICT 7 NEW: Course/Lesson filters
-    if let Some(course_id) = query.course_id {
-        let filter = format!(" AND course_id = {}", course_id);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.course_id.is_some() {
+        conditions.push(format!("course_id = ${}", param_idx));
+        param_idx += 1;
     }
-    if let Some(lesson_id) = query.lesson_id {
-        let filter = format!(" AND lesson_id = {}", lesson_id);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+    if query.lesson_id.is_some() {
+        conditions.push(format!("lesson_id = ${}", param_idx));
+        param_idx += 1;
     }
 
     // ICT 7 NEW: Only show latest versions by default
     let show_latest_only = query.latest_only.unwrap_or(true);
     if show_latest_only {
-        sql.push_str(" AND (is_latest_version = true OR is_latest_version IS NULL)");
-        count_sql.push_str(" AND (is_latest_version = true OR is_latest_version IS NULL)");
+        conditions.push("(is_latest_version = true OR is_latest_version IS NULL)".to_string());
     }
 
-    sql.push_str(" ORDER BY is_pinned DESC, is_featured DESC, resource_date DESC, created_at DESC");
-    sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
+    let where_clause = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!(" AND {}", conditions.join(" AND "))
+    };
 
-    let resources: Vec<RoomResource> = sqlx::query_as(&sql)
+    let sql = format!(
+        "SELECT * FROM room_resources WHERE is_published = true AND deleted_at IS NULL{} ORDER BY is_pinned DESC, is_featured DESC, resource_date DESC, created_at DESC LIMIT ${} OFFSET ${}",
+        where_clause, param_idx, param_idx + 1
+    );
+    let count_sql = format!(
+        "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL{}",
+        where_clause
+    );
+
+    // Helper macro-like closure to bind params to a query
+    // Bind parameters for the main query
+    let mut q = sqlx::query_as::<_, RoomResource>(&sql);
+    if let Some(room_id) = query.room_id {
+        q = q.bind(room_id);
+    }
+    if let Some(ref resource_type) = query.resource_type {
+        q = q.bind(resource_type);
+    }
+    if let Some(ref content_type) = query.content_type {
+        q = q.bind(content_type);
+    }
+    if let Some(is_featured) = query.is_featured {
+        q = q.bind(is_featured);
+    }
+    if let Some(ref difficulty) = query.difficulty_level {
+        q = q.bind(difficulty);
+    }
+    if let Some(ref section) = query.section {
+        q = q.bind(section);
+    }
+    for tag in &tag_list {
+        let tag_json = serde_json::json!([tag]);
+        q = q.bind(tag_json);
+    }
+    if let Some(ref search) = query.search {
+        let search_pattern = format!("%{}%", search);
+        q = q.bind(search_pattern);
+    }
+    if let Some(ref access_level) = query.access_level {
+        q = q.bind(access_level);
+    }
+    if let Some(course_id) = query.course_id {
+        q = q.bind(course_id);
+    }
+    if let Some(lesson_id) = query.lesson_id {
+        q = q.bind(lesson_id);
+    }
+    q = q.bind(per_page);
+    q = q.bind(offset);
+
+    let resources: Vec<RoomResource> = q
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
@@ -500,7 +519,45 @@ async fn list_resources(
             )
         })?;
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+    // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
+    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    if let Some(room_id) = query.room_id {
+        cq = cq.bind(room_id);
+    }
+    if let Some(ref resource_type) = query.resource_type {
+        cq = cq.bind(resource_type);
+    }
+    if let Some(ref content_type) = query.content_type {
+        cq = cq.bind(content_type);
+    }
+    if let Some(is_featured) = query.is_featured {
+        cq = cq.bind(is_featured);
+    }
+    if let Some(ref difficulty) = query.difficulty_level {
+        cq = cq.bind(difficulty);
+    }
+    if let Some(ref section) = query.section {
+        cq = cq.bind(section);
+    }
+    for tag in &tag_list {
+        let tag_json = serde_json::json!([tag]);
+        cq = cq.bind(tag_json);
+    }
+    if let Some(ref search) = query.search {
+        let search_pattern = format!("%{}%", search);
+        cq = cq.bind(search_pattern);
+    }
+    if let Some(ref access_level) = query.access_level {
+        cq = cq.bind(access_level);
+    }
+    if let Some(course_id) = query.course_id {
+        cq = cq.bind(course_id);
+    }
+    if let Some(lesson_id) = query.lesson_id {
+        cq = cq.bind(lesson_id);
+    }
+
+    let total: (i64,) = cq
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
@@ -577,6 +634,7 @@ async fn track_download(
 
 /// GET /api/admin/room-resources - List all resources (admin)
 async fn admin_list_resources(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(query): Query<ResourceListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -584,63 +642,78 @@ async fn admin_list_resources(
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from("SELECT * FROM room_resources WHERE deleted_at IS NULL");
-    let mut count_sql =
-        String::from("SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL");
+    // Build parameterized query to prevent SQL injection
+    let mut conditions = Vec::new();
+    let mut param_idx = 1usize;
 
-    // Room ID filter
+    if query.room_id.is_some() {
+        conditions.push(format!("trading_room_id = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.resource_type.is_some() {
+        conditions.push(format!("resource_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.content_type.is_some() {
+        conditions.push(format!("content_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.is_published.is_some() {
+        conditions.push(format!("is_published = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.section.is_some() {
+        conditions.push(format!("section = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.search.is_some() {
+        conditions.push(format!(
+            "(title ILIKE ${} OR description ILIKE ${})",
+            param_idx, param_idx
+        ));
+        param_idx += 1;
+    }
+
+    let where_clause = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!(" AND {}", conditions.join(" AND "))
+    };
+
+    let sql = format!(
+        "SELECT * FROM room_resources WHERE deleted_at IS NULL{} ORDER BY created_at DESC LIMIT ${} OFFSET ${}",
+        where_clause, param_idx, param_idx + 1
+    );
+    let count_sql = format!(
+        "SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL{}",
+        where_clause
+    );
+
+    // Bind parameters for the main query
+    let mut q = sqlx::query_as::<_, RoomResource>(&sql);
     if let Some(room_id) = query.room_id {
-        let filter = format!(" AND trading_room_id = {}", room_id);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(room_id);
     }
-
-    // Resource type filter
     if let Some(ref resource_type) = query.resource_type {
-        let filter = format!(
-            " AND resource_type = '{}'",
-            resource_type.replace('\'', "''")
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(resource_type);
     }
-
-    // Content type filter
     if let Some(ref content_type) = query.content_type {
-        let filter = format!(" AND content_type = '{}'", content_type.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(content_type);
     }
-
-    // Published filter
     if let Some(is_published) = query.is_published {
-        let filter = format!(" AND is_published = {}", is_published);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(is_published);
     }
-
-    // ICT 7: Section filter for admin
     if let Some(ref section) = query.section {
-        let filter = format!(" AND section = '{}'", section.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(section);
     }
-
-    // Search
     if let Some(ref search) = query.search {
-        let search_term = search.replace('\'', "''");
-        let filter = format!(
-            " AND (title ILIKE '%{}%' OR description ILIKE '%{}%')",
-            search_term, search_term
-        );
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let search_pattern = format!("%{}%", search);
+        q = q.bind(search_pattern);
     }
+    q = q.bind(per_page);
+    q = q.bind(offset);
 
-    sql.push_str(" ORDER BY created_at DESC");
-    sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
-
-    let resources: Vec<RoomResource> = sqlx::query_as(&sql)
+    let resources: Vec<RoomResource> = q
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
@@ -650,7 +723,29 @@ async fn admin_list_resources(
             )
         })?;
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+    // Bind parameters for the count query (same filters, no LIMIT/OFFSET)
+    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    if let Some(room_id) = query.room_id {
+        cq = cq.bind(room_id);
+    }
+    if let Some(ref resource_type) = query.resource_type {
+        cq = cq.bind(resource_type);
+    }
+    if let Some(ref content_type) = query.content_type {
+        cq = cq.bind(content_type);
+    }
+    if let Some(is_published) = query.is_published {
+        cq = cq.bind(is_published);
+    }
+    if let Some(ref section) = query.section {
+        cq = cq.bind(section);
+    }
+    if let Some(ref search) = query.search {
+        let search_pattern = format!("%{}%", search);
+        cq = cq.bind(search_pattern);
+    }
+
+    let total: (i64,) = cq
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
@@ -673,6 +768,7 @@ async fn admin_list_resources(
 
 /// POST /api/admin/room-resources - Create resource
 async fn create_resource(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<CreateResourceRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -747,6 +843,7 @@ async fn create_resource(
 
 /// PUT /api/admin/room-resources/:id - Update resource
 async fn update_resource(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
     Json(input): Json<UpdateResourceRequest>,
@@ -957,6 +1054,7 @@ async fn update_resource(
 
 /// DELETE /api/admin/room-resources/:id - Soft delete resource
 async fn delete_resource(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -996,35 +1094,42 @@ async fn generate_secure_download(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Generate a secure token
-    let token: String = sqlx::query_scalar(
-        "SELECT generate_secure_download_token($1, 24)"
-    )
-    .bind(id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let token: String = sqlx::query_scalar("SELECT generate_secure_download_token($1, 24)")
+        .bind(id)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     // Get the resource to include in response
-    let resource: RoomResource = sqlx::query_as(
-        "SELECT * FROM room_resources WHERE id = $1 AND deleted_at IS NULL"
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Resource not found"}))))?;
+    let resource: RoomResource =
+        sqlx::query_as("SELECT * FROM room_resources WHERE id = $1 AND deleted_at IS NULL")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Resource not found"})),
+                )
+            })?;
 
     // Construct the secure download URL
     let secure_url = format!("/api/room-resources/{}/download?token={}", id, token);
 
     // Track download attempt
     let _ = sqlx::query(
-        "UPDATE room_resources SET downloads_count = downloads_count + 1 WHERE id = $1"
+        "UPDATE room_resources SET downloads_count = downloads_count + 1 WHERE id = $1",
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -1034,7 +1139,7 @@ async fn generate_secure_download(
         "success": true,
         "download_url": secure_url,
         "file_url": resource.file_url,
-        "filename": format!("{}.{}", resource.slug, resource.mime_type.as_deref().unwrap_or("bin").split('/').last().unwrap_or("bin")),
+        "filename": format!("{}.{}", resource.slug, resource.mime_type.as_deref().unwrap_or("bin").split('/').next_back().unwrap_or("bin")),
         "expires_in_hours": 24
     })))
 }
@@ -1047,27 +1152,36 @@ async fn download_resource(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get the resource
     let resource: RoomResource = sqlx::query_as(
-        "SELECT * FROM room_resources WHERE id = $1 AND is_published = true AND deleted_at IS NULL"
+        "SELECT * FROM room_resources WHERE id = $1 AND is_published = true AND deleted_at IS NULL",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Resource not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Resource not found"})),
+        )
+    })?;
 
     // Check if resource requires premium access
     let access_level = resource.access_level.as_deref().unwrap_or("premium");
     if access_level != "free" {
         // Verify token for premium resources
         if let Some(token) = params.get("token") {
-            let is_valid: bool = sqlx::query_scalar(
-                "SELECT validate_secure_download_token($1, $2)"
-            )
-            .bind(id)
-            .bind(token)
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or(false);
+            let is_valid: bool =
+                sqlx::query_scalar("SELECT validate_secure_download_token($1, $2)")
+                    .bind(id)
+                    .bind(token)
+                    .fetch_one(&state.db.pool)
+                    .await
+                    .unwrap_or(false);
 
             if !is_valid {
                 return Err((
@@ -1081,7 +1195,7 @@ async fn download_resource(
 
     // Track download
     let _ = sqlx::query(
-        "UPDATE room_resources SET downloads_count = downloads_count + 1 WHERE id = $1"
+        "UPDATE room_resources SET downloads_count = downloads_count + 1 WHERE id = $1",
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -1090,7 +1204,7 @@ async fn download_resource(
     Ok(Json(json!({
         "success": true,
         "file_url": resource.file_url,
-        "filename": format!("{}.{}", resource.slug, resource.mime_type.as_deref().unwrap_or("bin").split('/').last().unwrap_or("bin")),
+        "filename": format!("{}.{}", resource.slug, resource.mime_type.as_deref().unwrap_or("bin").split('/').next_back().unwrap_or("bin")),
         "file_size": resource.file_size,
         "mime_type": resource.mime_type
     })))
@@ -1116,12 +1230,17 @@ async fn get_version_history(
             WHERE r.deleted_at IS NULL
         )
         SELECT * FROM version_chain ORDER BY version DESC
-        "#
+        "#,
     )
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let responses: Vec<ResourceResponse> = versions.into_iter().map(resource_to_response).collect();
 
@@ -1134,33 +1253,35 @@ async fn get_version_history(
 
 /// POST /api/admin/room-resources/:id/new-version - Create a new version of resource
 async fn create_new_version(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
     Json(input): Json<CreateVersionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let new_id: i64 = sqlx::query_scalar(
-        "SELECT create_resource_version($1, $2, $3)"
-    )
-    .bind(id)
-    .bind(&input.file_url)
-    .bind(input.file_size)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let new_id: i64 = sqlx::query_scalar("SELECT create_resource_version($1, $2, $3)")
+        .bind(id)
+        .bind(&input.file_url)
+        .bind(input.file_size)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     // Get the new resource
-    let resource: RoomResource = sqlx::query_as(
-        "SELECT * FROM room_resources WHERE id = $1"
-    )
-    .bind(new_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let resource: RoomResource = sqlx::query_as("SELECT * FROM room_resources WHERE id = $1")
+        .bind(new_id)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1202,6 +1323,7 @@ pub struct BulkUpdateFields {
 
 /// POST /api/admin/room-resources/bulk-create - Create multiple resources at once
 async fn bulk_create_resources(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkCreateRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1274,7 +1396,10 @@ async fn bulk_create_resources(
 
         match result {
             Ok(_) => created_count += 1,
-            Err(e) => errors.push(format!("Failed to create '{}': {}", resource_input.title, e)),
+            Err(e) => errors.push(format!(
+                "Failed to create '{}': {}",
+                resource_input.title, e
+            )),
         }
     }
 
@@ -1288,6 +1413,7 @@ async fn bulk_create_resources(
 
 /// PUT /api/admin/room-resources/bulk-update - Update multiple resources at once
 async fn bulk_update_resources(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkUpdateRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1326,7 +1452,9 @@ async fn bulk_update_resources(
         ));
     }
 
-    let ids_placeholder: String = input.ids.iter()
+    let ids_placeholder: String = input
+        .ids
+        .iter()
         .enumerate()
         .map(|(i, _)| format!("${}", param_idx + i))
         .collect::<Vec<_>>()
@@ -1363,15 +1491,12 @@ async fn bulk_update_resources(
         query = query.bind(*id);
     }
 
-    let result = query
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let result = query.execute(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1382,6 +1507,7 @@ async fn bulk_update_resources(
 
 /// DELETE /api/admin/room-resources/bulk-delete - Delete multiple resources at once
 async fn bulk_delete_resources(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(ids): Json<Vec<i64>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1392,7 +1518,8 @@ async fn bulk_delete_resources(
         ));
     }
 
-    let placeholders: String = ids.iter()
+    let placeholders: String = ids
+        .iter()
         .enumerate()
         .map(|(i, _)| format!("${}", i + 1))
         .collect::<Vec<_>>()
@@ -1408,15 +1535,12 @@ async fn bulk_delete_resources(
         query = query.bind(*id);
     }
 
-    let result = query
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let result = query.execute(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1440,6 +1564,7 @@ pub struct UploadLimit {
 
 /// GET /api/admin/room-resources/upload-limits - Get file upload limits
 async fn get_upload_limits(
+    _admin: AdminUser,
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let limits: Vec<UploadLimit> = sqlx::query_as(
@@ -1457,6 +1582,7 @@ async fn get_upload_limits(
 
 /// POST /api/admin/room-resources/validate-upload - Validate file before upload
 async fn validate_upload(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<ValidateUploadRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1546,7 +1672,8 @@ async fn get_course_resources(
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    let responses: Vec<ResourceResponse> = resources.into_iter().map(resource_to_response).collect();
+    let responses: Vec<ResourceResponse> =
+        resources.into_iter().map(resource_to_response).collect();
 
     Ok(Json(json!({
         "success": true,
@@ -1568,7 +1695,8 @@ async fn get_lesson_resources(
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    let responses: Vec<ResourceResponse> = resources.into_iter().map(resource_to_response).collect();
+    let responses: Vec<ResourceResponse> =
+        resources.into_iter().map(resource_to_response).collect();
 
     Ok(Json(json!({
         "success": true,
@@ -1641,42 +1769,84 @@ async fn list_stock_lists(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from("SELECT * FROM stock_lists WHERE 1=1");
-    let mut count_sql = String::from("SELECT COUNT(*) FROM stock_lists WHERE 1=1");
+    // Build parameterized query to prevent SQL injection
+    let mut conditions = Vec::new();
+    let mut param_idx = 1usize;
 
+    if query.room_id.is_some() {
+        conditions.push(format!("trading_room_id = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.list_type.is_some() {
+        conditions.push(format!("list_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.is_active.is_some() {
+        conditions.push(format!("is_active = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.week_of.is_some() {
+        conditions.push(format!("week_of = ${}", param_idx));
+        param_idx += 1;
+    }
+
+    let where_clause = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!(" AND {}", conditions.join(" AND "))
+    };
+
+    let sql = format!(
+        "SELECT * FROM stock_lists WHERE 1=1{} ORDER BY is_featured DESC, week_of DESC NULLS LAST, created_at DESC LIMIT ${} OFFSET ${}",
+        where_clause, param_idx, param_idx + 1
+    );
+    let count_sql = format!(
+        "SELECT COUNT(*) FROM stock_lists WHERE 1=1{}",
+        where_clause
+    );
+
+    // Bind parameters for the main query
+    let mut q = sqlx::query_as::<_, StockList>(&sql);
     if let Some(room_id) = query.room_id {
-        let filter = format!(" AND trading_room_id = {}", room_id);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(room_id);
     }
-
     if let Some(ref list_type) = query.list_type {
-        let filter = format!(" AND list_type = '{}'", list_type.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(list_type);
     }
-
     if let Some(is_active) = query.is_active {
-        let filter = format!(" AND is_active = {}", is_active);
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        q = q.bind(is_active);
     }
-
     if let Some(ref week_of) = query.week_of {
-        let filter = format!(" AND week_of = '{}'", week_of.replace('\'', "''"));
-        sql.push_str(&filter);
-        count_sql.push_str(&filter);
+        let week_date = NaiveDate::parse_from_str(week_of, "%Y-%m-%d")
+            .unwrap_or_else(|_| chrono::Utc::now().date_naive());
+        q = q.bind(week_date);
     }
+    q = q.bind(per_page);
+    q = q.bind(offset);
 
-    sql.push_str(" ORDER BY is_featured DESC, week_of DESC NULLS LAST, created_at DESC");
-    sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
-
-    let lists: Vec<StockList> = sqlx::query_as(&sql)
+    let lists: Vec<StockList> = q
         .fetch_all(&state.db.pool)
         .await
         .unwrap_or_default();
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+    // Bind parameters for the count query
+    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    if let Some(room_id) = query.room_id {
+        cq = cq.bind(room_id);
+    }
+    if let Some(ref list_type) = query.list_type {
+        cq = cq.bind(list_type);
+    }
+    if let Some(is_active) = query.is_active {
+        cq = cq.bind(is_active);
+    }
+    if let Some(ref week_of) = query.week_of {
+        let week_date = NaiveDate::parse_from_str(week_of, "%Y-%m-%d")
+            .unwrap_or_else(|_| chrono::Utc::now().date_naive());
+        cq = cq.bind(week_date);
+    }
+
+    let total: (i64,) = cq
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
@@ -1702,8 +1872,18 @@ async fn get_stock_list(
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Stock list not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Stock list not found"})),
+            )
+        })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1718,7 +1898,9 @@ async fn create_stock_list(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let slug = slugify(&input.name);
     let symbols_json = serde_json::to_value(&input.symbols).unwrap_or(json!([]));
-    let week_of = input.week_of.as_ref()
+    let week_of = input
+        .week_of
+        .as_ref()
         .and_then(|d| chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok());
 
     let list: StockList = sqlx::query_as(
@@ -1755,7 +1937,9 @@ async fn update_stock_list(
     Json(input): Json<CreateStockListRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let symbols_json = serde_json::to_value(&input.symbols).unwrap_or(json!([]));
-    let week_of = input.week_of.as_ref()
+    let week_of = input
+        .week_of
+        .as_ref()
         .and_then(|d| chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok());
 
     let list: StockList = sqlx::query_as(
@@ -1765,7 +1949,7 @@ async fn update_stock_list(
             is_active = $5, is_featured = $6, week_of = $7, updated_at = NOW()
         WHERE id = $8
         RETURNING *
-        "#
+        "#,
     )
     .bind(&input.name)
     .bind(&input.description)
@@ -1777,8 +1961,18 @@ async fn update_stock_list(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Stock list not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Stock list not found"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -1796,10 +1990,18 @@ async fn delete_stock_list(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Stock list not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Stock list not found"})),
+        ));
     }
 
     Ok(Json(json!({
@@ -1857,7 +2059,7 @@ async fn track_resource_access(
     if let Some(uid) = user_id {
         // Get resource info
         let resource: Option<(String, String, Option<String>)> = sqlx::query_as(
-            "SELECT resource_type, title, thumbnail_url FROM room_resources WHERE id = $1"
+            "SELECT resource_type, title, thumbnail_url FROM room_resources WHERE id = $1",
         )
         .bind(id)
         .fetch_optional(&state.db.pool)
@@ -1882,10 +2084,12 @@ async fn track_resource_access(
             .await;
 
             // Increment view count
-            let _ = sqlx::query("UPDATE room_resources SET views_count = views_count + 1 WHERE id = $1")
-                .bind(id)
-                .execute(&state.db.pool)
-                .await;
+            let _ = sqlx::query(
+                "UPDATE room_resources SET views_count = views_count + 1 WHERE id = $1",
+            )
+            .bind(id)
+            .execute(&state.db.pool)
+            .await;
         }
     }
 
@@ -1903,7 +2107,8 @@ async fn get_recently_accessed(
         .and_then(|v| v.to_str().ok())
         .and_then(|s| s.parse().ok());
 
-    let limit: i64 = params.get("limit")
+    let limit: i64 = params
+        .get("limit")
         .and_then(|s| s.parse().ok())
         .unwrap_or(10)
         .min(50);
@@ -1944,7 +2149,12 @@ async fn add_resource_favorite(
         .get("x-user-id")
         .and_then(|v| v.to_str().ok())
         .and_then(|s| s.parse().ok())
-        .ok_or_else(|| (StatusCode::UNAUTHORIZED, Json(json!({"error": "Authentication required"}))))?;
+        .ok_or_else(|| {
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Authentication required"})),
+            )
+        })?;
 
     let result = sqlx::query(
         "INSERT INTO resource_favorites (user_id, resource_id) VALUES ($1, $2) ON CONFLICT DO NOTHING"
@@ -1972,16 +2182,25 @@ async fn remove_resource_favorite(
         .get("x-user-id")
         .and_then(|v| v.to_str().ok())
         .and_then(|s| s.parse().ok())
-        .ok_or_else(|| (StatusCode::UNAUTHORIZED, Json(json!({"error": "Authentication required"}))))?;
+        .ok_or_else(|| {
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Authentication required"})),
+            )
+        })?;
 
-    let result = sqlx::query(
-        "DELETE FROM resource_favorites WHERE user_id = $1 AND resource_id = $2"
-    )
-    .bind(user_id)
-    .bind(id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let result =
+        sqlx::query("DELETE FROM resource_favorites WHERE user_id = $1 AND resource_id = $2")
+            .bind(user_id)
+            .bind(id)
+            .execute(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "success": true,
@@ -2033,10 +2252,23 @@ async fn get_favorite_resources(
         .get("x-user-id")
         .and_then(|v| v.to_str().ok())
         .and_then(|s| s.parse().ok())
-        .ok_or_else(|| (StatusCode::UNAUTHORIZED, Json(json!({"error": "Authentication required"}))))?;
+        .ok_or_else(|| {
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Authentication required"})),
+            )
+        })?;
 
-    let page: i64 = params.get("page").and_then(|s| s.parse().ok()).unwrap_or(1).max(1);
-    let per_page: i64 = params.get("per_page").and_then(|s| s.parse().ok()).unwrap_or(20).min(50);
+    let page: i64 = params
+        .get("page")
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(1)
+        .max(1);
+    let per_page: i64 = params
+        .get("per_page")
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(20)
+        .min(50);
     let offset = (page - 1) * per_page;
 
     let resources: Vec<RoomResource> = sqlx::query_as(
@@ -2046,7 +2278,7 @@ async fn get_favorite_resources(
         WHERE f.user_id = $1 AND r.deleted_at IS NULL
         ORDER BY f.created_at DESC
         LIMIT $2 OFFSET $3
-        "#
+        "#,
     )
     .bind(user_id)
     .bind(per_page)
@@ -2055,15 +2287,15 @@ async fn get_favorite_resources(
     .await
     .unwrap_or_default();
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM resource_favorites WHERE user_id = $1"
-    )
-    .bind(user_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM resource_favorites WHERE user_id = $1")
+            .bind(user_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let responses: Vec<ResourceResponse> = resources.into_iter().map(resource_to_response).collect();
+    let responses: Vec<ResourceResponse> =
+        resources.into_iter().map(resource_to_response).collect();
 
     Ok(Json(json!({
         "success": true,
@@ -2120,12 +2352,15 @@ pub struct ResourceStats {
 
 /// GET /api/admin/room-resources/analytics - Get resource analytics
 async fn get_resource_analytics(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let room_id: Option<i64> = params.get("room_id").and_then(|s| s.parse().ok());
 
-    let room_filter = room_id.map(|id| format!(" AND trading_room_id = {}", id)).unwrap_or_default();
+    let room_filter = room_id
+        .map(|id| format!(" AND trading_room_id = {}", id))
+        .unwrap_or_default();
 
     // Total counts
     let totals: (i64, i64, i64) = sqlx::query_as(&format!(
@@ -2136,12 +2371,10 @@ async fn get_resource_analytics(
     .await
     .unwrap_or((0, 0, 0));
 
-    let total_favorites: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM resource_favorites"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_favorites: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM resource_favorites")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
 
     // By type
     let by_type: Vec<TypeStats> = sqlx::query_as(&format!(
@@ -2208,15 +2441,25 @@ async fn get_resource_analytics(
 
 /// GET /api/admin/room-resources/download-logs - Get download logs
 async fn get_download_logs(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let resource_id: Option<i64> = params.get("resource_id").and_then(|s| s.parse().ok());
-    let page: i64 = params.get("page").and_then(|s| s.parse().ok()).unwrap_or(1).max(1);
-    let per_page: i64 = params.get("per_page").and_then(|s| s.parse().ok()).unwrap_or(50).min(100);
+    let page: i64 = params
+        .get("page")
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(1)
+        .max(1);
+    let per_page: i64 = params
+        .get("per_page")
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(50)
+        .min(100);
     let offset = (page - 1) * per_page;
 
     let (logs, total): (Vec<serde_json::Value>, (i64,)) = if let Some(rid) = resource_id {
+        #[allow(clippy::type_complexity)]
         let logs: Vec<(i64, i64, Option<i64>, Option<String>, chrono::DateTime<chrono::Utc>)> = sqlx::query_as(
             "SELECT id, resource_id, user_id, ip_address::TEXT, downloaded_at FROM resource_download_logs WHERE resource_id = $1 ORDER BY downloaded_at DESC LIMIT $2 OFFSET $3"
         )
@@ -2227,11 +2470,12 @@ async fn get_download_logs(
         .await
         .unwrap_or_default();
 
-        let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM resource_download_logs WHERE resource_id = $1")
-            .bind(rid)
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+        let total: (i64,) =
+            sqlx::query_as("SELECT COUNT(*) FROM resource_download_logs WHERE resource_id = $1")
+                .bind(rid)
+                .fetch_one(&state.db.pool)
+                .await
+                .unwrap_or((0,));
 
         let json_logs: Vec<serde_json::Value> = logs.into_iter().map(|(id, rid, uid, ip, ts)| {
             json!({"id": id, "resource_id": rid, "user_id": uid, "ip_address": ip, "downloaded_at": ts})
@@ -2239,6 +2483,7 @@ async fn get_download_logs(
 
         (json_logs, total)
     } else {
+        #[allow(clippy::type_complexity)]
         let logs: Vec<(i64, i64, Option<i64>, Option<String>, chrono::DateTime<chrono::Utc>)> = sqlx::query_as(
             "SELECT id, resource_id, user_id, ip_address::TEXT, downloaded_at FROM resource_download_logs ORDER BY downloaded_at DESC LIMIT $1 OFFSET $2"
         )

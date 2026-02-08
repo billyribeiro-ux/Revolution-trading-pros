@@ -708,7 +708,7 @@ pub struct CreateCategoryRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct CreateTagRequest {
+pub struct CreateCourseTagRequest {
     pub name: String,
     pub slug: Option<String>,
     pub color: Option<String>,
