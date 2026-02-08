@@ -48,8 +48,33 @@ async fn list_popups(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    // Build dynamic query
-    let mut sql = String::from(
+    // Build parameterized query to prevent SQL injection
+    let mut conditions = Vec::new();
+    let mut param_idx = 1usize;
+
+    if query.status.is_some() {
+        conditions.push(format!("status = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.popup_type.is_some() {
+        conditions.push(format!("type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if query.search.is_some() {
+        conditions.push(format!(
+            "(name ILIKE ${} OR title ILIKE ${})",
+            param_idx, param_idx
+        ));
+        param_idx += 1;
+    }
+
+    let where_clause = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!(" AND {}", conditions.join(" AND "))
+    };
+
+    let sql = format!(
         r#"
         SELECT id, name, type as popup_type, status, priority, title, content,
                cta_text, cta_url, cta_new_tab, position, size, animation,
@@ -61,42 +86,34 @@ async fn list_popups(
                total_views, total_conversions, conversion_rate,
                created_by, created_at, updated_at
         FROM popups
-        WHERE 1=1
+        WHERE 1=1{}
+        ORDER BY priority DESC, created_at DESC LIMIT ${} OFFSET ${}
         "#,
+        where_clause, param_idx, param_idx + 1
+    );
+    let count_sql = format!(
+        "SELECT COUNT(*) FROM popups WHERE 1=1{}",
+        where_clause
     );
 
-    let mut count_sql = String::from("SELECT COUNT(*) FROM popups WHERE 1=1");
-
+    // Bind parameters for the main query
+    let mut q = sqlx::query_as::<_, crate::models::popup::Popup>(&sql);
     if let Some(ref status) = query.status {
-        sql.push_str(&format!(" AND status = '{}'", status.replace('\'', "''")));
-        count_sql.push_str(&format!(" AND status = '{}'", status.replace('\'', "''")));
+        q = q.bind(status);
     }
-
     if let Some(ref popup_type) = query.popup_type {
-        sql.push_str(&format!(" AND type = '{}'", popup_type.replace('\'', "''")));
-        count_sql.push_str(&format!(" AND type = '{}'", popup_type.replace('\'', "''")));
+        q = q.bind(popup_type);
     }
-
     if let Some(ref search) = query.search {
-        let search_escaped = search.replace('\'', "''");
-        sql.push_str(&format!(
-            " AND (name ILIKE '%{}%' OR title ILIKE '%{}%')",
-            search_escaped, search_escaped
-        ));
-        count_sql.push_str(&format!(
-            " AND (name ILIKE '%{}%' OR title ILIKE '%{}%')",
-            search_escaped, search_escaped
-        ));
+        let search_pattern = format!("%{}%", search);
+        q = q.bind(search_pattern);
     }
-
-    sql.push_str(&format!(
-        " ORDER BY priority DESC, created_at DESC LIMIT {} OFFSET {}",
-        per_page, offset
-    ));
+    q = q.bind(per_page);
+    q = q.bind(offset);
 
     // Execute queries
     let popups: Vec<crate::models::popup::Popup> =
-        match sqlx::query_as(&sql).fetch_all(&state.db.pool).await {
+        match q.fetch_all(&state.db.pool).await {
             Ok(rows) => rows,
             Err(e) => {
                 // If table doesn't exist, return empty list
@@ -115,7 +132,20 @@ async fn list_popups(
             }
         };
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+    // Bind parameters for the count query
+    let mut cq = sqlx::query_as::<_, (i64,)>(&count_sql);
+    if let Some(ref status) = query.status {
+        cq = cq.bind(status);
+    }
+    if let Some(ref popup_type) = query.popup_type {
+        cq = cq.bind(popup_type);
+    }
+    if let Some(ref search) = query.search {
+        let search_pattern = format!("%{}%", search);
+        cq = cq.bind(search_pattern);
+    }
+
+    let total: (i64,) = cq
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
@@ -267,61 +297,19 @@ async fn update_popup(
     Path(id): Path<i32>,
     Json(req): Json<UpdatePopupRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Build dynamic update query
-    let mut updates = vec!["updated_at = NOW()".to_string()];
-    let mut param_count = 1;
+    // Handle isActive -> status conversion via parameterized query
+    // If is_active is provided, it overrides the status field
+    let effective_status: Option<String> = if let Some(is_active) = req.is_active {
+        Some(
+            if is_active { "published" } else { "paused" }.to_string(),
+        )
+    } else {
+        req.status.clone()
+    };
 
-    macro_rules! add_update {
-        ($field:expr, $name:expr) => {
-            if let Some(ref val) = $field {
-                updates.push(format!("{} = ${}", $name, param_count));
-                param_count += 1;
-            }
-        };
-    }
-
-    // Handle isActive -> status conversion
-    if let Some(is_active) = req.is_active {
-        updates.push(format!(
-            "status = '{}'",
-            if is_active { "published" } else { "paused" }
-        ));
-    }
-
-    add_update!(req.name, "name");
-    add_update!(req.popup_type, "type");
-    add_update!(req.status, "status");
-    add_update!(req.priority, "priority");
-    add_update!(req.title, "title");
-    add_update!(req.content, "content");
-    add_update!(req.cta_text, "cta_text");
-    add_update!(req.cta_url, "cta_url");
-    add_update!(req.cta_new_tab, "cta_new_tab");
-    add_update!(req.position, "position");
-    add_update!(req.size, "size");
-    add_update!(req.animation, "animation");
-    add_update!(req.show_close_button, "show_close_button");
-    add_update!(req.close_on_overlay_click, "close_on_overlay_click");
-    add_update!(req.close_on_escape, "close_on_escape");
-    add_update!(req.auto_close_after, "auto_close_after");
-    add_update!(req.has_form, "has_form");
-    add_update!(req.form_id, "form_id");
-    add_update!(req.trigger_rules, "trigger_rules");
-    add_update!(req.frequency_rules, "frequency_rules");
-    add_update!(req.display_rules, "display_rules");
-    add_update!(req.design, "design");
-    add_update!(req.start_date, "start_date");
-    add_update!(req.end_date, "end_date");
-
-    let sql = format!(
-        "UPDATE popups SET {} WHERE id = ${}",
-        updates.join(", "),
-        param_count
-    );
-
-    // For simplicity, using a simpler approach with direct SQL
-    // In production, you'd want to use query builder
-    let result = sqlx::query(r#"
+    // Use parameterized COALESCE query - all values are bound as parameters
+    let result = sqlx::query(
+        r#"
         UPDATE popups SET
             name = COALESCE($1, name),
             type = COALESCE($2, type),
@@ -336,10 +324,11 @@ async fn update_popup(
             animation = COALESCE($11, animation),
             updated_at = NOW()
         WHERE id = $12
-        "#)
+        "#,
+    )
     .bind(&req.name)
     .bind(&req.popup_type)
-    .bind(&req.status)
+    .bind(&effective_status)
     .bind(req.priority)
     .bind(&req.title)
     .bind(&req.content)

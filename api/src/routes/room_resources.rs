@@ -2361,18 +2361,23 @@ async fn get_resource_analytics(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let room_id: Option<i64> = params.get("room_id").and_then(|s| s.parse().ok());
 
-    let room_filter = room_id
-        .map(|id| format!(" AND trading_room_id = {}", id))
-        .unwrap_or_default();
+    // Use parameterized queries to prevent SQL injection
+    let room_filter = if room_id.is_some() {
+        " AND trading_room_id = $1"
+    } else {
+        ""
+    };
 
     // Total counts
-    let totals: (i64, i64, i64) = sqlx::query_as(&format!(
+    let totals_sql = format!(
         "SELECT COUNT(*), COALESCE(SUM(views_count), 0), COALESCE(SUM(downloads_count), 0) FROM room_resources WHERE deleted_at IS NULL{}",
         room_filter
-    ))
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0, 0, 0));
+    );
+    let mut totals_q = sqlx::query_as::<_, (i64, i64, i64)>(&totals_sql);
+    if let Some(rid) = room_id {
+        totals_q = totals_q.bind(rid);
+    }
+    let totals: (i64, i64, i64) = totals_q.fetch_one(&state.db.pool).await.unwrap_or((0, 0, 0));
 
     let total_favorites: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM resource_favorites")
         .fetch_one(&state.db.pool)
@@ -2380,49 +2385,59 @@ async fn get_resource_analytics(
         .unwrap_or((0,));
 
     // By type
-    let by_type: Vec<TypeStats> = sqlx::query_as(&format!(
+    let by_type_sql = format!(
         "SELECT resource_type, COUNT(*) as count, COALESCE(SUM(views_count), 0) as total_views, COALESCE(SUM(downloads_count), 0) as total_downloads FROM room_resources WHERE deleted_at IS NULL{} GROUP BY resource_type ORDER BY count DESC",
         room_filter
-    ))
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    );
+    let mut by_type_q = sqlx::query_as::<_, TypeStats>(&by_type_sql);
+    if let Some(rid) = room_id {
+        by_type_q = by_type_q.bind(rid);
+    }
+    let by_type: Vec<TypeStats> = by_type_q.fetch_all(&state.db.pool).await.unwrap_or_default();
 
     // By access level
-    let by_access_level: Vec<AccessStats> = sqlx::query_as(&format!(
+    let by_access_sql = format!(
         "SELECT COALESCE(access_level, 'premium') as access_level, COUNT(*) as count FROM room_resources WHERE deleted_at IS NULL{} GROUP BY access_level ORDER BY count DESC",
         room_filter
-    ))
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    );
+    let mut by_access_q = sqlx::query_as::<_, AccessStats>(&by_access_sql);
+    if let Some(rid) = room_id {
+        by_access_q = by_access_q.bind(rid);
+    }
+    let by_access_level: Vec<AccessStats> = by_access_q.fetch_all(&state.db.pool).await.unwrap_or_default();
 
     // Top viewed
-    let top_viewed: Vec<ResourceStats> = sqlx::query_as(&format!(
+    let top_viewed_sql = format!(
         "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{} ORDER BY views_count DESC LIMIT 10",
         room_filter
-    ))
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    );
+    let mut top_viewed_q = sqlx::query_as::<_, ResourceStats>(&top_viewed_sql);
+    if let Some(rid) = room_id {
+        top_viewed_q = top_viewed_q.bind(rid);
+    }
+    let top_viewed: Vec<ResourceStats> = top_viewed_q.fetch_all(&state.db.pool).await.unwrap_or_default();
 
     // Top downloaded
-    let top_downloaded: Vec<ResourceStats> = sqlx::query_as(&format!(
+    let top_downloaded_sql = format!(
         "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{} ORDER BY downloads_count DESC LIMIT 10",
         room_filter
-    ))
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    );
+    let mut top_downloaded_q = sqlx::query_as::<_, ResourceStats>(&top_downloaded_sql);
+    if let Some(rid) = room_id {
+        top_downloaded_q = top_downloaded_q.bind(rid);
+    }
+    let top_downloaded: Vec<ResourceStats> = top_downloaded_q.fetch_all(&state.db.pool).await.unwrap_or_default();
 
     // Recent uploads
-    let recent_uploads: Vec<ResourceStats> = sqlx::query_as(&format!(
+    let recent_uploads_sql = format!(
         "SELECT id, title, resource_type, views_count, downloads_count, created_at FROM room_resources WHERE deleted_at IS NULL{} ORDER BY created_at DESC LIMIT 10",
         room_filter
-    ))
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    );
+    let mut recent_uploads_q = sqlx::query_as::<_, ResourceStats>(&recent_uploads_sql);
+    if let Some(rid) = room_id {
+        recent_uploads_q = recent_uploads_q.bind(rid);
+    }
+    let recent_uploads: Vec<ResourceStats> = recent_uploads_q.fetch_all(&state.db.pool).await.unwrap_or_default();
 
     let analytics = ResourceAnalytics {
         total_resources: totals.0,

@@ -2,7 +2,6 @@
 //! ICT 11+ Principal Engineer Implementation
 use chrono::NaiveDateTime;
 use sqlx::PgPool;
-use uuid::Uuid;
 
 use crate::{models::UserSubscriptionWithPlan, utils::errors::ApiError};
 
@@ -37,13 +36,8 @@ impl<'a> SubscriptionService<'a> {
 
     pub async fn get_user_subscriptions(
         &self,
-        user_id: Uuid,
+        user_id: i64,
     ) -> Result<Vec<UserSubscriptionWithPlan>, ApiError> {
-        let user_id_i64 = user_id
-            .to_string()
-            .parse::<i64>()
-            .map_err(|_| ApiError::new(axum::http::StatusCode::BAD_REQUEST, "Invalid user ID"))?;
-
         let subscriptions = sqlx::query_as::<_, SubscriptionQueryRow>(
             r#"
             SELECT 
@@ -69,7 +63,7 @@ impl<'a> SubscriptionService<'a> {
             ORDER BY um.created_at DESC
             "#,
         )
-        .bind(user_id_i64)
+        .bind(user_id)
         .fetch_all(self.db)
         .await
         .map_err(|e| {
@@ -104,19 +98,9 @@ impl<'a> SubscriptionService<'a> {
 
     pub async fn get_user_subscription(
         &self,
-        user_id: Uuid,
-        subscription_id: Uuid,
+        user_id: i64,
+        subscription_id: i64,
     ) -> Result<Option<UserSubscriptionWithPlan>, ApiError> {
-        let user_id_i64 = user_id
-            .to_string()
-            .parse::<i64>()
-            .map_err(|_| ApiError::new(axum::http::StatusCode::BAD_REQUEST, "Invalid user ID"))?;
-        let subscription_id_i64 = subscription_id.to_string().parse::<i64>().map_err(|_| {
-            ApiError::new(
-                axum::http::StatusCode::BAD_REQUEST,
-                "Invalid subscription ID",
-            )
-        })?;
 
         let subscription = sqlx::query_as::<_, SubscriptionQueryRow>(
             r#"
@@ -142,8 +126,8 @@ impl<'a> SubscriptionService<'a> {
             WHERE um.id = $1 AND um.user_id = $2
             "#,
         )
-        .bind(subscription_id_i64)
-        .bind(user_id_i64)
+        .bind(subscription_id)
+        .bind(user_id)
         .fetch_optional(self.db)
         .await
         .map_err(|e| {

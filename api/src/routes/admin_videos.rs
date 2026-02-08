@@ -1541,8 +1541,12 @@ async fn bunny_webhook(
             query.push_str(&format!(", bunny_thumbnail_url = ${}", param_idx));
             param_idx += 1;
         }
-        if let (Some(w), Some(h)) = (width, height) {
-            query.push_str(&format!(", metadata = jsonb_set(COALESCE(metadata, '{{}}'::jsonb), '{{resolution}}', '{{\"width\": {}, \"height\": {}}}'::jsonb)", w, h));
+        if let (Some(_w), Some(_h)) = (width, height) {
+            query.push_str(&format!(
+                ", metadata = jsonb_set(COALESCE(metadata, '{{}}'::jsonb), '{{resolution}}', jsonb_build_object('width', ${}::int, 'height', ${}::int))",
+                param_idx, param_idx + 1
+            ));
+            param_idx += 2;
         }
 
         query.push_str(&format!(" WHERE bunny_video_guid = ${}", param_idx));
@@ -1554,6 +1558,10 @@ async fn bunny_webhook(
         }
         if let Some(thumb) = thumbnail_url {
             sqlx_query = sqlx_query.bind(thumb);
+        }
+        if let (Some(w), Some(h)) = (width, height) {
+            sqlx_query = sqlx_query.bind(w);
+            sqlx_query = sqlx_query.bind(h);
         }
         sqlx_query = sqlx_query.bind(video_guid);
 
