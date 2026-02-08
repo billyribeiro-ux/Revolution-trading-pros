@@ -1,53 +1,156 @@
-# Windsurf AI Rules - Revolution Trading Pros v2
-## Apple Principal Engineer ICT Level 7 | January 2026
+# Windsurf AI Rules - Revolution Trading Pros v4
+
+## Apple Principal Engineer ICT Level 7 | Feb 2026
 
 # 🚨 ZERO ERRORS TOLERANCE
+
 Every change MUST result in 0 errors, 0 warnings, 0 regressions.
 
-## 📖 READ COMPANION FILES FIRST
-- `RULES-VERIFICATION.md` - Error prevention protocols
-- `RULES-SVELTE5.md` - Svelte 5 patterns (MANDATORY)
-- `RULES-TAILWIND-RESPONSIVE.md` - Tailwind v4 & breakpoints
-- `RULES-SSR-HYDRATION-SEO.md` - SSR, CLS, Core Web Vitals
-- `RULES-BACKEND.md` - Rust/Axum patterns
+## 📦 STACK
 
-## 📦 Stack
-- SvelteKit 2.50.1 + Svelte 5.48.2
-- Tailwind CSS v4.1.18
-- Rust/Axum 0.7 + PostgreSQL
+* SvelteKit 2.x + Svelte 5.x
+* Tailwind CSS v4.x
+* Rust/Axum 0.7 + PostgreSQL
+
+## 📖 REQUIRED CONTEXT REVIEW (IF FILES EXIST)
+
+Before changes, read:
+
+* `RULES-VERIFICATION.md`
+* `RULES-SVELTE5.md`
+* `RULES-TAILWIND-RESPONSIVE.md`
+* `RULES-SSR-HYDRATION-SEO.md`
+* `RULES-BACKEND.md`
+* `RULES-REMOTE-FUNCTIONS.md` (MANDATORY)
 
 ## 🎯 BEFORE ANY CHANGE
-1. READ entire file
-2. TRACE imports/exports
-3. RUN `npm run check` (must pass)
-4. MAP dependencies
 
-## ✅ AFTER EVERY CHANGE
-```bash
-npm run check    # 0 errors
-npm run lint     # 0 warnings
-npm run build    # success
-npm run test     # all pass
-```
+1. Read complete target file(s), no blind partial edits.
+2. Trace imports/exports and call graph.
+3. Map blast radius (all affected files/routes/components).
+4. Run baseline validation:
 
-## ⚡ SVELTE 5 ONLY
+   * `npm run check`
+5. Choose data boundary:
+
+   * Internal app flow => Remote Functions
+   * External/public/webhook => `+server.ts`
+
+## ⚡ SVELTE 5 ONLY (MANDATORY)
+
+Use:
+
 ```svelte
 let count = $state(0);
 let doubled = $derived(count * 2);
 let { title, onClose }: Props = $props();
-$effect(() => { /* ... */ });
-{@render children()}
-<button onclick={handler}>
+$effect(() => { /* side effect */ });
+{@render children?.()}
+<button onclick={handler}>Click</button>
 ```
 
-## ❌ BANNED (Svelte 4)
+## ❌ BANNED (SVELTE 4 PATTERNS)
+
+* `export let` (use `$props`)
+* `$:` reactive statements (use `$derived` / `$effect`)
+* `<slot />` (use `{@render}`)
+* `on:click` (use `onclick`)
+* `createEventDispatcher` (use callback props)
+
+## ⚡ REMOTE FUNCTIONS POLICY (DEFAULT FOR INTERNAL FLOWS)
+
+* `query` => read operations
+* `query.batch` => batched reads/list hydration
+* `form` => validated form submissions
+* `command` => mutations/actions
+
+Rules:
+
+* Validate all input at server boundary
+* Enforce authN/authZ for privileged actions
+* Keep typed request/response contracts
+* Use consistent domain error shapes
+* Do not duplicate business logic across remote/API layers
+
+## 🌐 API POLICY (`+server.ts`)
+
+Use endpoints only when:
+
+* Third parties consume the API
+* Webhook receiver is required
+* Raw HTTP semantics or explicit versioned contracts are required
+
+## 🔒 SECURITY GUARDRAILS
+
+* Never expose secrets in client bundle
+* No direct DB access from client code
+* Validate/sanitize all external input
+* Rate-limit sensitive mutation surfaces
+* Log security-relevant failures with request IDs
+* Patch known ecosystem advisories promptly
+
+## 🧪 TESTING STANDARD
+
+For every behavior change, include:
+
+* Unit tests (logic + validation)
+* Auth allow/deny tests
+* Integration tests at remote/API boundary
+* Regression tests for touched route/component
+
+## ✅ AFTER EVERY CHANGE (HARD GATE)
+
+Run all:
+
+```bash
+npm run check
+npm run lint
+npm run build
+npm run test
 ```
-export let prop        → $props()
-$: derived = x         → $derived()
-<slot />               → {@render}
-on:click               → onclick
-createEventDispatcher  → callback props
-```
+
+All must pass before completion.
+
+## ENFORCEMENT MODE: HARD GATE
+
+A task is NOT complete unless all 4 commands pass.
+
+Required completion output:
+
+1. Changed files list with reason per file
+2. Verification evidence summary for:
+
+   * `npm run check`
+   * `npm run lint`
+   * `npm run build`
+   * `npm run test`
+3. Regression risk assessment
+4. Boundary decision note (Remote Functions vs `+server.ts`)
+5. Final status: `COMPLETE` or `INCOMPLETE`
+
+If any gate fails:
+
+* Status MUST be `INCOMPLETE`
+* Continue remediation until green
+
+## 2026 PLATFORM NOTES (VERIFIED)
+
+1. Remote Functions are official in SvelteKit (available since 2.27).
+2. Track and patch Svelte/SvelteKit ecosystem security advisories promptly.
+3. SvelteKit SEO requires explicit sitemap strategy.
+4. Use official migration tooling/docs for Svelte 5 + SvelteKit upgrades.
+
+## SEO + REMOTE + SECURITY CHANGE CHECKLIST
+
+* [ ] Svelte 5 runes syntax only
+* [ ] Correct server boundary chosen (Remote vs API)
+* [ ] Input validated on server boundary
+* [ ] Auth enforced for sensitive operations
+* [ ] No duplicate SEO head ownership
+* [ ] Sitemap strategy updated for new indexable routes
+* [ ] check/lint/build/test all green
+* [ ] Changed files + verification evidence included
 
 ## 🚨 MANTRA
-"Zero errors. Trace dependencies. Update all affected files. Verify with evidence."
+
+"Zero errors. Trace dependencies. Use the right server boundary. Verify with evidence."
