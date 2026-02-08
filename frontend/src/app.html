@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr" prefix="og: https://ogp.me/ns#">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     Resource Hints - DNS Prefetch & Preconnect
@@ -38,26 +38,12 @@
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     SEO Base Meta Tags
+		     NOTE: robots, OG, Twitter, canonical, verification tags are now
+		     managed by the unified SEO layer (<Seo /> in +layout.svelte).
+		     Only static, non-route-specific meta tags remain here.
 		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<meta name="format-detection" content="telephone=no" />
-		<meta
-			name="robots"
-			content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
-		/>
-
-		<!-- Google -->
-		<meta
-			name="googlebot"
-			content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
-		/>
 		<meta name="google" content="notranslate" />
-		<!-- Add your Google Search Console verification code below -->
-		<!-- <meta name="google-site-verification" content="YOUR_CODE_HERE" /> -->
-
-		<!-- Bing -->
-		<meta name="bingbot" content="index, follow" />
-		<!-- Add your Bing Webmaster Tools verification code below -->
-		<!-- <meta name="msvalidate.01" content="YOUR_CODE_HERE" /> -->
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     GEO Optimization for AI Search
@@ -74,15 +60,7 @@
 		<meta name="distribution" content="Global" />
 		<meta name="rating" content="General" />
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════
-		     Social & Sharing Defaults (overridden by SEOHead component per page)
-		     ═══════════════════════════════════════════════════════════════════════════ -->
-		<meta property="og:site_name" content="Revolution Trading Pros" />
-		<meta property="og:locale" content="en_US" />
-
-		<meta name="twitter:site" content="@RevTradingPros" />
-		<meta name="twitter:card" content="summary_large_image" />
-
+		<!-- Pinterest opt-out (static, not route-specific) -->
 		<meta name="pinterest" content="nopin" />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
