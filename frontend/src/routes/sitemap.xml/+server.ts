@@ -63,11 +63,14 @@ export const GET: RequestHandler = async () => {
 			'^/analytics.*',
 			'^/email.*',
 			'^/workflows.*',
+			'^/chatroom-archive.*',
 			// Dynamic routes without param values provided
 			'.*\\[slug\\].*',
 			'.*\\[id\\].*',
 			'.*\\[room\\].*',
-			'.*\\[page\\].*'
+			'.*\\[page\\].*',
+			'.*\\[room_slug\\].*',
+			'.*\\[date_slug\\].*'
 		],
 		additionalPaths: [
 			'/about',
