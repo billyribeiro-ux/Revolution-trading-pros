@@ -1893,6 +1893,7 @@ async fn get_stock_list(
 
 /// POST /api/admin/room-resources/stock-lists - Create stock list
 async fn create_stock_list(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<CreateStockListRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1932,6 +1933,7 @@ async fn create_stock_list(
 
 /// PUT /api/admin/room-resources/stock-lists/:id - Update stock list
 async fn update_stock_list(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
     Json(input): Json<CreateStockListRequest>,
@@ -1983,6 +1985,7 @@ async fn update_stock_list(
 
 /// DELETE /api/admin/room-resources/stock-lists/:id - Delete stock list
 async fn delete_stock_list(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {

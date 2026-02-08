@@ -22,6 +22,7 @@ use crate::models::indicator::{
     Indicator, IndicatorFile, IndicatorListItem, IndicatorQueryParams, IndicatorVideo,
     UserIndicatorOwnership,
 };
+use crate::models::User;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -182,10 +183,10 @@ async fn get_public_indicator(
 
 /// ICT 7 FIX: Uses i64 for indicator_id (matching database schema)
 async fn get_my_indicators(
+    user: User,
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Get user_id from auth middleware
-    let user_id: i64 = 1; // Placeholder
+    let user_id: i64 = user.id;
 
     // ICT 7 FIX: Database uses BIGINT (i64) for indicator_id, not UUID
     // Using user_indicators table which has user_id and indicator_id as i64
@@ -243,11 +244,11 @@ async fn get_my_indicators(
 
 /// ICT 7 FIX: Uses i64 for indicator_id, queries user_indicators table
 async fn get_indicator_downloads(
+    user: User,
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Get user_id from auth middleware
-    let user_id: i64 = 1; // Placeholder
+    let user_id: i64 = user.id;
 
     // Get indicator
     let indicator: Indicator = sqlx::query_as("SELECT * FROM indicators WHERE slug = $1")
@@ -340,11 +341,11 @@ async fn get_indicator_downloads(
 
 /// ICT 7 FIX: Uses i64 for indicator_id, queries user_indicators table
 async fn generate_download_url(
+    user: User,
     State(state): State<AppState>,
     Path((slug, file_id)): Path<(String, i32)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Get user_id from auth middleware
-    let user_id: i64 = 1; // Placeholder
+    let user_id: i64 = user.id;
 
     // ICT 7 FIX: Get indicator with i64 id
     let indicator: (i64,) = sqlx::query_as("SELECT id FROM indicators WHERE slug = $1")
@@ -407,8 +408,8 @@ async fn generate_download_url(
     })?;
 
     // Generate secure download token (WordPress-compatible hash)
-    let secret = std::env::var("DOWNLOAD_SECRET_KEY")
-        .unwrap_or_else(|_| "revolution-secret-2026".to_string());
+    let secret = std::env::var("MEMBER_INDICATOR_SECRET")
+        .unwrap_or_else(|_| "".to_string());
     let expires_at = Utc::now() + Duration::hours(24);
     let expiry_timestamp = expires_at.timestamp();
 
@@ -577,8 +578,8 @@ struct DownloadParams {
 /// ICT 7: Generate a license key for an indicator
 fn generate_license_key(user_id: i64, indicator_id: i64) -> String {
     use sha2::{Digest, Sha256};
-    let secret = std::env::var("LICENSE_SECRET_KEY")
-        .unwrap_or_else(|_| "revolution-license-2026".to_string());
+    let secret = std::env::var("MEMBER_LICENSE_SECRET")
+        .unwrap_or_else(|_| "".to_string());
     let timestamp = chrono::Utc::now().timestamp();
     let input = format!("{}-{}-{}-{}", user_id, indicator_id, timestamp, secret);
     let mut hasher = Sha256::new();
@@ -689,11 +690,11 @@ struct LicenseValidateParams {
 
 /// ICT 7: Get or generate license key for owned indicator
 async fn get_license_key(
+    user: User,
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Get user_id from auth middleware
-    let user_id: i64 = 1; // Placeholder
+    let user_id: i64 = user.id;
 
     // Get indicator
     let indicator: Option<(i64,)> = sqlx::query_as("SELECT id FROM indicators WHERE slug = $1")
@@ -776,11 +777,11 @@ struct DownloadHistoryRow {
 
 /// ICT 7: Get user's download history
 async fn get_download_history(
+    user: User,
     State(state): State<AppState>,
     Query(params): Query<DownloadHistoryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Get user_id from auth middleware
-    let user_id: i64 = 1; // Placeholder
+    let user_id: i64 = user.id;
 
     let page = params.page.unwrap_or(1).max(1);
     let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
@@ -844,10 +845,10 @@ struct DownloadHistoryParams {
 
 /// ICT 7: Check for indicator updates for owned indicators
 async fn check_updates(
+    user: User,
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Get user_id from auth middleware
-    let user_id: i64 = 1; // Placeholder
+    let user_id: i64 = user.id;
 
     // Get user's owned indicators with update info
     #[allow(clippy::type_complexity)]
