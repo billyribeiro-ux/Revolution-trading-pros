@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { createCalculatorState } from '$lib/options-calculator/state/calculator.svelte.js';
 	import { decodeState } from '$lib/options-calculator/utils/share-utils.js';
@@ -9,7 +9,7 @@
 	const calc = $state(createCalculatorState());
 
 	onMount(() => {
-		const params = $page.url.searchParams;
+		const params = page.url.searchParams;
 
 		// Apply theme from URL
 		const theme = params.get('theme');
