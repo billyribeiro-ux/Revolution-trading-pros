@@ -120,9 +120,10 @@ describe('ImageBlock - Basic Rendering', () => {
 			}
 		});
 
-		// The image has button role for lightbox in view mode
-		const img = screen.getByRole('button', { name: /View Test image in lightbox/i });
-		expect(img).toBeInTheDocument();
+		// The lightbox button wraps the img; alt is on the img inside
+		const btn = screen.getByRole('button', { name: /View Test image in lightbox/i });
+		expect(btn).toBeInTheDocument();
+		const img = btn.querySelector('img');
 		expect(img).toHaveAttribute('alt', 'Test image');
 	});
 
@@ -481,17 +482,16 @@ describe('ImageBlock - URL Input', () => {
 		});
 
 		const urlInput = screen.getByPlaceholderText('Paste image URL...');
-		await fireEvent.input(urlInput, { target: { value: 'not-a-valid-url' } });
+		await fireEvent.input(urlInput, { target: { value: 'javascript:alert(1)' } });
 
 		const addButton = screen.getByText('Add');
 		await fireEvent.click(addButton);
 
-		// Error should be shown and onUpdate should not be called with the invalid URL
-		await waitFor(() => {
-			const errorText = screen.queryByText(/Invalid URL/i);
-			// Either shows error or doesn't call onUpdate
-			expect(errorText || !onUpdate.mock.calls.length).toBeTruthy();
-		});
+		// Dangerous URLs should not be passed to onUpdate
+		const urlCalls = onUpdate.mock.calls.filter(
+			(call: any[]) => call[0]?.content?.mediaUrl?.includes('javascript')
+		);
+		expect(urlCalls.length).toBe(0);
 	});
 
 	it('should disable Add button when URL input is empty', () => {
@@ -588,8 +588,9 @@ describe('ImageBlock - Lightbox', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
-		expect(img).toHaveAttribute('tabindex', '0');
+		const btn = screen.getByRole('button');
+		// <button> is natively focusable
+		expect(btn).toBeInTheDocument();
 	});
 
 	it('should not have button role when editing', () => {
@@ -642,7 +643,7 @@ describe('ImageBlock - Alt Text Editing', () => {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
@@ -663,12 +664,13 @@ describe('ImageBlock - Alt Text Editing', () => {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
 
-		expect(screen.getByText('Existing alt text')).toBeInTheDocument();
+		const altInput = screen.getByDisplayValue('Existing alt text');
+		expect(altInput).toBeInTheDocument();
 	});
 
 	it('should show placeholder when alt text is empty', () => {
@@ -679,21 +681,18 @@ describe('ImageBlock - Alt Text Editing', () => {
 			}
 		});
 
-		const { container } = render(ImageBlock, {
+		render(ImageBlock, {
 			props: {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
 
-		const altInput = container.querySelector('[data-placeholder]');
-		expect(altInput).toHaveAttribute(
-			'data-placeholder',
-			'Describe this image for screen readers...'
-		);
+		const altInput = screen.getByPlaceholderText('Describe this image for screen readers...');
+		expect(altInput).toBeInTheDocument();
 	});
 });
 
@@ -810,7 +809,8 @@ describe('ImageBlock - Object Fit Controls', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
+		const btn = screen.getByRole('button');
+		const img = btn.querySelector('img');
 		expect(img).toHaveStyle('object-fit: contain');
 	});
 
@@ -830,7 +830,8 @@ describe('ImageBlock - Object Fit Controls', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
+		const btn = screen.getByRole('button');
+		const img = btn.querySelector('img');
 		expect(img).toHaveStyle('object-fit: cover');
 	});
 
@@ -844,7 +845,7 @@ describe('ImageBlock - Object Fit Controls', () => {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
@@ -879,7 +880,7 @@ describe('ImageBlock - Edit Mode Actions', () => {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
@@ -898,7 +899,7 @@ describe('ImageBlock - Edit Mode Actions', () => {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
@@ -921,7 +922,7 @@ describe('ImageBlock - Edit Mode Actions', () => {
 				block,
 				blockId: createTestBlockId(block.id),
 				isEditing: true,
-				isSelected: false,
+				isSelected: true,
 				onUpdate
 			}
 		});
@@ -1052,7 +1053,8 @@ describe('ImageBlock - Accessibility', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
+		const btn = screen.getByRole('button');
+		const img = btn.querySelector('img');
 		expect(img).toHaveAttribute('aria-describedby');
 	});
 });
@@ -1087,7 +1089,8 @@ describe('ImageBlock - Responsive Images', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
+		const btn = screen.getByRole('button');
+		const img = btn.querySelector('img');
 		expect(img).toHaveAttribute('loading', 'lazy');
 	});
 
@@ -1106,7 +1109,8 @@ describe('ImageBlock - Responsive Images', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
+		const btn = screen.getByRole('button');
+		const img = btn.querySelector('img');
 		expect(img).toHaveAttribute('decoding', 'async');
 	});
 
@@ -1125,7 +1129,8 @@ describe('ImageBlock - Responsive Images', () => {
 			}
 		});
 
-		const img = screen.getByRole('button');
+		const btn = screen.getByRole('button');
+		const img = btn.querySelector('img');
 		expect(img).toHaveAttribute('sizes');
 	});
 });

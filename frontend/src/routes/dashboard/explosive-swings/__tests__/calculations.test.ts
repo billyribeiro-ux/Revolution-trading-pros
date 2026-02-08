@@ -108,7 +108,7 @@ describe('calculateProgress()', () => {
 
 		it('should handle very small price differences', () => {
 			const progress = calculateProgress(100.0, 100.001, 100.002);
-			expect(progress).toBe(50);
+			expect(progress).toBeCloseTo(50, 5);
 		});
 
 		it('should handle very large numbers', () => {
@@ -235,7 +235,7 @@ describe('calculateRiskReward()', () => {
 
 		it('should handle very small differences', () => {
 			const rr = calculateRiskReward(100.0, 100.02, 99.99);
-			expect(rr).toBe(2); // 0.02 / 0.01 = 2
+			expect(rr).toBeCloseTo(2, 5); // 0.02 / 0.01 = 2
 		});
 	});
 });
@@ -577,7 +577,8 @@ describe('Numerical Precision', () => {
 
 	it('should handle very small numbers in calculateRiskReward', () => {
 		const rr = calculateRiskReward(0.0001, 0.0003, 0.00005);
-		expect(rr).toBeCloseTo(3.33, 2);
+		// (0.0003 - 0.0001) / (0.0001 - 0.00005) = 0.0002 / 0.00005 = 4.0
+		expect(rr).toBeCloseTo(4.0, 5);
 	});
 
 	it('should handle very large numbers in calculateAverage', () => {

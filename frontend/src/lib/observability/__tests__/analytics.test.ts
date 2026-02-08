@@ -151,6 +151,18 @@ describe('GoogleAnalytics Adapter', () => {
 	});
 
 	it('should initialize with valid config', async () => {
+		// Mock script loading in JSDOM - scripts don't actually load
+		const originalCreateElement = document.createElement.bind(document);
+		vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+			const el = originalCreateElement(tag);
+			if (tag === 'script') {
+				setTimeout(() => {
+					if (el.onload) (el.onload as Function)(new Event('load'));
+				}, 0);
+			}
+			return el;
+		});
+
 		const adapter = createGoogleAnalyticsAdapter();
 		const config: AnalyticsConfig = {
 			enabled: true,

@@ -73,15 +73,18 @@ function createImageModeBlock(imageUrl = 'https://example.com/chart.png'): Block
 // MOCK SETUP
 // ===============================================================================
 
-// Mock MutationObserver
-const mockMutationObserver = vi.fn().mockImplementation(() => ({
-	observe: vi.fn(),
-	disconnect: vi.fn(),
-	takeRecords: vi.fn()
-}));
+// Mock MutationObserver (plain class, not vi.fn(), so mockReset doesn't strip it)
+class MockMutationObserver {
+	observe() {}
+	disconnect() {}
+	takeRecords() {
+		return [];
+	}
+	constructor(_callback: MutationCallback) {}
+}
 
 beforeEach(() => {
-	vi.stubGlobal('MutationObserver', mockMutationObserver);
+	vi.stubGlobal('MutationObserver', MockMutationObserver);
 });
 
 afterEach(() => {
@@ -207,7 +210,7 @@ describe('ChartBlock - Image Mode', () => {
 			}
 		});
 
-		const img = screen.getByRole('img');
+		const img = screen.getByAltText('Stock chart analysis');
 		expect(img).toBeInTheDocument();
 		expect(img).toHaveAttribute('src', 'https://example.com/chart.png');
 	});
@@ -225,8 +228,8 @@ describe('ChartBlock - Image Mode', () => {
 			}
 		});
 
-		const img = screen.getByRole('img');
-		expect(img).toHaveAttribute('alt', 'Stock chart analysis');
+		const img = screen.getByAltText('Stock chart analysis');
+		expect(img).toBeInTheDocument();
 	});
 
 	it('should show caption when provided', () => {
@@ -501,7 +504,7 @@ describe('ChartBlock - Symbol Validation', () => {
 
 	it('should show placeholder for invalid symbol', () => {
 		const block = createMockBlock({
-			content: { chartSymbol: '' }
+			content: { chartSymbol: '!!!invalid!!!' }
 		});
 
 		render(ChartBlock, {

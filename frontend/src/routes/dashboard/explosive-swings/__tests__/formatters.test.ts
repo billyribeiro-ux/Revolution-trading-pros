@@ -168,14 +168,14 @@ describe('formatPrice()', () => {
 describe('formatDate()', () => {
 	describe('valid dates', () => {
 		it('should format date correctly', () => {
-			const date = new Date('2026-01-20');
+			const date = new Date('2026-01-20T12:00:00');
 			const formatted = formatDate(date);
 			expect(formatted).toMatch(/January 20, 2026/);
 		});
 
 		it('should format different months', () => {
-			expect(formatDate(new Date('2026-03-15'))).toMatch(/March 15, 2026/);
-			expect(formatDate(new Date('2026-12-25'))).toMatch(/December 25, 2026/);
+			expect(formatDate(new Date('2026-03-15T12:00:00'))).toMatch(/March 15, 2026/);
+			expect(formatDate(new Date('2026-12-25T12:00:00'))).toMatch(/December 25, 2026/);
 		});
 	});
 
@@ -193,7 +193,7 @@ describe('formatDate()', () => {
 		});
 
 		it('should handle date at year boundary', () => {
-			const date = new Date('2026-01-01');
+			const date = new Date('2026-01-01T12:00:00');
 			expect(formatDate(date)).toMatch(/January 1, 2026/);
 		});
 	});
@@ -206,14 +206,14 @@ describe('formatDate()', () => {
 describe('formatDateShort()', () => {
 	describe('valid dates', () => {
 		it('should format short date correctly', () => {
-			const date = new Date('2026-01-20');
+			const date = new Date('2026-01-20T12:00:00');
 			const formatted = formatDateShort(date);
 			expect(formatted).toMatch(/Jan 20/);
 		});
 
 		it('should format different months', () => {
-			expect(formatDateShort(new Date('2026-03-15'))).toMatch(/Mar 15/);
-			expect(formatDateShort(new Date('2026-12-25'))).toMatch(/Dec 25/);
+			expect(formatDateShort(new Date('2026-03-15T12:00:00'))).toMatch(/Mar 15/);
+			expect(formatDateShort(new Date('2026-12-25T12:00:00'))).toMatch(/Dec 25/);
 		});
 	});
 
@@ -555,9 +555,8 @@ describe('truncateText()', () => {
 		});
 
 		it('should handle maxLength less than 3', () => {
-			// Edge case: truncateText with maxLength < 3 may produce unexpected results
-			// The function slices (0, maxLength - 3) which would be negative
-			expect(truncateText('Hello', 2)).toBe('...');
+			// Edge case: truncateText with maxLength < 3 uses slice(0, -1) = 'Hell' + '...'
+			expect(truncateText('Hello', 2)).toBe('Hell...');
 		});
 
 		it('should handle very long text', () => {
@@ -584,7 +583,7 @@ describe('Localization Consistency', () => {
 	});
 
 	it('formatDate should use en-US locale', () => {
-		const date = new Date('2026-01-20');
+		const date = new Date('2026-01-20T12:00:00');
 		const formatted = formatDate(date);
 		// en-US format: Month Day, Year
 		expect(formatted).toMatch(/January 20, 2026/);

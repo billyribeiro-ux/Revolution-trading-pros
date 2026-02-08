@@ -274,7 +274,8 @@ describe('RiskDisclaimerBlock - Expandable Content', () => {
 	it('should not show expand button when no expanded text', () => {
 		const block = createMockBlock({
 			content: {
-				disclaimerExpandedText: ''
+				disclaimerExpandedText: '',
+				disclaimerPreset: 'custom'
 			}
 		});
 

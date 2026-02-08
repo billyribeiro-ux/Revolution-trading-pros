@@ -8,19 +8,19 @@ afterEach(() => {
 	cleanup();
 });
 
-// Mock window.matchMedia
+// Mock window.matchMedia (use plain function, not vi.fn(), so mockReset doesn't strip it)
 Object.defineProperty(window, 'matchMedia', {
 	writable: true,
-	value: vi.fn().mockImplementation((query) => ({
+	value: (query: string) => ({
 		matches: false,
 		media: query,
 		onchange: null,
-		addListener: vi.fn(),
-		removeListener: vi.fn(),
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn(),
-		dispatchEvent: vi.fn()
-	}))
+		addListener: () => {},
+		removeListener: () => {},
+		addEventListener: () => {},
+		removeEventListener: () => {},
+		dispatchEvent: () => false
+	})
 });
 
 // Mock IntersectionObserver
@@ -67,6 +67,35 @@ if (!global.crypto) {
 			}
 			return arr;
 		}
+	} as any;
+}
+
+// Mock HTMLCanvasElement.toDataURL (returns null in JSDOM, breaks image format detection)
+HTMLCanvasElement.prototype.toDataURL = function (type?: string) {
+	return `data:${type || 'image/png'};base64,`;
+};
+
+// Polyfill DataTransfer (not available in JSDOM)
+if (typeof globalThis.DataTransfer === 'undefined') {
+	globalThis.DataTransfer = class DataTransfer {
+		private data: Map<string, string> = new Map();
+		items: any[] = [];
+		files: any[] = [];
+		types: string[] = [];
+		dropEffect = 'none';
+		effectAllowed = 'all';
+		setData(format: string, data: string) {
+			this.data.set(format, data);
+			if (!this.types.includes(format)) this.types.push(format);
+		}
+		getData(format: string) {
+			return this.data.get(format) || '';
+		}
+		clearData() {
+			this.data.clear();
+			this.types = [];
+		}
+		setDragImage() {}
 	} as any;
 }
 

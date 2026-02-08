@@ -135,6 +135,66 @@ export function mockFetchNetworkError(message = 'Network error') {
 // ===============================================================================
 
 /**
+ * Mock API client - bypass retries, circuit breakers, and timeouts
+ */
+vi.mock('$lib/api/client', () => {
+	const mockApiGet = vi.fn();
+	const mockApiPost = vi.fn();
+	const mockApiPut = vi.fn();
+	const mockApiPatch = vi.fn();
+	const mockApiDelete = vi.fn();
+	return {
+		api: {
+			get: mockApiGet,
+			post: mockApiPost,
+			put: mockApiPut,
+			patch: mockApiPatch,
+			delete: mockApiDelete,
+			request: vi.fn(),
+			invalidateCache: vi.fn(),
+			clearCache: vi.fn()
+		},
+		getApiClient: vi.fn(() => ({
+			get: mockApiGet,
+			post: mockApiPost,
+			put: mockApiPut,
+			patch: mockApiPatch,
+			delete: mockApiDelete,
+			request: vi.fn(),
+			invalidateCache: vi.fn(),
+			clearCache: vi.fn()
+		})),
+		createApiClient: vi.fn(),
+		apiClient: null,
+		ApiClient: vi.fn()
+	};
+});
+
+vi.mock('$lib/api/errors', () => ({
+	ApiError: class ApiError extends Error {
+		status: number;
+		code: string;
+		constructor(message: string, status = 500, code = 'UNKNOWN') {
+			super(message);
+			this.name = 'ApiError';
+			this.status = status;
+			this.code = code;
+		}
+	},
+	isApiError: (err: unknown) => err instanceof Error && err.name === 'ApiError',
+	getUserFriendlyMessage: (err: unknown) => err instanceof Error ? err.message : 'An error occurred'
+}));
+
+vi.mock('$lib/api/cache', () => ({
+	getCache: vi.fn(() => ({
+		get: vi.fn(),
+		set: vi.fn(),
+		invalidate: vi.fn(),
+		clear: vi.fn()
+	}))
+}));
+
+/**
  * Mock SvelteKit navigation functions
  */
 vi.mock('$app/navigation', () => ({

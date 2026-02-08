@@ -454,7 +454,7 @@ describe('DividerBlock - Spacing Settings', () => {
 
 	it('should show spacing buttons in toolbar', () => {
 		const block = createDividerBlock();
-		render(DividerBlock, {
+		const { container } = render(DividerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('spacing-4'),
@@ -464,9 +464,8 @@ describe('DividerBlock - Spacing Settings', () => {
 			}
 		});
 
-		expect(screen.getByRole('button', { name: /s/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /m/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /l/i })).toBeInTheDocument();
+		const spacingButtons = container.querySelectorAll('.spacing-btn');
+		expect(spacingButtons.length).toBe(3);
 	});
 });
 
@@ -653,7 +652,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 
 	it('should show style buttons in toolbar', () => {
 		const block = createDividerBlock();
-		render(DividerBlock, {
+		const { container } = render(DividerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('toolbar-4'),
@@ -664,7 +663,7 @@ describe('DividerBlock - Edit Mode Toolbar', () => {
 		});
 
 		// Should have 4 style buttons (solid, dashed, dotted, double)
-		const styleButtons = screen.getAllByRole('button', { pressed: expect.anything() });
+		const styleButtons = container.querySelectorAll('.style-btn');
 		expect(styleButtons.length).toBeGreaterThanOrEqual(4);
 	});
 

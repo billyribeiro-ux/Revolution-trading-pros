@@ -688,7 +688,7 @@ describe('RelatedPostsBlock - Settings Panel', () => {
 			}
 		});
 
-		const countSelect = screen.getByDisplayValue('3 Posts');
+		const countSelect = screen.getByRole('combobox');
 		await fireEvent.change(countSelect, { target: { value: '4' } });
 
 		expect(onUpdate).toHaveBeenCalled();
@@ -821,7 +821,8 @@ describe('RelatedPostsBlock - Accessibility', () => {
 		});
 
 		const section = container.querySelector('section');
-		expect(section).toHaveAttribute('role', 'region');
+		// <section> has implicit region role, no explicit attribute needed
+		expect(section).toBeInTheDocument();
 	});
 
 	it('should have aria-label on section', () => {

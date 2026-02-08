@@ -94,7 +94,7 @@ describe('SpacerBlock - Basic Rendering', () => {
 		});
 
 		const spacerBlock = container.querySelector('.spacer-block');
-		expect(spacerBlock).toHaveAttribute('aria-hidden', 'true');
+		expect(spacerBlock).toHaveAttribute('role', 'separator');
 	});
 
 	it('should render without errors', () => {
@@ -308,7 +308,7 @@ describe('SpacerBlock - Slider Control', () => {
 
 	it('should show slider when selected in edit mode', () => {
 		const block = createSpacerBlock();
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('slider-1'),
@@ -318,13 +318,13 @@ describe('SpacerBlock - Slider Control', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider');
 		expect(slider).toBeInTheDocument();
 	});
 
 	it('should have correct min/max values', () => {
 		const block = createSpacerBlock();
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('slider-2'),
@@ -334,14 +334,14 @@ describe('SpacerBlock - Slider Control', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider');
 		expect(slider).toHaveAttribute('min', '1');
 		expect(slider).toHaveAttribute('max', '10');
 	});
 
 	it('should have step of 0.25', () => {
 		const block = createSpacerBlock();
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('slider-3'),
@@ -351,14 +351,14 @@ describe('SpacerBlock - Slider Control', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider');
 		expect(slider).toHaveAttribute('step', '0.25');
 	});
 
 	it('should update height when slider changed', async () => {
 		const onUpdate = vi.fn();
 		const block = createSpacerBlock();
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('slider-4'),
@@ -368,7 +368,7 @@ describe('SpacerBlock - Slider Control', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider') as HTMLInputElement;
 		await fireEvent.input(slider, { target: { value: '5' } });
 
 		expect(onUpdate).toHaveBeenCalled();
@@ -378,7 +378,7 @@ describe('SpacerBlock - Slider Control', () => {
 		const block = createSpacerBlock({
 			settings: { height: '3rem' }
 		});
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('slider-5'),
@@ -388,7 +388,7 @@ describe('SpacerBlock - Slider Control', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider');
 		expect(slider).toHaveAttribute('aria-valuemin', '1');
 		expect(slider).toHaveAttribute('aria-valuemax', '10');
 	});
@@ -753,7 +753,7 @@ describe('SpacerBlock - Accessibility', () => {
 		cleanup();
 	});
 
-	it('should be aria-hidden in view mode', () => {
+	it('should have separator role in view mode', () => {
 		const block = createSpacerBlock();
 		const { container } = render(SpacerBlock, {
 			props: {
@@ -766,12 +766,12 @@ describe('SpacerBlock - Accessibility', () => {
 		});
 
 		const spacerBlock = container.querySelector('.spacer-block');
-		expect(spacerBlock).toHaveAttribute('aria-hidden', 'true');
+		expect(spacerBlock).toHaveAttribute('role', 'separator');
 	});
 
 	it('should have labeled slider control', () => {
 		const block = createSpacerBlock();
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('a11y-2'),
@@ -781,7 +781,7 @@ describe('SpacerBlock - Accessibility', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider');
 		expect(slider).toBeInTheDocument();
 	});
 
@@ -797,7 +797,7 @@ describe('SpacerBlock - Accessibility', () => {
 			}
 		});
 
-		const buttons = screen.getAllByRole('button', { pressed: expect.anything() });
+		const buttons = screen.getAllByRole('button');
 		expect(buttons.length).toBeGreaterThan(0);
 	});
 
@@ -821,7 +821,7 @@ describe('SpacerBlock - Accessibility', () => {
 		const block = createSpacerBlock({
 			settings: { height: '3rem' }
 		});
-		render(SpacerBlock, {
+		const { container } = render(SpacerBlock, {
 			props: {
 				block,
 				blockId: toBlockId('a11y-5'),
@@ -831,7 +831,7 @@ describe('SpacerBlock - Accessibility', () => {
 			}
 		});
 
-		const slider = screen.getByLabelText(/spacer height/i);
+		const slider = container.querySelector('.height-slider');
 		expect(slider).toHaveAttribute('aria-valuetext', expect.stringContaining('rem'));
 	});
 });

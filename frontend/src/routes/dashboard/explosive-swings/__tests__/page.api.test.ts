@@ -3,14 +3,14 @@
  * Explosive Swings - Page API Unit Tests
  * ===============================================================================
  *
- * @description Comprehensive tests for API functions
- * @version 1.0.0
+ * @description Comprehensive tests for API functions using mocked api client
+ * @version 2.0.0
  * @standards Apple Principal Engineer ICT 7+ | Vitest January 2026 Patterns
  *
  * Tests cover:
- * - fetchAlerts() with mocked responses
- * - fetchTradePlan() with pagination
- * - fetchStats()
+ * - fetchAlerts() with mocked api.get responses
+ * - fetchTradePlan() with data transformation
+ * - fetchStats() with snake_case to camelCase
  * - fetchAllTrades()
  * - fetchWeeklyVideo()
  * - checkAdminStatus()
@@ -19,17 +19,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-	setupTestEnvironment,
-	mockFetch,
-	mockFetchSuccess,
-	mockFetchError,
-	mockFetchNetworkError,
-	resetAllMocks
-} from './setup';
+import { setupTestEnvironment, resetAllMocks } from './setup';
 
-// Setup test environment
+// Setup test environment (registers vi.mock for $lib/api/client etc.)
 setupTestEnvironment();
+
+// Import the mocked api module
+import { api } from '$lib/api/client';
 
 // Import after setup to ensure mocks are in place
 import {
@@ -40,6 +36,9 @@ import {
 	fetchWeeklyVideo,
 	checkAdminStatus
 } from '../page.api';
+
+// Typed reference to the mocked api methods
+const mockApiGet = api.get as ReturnType<typeof vi.fn>;
 
 // ===============================================================================
 // TEST SUITE: fetchAlerts
@@ -56,8 +55,7 @@ describe('fetchAlerts()', () => {
 
 	describe('successful requests', () => {
 		it('should fetch alerts with correct URL parameters', async () => {
-			const mockData = {
-				success: true,
+			mockApiGet.mockResolvedValueOnce({
 				data: [
 					{
 						id: 1,
@@ -72,54 +70,49 @@ describe('fetchAlerts()', () => {
 					}
 				],
 				total: 1
-			};
-
-			mockFetchSuccess(mockData);
+			});
 
 			const result = await fetchAlerts('explosive-swings', 1, 10);
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				'/api/alerts/explosive-swings?limit=10&offset=0',
-				expect.objectContaining({ credentials: 'include' })
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/alerts/explosive-swings',
+				expect.objectContaining({
+					params: { limit: 10, offset: 0 }
+				})
 			);
-
 			expect(result.alerts).toHaveLength(1);
 			expect(result.pagination.total).toBe(1);
 		});
 
 		it('should calculate correct offset for page 2', async () => {
-			const mockData = {
-				success: true,
-				data: [],
-				total: 0
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce({ data: [], total: 0 });
 
 			await fetchAlerts('explosive-swings', 2, 10);
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				'/api/alerts/explosive-swings?limit=10&offset=10',
-				expect.any(Object)
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/alerts/explosive-swings',
+				expect.objectContaining({
+					params: { limit: 10, offset: 10 }
+				})
 			);
 		});
 
 		it('should calculate correct offset for page 3 with custom limit', async () => {
-			const mockData = { success: true, data: [], total: 0 };
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce({ data: [], total: 0 });
 
 			await fetchAlerts('explosive-swings', 3, 15);
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				'/api/alerts/explosive-swings?limit=15&offset=30',
-				expect.any(Object)
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/alerts/explosive-swings',
+				expect.objectContaining({
+					params: { limit: 15, offset: 30 }
+				})
 			);
 		});
 
 		it('should transform API response to FormattedAlert type', async () => {
 			const publishedAt = new Date('2026-01-20T14:30:00Z').toISOString();
-			const mockData = {
-				success: true,
+			mockApiGet.mockResolvedValueOnce({
 				data: [
 					{
 						id: 123,
@@ -134,9 +127,7 @@ describe('fetchAlerts()', () => {
 					}
 				],
 				total: 1
-			};
-
-			mockFetchSuccess(mockData);
+			});
 
 			const result = await fetchAlerts('explosive-swings', 1, 10);
 
@@ -150,13 +141,11 @@ describe('fetchAlerts()', () => {
 				notes: 'Strong breakout',
 				tosString: 'TOS:NVDA'
 			});
-			// time is formatted as relative time
 			expect(result.alerts[0].time).toBeDefined();
 		});
 
 		it('should handle alerts without optional fields', async () => {
-			const mockData = {
-				success: true,
+			mockApiGet.mockResolvedValueOnce({
 				data: [
 					{
 						id: 1,
@@ -171,9 +160,7 @@ describe('fetchAlerts()', () => {
 					}
 				],
 				total: 1
-			};
-
-			mockFetchSuccess(mockData);
+			});
 
 			const result = await fetchAlerts('explosive-swings', 1, 10);
 
@@ -182,8 +169,7 @@ describe('fetchAlerts()', () => {
 		});
 
 		it('should return correct pagination state', async () => {
-			const mockData = {
-				success: true,
+			mockApiGet.mockResolvedValueOnce({
 				data: Array(10).fill({
 					id: 1,
 					alert_type: 'ENTRY',
@@ -196,9 +182,7 @@ describe('fetchAlerts()', () => {
 					tos_string: null
 				}),
 				total: 45
-			};
-
-			mockFetchSuccess(mockData);
+			});
 
 			const result = await fetchAlerts('explosive-swings', 2, 10);
 
@@ -211,30 +195,14 @@ describe('fetchAlerts()', () => {
 	});
 
 	describe('error handling', () => {
-		it('should throw error on HTTP error response', async () => {
-			mockFetchError(500, 'Internal Server Error');
+		it('should propagate api.get errors', async () => {
+			mockApiGet.mockRejectedValueOnce(new Error('API request failed'));
 
-			await expect(fetchAlerts('explosive-swings', 1, 10)).rejects.toThrow(
-				'HTTP 500: Failed to fetch alerts'
-			);
-		});
-
-		it('should throw error when success is false', async () => {
-			mockFetchSuccess({ success: false, error: 'Room not found' });
-
-			await expect(fetchAlerts('invalid-room', 1, 10)).rejects.toThrow('Room not found');
-		});
-
-		it('should throw default error message when no error provided', async () => {
-			mockFetchSuccess({ success: false });
-
-			await expect(fetchAlerts('explosive-swings', 1, 10)).rejects.toThrow(
-				'Failed to fetch alerts'
-			);
+			await expect(fetchAlerts('explosive-swings', 1, 10)).rejects.toThrow('API request failed');
 		});
 
 		it('should handle network errors', async () => {
-			mockFetchNetworkError('Connection refused');
+			mockApiGet.mockRejectedValueOnce(new Error('Connection refused'));
 
 			await expect(fetchAlerts('explosive-swings', 1, 10)).rejects.toThrow('Connection refused');
 		});
@@ -252,55 +220,46 @@ describe('fetchTradePlan()', () => {
 
 	describe('successful requests', () => {
 		it('should fetch trade plan with correct URL', async () => {
-			const mockData = {
-				success: true,
-				data: [
-					{
-						ticker: 'NVDA',
-						bias: 'BULLISH',
-						entry: '$142.50',
-						target1: '$148.00',
-						target2: '$152.00',
-						target3: '$158.00',
-						runner: '$165.00+',
-						stop: '$136.00',
-						options_strike: '$145 Call',
-						options_exp: 'Jan 24, 2026',
-						notes: 'Breakout setup'
-					}
-				]
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce([
+				{
+					ticker: 'NVDA',
+					bias: 'BULLISH',
+					entry: '$142.50',
+					target1: '$148.00',
+					target2: '$152.00',
+					target3: '$158.00',
+					runner: '$165.00+',
+					stop: '$136.00',
+					options_strike: '$145 Call',
+					options_exp: 'Jan 24, 2026',
+					notes: 'Breakout setup'
+				}
+			]);
 
 			await fetchTradePlan('explosive-swings');
 
-			expect(mockFetch).toHaveBeenCalledWith('/api/trade-plans/explosive-swings', {
-				credentials: 'include'
-			});
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/trade-plans/explosive-swings',
+				expect.any(Object)
+			);
 		});
 
 		it('should transform API response to TradePlanEntry type', async () => {
-			const mockData = {
-				success: true,
-				data: [
-					{
-						ticker: 'NVDA',
-						bias: 'BULLISH',
-						entry: '$142.50',
-						target1: '$148.00',
-						target2: '$152.00',
-						target3: '$158.00',
-						runner: '$165.00+',
-						stop: '$136.00',
-						options_strike: '$145 Call',
-						options_exp: 'Jan 24, 2026',
-						notes: 'Strong momentum'
-					}
-				]
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce([
+				{
+					ticker: 'NVDA',
+					bias: 'BULLISH',
+					entry: '$142.50',
+					target1: '$148.00',
+					target2: '$152.00',
+					target3: '$158.00',
+					runner: '$165.00+',
+					stop: '$136.00',
+					options_strike: '$145 Call',
+					options_exp: 'Jan 24, 2026',
+					notes: 'Strong momentum'
+				}
+			]);
 
 			const result = await fetchTradePlan('explosive-swings');
 
@@ -320,26 +279,21 @@ describe('fetchTradePlan()', () => {
 		});
 
 		it('should handle empty notes', async () => {
-			const mockData = {
-				success: true,
-				data: [
-					{
-						ticker: 'TSLA',
-						bias: 'BEARISH',
-						entry: '$248.00',
-						target1: '$240.00',
-						target2: '$235.00',
-						target3: '$230.00',
-						runner: '$220.00',
-						stop: '$255.00',
-						options_strike: null,
-						options_exp: null,
-						notes: null
-					}
-				]
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce([
+				{
+					ticker: 'TSLA',
+					bias: 'BEARISH',
+					entry: '$248.00',
+					target1: '$240.00',
+					target2: '$235.00',
+					target3: '$230.00',
+					runner: '$220.00',
+					stop: '$255.00',
+					options_strike: null,
+					options_exp: null,
+					notes: null
+				}
+			]);
 
 			const result = await fetchTradePlan('explosive-swings');
 
@@ -350,18 +304,10 @@ describe('fetchTradePlan()', () => {
 	});
 
 	describe('error handling', () => {
-		it('should throw error on HTTP error', async () => {
-			mockFetchError(401, 'Unauthorized');
+		it('should propagate api.get errors', async () => {
+			mockApiGet.mockRejectedValueOnce(new Error('Unauthorized'));
 
-			await expect(fetchTradePlan('explosive-swings')).rejects.toThrow(
-				'HTTP 401: Failed to fetch trade plan'
-			);
-		});
-
-		it('should throw error when success is false', async () => {
-			mockFetchSuccess({ success: false, error: 'Access denied' });
-
-			await expect(fetchTradePlan('explosive-swings')).rejects.toThrow('Access denied');
+			await expect(fetchTradePlan('explosive-swings')).rejects.toThrow('Unauthorized');
 		});
 	});
 });
@@ -377,37 +323,28 @@ describe('fetchStats()', () => {
 
 	describe('successful requests', () => {
 		it('should fetch stats with correct URL', async () => {
-			const mockData = {
-				success: true,
-				data: {
-					win_rate: 82,
-					weekly_profit: '+$4,850',
-					active_trades: 4,
-					closed_this_week: 3
-				}
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce({
+				win_rate: 82,
+				weekly_profit: '+$4,850',
+				active_trades: 4,
+				closed_this_week: 3
+			});
 
 			await fetchStats('explosive-swings');
 
-			expect(mockFetch).toHaveBeenCalledWith('/api/stats/explosive-swings', {
-				credentials: 'include'
-			});
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/stats/explosive-swings',
+				expect.any(Object)
+			);
 		});
 
 		it('should transform snake_case to camelCase', async () => {
-			const mockData = {
-				success: true,
-				data: {
-					win_rate: 85,
-					weekly_profit: '+$5,200',
-					active_trades: 5,
-					closed_this_week: 2
-				}
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce({
+				win_rate: 85,
+				weekly_profit: '+$5,200',
+				active_trades: 5,
+				closed_this_week: 2
+			});
 
 			const result = await fetchStats('explosive-swings');
 
@@ -421,18 +358,10 @@ describe('fetchStats()', () => {
 	});
 
 	describe('error handling', () => {
-		it('should throw error on HTTP error', async () => {
-			mockFetchError(500, 'Database error');
+		it('should propagate api.get errors', async () => {
+			mockApiGet.mockRejectedValueOnce(new Error('Database error'));
 
-			await expect(fetchStats('explosive-swings')).rejects.toThrow(
-				'HTTP 500: Failed to fetch stats'
-			);
-		});
-
-		it('should throw error when success is false', async () => {
-			mockFetchSuccess({ success: false, error: 'Stats unavailable' });
-
-			await expect(fetchStats('explosive-swings')).rejects.toThrow('Stats unavailable');
+			await expect(fetchStats('explosive-swings')).rejects.toThrow('Database error');
 		});
 	});
 });
@@ -448,62 +377,56 @@ describe('fetchAllTrades()', () => {
 
 	describe('successful requests', () => {
 		it('should fetch trades with per_page parameter', async () => {
-			const mockData = {
-				success: true,
-				data: [
-					{
-						id: 1,
-						ticker: 'NVDA',
-						status: 'open',
-						entry_price: 142.5,
-						exit_price: null,
-						pnl_percent: null,
-						entry_date: '2026-01-20T10:00:00Z',
-						exit_date: null,
-						direction: 'long'
-					}
-				]
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce([
+				{
+					id: 1,
+					ticker: 'NVDA',
+					status: 'open',
+					entry_price: 142.5,
+					exit_price: null,
+					pnl_percent: null,
+					entry_date: '2026-01-20T10:00:00Z',
+					exit_date: null,
+					direction: 'long'
+				}
+			]);
 
 			await fetchAllTrades('explosive-swings');
 
-			expect(mockFetch).toHaveBeenCalledWith('/api/trades/explosive-swings?per_page=100', {
-				credentials: 'include'
-			});
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/trades/explosive-swings',
+				expect.objectContaining({
+					params: { per_page: 100 }
+				})
+			);
 		});
 
 		it('should return trades array directly', async () => {
-			const mockData = {
-				success: true,
-				data: [
-					{
-						id: 1,
-						ticker: 'NVDA',
-						status: 'open',
-						entry_price: 142.5,
-						exit_price: null,
-						pnl_percent: null,
-						entry_date: '2026-01-20T10:00:00Z',
-						exit_date: null,
-						direction: 'long'
-					},
-					{
-						id: 2,
-						ticker: 'MSFT',
-						status: 'closed',
-						entry_price: 425.0,
-						exit_price: 460.0,
-						pnl_percent: 8.2,
-						entry_date: '2026-01-15T10:00:00Z',
-						exit_date: '2026-01-20T15:00:00Z',
-						direction: 'long'
-					}
-				]
-			};
-
-			mockFetchSuccess(mockData);
+			const trades = [
+				{
+					id: 1,
+					ticker: 'NVDA',
+					status: 'open',
+					entry_price: 142.5,
+					exit_price: null,
+					pnl_percent: null,
+					entry_date: '2026-01-20T10:00:00Z',
+					exit_date: null,
+					direction: 'long'
+				},
+				{
+					id: 2,
+					ticker: 'MSFT',
+					status: 'closed',
+					entry_price: 425.0,
+					exit_price: 460.0,
+					pnl_percent: 8.2,
+					entry_date: '2026-01-15T10:00:00Z',
+					exit_date: '2026-01-20T15:00:00Z',
+					direction: 'long'
+				}
+			];
+			mockApiGet.mockResolvedValueOnce(trades);
 
 			const result = await fetchAllTrades('explosive-swings');
 
@@ -513,12 +436,7 @@ describe('fetchAllTrades()', () => {
 		});
 
 		it('should handle empty trades array', async () => {
-			const mockData = {
-				success: true,
-				data: []
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce([]);
 
 			const result = await fetchAllTrades('explosive-swings');
 
@@ -527,18 +445,10 @@ describe('fetchAllTrades()', () => {
 	});
 
 	describe('error handling', () => {
-		it('should throw error on HTTP error', async () => {
-			mockFetchError(403, 'Forbidden');
+		it('should propagate api.get errors', async () => {
+			mockApiGet.mockRejectedValueOnce(new Error('Forbidden'));
 
-			await expect(fetchAllTrades('explosive-swings')).rejects.toThrow(
-				'HTTP 403: Failed to fetch trades'
-			);
-		});
-
-		it('should throw error when success is false', async () => {
-			mockFetchSuccess({ success: false, error: 'Invalid room' });
-
-			await expect(fetchAllTrades('explosive-swings')).rejects.toThrow('Invalid room');
+			await expect(fetchAllTrades('explosive-swings')).rejects.toThrow('Forbidden');
 		});
 	});
 });
@@ -554,43 +464,35 @@ describe('fetchWeeklyVideo()', () => {
 
 	describe('successful requests', () => {
 		it('should fetch weekly video with correct URL', async () => {
-			const mockData = {
-				success: true,
-				data: {
-					id: 1,
-					video_title: 'Weekly Breakdown',
-					video_url: 'https://iframe.mediadelivery.net/embed/585929/video-id',
-					thumbnail_url: 'https://placehold.co/640x360',
-					duration: '24:35',
-					published_at: '2026-01-20T09:00:00Z',
-					week_title: 'Week of January 20, 2026'
-				}
-			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce({
+				id: 1,
+				video_title: 'Weekly Breakdown',
+				video_url: 'https://iframe.mediadelivery.net/embed/585929/video-id',
+				thumbnail_url: 'https://placehold.co/640x360',
+				duration: '24:35',
+				published_at: '2026-01-20T09:00:00Z',
+				week_title: 'Week of January 20, 2026'
+			});
 
 			await fetchWeeklyVideo('explosive-swings');
 
-			expect(mockFetch).toHaveBeenCalledWith('/api/weekly-video/explosive-swings', {
-				credentials: 'include'
-			});
+			expect(mockApiGet).toHaveBeenCalledWith(
+				'/api/weekly-video/explosive-swings',
+				expect.any(Object)
+			);
 		});
 
 		it('should return video data directly', async () => {
-			const mockData = {
-				success: true,
-				data: {
-					id: 1,
-					video_title: 'Weekly Breakdown',
-					video_url: 'https://iframe.mediadelivery.net/embed/585929/video-id',
-					thumbnail_url: 'https://placehold.co/640x360',
-					duration: '24:35',
-					published_at: '2026-01-20T09:00:00Z',
-					week_title: 'Week of January 20, 2026'
-				}
+			const videoData = {
+				id: 1,
+				video_title: 'Weekly Breakdown',
+				video_url: 'https://iframe.mediadelivery.net/embed/585929/video-id',
+				thumbnail_url: 'https://placehold.co/640x360',
+				duration: '24:35',
+				published_at: '2026-01-20T09:00:00Z',
+				week_title: 'Week of January 20, 2026'
 			};
-
-			mockFetchSuccess(mockData);
+			mockApiGet.mockResolvedValueOnce(videoData);
 
 			const result = await fetchWeeklyVideo('explosive-swings');
 
@@ -600,31 +502,24 @@ describe('fetchWeeklyVideo()', () => {
 				video_url: 'https://iframe.mediadelivery.net/embed/585929/video-id'
 			});
 		});
-
-		it('should return null when no video data', async () => {
-			mockFetchSuccess({ success: true, data: null });
-
-			const result = await fetchWeeklyVideo('explosive-swings');
-
-			expect(result).toBeNull();
-		});
-
-		it('should return null when success is false', async () => {
-			mockFetchSuccess({ success: false });
-
-			const result = await fetchWeeklyVideo('explosive-swings');
-
-			expect(result).toBeNull();
-		});
 	});
 
 	describe('error handling', () => {
-		it('should throw error on HTTP error', async () => {
-			mockFetchError(404, 'Video not found');
+		it('should return null on 404 error', async () => {
+			const error = new Error('Not found');
+			(error as any).name = 'ApiError';
+			(error as any).statusCode = 404;
+			mockApiGet.mockRejectedValueOnce(error);
 
-			await expect(fetchWeeklyVideo('explosive-swings')).rejects.toThrow(
-				'HTTP 404: Failed to fetch weekly video'
-			);
+			const result = await fetchWeeklyVideo('explosive-swings');
+
+			expect(result).toBeNull();
+		});
+
+		it('should propagate non-404 errors', async () => {
+			mockApiGet.mockRejectedValueOnce(new Error('Server error'));
+
+			await expect(fetchWeeklyVideo('explosive-swings')).rejects.toThrow('Server error');
 		});
 	});
 });
@@ -640,15 +535,15 @@ describe('checkAdminStatus()', () => {
 
 	describe('successful requests', () => {
 		it('should call correct endpoint', async () => {
-			mockFetchSuccess({ is_admin: false, role: 'user' });
+			mockApiGet.mockResolvedValueOnce({ is_admin: false, role: 'user' });
 
 			await checkAdminStatus();
 
-			expect(mockFetch).toHaveBeenCalledWith('/api/auth/me');
+			expect(mockApiGet).toHaveBeenCalledWith('/api/auth/me', expect.any(Object));
 		});
 
 		it('should return true for is_admin=true', async () => {
-			mockFetchSuccess({ is_admin: true, role: 'user' });
+			mockApiGet.mockResolvedValueOnce({ is_admin: true, role: 'user' });
 
 			const result = await checkAdminStatus();
 
@@ -656,7 +551,7 @@ describe('checkAdminStatus()', () => {
 		});
 
 		it('should return true for role=admin', async () => {
-			mockFetchSuccess({ is_admin: false, role: 'admin' });
+			mockApiGet.mockResolvedValueOnce({ is_admin: false, role: 'admin' });
 
 			const result = await checkAdminStatus();
 
@@ -664,7 +559,7 @@ describe('checkAdminStatus()', () => {
 		});
 
 		it('should return true for role=super_admin', async () => {
-			mockFetchSuccess({ is_admin: false, role: 'super_admin' });
+			mockApiGet.mockResolvedValueOnce({ is_admin: false, role: 'super_admin' });
 
 			const result = await checkAdminStatus();
 
@@ -672,7 +567,7 @@ describe('checkAdminStatus()', () => {
 		});
 
 		it('should return false for regular user', async () => {
-			mockFetchSuccess({ is_admin: false, role: 'user' });
+			mockApiGet.mockResolvedValueOnce({ is_admin: false, role: 'user' });
 
 			const result = await checkAdminStatus();
 
@@ -681,8 +576,8 @@ describe('checkAdminStatus()', () => {
 	});
 
 	describe('error handling', () => {
-		it('should return false on HTTP error', async () => {
-			mockFetchError(401, 'Unauthorized');
+		it('should return false on error', async () => {
+			mockApiGet.mockRejectedValueOnce(new Error('Unauthorized'));
 
 			const result = await checkAdminStatus();
 
@@ -690,9 +585,8 @@ describe('checkAdminStatus()', () => {
 		});
 
 		it('should return false on network error', async () => {
-			mockFetchNetworkError('Network error');
+			mockApiGet.mockRejectedValueOnce(new Error('Network error'));
 
-			// checkAdminStatus returns false on error, doesn't throw
 			const result = await checkAdminStatus();
 			expect(result).toBe(false);
 		});
@@ -710,8 +604,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 
 	it('should format recent time as minutes ago', async () => {
 		const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-		const mockData = {
-			success: true,
+		mockApiGet.mockResolvedValueOnce({
 			data: [
 				{
 					id: 1,
@@ -726,9 +619,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 				}
 			],
 			total: 1
-		};
-
-		mockFetchSuccess(mockData);
+		});
 
 		const result = await fetchAlerts('explosive-swings', 1, 10);
 
@@ -737,8 +628,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 
 	it('should format hours ago', async () => {
 		const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
-		const mockData = {
-			success: true,
+		mockApiGet.mockResolvedValueOnce({
 			data: [
 				{
 					id: 1,
@@ -753,9 +643,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 				}
 			],
 			total: 1
-		};
-
-		mockFetchSuccess(mockData);
+		});
 
 		const result = await fetchAlerts('explosive-swings', 1, 10);
 
@@ -764,8 +652,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 
 	it('should format yesterday', async () => {
 		const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000 - 1000).toISOString();
-		const mockData = {
-			success: true,
+		mockApiGet.mockResolvedValueOnce({
 			data: [
 				{
 					id: 1,
@@ -780,9 +667,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 				}
 			],
 			total: 1
-		};
-
-		mockFetchSuccess(mockData);
+		});
 
 		const result = await fetchAlerts('explosive-swings', 1, 10);
 
@@ -791,8 +676,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 
 	it('should format older dates with month and day', async () => {
 		const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-		const mockData = {
-			success: true,
+		mockApiGet.mockResolvedValueOnce({
 			data: [
 				{
 					id: 1,
@@ -807,9 +691,7 @@ describe('formatTimeAgo (internal function tested via fetchAlerts)', () => {
 				}
 			],
 			total: 1
-		};
-
-		mockFetchSuccess(mockData);
+		});
 
 		const result = await fetchAlerts('explosive-swings', 1, 10);
 
@@ -828,33 +710,20 @@ describe('Edge Cases', () => {
 	});
 
 	it('should handle very large page numbers', async () => {
-		const mockData = { success: true, data: [], total: 0 };
-		mockFetchSuccess(mockData);
+		mockApiGet.mockResolvedValueOnce({ data: [], total: 0 });
 
 		await fetchAlerts('explosive-swings', 1000, 10);
 
-		expect(mockFetch).toHaveBeenCalledWith(
-			'/api/alerts/explosive-swings?limit=10&offset=9990',
-			expect.any(Object)
-		);
-	});
-
-	it('should handle special characters in room slug', async () => {
-		const mockData = { success: true, data: [], total: 0 };
-		mockFetchSuccess(mockData);
-
-		// Room slugs should be URL-safe, but test the function handles them
-		await fetchAlerts('explosive-swings', 1, 10);
-
-		expect(mockFetch).toHaveBeenCalledWith(
-			'/api/alerts/explosive-swings?limit=10&offset=0',
-			expect.any(Object)
+		expect(mockApiGet).toHaveBeenCalledWith(
+			'/api/alerts/explosive-swings',
+			expect.objectContaining({
+				params: { limit: 10, offset: 9990 }
+			})
 		);
 	});
 
 	it('should handle API returning empty data array', async () => {
-		const mockData = { success: true, data: [] };
-		mockFetchSuccess(mockData);
+		mockApiGet.mockResolvedValueOnce([]);
 
 		const result = await fetchTradePlan('explosive-swings');
 
@@ -862,8 +731,7 @@ describe('Edge Cases', () => {
 	});
 
 	it('should handle malformed date strings gracefully', async () => {
-		const mockData = {
-			success: true,
+		mockApiGet.mockResolvedValueOnce({
 			data: [
 				{
 					id: 1,
@@ -878,9 +746,7 @@ describe('Edge Cases', () => {
 				}
 			],
 			total: 1
-		};
-
-		mockFetchSuccess(mockData);
+		});
 
 		// Should not throw, but time formatting may produce unexpected results
 		const result = await fetchAlerts('explosive-swings', 1, 10);

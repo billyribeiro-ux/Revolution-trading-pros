@@ -575,7 +575,7 @@ describe('createPageState()', () => {
 				state.openAlertModal(alert);
 
 				expect(state.isAlertModalOpen).toBe(true);
-				expect(state.editingAlert).toBe(alert);
+				expect(state.editingAlert).toEqual(alert);
 			});
 
 			it('should close alert modal and clear editing state', () => {
@@ -606,7 +606,7 @@ describe('createPageState()', () => {
 				state.openTradeEntryModal(entry);
 
 				expect(state.isTradeEntryModalOpen).toBe(true);
-				expect(state.editingTradeEntry).toBe(entry);
+				expect(state.editingTradeEntry).toEqual(entry);
 			});
 
 			it('should close and clear state', () => {
@@ -629,7 +629,7 @@ describe('createPageState()', () => {
 				state.openClosePositionModal(position as any);
 
 				expect(state.isClosePositionModalOpen).toBe(true);
-				expect(state.closingPosition).toBe(position);
+				expect(state.closingPosition).toEqual(position);
 			});
 
 			it('should close and clear state', () => {
@@ -676,7 +676,7 @@ describe('createPageState()', () => {
 				state.openUpdatePositionModal(position as any);
 
 				expect(state.isUpdatePositionModalOpen).toBe(true);
-				expect(state.updatingPosition).toBe(position);
+				expect(state.updatingPosition).toEqual(position);
 			});
 
 			it('should close and clear state', () => {
@@ -699,7 +699,7 @@ describe('createPageState()', () => {
 				state.openInvalidatePositionModal(position as any);
 
 				expect(state.isInvalidatePositionModalOpen).toBe(true);
-				expect(state.invalidatingPosition).toBe(position);
+				expect(state.invalidatingPosition).toEqual(position);
 			});
 
 			it('should close and clear state', () => {
@@ -809,8 +809,8 @@ describe('createPageState()', () => {
 			const state = createPageState();
 			const position = createMockActivePosition();
 
-			// Should not throw
-			await expect(state.deletePosition(position as any)).resolves.not.toThrow();
+			// deletePosition re-throws errors for UI to handle
+			await expect(state.deletePosition(position as any)).rejects.toThrow();
 		});
 	});
 
