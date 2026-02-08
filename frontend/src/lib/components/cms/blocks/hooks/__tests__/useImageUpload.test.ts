@@ -92,10 +92,14 @@ describe('useImageUpload', () => {
 		vi.clearAllMocks();
 		vi.useFakeTimers();
 
-		// Mock XMLHttpRequest
+		// Mock XMLHttpRequest with a proper class constructor
 		mockXHR = createMockXHR();
 		originalXHR = global.XMLHttpRequest;
-		global.XMLHttpRequest = vi.fn(() => mockXHR) as any;
+		global.XMLHttpRequest = class MockXMLHttpRequest {
+			constructor() {
+				return mockXHR as any;
+			}
+		} as any;
 	});
 
 	afterEach(() => {
@@ -341,7 +345,8 @@ describe('useImageUpload', () => {
 			const file = createMockFile('test.jpg', 'image/jpeg', 1000);
 			hook.upload(file);
 
-			await vi.advanceTimersByTimeAsync(10);
+			// Flush microtasks so upload reaches XHR stage (Image.onload + createThumbnail)
+			await vi.advanceTimersByTimeAsync(50);
 
 			if (progressHandler) {
 				progressHandler({ loaded: 500, total: 1000, lengthComputable: true } as ProgressEvent);
@@ -555,11 +560,14 @@ describe('useImageUpload', () => {
 			expect(hook.metadata).toBeNull();
 		});
 
-		it('cancels ongoing upload on reset()', () => {
+		it('cancels ongoing upload on reset()', async () => {
 			const hook = useImageUpload({ onSuccess: vi.fn() });
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
 			hook.upload(file);
+
+			// Flush microtasks so upload reaches XHR stage (Image.onload + createThumbnail)
+			await vi.advanceTimersByTimeAsync(50);
 
 			hook.reset();
 
@@ -578,7 +586,8 @@ describe('useImageUpload', () => {
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
 			hook.upload(file);
 
-			await vi.advanceTimersByTimeAsync(10);
+			// Flush microtasks so upload reaches XHR stage
+			await vi.advanceTimersByTimeAsync(50);
 
 			hook.cancel();
 
@@ -930,18 +939,36 @@ describe('Edge Cases', () => {
 	});
 
 	it('handles multiple upload calls', async () => {
-		const onSuccess = vi.fn();
-		const hook = useImageUpload({ onSuccess });
+		vi.useFakeTimers();
 
-		const file1 = createMockFile('file1.jpg', 'image/jpeg', 1024);
-		const file2 = createMockFile('file2.jpg', 'image/jpeg', 1024);
+		const mockXHR = createMockXHR();
+		const originalXHR = global.XMLHttpRequest;
+		global.XMLHttpRequest = class MockXMLHttpRequest {
+			constructor() {
+				return mockXHR as any;
+			}
+		} as any;
 
-		// Start first upload
-		hook.upload(file1);
+		try {
+			const onSuccess = vi.fn();
+			const hook = useImageUpload({ onSuccess });
 
-		await vi.advanceTimersByTimeAsync(10);
+			const file1 = createMockFile('file1.jpg', 'image/jpeg', 1024);
+			const file2 = createMockFile('file2.jpg', 'image/jpeg', 1024);
 
-		// Start second upload (should abort first)
-		hook.upload(file2);
+			// Start first upload
+			hook.upload(file1);
+
+			// Flush microtasks so first upload reaches XHR stage
+			await vi.advanceTimersByTimeAsync(50);
+
+			// Start second upload (should abort first)
+			hook.upload(file2);
+
+			await vi.advanceTimersByTimeAsync(50);
+		} finally {
+			global.XMLHttpRequest = originalXHR;
+			vi.useRealTimers();
+		}
 	});
 });

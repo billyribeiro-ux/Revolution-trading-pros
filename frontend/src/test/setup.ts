@@ -70,6 +70,17 @@ if (!global.crypto) {
 	} as any;
 }
 
+// Polyfill ClipboardEvent (not available in JSDOM)
+if (typeof globalThis.ClipboardEvent === 'undefined') {
+	globalThis.ClipboardEvent = class ClipboardEvent extends Event {
+		clipboardData: DataTransfer | null;
+		constructor(type: string, eventInitDict?: ClipboardEventInit) {
+			super(type, eventInitDict);
+			this.clipboardData = eventInitDict?.clipboardData ?? null;
+		}
+	} as any;
+}
+
 // Mock clipboard
 Object.assign(navigator, {
 	clipboard: {

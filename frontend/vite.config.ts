@@ -15,6 +15,11 @@ export default defineConfig({
     }),
     devtoolsJson()
   ],
+  resolve: {
+    // Force Svelte client bundle in tests (default resolves to server bundle
+    // which doesn't have mount/unmount needed by @testing-library/svelte)
+    conditions: ['browser']
+  },
   test: {
     globals: true,
     environment: 'jsdom',
