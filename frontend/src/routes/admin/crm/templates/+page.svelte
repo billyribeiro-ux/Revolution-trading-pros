@@ -740,6 +740,7 @@
 		<div
 			class="modal-content preview-modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="preview-title"

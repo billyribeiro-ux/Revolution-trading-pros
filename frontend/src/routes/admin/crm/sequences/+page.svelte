@@ -580,6 +580,7 @@
 	<div
 		class="modal-backdrop"
 		onclick={handleModalBackdropClick}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeSendEmailModal()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="modal-title"

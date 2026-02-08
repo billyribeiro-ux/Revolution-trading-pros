@@ -394,26 +394,41 @@
 			{/if}
 
 			<!-- Responsive Image -->
-			<img
-				src={sanitizedURL}
-				{srcset}
-				sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
-				alt={imageAlt}
-				loading="lazy"
-				decoding="async"
-				class="image-block__image"
-				class:image-block__image--loaded={imageLoaded}
-				class:image-block__image--error={imageError}
-				style="object-fit: {objectFit}"
-				role={props.isEditing ? undefined : 'button'}
-				tabindex={props.isEditing ? -1 : 0}
-				aria-label={props.isEditing ? undefined : `View ${imageAlt || 'image'} in lightbox`}
-				aria-describedby={caption ? captionId : undefined}
-				onclick={props.isEditing ? undefined : handleImageClick}
-				onkeydown={props.isEditing ? undefined : handleImageKeyDown}
-				onload={handleImageLoad}
-				onerror={handleImageError}
-			/>
+			{#if props.isEditing}
+				<img
+					src={sanitizedURL}
+					{srcset}
+					sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
+					alt={imageAlt}
+					loading="lazy"
+					decoding="async"
+					class="image-block__image"
+					class:image-block__image--loaded={imageLoaded}
+					class:image-block__image--error={imageError}
+					style="object-fit: {objectFit}"
+					aria-describedby={caption ? captionId : undefined}
+					onload={handleImageLoad}
+					onerror={handleImageError}
+				/>
+			{:else}
+				<button type="button" class="image-block__lightbox-btn" onclick={handleImageClick} onkeydown={handleImageKeyDown} aria-label={`View ${imageAlt || 'image'} in lightbox`}>
+					<img
+						src={sanitizedURL}
+						{srcset}
+						sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
+						alt={imageAlt}
+						loading="lazy"
+						decoding="async"
+						class="image-block__image"
+						class:image-block__image--loaded={imageLoaded}
+						class:image-block__image--error={imageError}
+						style="object-fit: {objectFit}"
+						aria-describedby={caption ? captionId : undefined}
+						onload={handleImageLoad}
+						onerror={handleImageError}
+					/>
+				</button>
+			{/if}
 		</div>
 
 		<!-- Alt Text Editor (Edit Mode & Selected) -->
@@ -617,6 +632,12 @@
 
 	.image-block__image--error {
 		opacity: 0;
+	}
+
+	.image-block__lightbox-btn {
+		all: unset;
+		display: contents;
+		cursor: zoom-in;
 	}
 
 	.image-block:not(.image-block--editing) .image-block__image {

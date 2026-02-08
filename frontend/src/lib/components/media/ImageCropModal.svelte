@@ -536,8 +536,8 @@
 					/>
 
 					<!-- Crop overlay -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div
+					<button
+						type="button"
 						class="crop-overlay"
 						style="
               left: {cropArea.x}px;
@@ -547,7 +547,6 @@
             "
 						onmousedown={handleMouseDown}
 						ontouchstart={handleMouseDown}
-						role="application"
 						aria-label="Crop area - drag to move or resize"
 					>
 						<!-- Grid lines -->
@@ -589,7 +588,7 @@
 						<div class="resize-handle resize-w" data-handle="w" onmousedown={handleMouseDown}></div>
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<div class="resize-handle resize-e" data-handle="e" onmousedown={handleMouseDown}></div>
-					</div>
+					</button>
 
 					<!-- Dark overlay outside crop area -->
 					<div class="dark-overlay"></div>
@@ -894,10 +893,13 @@
 	}
 
 	.crop-overlay {
+		all: unset;
 		position: absolute;
 		border: 2px solid white;
 		cursor: move;
 		box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+		display: block;
+		box-sizing: border-box;
 	}
 
 	.grid-line {

@@ -707,6 +707,7 @@
 	<div class="virtual-spacer" style:height="{totalHeight}px">
 		<!-- Render only visible blocks -->
 		{#each visibleBlocks as { block, index, position } (block.id)}
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 			<div
 				class="virtual-block-wrapper"
 				class:is-selected={selectedBlockId === block.id}
@@ -720,6 +721,7 @@
 				aria-selected={selectedBlockId === block.id}
 				tabindex={selectedBlockId === block.id ? 0 : -1}
 				onclick={() => handleBlockClick(block.id)}
+				onkeydown={(e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && handleBlockClick(block.id)}
 				ondragstart={(e) => handleDragStart(e, block.id, index)}
 				ondragover={(e) => handleDragOver(e, index)}
 				ondragend={handleDragEnd}

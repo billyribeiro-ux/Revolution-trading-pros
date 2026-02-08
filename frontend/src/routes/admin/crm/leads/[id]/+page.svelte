@@ -763,6 +763,7 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showAddNoteModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddNoteModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -815,6 +816,7 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showConvertModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showConvertModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -861,6 +863,7 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showDeleteModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeleteModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"

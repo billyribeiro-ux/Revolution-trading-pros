@@ -1047,16 +1047,25 @@
 {#if showCreateModal || showEditModal}
 	<div
 		class="modal-overlay"
-		onclick={() => {
-			showCreateModal = false;
-			showEditModal = false;
-			editingResource = null;
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) {
+				showCreateModal = false;
+				showEditModal = false;
+				editingResource = null;
+			}
+		}}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				showCreateModal = false;
+				showEditModal = false;
+				editingResource = null;
+			}
 		}}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} role="document">
+		<div class="modal modal-large" role="document">
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Resource' : 'Add New Resource'}</h2>
 				<button
@@ -1283,16 +1292,25 @@
 {#if showReplaceModal && replacingResource}
 	<div
 		class="modal-overlay"
-		onclick={() => {
-			showReplaceModal = false;
-			replacingResource = null;
-			newFileUrl = '';
+		onclick={(e: MouseEvent) => {
+			if (e.target === e.currentTarget) {
+				showReplaceModal = false;
+				replacingResource = null;
+				newFileUrl = '';
+			}
+		}}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				showReplaceModal = false;
+				replacingResource = null;
+				newFileUrl = '';
+			}
 		}}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h2>Replace Resource</h2>
 				<button
@@ -1350,6 +1368,7 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showBulkModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showBulkModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"

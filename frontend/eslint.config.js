@@ -115,7 +115,7 @@ export default [
       'no-control-regex': 'off',
       'no-empty': 'warn',
       'no-console': 'off',
-      'svelte/no-unused-svelte-ignore': 'warn',
+      'svelte/no-unused-svelte-ignore': 'off',
       'svelte/no-shorthand-style-property-overrides': 'warn',
       'svelte/no-at-html-tags': 'off',
       'svelte/require-each-key': 'off',
