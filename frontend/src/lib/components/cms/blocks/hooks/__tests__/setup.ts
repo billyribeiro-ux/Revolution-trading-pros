@@ -5,11 +5,23 @@
  *
  * This setup file handles the mocking of Svelte 5 reactive primitives ($state, $derived, $effect)
  * which cannot be used outside Svelte component context.
+ *
+ * IMPORTANT: The Svelte compiler transforms .svelte.ts runes into internal runtime calls:
+ *   $state(v)    → state(v)        from 'svelte/internal/client'
+ *   $derived(v)  → user_derived(v) from 'svelte/internal/client'
+ *   $effect(fn)  → user_effect(fn) from 'svelte/internal/client'
+ *
+ * Global mocks (globalThis.$effect = ...) are BYPASSED because the compiler
+ * replaces runes before runtime. We must mock 'svelte/internal/client' instead.
  */
 
 import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
+import { applySvelteInternalMock, runEffectCleanups } from '../../../../../../test/svelte-internal-mock';
+
+// Apply the Svelte internal mock BEFORE any .svelte.ts imports
+applySvelteInternalMock();
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers);
@@ -17,61 +29,7 @@ expect.extend(matchers);
 // Cleanup after each test
 afterEach(() => {
 	cleanup();
-});
-
-// ===============================================================================
-// Svelte 5 Runes Mocking
-// ===============================================================================
-
-// Mock the Svelte 5 runes at the global level
-// These are compile-time macros in Svelte 5, so we need to provide runtime equivalents
-const globalAny = globalThis as any;
-
-// Mock $state - creates a simple reactive-like wrapper
-globalAny.$state = function <T>(initialValue: T): T {
-	return initialValue;
-};
-globalAny.$state.raw = globalAny.$state;
-globalAny.$state.snapshot = <T>(value: T): T => value;
-
-// Mock $derived - returns the computed value directly
-const derivedFn = function <T>(expression: T): T {
-	return expression;
-};
-derivedFn.by = function <T>(fn: () => T): T {
-	return fn();
-};
-globalAny.$derived = derivedFn;
-
-// Mock $effect - no-op in tests, but register for cleanup
-const effectCleanups: Array<() => void> = [];
-const effectFn = function (fn: () => void | (() => void)): void {
-	try {
-		const cleanup = fn();
-		if (typeof cleanup === 'function') {
-			effectCleanups.push(cleanup);
-		}
-	} catch {
-		// Effects may fail in test context, ignore
-	}
-};
-effectFn.pre = effectFn;
-effectFn.root = function (fn: () => void | (() => void)): () => void {
-	const cleanup = fn();
-	return typeof cleanup === 'function' ? cleanup : () => {};
-};
-globalAny.$effect = effectFn;
-
-// Clean up effects after each test
-afterEach(() => {
-	effectCleanups.forEach((cleanup) => {
-		try {
-			cleanup();
-		} catch {
-			// Ignore cleanup errors
-		}
-	});
-	effectCleanups.length = 0;
+	runEffectCleanups();
 });
 
 // ===============================================================================
@@ -109,6 +67,54 @@ global.ResizeObserver = class ResizeObserver {
 	observe() {}
 	unobserve() {}
 } as unknown as typeof ResizeObserver;
+
+// Mock Image so onload fires synchronously (JSDOM doesn't support Image loading)
+const OriginalImage = global.Image;
+class MockImage {
+	src = '';
+	naturalWidth = 800;
+	naturalHeight = 600;
+	width = 800;
+	height = 600;
+	onload: (() => void) | null = null;
+	onerror: (() => void) | null = null;
+
+	set _src(value: string) {
+		this.src = value;
+		// Fire onload asynchronously to simulate real behavior
+		if (this.onload) {
+			setTimeout(() => this.onload?.(), 0);
+		}
+	}
+
+	constructor() {
+		// Use a proxy to intercept src assignment
+		return new Proxy(this, {
+			set(target, prop, value) {
+				if (prop === 'src') {
+					target.src = value;
+					if (target.onload) {
+						setTimeout(() => target.onload?.(), 0);
+					}
+					return true;
+				}
+				return Reflect.set(target, prop, value);
+			}
+		});
+	}
+}
+global.Image = MockImage as unknown as typeof Image;
+
+// Mock HTMLCanvasElement.getContext and toBlob
+HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+	drawImage: vi.fn()
+}) as any;
+HTMLCanvasElement.prototype.toBlob = vi.fn(function (
+	this: HTMLCanvasElement,
+	callback: BlobCallback
+) {
+	callback(new Blob(['mock-thumbnail'], { type: 'image/jpeg' }));
+}) as any;
 
 // Mock URL.createObjectURL and revokeObjectURL
 const mockObjectURLs = new Map<string, Blob>();

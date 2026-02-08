@@ -222,7 +222,10 @@ describe('useAIGeneration', () => {
 				onError: vi.fn()
 			});
 
-			await hook.generate('Test prompt');
+			// Start generate without awaiting — retry sleep() uses setTimeout
+			const promise = hook.generate('Test prompt');
+			await vi.runAllTimersAsync();
+			await promise;
 
 			// Should have been called with loading: false
 			expect(mockStateManager.setAIGeneratedState).toHaveBeenCalledWith(
@@ -328,10 +331,12 @@ describe('useAIGeneration', () => {
 				onError
 			});
 
-			await hook.generate('Test prompt');
+			// Start generate without awaiting — retry sleep() uses setTimeout
+			const promise = hook.generate('Test prompt');
 
 			// After 3 retries (with delays), should eventually fail
 			await vi.runAllTimersAsync();
+			await promise;
 
 			expect(mockStateManager.setAIGeneratedState).toHaveBeenCalledWith(
 				mockBlockId,
@@ -350,8 +355,9 @@ describe('useAIGeneration', () => {
 				onError
 			});
 
-			await hook.generate('Test prompt');
+			const promise = hook.generate('Test prompt');
 			await vi.runAllTimersAsync();
+			await promise;
 
 			expect(onError).toHaveBeenCalled();
 		});
@@ -371,8 +377,9 @@ describe('useAIGeneration', () => {
 				onError
 			});
 
-			await hook.generate('Test prompt');
+			const promise = hook.generate('Test prompt');
 			await vi.runAllTimersAsync();
+			await promise;
 
 			expect(onError).toHaveBeenCalledWith(expect.any(Error));
 		});
@@ -804,6 +811,14 @@ describe('useAIGeneration', () => {
 
 	describe('Copy to Clipboard', () => {
 		it('copies output to clipboard', async () => {
+			// Re-mock clipboard since mockReset: true resets it between tests
+			Object.assign(navigator, {
+				clipboard: {
+					writeText: vi.fn().mockResolvedValue(undefined),
+					readText: vi.fn().mockResolvedValue('')
+				}
+			});
+
 			mockStateManager.getAIGeneratedState.mockReturnValue({
 				loading: false,
 				error: null,

@@ -67,6 +67,8 @@ function createInputElement(tagName: 'INPUT' | 'TEXTAREA' | 'SELECT' = 'INPUT'):
 function createContentEditableElement(): HTMLElement {
 	const element = document.createElement('div');
 	element.contentEditable = 'true';
+	// JSDOM does not support isContentEditable, so we polyfill it
+	Object.defineProperty(element, 'isContentEditable', { value: true, writable: false });
 	return element;
 }
 
