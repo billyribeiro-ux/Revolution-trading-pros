@@ -24,8 +24,16 @@ import type {
 	QuickStats
 } from './types';
 import { fallbackData, ROOM_SLUG, ALERTS_PER_PAGE } from './data/fallbacks';
-import * as api from './page.api';
-import type { FormattedAlert } from './page.api';
+import {
+	getAlerts,
+	getTradePlan,
+	getStats,
+	getTrades,
+	getWeeklyVideo,
+	getAdminStatus,
+	type FormattedAlert
+} from './data.remote';
+import { deleteTrade as remoteDeleteTrade } from './commands.remote';
 import type { RoomAlert } from '$lib/types/trading';
 import type { TradePlanEntry as ApiTradePlanEntry } from '$lib/types/trading';
 import {
@@ -251,7 +259,7 @@ export function createPageState() {
 
 		try {
 			const result = await performanceMonitor.measureAsync('fetch-alerts', () =>
-				api.fetchAlerts(ROOM_SLUG, currentPage, ALERTS_PER_PAGE)
+				getAlerts({ roomSlug: ROOM_SLUG, page: currentPage, limit: ALERTS_PER_PAGE })
 			);
 			apiAlerts = result.alerts;
 			pagination = result.pagination;
@@ -273,7 +281,7 @@ export function createPageState() {
 		tradePlanError = null;
 
 		try {
-			const result = await api.fetchTradePlan(ROOM_SLUG);
+			const result = await getTradePlan({ roomSlug: ROOM_SLUG });
 			apiTradePlan = result as unknown as ApiTradePlanEntry[];
 		} catch (err) {
 			tradePlanError = err instanceof Error ? err.message : 'Failed to load trade plan';
@@ -289,7 +297,7 @@ export function createPageState() {
 
 		try {
 			apiStats = await performanceMonitor.measureAsync('fetch-stats', () =>
-				api.fetchStats(ROOM_SLUG)
+				getStats({ roomSlug: ROOM_SLUG })
 			);
 		} catch (err) {
 			statsError = err instanceof Error ? err.message : 'Failed to load stats';
@@ -306,7 +314,7 @@ export function createPageState() {
 
 		try {
 			const trades = await performanceMonitor.measureAsync('fetch-trades', () =>
-				api.fetchAllTrades(ROOM_SLUG)
+				getTrades({ roomSlug: ROOM_SLUG })
 			);
 			apiOpenTrades = trades.filter((t) => t.status === 'open');
 			apiClosedTrades = trades.filter((t) => t.status === 'closed');
@@ -324,7 +332,7 @@ export function createPageState() {
 		videosError = null;
 
 		try {
-			apiWeeklyVideo = await api.fetchWeeklyVideo(ROOM_SLUG);
+			apiWeeklyVideo = await getWeeklyVideo({ roomSlug: ROOM_SLUG });
 		} catch (err) {
 			videosError = err instanceof Error ? err.message : 'Failed to load video';
 			console.error('Failed to fetch weekly video:', err);
@@ -335,7 +343,7 @@ export function createPageState() {
 
 	async function checkAdminStatus() {
 		try {
-			isAdmin = await api.checkAdminStatus();
+			isAdmin = await getAdminStatus();
 		} catch {
 			isAdmin = false;
 		}
@@ -576,15 +584,7 @@ export function createPageState() {
 	 */
 	async function deletePosition(position: ActivePosition): Promise<void> {
 		try {
-			const response = await fetch(`/api/admin/trades/${position.id}`, {
-				method: 'DELETE',
-				credentials: 'include'
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || 'Failed to delete position');
-			}
+			await remoteDeleteTrade({ tradeId: Number(position.id) });
 
 			// Refresh data after successful deletion
 			await Promise.all([fetchAllTrades(), fetchStats()]);

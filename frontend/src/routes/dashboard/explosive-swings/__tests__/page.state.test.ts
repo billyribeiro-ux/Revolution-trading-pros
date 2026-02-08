@@ -20,9 +20,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
 	setupTestEnvironment,
-	mockFetch,
-	mockFetchSuccess,
-	mockFetchError,
 	createMockAlertsResponse,
 	createMockAlert,
 	createMockTrade,
@@ -35,22 +32,28 @@ import {
 setupTestEnvironment();
 
 // ===============================================================================
-// MOCK THE API MODULE
+// MOCK THE REMOTE FUNCTION MODULES
 // ===============================================================================
 
-// We need to mock the page.api module since createPageState imports it
-vi.mock('../page.api', () => ({
-	fetchAlerts: vi.fn(),
-	fetchTradePlan: vi.fn(),
-	fetchStats: vi.fn(),
-	fetchAllTrades: vi.fn(),
-	fetchWeeklyVideo: vi.fn(),
-	checkAdminStatus: vi.fn()
+// Mock data.remote — remote query functions used by page.state.svelte.ts
+vi.mock('../data.remote', () => ({
+	getAlerts: vi.fn(),
+	getTradePlan: vi.fn(),
+	getStats: vi.fn(),
+	getTrades: vi.fn(),
+	getWeeklyVideo: vi.fn(),
+	getAdminStatus: vi.fn()
+}));
+
+// Mock commands.remote — remote command functions used by page.state.svelte.ts
+vi.mock('../commands.remote', () => ({
+	deleteTrade: vi.fn()
 }));
 
 // Import after mocking
 import { createPageState } from '../page.state.svelte';
-import * as api from '../page.api';
+import { getAlerts, getTradePlan, getStats, getTrades, getWeeklyVideo, getAdminStatus } from '../data.remote';
+import { deleteTrade } from '../commands.remote';
 
 // ===============================================================================
 // TEST SUITE: createPageState Factory Function
@@ -209,7 +212,7 @@ describe('createPageState()', () => {
 			const mockAlerts = [createMockAlert(), createMockAlert({ id: 2, ticker: 'TSLA' })];
 			void createMockAlertsResponse(mockAlerts);
 
-			vi.mocked(api.fetchAlerts).mockResolvedValueOnce({
+				vi.mocked(getAlerts).mockResolvedValueOnce({
 				alerts: mockAlerts.map((a) => ({
 					...a,
 					notes: a.notes || ''
@@ -235,7 +238,7 @@ describe('createPageState()', () => {
 				createMockAlert({ id: 2, ticker: 'TSLA' })
 			];
 
-			vi.mocked(api.fetchAlerts).mockResolvedValueOnce({
+			vi.mocked(getAlerts).mockResolvedValueOnce({
 				alerts: mockAlerts.map((a) => ({ ...a, notes: a.notes || '' })),
 				pagination: { total: 2, limit: 10, offset: 0 }
 			});
@@ -248,7 +251,7 @@ describe('createPageState()', () => {
 		});
 
 		it('should set error state on fetch failure', async () => {
-			vi.mocked(api.fetchAlerts).mockRejectedValueOnce(new Error('Network error'));
+			vi.mocked(getAlerts).mockRejectedValueOnce(new Error('Network error'));
 
 			const state = createPageState();
 			await state.fetchAlerts();
@@ -258,7 +261,7 @@ describe('createPageState()', () => {
 		});
 
 		it('should handle non-Error exceptions', async () => {
-			vi.mocked(api.fetchAlerts).mockRejectedValueOnce('String error');
+			vi.mocked(getAlerts).mockRejectedValueOnce('String error');
 
 			const state = createPageState();
 			await state.fetchAlerts();
@@ -285,7 +288,7 @@ describe('createPageState()', () => {
 				}
 			];
 
-			vi.mocked(api.fetchTradePlan).mockResolvedValueOnce(mockEntries as any);
+			vi.mocked(getTradePlan).mockResolvedValueOnce(mockEntries as any);
 
 			const state = createPageState();
 			await state.fetchTradePlan();
@@ -295,7 +298,7 @@ describe('createPageState()', () => {
 		});
 
 		it('should set error state on failure', async () => {
-			vi.mocked(api.fetchTradePlan).mockRejectedValueOnce(new Error('API error'));
+			vi.mocked(getTradePlan).mockRejectedValueOnce(new Error('API error'));
 
 			const state = createPageState();
 			await state.fetchTradePlan();
@@ -306,7 +309,7 @@ describe('createPageState()', () => {
 
 	describe('fetchStats()', () => {
 		it('should update stats on successful fetch', async () => {
-			vi.mocked(api.fetchStats).mockResolvedValueOnce({
+			vi.mocked(getStats).mockResolvedValueOnce({
 				winRate: 85,
 				weeklyProfit: '+$5,000',
 				activeTrades: 5,
@@ -321,7 +324,7 @@ describe('createPageState()', () => {
 		});
 
 		it('should set error state on failure', async () => {
-			vi.mocked(api.fetchStats).mockRejectedValueOnce(new Error('Stats unavailable'));
+			vi.mocked(getStats).mockRejectedValueOnce(new Error('Stats unavailable'));
 
 			const state = createPageState();
 			await state.fetchStats();
@@ -338,7 +341,7 @@ describe('createPageState()', () => {
 				createMockTrade({ id: 3, status: 'open' })
 			];
 
-			vi.mocked(api.fetchAllTrades).mockResolvedValueOnce(mockTrades as any);
+			vi.mocked(getTrades).mockResolvedValueOnce(mockTrades as any);
 
 			const state = createPageState();
 			await state.fetchAllTrades();
@@ -349,7 +352,7 @@ describe('createPageState()', () => {
 		});
 
 		it('should set error state on failure', async () => {
-			vi.mocked(api.fetchAllTrades).mockRejectedValueOnce(new Error('Trades unavailable'));
+			vi.mocked(getTrades).mockRejectedValueOnce(new Error('Trades unavailable'));
 
 			const state = createPageState();
 			await state.fetchAllTrades();
@@ -360,7 +363,7 @@ describe('createPageState()', () => {
 
 	describe('fetchWeeklyVideo()', () => {
 		it('should update weekly video on successful fetch', async () => {
-			vi.mocked(api.fetchWeeklyVideo).mockResolvedValueOnce({
+			vi.mocked(getWeeklyVideo).mockResolvedValueOnce({
 				id: 1,
 				video_title: 'Test Video',
 				video_url: 'https://example.com/video',
@@ -378,7 +381,7 @@ describe('createPageState()', () => {
 		});
 
 		it('should set error state on failure', async () => {
-			vi.mocked(api.fetchWeeklyVideo).mockRejectedValueOnce(new Error('Video unavailable'));
+			vi.mocked(getWeeklyVideo).mockRejectedValueOnce(new Error('Video unavailable'));
 
 			const state = createPageState();
 			await state.fetchWeeklyVideo();
@@ -393,7 +396,7 @@ describe('createPageState()', () => {
 
 	describe('setFilter()', () => {
 		it('should update filter and reset page to 1', async () => {
-			vi.mocked(api.fetchAlerts).mockResolvedValue({
+			vi.mocked(getAlerts).mockResolvedValue({
 				alerts: [],
 				pagination: { total: 0, limit: 10, offset: 0 }
 			});
@@ -413,11 +416,11 @@ describe('createPageState()', () => {
 			// Filter is already 'all', so this should not trigger fetch
 			state.setFilter('all');
 
-			expect(api.fetchAlerts).not.toHaveBeenCalled();
+			expect(getAlerts).not.toHaveBeenCalled();
 		});
 
 		it('should trigger fetchAlerts when filter changes', async () => {
-			vi.mocked(api.fetchAlerts).mockResolvedValue({
+			vi.mocked(getAlerts).mockResolvedValue({
 				alerts: [],
 				pagination: { total: 0, limit: 10, offset: 0 }
 			});
@@ -425,7 +428,7 @@ describe('createPageState()', () => {
 			const state = createPageState();
 			state.setFilter('exit');
 
-			expect(api.fetchAlerts).toHaveBeenCalled();
+			expect(getAlerts).toHaveBeenCalled();
 		});
 	});
 
@@ -449,11 +452,11 @@ describe('createPageState()', () => {
 
 			await state.goToPage(1); // Already on page 1
 
-			expect(api.fetchAlerts).not.toHaveBeenCalled();
+			expect(getAlerts).not.toHaveBeenCalled();
 		});
 
 		it('should fetch alerts when navigating to a valid new page', async () => {
-			vi.mocked(api.fetchAlerts).mockResolvedValue({
+			vi.mocked(getAlerts).mockResolvedValue({
 				alerts: [],
 				pagination: { total: 50, limit: 10, offset: 10 }
 			});
@@ -721,8 +724,8 @@ describe('createPageState()', () => {
 
 	describe('handlePositionUpdated()', () => {
 		it('should refresh trades and stats', async () => {
-			vi.mocked(api.fetchAllTrades).mockResolvedValue([]);
-			vi.mocked(api.fetchStats).mockResolvedValue({
+			vi.mocked(getTrades).mockResolvedValue([]);
+			vi.mocked(getStats).mockResolvedValue({
 				winRate: 80,
 				weeklyProfit: '+$4,000',
 				activeTrades: 3,
@@ -734,8 +737,8 @@ describe('createPageState()', () => {
 
 			await flushPromises();
 
-			expect(api.fetchAllTrades).toHaveBeenCalled();
-			expect(api.fetchStats).toHaveBeenCalled();
+			expect(getTrades).toHaveBeenCalled();
+			expect(getStats).toHaveBeenCalled();
 		});
 	});
 
@@ -745,32 +748,32 @@ describe('createPageState()', () => {
 
 	describe('initializeData()', () => {
 		it('should fetch all data in parallel', async () => {
-			vi.mocked(api.checkAdminStatus).mockResolvedValue(false);
-			vi.mocked(api.fetchAlerts).mockResolvedValue({
+			vi.mocked(getAdminStatus).mockResolvedValue(false);
+			vi.mocked(getAlerts).mockResolvedValue({
 				alerts: [],
 				pagination: { total: 0, limit: 10, offset: 0 }
 			});
-			vi.mocked(api.fetchTradePlan).mockResolvedValue([]);
-			vi.mocked(api.fetchStats).mockResolvedValue({
+			vi.mocked(getTradePlan).mockResolvedValue([]);
+			vi.mocked(getStats).mockResolvedValue({
 				winRate: 80,
 				weeklyProfit: '+$4,000',
 				activeTrades: 3,
 				closedThisWeek: 2
 			});
-			vi.mocked(api.fetchAllTrades).mockResolvedValue([]);
-			vi.mocked(api.fetchWeeklyVideo).mockResolvedValue(null);
+			vi.mocked(getTrades).mockResolvedValue([]);
+			vi.mocked(getWeeklyVideo).mockResolvedValue(null);
 
 			const state = createPageState();
 			state.initializeData();
 
 			await flushPromises();
 
-			expect(api.checkAdminStatus).toHaveBeenCalled();
-			expect(api.fetchAlerts).toHaveBeenCalled();
-			expect(api.fetchTradePlan).toHaveBeenCalled();
-			expect(api.fetchStats).toHaveBeenCalled();
-			expect(api.fetchAllTrades).toHaveBeenCalled();
-			expect(api.fetchWeeklyVideo).toHaveBeenCalled();
+			expect(getAdminStatus).toHaveBeenCalled();
+			expect(getAlerts).toHaveBeenCalled();
+			expect(getTradePlan).toHaveBeenCalled();
+			expect(getStats).toHaveBeenCalled();
+			expect(getTrades).toHaveBeenCalled();
+			expect(getWeeklyVideo).toHaveBeenCalled();
 		});
 	});
 
@@ -780,9 +783,9 @@ describe('createPageState()', () => {
 
 	describe('deletePosition()', () => {
 		it('should call API to delete position and refresh data', async () => {
-			mockFetchSuccess({ success: true });
-			vi.mocked(api.fetchAllTrades).mockResolvedValue([]);
-			vi.mocked(api.fetchStats).mockResolvedValue({
+			vi.mocked(deleteTrade).mockResolvedValue(undefined);
+			vi.mocked(getTrades).mockResolvedValue([]);
+			vi.mocked(getStats).mockResolvedValue({
 				winRate: 80,
 				weeklyProfit: '+$4,000',
 				activeTrades: 2,
@@ -794,17 +797,13 @@ describe('createPageState()', () => {
 
 			await state.deletePosition(position as any);
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				`/api/admin/trades/${position.id}`,
-				expect.objectContaining({
-					method: 'DELETE',
-					credentials: 'include'
-				})
-			);
+			expect(deleteTrade).toHaveBeenCalledWith({
+				tradeId: Number(position.id)
+			});
 		});
 
 		it('should handle delete failure gracefully', async () => {
-			mockFetchError(500, 'Server error');
+			vi.mocked(deleteTrade).mockRejectedValueOnce(new Error('Server error'));
 
 			const state = createPageState();
 			const position = createMockActivePosition();
@@ -820,20 +819,20 @@ describe('createPageState()', () => {
 
 	describe('checkAdminStatus()', () => {
 		it('should set isAdmin to true for admin user', async () => {
-			vi.mocked(api.checkAdminStatus).mockResolvedValue(true);
+			vi.mocked(getAdminStatus).mockResolvedValue(true);
 
 			void createPageState();
 
 			// Admin status is checked via initializeData or directly
 			// We need to trigger it
-			await vi.mocked(api.checkAdminStatus)();
+			await vi.mocked(getAdminStatus)();
 
 			// Note: Due to encapsulation, we can't directly call checkAdminStatus
 			// It's called internally by initializeData
 		});
 
 		it('should set isAdmin to false on error', async () => {
-			vi.mocked(api.checkAdminStatus).mockRejectedValue(new Error('Unauthorized'));
+			vi.mocked(getAdminStatus).mockRejectedValue(new Error('Unauthorized'));
 
 			const state = createPageState();
 
