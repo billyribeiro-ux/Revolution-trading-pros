@@ -68,42 +68,27 @@ global.ResizeObserver = class ResizeObserver {
 	unobserve() {}
 } as unknown as typeof ResizeObserver;
 
-// Mock Image so onload fires synchronously (JSDOM doesn't support Image loading)
-const OriginalImage = global.Image;
-class MockImage {
-	src = '';
+// Mock Image so onload fires via microtask (JSDOM doesn't support Image loading)
+// Uses queueMicrotask instead of setTimeout to work with vi.useFakeTimers()
+global.Image = class MockImage {
 	naturalWidth = 800;
 	naturalHeight = 600;
 	width = 800;
 	height = 600;
 	onload: (() => void) | null = null;
 	onerror: (() => void) | null = null;
+	private _src = '';
 
-	set _src(value: string) {
-		this.src = value;
-		// Fire onload asynchronously to simulate real behavior
-		if (this.onload) {
-			setTimeout(() => this.onload?.(), 0);
-		}
+	get src() {
+		return this._src;
 	}
 
-	constructor() {
-		// Use a proxy to intercept src assignment
-		return new Proxy(this, {
-			set(target, prop, value) {
-				if (prop === 'src') {
-					target.src = value;
-					if (target.onload) {
-						setTimeout(() => target.onload?.(), 0);
-					}
-					return true;
-				}
-				return Reflect.set(target, prop, value);
-			}
-		});
+	set src(value: string) {
+		this._src = value;
+		// Use microtask so it fires even with fake timers
+		queueMicrotask(() => this.onload?.());
 	}
-}
-global.Image = MockImage as unknown as typeof Image;
+} as unknown as typeof Image;
 
 // Mock HTMLCanvasElement.getContext and toBlob
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
