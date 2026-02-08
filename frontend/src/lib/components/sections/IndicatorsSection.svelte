@@ -233,33 +233,10 @@
 			}
 		});
 
-		// Setup canvas with resize observer (delayed to ensure DOM is ready)
-		// Use double rAF to ensure layout is complete
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				setupCanvas();
-				resizeObserver = new ResizeObserver(() => {
-					setupCanvas();
-					drawChart(); // Redraw on resize
-				});
-				if (chartRef) resizeObserver.observe(chartRef);
-			});
-		});
-
-		// Start chart animation immediately since LazySection handles visibility
-		if (!prefersReducedMotion) {
-			animatechartProgress();
-		} else {
-			chartProgress = 1;
-		}
-
 		// Load GSAP asynchronously
 		if (!prefersReducedMotion) {
 			loadGSAP();
 		}
-
-		// Start animation loop
-		animate();
 
 		// Auto-rotate indicators (slower on mobile for better UX)
 		const isMobile = window.innerWidth < 768;
@@ -274,6 +251,39 @@
 			if (rotationInterval) clearInterval(rotationInterval);
 			resizeObserver?.disconnect();
 		};
+	});
+
+	// ============================================================================
+	// CANVAS INIT — waits for isVisible + DOM refs before starting
+	// ============================================================================
+	let canvasInitialized = false;
+
+	$effect(() => {
+		if (!isVisible || !canvasRef || !chartRef || canvasInitialized) return;
+		canvasInitialized = true;
+
+		// Double rAF ensures layout is fully computed after the {#if} block mounts
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				setupCanvas();
+
+				resizeObserver = new ResizeObserver(() => {
+					setupCanvas();
+					drawChart();
+				});
+				if (chartRef) resizeObserver.observe(chartRef);
+
+				// Start chart progress animation now that canvas is ready
+				if (!prefersReducedMotion) {
+					animatechartProgress();
+				} else {
+					chartProgress = 1;
+				}
+
+				// Start draw loop
+				animate();
+			});
+		});
 	});
 
 	function setupCanvas() {
