@@ -42,5 +42,5 @@ export const load = async ({ locals, cookies, fetch }: RequestEvent) => {
 	cookies.delete('access_token', cookieOptions);
 
 	// Redirect to home page with logged out message
-	throw redirect(303, '/?message=logged_out');
+	redirect(303, '/?message=logged_out');
 };

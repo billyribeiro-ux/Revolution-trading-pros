@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ params, fetch, setHeaders }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Alert slug is required');
+		error(400, 'Alert slug is required');
 	}
 
 	// Set cache headers
@@ -28,15 +28,15 @@ export const load: PageServerLoad = async ({ params, fetch, setHeaders }) => {
 
 		if (!response.ok) {
 			if (response.status === 404) {
-				throw error(404, 'Alert not found');
+				error(404, 'Alert not found');
 			}
-			throw error(response.status, 'Failed to load alert');
+			error(response.status, 'Failed to load alert');
 		}
 
 		const result = await response.json();
 
 		if (!result.success || !result.data) {
-			throw error(404, 'Alert not found');
+			error(404, 'Alert not found');
 		}
 
 		return {
@@ -47,6 +47,6 @@ export const load: PageServerLoad = async ({ params, fetch, setHeaders }) => {
 			throw err;
 		}
 		console.error('[SPX Alert SSR] Error:', err);
-		throw error(500, 'Failed to load alert');
+		error(500, 'Failed to load alert');
 	}
 };

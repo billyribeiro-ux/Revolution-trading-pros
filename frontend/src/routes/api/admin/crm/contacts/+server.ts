@@ -109,7 +109,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate required fields
 		if (!body.email) {
-			throw error(400, 'Email is required');
+			error(400, 'Email is required');
 		}
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/crm/contacts`, {
@@ -134,7 +134,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			// Handle duplicate email error
 			if (response.status === 422 && errorData.errors?.email) {
-				throw error(409, 'Contact with this email already exists');
+				error(409, 'Contact with this email already exists');
 			}
 
 			return json(
@@ -161,6 +161,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw err;
 		}
 		console.error('CRM Contacts API create error:', err);
-		throw error(500, 'Failed to create contact');
+		error(500, 'Failed to create contact');
 	}
 };

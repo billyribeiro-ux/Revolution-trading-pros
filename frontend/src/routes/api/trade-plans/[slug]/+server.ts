@@ -90,7 +90,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Query params
@@ -178,18 +178,18 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	const body: TradePlanCreateInput = await request.json();
 
 	// Validate required fields - only ticker is truly required
 	if (!body.ticker) {
-		throw error(400, 'Ticker is required');
+		error(400, 'Ticker is required');
 	}
 
 	// Build headers

@@ -9,7 +9,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 	const session = await locals.auth();
 
 	if (!session?.user) {
-		throw error(401, 'Unauthorized');
+		error(401, 'Unauthorized');
 	}
 
 	try {

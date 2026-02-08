@@ -99,12 +99,12 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and alert ID are required');
+		error(400, 'Room slug and alert ID are required');
 	}
 
 	const alertId = parseInt(id, 10);
 	if (isNaN(alertId)) {
-		throw error(400, 'Invalid alert ID');
+		error(400, 'Invalid alert ID');
 	}
 
 	// Get auth headers
@@ -138,7 +138,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const alert = alerts.find((a) => a.id === alertId);
 
 	if (!alert) {
-		throw error(404, `Alert ${id} not found`);
+		error(404, `Alert ${id} not found`);
 	}
 
 	return json({
@@ -158,16 +158,16 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const sessionCookie = cookies.get('session');
 
 	if (!authHeader && !sessionCookie) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and alert ID are required');
+		error(400, 'Room slug and alert ID are required');
 	}
 
 	const alertId = parseInt(id, 10);
 	if (isNaN(alertId)) {
-		throw error(400, 'Invalid alert ID');
+		error(400, 'Invalid alert ID');
 	}
 
 	const body: AlertUpdateInput = await request.json();
@@ -201,7 +201,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const alertIndex = alerts.findIndex((a) => a.id === alertId);
 
 	if (alertIndex === -1) {
-		throw error(404, `Alert ${id} not found`);
+		error(404, `Alert ${id} not found`);
 	}
 
 	const existingAlert = alerts[alertIndex];
@@ -278,16 +278,16 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const sessionCookie = cookies.get('session');
 
 	if (!authHeader && !sessionCookie) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and alert ID are required');
+		error(400, 'Room slug and alert ID are required');
 	}
 
 	const alertId = parseInt(id, 10);
 	if (isNaN(alertId)) {
-		throw error(400, 'Invalid alert ID');
+		error(400, 'Invalid alert ID');
 	}
 
 	// Build headers
@@ -317,7 +317,7 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const alertIndex = alerts.findIndex((a) => a.id === alertId);
 
 	if (alertIndex === -1) {
-		throw error(404, `Alert ${id} not found`);
+		error(404, `Alert ${id} not found`);
 	}
 
 	mockAlerts[slug].splice(alertIndex, 1);

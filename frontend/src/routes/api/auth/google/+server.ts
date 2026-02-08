@@ -19,5 +19,5 @@ export const GET: RequestHandler = async () => {
 	// 2. Generate PKCE code verifier/challenge
 	// 3. Store state in database
 	// 4. Redirect to Google authorization URL
-	throw redirect(302, `${API_URL}/api/auth/google`);
+	redirect(302, `${API_URL}/api/auth/google`);
 };

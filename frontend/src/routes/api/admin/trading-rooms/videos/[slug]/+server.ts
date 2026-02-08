@@ -176,7 +176,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	// Fallback to mock data
 	const roomId = roomSlugToId[slug ?? ''];
 	if (!roomId) {
-		throw error(404, `Trading room '${slug}' not found`);
+		error(404, `Trading room '${slug}' not found`);
 	}
 
 	let filteredVideos = mockVideos.filter((v) => v.trading_room_id === roomId);

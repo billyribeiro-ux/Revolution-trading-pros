@@ -315,14 +315,14 @@ export const GET: RequestHandler = async ({ url, request }) => {
 export const POST: RequestHandler = async ({ request }) => {
 	const authHeader = request.headers.get('Authorization');
 	if (!authHeader) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	const body = await request.json();
 
 	// Validate required fields
 	if (!body.title || !body.trader || !body.weekOf) {
-		throw error(400, 'Title, trader, and weekOf are required');
+		error(400, 'Title, trader, and weekOf are required');
 	}
 
 	// Default to all rooms if not specified

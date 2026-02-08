@@ -138,6 +138,6 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		});
 	} catch (err) {
 		console.error('Export failed:', err);
-		throw error(500, 'Failed to export watchlist');
+		error(500, 'Failed to export watchlist');
 	}
 };

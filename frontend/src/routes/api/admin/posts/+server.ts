@@ -73,13 +73,13 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		if (status >= 400) {
-			throw error(status, 'Failed to create post');
+			error(status, 'Failed to create post');
 		}
 
 		return json(data);
 	} catch (err) {
 		console.error('POST /api/admin/posts error:', err);
-		throw error(400, 'Invalid request body');
+		error(400, 'Invalid request body');
 	}
 };
 
@@ -89,7 +89,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 	const postId = url.searchParams.get('id');
 
 	if (!postId) {
-		throw error(400, 'Post ID required');
+		error(400, 'Post ID required');
 	}
 
 	try {
@@ -102,13 +102,13 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 		});
 
 		if (status >= 400) {
-			throw error(status, 'Failed to update post');
+			error(status, 'Failed to update post');
 		}
 
 		return json(data);
 	} catch (err) {
 		console.error('PUT /api/admin/posts error:', err);
-		throw error(400, 'Invalid request body');
+		error(400, 'Invalid request body');
 	}
 };
 
@@ -118,7 +118,7 @@ export const DELETE: RequestHandler = async ({ url, request }) => {
 	const postId = url.searchParams.get('id');
 
 	if (!postId) {
-		throw error(400, 'Post ID required');
+		error(400, 'Post ID required');
 	}
 
 	const { data, status } = await fetchFromBackend(`/admin/posts/${postId}`, {
@@ -127,7 +127,7 @@ export const DELETE: RequestHandler = async ({ url, request }) => {
 	});
 
 	if (status >= 400) {
-		throw error(status, 'Failed to delete post');
+		error(status, 'Failed to delete post');
 	}
 
 	return json(data);

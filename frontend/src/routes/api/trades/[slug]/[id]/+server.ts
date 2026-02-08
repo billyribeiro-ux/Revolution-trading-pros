@@ -173,12 +173,12 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and trade ID are required');
+		error(400, 'Room slug and trade ID are required');
 	}
 
 	const tradeId = parseInt(id, 10);
 	if (isNaN(tradeId)) {
-		throw error(400, 'Invalid trade ID');
+		error(400, 'Invalid trade ID');
 	}
 
 	// Try backend first - use rtp_access_token cookie for Bearer auth
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const trade = trades.find((t) => t.id === tradeId);
 
 	if (!trade) {
-		throw error(404, `Trade ${id} not found`);
+		error(404, `Trade ${id} not found`);
 	}
 
 	return json({
@@ -224,16 +224,16 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and trade ID are required');
+		error(400, 'Room slug and trade ID are required');
 	}
 
 	const tradeId = parseInt(id, 10);
 	if (isNaN(tradeId)) {
-		throw error(400, 'Invalid trade ID');
+		error(400, 'Invalid trade ID');
 	}
 
 	const body: TradeUpdateInput = await request.json();
@@ -289,7 +289,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const tradeIndex = trades.findIndex((t) => t.id === tradeId);
 
 	if (tradeIndex === -1) {
-		throw error(404, `Trade ${id} not found`);
+		error(404, `Trade ${id} not found`);
 	}
 
 	const existingTrade = trades[tradeIndex];
@@ -357,16 +357,16 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and trade ID are required');
+		error(400, 'Room slug and trade ID are required');
 	}
 
 	const tradeId = parseInt(id, 10);
 	if (isNaN(tradeId)) {
-		throw error(400, 'Invalid trade ID');
+		error(400, 'Invalid trade ID');
 	}
 
 	// Build headers - use rtp_access_token cookie for Bearer auth
@@ -392,7 +392,7 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const tradeIndex = trades.findIndex((t) => t.id === tradeId);
 
 	if (tradeIndex === -1) {
-		throw error(404, `Trade ${id} not found`);
+		error(404, `Trade ${id} not found`);
 	}
 
 	// Remove from mock data

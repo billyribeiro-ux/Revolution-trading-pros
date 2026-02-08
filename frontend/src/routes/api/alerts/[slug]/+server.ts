@@ -98,7 +98,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Build query params
@@ -198,18 +198,18 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	const body: AlertCreateInput = await request.json();
 
 	// Validate required fields
 	if (!body.alert_type || !body.ticker || !body.title || !body.message) {
-		throw error(400, 'Alert type, ticker, title, and message are required');
+		error(400, 'Alert type, ticker, title, and message are required');
 	}
 
 	// Build TOS string if trade details provided
@@ -230,7 +230,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 		const errors = validateTosParams(tosParams);
 		if (errors.length > 0) {
-			throw error(400, `Invalid trade details: ${errors.join(', ')}`);
+			error(400, `Invalid trade details: ${errors.join(', ')}`);
 		}
 
 		tosString = buildTosString(tosParams);

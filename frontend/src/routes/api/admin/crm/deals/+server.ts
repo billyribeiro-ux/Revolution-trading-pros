@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate required fields
 		if (!body.name) {
-			throw error(400, 'Deal name is required');
+			error(400, 'Deal name is required');
 		}
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/crm/deals`, {
@@ -156,6 +156,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw err;
 		}
 		console.error('CRM Deals API create error:', err);
-		throw error(500, 'Failed to create deal');
+		error(500, 'Failed to create deal');
 	}
 };

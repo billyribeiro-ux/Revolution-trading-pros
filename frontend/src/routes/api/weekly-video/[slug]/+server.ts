@@ -128,7 +128,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Get auth headers
@@ -175,18 +175,18 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const sessionCookie = cookies.get('session');
 
 	if (!authHeader && !sessionCookie) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	const body = await request.json();
 
 	// Validate required fields
 	if (!body.video_url || !body.video_title) {
-		throw error(400, 'Video URL and title are required');
+		error(400, 'Video URL and title are required');
 	}
 
 	// Build headers

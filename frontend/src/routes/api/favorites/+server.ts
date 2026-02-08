@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
 
 	if (!body.item_type || !body.item_id) {
-		throw error(400, 'item_type and item_id are required');
+		error(400, 'item_type and item_id are required');
 	}
 
 	const backendData = await fetchFromBackend(
@@ -98,5 +98,5 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json(backendData);
 	}
 
-	throw error(401, 'Authentication required');
+	error(401, 'Authentication required');
 };

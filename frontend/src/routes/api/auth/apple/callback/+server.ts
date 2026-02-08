@@ -36,14 +36,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// If backend returns a redirect, follow it
 		if (backendResponse.redirected) {
-			throw redirect(302, backendResponse.url);
+			redirect(302, backendResponse.url);
 		}
 
 		// If backend returns 3xx status, get the Location header
 		if (backendResponse.status >= 300 && backendResponse.status < 400) {
 			const location = backendResponse.headers.get('Location');
 			if (location) {
-				throw redirect(302, location);
+				redirect(302, location);
 			}
 		}
 
@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		console.error('[Apple Callback] Error:', error);
 		// Redirect to login with error on failure
-		throw redirect(302, '/login?error=apple_callback_failed');
+		redirect(302, '/login?error=apple_callback_failed');
 	}
 };
 
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request }) => {
 export const GET: RequestHandler = async ({ url }) => {
 	const error = url.searchParams.get('error');
 	if (error) {
-		throw redirect(302, `/login?error=${encodeURIComponent(error)}`);
+		redirect(302, `/login?error=${encodeURIComponent(error)}`);
 	}
-	throw redirect(302, '/login');
+	redirect(302, '/login');
 };

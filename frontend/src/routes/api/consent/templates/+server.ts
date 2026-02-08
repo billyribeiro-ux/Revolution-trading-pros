@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] GET error:', err);
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };
 
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		const { templateId, customization, customTemplates, updatedBy } = body;
 
 		if (!templateId) {
-			throw error(400, 'Missing required field: templateId');
+			error(400, 'Missing required field: templateId');
 		}
 
 		const config: StoredTemplateConfig = {
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };
 
@@ -119,7 +119,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] PUT error:', err);
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };
 
@@ -140,6 +140,6 @@ export const DELETE: RequestHandler = async ({ url }) => {
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] DELETE error:', err);
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };

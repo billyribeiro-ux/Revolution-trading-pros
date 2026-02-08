@@ -16,5 +16,5 @@ const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 export const GET: RequestHandler = async ({ url }) => {
 	// Forward all query parameters to backend callback handler
 	const queryString = url.search;
-	throw redirect(302, `${API_URL}/api/auth/google/callback${queryString}`);
+	redirect(302, `${API_URL}/api/auth/google/callback${queryString}`);
 };

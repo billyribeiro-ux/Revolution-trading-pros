@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		const body = await request.json();
 
 		if (!body.consents || typeof body.consents !== 'object') {
-			throw error(400, 'Consents object is required');
+			error(400, 'Consents object is required');
 		}
 
 		const id = `consent_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to record consent');
+		error(500, 'Failed to record consent');
 	}
 };
 
@@ -69,13 +69,13 @@ export const GET: RequestHandler = async ({ url }) => {
 	const id = url.searchParams.get('id');
 
 	if (!id) {
-		throw error(400, 'Consent ID is required');
+		error(400, 'Consent ID is required');
 	}
 
 	const record = consentRecords.get(id);
 
 	if (!record) {
-		throw error(404, 'Consent record not found');
+		error(404, 'Consent record not found');
 	}
 
 	return json({

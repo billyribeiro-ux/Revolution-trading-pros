@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ params }) => {
 		const connection = connections.get(key ?? '');
 
 		if (!connection) {
-			throw error(404, `No connection found for service '${key}'`);
+			error(404, `No connection found for service '${key}'`);
 		}
 
 		// Remove connection
@@ -42,6 +42,6 @@ export const POST: RequestHandler = async ({ params }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to disconnect service');
+		error(500, 'Failed to disconnect service');
 	}
 };

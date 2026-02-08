@@ -126,7 +126,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Query params
@@ -220,18 +220,18 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	const body: TradeCreateInput = await request.json();
 
 	// Validate required fields
 	if (!body.ticker || !body.trade_type || !body.direction || !body.quantity || !body.entry_price) {
-		throw error(400, 'Ticker, trade_type, direction, quantity, and entry_price are required');
+		error(400, 'Ticker, trade_type, direction, quantity, and entry_price are required');
 	}
 
 	// Build headers - use rtp_access_token cookie for Bearer auth

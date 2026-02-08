@@ -597,7 +597,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const service = getService(service_key);
 		if (!service) {
-			throw error(404, `Service '${service_key}' not found`);
+			error(404, `Service '${service_key}' not found`);
 		}
 
 		// For OAuth services, generate auth URL
@@ -620,6 +620,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to initiate connection');
+		error(500, 'Failed to initiate connection');
 	}
 };

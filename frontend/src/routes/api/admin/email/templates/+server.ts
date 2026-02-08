@@ -72,12 +72,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		if (status >= 400) {
-			throw error(status, 'Failed to create template');
+			error(status, 'Failed to create template');
 		}
 
 		return json(data);
 	} catch (err) {
 		console.error('POST /api/admin/email/templates error:', err);
-		throw error(400, 'Invalid request body');
+		error(400, 'Invalid request body');
 	}
 };

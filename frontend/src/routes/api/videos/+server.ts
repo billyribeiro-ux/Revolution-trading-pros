@@ -108,10 +108,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate required fields before sending to backend
 		if (!body.title) {
-			throw error(400, 'Title is required');
+			error(400, 'Title is required');
 		}
 		if (!body.url) {
-			throw error(400, 'Video URL is required');
+			error(400, 'Video URL is required');
 		}
 
 		const response = await fetch(`${BACKEND_URL}/api/admin/videos`, {
@@ -161,6 +161,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw err;
 		}
 		console.error('Videos API create error:', err);
-		throw error(500, 'Failed to create video');
+		error(500, 'Failed to create video');
 	}
 };

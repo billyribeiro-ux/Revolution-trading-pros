@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ params }) => {
 	const video = videos.get(id ?? '');
 
 	if (!video) {
-		throw error(404, 'Video not found');
+		error(404, 'Video not found');
 	}
 
 	// Increment view count
@@ -63,7 +63,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	const video = videos.get(id ?? '');
 
 	if (!video) {
-		throw error(404, 'Video not found');
+		error(404, 'Video not found');
 	}
 
 	try {
@@ -103,7 +103,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			data: updatedVideo
 		});
 	} catch {
-		throw error(400, 'Invalid request body');
+		error(400, 'Invalid request body');
 	}
 };
 
@@ -112,7 +112,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
 	const { id } = params;
 
 	if (!videos.has(id ?? '')) {
-		throw error(404, 'Video not found');
+		error(404, 'Video not found');
 	}
 
 	videos.delete(id ?? '');

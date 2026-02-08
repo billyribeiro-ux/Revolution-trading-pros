@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const { consentId, userId, sessionId, consent, metadata, auditLog } = body;
 
 		if (!consentId || !consent) {
-			throw error(400, 'Missing required fields: consentId, consent');
+			error(400, 'Missing required fields: consentId, consent');
 		}
 
 		const now = new Date().toISOString();
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };
 
@@ -108,11 +108,11 @@ export const GET: RequestHandler = async ({ url }) => {
 		} else if (consentId) {
 			record = consentStore.get(consentId);
 		} else {
-			throw error(400, 'Missing required parameter: userId or consentId');
+			error(400, 'Missing required parameter: userId or consentId');
 		}
 
 		if (!record) {
-			throw error(404, 'Consent not found');
+			error(404, 'Consent not found');
 		}
 
 		return json({
@@ -134,7 +134,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };
 
@@ -158,11 +158,11 @@ export const DELETE: RequestHandler = async ({ url }) => {
 		} else if (consentId) {
 			deleted = consentStore.delete(consentId);
 		} else {
-			throw error(400, 'Missing required parameter: userId or consentId');
+			error(400, 'Missing required parameter: userId or consentId');
 		}
 
 		if (!deleted) {
-			throw error(404, 'Consent not found');
+			error(404, 'Consent not found');
 		}
 
 		console.log(`[ConsentAPI] Deleted consent for: ${userId || consentId}`);
@@ -178,6 +178,6 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		error(500, 'Internal server error');
 	}
 };

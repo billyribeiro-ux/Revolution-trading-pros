@@ -19,5 +19,5 @@ export const GET: RequestHandler = async () => {
 	// 2. Generate nonce for ID token validation
 	// 3. Store state in database
 	// 4. Redirect to Apple authorization URL
-	throw redirect(302, `${API_URL}/api/auth/apple`);
+	redirect(302, `${API_URL}/api/auth/apple`);
 };

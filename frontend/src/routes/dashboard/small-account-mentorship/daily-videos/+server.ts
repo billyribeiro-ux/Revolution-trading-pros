@@ -16,5 +16,5 @@ export const GET = async ({ url }: RequestEvent) => {
 	const searchParams = url.searchParams.toString();
 	const newUrl = `/dashboard/small-account-mentorship/daily-videos${searchParams ? '?' + searchParams : ''}`;
 
-	throw redirect(301, newUrl);
+	redirect(301, newUrl);
 };

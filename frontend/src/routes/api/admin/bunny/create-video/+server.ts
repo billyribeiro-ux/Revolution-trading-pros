@@ -20,13 +20,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	const body = await request.json();
 
 	if (!body.title) {
-		throw error(400, 'Video title is required');
+		error(400, 'Video title is required');
 	}
 
 	// Forward to backend with Bearer token auth
@@ -48,25 +48,25 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		if (!response.ok) {
 			const errorText = await response.text();
 			console.error(`[Bunny API] Backend error: ${response.status}`, errorText);
-			throw error(response.status, errorText || 'Failed to create video');
+			error(response.status, errorText || 'Failed to create video');
 		}
 
 		const backendData = await response.json();
 
 		if (backendData?.error) {
-			throw error(backendData.status || 500, backendData.error);
+			error(backendData.status || 500, backendData.error);
 		}
 
 		if (backendData?.success) {
 			return json(backendData);
 		}
 
-		throw error(500, 'Failed to create video on Bunny.net');
+		error(500, 'Failed to create video on Bunny.net');
 	} catch (err) {
 		console.error('[Bunny API] Error:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to create video on Bunny.net');
+		error(500, 'Failed to create video on Bunny.net');
 	}
 };

@@ -112,7 +112,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	if (!token && !refreshToken) {
 		// No tokens - redirect to login with return URL
 		const returnUrl = encodeURIComponent(pathname);
-		throw redirect(303, `/login?redirect=${returnUrl}`);
+		redirect(303, `/login?redirect=${returnUrl}`);
 	}
 
 	// ICT 7 FIX: Validate token with proper timeout and error handling
@@ -156,7 +156,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				// No refresh token - permanent auth failure
 				console.log('[Auth Hook] 401 with no refresh token - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
-				throw redirect(303, `/login?redirect=${returnUrl}`);
+				redirect(303, `/login?redirect=${returnUrl}`);
 			}
 
 			// SERVER-SIDE TOKEN REFRESH
@@ -221,7 +221,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				// Refresh failed - permanent auth failure
 				console.log('[Auth Hook] Token refresh failed - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
-				throw redirect(303, `/login?redirect=${returnUrl}`);
+				redirect(303, `/login?redirect=${returnUrl}`);
 			}
 		} else if (response.status >= 500) {
 			// ICT 7: 5xx = Server error (transient) - preserve session
@@ -232,7 +232,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// ICT 7: 403 = Forbidden (permanent) - redirect to login
 			console.log('[Auth Hook] 403 Forbidden - redirecting to login');
 			const returnUrl = encodeURIComponent(pathname);
-			throw redirect(303, `/login?redirect=${returnUrl}`);
+			redirect(303, `/login?redirect=${returnUrl}`);
 		} else {
 			// ICT 7: Other errors (4xx) - treat as transient, preserve session
 			console.warn(`[Auth Hook] Unexpected response (${response.status}) - preserving session`);
@@ -302,7 +302,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// ICT 7: Permanent failure or no tokens - redirect to login
 			console.error('[Auth Hook] Permanent auth failure:', error);
 			const returnUrl = encodeURIComponent(pathname);
-			throw redirect(303, `/login?redirect=${returnUrl}`);
+			redirect(303, `/login?redirect=${returnUrl}`);
 		}
 	}
 

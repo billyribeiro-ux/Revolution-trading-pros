@@ -71,12 +71,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		if (status >= 400) {
-			throw error(status, 'Failed to create category');
+			error(status, 'Failed to create category');
 		}
 
 		return json(data);
 	} catch (err) {
 		console.error('POST /api/admin/categories error:', err);
-		throw error(400, 'Invalid request body');
+		error(400, 'Invalid request body');
 	}
 };

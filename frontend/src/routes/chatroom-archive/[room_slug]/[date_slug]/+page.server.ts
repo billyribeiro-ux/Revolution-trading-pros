@@ -128,7 +128,7 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDe
 	// Parse the date
 	const archiveDate = parseDateSlug(dateSlug);
 	if (!archiveDate) {
-		throw error(404, 'Invalid date format');
+		error(404, 'Invalid date format');
 	}
 
 	const displayDate = formatDisplayDate(archiveDate);

@@ -9,7 +9,7 @@ export const load = async ({ locals }: RequestEvent) => {
 	const session = await locals.auth();
 
 	if (!session?.user) {
-		throw error(401, 'Unauthorized');
+		error(401, 'Unauthorized');
 	}
 
 	return {
@@ -55,7 +55,7 @@ export const actions = {
 			}
 
 			// Redirect to payment methods page on success
-			throw redirect(303, '/dashboard/account/payment-methods');
+			redirect(303, '/dashboard/account/payment-methods');
 		} catch (err) {
 			// If it's a redirect, re-throw it
 			if (err instanceof Response && err.status === 303) {

@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 	const guid = (params as { guid: string }).guid;
 
 	if (!guid) {
-		throw error(400, 'Video GUID is required');
+		error(400, 'Video GUID is required');
 	}
 
 	try {

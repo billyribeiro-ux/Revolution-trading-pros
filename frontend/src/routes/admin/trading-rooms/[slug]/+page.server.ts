@@ -18,13 +18,13 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Verify admin session exists
 	const sessionToken = cookies.get('session_token');
 	if (!sessionToken) {
-		throw redirect(302, '/login?redirect=/admin/trading-rooms/' + slug);
+		redirect(302, '/login?redirect=/admin/trading-rooms/' + slug);
 	}
 
 	// Parallel data fetching for performance

@@ -22,7 +22,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	try {
@@ -32,7 +32,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		const libraryId = url.searchParams.get('library_id') || '585929';
 
 		if (!videoGuid) {
-			throw error(400, 'video_guid is required');
+			error(400, 'video_guid is required');
 		}
 
 		// Get the file from the request body
@@ -40,7 +40,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		const fileBuffer = await request.arrayBuffer();
 
 		if (!fileBuffer || fileBuffer.byteLength === 0) {
-			throw error(400, 'No file data provided');
+			error(400, 'No file data provided');
 		}
 
 		console.log(`[Bunny Upload] Uploading ${fileBuffer.byteLength} bytes to video ${videoGuid}`);
@@ -61,7 +61,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		if (!response.ok) {
 			const errorText = await response.text();
 			console.error(`[Bunny Upload] Backend error: ${response.status}`, errorText);
-			throw error(response.status, errorText || 'Upload failed');
+			error(response.status, errorText || 'Upload failed');
 		}
 
 		const result = await response.json();
@@ -71,6 +71,6 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, err instanceof Error ? err.message : 'Upload failed');
+		error(500, err instanceof Error ? err.message : 'Upload failed');
 	}
 };

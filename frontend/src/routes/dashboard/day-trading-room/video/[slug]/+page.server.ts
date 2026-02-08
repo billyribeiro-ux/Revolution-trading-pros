@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(404, 'Video not found');
+		error(404, 'Video not found');
 	}
 
 	try {

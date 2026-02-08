@@ -172,7 +172,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Slug is required');
+		error(400, 'Slug is required');
 	}
 
 	// Try backend first
@@ -190,7 +190,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	const item = mockWatchlistItems[slug];
 
 	if (!item) {
-		throw error(404, `Watchlist item '${slug}' not found`);
+		error(404, `Watchlist item '${slug}' not found`);
 	}
 
 	return json({
@@ -209,11 +209,11 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	const authHeader = request.headers.get('Authorization');
 
 	if (!authHeader) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Slug is required');
+		error(400, 'Slug is required');
 	}
 
 	const body = await request.json();
@@ -233,7 +233,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	const existingItem = mockWatchlistItems[slug];
 
 	if (!existingItem) {
-		throw error(404, `Watchlist item '${slug}' not found`);
+		error(404, `Watchlist item '${slug}' not found`);
 	}
 
 	const updatedItem: WatchlistItem = {
@@ -271,11 +271,11 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 	const authHeader = request.headers.get('Authorization');
 
 	if (!authHeader) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Slug is required');
+		error(400, 'Slug is required');
 	}
 
 	// Try backend first
@@ -292,7 +292,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 	const existingItem = mockWatchlistItems[slug];
 
 	if (!existingItem) {
-		throw error(404, `Watchlist item '${slug}' not found`);
+		error(404, `Watchlist item '${slug}' not found`);
 	}
 
 	return json({

@@ -36,11 +36,11 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 
 	if (!accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	const libraryId = ROOM_LIBRARY_IDS[slug] || DEFAULT_LIBRARY_ID;
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const body = await request.json();
 
 	if (!body.title) {
-		throw error(400, 'Video title is required');
+		error(400, 'Video title is required');
 	}
 
 	try {
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		if (!response.ok) {
 			const errorText = await response.text();
 			console.error(`[Weekly Video Upload] Backend error: ${response.status}`, errorText);
-			throw error(response.status, errorText || 'Failed to create video');
+			error(response.status, errorText || 'Failed to create video');
 		}
 
 		const backendData = await response.json();
@@ -83,13 +83,13 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 			});
 		}
 
-		throw error(500, 'Failed to create video on Bunny.net');
+		error(500, 'Failed to create video on Bunny.net');
 	} catch (err) {
 		console.error('[Weekly Video Upload] Error:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to create video on Bunny.net');
+		error(500, 'Failed to create video on Bunny.net');
 	}
 };
 
@@ -99,11 +99,11 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 
 	if (!accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	const libraryId = ROOM_LIBRARY_IDS[slug] || DEFAULT_LIBRARY_ID;
@@ -113,14 +113,14 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		const videoGuid = url.searchParams.get('video_guid');
 
 		if (!videoGuid) {
-			throw error(400, 'video_guid is required');
+			error(400, 'video_guid is required');
 		}
 
 		const contentType = request.headers.get('content-type') || 'video/mp4';
 		const fileBuffer = await request.arrayBuffer();
 
 		if (!fileBuffer || fileBuffer.byteLength === 0) {
-			throw error(400, 'No file data provided');
+			error(400, 'No file data provided');
 		}
 
 		console.log(
@@ -142,7 +142,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		if (!response.ok) {
 			const errorText = await response.text();
 			console.error(`[Weekly Video Upload] Backend error: ${response.status}`, errorText);
-			throw error(response.status, errorText || 'Upload failed');
+			error(response.status, errorText || 'Upload failed');
 		}
 
 		const result = await response.json();
@@ -155,6 +155,6 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Upload failed');
+		error(500, 'Upload failed');
 	}
 };

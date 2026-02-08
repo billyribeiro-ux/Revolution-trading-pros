@@ -51,12 +51,12 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and trade plan ID are required');
+		error(400, 'Room slug and trade plan ID are required');
 	}
 
 	const planId = parseInt(id, 10);
 	if (isNaN(planId)) {
-		throw error(400, 'Invalid trade plan ID');
+		error(400, 'Invalid trade plan ID');
 	}
 
 	// Get auth headers - use rtp_access_token cookie
@@ -82,7 +82,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	throw error(404, `Trade plan ${id} not found`);
+	error(404, `Trade plan ${id} not found`);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -95,16 +95,16 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and trade plan ID are required');
+		error(400, 'Room slug and trade plan ID are required');
 	}
 
 	const planId = parseInt(id, 10);
 	if (isNaN(planId)) {
-		throw error(400, 'Invalid trade plan ID');
+		error(400, 'Invalid trade plan ID');
 	}
 
 	const body = await request.json();
@@ -148,7 +148,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	throw error(500, 'Failed to update trade plan entry');
+	error(500, 'Failed to update trade plan entry');
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -161,16 +161,16 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug || !id) {
-		throw error(400, 'Room slug and trade plan ID are required');
+		error(400, 'Room slug and trade plan ID are required');
 	}
 
 	const planId = parseInt(id, 10);
 	if (isNaN(planId)) {
-		throw error(400, 'Invalid trade plan ID');
+		error(400, 'Invalid trade plan ID');
 	}
 
 	// Build headers - use Bearer token format
@@ -195,5 +195,5 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 		});
 	}
 
-	throw error(500, 'Failed to delete trade plan entry');
+	error(500, 'Failed to delete trade plan entry');
 };

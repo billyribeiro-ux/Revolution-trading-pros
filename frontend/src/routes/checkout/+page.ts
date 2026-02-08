@@ -21,7 +21,7 @@ export const load: Load = async ({ url }) => {
 	// No token AND no session - definitely not logged in
 	if (!token && !sessionId) {
 		const returnUrl = encodeURIComponent(url.pathname + url.search);
-		throw redirect(302, `/login?redirect=${returnUrl}`);
+		redirect(302, `/login?redirect=${returnUrl}`);
 	}
 
 	// Has session but no token - might need refresh, let client handle

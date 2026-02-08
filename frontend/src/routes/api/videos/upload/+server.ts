@@ -72,7 +72,7 @@ export const GET = async ({ url }: RequestEvent) => {
 	if (sessionId) {
 		const session = uploadSessions.get(sessionId);
 		if (!session) {
-			throw error(404, 'Upload session not found');
+			error(404, 'Upload session not found');
 		}
 		return json({
 			success: true,
@@ -98,11 +98,11 @@ async function handlePresignRequest(request: Request, token?: string) {
 		const { filename, content_type, size } = body;
 
 		if (!filename || !content_type) {
-			throw error(400, 'Filename and content_type are required');
+			error(400, 'Filename and content_type are required');
 		}
 
 		if (size && size > MAX_FILE_SIZE) {
-			throw error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+			error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
 		}
 
 		// Request presigned URL from backend
@@ -117,7 +117,7 @@ async function handlePresignRequest(request: Request, token?: string) {
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({}));
-			throw error(response.status, errorData.message || 'Failed to get presigned URL');
+			error(response.status, errorData.message || 'Failed to get presigned URL');
 		}
 
 		const data = await response.json();
@@ -141,7 +141,7 @@ async function handlePresignRequest(request: Request, token?: string) {
 			throw err;
 		}
 		console.error('Presign error:', err);
-		throw error(500, 'Failed to generate presigned URL');
+		error(500, 'Failed to generate presigned URL');
 	}
 }
 
@@ -152,7 +152,7 @@ async function handleUploadInit(request: Request) {
 		const { filename, size, content_type } = body;
 
 		if (!filename) {
-			throw error(400, 'Filename is required');
+			error(400, 'Filename is required');
 		}
 
 		// Validate file type
@@ -160,11 +160,11 @@ async function handleUploadInit(request: Request) {
 		const isImage = ALLOWED_IMAGE_TYPES.includes(content_type);
 
 		if (!isVideo && !isImage) {
-			throw error(400, 'File type not allowed');
+			error(400, 'File type not allowed');
 		}
 
 		if (size && size > MAX_FILE_SIZE) {
-			throw error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+			error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
 		}
 
 		const uploadId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -191,7 +191,7 @@ async function handleUploadInit(request: Request) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to initialize upload');
+		error(500, 'Failed to initialize upload');
 	}
 }
 
@@ -204,18 +204,18 @@ async function handleDirectUpload(request: Request, token?: string) {
 		const sessionId = formData.get('session_id') as string | null;
 
 		if (!file) {
-			throw error(400, 'No file provided');
+			error(400, 'No file provided');
 		}
 
 		// Validate file type
 		const allowedTypes = type === 'thumbnail' ? ALLOWED_IMAGE_TYPES : ALLOWED_VIDEO_TYPES;
 		if (!allowedTypes.includes(file.type)) {
-			throw error(400, `Invalid file type: ${file.type}`);
+			error(400, `Invalid file type: ${file.type}`);
 		}
 
 		// Validate file size
 		if (file.size > MAX_FILE_SIZE) {
-			throw error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+			error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
 		}
 
 		// Update session status
@@ -256,7 +256,7 @@ async function handleDirectUpload(request: Request, token?: string) {
 				}
 			}
 
-			throw error(response.status, errorData.message || 'Upload failed');
+			error(response.status, errorData.message || 'Upload failed');
 		}
 
 		const data = await response.json();
@@ -282,6 +282,6 @@ async function handleDirectUpload(request: Request, token?: string) {
 			throw err;
 		}
 		console.error('Upload error:', err);
-		throw error(500, 'Failed to upload file');
+		error(500, 'Failed to upload file');
 	}
 }

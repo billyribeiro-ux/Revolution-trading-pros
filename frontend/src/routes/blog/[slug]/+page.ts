@@ -17,9 +17,9 @@ export const load: Load = async ({ params, url }) => {
 		post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''));
 	} catch (err) {
 		console.error('Failed to load post:', err);
-		throw error(404, {
-			message: 'Blog post not found'
-		});
+		error(404, {
+        			message: 'Blog post not found'
+        		});
 	}
 
 	const postUrl = `${SITE_URL}${url.pathname}`;

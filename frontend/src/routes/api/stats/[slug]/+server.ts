@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Get auth headers - ICT 7: Use rtp_access_token cookie for Bearer auth (consistent with auth store)
@@ -159,11 +159,11 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const accessToken = cookies.get('rtp_access_token');
 
 	if (!authHeader && !accessToken) {
-		throw error(401, 'Authentication required');
+		error(401, 'Authentication required');
 	}
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	// Build headers - ICT 7: Use rtp_access_token cookie for Bearer auth

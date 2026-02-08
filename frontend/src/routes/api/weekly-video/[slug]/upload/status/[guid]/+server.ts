@@ -21,11 +21,11 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 	const { slug, guid } = params;
 
 	if (!slug) {
-		throw error(400, 'Room slug is required');
+		error(400, 'Room slug is required');
 	}
 
 	if (!guid) {
-		throw error(400, 'Video GUID is required');
+		error(400, 'Video GUID is required');
 	}
 
 	try {
