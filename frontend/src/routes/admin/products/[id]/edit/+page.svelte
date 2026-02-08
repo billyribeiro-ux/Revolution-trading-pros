@@ -674,6 +674,7 @@
 		<div
 			class="modal-overlay"
 			onclick={() => (showDeleteConfirm = false)}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeleteConfirm = false)}
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"

@@ -1009,7 +1009,7 @@
 {#if showAddTagModal}
 	<div
 		class="modal-overlay"
-		onclick={() => (showAddTagModal = false)}
+		onclick={(e: MouseEvent) => e.target === e.currentTarget && (showAddTagModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddTagModal = false)}
 		role="dialog"
 		aria-modal="true"
@@ -1019,8 +1019,6 @@
 		<div
 			class="modal"
 			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3 id="add-tag-title">Add Tag</h3>
@@ -1048,10 +1046,9 @@
 
 <!-- Add List Modal -->
 {#if showAddListModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		onclick={() => (showAddListModal = false)}
+		onclick={(e: MouseEvent) => e.target === e.currentTarget && (showAddListModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddListModal = false)}
 		role="dialog"
 		aria-modal="true"
@@ -1061,8 +1058,6 @@
 		<div
 			class="modal"
 			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3 id="add-list-title">Add to List</h3>
@@ -1092,7 +1087,7 @@
 {#if showAddNoteModal}
 	<div
 		class="modal-overlay"
-		onclick={() => (showAddNoteModal = false)}
+		onclick={(e: MouseEvent) => e.target === e.currentTarget && (showAddNoteModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddNoteModal = false)}
 		role="dialog"
 		aria-modal="true"
@@ -1102,8 +1097,6 @@
 		<div
 			class="modal"
 			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3 id="add-note-title">Add Note</h3>
@@ -1134,7 +1127,7 @@
 {#if showSendEmailModal}
 	<div
 		class="modal-overlay"
-		onclick={closeSendEmailModal}
+		onclick={(e: MouseEvent) => e.target === e.currentTarget && closeSendEmailModal()}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeSendEmailModal()}
 		role="dialog"
 		aria-modal="true"
@@ -1144,8 +1137,6 @@
 		<div
 			class="modal modal-large"
 			role="document"
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<div class="modal-title-section">

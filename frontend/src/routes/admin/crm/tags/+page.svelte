@@ -318,7 +318,7 @@
 
 <!-- Create/Edit Modal -->
 {#if showModal}
-	<div class="modal-overlay" onclick={closeModal} role="dialog" aria-modal="true" tabindex="-1">
+	<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeModal()} role="dialog" aria-modal="true" tabindex="-1">
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content"

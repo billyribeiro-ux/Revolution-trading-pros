@@ -38,6 +38,7 @@ const config = {
         throw new Error(`${status} ${path}`);
       },
       handleMissingId: 'ignore',
+      handleUnseenRoutes: 'ignore',
       concurrency: 8,
       crawl: true,
       entries: ['*', '/robots.txt']
