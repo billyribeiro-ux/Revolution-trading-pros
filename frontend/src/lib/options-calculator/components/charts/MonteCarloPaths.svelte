@@ -68,8 +68,12 @@
 		}
 		const yPad = (maxPrice - minPrice) * 0.05;
 
-		const x = scaleLinear().domain([0, timePoints[timePoints.length - 1]]).range([0, innerW]);
-		const y = scaleLinear().domain([minPrice - yPad, maxPrice + yPad]).range([innerH, 0]);
+		const x = scaleLinear()
+			.domain([0, timePoints[timePoints.length - 1]])
+			.range([0, innerW]);
+		const y = scaleLinear()
+			.domain([minPrice - yPad, maxPrice + yPad])
+			.range([innerH, 0]);
 
 		// Draw paths (limit to 200 for SVG performance)
 		const displayPaths = paths.slice(0, Math.min(200, paths.length));
@@ -97,7 +101,7 @@
 		const highlights: { path: MonteCarloPath; color: string; label: string }[] = [
 			{ path: p5Path, color: 'var(--calc-put)', label: '5th %ile' },
 			{ path: medianPath, color: 'var(--calc-accent)', label: 'Median' },
-			{ path: p95Path, color: 'var(--calc-call)', label: '95th %ile' },
+			{ path: p95Path, color: 'var(--calc-call)', label: '95th %ile' }
 		];
 
 		for (const hl of highlights) {
@@ -121,37 +125,51 @@
 
 		// Strike price line
 		g.append('line')
-			.attr('x1', 0).attr('x2', innerW)
-			.attr('y1', y(calc.strikePrice)).attr('y2', y(calc.strikePrice))
+			.attr('x1', 0)
+			.attr('x2', innerW)
+			.attr('y1', y(calc.strikePrice))
+			.attr('y2', y(calc.strikePrice))
 			.attr('stroke', 'var(--calc-warning)')
-			.attr('stroke-width', 1).attr('stroke-dasharray', '6,3').attr('opacity', 0.7);
+			.attr('stroke-width', 1)
+			.attr('stroke-dasharray', '6,3')
+			.attr('opacity', 0.7);
 
 		g.append('text')
-			.attr('x', innerW + 4).attr('y', y(calc.strikePrice))
+			.attr('x', innerW + 4)
+			.attr('y', y(calc.strikePrice))
 			.attr('fill', 'var(--calc-warning)')
-			.attr('font-size', '9px').attr('font-family', 'var(--calc-font-mono)')
+			.attr('font-size', '9px')
+			.attr('font-family', 'var(--calc-font-mono)')
 			.attr('dominant-baseline', 'middle')
 			.text(`K=$${calc.strikePrice.toFixed(0)}`);
 
 		// Spot price starting dot
 		g.append('circle')
-			.attr('cx', x(0)).attr('cy', y(calc.spotPrice))
-			.attr('r', 4).attr('fill', 'var(--calc-text)');
+			.attr('cx', x(0))
+			.attr('cy', y(calc.spotPrice))
+			.attr('r', 4)
+			.attr('fill', 'var(--calc-text)');
 
 		// Axes
-		const xAxisGen = axisBottom(x).ticks(6).tickFormat((d) => `${(Number(d) * 365).toFixed(0)}d`);
-		const yAxisGen = axisLeft(y).ticks(6).tickFormat((d) => `$${Number(d).toFixed(0)}`);
+		const xAxisGen = axisBottom(x)
+			.ticks(6)
+			.tickFormat((d) => `${(Number(d) * 365).toFixed(0)}d`);
+		const yAxisGen = axisLeft(y)
+			.ticks(6)
+			.tickFormat((d) => `$${Number(d).toFixed(0)}`);
 
 		g.append('g')
 			.attr('transform', `translate(0,${innerH})`)
 			.call(xAxisGen)
 			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)').attr('font-size', '10px');
+			.attr('font-family', 'var(--calc-font-mono)')
+			.attr('font-size', '10px');
 
 		g.append('g')
 			.call(yAxisGen)
 			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)').attr('font-size', '10px');
+			.attr('font-family', 'var(--calc-font-mono)')
+			.attr('font-size', '10px');
 
 		// Final price histogram on right edge
 		const histBins = 30;
@@ -173,7 +191,10 @@
 				.attr('y', y(binY + binSize))
 				.attr('width', barW)
 				.attr('height', Math.max(1, y(binY) - y(binY + binSize)))
-				.attr('fill', binY + binSize / 2 > calc.strikePrice ? 'var(--calc-call)' : 'var(--calc-put)')
+				.attr(
+					'fill',
+					binY + binSize / 2 > calc.strikePrice ? 'var(--calc-call)' : 'var(--calc-put)'
+				)
 				.attr('opacity', 0.4);
 		}
 	});
@@ -198,7 +219,10 @@
 		</button>
 
 		<div class="flex items-center gap-2">
-			<span class="text-[10px]" style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Paths:</span>
+			<span
+				class="text-[10px]"
+				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Paths:</span
+			>
 			<input
 				type="range"
 				min="100"
@@ -207,11 +231,18 @@
 				bind:value={pathCount}
 				class="calc-slider w-24"
 			/>
-			<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">{pathCount.toLocaleString()}</span>
+			<span
+				class="text-xs"
+				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+				>{pathCount.toLocaleString()}</span
+			>
 		</div>
 
 		{#if calc.monteCarloResult}
-			<span class="text-[10px]" style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">
+			<span
+				class="text-[10px]"
+				style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
+			>
 				{calc.monteCarloResult.computeTimeMs.toFixed(0)}ms
 			</span>
 		{/if}
@@ -232,22 +263,60 @@
 	{#if calc.monteCarloResult}
 		{@const s = calc.monteCarloResult.stats}
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-			<div class="flex flex-col gap-0.5 rounded-lg px-3 py-2" style="background: var(--calc-surface); border: 1px solid var(--calc-border);">
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">Mean Price</span>
-				<span class="text-sm font-semibold" style="color: var(--calc-text); font-family: var(--calc-font-mono);">{formatCurrency(s.meanFinalPrice)}</span>
+			<div
+				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
+				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
+			>
+				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+					>Mean Price</span
+				>
+				<span
+					class="text-sm font-semibold"
+					style="color: var(--calc-text); font-family: var(--calc-font-mono);"
+					>{formatCurrency(s.meanFinalPrice)}</span
+				>
 			</div>
-			<div class="flex flex-col gap-0.5 rounded-lg px-3 py-2" style="background: var(--calc-surface); border: 1px solid var(--calc-border);">
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">Std Dev</span>
-				<span class="text-sm font-semibold" style="color: var(--calc-text); font-family: var(--calc-font-mono);">{formatCurrency(s.stdDev)}</span>
+			<div
+				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
+				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
+			>
+				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+					>Std Dev</span
+				>
+				<span
+					class="text-sm font-semibold"
+					style="color: var(--calc-text); font-family: var(--calc-font-mono);"
+					>{formatCurrency(s.stdDev)}</span
+				>
 			</div>
-			<div class="flex flex-col gap-0.5 rounded-lg px-3 py-2" style="background: var(--calc-surface); border: 1px solid var(--calc-border);">
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">MC Call</span>
-				<span class="text-sm font-semibold" style="color: var(--calc-call); font-family: var(--calc-font-mono);">{formatCurrency(s.expectedPayoffCall)}</span>
-				<span class="text-[9px]" style="color: var(--calc-text-muted);">BS: {formatCurrency(s.bsCallPrice)}</span>
+			<div
+				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
+				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
+			>
+				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+					>MC Call</span
+				>
+				<span
+					class="text-sm font-semibold"
+					style="color: var(--calc-call); font-family: var(--calc-font-mono);"
+					>{formatCurrency(s.expectedPayoffCall)}</span
+				>
+				<span class="text-[9px]" style="color: var(--calc-text-muted);"
+					>BS: {formatCurrency(s.bsCallPrice)}</span
+				>
 			</div>
-			<div class="flex flex-col gap-0.5 rounded-lg px-3 py-2" style="background: var(--calc-surface); border: 1px solid var(--calc-border);">
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);">P(Above K)</span>
-				<span class="text-sm font-semibold" style="color: var(--calc-accent); font-family: var(--calc-font-mono);">{formatPercent(s.probabilityAboveStrike)}</span>
+			<div
+				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
+				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
+			>
+				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+					>P(Above K)</span
+				>
+				<span
+					class="text-sm font-semibold"
+					style="color: var(--calc-accent); font-family: var(--calc-font-mono);"
+					>{formatPercent(s.probabilityAboveStrike)}</span
+				>
 			</div>
 		</div>
 	{/if}

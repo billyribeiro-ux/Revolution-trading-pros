@@ -61,7 +61,7 @@
 		name.trim().length > 0 && url.trim().length > 0 && isValidUrl(url) && selectedEvents.size > 0
 	);
 
-		let _hasChanges: boolean = $derived.by(() => {
+	let _hasChanges: boolean = $derived.by(() => {
 		if (!originalWebhook) return false;
 
 		const currentHeadersObj: Record<string, string> = {};

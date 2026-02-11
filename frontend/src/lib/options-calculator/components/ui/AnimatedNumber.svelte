@@ -18,7 +18,7 @@
 		suffix = '',
 		duration = 0.6,
 		colorize = false,
-		class: className = '',
+		class: className = ''
 	}: Props = $props();
 
 	let displayEl: HTMLSpanElement | undefined = $state();
@@ -48,7 +48,7 @@
 			ease: 'power2.out',
 			onUpdate() {
 				displayText = `${pfx}${tweenObj.val.toFixed(dec)}${sfx}`;
-			},
+			}
 		});
 	});
 </script>

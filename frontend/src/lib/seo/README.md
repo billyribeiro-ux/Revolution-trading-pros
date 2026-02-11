@@ -48,6 +48,7 @@ scripts/
 ### 1. No additional install needed
 
 All dependencies are already in the project:
+
 - `super-sitemap` (sitemap generation)
 - `vitest` + `@vitest/coverage-v8` (testing)
 - `zod` (available for runtime validation if needed)
@@ -65,11 +66,11 @@ In any `+page.server.ts` or `+page.ts`:
 import type { SEOInput } from '$lib/seo/types';
 
 export const load = async () => {
-  const seo: SEOInput = {
-    title: 'About Us',
-    description: 'Learn about Revolution Trading Pros.',
-  };
-  return { seo };
+	const seo: SEOInput = {
+		title: 'About Us',
+		description: 'Learn about Revolution Trading Pros.'
+	};
+	return { seo };
 };
 ```
 
@@ -79,19 +80,19 @@ That's it. The layout picks up `page.data.seo` and resolves everything.
 
 ### Types
 
-| Type | Purpose |
-|------|---------|
-| `SEOInput` | What routes provide (partial, nullable) |
-| `SEOResolved` | Final output ready for rendering |
-| `SEODefaults` | Site-wide configuration |
-| `OpenGraph` | OG meta fields |
-| `TwitterCard` | Twitter Card fields |
-| `RobotsDirectives` | Robots meta directives |
-| `AlternateLink` | hreflang alternate link |
-| `VerificationTags` | Search engine verification codes |
-| `JsonLdNode` | Union of all JSON-LD schema types |
-| `RouteSEOContext` | Route context (pathname, env, flags) |
-| `CanonicalConfig` | Canonical URL normalization config |
+| Type               | Purpose                                 |
+| ------------------ | --------------------------------------- |
+| `SEOInput`         | What routes provide (partial, nullable) |
+| `SEOResolved`      | Final output ready for rendering        |
+| `SEODefaults`      | Site-wide configuration                 |
+| `OpenGraph`        | OG meta fields                          |
+| `TwitterCard`      | Twitter Card fields                     |
+| `RobotsDirectives` | Robots meta directives                  |
+| `AlternateLink`    | hreflang alternate link                 |
+| `VerificationTags` | Search engine verification codes        |
+| `JsonLdNode`       | Union of all JSON-LD schema types       |
+| `RouteSEOContext`  | Route context (pathname, env, flags)    |
+| `CanonicalConfig`  | Canonical URL normalization config      |
 
 ### Nullable Semantics
 
@@ -102,21 +103,27 @@ That's it. The layout picks up `page.data.seo` and resolves everything.
 ### Functions
 
 #### `resolveSEO(context, defaults, ...overrides)`
+
 Full resolution pipeline. Returns `SEOResolved`.
 
 #### `createSEOContext(opts)`
+
 Create a `RouteSEOContext` from common SvelteKit data.
 
 #### `mergeSEO(...layers)`
+
 Deterministic deep merge of SEOInput layers.
 
 #### `normalizeCanonical(input, config)`
+
 Normalize a URL: force HTTPS, lowercase host, strip tracking params, enforce trailing slash.
 
 #### `buildRobots(context, overrides, defaults)`
+
 Environment-aware robots directive builder. Returns `{ directives, content }`.
 
 #### JSON-LD Builders
+
 - `organizationSchema(opts)` → `JsonLdOrganization`
 - `websiteSchema(opts)` → `JsonLdWebSite`
 - `breadcrumbSchema(items, id?)` → `JsonLdBreadcrumbList`
@@ -124,6 +131,7 @@ Environment-aware robots directive builder. Returns `{ directives, content }`.
 - `faqSchema(questions, id?)` → `JsonLdFAQPage`
 
 #### Utilities
+
 - `safeJsonLdSerialize(node)` — XSS-safe JSON-LD serialization
 - `toGraph(nodes)` — Wrap nodes in `@graph` structure
 - `dedupeJsonLd(nodes)` — Deduplicate by `@id` or stable hash
@@ -139,12 +147,12 @@ Environment-aware robots directive builder. Returns `{ directives, content }`.
 import type { SEOInput } from '$lib/seo/types';
 
 export const load = async () => {
-  const seo: SEOInput = {
-    title: 'About Us',
-    description: 'Revolution Trading Pros: 18,000+ traders trust our education.',
-    og: { type: 'website' },
-  };
-  return { seo };
+	const seo: SEOInput = {
+		title: 'About Us',
+		description: 'Revolution Trading Pros: 18,000+ traders trust our education.',
+		og: { type: 'website' }
+	};
+	return { seo };
 };
 ```
 
@@ -156,36 +164,36 @@ import type { SEOInput } from '$lib/seo/types';
 import { articleSchema, breadcrumbSchema } from '$lib/seo/jsonld';
 
 export const load = async ({ params, url }) => {
-  const post = await fetchPost(params.slug);
-  const seo: SEOInput = {
-    title: post.title,
-    description: post.excerpt,
-    canonical: `https://revolution-trading-pros.pages.dev${url.pathname}`,
-    og: {
-      type: 'article',
-      image: post.image,
-      article: {
-        publishedTime: post.publishedAt,
-        author: post.author,
-      },
-    },
-    jsonld: [
-      articleSchema({
-        headline: post.title,
-        url: `https://revolution-trading-pros.pages.dev${url.pathname}`,
-        datePublished: post.publishedAt,
-        authorName: post.author,
-        publisherName: 'Revolution Trading Pros',
-        type: 'BlogPosting',
-      }),
-      breadcrumbSchema([
-        { name: 'Home', url: 'https://revolution-trading-pros.pages.dev' },
-        { name: 'Blog', url: 'https://revolution-trading-pros.pages.dev/blog' },
-        { name: post.title, url: `https://revolution-trading-pros.pages.dev${url.pathname}` },
-      ]),
-    ],
-  };
-  return { post, seo };
+	const post = await fetchPost(params.slug);
+	const seo: SEOInput = {
+		title: post.title,
+		description: post.excerpt,
+		canonical: `https://revolution-trading-pros.pages.dev${url.pathname}`,
+		og: {
+			type: 'article',
+			image: post.image,
+			article: {
+				publishedTime: post.publishedAt,
+				author: post.author
+			}
+		},
+		jsonld: [
+			articleSchema({
+				headline: post.title,
+				url: `https://revolution-trading-pros.pages.dev${url.pathname}`,
+				datePublished: post.publishedAt,
+				authorName: post.author,
+				publisherName: 'Revolution Trading Pros',
+				type: 'BlogPosting'
+			}),
+			breadcrumbSchema([
+				{ name: 'Home', url: 'https://revolution-trading-pros.pages.dev' },
+				{ name: 'Blog', url: 'https://revolution-trading-pros.pages.dev/blog' },
+				{ name: post.title, url: `https://revolution-trading-pros.pages.dev${url.pathname}` }
+			])
+		]
+	};
+	return { post, seo };
 };
 ```
 
@@ -196,12 +204,12 @@ export const load = async ({ params, url }) => {
 import type { SEOInput } from '$lib/seo/types';
 
 export const load = async () => {
-  const seo: SEOInput = {
-    title: 'My Account',
-    description: 'Manage your account.',
-    robots: { index: false, follow: false },
-  };
-  return { seo };
+	const seo: SEOInput = {
+		title: 'My Account',
+		description: 'Manage your account.',
+		robots: { index: false, follow: false }
+	};
+	return { seo };
 };
 ```
 
@@ -238,12 +246,14 @@ robots: {
 ```
 
 **Automatic noindex rules:**
+
 - Non-production environments (dev/staging)
 - Paths matching `privatePathPrefixes`
 - Paths matching `searchPathPrefixes`
 - Pages with `isErrorPage: true`
 
 **Safety guards:**
+
 - `index: true` override is ignored on non-production environments
 - `index: true` override is ignored on private/error pages
 
@@ -255,12 +265,12 @@ robots: {
 import { faqSchema } from '$lib/seo/jsonld';
 
 const seo: SEOInput = {
-  jsonld: [
-    faqSchema([
-      { question: 'What is day trading?', answer: 'Day trading is...' },
-      { question: 'How do I start?', answer: 'Start by...' },
-    ]),
-  ],
+	jsonld: [
+		faqSchema([
+			{ question: 'What is day trading?', answer: 'Day trading is...' },
+			{ question: 'How do I start?', answer: 'Start by...' }
+		])
+	]
 };
 ```
 
@@ -270,12 +280,12 @@ const seo: SEOInput = {
 import type { JsonLdNode } from '$lib/seo/types';
 
 const courseNode: JsonLdNode = {
-  '@context': 'https://schema.org',
-  '@type': 'Course',
-  '@id': 'https://example.com/courses/trading-101#course',
-  name: 'Trading 101',
-  description: 'Learn the fundamentals.',
-  provider: { '@type': 'Organization', name: 'Revolution Trading Pros' },
+	'@context': 'https://schema.org',
+	'@type': 'Course',
+	'@id': 'https://example.com/courses/trading-101#course',
+	name: 'Trading 101',
+	description: 'Learn the fundamentals.',
+	provider: { '@type': 'Organization', name: 'Revolution Trading Pros' }
 };
 
 const seo: SEOInput = { jsonld: [courseNode] };
@@ -304,6 +314,7 @@ paramValues: {
 ### robots.txt reference
 
 The `robots.txt` at `src/routes/robots.txt/+server.ts` already references:
+
 ```
 Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
 ```
@@ -336,30 +347,36 @@ Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
 ## Google-Aligned Compliance
 
 ### Sitemap Constraints
+
 - Max 50,000 URLs per sitemap file
 - Max 50MB uncompressed per file
 - super-sitemap auto-segments when exceeded
 
 ### Robots Meta / X-Robots-Tag
+
 - Full support for all standard directives
 - Environment-aware defaults prevent accidental indexing
 
 ### Structured Data Quality
+
 - Type-safe builders prevent invalid schemas
 - XSS-safe serialization for script injection context
 - Deduplicated by `@id` or stable hash
 
 ### Snippet/Preview Controls
+
 - `max-snippet`, `max-image-preview`, `max-video-preview` supported
 - Defaults: `-1` (unlimited), `large`, `-1`
 
 ### Core Update Resilience
+
 - Intent-match: per-route title/description customization
 - Originality: unique canonical URLs, no duplicate content
 - Trust signals: Organization + WebSite JSON-LD on every page
 - Content quality: structured data validates required fields
 
 ### Google Discover Monitoring (February 2026)
+
 - **Context:** February 2026 Discover update awareness
 - **Action:** Monitor Discover traffic in GSC Performance → Discover tab
 - **Note:** This is a Discover-specific volatility event, NOT a broad Search core update
@@ -378,42 +395,44 @@ Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
 
 ## Troubleshooting Matrix
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Duplicate `<title>` tags | Multiple components emit `<svelte:head>` title | Remove all `<title>` from page-level `<svelte:head>` blocks; use `seo.title` in load function |
-| Page indexed when it shouldn't be | Missing from `privatePathPrefixes` | Add path prefix to `defaults.ts` → `privatePathPrefixes` |
-| OG image not showing | Missing `og.image` in SEOInput | Set `og.image` in page load or update `defaultImage` in defaults |
-| JSON-LD validation errors | Missing required fields | Use type-safe builders (`articleSchema`, etc.) which enforce required fields |
-| Canonical has tracking params | Param not in denylist | Add param to `canonical.queryParamDenylist` in defaults |
-| Staging site indexed by Google | `env` not set correctly | Ensure `import.meta.env.MODE` returns correct value; check `detectEnv()` in layout server |
-| Sitemap missing routes | Route matches exclusion pattern | Check `excludeRoutePatterns` in sitemap.xml server |
-| Duplicate meta tags in audit | Legacy `<svelte:head>` in page components | Remove SEO tags from page `<svelte:head>` blocks; use load function `seo` instead |
+| Symptom                           | Cause                                          | Fix                                                                                           |
+| --------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Duplicate `<title>` tags          | Multiple components emit `<svelte:head>` title | Remove all `<title>` from page-level `<svelte:head>` blocks; use `seo.title` in load function |
+| Page indexed when it shouldn't be | Missing from `privatePathPrefixes`             | Add path prefix to `defaults.ts` → `privatePathPrefixes`                                      |
+| OG image not showing              | Missing `og.image` in SEOInput                 | Set `og.image` in page load or update `defaultImage` in defaults                              |
+| JSON-LD validation errors         | Missing required fields                        | Use type-safe builders (`articleSchema`, etc.) which enforce required fields                  |
+| Canonical has tracking params     | Param not in denylist                          | Add param to `canonical.queryParamDenylist` in defaults                                       |
+| Staging site indexed by Google    | `env` not set correctly                        | Ensure `import.meta.env.MODE` returns correct value; check `detectEnv()` in layout server     |
+| Sitemap missing routes            | Route matches exclusion pattern                | Check `excludeRoutePatterns` in sitemap.xml server                                            |
+| Duplicate meta tags in audit      | Legacy `<svelte:head>` in page components      | Remove SEO tags from page `<svelte:head>` blocks; use load function `seo` instead             |
 
 ## Migration Guide
 
 ### From Mixed Libraries to Unified Layer
 
 **Before (scattered SEO):**
+
 ```svelte
 <!-- In every page component -->
 <svelte:head>
-  <title>My Page | Brand</title>
-  <meta name="description" content="..." />
-  <meta property="og:title" content="..." />
-  <link rel="canonical" href="..." />
-  {@html `<script type="application/ld+json">...</script>`}
+	<title>My Page | Brand</title>
+	<meta name="description" content="..." />
+	<meta property="og:title" content="..." />
+	<link rel="canonical" href="..." />
+	{@html `<script type="application/ld+json">...</script>`}
 </svelte:head>
 ```
 
 **After (unified layer):**
+
 ```typescript
 // In +page.server.ts or +page.ts
 export const load = async () => {
-  const seo: SEOInput = {
-    title: 'My Page',
-    description: '...',
-  };
-  return { seo };
+	const seo: SEOInput = {
+		title: 'My Page',
+		description: '...'
+	};
+	return { seo };
 };
 // No <svelte:head> SEO tags in the component!
 ```
@@ -445,6 +464,7 @@ export const load = async () => {
 ### What to Keep in `app.html`
 
 These tags stay in `app.html` because they're static and not route-specific:
+
 - `<meta charset="utf-8" />`
 - `<meta name="viewport" ...>`
 - `<link rel="icon" ...>`
@@ -457,6 +477,7 @@ These tags stay in `app.html` because they're static and not route-specific:
 ### What Moves to the SEO Layer
 
 These are now exclusively managed by `<Seo>`:
+
 - `<title>`
 - `<meta name="description">`
 - `<meta name="robots">`

@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		try {
 			const response = await fetch(
-				`https://api.polygon.io/v3/reference/options/contracts?underlying_ticker=${ticker}&apiKey=${apiKey}&limit=1000&order=asc&sort=expiration_date`,
+				`https://api.polygon.io/v3/reference/options/contracts?underlying_ticker=${ticker}&apiKey=${apiKey}&limit=1000&order=asc&sort=expiration_date`
 			);
 
 			if (!response.ok) {
@@ -36,10 +36,13 @@ export const GET: RequestHandler = async ({ url }) => {
 			return json({
 				underlying: ticker,
 				expirations: [...expirationSet].sort(),
-				source: 'polygon',
+				source: 'polygon'
 			});
 		} catch (err) {
-			return error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+			return error(
+				502,
+				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
+			);
 		}
 	}
 

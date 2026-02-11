@@ -78,10 +78,9 @@ export function normalizeCanonical(input: string, config: CanonicalConfig): stri
 	url.hash = '';
 
 	// Build denylist set (config denylist + defaults)
-	const denySet = new Set([
-		...DEFAULT_DENY_PARAMS,
-		...config.queryParamDenylist
-	].map((p) => p.toLowerCase()));
+	const denySet = new Set(
+		[...DEFAULT_DENY_PARAMS, ...config.queryParamDenylist].map((p) => p.toLowerCase())
+	);
 
 	// Build allowlist set
 	const allowSet = new Set(config.queryParamAllowlist.map((p) => p.toLowerCase()));

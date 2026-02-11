@@ -33,7 +33,7 @@ export function solveImpliedVolatility(
 				impliedVolatility: vol,
 				iterations,
 				converged: true,
-				error: Math.abs(diff),
+				error: Math.abs(diff)
 			};
 		}
 
@@ -72,7 +72,7 @@ function bisectionIV(marketPrice: number, inputs: BSInputs, type: OptionType): I
 				impliedVolatility: mid,
 				iterations,
 				converged: true,
-				error: Math.abs(diff),
+				error: Math.abs(diff)
 			};
 		}
 
@@ -87,6 +87,6 @@ function bisectionIV(marketPrice: number, inputs: BSInputs, type: OptionType): I
 		impliedVolatility: mid,
 		iterations,
 		converged: false,
-		error: Math.abs(priceOption({ ...inputs, volatility: mid }, type) - marketPrice),
+		error: Math.abs(priceOption({ ...inputs, volatility: mid }, type) - marketPrice)
 	};
 }

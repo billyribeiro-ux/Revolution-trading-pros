@@ -12,7 +12,6 @@
 
 import type { PageServerLoad } from './$types';
 
-
 export interface VideoResponse {
 	id: number;
 	title: string;
@@ -48,7 +47,6 @@ export interface ApiResponse {
 		last_page: number;
 	};
 }
-
 
 function getRoomName(slug: string): string {
 	const roomNames: Record<string, string> = {

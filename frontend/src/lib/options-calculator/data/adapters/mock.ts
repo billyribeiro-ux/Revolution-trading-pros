@@ -17,13 +17,16 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from '../types.js';
 import { price as bsPrice } from '../../engine/black-scholes.js';
 import { firstOrderGreeks } from '../../engine/greeks.js';
 import type { BSInputs } from '../../engine/types.js';
 
-const MOCK_STOCKS: Record<string, { name: string; price: number; div: number; type: 'stock' | 'etf' }> = {
+const MOCK_STOCKS: Record<
+	string,
+	{ name: string; price: number; div: number; type: 'stock' | 'etf' }
+> = {
 	AAPL: { name: 'Apple Inc.', price: 237.42, div: 0.0044, type: 'stock' },
 	MSFT: { name: 'Microsoft Corporation', price: 441.28, div: 0.0072, type: 'stock' },
 	GOOGL: { name: 'Alphabet Inc.', price: 192.15, div: 0.0, type: 'stock' },
@@ -38,7 +41,7 @@ const MOCK_STOCKS: Record<string, { name: string; price: number; div: number; ty
 	AMD: { name: 'Advanced Micro Devices', price: 164.21, div: 0.0, type: 'stock' },
 	NFLX: { name: 'Netflix Inc.', price: 982.15, div: 0.0, type: 'stock' },
 	DIS: { name: 'The Walt Disney Company', price: 112.45, div: 0.0, type: 'stock' },
-	BA: { name: 'Boeing Company', price: 178.32, div: 0.0, type: 'stock' },
+	BA: { name: 'Boeing Company', price: 178.32, div: 0.0, type: 'stock' }
 };
 
 function addNoise(base: number, pct: number = 0.002): number {
@@ -75,11 +78,14 @@ function generateMockChain(
 	ticker: string,
 	spotPrice: number,
 	expiration: string,
-	divYield: number,
+	divYield: number
 ): OptionsChain {
 	const today = new Date();
 	const expiryDate = new Date(expiration);
-	const daysToExpiry = Math.max(1, Math.round((expiryDate.getTime() - today.getTime()) / 86_400_000));
+	const daysToExpiry = Math.max(
+		1,
+		Math.round((expiryDate.getTime() - today.getTime()) / 86_400_000)
+	);
 	const timeToExpiry = daysToExpiry / 365;
 
 	const strikeStep = spotPrice > 200 ? 5 : spotPrice > 50 ? 2.5 : 1;
@@ -92,7 +98,7 @@ function generateMockChain(
 	}
 
 	const riskFreeRate = 0.0428;
-	const baseVol = 0.25 + Math.random() * 0.10;
+	const baseVol = 0.25 + Math.random() * 0.1;
 
 	const calls: OptionQuote[] = [];
 	const puts: OptionQuote[] = [];
@@ -109,7 +115,7 @@ function generateMockChain(
 			volatility: iv,
 			timeToExpiry,
 			riskFreeRate,
-			dividendYield: divYield,
+			dividendYield: divYield
 		};
 
 		const pricing = bsPrice(bsInputs);
@@ -139,7 +145,7 @@ function generateMockChain(
 			vega: callGreeks.vega,
 			rho: callGreeks.rho,
 			inTheMoney: spotPrice > strike,
-			source: 'mock' as DataProviderName,
+			source: 'mock' as DataProviderName
 		});
 
 		puts.push({
@@ -161,7 +167,7 @@ function generateMockChain(
 			vega: putGreeks.vega,
 			rho: putGreeks.rho,
 			inTheMoney: spotPrice < strike,
-			source: 'mock' as DataProviderName,
+			source: 'mock' as DataProviderName
 		});
 	}
 
@@ -172,7 +178,7 @@ function generateMockChain(
 		calls,
 		puts,
 		timestamp: new Date().toISOString(),
-		source: 'mock',
+		source: 'mock'
 	};
 }
 
@@ -186,7 +192,7 @@ export function createMockAdapter(): MarketDataProvider {
 		earnings: true,
 		riskFreeRate: true,
 		tickerSearch: true,
-		streaming: false,
+		streaming: false
 	};
 
 	return {
@@ -204,7 +210,7 @@ export function createMockAdapter(): MarketDataProvider {
 				displayName: 'Mock Data (Development)',
 				isAvailable: true,
 				isConfigured: true,
-				avgResponseTime: 5,
+				avgResponseTime: 5
 			};
 		},
 
@@ -225,7 +231,7 @@ export function createMockAdapter(): MarketDataProvider {
 				change: p - prevClose,
 				changePercent: ((p - prevClose) / prevClose) * 100,
 				timestamp: new Date().toISOString(),
-				source: 'mock',
+				source: 'mock'
 			};
 		},
 
@@ -255,7 +261,7 @@ export function createMockAdapter(): MarketDataProvider {
 					high,
 					low,
 					close: currentPrice,
-					volume: Math.round(30_000_000 + Math.random() * 40_000_000),
+					volume: Math.round(30_000_000 + Math.random() * 40_000_000)
 				});
 			}
 			return data;
@@ -271,12 +277,12 @@ export function createMockAdapter(): MarketDataProvider {
 			return {
 				underlying: ticker.toUpperCase(),
 				expirations: generateExpirations(12),
-				source: 'mock',
+				source: 'mock'
 			};
 		},
 
 		async getHistoricalVol(ticker: string): Promise<HistoricalVolData> {
-			const baseVol = 0.20 + Math.random() * 0.15;
+			const baseVol = 0.2 + Math.random() * 0.15;
 			return {
 				ticker: ticker.toUpperCase(),
 				hv10: baseVol * (0.9 + Math.random() * 0.2),
@@ -286,7 +292,7 @@ export function createMockAdapter(): MarketDataProvider {
 				hv90: baseVol * (1.0 + Math.random() * 0.15),
 				ivPercentile: Math.round(Math.random() * 100),
 				ivRank: Math.round(Math.random() * 100),
-				source: 'mock',
+				source: 'mock'
 			};
 		},
 
@@ -298,7 +304,7 @@ export function createMockAdapter(): MarketDataProvider {
 				annualDividend: stock.price * stock.div,
 				dividendYield: stock.div,
 				frequency: stock.div > 0 ? 'quarterly' : 'none',
-				source: 'mock',
+				source: 'mock'
 			};
 		},
 
@@ -311,7 +317,7 @@ export function createMockAdapter(): MarketDataProvider {
 				nextEarningsDate: nextDate.toISOString().split('T')[0],
 				daysToEarnings,
 				expectedMovePercent: 4 + Math.random() * 6,
-				source: 'mock',
+				source: 'mock'
 			};
 		},
 
@@ -324,7 +330,7 @@ export function createMockAdapter(): MarketDataProvider {
 				rate2Y: 0.0385,
 				rate10Y: 0.0395,
 				date: new Date().toISOString().split('T')[0],
-				source: 'mock',
+				source: 'mock'
 			};
 		},
 
@@ -338,12 +344,12 @@ export function createMockAdapter(): MarketDataProvider {
 						ticker,
 						name: stock.name,
 						type: stock.type,
-						exchange: 'NASDAQ',
+						exchange: 'NASDAQ'
 					});
 				}
 				if (results.length >= limit) break;
 			}
 			return results;
-		},
+		}
 	};
 }

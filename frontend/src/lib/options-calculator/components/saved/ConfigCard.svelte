@@ -14,14 +14,14 @@
 	let dateStr = $derived(
 		new Date(config.createdAt).toLocaleDateString('en-US', {
 			month: 'short',
-			day: 'numeric',
-		}),
+			day: 'numeric'
+		})
 	);
 
 	let typeColor = $derived(
 		config.optionType === 'call'
 			? { bg: 'var(--calc-call-bg)', text: 'var(--calc-call)' }
-			: { bg: 'var(--calc-put-bg)', text: 'var(--calc-put)' },
+			: { bg: 'var(--calc-put-bg)', text: 'var(--calc-put)' }
 	);
 </script>
 
@@ -31,14 +31,13 @@
 >
 	<!-- Header: name + date -->
 	<div class="flex items-center justify-between gap-2">
-		<span
-			class="text-xs font-semibold truncate"
-			style="color: var(--calc-text);"
-		>{config.name}</span>
+		<span class="text-xs font-semibold truncate" style="color: var(--calc-text);"
+			>{config.name}</span
+		>
 		<span
 			class="text-[9px] px-1.5 py-0.5 rounded flex-shrink-0"
-			style="background: var(--calc-surface-hover); color: var(--calc-text-muted);"
-		>{dateStr}</span>
+			style="background: var(--calc-surface-hover); color: var(--calc-text-muted);">{dateStr}</span
+		>
 	</div>
 
 	<!-- Badges: ticker, type, key inputs -->
@@ -47,17 +46,21 @@
 			<span
 				class="text-[9px] font-bold px-1.5 py-0.5 rounded"
 				style="background: var(--calc-accent-glow); color: var(--calc-accent);"
-			>{config.ticker}</span>
+				>{config.ticker}</span
+			>
 		{/if}
 		<span
 			class="text-[9px] font-medium px-1.5 py-0.5 rounded"
 			style="background: {typeColor.bg}; color: {typeColor.text};"
-		>{config.optionType.toUpperCase()}</span>
+			>{config.optionType.toUpperCase()}</span
+		>
 		<span
 			class="text-[9px]"
 			style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
 		>
-			S={formatCurrency(config.inputs.spotPrice)} K={formatCurrency(config.inputs.strikePrice)} \u03c3={(config.inputs.volatility * 100).toFixed(0)}%
+			S={formatCurrency(config.inputs.spotPrice)} K={formatCurrency(config.inputs.strikePrice)} \u03c3={(
+				config.inputs.volatility * 100
+			).toFixed(0)}%
 		</span>
 	</div>
 
@@ -75,7 +78,8 @@
 				<span
 					class="text-[8px] px-1 py-0.5 rounded"
 					style="background: var(--calc-surface-hover); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
-				>{tag}</span>
+					>{tag}</span
+				>
 			{/each}
 		</div>
 	{/if}

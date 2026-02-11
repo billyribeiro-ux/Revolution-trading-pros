@@ -17,7 +17,7 @@ export const CACHE_TTL = {
 	DIVIDEND: 86_400_000,
 	EARNINGS: 21_600_000,
 	TICKER_SEARCH: 600_000,
-	HISTORICAL_PRICES: 3_600_000,
+	HISTORICAL_PRICES: 3_600_000
 } as const;
 
 interface CacheItem<T> {
@@ -87,7 +87,11 @@ export function createCache() {
 	function invalidate(key: string): void {
 		memoryCache.delete(key);
 		if (typeof window !== 'undefined') {
-			try { localStorage.removeItem(key); } catch { /* ignore */ }
+			try {
+				localStorage.removeItem(key);
+			} catch {
+				/* ignore */
+			}
 		}
 	}
 
@@ -101,7 +105,9 @@ export function createCache() {
 					const key = localStorage.key(i);
 					if (key?.startsWith(prefix)) localStorage.removeItem(key);
 				}
-			} catch { /* ignore */ }
+			} catch {
+				/* ignore */
+			}
 		}
 	}
 

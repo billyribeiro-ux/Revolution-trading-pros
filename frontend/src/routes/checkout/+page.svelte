@@ -248,7 +248,10 @@
 
 <svelte:head>
 	<title>Checkout | Revolution Trading Pros</title>
-	<meta name="description" content="Complete your purchase securely. Revolution Trading Pros checkout." />
+	<meta
+		name="description"
+		content="Complete your purchase securely. Revolution Trading Pros checkout."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

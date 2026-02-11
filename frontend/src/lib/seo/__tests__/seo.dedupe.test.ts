@@ -41,7 +41,12 @@ describe('key generators', () => {
 	});
 
 	it('jsonLdKey uses @id when present', () => {
-		const node: JsonLdNode = { '@type': 'Organization', '@id': '#org', name: 'Test', url: 'https://test.com' };
+		const node: JsonLdNode = {
+			'@type': 'Organization',
+			'@id': '#org',
+			name: 'Test',
+			url: 'https://test.com'
+		};
 		expect(jsonLdKey(node)).toBe('jsonld::#org');
 	});
 

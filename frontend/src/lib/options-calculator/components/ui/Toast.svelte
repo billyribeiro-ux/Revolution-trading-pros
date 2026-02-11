@@ -35,7 +35,7 @@
 		gsap.fromTo(
 			el,
 			{ x: 80, opacity: 0, scale: 0.9 },
-			{ x: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' },
+			{ x: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' }
 		);
 	}
 
@@ -43,14 +43,14 @@
 		success: CheckCircle,
 		error: AlertCircle,
 		info: Info,
-		warning: AlertTriangle,
+		warning: AlertTriangle
 	};
 
 	const COLORS: Record<ToastType, { bg: string; border: string; icon: string }> = {
 		success: { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.25)', icon: '#10b981' },
 		error: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.25)', icon: '#ef4444' },
 		info: { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.25)', icon: '#6366f1' },
-		warning: { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)', icon: '#f59e0b' },
+		warning: { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)', icon: '#f59e0b' }
 	};
 
 	function handleDismiss(id: string, el: HTMLElement) {
@@ -60,7 +60,7 @@
 			scale: 0.9,
 			duration: 0.2,
 			ease: 'power2.in',
-			onComplete: () => calc.removeToast(id),
+			onComplete: () => calc.removeToast(id)
 		});
 	}
 </script>

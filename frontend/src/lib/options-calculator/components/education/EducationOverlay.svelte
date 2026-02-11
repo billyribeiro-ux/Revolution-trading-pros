@@ -45,7 +45,9 @@
 
 <!-- Education toggle button (always visible in header area) -->
 <button
-	onclick={() => { calc.educationMode = !calc.educationMode; }}
+	onclick={() => {
+		calc.educationMode = !calc.educationMode;
+	}}
 	class="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer"
 	style={calc.educationMode
 		? 'background: var(--calc-accent-glow); color: var(--calc-accent); border: 1px solid var(--calc-accent); box-shadow: 0 0 12px rgba(99,102,241,0.2);'

@@ -91,8 +91,16 @@
 			.y1(y(0))
 			.curve(curveMonotoneX);
 
-		g.append('path').datum(data).attr('d', areaProfit).attr('fill', 'var(--calc-profit)').attr('opacity', 0.12);
-		g.append('path').datum(data).attr('d', areaLoss).attr('fill', 'var(--calc-loss)').attr('opacity', 0.12);
+		g.append('path')
+			.datum(data)
+			.attr('d', areaProfit)
+			.attr('fill', 'var(--calc-profit)')
+			.attr('opacity', 0.12);
+		g.append('path')
+			.datum(data)
+			.attr('d', areaLoss)
+			.attr('fill', 'var(--calc-loss)')
+			.attr('opacity', 0.12);
 
 		// Zero line
 		if (y(0) >= 0 && y(0) <= innerH) {
@@ -179,8 +187,12 @@
 		}
 
 		// Axes
-		const xAxisGen = axisBottom(x).ticks(8).tickFormat((d) => `$${d}`);
-		const yAxisGen = axisLeft(y).ticks(6).tickFormat((d) => `$${d}`);
+		const xAxisGen = axisBottom(x)
+			.ticks(8)
+			.tickFormat((d) => `$${d}`);
+		const yAxisGen = axisLeft(y)
+			.ticks(6)
+			.tickFormat((d) => `$${d}`);
 
 		g.append('g')
 			.attr('transform', `translate(0,${innerH})`)

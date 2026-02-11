@@ -61,14 +61,8 @@ export interface AxumTradeUpdatePayload {
 /**
  * Fetch all trades for a trading room.
  */
-export async function fetchTrades(
-	roomSlug: string,
-	perPage: number = 100
-): Promise<AxumTrade[]> {
-	return axum.get<AxumTrade[]>(
-		`/api/trades/${roomSlug}`,
-		{ params: { per_page: perPage } }
-	);
+export async function fetchTrades(roomSlug: string, perPage: number = 100): Promise<AxumTrade[]> {
+	return axum.get<AxumTrade[]>(`/api/trades/${roomSlug}`, { params: { per_page: perPage } });
 }
 
 /**
@@ -113,10 +107,7 @@ export async function deleteTrade(tradeId: number): Promise<void> {
 /**
  * Fetch a single trade by ID.
  */
-export async function fetchTrade(
-	roomSlug: string,
-	tradeId: number
-): Promise<AxumTrade | null> {
+export async function fetchTrade(roomSlug: string, tradeId: number): Promise<AxumTrade | null> {
 	try {
 		return await axum.get<AxumTrade>(`/api/trades/${roomSlug}/${tradeId}`);
 	} catch (err) {

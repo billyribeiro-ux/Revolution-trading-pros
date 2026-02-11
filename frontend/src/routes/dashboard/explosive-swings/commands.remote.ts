@@ -97,20 +97,17 @@ export const deleteAlertCommand = command(
 /**
  * Create a new trade entry.
  */
-export const createTrade = command(
-	CreateTradeInputSchema,
-	async ({ roomSlug, ...payload }) => {
-		await requireAuth();
+export const createTrade = command(CreateTradeInputSchema, async ({ roomSlug, ...payload }) => {
+	await requireAuth();
 
-		const trade = await axumTrades.createTrade(roomSlug, payload);
+	const trade = await axumTrades.createTrade(roomSlug, payload);
 
-		// Invalidate related queries
-		getTrades({ roomSlug }).refresh();
-		getStats({ roomSlug }).refresh();
+	// Invalidate related queries
+	getTrades({ roomSlug }).refresh();
+	getStats({ roomSlug }).refresh();
 
-		return trade;
-	}
-);
+	return trade;
+});
 
 /**
  * Close an existing trade position.
@@ -150,17 +147,14 @@ export const updateTrade = command(
 /**
  * Delete a trade (admin only).
  */
-export const deleteTrade = command(
-	DeleteTradeInputSchema,
-	async ({ tradeId }) => {
-		await requireAdmin();
+export const deleteTrade = command(DeleteTradeInputSchema, async ({ tradeId }) => {
+	await requireAdmin();
 
-		await axumTrades.deleteTrade(tradeId);
+	await axumTrades.deleteTrade(tradeId);
 
-		// Note: Cannot refresh with specific roomSlug here since it's not in the input.
-		// Caller should manually refresh queries after this command.
-	}
-);
+	// Note: Cannot refresh with specific roomSlug here since it's not in the input.
+	// Caller should manually refresh queries after this command.
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Trade Plan Commands

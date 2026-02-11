@@ -19,7 +19,7 @@
 		if (!filter) return STRATEGY_TEMPLATES;
 		const q = filter.toLowerCase();
 		return STRATEGY_TEMPLATES.filter(
-			(t) => t.name.toLowerCase().includes(q) || t.sentiment.toLowerCase().includes(q),
+			(t) => t.name.toLowerCase().includes(q) || t.sentiment.toLowerCase().includes(q)
 		);
 	});
 
@@ -29,7 +29,7 @@
 			gsap.fromTo(
 				cards,
 				{ y: 20, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.3, stagger: 0.04, ease: 'power2.out' },
+				{ y: 0, opacity: 1, duration: 0.3, stagger: 0.04, ease: 'power2.out' }
 			);
 		}
 	});
@@ -43,7 +43,7 @@
 				expiry: calc.timeToExpiry,
 				position: leg.position,
 				quantity: leg.quantity,
-				premium: 0,
+				premium: 0
 			});
 		}
 		calc.calculatorMode = 'strategy';
@@ -52,9 +52,12 @@
 
 	function sentimentColor(sentiment: string): string {
 		switch (sentiment) {
-			case 'bullish': return 'var(--calc-call)';
-			case 'bearish': return 'var(--calc-put)';
-			default: return 'var(--calc-accent)';
+			case 'bullish':
+				return 'var(--calc-call)';
+			case 'bearish':
+				return 'var(--calc-put)';
+			default:
+				return 'var(--calc-accent)';
 		}
 	}
 </script>
@@ -78,12 +81,17 @@
 				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
 			>
 				<div class="flex items-center justify-between">
-					<span class="text-xs font-semibold" style="color: var(--calc-text); font-family: var(--calc-font-display);">
+					<span
+						class="text-xs font-semibold"
+						style="color: var(--calc-text); font-family: var(--calc-font-display);"
+					>
 						{template.name}
 					</span>
 					<span
 						class="text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase"
-						style="color: {sentimentColor(template.sentiment)}; background: {sentimentColor(template.sentiment)}22;"
+						style="color: {sentimentColor(template.sentiment)}; background: {sentimentColor(
+							template.sentiment
+						)}22;"
 					>
 						{#if template.sentiment === 'bullish'}
 							<TrendingUp size={10} class="inline -mt-0.5" />

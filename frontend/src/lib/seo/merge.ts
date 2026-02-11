@@ -29,7 +29,9 @@ import type {
 function stableJsonLdHash(node: JsonLdNode): string {
 	if (node['@id']) return node['@id'];
 	const sortedKeys = Object.keys(node).sort();
-	const parts = sortedKeys.map((k) => `${k}:${JSON.stringify((node as Record<string, unknown>)[k])}`);
+	const parts = sortedKeys.map(
+		(k) => `${k}:${JSON.stringify((node as Record<string, unknown>)[k])}`
+	);
 	return parts.join('|');
 }
 
@@ -142,20 +144,15 @@ export function mergeSEO(...layers: (SEOInput | undefined | null)[]): SEOInput {
 		}
 
 		// Object fields: deep merge with null-removal
-		result.robots = mergeShallow<RobotsDirectives>(
-			result.robots ?? undefined,
-			layer.robots
-		) as RobotsDirectives | undefined;
+		result.robots = mergeShallow<RobotsDirectives>(result.robots ?? undefined, layer.robots) as
+			| RobotsDirectives
+			| undefined;
 
-		result.og = mergeShallow<OpenGraph>(
-			result.og ?? undefined,
-			layer.og
-		) as OpenGraph | undefined;
+		result.og = mergeShallow<OpenGraph>(result.og ?? undefined, layer.og) as OpenGraph | undefined;
 
-		result.twitter = mergeShallow<TwitterCard>(
-			result.twitter ?? undefined,
-			layer.twitter
-		) as TwitterCard | undefined;
+		result.twitter = mergeShallow<TwitterCard>(result.twitter ?? undefined, layer.twitter) as
+			| TwitterCard
+			| undefined;
 
 		result.verification = mergeShallow<VerificationTags>(
 			result.verification ?? undefined,

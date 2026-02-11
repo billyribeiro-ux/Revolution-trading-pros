@@ -64,11 +64,7 @@ export const indicators: Indicator[] = [
 		icon: IconActivity,
 		color: '#2e8eff',
 		gradient: 'linear-gradient(135deg, #2e8eff 0%, #1e5cb8 100%)',
-		features: [
-			'Bullish/Bearish Divergence',
-			'Trend Reset Zones (50 line)',
-			'Momentum Confirmation'
-		]
+		features: ['Bullish/Bearish Divergence', 'Trend Reset Zones (50 line)', 'Momentum Confirmation']
 	},
 	{
 		id: '2',

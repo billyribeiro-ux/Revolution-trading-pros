@@ -19,7 +19,7 @@ export const MATH = {
 	/** Max iterations for Newton-Raphson */
 	NR_MAX_ITERATIONS: 100,
 	/** Very small number to avoid division by zero */
-	EPSILON: 1e-10,
+	EPSILON: 1e-10
 } as const;
 
 /** Default BS input values */
@@ -29,7 +29,7 @@ export const DEFAULT_INPUTS: BSInputs = {
 	volatility: 0.25,
 	timeToExpiry: 0.25,
 	riskFreeRate: 0.05,
-	dividendYield: 0.0,
+	dividendYield: 0.0
 };
 
 /** Input field configurations */
@@ -42,7 +42,7 @@ export const INPUT_FIELDS: InputFieldConfig[] = [
 		step: 0.5,
 		unit: '$',
 		tooltip: 'Current market price of the underlying asset (S)',
-		icon: 'trending-up',
+		icon: 'trending-up'
 	},
 	{
 		key: 'strikePrice',
@@ -52,7 +52,7 @@ export const INPUT_FIELDS: InputFieldConfig[] = [
 		step: 0.5,
 		unit: '$',
 		tooltip: 'The price at which the option can be exercised (K)',
-		icon: 'target',
+		icon: 'target'
 	},
 	{
 		key: 'volatility',
@@ -61,11 +61,10 @@ export const INPUT_FIELDS: InputFieldConfig[] = [
 		max: 3.0,
 		step: 0.005,
 		unit: '%',
-		tooltip:
-			'Annualized implied volatility (σ). 0.25 = 25%. Measures expected price fluctuation.',
+		tooltip: 'Annualized implied volatility (σ). 0.25 = 25%. Measures expected price fluctuation.',
 		icon: 'activity',
 		displayMultiplier: 100,
-		displayDecimals: 1,
+		displayDecimals: 1
 	},
 	{
 		key: 'timeToExpiry',
@@ -74,23 +73,22 @@ export const INPUT_FIELDS: InputFieldConfig[] = [
 		max: 5.0,
 		step: 0.01,
 		unit: 'years',
-		tooltip:
-			'Time until option expiration in years (T). 0.25 = ~3 months, 0.0833 = ~1 month.',
+		tooltip: 'Time until option expiration in years (T). 0.25 = ~3 months, 0.0833 = ~1 month.',
 		icon: 'clock',
-		displayDecimals: 3,
+		displayDecimals: 3
 	},
 	{
 		key: 'riskFreeRate',
 		label: 'Risk-Free Rate',
 		min: 0.0,
-		max: 0.20,
+		max: 0.2,
 		step: 0.0025,
 		unit: '%',
 		tooltip:
 			'Annual risk-free interest rate (r). Typically the Treasury yield matching expiration.',
 		icon: 'landmark',
 		displayMultiplier: 100,
-		displayDecimals: 2,
+		displayDecimals: 2
 	},
 	{
 		key: 'dividendYield',
@@ -102,8 +100,8 @@ export const INPUT_FIELDS: InputFieldConfig[] = [
 		tooltip: 'Annual continuous dividend yield (q). Set to 0 for non-dividend stocks.',
 		icon: 'coins',
 		displayMultiplier: 100,
-		displayDecimals: 2,
-	},
+		displayDecimals: 2
+	}
 ];
 
 /** Strategy templates */
@@ -114,7 +112,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		description: 'Bullish bet with limited risk and unlimited upside',
 		sentiment: 'bullish',
 		riskProfile: 'defined',
-		legs: [{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 }],
+		legs: [{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 }]
 	},
 	{
 		id: 'long-put',
@@ -122,7 +120,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		description: 'Bearish bet with limited risk and large downside profit potential',
 		sentiment: 'bearish',
 		riskProfile: 'defined',
-		legs: [{ type: 'put', strike: 0, expiry: 0.25, position: 1, quantity: 1 }],
+		legs: [{ type: 'put', strike: 0, expiry: 0.25, position: 1, quantity: 1 }]
 	},
 	{
 		id: 'covered-call',
@@ -130,7 +128,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		description: 'Own shares + sell call for income. Caps upside, reduces cost basis.',
 		sentiment: 'neutral',
 		riskProfile: 'undefined',
-		legs: [{ type: 'call', strike: 5, expiry: 0.0833, position: -1, quantity: 1 }],
+		legs: [{ type: 'call', strike: 5, expiry: 0.0833, position: -1, quantity: 1 }]
 	},
 	{
 		id: 'bull-call-spread',
@@ -140,8 +138,8 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 },
-			{ type: 'call', strike: 10, expiry: 0.25, position: -1, quantity: 1 },
-		],
+			{ type: 'call', strike: 10, expiry: 0.25, position: -1, quantity: 1 }
+		]
 	},
 	{
 		id: 'bear-put-spread',
@@ -151,22 +149,21 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'put', strike: 0, expiry: 0.25, position: 1, quantity: 1 },
-			{ type: 'put', strike: -10, expiry: 0.25, position: -1, quantity: 1 },
-		],
+			{ type: 'put', strike: -10, expiry: 0.25, position: -1, quantity: 1 }
+		]
 	},
 	{
 		id: 'iron-condor',
 		name: 'Iron Condor',
-		description:
-			'Sell OTM call spread + OTM put spread. Profit from low volatility / range.',
+		description: 'Sell OTM call spread + OTM put spread. Profit from low volatility / range.',
 		sentiment: 'neutral',
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'put', strike: -15, expiry: 0.25, position: -1, quantity: 1 },
 			{ type: 'put', strike: -20, expiry: 0.25, position: 1, quantity: 1 },
 			{ type: 'call', strike: 15, expiry: 0.25, position: -1, quantity: 1 },
-			{ type: 'call', strike: 20, expiry: 0.25, position: 1, quantity: 1 },
-		],
+			{ type: 'call', strike: 20, expiry: 0.25, position: 1, quantity: 1 }
+		]
 	},
 	{
 		id: 'straddle',
@@ -176,8 +173,8 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 },
-			{ type: 'put', strike: 0, expiry: 0.25, position: 1, quantity: 1 },
-		],
+			{ type: 'put', strike: 0, expiry: 0.25, position: 1, quantity: 1 }
+		]
 	},
 	{
 		id: 'strangle',
@@ -187,34 +184,32 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'call', strike: 10, expiry: 0.25, position: 1, quantity: 1 },
-			{ type: 'put', strike: -10, expiry: 0.25, position: 1, quantity: 1 },
-		],
+			{ type: 'put', strike: -10, expiry: 0.25, position: 1, quantity: 1 }
+		]
 	},
 	{
 		id: 'butterfly',
 		name: 'Long Butterfly',
-		description:
-			'Buy 1 lower, sell 2 middle, buy 1 upper. Max profit at middle strike.',
+		description: 'Buy 1 lower, sell 2 middle, buy 1 upper. Max profit at middle strike.',
 		sentiment: 'neutral',
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'call', strike: -10, expiry: 0.25, position: 1, quantity: 1 },
 			{ type: 'call', strike: 0, expiry: 0.25, position: -1, quantity: 2 },
-			{ type: 'call', strike: 10, expiry: 0.25, position: 1, quantity: 1 },
-		],
+			{ type: 'call', strike: 10, expiry: 0.25, position: 1, quantity: 1 }
+		]
 	},
 	{
 		id: 'jade-lizard',
 		name: 'Jade Lizard',
-		description:
-			'Sell OTM put + sell call spread. No upside risk if premium > spread width.',
+		description: 'Sell OTM put + sell call spread. No upside risk if premium > spread width.',
 		sentiment: 'bullish',
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'put', strike: -10, expiry: 0.25, position: -1, quantity: 1 },
 			{ type: 'call', strike: 10, expiry: 0.25, position: -1, quantity: 1 },
-			{ type: 'call', strike: 15, expiry: 0.25, position: 1, quantity: 1 },
-		],
+			{ type: 'call', strike: 15, expiry: 0.25, position: 1, quantity: 1 }
+		]
 	},
 	{
 		id: 'calendar-spread',
@@ -225,19 +220,18 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
 		riskProfile: 'defined',
 		legs: [
 			{ type: 'call', strike: 0, expiry: 0.0833, position: -1, quantity: 1 },
-			{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 },
-		],
+			{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 }
+		]
 	},
 	{
 		id: 'ratio-spread',
 		name: 'Ratio Call Spread',
-		description:
-			'Buy 1 call, sell 2 higher calls. Can be done for credit. Undefined upside risk.',
+		description: 'Buy 1 call, sell 2 higher calls. Can be done for credit. Undefined upside risk.',
 		sentiment: 'bullish',
 		riskProfile: 'undefined',
 		legs: [
 			{ type: 'call', strike: 0, expiry: 0.25, position: 1, quantity: 1 },
-			{ type: 'call', strike: 10, expiry: 0.25, position: -1, quantity: 2 },
-		],
-	},
+			{ type: 'call', strike: 10, expiry: 0.25, position: -1, quantity: 2 }
+		]
+	}
 ];

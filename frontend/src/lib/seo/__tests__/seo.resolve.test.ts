@@ -60,9 +60,7 @@ describe('resolveSEO', () => {
 	it('canonical is normalized from pathname', () => {
 		const ctx = makeContext({ pathname: '/blog/my-post' });
 		const result = resolveSEO(ctx, seoDefaults);
-		expect(result.canonical).toBe(
-			'https://revolution-trading-pros.pages.dev/blog/my-post'
-		);
+		expect(result.canonical).toBe('https://revolution-trading-pros.pages.dev/blog/my-post');
 	});
 
 	it('explicit canonical override is normalized', () => {

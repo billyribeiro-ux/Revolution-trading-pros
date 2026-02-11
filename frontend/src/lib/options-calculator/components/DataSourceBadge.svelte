@@ -15,13 +15,20 @@
 	let label = $derived.by(() => {
 		if (!source) return 'No Data';
 		switch (source) {
-			case 'polygon': return 'Polygon.io';
-			case 'theta-data': return 'Theta Data';
-			case 'tradier': return 'Tradier';
-			case 'fred': return 'FRED';
-			case 'yahoo': return 'Yahoo';
-			case 'mock': return 'Mock Data';
-			default: return source;
+			case 'polygon':
+				return 'Polygon.io';
+			case 'theta-data':
+				return 'Theta Data';
+			case 'tradier':
+				return 'Tradier';
+			case 'fred':
+				return 'FRED';
+			case 'yahoo':
+				return 'Yahoo';
+			case 'mock':
+				return 'Mock Data';
+			default:
+				return source;
 		}
 	});
 
@@ -61,35 +68,59 @@
 
 			<div class="flex items-center justify-between">
 				<span class="text-[10px]" style="color: var(--calc-text-muted);">Provider:</span>
-				<span class="text-[10px] font-medium" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">{label}</span>
+				<span
+					class="text-[10px] font-medium"
+					style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+					>{label}</span
+				>
 			</div>
 
 			<div class="flex items-center justify-between">
 				<span class="text-[10px]" style="color: var(--calc-text-muted);">Status:</span>
 				<span class="flex items-center gap-1 text-[10px]" style="color: {dotColor};">
 					<span class="w-1.5 h-1.5 rounded-full" style="background: {dotColor};"></span>
-					{marketData.lastError ? 'Error' : isLive ? 'Live' : source === 'mock' ? 'Mock' : 'Offline'}
+					{marketData.lastError
+						? 'Error'
+						: isLive
+							? 'Live'
+							: source === 'mock'
+								? 'Mock'
+								: 'Offline'}
 				</span>
 			</div>
 
 			<div class="flex items-center justify-between">
 				<span class="text-[10px]" style="color: var(--calc-text-muted);">Cache entries:</span>
-				<span class="text-[10px]" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">{cacheStats.memoryEntries}</span>
+				<span
+					class="text-[10px]"
+					style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+					>{cacheStats.memoryEntries}</span
+				>
 			</div>
 
 			<div class="flex items-center justify-between">
 				<span class="text-[10px]" style="color: var(--calc-text-muted);">Cache size:</span>
-				<span class="text-[10px]" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">{(cacheStats.memoryBytes / 1024).toFixed(1)} KB</span>
+				<span
+					class="text-[10px]"
+					style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+					>{(cacheStats.memoryBytes / 1024).toFixed(1)} KB</span
+				>
 			</div>
 
 			{#if marketData.lastError}
-				<div class="text-[9px] px-2 py-1 rounded" style="background: var(--calc-put-bg); color: var(--calc-put);">
+				<div
+					class="text-[9px] px-2 py-1 rounded"
+					style="background: var(--calc-put-bg); color: var(--calc-put);"
+				>
 					{marketData.lastError}
 				</div>
 			{/if}
 
 			<button
-				onclick={() => { marketData.cache.clearAll(); expanded = false; }}
+				onclick={() => {
+					marketData.cache.clearAll();
+					expanded = false;
+				}}
 				class="text-[10px] px-2 py-1 rounded-lg cursor-pointer mt-1"
 				style="background: var(--calc-surface-hover); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 			>

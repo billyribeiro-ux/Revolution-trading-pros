@@ -31,7 +31,7 @@
 					gsap.fromTo(
 						modalEl,
 						{ scale: 0.92, opacity: 0 },
-						{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+						{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 					);
 				}
 				nameInputEl?.focus();
@@ -53,8 +53,11 @@
 			ticker: calc.activeTicker || undefined,
 			strategyLegs: calc.strategyLegs.length > 0 ? [...calc.strategyLegs] : undefined,
 			tags: tags.trim()
-				? tags.split(',').map((t) => t.trim()).filter(Boolean)
-				: undefined,
+				? tags
+						.split(',')
+						.map((t) => t.trim())
+						.filter(Boolean)
+				: undefined
 		});
 
 		calc.addToast('success', `Configuration "${trimmedName}" saved!`);
@@ -111,7 +114,9 @@
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Save Configuration</h3>
+					>
+						Save Configuration
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}
@@ -136,7 +141,10 @@
 
 			<!-- Name field -->
 			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[10px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Name *
 				</span>
 				<input
@@ -151,7 +159,10 @@
 
 			<!-- Description field -->
 			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[10px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Description
 				</span>
 				<input
@@ -165,7 +176,10 @@
 
 			<!-- Tags field -->
 			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[10px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Tags (comma-separated)
 				</span>
 				<input
@@ -183,7 +197,8 @@
 					onclick={handleClose}
 					class="flex-1 text-xs py-2.5 rounded-lg cursor-pointer"
 					style="color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
-				>Cancel</button>
+					>Cancel</button
+				>
 				<button
 					onclick={handleSave}
 					disabled={!canSave}

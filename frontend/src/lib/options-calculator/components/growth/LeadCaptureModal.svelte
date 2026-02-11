@@ -40,7 +40,7 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.9, opacity: 0, y: 20 },
-				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)' },
+				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)' }
 			);
 		}
 	});
@@ -56,7 +56,7 @@
 				onComplete: () => {
 					showModal = false;
 					localStorage.setItem(DISMISS_KEY, Date.now().toString());
-				},
+				}
 			});
 		} else {
 			showModal = false;
@@ -76,7 +76,7 @@
 			await fetch('/api/newsletter/subscribe', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: trimmed, source: 'options-calculator' }),
+				body: JSON.stringify({ email: trimmed, source: 'options-calculator' })
 			});
 		} catch {
 			// Silently fail — don't block UX for newsletter
@@ -160,7 +160,8 @@
 				</h3>
 
 				<p class="text-xs text-center leading-relaxed" style="color: var(--calc-text-muted);">
-					Join 18,000+ traders receiving actionable options insights, strategy breakdowns, and market analysis every week.
+					Join 18,000+ traders receiving actionable options insights, strategy breakdowns, and
+					market analysis every week.
 				</p>
 
 				<!-- Email Input -->
@@ -185,7 +186,10 @@
 							onclick={handleSubmit}
 							disabled={!isValidEmail || isSubmitting}
 							class="text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
-							style="background: var(--calc-accent); color: white; opacity: {isValidEmail && !isSubmitting ? 1 : 0.5};"
+							style="background: var(--calc-accent); color: white; opacity: {isValidEmail &&
+							!isSubmitting
+								? 1
+								: 0.5};"
 						>
 							{isSubmitting ? '...' : 'Subscribe'}
 						</button>

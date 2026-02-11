@@ -19,7 +19,7 @@
 			gsap.fromTo(
 				overlayEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
@@ -42,7 +42,7 @@
 		'tab-volsmile': 'volsmile',
 		'tab-theta': 'theta',
 		'tab-sensitivity': 'sensitivity',
-		'tab-chain': 'chain',
+		'tab-chain': 'chain'
 	};
 
 	/**
@@ -152,7 +152,9 @@
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Keyboard Shortcuts</h3>
+					>
+						Keyboard Shortcuts
+					</h3>
 				</div>
 				<button
 					onclick={() => (calc.showShortcutsHelp = false)}
@@ -170,7 +172,9 @@
 					<h4
 						class="text-[10px] uppercase tracking-wider font-semibold"
 						style="color: var(--calc-text-muted);"
-					>{CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}</h4>
+					>
+						{CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}
+					</h4>
 
 					{#each shortcuts as shortcut (shortcut.id)}
 						<div
@@ -189,8 +193,8 @@
 									font-family: var(--calc-font-mono);
 									min-width: 28px;
 									text-align: center;
-								"
-							>{shortcut.display}</kbd>
+								">{shortcut.display}</kbd
+							>
 						</div>
 					{/each}
 				</div>

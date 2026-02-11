@@ -5,7 +5,11 @@
 // ============================================================
 
 import type { MarketDataProvider } from '../provider-interface.js';
-import { CapabilityNotSupportedError, AuthenticationError, RateLimitExceededError } from '../provider-interface.js';
+import {
+	CapabilityNotSupportedError,
+	AuthenticationError,
+	RateLimitExceededError
+} from '../provider-interface.js';
 import type {
 	ProviderCapabilities,
 	ProviderStatus,
@@ -17,7 +21,7 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from '../types.js';
 
 export function createTradierAdapter(): MarketDataProvider {
@@ -45,7 +49,7 @@ export function createTradierAdapter(): MarketDataProvider {
 		earnings: false,
 		riskFreeRate: false,
 		tickerSearch: true,
-		streaming: true,
+		streaming: true
 	};
 
 	return {
@@ -57,12 +61,19 @@ export function createTradierAdapter(): MarketDataProvider {
 			try {
 				const res = await fetch(`${BASE}/quote?provider=tradier&ticker=AAPL&healthcheck=true`);
 				return res.ok;
-			} catch { return false; }
+			} catch {
+				return false;
+			}
 		},
 
 		async getStatus(): Promise<ProviderStatus> {
 			const available = await this.isAvailable();
-			return { name: 'tradier', displayName: 'Tradier', isAvailable: available, isConfigured: available };
+			return {
+				name: 'tradier',
+				displayName: 'Tradier',
+				isAvailable: available,
+				isConfigured: available
+			};
 		},
 
 		async getQuote(ticker: string): Promise<StockQuote> {
@@ -99,6 +110,6 @@ export function createTradierAdapter(): MarketDataProvider {
 
 		async searchTickers(query: string, limit: number = 10): Promise<TickerSearchResult[]> {
 			return fetchAPI<TickerSearchResult[]>(`${BASE}/search`, { q: query, limit: String(limit) });
-		},
+		}
 	};
 }

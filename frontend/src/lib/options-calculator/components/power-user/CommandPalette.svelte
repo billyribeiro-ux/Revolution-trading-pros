@@ -23,27 +23,191 @@
 	}
 
 	let commands = $derived.by<CommandItem[]>(() => [
-		{ id: 'toggle-call', label: 'Toggle Call/Put', shortcut: 'C', category: 'Input', action: () => { calc.optionType = calc.optionType === 'call' ? 'put' : 'call'; } },
-		{ id: 'reset', label: 'Reset Inputs', shortcut: '\u2318R', category: 'Input', action: () => calc.resetInputs() },
-		{ id: 'toggle-strategy', label: 'Toggle Strategy Mode', shortcut: '', category: 'Input', action: () => { calc.calculatorMode = calc.calculatorMode === 'strategy' ? 'single' : 'strategy'; } },
-		{ id: 'toggle-theme', label: 'Toggle Theme', shortcut: '\u2318\u21e7T', category: 'View', action: () => calc.toggleTheme() },
-		{ id: 'toggle-education', label: 'Toggle Education Mode', shortcut: 'E', category: 'View', action: () => { calc.educationMode = !calc.educationMode; } },
-		{ id: 'toggle-greeks', label: 'Toggle Advanced Greeks', shortcut: 'G', category: 'View', action: () => { calc.showAdvancedGreeks = !calc.showAdvancedGreeks; } },
-		{ id: 'toggle-panel', label: 'Toggle Input Panel', shortcut: '\u2318B', category: 'View', action: () => { calc.isInputPanelOpen = !calc.isInputPanelOpen; } },
-		{ id: 'tab-payoff', label: 'Payoff Diagram', shortcut: '1', category: 'Navigation', action: () => { calc.activeTab = 'payoff'; } },
-		{ id: 'tab-heatmap', label: 'Greeks Heatmap', shortcut: '2', category: 'Navigation', action: () => { calc.activeTab = 'heatmap'; } },
-		{ id: 'tab-surface', label: '3D Surface', shortcut: '3', category: 'Navigation', action: () => { calc.activeTab = 'surface'; } },
-		{ id: 'tab-mc', label: 'Monte Carlo', shortcut: '4', category: 'Navigation', action: () => { calc.activeTab = 'montecarlo'; } },
-		{ id: 'tab-vol', label: 'Vol Smile', shortcut: '5', category: 'Navigation', action: () => { calc.activeTab = 'volsmile'; } },
-		{ id: 'tab-theta', label: 'Theta Decay', shortcut: '6', category: 'Navigation', action: () => { calc.activeTab = 'theta'; } },
-		{ id: 'tab-sens', label: 'Sensitivity', shortcut: '7', category: 'Navigation', action: () => { calc.activeTab = 'sensitivity'; } },
-		{ id: 'tab-chain', label: 'Options Chain', shortcut: '8', category: 'Navigation', action: () => { calc.activeTab = 'chain'; } },
-		{ id: 'save-config', label: 'Save Configuration', shortcut: '\u2318S', category: 'Export', action: () => { calc.showSaveModal = true; } },
-		{ id: 'open-configs', label: 'Open Saved Configs', shortcut: '', category: 'Export', action: () => { calc.showSavedConfigs = true; } },
-		{ id: 'export-png', label: 'Export as PNG', shortcut: '\u2318\u21e7S', category: 'Export', action: () => { calc.showExportPNG = true; } },
-		{ id: 'share-link', label: 'Copy Shareable Link', shortcut: '\u2318\u21e7L', category: 'Export', action: () => { calc.showShareLink = true; } },
-		{ id: 'embed-code', label: 'Get Embed Code', shortcut: '', category: 'Export', action: () => { calc.showEmbedCode = true; } },
-		{ id: 'shortcuts', label: 'Show Keyboard Shortcuts', shortcut: '?', category: 'Help', action: () => { calc.showShortcutsHelp = true; } },
+		{
+			id: 'toggle-call',
+			label: 'Toggle Call/Put',
+			shortcut: 'C',
+			category: 'Input',
+			action: () => {
+				calc.optionType = calc.optionType === 'call' ? 'put' : 'call';
+			}
+		},
+		{
+			id: 'reset',
+			label: 'Reset Inputs',
+			shortcut: '\u2318R',
+			category: 'Input',
+			action: () => calc.resetInputs()
+		},
+		{
+			id: 'toggle-strategy',
+			label: 'Toggle Strategy Mode',
+			shortcut: '',
+			category: 'Input',
+			action: () => {
+				calc.calculatorMode = calc.calculatorMode === 'strategy' ? 'single' : 'strategy';
+			}
+		},
+		{
+			id: 'toggle-theme',
+			label: 'Toggle Theme',
+			shortcut: '\u2318\u21e7T',
+			category: 'View',
+			action: () => calc.toggleTheme()
+		},
+		{
+			id: 'toggle-education',
+			label: 'Toggle Education Mode',
+			shortcut: 'E',
+			category: 'View',
+			action: () => {
+				calc.educationMode = !calc.educationMode;
+			}
+		},
+		{
+			id: 'toggle-greeks',
+			label: 'Toggle Advanced Greeks',
+			shortcut: 'G',
+			category: 'View',
+			action: () => {
+				calc.showAdvancedGreeks = !calc.showAdvancedGreeks;
+			}
+		},
+		{
+			id: 'toggle-panel',
+			label: 'Toggle Input Panel',
+			shortcut: '\u2318B',
+			category: 'View',
+			action: () => {
+				calc.isInputPanelOpen = !calc.isInputPanelOpen;
+			}
+		},
+		{
+			id: 'tab-payoff',
+			label: 'Payoff Diagram',
+			shortcut: '1',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'payoff';
+			}
+		},
+		{
+			id: 'tab-heatmap',
+			label: 'Greeks Heatmap',
+			shortcut: '2',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'heatmap';
+			}
+		},
+		{
+			id: 'tab-surface',
+			label: '3D Surface',
+			shortcut: '3',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'surface';
+			}
+		},
+		{
+			id: 'tab-mc',
+			label: 'Monte Carlo',
+			shortcut: '4',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'montecarlo';
+			}
+		},
+		{
+			id: 'tab-vol',
+			label: 'Vol Smile',
+			shortcut: '5',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'volsmile';
+			}
+		},
+		{
+			id: 'tab-theta',
+			label: 'Theta Decay',
+			shortcut: '6',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'theta';
+			}
+		},
+		{
+			id: 'tab-sens',
+			label: 'Sensitivity',
+			shortcut: '7',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'sensitivity';
+			}
+		},
+		{
+			id: 'tab-chain',
+			label: 'Options Chain',
+			shortcut: '8',
+			category: 'Navigation',
+			action: () => {
+				calc.activeTab = 'chain';
+			}
+		},
+		{
+			id: 'save-config',
+			label: 'Save Configuration',
+			shortcut: '\u2318S',
+			category: 'Export',
+			action: () => {
+				calc.showSaveModal = true;
+			}
+		},
+		{
+			id: 'open-configs',
+			label: 'Open Saved Configs',
+			shortcut: '',
+			category: 'Export',
+			action: () => {
+				calc.showSavedConfigs = true;
+			}
+		},
+		{
+			id: 'export-png',
+			label: 'Export as PNG',
+			shortcut: '\u2318\u21e7S',
+			category: 'Export',
+			action: () => {
+				calc.showExportPNG = true;
+			}
+		},
+		{
+			id: 'share-link',
+			label: 'Copy Shareable Link',
+			shortcut: '\u2318\u21e7L',
+			category: 'Export',
+			action: () => {
+				calc.showShareLink = true;
+			}
+		},
+		{
+			id: 'embed-code',
+			label: 'Get Embed Code',
+			shortcut: '',
+			category: 'Export',
+			action: () => {
+				calc.showEmbedCode = true;
+			}
+		},
+		{
+			id: 'shortcuts',
+			label: 'Show Keyboard Shortcuts',
+			shortcut: '?',
+			category: 'Help',
+			action: () => {
+				calc.showShortcutsHelp = true;
+			}
+		}
 	]);
 
 	let filtered = $derived(
@@ -51,9 +215,9 @@
 			? commands.filter(
 					(cmd) =>
 						cmd.label.toLowerCase().includes(query.toLowerCase()) ||
-						cmd.category.toLowerCase().includes(query.toLowerCase()),
+						cmd.category.toLowerCase().includes(query.toLowerCase())
 				)
-			: commands,
+			: commands
 	);
 
 	// Build a flat index map for keyboard navigation
@@ -76,7 +240,7 @@
 					gsap.fromTo(
 						paletteEl,
 						{ y: -20, opacity: 0 },
-						{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' },
+						{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
 					);
 				}
 			});
@@ -172,7 +336,8 @@
 				<kbd
 					class="text-[9px] px-1.5 py-0.5 rounded"
 					style="background: var(--calc-surface-hover); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
-				>ESC</kbd>
+					>ESC</kbd
+				>
 			</div>
 
 			<!-- Results -->
@@ -181,15 +346,17 @@
 					<div class="px-3 pt-2.5 pb-1">
 						<span
 							class="text-[9px] uppercase tracking-wider font-medium"
-							style="color: var(--calc-text-muted);"
-						>{category}</span>
+							style="color: var(--calc-text-muted);">{category}</span
+						>
 					</div>
 					{#each cmds as cmd (cmd.id)}
 						{@const idx = flatIndexMap.get(cmd.id) ?? -1}
 						<button
 							onclick={() => execute(cmd)}
 							class="w-full flex items-center gap-2.5 px-4 py-2 text-xs cursor-pointer transition-colors"
-							style="color: var(--calc-text-secondary); background: {idx === selectedIndex ? 'var(--calc-accent-glow)' : 'transparent'};"
+							style="color: var(--calc-text-secondary); background: {idx === selectedIndex
+								? 'var(--calc-accent-glow)'
+								: 'transparent'};"
 						>
 							<span class="flex-1 text-left">{cmd.label}</span>
 							{#if cmd.shortcut}
@@ -200,8 +367,8 @@
 										color: var(--calc-text-muted);
 										border: 1px solid var(--calc-border);
 										font-family: var(--calc-font-mono);
-									"
-								>{cmd.shortcut}</kbd>
+									">{cmd.shortcut}</kbd
+								>
 							{/if}
 						</button>
 					{/each}

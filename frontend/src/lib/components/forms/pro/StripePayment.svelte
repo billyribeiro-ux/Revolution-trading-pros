@@ -15,11 +15,7 @@
 	 */
 
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
-	import type {
-		Stripe,
-		StripeElements,
-		StripeCardElement
-	} from '@stripe/stripe-js';
+	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 
 	interface Props {
 		publicKey: string;

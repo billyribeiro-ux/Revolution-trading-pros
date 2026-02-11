@@ -18,8 +18,8 @@ export const load: Load = async ({ params, url }) => {
 	} catch (err) {
 		console.error('Failed to load post:', err);
 		error(404, {
-        			message: 'Blog post not found'
-        		});
+			message: 'Blog post not found'
+		});
 	}
 
 	const postUrl = `${SITE_URL}${url.pathname}`;

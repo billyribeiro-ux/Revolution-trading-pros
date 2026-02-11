@@ -11,7 +11,14 @@
 		children: Snippet;
 	}
 
-	let { class: className = '', glow = 'none', animate = true, delay = 0, header, children }: Props = $props();
+	let {
+		class: className = '',
+		glow = 'none',
+		animate = true,
+		delay = 0,
+		header,
+		children
+	}: Props = $props();
 
 	let cardEl: HTMLDivElement | undefined = $state();
 

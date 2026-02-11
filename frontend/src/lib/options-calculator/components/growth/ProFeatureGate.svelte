@@ -15,11 +15,7 @@
 
 	$effect(() => {
 		if (isLocked && overlayEl) {
-			gsap.fromTo(
-				overlayEl,
-				{ opacity: 0 },
-				{ opacity: 1, duration: 0.3, ease: 'power2.out' },
-			);
+			gsap.fromTo(overlayEl, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
 		}
 	});
 </script>

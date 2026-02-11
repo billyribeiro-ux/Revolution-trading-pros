@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Camera, X, Copy, Download, Monitor, BarChart3, LineChart, Maximize } from '@lucide/svelte';
+	import {
+		Camera,
+		X,
+		Copy,
+		Download,
+		Monitor,
+		BarChart3,
+		LineChart,
+		Maximize
+	} from '@lucide/svelte';
 	import gsap from 'gsap';
 	import { captureScreenshot } from '../../utils/export-utils.js';
 	import type { CaptureZone, AspectRatio, ScreenshotConfig } from '../../engine/types.js';
@@ -34,7 +43,7 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
@@ -49,7 +58,7 @@
 		{ id: 'results-only', label: 'Results', icon: BarChart3 },
 		{ id: 'results-chart', label: 'Results + Chart', icon: LineChart },
 		{ id: 'chart-only', label: 'Chart Only', icon: LineChart },
-		{ id: 'full-calculator', label: 'Full', icon: Maximize },
+		{ id: 'full-calculator', label: 'Full', icon: Maximize }
 	];
 
 	interface RatioOption {
@@ -61,7 +70,7 @@
 		{ id: 'auto', label: 'Auto' },
 		{ id: '16:9', label: '16:9' },
 		{ id: '4:5', label: '4:5' },
-		{ id: '1:1', label: '1:1' },
+		{ id: '1:1', label: '1:1' }
 	];
 
 	function buildSummaryText(): string {
@@ -87,7 +96,7 @@
 			showFrame,
 			ticker: calc.activeTicker || undefined,
 			summaryText: buildSummaryText(),
-			theme: calc.theme,
+			theme: calc.theme
 		};
 
 		const blob = await captureScreenshot(captureElement, config);
@@ -104,9 +113,7 @@
 	async function copyToClipboard(): Promise<void> {
 		if (!capturedBlob) return;
 		try {
-			await navigator.clipboard.write([
-				new ClipboardItem({ 'image/png': capturedBlob }),
-			]);
+			await navigator.clipboard.write([new ClipboardItem({ 'image/png': capturedBlob })]);
 			calc.addToast('success', 'Copied to clipboard!');
 		} catch {
 			calc.addToast('error', 'Copy failed \u2014 try saving instead.');
@@ -163,7 +170,9 @@
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Export Screenshot</h3>
+					>
+						Export Screenshot
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}
@@ -180,8 +189,8 @@
 				<div class="flex flex-col gap-1.5">
 					<span
 						class="text-[10px] uppercase tracking-wider font-medium"
-						style="color: var(--calc-text-muted);"
-					>Capture Zone</span>
+						style="color: var(--calc-text-muted);">Capture Zone</span
+					>
 					<div class="grid grid-cols-4 gap-1.5">
 						{#each ZONES as z (z.id)}
 							{@const Icon = z.icon}
@@ -203,8 +212,8 @@
 				<div class="flex flex-col gap-1.5">
 					<span
 						class="text-[10px] uppercase tracking-wider font-medium"
-						style="color: var(--calc-text-muted);"
-					>Aspect Ratio</span>
+						style="color: var(--calc-text-muted);">Aspect Ratio</span
+					>
 					<div class="grid grid-cols-4 gap-1.5">
 						{#each RATIOS as r (r.id)}
 							<button
@@ -224,17 +233,26 @@
 				<div class="flex flex-col gap-2">
 					<span
 						class="text-[10px] uppercase tracking-wider font-medium"
-						style="color: var(--calc-text-muted);"
-					>Branding</span>
-					<label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--calc-text-secondary);">
+						style="color: var(--calc-text-muted);">Branding</span
+					>
+					<label
+						class="flex items-center gap-2 text-xs cursor-pointer"
+						style="color: var(--calc-text-secondary);"
+					>
 						<input type="checkbox" bind:checked={showLogo} class="accent-[var(--calc-accent)]" />
 						Show RTP Logo
 					</label>
-					<label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--calc-text-secondary);">
+					<label
+						class="flex items-center gap-2 text-xs cursor-pointer"
+						style="color: var(--calc-text-secondary);"
+					>
 						<input type="checkbox" bind:checked={showInfoBar} class="accent-[var(--calc-accent)]" />
 						Show Info Bar (ticker, price, timestamp)
 					</label>
-					<label class="flex items-center gap-2 text-xs cursor-pointer" style="color: var(--calc-text-secondary);">
+					<label
+						class="flex items-center gap-2 text-xs cursor-pointer"
+						style="color: var(--calc-text-secondary);"
+					>
 						<input type="checkbox" bind:checked={showFrame} class="accent-[var(--calc-accent)]" />
 						Show Gradient Frame
 					</label>
@@ -248,7 +266,9 @@
 					style="background: var(--calc-accent); color: white; opacity: {isCapturing ? 0.6 : 1};"
 				>
 					{#if isCapturing}
-						<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+						<div
+							class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+						></div>
 						Capturing...
 					{:else}
 						<Camera size={16} />
@@ -264,9 +284,7 @@
 					>
 						<Camera size={24} style="color: #10b981;" />
 					</div>
-					<p class="text-sm font-semibold" style="color: var(--calc-text);">
-						Screenshot Ready!
-					</p>
+					<p class="text-sm font-semibold" style="color: var(--calc-text);">Screenshot Ready!</p>
 				</div>
 
 				<div class="grid grid-cols-2 gap-2">

@@ -45,9 +45,7 @@ export interface AxumTradePlanCreatePayload {
 /**
  * Fetch trade plan entries for a trading room.
  */
-export async function fetchTradePlan(
-	roomSlug: string
-): Promise<AxumTradePlanEntry[]> {
+export async function fetchTradePlan(roomSlug: string): Promise<AxumTradePlanEntry[]> {
 	const data = await axum.get<AxumTradePlanEntry[] | { data: AxumTradePlanEntry[] }>(
 		`/api/trade-plans/${roomSlug}`
 	);
@@ -79,9 +77,6 @@ export async function updateTradePlanEntry(
 /**
  * Delete a trade plan entry.
  */
-export async function deleteTradePlanEntry(
-	roomSlug: string,
-	entryId: number
-): Promise<void> {
+export async function deleteTradePlanEntry(roomSlug: string, entryId: number): Promise<void> {
 	await axum.delete(`/api/trade-plans/${roomSlug}/${entryId}`);
 }

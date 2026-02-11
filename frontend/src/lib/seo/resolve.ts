@@ -53,9 +53,7 @@ export function resolveSEO(
 	const titleTemplate = merged.titleTemplate ?? defaults.titleTemplate;
 	// If the raw title IS the default title (homepage), don't template it
 	const title =
-		rawTitle === defaults.defaultTitle
-			? rawTitle
-			: applyTitleTemplate(rawTitle, titleTemplate);
+		rawTitle === defaults.defaultTitle ? rawTitle : applyTitleTemplate(rawTitle, titleTemplate);
 
 	// Step 3: Resolve description
 	const description = merged.description ?? defaults.defaultDescription;

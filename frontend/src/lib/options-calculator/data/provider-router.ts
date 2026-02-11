@@ -13,7 +13,10 @@ export interface RouterConfig {
 	maxRetries: number;
 	timeoutMs: number;
 	onFallback?: (from: DataProviderName, to: DataProviderName, error: Error) => void;
-	onAllFailed?: (capability: string, errors: { provider: DataProviderName; error: Error }[]) => void;
+	onAllFailed?: (
+		capability: string,
+		errors: { provider: DataProviderName; error: Error }[]
+	) => void;
 }
 
 /**
@@ -26,7 +29,7 @@ export function createProviderRouter(config: RouterConfig) {
 
 	async function route<T>(
 		capability: string,
-		fn: (provider: MarketDataProvider) => Promise<T>,
+		fn: (provider: MarketDataProvider) => Promise<T>
 	): Promise<T> {
 		const errors: { provider: DataProviderName; error: Error }[] = [];
 
@@ -34,7 +37,7 @@ export function createProviderRouter(config: RouterConfig) {
 		const sortedProviders = preferred
 			? [
 					providers.find((p) => p.name === preferred),
-					...providers.filter((p) => p.name !== preferred),
+					...providers.filter((p) => p.name !== preferred)
 				].filter((p): p is MarketDataProvider => p !== undefined)
 			: providers;
 
@@ -44,8 +47,8 @@ export function createProviderRouter(config: RouterConfig) {
 					const result = await Promise.race([
 						fn(provider),
 						new Promise<never>((_, reject) =>
-							setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs),
-						),
+							setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)
+						)
 					]);
 
 					lastSuccessful.set(capability, provider.name);

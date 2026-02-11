@@ -30,8 +30,8 @@
 	<a
 		href="/tools/options-calculator"
 		class="font-semibold underline underline-offset-2"
-		style="color: var(--calc-accent, #6366f1);"
-	>Start your own analysis</a>
+		style="color: var(--calc-accent, #6366f1);">Start your own analysis</a
+	>
 </div>
 
 <Calculator />

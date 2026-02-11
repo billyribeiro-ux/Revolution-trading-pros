@@ -82,8 +82,10 @@
 			const lineY = radius * Math.sin(angle);
 
 			g.append('line')
-				.attr('x1', 0).attr('y1', 0)
-				.attr('x2', lineX).attr('y2', lineY)
+				.attr('x1', 0)
+				.attr('y1', 0)
+				.attr('x2', lineX)
+				.attr('y2', lineY)
 				.attr('stroke', 'var(--calc-border)')
 				.attr('stroke-width', 1)
 				.attr('opacity', 0.4);
@@ -136,7 +138,7 @@
 		gsap.fromTo(
 			polygonPath.node(),
 			{ opacity: 0, scale: 0, transformOrigin: 'center center' },
-			{ opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' },
+			{ opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' }
 		);
 
 		// Data points
@@ -169,7 +171,9 @@
 				.attr('fill', 'transparent')
 				.attr('cursor', 'pointer')
 				.append('title')
-				.text(`${data[i].label}: A 1% change causes a ${(data[i].sensitivity * 100).toFixed(1)}% change in option price`);
+				.text(
+					`${data[i].label}: A 1% change causes a ${(data[i].sensitivity * 100).toFixed(1)}% change in option price`
+				);
 		}
 	});
 </script>
@@ -179,14 +183,21 @@
 		Sensitivity shows how a 1% change in each parameter affects the option price (elasticity).
 	</div>
 
-	<div bind:this={containerEl} class="relative w-full flex justify-center" style="min-height: 300px;">
+	<div
+		bind:this={containerEl}
+		class="relative w-full flex justify-center"
+		style="min-height: 300px;"
+	>
 		<svg bind:this={svgEl}></svg>
 	</div>
 
 	<!-- Legend -->
 	<div class="flex flex-wrap gap-3 justify-center">
 		{#each calc.sensitivityData as item (item.parameter)}
-			<div class="flex items-center gap-1.5 text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+			<div
+				class="flex items-center gap-1.5 text-xs"
+				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+			>
 				<span class="w-2 h-2 rounded-full" style="background: var(--calc-accent);"></span>
 				{item.label}: {item.sensitivity.toFixed(3)}
 			</div>

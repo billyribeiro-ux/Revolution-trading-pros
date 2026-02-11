@@ -58,7 +58,7 @@ function main() {
 	// Get relative path from components directory
 	const projectRoot = resolve(__dirname, '..');
 	const componentsDir = resolve(projectRoot, COMPONENTS_BASE);
-	
+
 	// Check if file is inside components directory
 	if (!absolutePath.startsWith(componentsDir)) {
 		console.error(`❌ Error: Component must be inside ${COMPONENTS_BASE}/`);

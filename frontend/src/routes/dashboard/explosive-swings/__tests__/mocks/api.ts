@@ -14,12 +14,7 @@
  */
 
 import { vi } from 'vitest';
-import type {
-	ApiTrade,
-	ApiWeeklyVideo,
-	QuickStats,
-	PaginationMeta
-} from '../../types';
+import type { ApiTrade, ApiWeeklyVideo, QuickStats, PaginationMeta } from '../../types';
 
 // ===============================================================================
 // API ALERT TYPES (matches backend response shape)

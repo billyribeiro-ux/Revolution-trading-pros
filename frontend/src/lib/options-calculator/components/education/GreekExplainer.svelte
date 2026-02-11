@@ -20,7 +20,7 @@
 			gsap.fromTo(
 				cardEl,
 				{ y: 12, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' },
+				{ y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
 			);
 		}
 	});
@@ -73,8 +73,8 @@
 						background: var(--calc-accent-glow);
 						color: var(--calc-accent);
 						font-family: var(--calc-font-mono);
-					"
-				>{entry.symbol}</span>
+					">{entry.symbol}</span
+				>
 			{/if}
 			<span class="text-xs font-semibold" style="color: var(--calc-text);">
 				{entry.term}

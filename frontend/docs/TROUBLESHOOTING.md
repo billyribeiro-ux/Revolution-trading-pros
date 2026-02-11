@@ -9,6 +9,7 @@
 **Cause:** Dependencies not installed
 
 **Solution:**
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
@@ -19,6 +20,7 @@ npm install
 **Cause:** TypeScript strict mode violations
 
 **Solution:** Check that all types are properly defined. Run:
+
 ```bash
 npm run check
 ```
@@ -30,12 +32,13 @@ npm run check
 **Cause:** State manager not initialized in layout
 
 **Solution:** Ensure `+layout.svelte` initializes the state manager:
+
 ```svelte
 <script>
-  import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
+	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
 
-  const stateManager = new BlockStateManager();
-  setBlockStateManager(stateManager);
+	const stateManager = new BlockStateManager();
+	setBlockStateManager(stateManager);
 </script>
 ```
 
@@ -44,12 +47,13 @@ npm run check
 **Cause:** Block type not registered in componentMap
 
 **Solution:** Add block to `BlockRenderer.svelte`:
+
 ```typescript
 import MyBlock from './custom/MyBlock.svelte';
 
 const componentMap = {
-  // ... existing mappings
-  myBlock: MyBlock
+	// ... existing mappings
+	myBlock: MyBlock
 };
 ```
 
@@ -58,6 +62,7 @@ const componentMap = {
 #### "Slow rendering with many blocks"
 
 **Solution:** Enable virtual scrolling:
+
 ```typescript
 import { calculateVirtualScrollIndices } from '$lib/utils/performance';
 
@@ -67,6 +72,7 @@ import { calculateVirtualScrollIndices } from '$lib/utils/performance';
 #### "Large bundle size"
 
 **Solution:** Check bundle analyzer:
+
 ```bash
 npm run analyze
 ```
@@ -78,6 +84,7 @@ Remove unused dependencies and ensure code splitting is working.
 #### "Prisma Client not generated"
 
 **Solution:**
+
 ```bash
 npx prisma generate
 ```
@@ -85,6 +92,7 @@ npx prisma generate
 #### "Migration failed"
 
 **Solution:**
+
 ```bash
 npx prisma migrate reset
 npx prisma migrate dev
@@ -97,6 +105,7 @@ npx prisma migrate dev
 **Cause:** Missing or invalid API key
 
 **Solution:** Check `.env` file:
+
 ```bash
 VITE_ANTHROPIC_API_KEY=sk-ant-...
 ```
@@ -112,6 +121,7 @@ VITE_ANTHROPIC_API_KEY=sk-ant-...
 #### "E2E tests fail"
 
 **Solution:** Ensure dev server is running:
+
 ```bash
 # Terminal 1
 npm run dev
@@ -123,13 +133,15 @@ npm run test:e2e
 #### "Tests timeout"
 
 **Solution:** Increase timeout in `playwright.config.ts`:
+
 ```typescript
-timeout: 60000 // 60 seconds
+timeout: 60000; // 60 seconds
 ```
 
 ## Debug Mode
 
 Enable debug logging:
+
 ```bash
 DEBUG=* npm run dev
 ```

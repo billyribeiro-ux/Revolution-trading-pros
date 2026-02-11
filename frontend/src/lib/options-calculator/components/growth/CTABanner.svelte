@@ -24,7 +24,7 @@
 			gsap.fromTo(
 				bannerEl,
 				{ y: 20, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 2 },
+				{ y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 2 }
 			);
 		}
 	});
@@ -39,7 +39,7 @@
 				onComplete: () => {
 					dismissed = true;
 					localStorage.setItem(DISMISS_KEY, Date.now().toString());
-				},
+				}
 			});
 		} else {
 			dismissed = true;

@@ -29,7 +29,7 @@
 		{ value: 'rho', label: 'Rho' },
 		{ value: 'charm', label: 'Charm' },
 		{ value: 'vanna', label: 'Vanna' },
-		{ value: 'volga', label: 'Volga' },
+		{ value: 'volga', label: 'Volga' }
 	];
 
 	$effect(() => {
@@ -111,7 +111,9 @@
 				.attr('fill', colorScale(cell.value))
 				.attr('opacity', 0.85)
 				.on('mouseenter', (event: MouseEvent) => {
-					select(event.currentTarget as SVGRectElement).attr('stroke', 'var(--calc-text)').attr('stroke-width', 2);
+					select(event.currentTarget as SVGRectElement)
+						.attr('stroke', 'var(--calc-text)')
+						.attr('stroke-width', 2);
 					if (tooltipEl) {
 						tooltipEl.style.display = 'block';
 						tooltipEl.style.left = `${event.offsetX + 12}px`;
@@ -150,8 +152,12 @@
 		}
 
 		// Axes
-		const xAxisGen = axisBottom(x).ticks(8).tickFormat((d) => `$${Number(d).toFixed(0)}`);
-		const yAxisGen = axisLeft(y).ticks(6).tickFormat((d) => `${(Number(d) * 365).toFixed(0)}d`);
+		const xAxisGen = axisBottom(x)
+			.ticks(8)
+			.tickFormat((d) => `$${Number(d).toFixed(0)}`);
+		const yAxisGen = axisLeft(y)
+			.ticks(6)
+			.tickFormat((d) => `${(Number(d) * 365).toFixed(0)}d`);
 
 		g.append('g')
 			.attr('transform', `translate(0,${innerH})`)

@@ -429,7 +429,8 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 			if (plansResponse.ok) {
 				const plansData = await plansResponse.json();
-				const plans = plansData.plans || plansData.data || (Array.isArray(plansData) ? plansData : []);
+				const plans =
+					plansData.plans || plansData.data || (Array.isArray(plansData) ? plansData : []);
 				if (plans.length > 0) {
 					return transformDeveloperProducts(plans);
 				}
@@ -445,7 +446,10 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 			if (productsResponse.ok) {
 				const productsData = await productsResponse.json();
-				const products = productsData.data || productsData.products || (Array.isArray(productsData) ? productsData : []);
+				const products =
+					productsData.data ||
+					productsData.products ||
+					(Array.isArray(productsData) ? productsData : []);
 				if (products.length > 0) {
 					return transformDeveloperProducts(products);
 				}

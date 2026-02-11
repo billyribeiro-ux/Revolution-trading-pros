@@ -27,7 +27,10 @@ describe('normalizeCanonical', () => {
 	});
 
 	it('lowercases hostname', () => {
-		const result = normalizeCanonical('https://Revolution-Trading-Pros.Pages.Dev/about', baseConfig);
+		const result = normalizeCanonical(
+			'https://Revolution-Trading-Pros.Pages.Dev/about',
+			baseConfig
+		);
 		expect(result).toBe('https://revolution-trading-pros.pages.dev/about');
 	});
 

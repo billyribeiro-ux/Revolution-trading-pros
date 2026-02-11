@@ -6,7 +6,7 @@
 	import { createBlock, deserializeBlocks } from '$lib/utils/blocks';
 	import { IconPlus } from '$lib/icons';
 	import type { Block } from '$lib/components/cms/blocks/types';
-import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '$lib/stores/blockState.svelte';
 
 	// Initialize state manager
 	const stateManager = new BlockStateManager();

@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		try {
 			const response = await fetch(
-				`https://api.polygon.io/v3/snapshot/options/${ticker}?expiration_date=${expiration}&apiKey=${apiKey}&limit=250`,
+				`https://api.polygon.io/v3/snapshot/options/${ticker}?expiration_date=${expiration}&apiKey=${apiKey}&limit=250`
 			);
 
 			if (!response.ok) {
@@ -56,8 +56,8 @@ export const GET: RequestHandler = async ({ url }) => {
 						gamma: greeks?.gamma,
 						theta: greeks?.theta,
 						vega: greeks?.vega,
-						inTheMoney: (underlying?.price as number ?? 0) > (details.strike_price as number),
-						source: 'polygon',
+						inTheMoney: ((underlying?.price as number) ?? 0) > (details.strike_price as number),
+						source: 'polygon'
 					};
 				});
 
@@ -90,13 +90,12 @@ export const GET: RequestHandler = async ({ url }) => {
 						gamma: greeks?.gamma,
 						theta: greeks?.theta,
 						vega: greeks?.vega,
-						inTheMoney: (underlying?.price as number ?? 0) < (details.strike_price as number),
-						source: 'polygon',
+						inTheMoney: ((underlying?.price as number) ?? 0) < (details.strike_price as number),
+						source: 'polygon'
 					};
 				});
 
-			const underlyingPrice =
-				results[0]?.underlying_asset?.price ?? 0;
+			const underlyingPrice = results[0]?.underlying_asset?.price ?? 0;
 
 			return json({
 				underlying: ticker,
@@ -105,10 +104,13 @@ export const GET: RequestHandler = async ({ url }) => {
 				calls,
 				puts,
 				timestamp: new Date().toISOString(),
-				source: 'polygon',
+				source: 'polygon'
 			});
 		} catch (err) {
-			return error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+			return error(
+				502,
+				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
+			);
 		}
 	}
 

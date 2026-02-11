@@ -61,7 +61,7 @@
 	let snapshot = $derived(calc.currentTimeMachineSnapshot);
 
 	let sliderPercent = $derived(
-		calc.timeMachineMaxDays > 0 ? (calc.timeMachineDay / calc.timeMachineMaxDays) * 100 : 0,
+		calc.timeMachineMaxDays > 0 ? (calc.timeMachineDay / calc.timeMachineMaxDays) * 100 : 0
 	);
 
 	// Key DTE markers
@@ -72,7 +72,7 @@
 			.filter((dte) => dte < max)
 			.map((dte) => ({
 				dte,
-				position: ((max - dte) / max) * 100,
+				position: ((max - dte) / max) * 100
 			}));
 	});
 
@@ -108,7 +108,10 @@
 				{speed}x
 			</button>
 
-			<span class="text-xs font-semibold" style="color: var(--calc-text); font-family: var(--calc-font-mono);">
+			<span
+				class="text-xs font-semibold"
+				style="color: var(--calc-text); font-family: var(--calc-font-mono);"
+			>
 				Day {calc.timeMachineDay}
 			</span>
 			<span class="text-[10px]" style="color: var(--calc-text-muted);">
@@ -120,19 +123,28 @@
 			<div class="flex items-center gap-3">
 				<div class="flex items-center gap-1">
 					<span class="text-[10px]" style="color: var(--calc-text-muted);">Call:</span>
-					<span class="text-xs font-semibold" style="color: var(--calc-call); font-family: var(--calc-font-mono);">
+					<span
+						class="text-xs font-semibold"
+						style="color: var(--calc-call); font-family: var(--calc-font-mono);"
+					>
 						{formatCurrency(snapshot.callPrice)}
 					</span>
 				</div>
 				<div class="flex items-center gap-1">
 					<span class="text-[10px]" style="color: var(--calc-text-muted);">Put:</span>
-					<span class="text-xs font-semibold" style="color: var(--calc-put); font-family: var(--calc-font-mono);">
+					<span
+						class="text-xs font-semibold"
+						style="color: var(--calc-put); font-family: var(--calc-font-mono);"
+					>
 						{formatCurrency(snapshot.putPrice)}
 					</span>
 				</div>
 				<div class="flex items-center gap-1">
 					<span class="text-[10px]" style="color: var(--calc-text-muted);">Δ:</span>
-					<span class="text-xs" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+					<span
+						class="text-xs"
+						style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+					>
 						{snapshot.greeks.first.delta.toFixed(3)}
 					</span>
 				</div>
@@ -143,7 +155,10 @@
 	<!-- Slider -->
 	<div class="relative w-full h-8">
 		<!-- Track background -->
-		<div class="absolute top-3 left-0 right-0 h-2 rounded-full" style="background: var(--calc-surface-hover);">
+		<div
+			class="absolute top-3 left-0 right-0 h-2 rounded-full"
+			style="background: var(--calc-surface-hover);"
+		>
 			<!-- Filled track -->
 			<div
 				class="absolute top-0 left-0 h-full rounded-full transition-all"
@@ -157,7 +172,10 @@
 				class="absolute top-0 flex flex-col items-center"
 				style="left: {marker.position}%; transform: translateX(-50%);"
 			>
-				<span class="text-[7px] font-medium" style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">
+				<span
+					class="text-[7px] font-medium"
+					style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
+				>
 					{marker.dte}d
 				</span>
 				<div class="w-px h-2" style="background: var(--calc-border);"></div>
@@ -183,7 +201,14 @@
 
 	<!-- Timeline labels -->
 	<div class="flex items-center justify-between">
-		<span class="text-[9px]" style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">Today</span>
-		<span class="text-[9px]" style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">Expiration ({calc.timeMachineMaxDays}d)</span>
+		<span
+			class="text-[9px]"
+			style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">Today</span
+		>
+		<span
+			class="text-[9px]"
+			style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
+			>Expiration ({calc.timeMachineMaxDays}d)</span
+		>
 	</div>
 </div>

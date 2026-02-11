@@ -95,6 +95,7 @@ describe('useImageUpload', () => {
 		// Mock XMLHttpRequest with a proper class constructor
 		mockXHR = createMockXHR();
 		originalXHR = global.XMLHttpRequest;
+		// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 		global.XMLHttpRequest = class MockXMLHttpRequest {
 			constructor() {
 				return mockXHR as any;
@@ -832,6 +833,7 @@ describe('createPresignedUploader', () => {
 			_handlers: {} as Record<string, Array<() => void>>
 		};
 
+		// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 		global.XMLHttpRequest = class MockXMLHttpRequest {
 			constructor() {
 				return mockXHR as any;
@@ -950,6 +952,7 @@ describe('Edge Cases', () => {
 	it('handles multiple upload calls', async () => {
 		const mockXHR = createMockXHR();
 		const originalXHR = global.XMLHttpRequest;
+		// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 		global.XMLHttpRequest = class MockXMLHttpRequest {
 			constructor() {
 				return mockXHR as any;

@@ -24,7 +24,7 @@
 		displayDecimals = 2,
 		symbol = '',
 		onchange,
-		class: className = '',
+		class: className = ''
 	}: Props = $props();
 
 	let isEditing = $state(false);
@@ -76,9 +76,15 @@
 <div class="flex flex-col gap-1.5 {className}">
 	<!-- Label row -->
 	<div class="flex items-center justify-between">
-		<span class="flex items-center gap-1.5 text-xs font-medium" style="color: var(--calc-text-secondary); font-family: var(--calc-font-body);">
+		<span
+			class="flex items-center gap-1.5 text-xs font-medium"
+			style="color: var(--calc-text-secondary); font-family: var(--calc-font-body);"
+		>
 			{#if symbol}
-				<span class="inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold" style="background: var(--calc-accent-glow); color: var(--calc-accent); font-family: var(--calc-font-mono);">
+				<span
+					class="inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold"
+					style="background: var(--calc-accent-glow); color: var(--calc-accent); font-family: var(--calc-font-mono);"
+				>
 					{symbol}
 				</span>
 			{/if}
@@ -91,8 +97,8 @@
 				onclick={decrement}
 				class="w-5 h-5 flex items-center justify-center rounded text-xs transition-colors cursor-pointer"
 				style="background: var(--calc-surface-hover); color: var(--calc-text-secondary);"
-				aria-label="Decrease {label}"
-			>−</button>
+				aria-label="Decrease {label}">−</button
+			>
 
 			{#if isEditing}
 				<!-- svelte-ignore a11y_autofocus -->
@@ -120,8 +126,8 @@
 				onclick={increment}
 				class="w-5 h-5 flex items-center justify-center rounded text-xs transition-colors cursor-pointer"
 				style="background: var(--calc-surface-hover); color: var(--calc-text-secondary);"
-				aria-label="Increase {label}"
-			>+</button>
+				aria-label="Increase {label}">+</button
+			>
 		</div>
 	</div>
 
@@ -141,8 +147,19 @@
 	</div>
 
 	<!-- Min/Max labels -->
-	<div class="flex justify-between text-[10px]" style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">
-		<span>{(min * displayMultiplier).toFixed(displayDecimals > 2 ? 1 : 0)}{unit === '%' ? '%' : ''}</span>
-		<span>{(max * displayMultiplier).toFixed(displayDecimals > 2 ? 1 : 0)}{unit === '%' ? '%' : ''}</span>
+	<div
+		class="flex justify-between text-[10px]"
+		style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
+	>
+		<span
+			>{(min * displayMultiplier).toFixed(displayDecimals > 2 ? 1 : 0)}{unit === '%'
+				? '%'
+				: ''}</span
+		>
+		<span
+			>{(max * displayMultiplier).toFixed(displayDecimals > 2 ? 1 : 0)}{unit === '%'
+				? '%'
+				: ''}</span
+		>
 	</div>
 </div>

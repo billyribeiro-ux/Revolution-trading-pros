@@ -20,7 +20,7 @@
 			gsap.fromTo(
 				cardEl,
 				{ scale: 0.85, opacity: 0, y: 8 },
-				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(2)' },
+				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(2)' }
 			);
 		}
 	});
@@ -36,14 +36,14 @@
 			y: 8,
 			duration: 0.15,
 			ease: 'power2.in',
-			onComplete: onClose,
+			onComplete: onClose
 		});
 	}
 
 	let truncatedExplanation = $derived(
 		entry.fullExplanation.length > 200 && !isExpanded
 			? entry.fullExplanation.slice(0, 200) + '...'
-			: entry.fullExplanation,
+			: entry.fullExplanation
 	);
 </script>
 
@@ -69,8 +69,8 @@
 							background: var(--calc-accent-glow);
 							color: var(--calc-accent);
 							font-family: var(--calc-font-mono);
-						"
-					>{entry.symbol}</span>
+						">{entry.symbol}</span
+					>
 				{/if}
 				<h4
 					class="text-sm font-semibold"
@@ -113,7 +113,10 @@
 			<div class="flex flex-col gap-1.5">
 				{#if entry.whenIncreases}
 					<div class="flex items-start gap-1.5">
-						<TrendingUp size={11} style="color: var(--calc-call); flex-shrink: 0; margin-top: 1px;" />
+						<TrendingUp
+							size={11}
+							style="color: var(--calc-call); flex-shrink: 0; margin-top: 1px;"
+						/>
 						<span class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
 							{entry.whenIncreases}
 						</span>
@@ -121,7 +124,10 @@
 				{/if}
 				{#if entry.whenDecreases}
 					<div class="flex items-start gap-1.5">
-						<TrendingDown size={11} style="color: var(--calc-put); flex-shrink: 0; margin-top: 1px;" />
+						<TrendingDown
+							size={11}
+							style="color: var(--calc-put); flex-shrink: 0; margin-top: 1px;"
+						/>
 						<span class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
 							{entry.whenDecreases}
 						</span>
@@ -145,7 +151,10 @@
 		<!-- Related terms -->
 		{#if entry.relatedTerms && entry.relatedTerms.length > 0}
 			<div class="flex items-center gap-1.5 flex-wrap">
-				<span class="text-[9px] uppercase tracking-wider font-medium" style="color: var(--calc-text-muted);">
+				<span
+					class="text-[9px] uppercase tracking-wider font-medium"
+					style="color: var(--calc-text-muted);"
+				>
 					Related:
 				</span>
 				{#each entry.relatedTerms as termId (termId)}

@@ -7,7 +7,7 @@
 		deleteConfig,
 		exportConfigs,
 		importConfigs,
-		clearAllConfigs,
+		clearAllConfigs
 	} from '../../utils/saved-configs.js';
 	import type { SavedConfig } from '../../engine/types.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
@@ -29,9 +29,9 @@
 					(c) =>
 						c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 						c.ticker?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						c.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())),
+						c.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
 				)
-			: configs,
+			: configs
 	);
 
 	$effect(() => {
@@ -43,7 +43,7 @@
 					gsap.fromTo(
 						panelEl,
 						{ x: 320, opacity: 0 },
-						{ x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' },
+						{ x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
 					);
 				}
 			});
@@ -158,11 +158,14 @@
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Saved Configs</h3>
+					>
+						Saved Configs
+					</h3>
 					<span
 						class="text-[9px] px-1.5 py-0.5 rounded"
 						style="background: var(--calc-surface); color: var(--calc-text-muted);"
-					>{configs.length}</span>
+						>{configs.length}</span
+					>
 				</div>
 				<button
 					onclick={handleClose}
@@ -199,7 +202,8 @@
 								<kbd
 									class="px-1 py-0.5 rounded text-[9px]"
 									style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-								>\u2318S</kbd>
+									>\u2318S</kbd
+								>
 								to save your first one.
 							</p>
 						{/if}

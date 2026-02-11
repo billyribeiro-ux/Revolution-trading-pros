@@ -94,15 +94,15 @@
 					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'single'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
-						: 'color: var(--calc-text-muted);'}
-				>Single</button>
+						: 'color: var(--calc-text-muted);'}>Single</button
+				>
 				<button
 					onclick={() => (calc.calculatorMode = 'strategy')}
 					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'strategy'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
-						: 'color: var(--calc-text-muted);'}
-				>Strategy</button>
+						: 'color: var(--calc-text-muted);'}>Strategy</button
+				>
 			</div>
 
 			<!-- Scenario Toggle -->
@@ -120,7 +120,7 @@
 			<!-- Data Source Badge -->
 			<DataSourceBadge {marketData} />
 
-				<!-- Phase 4: Education Toggle -->
+			<!-- Phase 4: Education Toggle -->
 			<EducationOverlay {calc} />
 
 			<!-- Phase 4: Export Menu -->

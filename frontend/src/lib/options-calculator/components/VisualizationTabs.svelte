@@ -26,16 +26,13 @@
 		{ id: 'volsmile', label: 'Vol Smile' },
 		{ id: 'theta', label: 'Theta Decay' },
 		{ id: 'sensitivity', label: 'Sensitivity' },
-		{ id: 'chain', label: 'Options Chain' },
+		{ id: 'chain', label: 'Options Chain' }
 	];
 </script>
 
 <div class="flex flex-col gap-0">
 	<!-- Tab bar -->
-	<div
-		class="relative flex border-b"
-		style="border-color: var(--calc-border);"
-	>
+	<div class="relative flex border-b" style="border-color: var(--calc-border);">
 		{#each TABS as tab (tab.id)}
 			<button
 				onclick={() => (calc.activeTab = tab.id)}

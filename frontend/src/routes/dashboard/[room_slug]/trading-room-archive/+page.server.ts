@@ -56,7 +56,6 @@ interface VideoResponse {
 	[key: string]: unknown;
 }
 
-
 // Page data type export for +page.svelte
 export interface DynamicArchivePageData {
 	roomSlug: string;
@@ -73,10 +72,7 @@ export interface DynamicArchivePageData {
 	error: string | null;
 }
 
-export const load: PageServerLoad = async ({
-	url,
-	params
-}): Promise<DynamicArchivePageData> => {
+export const load: PageServerLoad = async ({ url, params }): Promise<DynamicArchivePageData> => {
 	void env;
 	const roomSlug = params.room_slug;
 

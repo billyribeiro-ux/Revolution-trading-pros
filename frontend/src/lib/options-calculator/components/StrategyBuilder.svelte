@@ -26,7 +26,7 @@
 			expiry: calc.timeToExpiry,
 			position: 1,
 			quantity: 1,
-			premium: 0,
+			premium: 0
 		});
 		if (addBtnEl) {
 			gsap.fromTo(addBtnEl, { scale: 0.9 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
@@ -41,7 +41,7 @@
 			expiry: updated.expiry,
 			position: updated.position,
 			quantity: updated.quantity,
-			premium: updated.premium,
+			premium: updated.premium
 		});
 	}
 
@@ -65,10 +65,16 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<BarChart3 size={16} style="color: var(--calc-accent);" />
-			<h3 class="text-sm font-semibold" style="color: var(--calc-text); font-family: var(--calc-font-display);">
+			<h3
+				class="text-sm font-semibold"
+				style="color: var(--calc-text); font-family: var(--calc-font-display);"
+			>
 				Strategy Builder
 			</h3>
-			<span class="text-[10px] px-1.5 py-0.5 rounded" style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);">
+			<span
+				class="text-[10px] px-1.5 py-0.5 rounded"
+				style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
+			>
 				{calc.strategyLegs.length} legs
 			</span>
 		</div>
@@ -127,21 +133,50 @@
 
 	<!-- Strategy Summary -->
 	{#if calc.strategyLegs.length > 0}
-		<div class="flex flex-col gap-3 rounded-xl p-3" style="background: var(--calc-surface); border: 1px solid var(--calc-border);">
+		<div
+			class="flex flex-col gap-3 rounded-xl p-3"
+			style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
+		>
 			<div class="flex items-center justify-between">
-				<span class="text-xs font-medium" style="color: var(--calc-text-secondary);">Strategy Summary</span>
+				<span class="text-xs font-medium" style="color: var(--calc-text-secondary);"
+					>Strategy Summary</span
+				>
 				<span
 					class="text-xs font-bold px-2 py-0.5 rounded"
-					style="font-family: var(--calc-font-mono); {netPremium >= 0 ? 'color: var(--calc-call); background: var(--calc-call-bg);' : 'color: var(--calc-put); background: var(--calc-put-bg);'}"
+					style="font-family: var(--calc-font-mono); {netPremium >= 0
+						? 'color: var(--calc-call); background: var(--calc-call-bg);'
+						: 'color: var(--calc-put); background: var(--calc-put-bg);'}"
 				>
-					{netPremium >= 0 ? 'Credit' : 'Debit'} {formatCurrency(Math.abs(netPremium))}
+					{netPremium >= 0 ? 'Credit' : 'Debit'}
+					{formatCurrency(Math.abs(netPremium))}
 				</span>
 			</div>
 
 			<div class="grid grid-cols-4 gap-2">
-				<MetricCard label="Max Profit" value={typeof calc.strategyMaxProfitLoss.maxProfit === 'number' ? calc.strategyMaxProfitLoss.maxProfit : 99999} decimals={2} prefix="$" colorize />
-				<MetricCard label="Max Loss" value={typeof calc.strategyMaxProfitLoss.maxLoss === 'number' ? -calc.strategyMaxProfitLoss.maxLoss : -99999} decimals={2} prefix="$" colorize />
-				<MetricCard label="Breakevens" value={calc.strategyBreakevens.length} decimals={0} colorize={false} />
+				<MetricCard
+					label="Max Profit"
+					value={typeof calc.strategyMaxProfitLoss.maxProfit === 'number'
+						? calc.strategyMaxProfitLoss.maxProfit
+						: 99999}
+					decimals={2}
+					prefix="$"
+					colorize
+				/>
+				<MetricCard
+					label="Max Loss"
+					value={typeof calc.strategyMaxProfitLoss.maxLoss === 'number'
+						? -calc.strategyMaxProfitLoss.maxLoss
+						: -99999}
+					decimals={2}
+					prefix="$"
+					colorize
+				/>
+				<MetricCard
+					label="Breakevens"
+					value={calc.strategyBreakevens.length}
+					decimals={0}
+					colorize={false}
+				/>
 				<MetricCard label="Net Delta" value={netDelta} decimals={3} colorize />
 			</div>
 
@@ -149,7 +184,10 @@
 				<div class="flex items-center gap-2 flex-wrap">
 					<span class="text-[10px]" style="color: var(--calc-text-muted);">B/E:</span>
 					{#each calc.strategyBreakevens as be}
-						<span class="text-xs px-1.5 py-0.5 rounded" style="background: var(--calc-surface-hover); color: var(--calc-warning); font-family: var(--calc-font-mono);">
+						<span
+							class="text-xs px-1.5 py-0.5 rounded"
+							style="background: var(--calc-surface-hover); color: var(--calc-warning); font-family: var(--calc-font-mono);"
+						>
 							{formatCurrency(be)}
 						</span>
 					{/each}

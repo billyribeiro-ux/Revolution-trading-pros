@@ -53,7 +53,7 @@ function seededBoxMuller(rng: () => number): [number, number] {
  */
 export function runMonteCarlo(
 	inputs: BSInputs,
-	config: MonteCarloConfig = { numPaths: 5000, numSteps: 100 },
+	config: MonteCarloConfig = { numPaths: 5000, numSteps: 100 }
 ): MonteCarloResult {
 	const startTime = performance.now();
 
@@ -104,7 +104,13 @@ export function runMonteCarlo(
 		finalPrices.push(S1);
 
 		if (paths.length < numPaths) {
-			paths.push({ id: p * 2 + 1, prices: prices2, finalPrice: S2, maxPrice: max2, minPrice: min2 });
+			paths.push({
+				id: p * 2 + 1,
+				prices: prices2,
+				finalPrice: S2,
+				maxPrice: max2,
+				minPrice: min2
+			});
 			finalPrices.push(S2);
 		}
 	}
@@ -149,9 +155,9 @@ export function runMonteCarlo(
 			expectedPayoffCall,
 			expectedPayoffPut,
 			bsCallPrice: bsResult.callPrice,
-			bsPutPrice: bsResult.putPrice,
+			bsPutPrice: bsResult.putPrice
 		},
-		computeTimeMs,
+		computeTimeMs
 	};
 }
 
@@ -161,7 +167,7 @@ export function runMonteCarlo(
 export function runLightMonteCarlo(
 	inputs: BSInputs,
 	numPaths: number = 200,
-	numSteps: number = 50,
+	numSteps: number = 50
 ): MonteCarloResult {
 	return runMonteCarlo(inputs, { numPaths, numSteps });
 }

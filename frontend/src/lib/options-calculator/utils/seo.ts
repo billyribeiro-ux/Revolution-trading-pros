@@ -22,12 +22,12 @@ export function generateStructuredData(): object {
 		offers: {
 			'@type': 'Offer',
 			price: '0',
-			priceCurrency: 'USD',
+			priceCurrency: 'USD'
 		},
 		creator: {
 			'@type': 'Organization',
 			name: 'Revolution Trading Pros',
-			url: 'https://revolutiontradingpros.com',
+			url: 'https://revolutiontradingpros.com'
 		},
 		featureList: [
 			'Black-Scholes-Merton option pricing',
@@ -46,8 +46,8 @@ export function generateStructuredData(): object {
 			'Shareable calculator links',
 			'Embeddable widget',
 			'Dark and light themes',
-			'Keyboard shortcuts and command palette',
-		],
+			'Keyboard shortcuts and command palette'
+		]
 	};
 }
 
@@ -70,7 +70,7 @@ export function generateOGMeta(inputs?: BSInputs): Record<string, string> {
 		'twitter:card': 'summary_large_image',
 		'twitter:title': 'Black-Scholes Options Calculator',
 		'twitter:description': description,
-		'twitter:image': 'https://revolutiontradingpros.com/images/options-calculator-og.png',
+		'twitter:image': 'https://revolutiontradingpros.com/images/options-calculator-og.png'
 	};
 }
 
@@ -88,33 +88,33 @@ export function generateFAQStructuredData(): object {
 				name: 'What is the Black-Scholes model?',
 				acceptedAnswer: {
 					'@type': 'Answer',
-					text: 'The Black-Scholes-Merton model is a mathematical framework for pricing European-style options. Published in 1973, it calculates theoretical option prices based on five inputs: stock price, strike price, time to expiration, risk-free interest rate, and implied volatility.',
-				},
+					text: 'The Black-Scholes-Merton model is a mathematical framework for pricing European-style options. Published in 1973, it calculates theoretical option prices based on five inputs: stock price, strike price, time to expiration, risk-free interest rate, and implied volatility.'
+				}
 			},
 			{
 				'@type': 'Question',
 				name: 'What are the Greeks in options trading?',
 				acceptedAnswer: {
 					'@type': 'Answer',
-					text: "The Greeks are risk measures that describe how an option's price changes relative to various factors. Delta measures sensitivity to stock price, Gamma measures delta's rate of change, Theta measures time decay, Vega measures sensitivity to volatility, and Rho measures sensitivity to interest rates.",
-				},
+					text: "The Greeks are risk measures that describe how an option's price changes relative to various factors. Delta measures sensitivity to stock price, Gamma measures delta's rate of change, Theta measures time decay, Vega measures sensitivity to volatility, and Rho measures sensitivity to interest rates."
+				}
 			},
 			{
 				'@type': 'Question',
 				name: 'How accurate is the Black-Scholes calculator?',
 				acceptedAnswer: {
 					'@type': 'Answer',
-					text: 'This calculator implements the exact Black-Scholes-Merton formula with continuous dividend yield adjustment. It calculates all first-order Greeks (Delta, Gamma, Theta, Vega, Rho) and second-order Greeks (Charm, Vanna, Volga, Speed, Color, Zomma) with full floating-point precision.',
-				},
+					text: 'This calculator implements the exact Black-Scholes-Merton formula with continuous dividend yield adjustment. It calculates all first-order Greeks (Delta, Gamma, Theta, Vega, Rho) and second-order Greeks (Charm, Vanna, Volga, Speed, Color, Zomma) with full floating-point precision.'
+				}
 			},
 			{
 				'@type': 'Question',
 				name: 'Is this options calculator free?',
 				acceptedAnswer: {
 					'@type': 'Answer',
-					text: 'Yes, the Black-Scholes Options Calculator by Revolution Trading Pros is completely free to use. It includes real-time Greeks, payoff diagrams, strategy builder, Monte Carlo simulation, and more \u2014 no account required.',
-				},
-			},
-		],
+					text: 'Yes, the Black-Scholes Options Calculator by Revolution Trading Pros is completely free to use. It includes real-time Greeks, payoff diagrams, strategy builder, Monte Carlo simulation, and more \u2014 no account required.'
+				}
+			}
+		]
 	};
 }

@@ -87,7 +87,13 @@
 	canonical="/classes"
 	ogType="website"
 	schemaType="CollectionPage"
-	keywords={['trading classes', 'trading courses', 'learn to trade', 'stock market education', 'day trading course']}
+	keywords={[
+		'trading classes',
+		'trading courses',
+		'learn to trade',
+		'stock market education',
+		'day trading course'
+	]}
 />
 
 <div class="courses-page">

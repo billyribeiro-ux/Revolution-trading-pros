@@ -58,7 +58,9 @@
 			class="text-[10px] transition-colors"
 			style="color: var(--calc-text-muted);"
 		>
-			Powered by <span class="font-semibold" style="color: var(--calc-accent);">Revolution Trading Pros</span>
+			Powered by <span class="font-semibold" style="color: var(--calc-accent);"
+				>Revolution Trading Pros</span
+			>
 		</a>
 	</div>
 </div>

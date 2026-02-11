@@ -23,7 +23,7 @@
 		volatility: 'σ',
 		timeToExpiry: 'T',
 		riskFreeRate: 'r',
-		dividendYield: 'q',
+		dividendYield: 'q'
 	};
 
 	function handleOptionTypeChange(type: OptionType) {
@@ -101,8 +101,8 @@
 				{#if calc.isLivePopulated(field.key)}
 					<span
 						class="absolute -top-1 right-0 text-[8px] font-bold px-1 py-0.5 rounded z-10"
-						style="background: var(--calc-call-bg); color: var(--calc-call);"
-					>LIVE</span>
+						style="background: var(--calc-call-bg); color: var(--calc-call);">LIVE</span
+					>
 				{/if}
 				<AnimatedSlider
 					value={calc[field.key] as number}
@@ -145,7 +145,9 @@
 			>
 				IV Solver
 			</span>
-			<InfoTooltip content="Enter a market price to reverse-engineer the implied volatility using Newton-Raphson iteration." />
+			<InfoTooltip
+				content="Enter a market price to reverse-engineer the implied volatility using Newton-Raphson iteration."
+			/>
 		</div>
 		<div class="flex gap-2">
 			<input
@@ -166,7 +168,9 @@
 		{#if ivResult}
 			<div
 				class="text-xs"
-				style="color: {ivResult.converged ? 'var(--calc-call)' : 'var(--calc-warning)'}; font-family: var(--calc-font-mono);"
+				style="color: {ivResult.converged
+					? 'var(--calc-call)'
+					: 'var(--calc-warning)'}; font-family: var(--calc-font-mono);"
 			>
 				{#if ivResult.converged}
 					IV = {(ivResult.iv * 100).toFixed(2)}% ✓

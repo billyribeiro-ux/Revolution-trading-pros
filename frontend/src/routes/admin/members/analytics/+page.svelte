@@ -55,7 +55,8 @@
 		churn: number;
 	}[] = $state([]);
 	let churnReasons: { reason: string; count: number; percentage: number }[] = $state([]);
-	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] = $state([]);
+	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] =
+		$state([]);
 
 	onMount(async () => {
 		await loadAnalytics();

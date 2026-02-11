@@ -20,13 +20,11 @@
 			mode: calc.calculatorMode,
 			activeTab: calc.activeTab,
 			ticker: calc.activeTicker || undefined,
-			strategyLegs: calc.strategyLegs.length > 0 ? calc.strategyLegs : undefined,
-		}),
+			strategyLegs: calc.strategyLegs.length > 0 ? calc.strategyLegs : undefined
+		})
 	);
 
-	let displayURL = $derived(
-		shareURL.length > 80 ? shareURL.slice(0, 77) + '\u2026' : shareURL,
-	);
+	let displayURL = $derived(shareURL.length > 80 ? shareURL.slice(0, 77) + '\u2026' : shareURL);
 
 	$effect(() => {
 		if (calc.showShareLink && modalEl) {
@@ -34,7 +32,7 @@
 			gsap.fromTo(
 				modalEl,
 				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
 			);
 		}
 	});
@@ -97,7 +95,9 @@
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
-					>Share Calculator</h3>
+					>
+						Share Calculator
+					</h3>
 				</div>
 				<button
 					onclick={handleClose}

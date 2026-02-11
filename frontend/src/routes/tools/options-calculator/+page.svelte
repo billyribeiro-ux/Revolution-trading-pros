@@ -4,7 +4,7 @@
 	import {
 		generateStructuredData,
 		generateFAQStructuredData,
-		generateOGMeta,
+		generateOGMeta
 	} from '$lib/options-calculator/utils/seo.js';
 
 	const structuredData = generateStructuredData();

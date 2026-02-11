@@ -214,7 +214,7 @@
 	<!-- Structured Data / JSON-LD -->
 	{#if structuredDataJson}
 		{#each structuredDataJson as jsonLd}
-				{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(jsonLd) + '</scr' + 'ipt>'}
+			{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(jsonLd) + '</scr' + 'ipt>'}
 		{/each}
 	{/if}
 </svelte:head>

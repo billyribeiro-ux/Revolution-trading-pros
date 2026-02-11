@@ -21,7 +21,7 @@
 		cancelText = 'Cancel',
 		variant = 'default',
 		onConfirm,
-		onCancel,
+		onCancel
 	}: Props = $props();
 
 	let dialogEl: HTMLDivElement | undefined = $state();
@@ -31,7 +31,7 @@
 			gsap.fromTo(
 				dialogEl,
 				{ scale: 0.9, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.7)' },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.7)' }
 			);
 		}
 	});
@@ -47,9 +47,7 @@
 		}
 	}
 
-	let confirmBg = $derived(
-		variant === 'danger' ? 'var(--calc-put)' : 'var(--calc-accent)',
-	);
+	let confirmBg = $derived(variant === 'danger' ? 'var(--calc-put)' : 'var(--calc-accent)');
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

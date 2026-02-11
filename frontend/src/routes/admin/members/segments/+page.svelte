@@ -33,7 +33,7 @@
 		IconMail,
 		IconCurrencyDollar,
 		IconCalendar,
-		IconTrendingUp,
+		IconTrendingUp
 	} from '$lib/icons';
 	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';

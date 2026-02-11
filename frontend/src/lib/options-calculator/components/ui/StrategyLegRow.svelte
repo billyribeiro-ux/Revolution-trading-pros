@@ -17,13 +17,26 @@
 		onRemove: (id: string) => void;
 	}
 
-	let { leg, spotPrice, volatility, riskFreeRate, dividendYield, color, onUpdate, onRemove }: Props = $props();
+	let {
+		leg,
+		spotPrice,
+		volatility,
+		riskFreeRate,
+		dividendYield,
+		color,
+		onUpdate,
+		onRemove
+	}: Props = $props();
 
 	let rowEl: HTMLDivElement | undefined = $state();
 
 	$effect(() => {
 		if (rowEl) {
-			gsap.fromTo(rowEl, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: 'power2.out' });
+			gsap.fromTo(
+				rowEl,
+				{ x: 40, opacity: 0 },
+				{ x: 0, opacity: 1, duration: 0.35, ease: 'power2.out' }
+			);
 		}
 	});
 
@@ -33,7 +46,7 @@
 		volatility,
 		timeToExpiry: leg.expiry,
 		riskFreeRate,
-		dividendYield,
+		dividendYield
 	});
 
 	let computedPrice = $derived(priceOption(legInputs, leg.type));
@@ -63,15 +76,24 @@
 
 	function updateQuantity(delta: number) {
 		const newQty = Math.max(1, Math.min(100, leg.quantity + delta));
-		onUpdate({ ...leg, quantity: newQty, premium: -computedPrice * newQty * (leg.position === 1 ? 1 : -1) });
+		onUpdate({
+			...leg,
+			quantity: newQty,
+			premium: -computedPrice * newQty * (leg.position === 1 ? 1 : -1)
+		});
 	}
 
 	function handleRemove() {
 		if (rowEl) {
 			gsap.to(rowEl, {
-				x: 60, opacity: 0, height: 0, padding: 0, margin: 0,
-				duration: 0.3, ease: 'power2.in',
-				onComplete: () => onRemove(leg.id),
+				x: 60,
+				opacity: 0,
+				height: 0,
+				padding: 0,
+				margin: 0,
+				duration: 0.3,
+				ease: 'power2.in',
+				onComplete: () => onRemove(leg.id)
 			});
 		} else {
 			onRemove(leg.id);
@@ -91,20 +113,24 @@
 			class="text-[10px] font-bold px-2 py-1 transition-colors cursor-pointer"
 			style={leg.type === 'call'
 				? 'background: var(--calc-call-bg); color: var(--calc-call);'
-				: 'color: var(--calc-text-muted);'}
-		>C</button>
+				: 'color: var(--calc-text-muted);'}>C</button
+		>
 		<button
 			onclick={() => updateType('put')}
 			class="text-[10px] font-bold px-2 py-1 transition-colors cursor-pointer"
 			style={leg.type === 'put'
 				? 'background: var(--calc-put-bg); color: var(--calc-put);'
-				: 'color: var(--calc-text-muted);'}
-		>P</button>
+				: 'color: var(--calc-text-muted);'}>P</button
+		>
 	</div>
 
 	<!-- Strike -->
 	<div class="flex items-center gap-0.5">
-		<button onclick={() => updateStrike(-1)} class="w-5 h-5 flex items-center justify-center rounded text-xs cursor-pointer" style="color: var(--calc-text-muted);"><Minus size={10} /></button>
+		<button
+			onclick={() => updateStrike(-1)}
+			class="w-5 h-5 flex items-center justify-center rounded text-xs cursor-pointer"
+			style="color: var(--calc-text-muted);"><Minus size={10} /></button
+		>
 		<input
 			type="number"
 			value={leg.strike}
@@ -112,7 +138,11 @@
 			class="w-14 text-center text-xs px-1 py-0.5 rounded outline-none"
 			style="background: var(--calc-surface-hover); color: var(--calc-text); font-family: var(--calc-font-mono); border: 1px solid var(--calc-border);"
 		/>
-		<button onclick={() => updateStrike(1)} class="w-5 h-5 flex items-center justify-center rounded text-xs cursor-pointer" style="color: var(--calc-text-muted);"><Plus size={10} /></button>
+		<button
+			onclick={() => updateStrike(1)}
+			class="w-5 h-5 flex items-center justify-center rounded text-xs cursor-pointer"
+			style="color: var(--calc-text-muted);"><Plus size={10} /></button
+		>
 	</div>
 
 	<!-- DTE -->
@@ -138,18 +168,35 @@
 
 	<!-- Quantity -->
 	<div class="flex items-center gap-0.5">
-		<button onclick={() => updateQuantity(-1)} class="w-4 h-4 flex items-center justify-center rounded text-xs cursor-pointer" style="color: var(--calc-text-muted);"><Minus size={8} /></button>
-		<span class="text-xs w-5 text-center" style="color: var(--calc-text); font-family: var(--calc-font-mono);">{leg.quantity}</span>
-		<button onclick={() => updateQuantity(1)} class="w-4 h-4 flex items-center justify-center rounded text-xs cursor-pointer" style="color: var(--calc-text-muted);"><Plus size={8} /></button>
+		<button
+			onclick={() => updateQuantity(-1)}
+			class="w-4 h-4 flex items-center justify-center rounded text-xs cursor-pointer"
+			style="color: var(--calc-text-muted);"><Minus size={8} /></button
+		>
+		<span
+			class="text-xs w-5 text-center"
+			style="color: var(--calc-text); font-family: var(--calc-font-mono);">{leg.quantity}</span
+		>
+		<button
+			onclick={() => updateQuantity(1)}
+			class="w-4 h-4 flex items-center justify-center rounded text-xs cursor-pointer"
+			style="color: var(--calc-text-muted);"><Plus size={8} /></button
+		>
 	</div>
 
 	<!-- Computed Price -->
-	<span class="text-xs min-w-[3.5rem] text-right" style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);">
+	<span
+		class="text-xs min-w-[3.5rem] text-right"
+		style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
+	>
 		{formatCurrency(computedPrice)}
 	</span>
 
 	<!-- Delta -->
-	<span class="text-[10px] min-w-[2.5rem] text-right" style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);">
+	<span
+		class="text-[10px] min-w-[2.5rem] text-right"
+		style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
+	>
 		Δ{computedGreeks.delta.toFixed(2)}
 	</span>
 

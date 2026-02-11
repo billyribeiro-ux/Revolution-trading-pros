@@ -8,7 +8,7 @@ const FRED_SERIES: Record<string, string> = {
 	rate6M: 'DGS6MO',
 	rate1Y: 'DGS1',
 	rate2Y: 'DGS2',
-	rate10Y: 'DGS10',
+	rate10Y: 'DGS10'
 };
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			const fetches = Object.entries(FRED_SERIES).map(async ([key, seriesId]) => {
 				const response = await fetch(
-					`https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json&sort_order=desc&limit=5`,
+					`https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json&sort_order=desc&limit=5`
 				);
 
 				if (!response.ok) return;
@@ -56,7 +56,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				rate2Y: results.rate2Y ?? 0.039,
 				rate10Y: results.rate10Y ?? 0.04,
 				date: latestDate || new Date().toISOString().split('T')[0],
-				source: 'fred',
+				source: 'fred'
 			});
 		} catch (err) {
 			return error(502, `FRED request failed: ${err instanceof Error ? err.message : 'Unknown'}`);

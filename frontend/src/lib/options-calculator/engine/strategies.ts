@@ -8,10 +8,7 @@ import type { BSInputs, StrategyLeg, PayoffPoint } from './types.js';
 /**
  * Calculate combined payoff at expiration for a set of strategy legs.
  */
-export function calculateStrategyPayoff(
-	legs: StrategyLeg[],
-	priceRange: number[]
-): PayoffPoint[] {
+export function calculateStrategyPayoff(legs: StrategyLeg[], priceRange: number[]): PayoffPoint[] {
 	return priceRange.map((underlyingPrice) => {
 		let totalPayoff = 0;
 		let totalPremium = 0;
@@ -31,7 +28,7 @@ export function calculateStrategyPayoff(
 		return {
 			underlyingPrice,
 			payoff: totalPayoff,
-			profit,
+			profit
 		};
 	});
 }
@@ -53,7 +50,7 @@ export function calculateStrategyGreeks(
 		const legInputs: BSInputs = {
 			...baseInputs,
 			strikePrice: leg.strike,
-			timeToExpiry: leg.expiry,
+			timeToExpiry: leg.expiry
 		};
 		const greeks = firstOrderGreeks(legInputs, leg.type);
 
@@ -90,9 +87,10 @@ export function findBreakevens(payoffPoints: PayoffPoint[]): number[] {
 /**
  * Calculate max profit and max loss from payoff curve.
  */
-export function findMaxProfitLoss(
-	payoffPoints: PayoffPoint[]
-): { maxProfit: number | 'unlimited'; maxLoss: number | 'unlimited' } {
+export function findMaxProfitLoss(payoffPoints: PayoffPoint[]): {
+	maxProfit: number | 'unlimited';
+	maxLoss: number | 'unlimited';
+} {
 	const profits = payoffPoints.map((p) => p.profit);
 	const maxProfit = Math.max(...profits);
 	const maxLoss = Math.min(...profits);
@@ -107,7 +105,7 @@ export function findMaxProfitLoss(
 
 	return {
 		maxProfit: isUnlimitedUpside ? 'unlimited' : maxProfit,
-		maxLoss: isUnlimitedDownside ? 'unlimited' : maxLoss,
+		maxLoss: isUnlimitedDownside ? 'unlimited' : maxLoss
 	};
 }
 

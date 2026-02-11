@@ -5,261 +5,300 @@
 
 /* ── CSS Custom Properties (Theme Tokens) ─────────────────── */
 :root {
-  --calc-bg: #0a0a0f;
-  --calc-surface: #12121a;
-  --calc-surface-hover: #1a1a28;
-  --calc-surface-active: #222236;
-  --calc-border: #1f1f33;
-  --calc-border-accent: #2a2a44;
+	--calc-bg: #0a0a0f;
+	--calc-surface: #12121a;
+	--calc-surface-hover: #1a1a28;
+	--calc-surface-active: #222236;
+	--calc-border: #1f1f33;
+	--calc-border-accent: #2a2a44;
 
-  --calc-text: #e8e8f0;
-  --calc-text-secondary: #8888aa;
-  --calc-text-muted: #555577;
+	--calc-text: #e8e8f0;
+	--calc-text-secondary: #8888aa;
+	--calc-text-muted: #555577;
 
-  --calc-call: #00d4aa;
-  --calc-call-glow: rgba(0, 212, 170, 0.15);
-  --calc-call-bg: rgba(0, 212, 170, 0.08);
-  --calc-put: #ff4477;
-  --calc-put-glow: rgba(255, 68, 119, 0.15);
-  --calc-put-bg: rgba(255, 68, 119, 0.08);
+	--calc-call: #00d4aa;
+	--calc-call-glow: rgba(0, 212, 170, 0.15);
+	--calc-call-bg: rgba(0, 212, 170, 0.08);
+	--calc-put: #ff4477;
+	--calc-put-glow: rgba(255, 68, 119, 0.15);
+	--calc-put-bg: rgba(255, 68, 119, 0.08);
 
-  --calc-profit: #00d4aa;
-  --calc-loss: #ff4477;
-  --calc-neutral: #6366f1;
+	--calc-profit: #00d4aa;
+	--calc-loss: #ff4477;
+	--calc-neutral: #6366f1;
 
-  --calc-accent: #6366f1;
-  --calc-accent-hover: #818cf8;
-  --calc-accent-glow: rgba(99, 102, 241, 0.2);
+	--calc-accent: #6366f1;
+	--calc-accent-hover: #818cf8;
+	--calc-accent-glow: rgba(99, 102, 241, 0.2);
 
-  --calc-warning: #f59e0b;
-  --calc-info: #3b82f6;
+	--calc-warning: #f59e0b;
+	--calc-info: #3b82f6;
 
-  --calc-glass: rgba(18, 18, 26, 0.72);
-  --calc-glass-border: rgba(255, 255, 255, 0.06);
-  --calc-glass-highlight: rgba(255, 255, 255, 0.03);
-  --calc-blur: 20px;
+	--calc-glass: rgba(18, 18, 26, 0.72);
+	--calc-glass-border: rgba(255, 255, 255, 0.06);
+	--calc-glass-highlight: rgba(255, 255, 255, 0.03);
+	--calc-blur: 20px;
 
-  --calc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --calc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --calc-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --calc-shadow-glow: 0 0 40px rgba(99, 102, 241, 0.1);
+	--calc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+	--calc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+	--calc-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+	--calc-shadow-glow: 0 0 40px rgba(99, 102, 241, 0.1);
 
-  --calc-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-  --calc-font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-  --calc-font-body: 'Inter', system-ui, sans-serif;
+	--calc-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+	--calc-font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+	--calc-font-body: 'Inter', system-ui, sans-serif;
 
-  --calc-radius-sm: 6px;
-  --calc-radius-md: 10px;
-  --calc-radius-lg: 16px;
-  --calc-radius-xl: 24px;
+	--calc-radius-sm: 6px;
+	--calc-radius-md: 10px;
+	--calc-radius-lg: 16px;
+	--calc-radius-xl: 24px;
 
-  --calc-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --calc-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --calc-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+	--calc-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	--calc-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+	--calc-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Light Theme Override ──────────────────────────────────── */
 [data-calc-theme='light'] {
-  --calc-bg: #f4f5f9;
-  --calc-surface: #ffffff;
-  --calc-surface-hover: #f0f1f5;
-  --calc-surface-active: #e5e7ef;
-  --calc-border: #dfe1e8;
-  --calc-border-accent: #c8cbd6;
+	--calc-bg: #f4f5f9;
+	--calc-surface: #ffffff;
+	--calc-surface-hover: #f0f1f5;
+	--calc-surface-active: #e5e7ef;
+	--calc-border: #dfe1e8;
+	--calc-border-accent: #c8cbd6;
 
-  --calc-text: #111827;
-  --calc-text-secondary: #4b5563;
-  --calc-text-muted: #9ca3af;
+	--calc-text: #111827;
+	--calc-text-secondary: #4b5563;
+	--calc-text-muted: #9ca3af;
 
-  --calc-call: #059669;
-  --calc-call-glow: rgba(5, 150, 105, 0.12);
-  --calc-call-bg: rgba(5, 150, 105, 0.06);
-  --calc-put: #dc2626;
-  --calc-put-glow: rgba(220, 38, 38, 0.12);
-  --calc-put-bg: rgba(220, 38, 38, 0.06);
+	--calc-call: #059669;
+	--calc-call-glow: rgba(5, 150, 105, 0.12);
+	--calc-call-bg: rgba(5, 150, 105, 0.06);
+	--calc-put: #dc2626;
+	--calc-put-glow: rgba(220, 38, 38, 0.12);
+	--calc-put-bg: rgba(220, 38, 38, 0.06);
 
-  --calc-profit: #059669;
-  --calc-loss: #dc2626;
+	--calc-profit: #059669;
+	--calc-loss: #dc2626;
 
-  --calc-accent: #4f46e5;
-  --calc-accent-hover: #6366f1;
-  --calc-accent-glow: rgba(79, 70, 229, 0.15);
+	--calc-accent: #4f46e5;
+	--calc-accent-hover: #6366f1;
+	--calc-accent-glow: rgba(79, 70, 229, 0.15);
 
-  --calc-glass: rgba(255, 255, 255, 0.82);
-  --calc-glass-border: rgba(0, 0, 0, 0.07);
-  --calc-glass-highlight: rgba(255, 255, 255, 0.5);
+	--calc-glass: rgba(255, 255, 255, 0.82);
+	--calc-glass-border: rgba(0, 0, 0, 0.07);
+	--calc-glass-highlight: rgba(255, 255, 255, 0.5);
 
-  --calc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --calc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --calc-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --calc-shadow-glow: 0 0 40px rgba(79, 70, 229, 0.06);
+	--calc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--calc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+	--calc-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+	--calc-shadow-glow: 0 0 40px rgba(79, 70, 229, 0.06);
 }
 
 /* ── Glass Card Base ───────────────────────────────────────── */
 .glass-card {
-  background: var(--calc-glass);
-  backdrop-filter: blur(var(--calc-blur));
-  -webkit-backdrop-filter: blur(var(--calc-blur));
-  border: 1px solid var(--calc-glass-border);
-  border-radius: var(--calc-radius-lg);
-  box-shadow: var(--calc-shadow-md);
-  transition: all var(--calc-transition-normal);
+	background: var(--calc-glass);
+	backdrop-filter: blur(var(--calc-blur));
+	-webkit-backdrop-filter: blur(var(--calc-blur));
+	border: 1px solid var(--calc-glass-border);
+	border-radius: var(--calc-radius-lg);
+	box-shadow: var(--calc-shadow-md);
+	transition: all var(--calc-transition-normal);
 }
 
 .glass-card:hover {
-  border-color: var(--calc-border-accent);
-  box-shadow: var(--calc-shadow-lg);
+	border-color: var(--calc-border-accent);
+	box-shadow: var(--calc-shadow-lg);
 }
 
 /* ── Call/Put Color Utilities ──────────────────────────────── */
-.text-call { color: var(--calc-call); }
-.text-put { color: var(--calc-put); }
-.text-profit { color: var(--calc-profit); }
-.text-loss { color: var(--calc-loss); }
-.text-accent { color: var(--calc-accent); }
+.text-call {
+	color: var(--calc-call);
+}
+.text-put {
+	color: var(--calc-put);
+}
+.text-profit {
+	color: var(--calc-profit);
+}
+.text-loss {
+	color: var(--calc-loss);
+}
+.text-accent {
+	color: var(--calc-accent);
+}
 
-.bg-call { background-color: var(--calc-call-bg); }
-.bg-put { background-color: var(--calc-put-bg); }
+.bg-call {
+	background-color: var(--calc-call-bg);
+}
+.bg-put {
+	background-color: var(--calc-put-bg);
+}
 
-.border-call { border-color: var(--calc-call); }
-.border-put { border-color: var(--calc-put); }
+.border-call {
+	border-color: var(--calc-call);
+}
+.border-put {
+	border-color: var(--calc-put);
+}
 
-.glow-call { box-shadow: 0 0 20px var(--calc-call-glow), 0 0 40px var(--calc-call-glow); }
-.glow-put { box-shadow: 0 0 20px var(--calc-put-glow), 0 0 40px var(--calc-put-glow); }
+.glow-call {
+	box-shadow:
+		0 0 20px var(--calc-call-glow),
+		0 0 40px var(--calc-call-glow);
+}
+.glow-put {
+	box-shadow:
+		0 0 20px var(--calc-put-glow),
+		0 0 40px var(--calc-put-glow);
+}
 
 /* ── Animated Number Display ───────────────────────────────── */
 .number-display {
-  font-family: var(--calc-font-mono);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  transition: color var(--calc-transition-fast);
+	font-family: var(--calc-font-mono);
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.02em;
+	transition: color var(--calc-transition-fast);
 }
 
 /* ── Custom Slider Track ───────────────────────────────────── */
 .calc-slider {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--calc-border);
-  outline: none;
-  cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+	width: 100%;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--calc-border);
+	outline: none;
+	cursor: pointer;
 }
 
 .calc-slider::-webkit-slider-thumb {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--calc-accent);
-  box-shadow: 0 0 10px var(--calc-accent-glow);
-  cursor: grab;
-  transition: transform var(--calc-transition-fast), box-shadow var(--calc-transition-fast);
+	appearance: none;
+	-webkit-appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--calc-accent);
+	box-shadow: 0 0 10px var(--calc-accent-glow);
+	cursor: grab;
+	transition:
+		transform var(--calc-transition-fast),
+		box-shadow var(--calc-transition-fast);
 }
 
 .calc-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 20px var(--calc-accent-glow);
+	transform: scale(1.15);
+	box-shadow: 0 0 20px var(--calc-accent-glow);
 }
 
 .calc-slider::-webkit-slider-thumb:active {
-  cursor: grabbing;
-  transform: scale(1.25);
+	cursor: grabbing;
+	transform: scale(1.25);
 }
 
 .calc-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--calc-accent);
-  box-shadow: 0 0 10px var(--calc-accent-glow);
-  border: none;
-  cursor: grab;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--calc-accent);
+	box-shadow: 0 0 10px var(--calc-accent-glow);
+	border: none;
+	cursor: grab;
 }
 
 /* ── Metric Card Glow States ───────────────────────────────── */
 .metric-positive {
-  border-color: var(--calc-call);
-  box-shadow: 0 0 15px var(--calc-call-glow);
+	border-color: var(--calc-call);
+	box-shadow: 0 0 15px var(--calc-call-glow);
 }
 
 .metric-negative {
-  border-color: var(--calc-put);
-  box-shadow: 0 0 15px var(--calc-put-glow);
+	border-color: var(--calc-put);
+	box-shadow: 0 0 15px var(--calc-put-glow);
 }
 
 /* ── Tab Indicator ─────────────────────────────────────────── */
 .tab-indicator {
-  position: absolute;
-  bottom: 0;
-  height: 2px;
-  background: var(--calc-accent);
-  border-radius: 1px;
-  box-shadow: 0 0 8px var(--calc-accent-glow);
-  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+	position: absolute;
+	bottom: 0;
+	height: 2px;
+	background: var(--calc-accent);
+	border-radius: 1px;
+	box-shadow: 0 0 8px var(--calc-accent-glow);
+	transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Scrollbar Styling ─────────────────────────────────────── */
 .calc-scrollbar::-webkit-scrollbar {
-  width: 6px;
+	width: 6px;
 }
 
 .calc-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+	background: transparent;
 }
 
 .calc-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--calc-border-accent);
-  border-radius: 3px;
+	background: var(--calc-border-accent);
+	border-radius: 3px;
 }
 
 .calc-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--calc-text-muted);
+	background: var(--calc-text-muted);
 }
 
 /* ── Keyframe Animations ───────────────────────────────────── */
 @keyframes calc-fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes calc-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.6;
+	}
 }
 
 .animate-fade-in {
-  animation: calc-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	animation: calc-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .animate-pulse-soft {
-  animation: calc-pulse 2s ease-in-out infinite;
+	animation: calc-pulse 2s ease-in-out infinite;
 }
 
 /* ── Responsive Grid Layout ────────────────────────────────── */
 .calc-layout {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  grid-template-rows: auto 1fr;
-  gap: 16px;
-  min-height: 100vh;
-  padding: 16px;
-  background: var(--calc-bg);
-  color: var(--calc-text);
-  font-family: var(--calc-font-body);
+	display: grid;
+	grid-template-columns: 340px 1fr;
+	grid-template-rows: auto 1fr;
+	gap: 16px;
+	min-height: 100vh;
+	padding: 16px;
+	background: var(--calc-bg);
+	color: var(--calc-text);
+	font-family: var(--calc-font-body);
 }
 
 @media (max-width: 1024px) {
-  .calc-layout {
-    grid-template-columns: 1fr;
-  }
+	.calc-layout {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media (max-width: 640px) {
-  .calc-layout {
-    padding: 8px;
-    gap: 8px;
-  }
+	.calc-layout {
+		padding: 8px;
+		gap: 8px;
+	}
 }

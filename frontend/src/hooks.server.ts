@@ -184,8 +184,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 				// Set new access token cookie (backend sends access_token, not token)
 				const newToken = refreshData.access_token || refreshData.token;
-				const isSecure =
-					import.meta.env.PROD || !event.url.hostname.includes('localhost');
+				const isSecure = import.meta.env.PROD || !event.url.hostname.includes('localhost');
 				event.cookies.set('rtp_access_token', newToken, {
 					path: '/',
 					httpOnly: true,

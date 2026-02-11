@@ -41,8 +41,6 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-        env:
-          NODE_OPTIONS: "--max-old-space-size=6144"
 
       - name: Check formatting
         run: npm run format:check

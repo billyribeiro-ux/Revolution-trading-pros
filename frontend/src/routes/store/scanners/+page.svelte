@@ -183,7 +183,11 @@
 	     STRUCTURED DATA - JSON-LD for Google Rich Snippets
 	     Google Dec 2025: Critical for product listings
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(structuredData) + '</scr' + 'ipt>'}
+	{@html '<scr' +
+		'ipt type="application/ld+json">' +
+		JSON.stringify(structuredData) +
+		'</scr' +
+		'ipt>'}
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     PERFORMANCE HINTS - Core Web Vitals Optimization

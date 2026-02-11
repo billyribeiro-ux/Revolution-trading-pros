@@ -5,7 +5,11 @@
 // ============================================================
 
 import type { MarketDataProvider } from '../provider-interface.js';
-import { CapabilityNotSupportedError, AuthenticationError, RateLimitExceededError } from '../provider-interface.js';
+import {
+	CapabilityNotSupportedError,
+	AuthenticationError,
+	RateLimitExceededError
+} from '../provider-interface.js';
 import type {
 	ProviderCapabilities,
 	ProviderStatus,
@@ -17,7 +21,7 @@ import type {
 	DividendInfo,
 	EarningsInfo,
 	HistoricalVolData,
-	OHLCV,
+	OHLCV
 } from '../types.js';
 
 export function createThetaDataAdapter(): MarketDataProvider {
@@ -45,7 +49,7 @@ export function createThetaDataAdapter(): MarketDataProvider {
 		earnings: false,
 		riskFreeRate: false,
 		tickerSearch: false,
-		streaming: false,
+		streaming: false
 	};
 
 	return {
@@ -57,12 +61,19 @@ export function createThetaDataAdapter(): MarketDataProvider {
 			try {
 				const res = await fetch(`${BASE}/quote?provider=theta-data&ticker=AAPL&healthcheck=true`);
 				return res.ok;
-			} catch { return false; }
+			} catch {
+				return false;
+			}
 		},
 
 		async getStatus(): Promise<ProviderStatus> {
 			const available = await this.isAvailable();
-			return { name: 'theta-data', displayName: 'Theta Data', isAvailable: available, isConfigured: available };
+			return {
+				name: 'theta-data',
+				displayName: 'Theta Data',
+				isAvailable: available,
+				isConfigured: available
+			};
 		},
 
 		async getQuote(ticker: string): Promise<StockQuote> {
@@ -99,6 +110,6 @@ export function createThetaDataAdapter(): MarketDataProvider {
 
 		async searchTickers(_query: string, _limit?: number): Promise<TickerSearchResult[]> {
 			throw new CapabilityNotSupportedError('theta-data', 'tickerSearch');
-		},
+		}
 	};
 }

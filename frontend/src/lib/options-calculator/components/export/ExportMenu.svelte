@@ -20,7 +20,7 @@
 			gsap.fromTo(
 				menuEl,
 				{ y: -8, opacity: 0, scale: 0.95 },
-				{ y: 0, opacity: 1, scale: 1, duration: 0.2, ease: 'power2.out' },
+				{ y: 0, opacity: 1, scale: 1, duration: 0.2, ease: 'power2.out' }
 			);
 		}
 	});
@@ -44,10 +44,25 @@
 	}
 
 	const ITEMS: MenuItem[] = [
-		{ icon: Camera, label: 'Export as PNG', shortcut: '\u2318\u21e7S', action: () => handleAction(onExportPNG) },
-		{ icon: FileSpreadsheet, label: 'Export Greeks CSV', shortcut: '\u2318\u21e7E', action: () => handleAction(onExportCSV) },
-		{ icon: Link2, label: 'Copy Shareable Link', shortcut: '\u2318\u21e7L', action: () => handleAction(onShareLink) },
-		{ icon: Code2, label: 'Get Embed Code', shortcut: '', action: () => handleAction(onEmbedCode) },
+		{
+			icon: Camera,
+			label: 'Export as PNG',
+			shortcut: '\u2318\u21e7S',
+			action: () => handleAction(onExportPNG)
+		},
+		{
+			icon: FileSpreadsheet,
+			label: 'Export Greeks CSV',
+			shortcut: '\u2318\u21e7E',
+			action: () => handleAction(onExportCSV)
+		},
+		{
+			icon: Link2,
+			label: 'Copy Shareable Link',
+			shortcut: '\u2318\u21e7L',
+			action: () => handleAction(onShareLink)
+		},
+		{ icon: Code2, label: 'Get Embed Code', shortcut: '', action: () => handleAction(onEmbedCode) }
 	];
 </script>
 
@@ -96,8 +111,8 @@
 								color: var(--calc-text-muted);
 								border: 1px solid var(--calc-border);
 								font-family: var(--calc-font-mono);
-							"
-						>{item.shortcut}</kbd>
+							">{item.shortcut}</kbd
+						>
 					{/if}
 				</button>
 			{/each}

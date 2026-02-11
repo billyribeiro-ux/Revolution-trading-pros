@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				const from = url.searchParams.get('from') ?? '';
 				const to = url.searchParams.get('to') ?? '';
 				const response = await fetch(
-					`https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`,
+					`https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`
 				);
 
 				if (!response.ok) {
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ url }) => {
 					high: r.h,
 					low: r.l,
 					close: r.c,
-					volume: r.v,
+					volume: r.v
 				}));
 
 				return json(results);
@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			const from = fromDate.toISOString().split('T')[0];
 
 			const response = await fetch(
-				`https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`,
+				`https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`
 			);
 
 			if (!response.ok) {
@@ -82,10 +82,13 @@ export const GET: RequestHandler = async ({ url }) => {
 				hv30: calcHV(logReturns, 30),
 				hv60: calcHV(logReturns, 60),
 				hv90: calcHV(logReturns, Math.min(90, logReturns.length)),
-				source: 'polygon',
+				source: 'polygon'
 			});
 		} catch (err) {
-			return error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+			return error(
+				502,
+				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
+			);
 		}
 	}
 

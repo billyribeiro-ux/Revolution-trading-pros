@@ -41,8 +41,10 @@ export function buildRobots(
 	// Step 1: Determine base directives from context
 	let base: RobotsDirectives;
 
-	const isPrivatePath = context.isPrivate || matchesPrefix(context.pathname, defaults.privatePathPrefixes);
-	const isSearchPath = context.isSearchPage || matchesPrefix(context.pathname, defaults.searchPathPrefixes);
+	const isPrivatePath =
+		context.isPrivate || matchesPrefix(context.pathname, defaults.privatePathPrefixes);
+	const isSearchPath =
+		context.isSearchPage || matchesPrefix(context.pathname, defaults.searchPathPrefixes);
 	const isNonProduction = context.env !== 'production';
 
 	if (isPrivatePath || isSearchPath || context.isErrorPage) {

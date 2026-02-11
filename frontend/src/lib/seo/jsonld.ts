@@ -219,11 +219,11 @@ export function dedupeJsonLd(nodes: JsonLdNode[]): JsonLdNode[] {
  * Safely serialize a JSON-LD node for embedding in a <script> tag.
  * Escapes </script> and <!-- to prevent XSS via script injection.
  */
-export function safeJsonLdSerialize(node: JsonLdNode | JsonLdNode[] | Record<string, unknown>): string {
+export function safeJsonLdSerialize(
+	node: JsonLdNode | JsonLdNode[] | Record<string, unknown>
+): string {
 	const json = JSON.stringify(node);
-	return json
-		.replace(/<\/script/gi, '<\\/script')
-		.replace(/<!--/g, '<\\!--');
+	return json.replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--');
 }
 
 /**

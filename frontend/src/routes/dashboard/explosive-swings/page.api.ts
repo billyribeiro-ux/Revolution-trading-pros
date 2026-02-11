@@ -17,11 +17,7 @@
 
 import { browser } from '$app/environment';
 import { api, type RequestOptions } from '$lib/api/client';
-import {
-	ApiError,
-	isApiError,
-	getUserFriendlyMessage
-} from '$lib/api/errors';
+import { ApiError, isApiError, getUserFriendlyMessage } from '$lib/api/errors';
 import { getCache, type CacheConfig } from '$lib/api/cache';
 import type {
 	ApiTrade,

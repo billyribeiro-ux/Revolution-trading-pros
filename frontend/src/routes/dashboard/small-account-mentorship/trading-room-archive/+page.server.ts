@@ -39,7 +39,6 @@ interface VideoResponse {
 	[key: string]: unknown;
 }
 
-
 // Page data type export for +page.svelte
 export interface ArchivePageData {
 	videos: VideoResponse[];
