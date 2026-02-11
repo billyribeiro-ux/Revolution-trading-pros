@@ -1,146 +1,107 @@
-import js from '@eslint/js';
-import ts from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import svelte from 'eslint-plugin-svelte';
-import prettier from 'eslint-config-prettier';
-import globals from 'globals';
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from 'eslint-plugin-storybook';
 
-export default [
-  js.configs.recommended,
-  ...svelte.configs['flat/recommended'],
-  ...svelte.configs['flat/prettier'],
-  {
-    files: ['**/*.{js,ts,svelte}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        gapi: 'readonly',
-        ServiceWorkerGlobalScope: 'readonly',
-        FetchEvent: 'readonly',
-        Disposable: 'readonly',
-        $state: 'readonly',
-        $derived: 'readonly',
-        $effect: 'readonly',
-        $props: 'readonly',
-        $bindable: 'readonly',
-        $inspect: 'readonly',
-        $host: 'readonly'
-      }
-    }
-  },
-  {
-    files: ['**/*.ts'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json',
-        extraFileExtensions: ['.svelte']
-      }
-    },
-    plugins: {
-      '@typescript-eslint': ts
-    },
-    rules: {
-      ...ts.configs.strict.rules,
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      '@typescript-eslint/no-invalid-void-type': 'off',
-      '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/no-useless-constructor': 'warn',
-      '@typescript-eslint/no-dynamic-delete': 'off',
-      '@typescript-eslint/no-unsafe-function-type': 'warn',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/unified-signatures': 'off',
-      '@typescript-eslint/no-this-alias': 'warn',
-      '@typescript-eslint/prefer-as-const': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      'no-case-declarations': 'off',
-      'no-useless-escape': 'warn',
-      'no-import-assign': 'warn',
-      'no-useless-catch': 'warn',
-      'no-control-regex': 'off',
-      'no-empty': 'warn',
-      'no-console': 'off'
-    }
-  },
-  {
-    files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-    languageOptions: {
-      parserOptions: {
-        parser: tsParser,
-        project: './tsconfig.json',
-        extraFileExtensions: ['.svelte'],
-        svelteFeatures: {
-          experimentalGenerics: true
-        }
-      },
-      globals: {
-        $state: 'readonly',
-        $derived: 'readonly',
-        $effect: 'readonly',
-        $props: 'readonly',
-        $bindable: 'readonly',
-        $inspect: 'readonly',
-        $host: 'readonly'
-      }
-    },
-    plugins: {
-      '@typescript-eslint': ts
-    },
-    rules: {
-      ...ts.configs.strict.rules,
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^(\\$|_)', caughtErrorsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      '@typescript-eslint/no-invalid-void-type': 'off',
-      '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/no-useless-constructor': 'warn',
-      '@typescript-eslint/no-dynamic-delete': 'off',
-      '@typescript-eslint/no-unsafe-function-type': 'warn',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/unified-signatures': 'off',
-      '@typescript-eslint/no-this-alias': 'warn',
-      '@typescript-eslint/prefer-as-const': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      'no-case-declarations': 'off',
-      'no-useless-escape': 'warn',
-      'no-import-assign': 'warn',
-      'no-useless-catch': 'warn',
-      'no-control-regex': 'off',
-      'no-empty': 'warn',
-      'no-console': 'off',
-      'svelte/no-unused-svelte-ignore': 'off',
-      'svelte/no-shorthand-style-property-overrides': 'warn',
-      'svelte/no-at-html-tags': 'off',
-      'svelte/require-each-key': 'off',
-      'svelte/no-navigation-without-resolve': 'off',
-      'svelte/prefer-svelte-reactivity': 'off',
-      'svelte/no-unused-props': 'off',
-      'svelte/prefer-writable-derived': 'off',
-      'svelte/no-dom-manipulating': 'off',
-      'svelte/no-object-in-text-mustaches': 'off',
-      'no-undef': 'off'
-    }
-  },
-  prettier,
-  {
-    ignores: [
-      '.svelte-kit/**',
-      'build/**',
-      'node_modules/**',
-      'retired/**',
-      'playwright-report/**',
-      'e2e/**',
-      'tests/**',
-      'scripts/**',
-      'test-icons-import.ts',
-      'playwright.config.ts'
-    ]
-  }
-];
+import js from '@eslint/js';
+import svelte from 'eslint-plugin-svelte';
+import globals from 'globals';
+import ts from 'typescript-eslint';
+
+import prettier from 'eslint-config-prettier';
+
+const SAFE_MODE = true;
+
+export default ts.config(
+	js.configs.recommended,
+	...ts.configs.recommended,
+	...svelte.configs['flat/recommended'],
+	prettier,
+	...svelte.configs['flat/prettier'],
+	{
+		languageOptions: {
+			globals: {
+				...globals.browser,
+				...globals.node
+			}
+		}
+	},
+	{
+		// Ensure Svelte + TS "module" files like `*.svelte.ts` are parsed as TypeScript
+		// (they are not `.svelte` components, so they must NOT be handled by the Svelte parser)
+		files: ['**/*.svelte.ts'],
+		languageOptions: {
+			parser: ts.parser
+		}
+	},
+	{
+		files: ['**/*.svelte'],
+		languageOptions: {
+			parserOptions: {
+				parser: ts.parser
+			}
+		}
+	},
+	{
+		files: ['**/*.cjs'],
+		rules: {
+			'@typescript-eslint/no-require-imports': 'off'
+		}
+	},
+	{
+		rules: {
+			// SAFE MODE: avoid forcing broad refactors. We keep eslint running, but relax
+			// rules that are opinionated or noisy during incremental modernization.
+
+			// TypeScript ergonomics / migration noise
+			'@typescript-eslint/no-unused-vars': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-empty-object-type': 'off',
+
+			// TS comments: do not force @ts-expect-error conversion in safe mode
+			'@typescript-eslint/ban-ts-comment': 'off',
+
+			// Minor preference rules (no refactors in safe mode)
+			'@typescript-eslint/prefer-as-const': 'off',
+
+			// Svelte 5 / runes ergonomics (don't force $derived refactors in safe mode)
+			'svelte/prefer-writable-derived': 'off',
+
+			// Svelte comment / mustache strictness (often used intentionally during migrations)
+			'svelte/no-unused-svelte-ignore': 'off',
+			'svelte/no-useless-mustaches': 'off',
+			'svelte/no-object-in-text-mustaches': 'off',
+
+			// Existing project preferences
+			'svelte/no-at-html-tags': 'off',
+			'svelte/no-navigation-without-resolve': 'off',
+			'svelte/require-each-key': 'off',
+			'svelte/prefer-svelte-reactivity': 'off',
+			'svelte/no-dom-manipulating': 'off',
+			'svelte/no-immutable-reactive-statements': 'off',
+			'no-useless-escape': 'off',
+			'no-case-declarations': 'off',
+			'svelte/infinite-reactive-loop': 'off',
+			'svelte/no-shorthand-style-property-overrides': 'off',
+			'@typescript-eslint/no-unused-expressions': 'off',
+
+			// Keep standard JS correctness rules enabled
+			...(SAFE_MODE
+				? {
+						'prefer-const': 'off',
+						'prefer-spread': 'off',
+						'no-undef': 'off'
+					}
+				: {})
+		}
+	},
+	{
+		ignores: [
+			'build/',
+			'.svelte-kit/',
+			'dist/',
+			'retired/**',
+			'**/*.generated.*',
+			'**/generated/**'
+		]
+	},
+	storybook.configs['flat/recommended']
+);

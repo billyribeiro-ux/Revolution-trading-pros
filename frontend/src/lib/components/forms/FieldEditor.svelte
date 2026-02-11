@@ -1,7 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
-https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
 	import type { FormField } from '$lib/api/forms';
+
+	type OptionLike = string | { label?: string; value?: string };
 
 	interface Props {
 		field?: FormField | null;
@@ -10,17 +10,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 		oncancel?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Default validation object to prevent null reference errors (ICT 7 Fix)
-	const createDefaultValidation = () => ({
-		min_length: undefined as number | undefined,
-		max_length: undefined as number | undefined,
-		min: undefined as number | undefined,
-		max: undefined as number | undefined,
-		accept: undefined as string | undefined,
-		max_size: undefined as number | undefined
-	});
+	let { field = null, availableFields = [], onsave, oncancel }: Props = $props();
 
 	let fieldData: FormField = $state({
 		field_type: 'text',
@@ -30,7 +20,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 		help_text: '',
 		default_value: '',
 		options: null,
-		validation: createDefaultValidation(),
+		validation: null,
 		conditional_logic: null,
 		attributes: null,
 		required: false,
@@ -41,29 +31,41 @@ https://svelte.dev/e/bind_invalid_expression -->
 	let showConditionalLogic = $state(false);
 	let optionsText = $state('');
 
-	// Sync with prop changes - ICT 7 Fix: Always ensure validation is an object
+	function optionsToText(options: unknown): string {
+		if (!Array.isArray(options)) return '';
+		return (options as OptionLike[])
+			.map((opt) => {
+				if (typeof opt === 'string') return opt;
+				const label = typeof opt?.label === 'string' ? opt.label : '';
+				const value = typeof opt?.value === 'string' ? opt.value : '';
+				return label || value;
+			})
+			.map((s) => s.trim())
+			.filter(Boolean)
+			.join('\n');
+	}
+
+	// Sync with prop changes
 	$effect(() => {
-		if (props.field) {
+		if (field) {
 			fieldData = {
-				...props.field,
-				field_type: props.field.field_type ?? 'text',
-				label: props.field.label ?? '',
-				name: props.field.name ?? '',
-				placeholder: props.field.placeholder ?? '',
-				help_text: props.field.help_text ?? '',
-				default_value: props.field.default_value ?? '',
-				options: props.field.options ?? null,
-				validation: props.field.validation
-					? { ...createDefaultValidation(), ...props.field.validation }
-					: createDefaultValidation(),
-				conditional_logic: props.field.conditional_logic ?? null,
-				attributes: props.field.attributes ?? null,
-				required: props.field.required ?? false,
-				order: props.field.order ?? 0,
-				width: props.field.width ?? 12
+				...field,
+				field_type: field.field_type ?? 'text',
+				label: field.label ?? '',
+				name: field.name ?? '',
+				placeholder: field.placeholder ?? '',
+				help_text: field.help_text ?? '',
+				default_value: field.default_value ?? '',
+				options: field.options ?? null,
+				validation: field.validation ?? null,
+				conditional_logic: field.conditional_logic ?? null,
+				attributes: field.attributes ?? null,
+				required: field.required ?? false,
+				order: field.order ?? 0,
+				width: field.width ?? 12
 			};
-			showConditionalLogic = !!props.field.conditional_logic;
-			optionsText = props.field.options ? props.field.options.join('\n') : '';
+			showConditionalLogic = !!field.conditional_logic;
+			optionsText = optionsToText(field.options);
 		}
 	});
 
@@ -97,11 +99,11 @@ https://svelte.dev/e/bind_invalid_expression -->
 				.replace(/^_+|_+$/g, '');
 		}
 
-		props.onsave?.(fieldData);
+		onsave?.(fieldData);
 	}
 
 	function handleCancel() {
-		props.oncancel?.();
+		oncancel?.();
 	}
 
 	function addConditionalRule() {
@@ -362,7 +364,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 								<label for="rule-field-{index}" class="sr-only">Rule field</label>
 								<select id="rule-field-{index}" bind:value={rule.field} class="form-input">
 									<option value="">Select field...</option>
-									{#each props.availableFields ?? [] as availField}
+									{#each availableFields as availField}
 										<option value={availField.name}>{availField.label}</option>
 									{/each}
 								</select>
@@ -450,19 +452,14 @@ https://svelte.dev/e/bind_invalid_expression -->
 		color: #94a3b8;
 	}
 
-	/* 2026 Mobile-First: 44px touch targets, 16px font */
 	.form-input {
 		width: 100%;
-		padding: 0.75rem 1rem;
-		min-height: 44px; /* Touch target */
+		padding: 0.625rem 0.875rem;
 		background: #0f172a;
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		font-size: 1rem; /* 16px prevents iOS zoom */
+		font-size: 0.875rem;
 		color: #e2e8f0;
-		touch-action: manipulation;
-		-webkit-appearance: none;
-		appearance: none;
 	}
 
 	.form-input:focus {
@@ -471,38 +468,24 @@ https://svelte.dev/e/bind_invalid_expression -->
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
-	/* 2026 Mobile-First: Stack on mobile, side-by-side on larger screens */
 	.form-row {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		gap: 1rem;
-	}
-
-	@media (min-width: 640px) {
-		.form-row {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-		}
 	}
 
 	.checkbox-label {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: 0.5rem;
 		cursor: pointer;
-		font-size: 1rem; /* 16px for readability */
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: #94a3b8;
-		min-height: 44px; /* Touch target */
-		padding: 0.5rem 0;
-		touch-action: manipulation;
 	}
 
 	.checkbox-label input {
 		cursor: pointer;
-		width: 20px;
-		height: 20px;
-		min-width: 20px;
 	}
 
 	.help-text {
@@ -547,20 +530,11 @@ https://svelte.dev/e/bind_invalid_expression -->
 		gap: 0.75rem;
 	}
 
-	/* 2026 Mobile-First: Stack rule fields on mobile */
 	.rule-row {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr auto;
 		gap: 0.5rem;
-		align-items: stretch;
-	}
-
-	@media (min-width: 640px) {
-		.rule-row {
-			display: grid;
-			grid-template-columns: 1fr 1fr 1fr auto;
-			align-items: center;
-		}
+		align-items: center;
 	}
 
 	.btn-remove {
@@ -568,17 +542,11 @@ https://svelte.dev/e/bind_invalid_expression -->
 		color: #f87171;
 		border: 1px solid rgba(239, 68, 68, 0.2);
 		border-radius: 8px;
-		width: 44px; /* Touch target */
-		height: 44px; /* Touch target */
-		min-width: 44px;
-		min-height: 44px;
+		width: 2rem;
+		height: 2rem;
 		font-size: 1rem;
 		cursor: pointer;
 		transition: all 0.2s;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		touch-action: manipulation;
 	}
 
 	.btn-remove:hover {
@@ -587,59 +555,38 @@ https://svelte.dev/e/bind_invalid_expression -->
 
 	.btn-add-rule {
 		align-self: flex-start;
-		padding: 0.75rem 1rem;
-		min-height: 44px; /* Touch target */
+		padding: 0.5rem 1rem;
 		background: rgba(99, 102, 241, 0.1);
 		color: #a5b4fc;
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		font-size: 0.875rem;
+		font-size: 0.75rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
-		touch-action: manipulation;
 	}
 
 	.btn-add-rule:hover {
 		background: rgba(99, 102, 241, 0.2);
 	}
 
-	/* 2026 Mobile-First: Safe area insets and full-width buttons on mobile */
 	.editor-actions {
 		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
+		justify-content: flex-end;
+		gap: 1rem;
 		margin-top: 2rem;
 		padding-top: 2rem;
-		padding-bottom: env(safe-area-inset-bottom, 0);
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
-	@media (min-width: 640px) {
-		.editor-actions {
-			flex-direction: row;
-			justify-content: flex-end;
-			gap: 1rem;
-		}
-	}
-
 	.btn {
-		padding: 0.875rem 1.5rem;
-		min-height: 48px; /* Enhanced touch target */
+		padding: 0.75rem 1.5rem;
 		border-radius: 8px;
-		font-size: 1rem; /* 16px prevents iOS zoom */
+		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
-		width: 100%;
-		touch-action: manipulation;
-	}
-
-	@media (min-width: 640px) {
-		.btn {
-			width: auto;
-		}
 	}
 
 	.btn-primary {

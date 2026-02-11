@@ -55,13 +55,13 @@ ${body.context ? `Context: ${body.context}` : ''}`;
 				outputTokens: response.usage.output_tokens
 			}
 		});
-	} catch (error) {
-		console.error('[AI Generate] Error:', error);
+	} catch (err: unknown) {
+		console.error('[AI Generate] Error:', err);
 
-		if (error instanceof Anthropic.APIError) {
+		if (err instanceof Anthropic.APIError) {
 			return json(
-				{ error: 'AI service error', details: error.message },
-				{ status: error.status || 500 }
+				{ error: 'AI service error', details: err.message },
+				{ status: err.status || 500 }
 			);
 		}
 

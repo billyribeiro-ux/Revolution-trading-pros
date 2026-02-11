@@ -112,6 +112,20 @@ export interface NewsletterFieldOptions {
 	privacy_url?: string;
 }
 
+/**
+ * Options for fields that render a set of selectable choices.
+ * Supports both simple string options and object options.
+ */
+export interface FieldChoiceOption {
+	label: string;
+	value: string;
+	disabled?: boolean;
+	selected?: boolean;
+	icon?: string;
+	color?: string;
+	description?: string;
+}
+
 export interface FormField {
 	id?: number;
 	form_id?: number;
@@ -121,7 +135,16 @@ export interface FormField {
 	placeholder?: string;
 	help_text?: string;
 	default_value?: any;
-	options?: any;
+
+	/**
+	 * Field-specific options.
+	 *
+	 * - For choice fields (select/radio/checkbox): list of strings or {label,value} objects
+	 * - For newsletter fields: NewsletterFieldOptions object
+	 * - For other fields: null/undefined
+	 */
+	options?: string[] | FieldChoiceOption[] | NewsletterFieldOptions | null;
+
 	validation?: FieldValidation | null;
 	conditional_logic?: ConditionalLogic | null;
 	attributes?: FieldAttributes | null;
@@ -138,7 +161,6 @@ export type FieldType =
 	| 'text'
 	| 'email'
 	| 'tel'
-	| 'phone'
 	| 'url'
 	| 'number'
 	| 'password'
@@ -158,7 +180,6 @@ export type FieldType =
 	| 'range'
 	| 'toggle'
 	| 'color'
-	| 'address'
 	| 'location'
 	| 'payment'
 	| 'captcha'
@@ -647,7 +668,7 @@ class FormsService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (_error) {
+		} catch (error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -818,7 +839,7 @@ class FormsService {
 				body: JSON.stringify({ events: batch }),
 				skipCache: true
 			});
-		} catch (_error) {
+		} catch (error) {
 			// Re-queue on failure
 			this.analyticsQueue.unshift(...batch);
 		}

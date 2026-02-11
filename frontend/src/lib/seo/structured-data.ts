@@ -417,7 +417,9 @@ export function combineSchemas(schemas: object[]): object {
 	return {
 		'@context': 'https://schema.org',
 		'@graph': schemas.map((s) => {
-			const { '@context': _, ...rest } = s as Record<string, unknown>;
+			const record = s as Record<string, unknown>;
+			const { '@context': context, ...rest } = record;
+			void context;
 			return rest;
 		})
 	};

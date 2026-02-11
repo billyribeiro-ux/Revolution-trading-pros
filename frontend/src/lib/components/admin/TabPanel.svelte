@@ -42,30 +42,20 @@
 		class?: string;
 	}
 
-	let props: Props = $props();
-
-	// Bindable state for two-way binding
-	let activeTab = $state(props.activeTab);
-
-	// Destructure with defaults for internal use
-	const tabs = $derived(props.tabs);
-	const variant = $derived(props.variant ?? 'default');
-	const panel = $derived(props.panel);
-	const className = $derived(props.class ?? '');
-
-	// Sync activeTab back when props change
-	$effect(() => {
-		if (props.activeTab !== undefined && props.activeTab !== activeTab) {
-			activeTab = props.activeTab;
-		}
-	});
+	let {
+		tabs,
+		activeTab = $bindable(),
+		variant = 'default',
+		panel,
+		class: className = ''
+	}: Props = $props();
 
 	function handleTabClick(tabId: string, disabled?: boolean) {
 		if (disabled) return;
 		activeTab = tabId;
 	}
 
-	function handleKeyDown(event: KeyboardEvent, _tabId: string, index: number) {
+	function handleKeyDown(event: KeyboardEvent, tabId: string, index: number) {
 		if (event.key === 'ArrowRight') {
 			event.preventDefault();
 			const nextIndex = (index + 1) % tabs.length;

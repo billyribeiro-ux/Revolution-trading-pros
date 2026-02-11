@@ -3,13 +3,13 @@
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11 Principal Engineer Implementation
 	Svelte 5 (December 2025) Best Practices
-	
+
 	Implements complete design specifications from DASHBOARD_DESIGN_SPECIFICATIONS.md:
 	- Hierarchical navigation structure
 	- JSON-LD schema markup for SEO
 	- Accessibility features (ARIA, semantic HTML)
 	- Responsive behavior (desktop/mobile)
-	
+
 	@version 1.0.0
 	@author Revolution Trading Pros
 -->
@@ -26,11 +26,11 @@
 		items?: BreadcrumbItem[];
 	}
 
-	let props: Props = $props();
+	let { items = [] }: Props = $props();
 
 	// Generate breadcrumb items from current page if not provided
 	const breadcrumbItems = $derived.by(() => {
-		if (props.items && props.items.length > 0) return props.items;
+		if (items.length > 0) return items;
 
 		// Default: Current page only (no Home link)
 		const currentPath = page?.url?.pathname ?? '/dashboard';
@@ -66,11 +66,14 @@
 			...(item.href && { item: item.href })
 		}))
 	});
+
+	// Prettier-safe JSON-LD payload for embedding via attribute
+	const breadcrumbSchemaJson = $derived(JSON.stringify(breadcrumbSchema));
 </script>
 
 <!-- JSON-LD Schema Markup -->
 <svelte:head>
-	{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(breadcrumbSchema) + '</scr' + 'ipt>'}
+	{@html `<script type="application/ld+json">${breadcrumbSchemaJson}</script>`}
 </svelte:head>
 
 <!-- Breadcrumbs Navigation -->

@@ -386,9 +386,9 @@ describe.skip('ButtonBlock - Icon Position Left', () => {
 		expect(iconSpans?.length).toBeGreaterThan(0);
 
 		// Check order: icon comes before text
-		const children = Array.from(button?.children || []);
-		const iconIndex = children.findIndex((el) => el.classList.contains('btn-icon'));
-		const textIndex = children.findIndex((el) => el.classList.contains('btn-text'));
+		const children = Array.from(button?.children || []) as Element[];
+		const iconIndex = children.findIndex((el: Element) => el.classList.contains('btn-icon'));
+		const textIndex = children.findIndex((el: Element) => el.classList.contains('btn-text'));
 
 		expect(iconIndex).toBeLessThan(textIndex);
 	});
@@ -418,9 +418,9 @@ describe.skip('ButtonBlock - Icon Position Right', () => {
 		});
 
 		const button = container.querySelector('.btn');
-		const children = Array.from(button?.children || []);
-		const iconIndex = children.findIndex((el) => el.classList.contains('btn-icon'));
-		const textIndex = children.findIndex((el) => el.classList.contains('btn-text'));
+		const children = Array.from(button?.children || []) as Element[];
+		const iconIndex = children.findIndex((el: Element) => el.classList.contains('btn-icon'));
+		const textIndex = children.findIndex((el: Element) => el.classList.contains('btn-text'));
 
 		expect(iconIndex).toBeGreaterThan(textIndex);
 	});

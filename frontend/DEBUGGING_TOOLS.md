@@ -9,9 +9,11 @@ This document outlines the debugging and inspection tools available in the devel
 ## 🔍 Installed Tools
 
 ### 1. **svelte-render-scan** (v1.1.0)
+
 Visual debugging tool that highlights component re-renders in real-time.
 
 **Features:**
+
 - Highlights components when they re-render
 - Shows render count and timing
 - Helps identify performance bottlenecks
@@ -19,6 +21,7 @@ Visual debugging tool that highlights component re-renders in real-time.
 
 **Usage:**
 Already configured in `vite.config.js`. Just run the dev server:
+
 ```bash
 npm run dev
 ```
@@ -27,21 +30,24 @@ Components will show visual overlays when they re-render. Look for colored borde
 
 **Configuration:**
 Located in `frontend/vite.config.js`:
+
 ```js
 import { renderScan } from 'svelte-render-scan/vite';
 
 plugins: [
-  renderScan(), // Visual debugging tool
-  // ...
-]
+	renderScan() // Visual debugging tool
+	// ...
+];
 ```
 
 ---
 
 ### 2. **svelte-inspect-value** (v0.10.0)
+
 Interactive value inspector component for debugging reactive state.
 
 **Features:**
+
 - Inspect any JavaScript value
 - Collapsible object/array trees
 - Real-time updates as values change
@@ -52,9 +58,9 @@ Use the wrapper component in your Svelte files:
 
 ```svelte
 <script>
-  import InspectValue from '$lib/components/dev/InspectValue.svelte';
-  
-  let myState = $state({ count: 0, user: { name: 'John' } });
+	import InspectValue from '$lib/components/dev/InspectValue.svelte';
+
+	let myState = $state({ count: 0, user: { name: 'John' } });
 </script>
 
 <InspectValue value={myState} label="My State" />
@@ -65,6 +71,7 @@ Use the wrapper component in your Svelte files:
 `frontend/src/lib/components/dev/InspectValue.svelte`
 
 **Props:**
+
 - `value: any` - The value to inspect (required)
 - `label?: string` - Display label (default: "Value")
 - `collapsed?: boolean` - Start collapsed (default: false)
@@ -74,9 +81,11 @@ Use the wrapper component in your Svelte files:
 ---
 
 ### 3. **vite-plugin-devtools-json**
+
 Chrome DevTools workspace integration for in-browser editing.
 
 **Features:**
+
 - Edit source files directly in Chrome DevTools
 - Changes sync back to filesystem
 - Seamless development workflow
@@ -92,17 +101,17 @@ Automatic. Just use Chrome/Edge DevTools as normal.
 ## 🎯 Best Practices
 
 ### Performance Debugging with render-scan
+
 1. **Identify unnecessary re-renders:**
    - Look for components flashing frequently
    - Check if parent re-renders trigger child re-renders unnecessarily
 
 2. **Optimize with Svelte 5 patterns:**
+
    ```svelte
-   // ✅ Good: Derived state prevents re-renders
-   const filtered = $derived(items.filter(i => i.active));
-   
-   // ❌ Bad: Function recreated on every render
-   const filtered = () => items.filter(i => i.active);
+   // ✅ Good: Derived state prevents re-renders const filtered = $derived(items.filter(i =>
+   i.active)); // ❌ Bad: Function recreated on every render const filtered = () => items.filter(i
+   => i.active);
    ```
 
 3. **Use $derived.by() for expensive computations:**
@@ -114,12 +123,15 @@ Automatic. Just use Chrome/Edge DevTools as normal.
    ```
 
 ### State Inspection with inspect-value
+
 1. **Debug reactive state issues:**
+
    ```svelte
    <InspectValue value={ps.alerts} label="Alerts State" />
    ```
 
 2. **Track derived state:**
+
    ```svelte
    <InspectValue value={filteredAlerts} label="Filtered Alerts" />
    ```
@@ -152,16 +164,19 @@ All debugging tools are **automatically disabled in production**:
 ## 🔧 Troubleshooting
 
 ### render-scan not showing overlays
+
 - Ensure dev server is running
 - Check browser console for errors
 - Verify plugin is in `vite.config.js`
 
 ### InspectValue not rendering
+
 - Check `dev` environment is true
 - Verify import path is correct
 - Ensure component is in dev mode
 
 ### DevTools workspace not working
+
 - Visit the JSON endpoint to verify it's served
 - Check Chrome flags: `chrome://flags`
 - Enable "DevTools Project Settings"
