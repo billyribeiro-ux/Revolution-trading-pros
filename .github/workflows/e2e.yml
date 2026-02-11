@@ -347,7 +347,7 @@ jobs:
         working-directory: frontend
         run: |
           npx playwright test tests/e2e/smoke \
-            --project=mobile-chrome --project=mobile-safari \
+            "--project=Mobile Chrome" "--project=Mobile Safari" \
             --reporter=list
 
       - name: Stop preview server
