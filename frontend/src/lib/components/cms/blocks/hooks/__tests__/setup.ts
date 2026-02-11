@@ -18,7 +18,10 @@
 import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { applySvelteInternalMock, runEffectCleanups } from '../../../../../../test/svelte-internal-mock';
+import {
+	applySvelteInternalMock,
+	runEffectCleanups
+} from '../../../../../../test/svelte-internal-mock';
 
 // Apply the Svelte internal mock BEFORE any .svelte.ts imports
 applySvelteInternalMock();
@@ -30,6 +33,16 @@ expect.extend(matchers);
 afterEach(() => {
 	cleanup();
 	runEffectCleanups();
+});
+
+// Suppress undici InvalidArgumentError rejections from XHR mocks
+// These fire asynchronously after tests complete and are not actionable
+process.on('unhandledRejection', (reason: unknown) => {
+	if (reason instanceof Error && reason.message === 'invalid onError method') {
+		return; // swallow undici mock artifact
+	}
+	// Re-throw anything else so real errors are still caught
+	throw reason;
 });
 
 // ===============================================================================
@@ -91,15 +104,13 @@ global.Image = class MockImage {
 } as unknown as typeof Image;
 
 // Mock HTMLCanvasElement.getContext and toBlob
-HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
-	drawImage: vi.fn()
-}) as any;
-HTMLCanvasElement.prototype.toBlob = vi.fn(function (
-	this: HTMLCanvasElement,
-	callback: BlobCallback
-) {
+// Use plain function assignments (not vi.fn()) so vi.clearAllMocks() can't wipe them
+HTMLCanvasElement.prototype.getContext = function () {
+	return { drawImage: () => {} };
+} as any;
+HTMLCanvasElement.prototype.toBlob = function (this: HTMLCanvasElement, callback: BlobCallback) {
 	callback(new Blob(['mock-thumbnail'], { type: 'image/jpeg' }));
-}) as any;
+} as any;
 
 // Mock URL.createObjectURL and revokeObjectURL
 const mockObjectURLs = new Map<string, Blob>();

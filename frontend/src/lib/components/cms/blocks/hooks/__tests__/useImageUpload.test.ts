@@ -807,27 +807,36 @@ describe('createPresignedUploader', () => {
 	beforeEach(() => {
 		originalXHR = global.XMLHttpRequest;
 
-		const mockXHR = {
+		const mockXHR: Record<string, any> = {
 			open: vi.fn(),
-			send: vi.fn(function (this: any) {
-				setTimeout(() => {
-					this.status = 200;
-					if (this.onload) this.onload(new Event('load'));
-				}, 0);
+			send: vi.fn(function () {
+				queueMicrotask(() => {
+					mockXHR.status = 200;
+					mockXHR._handlers.load?.forEach((h: () => void) => h());
+				});
 			}),
 			setRequestHeader: vi.fn(),
+			abort: vi.fn(),
 			upload: {
-				addEventListener: vi.fn()
+				addEventListener: vi.fn(),
+				removeEventListener: vi.fn()
 			},
-			addEventListener: vi.fn(function (this: any, event: string, handler: () => void) {
-				if (event === 'load') {
-					this.onload = handler;
-				}
+			addEventListener: vi.fn((event: string, handler: () => void) => {
+				if (!mockXHR._handlers[event]) mockXHR._handlers[event] = [];
+				mockXHR._handlers[event].push(handler);
 			}),
-			status: 200
+			removeEventListener: vi.fn(),
+			status: 200,
+			responseText: JSON.stringify({ success: true, url: 'https://s3.example.com/uploaded.jpg' }),
+			readyState: 4,
+			_handlers: {} as Record<string, Array<() => void>>
 		};
 
-		global.XMLHttpRequest = vi.fn(() => mockXHR) as any;
+		global.XMLHttpRequest = class MockXMLHttpRequest {
+			constructor() {
+				return mockXHR as any;
+			}
+		} as any;
 	});
 
 	afterEach(() => {
@@ -939,8 +948,6 @@ describe('Edge Cases', () => {
 	});
 
 	it('handles multiple upload calls', async () => {
-		vi.useFakeTimers();
-
 		const mockXHR = createMockXHR();
 		const originalXHR = global.XMLHttpRequest;
 		global.XMLHttpRequest = class MockXMLHttpRequest {
@@ -957,18 +964,20 @@ describe('Edge Cases', () => {
 			const file2 = createMockFile('file2.jpg', 'image/jpeg', 1024);
 
 			// Start first upload
-			hook.upload(file1);
+			hook.upload(file1).catch(() => {});
 
-			// Flush microtasks so first upload reaches XHR stage
-			await vi.advanceTimersByTimeAsync(50);
+			// Allow full async chain: Image.onload (microtask) → createThumbnail → XHR.send
+			await new Promise((r) => setTimeout(r, 200));
+
+			// Verify first upload reached XHR
+			expect(mockXHR.open).toHaveBeenCalled();
 
 			// Start second upload (should abort first)
-			hook.upload(file2);
+			hook.upload(file2).catch(() => {});
 
-			await vi.advanceTimersByTimeAsync(50);
+			await new Promise((r) => setTimeout(r, 200));
 		} finally {
 			global.XMLHttpRequest = originalXHR;
-			vi.useRealTimers();
 		}
 	});
 });

@@ -33,6 +33,8 @@ describe('ParagraphBlock', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		// jsdom doesn't implement execCommand — mock it for paste handling
+		document.execCommand = vi.fn(() => true);
 	});
 
 	it('renders paragraph text correctly', () => {
