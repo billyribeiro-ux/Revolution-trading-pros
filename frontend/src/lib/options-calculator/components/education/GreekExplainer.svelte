@@ -97,7 +97,7 @@
 			class="flex items-start gap-1.5 rounded-lg px-2.5 py-2"
 			style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1);"
 		>
-			<Lightbulb size={10} style="color: #f59e0b; flex-shrink: 0; margin-top: 2px;" />
+			<Lightbulb size={10} style="color: var(--color-warning); flex-shrink: 0; margin-top: 2px;" />
 			<p class="text-[9px] leading-relaxed" style="color: var(--calc-text-muted);">
 				{entry.proTip}
 			</p>

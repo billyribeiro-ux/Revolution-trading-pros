@@ -17,7 +17,7 @@
 	let showPresets = $state(false);
 	let addBtnEl: HTMLButtonElement | undefined = $state();
 
-	const LEG_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+	const LEG_COLORS = ['var(--color-brand-primary)', 'var(--color-brand-secondary)', 'var(--color-accent)', 'var(--color-warning)', 'var(--color-success)', 'var(--color-info)'];
 
 	function addLeg() {
 		calc.addStrategyLeg({

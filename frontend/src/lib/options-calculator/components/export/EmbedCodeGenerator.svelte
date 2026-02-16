@@ -39,7 +39,7 @@
 	});
 
 	let embedCode = $derived(
-		`<iframe src="${embedURL}" width="${embedWidth}" height="${embedHeight}px" frameborder="0" style="border-radius:12px;border:1px solid #2a2a3a;" title="Black-Scholes Options Calculator" loading="lazy"></iframe>\n<p style="font-size:11px;color:#888;margin-top:4px;">Powered by <a href="https://revolutiontradingpros.com" target="_blank" rel="noopener">Revolution Trading Pros</a></p>`
+		`<iframe src="${embedURL}" width="${embedWidth}" height="${embedHeight}px" frameborder="0" style="border-radius:12px;border:1px solid var(--color-border-subtle);" title="Black-Scholes Options Calculator" loading="lazy"></iframe>\n<p style="font-size:11px;color:var(--color-text-muted);margin-top:4px;">Powered by <a href="https://revolutiontradingpros.com" target="_blank" rel="noopener">Revolution Trading Pros</a></p>`
 	);
 
 	async function handleCopy(): Promise<void> {

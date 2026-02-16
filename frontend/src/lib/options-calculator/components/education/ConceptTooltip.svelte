@@ -141,9 +141,9 @@
 			class="flex items-start gap-2 rounded-lg px-3 py-2"
 			style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12);"
 		>
-			<Lightbulb size={12} style="color: #f59e0b; flex-shrink: 0; margin-top: 1px;" />
+			<Lightbulb size={12} style="color: var(--color-warning); flex-shrink: 0; margin-top: 1px;" />
 			<p class="text-[10px] leading-relaxed" style="color: var(--calc-text-secondary);">
-				<span class="font-semibold" style="color: #f59e0b;">Pro Tip:</span>
+				<span class="font-semibold" style="color: var(--color-warning);">Pro Tip:</span>
 				{entry.proTip}
 			</p>
 		</div>

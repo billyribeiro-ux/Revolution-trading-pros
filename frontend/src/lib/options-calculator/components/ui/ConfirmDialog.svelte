@@ -82,7 +82,7 @@
 						class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
 						style="background: rgba(239,68,68,0.1);"
 					>
-						<AlertTriangle size={18} style="color: #ef4444;" />
+						<AlertTriangle size={18} style="color: var(--color-loss);" />
 					</div>
 				{/if}
 				<div class="flex flex-col gap-1">

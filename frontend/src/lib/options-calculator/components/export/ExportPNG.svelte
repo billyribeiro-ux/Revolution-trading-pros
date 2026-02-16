@@ -282,7 +282,7 @@
 						class="w-14 h-14 rounded-full flex items-center justify-center"
 						style="background: rgba(16,185,129,0.1);"
 					>
-						<Camera size={24} style="color: #10b981;" />
+						<Camera size={24} style="color: var(--color-success);" />
 					</div>
 					<p class="text-sm font-semibold" style="color: var(--calc-text);">Screenshot Ready!</p>
 				</div>

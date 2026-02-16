@@ -210,7 +210,7 @@
 					class="w-14 h-14 rounded-full flex items-center justify-center"
 					style="background: rgba(16,185,129,0.1);"
 				>
-					<Mail size={24} style="color: #10b981;" />
+					<Mail size={24} style="color: var(--color-success);" />
 				</div>
 				<h3
 					class="text-base font-bold text-center"

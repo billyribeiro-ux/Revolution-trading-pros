@@ -42,7 +42,7 @@
 	<div
 		class="absolute inset-0 pointer-events-none z-[9000] flex flex-col"
 		style={showFrame
-			? `border: 2px solid transparent; border-image: linear-gradient(135deg, #6366f1, #00d4aa, #6366f1) 1; border-radius: 12px;`
+			? `border: 2px solid transparent; border-image: var(--color-brand-gradient) 1; border-radius: 12px;`
 			: ''}
 	>
 		<!-- Top Info Bar -->
@@ -56,8 +56,8 @@
 						<span
 							class="text-sm font-bold"
 							style="color: {isDark
-								? '#e8e8f0'
-								: '#111827'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
+								? 'var(--color-text-primary)'
+								: 'var(--color-text-primary)'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
 							>{ticker}</span
 						>
 					{/if}
@@ -65,8 +65,8 @@
 						<span
 							class="text-xs"
 							style="color: {isDark
-								? '#8888aa'
-								: '#6b7280'}; font-family: 'JetBrains Mono', 'Fira Code', monospace;"
+								? 'var(--color-text-muted)'
+								: 'var(--color-text-muted)'}; font-family: 'JetBrains Mono', 'Fira Code', monospace;"
 							>|&nbsp;&nbsp;{summaryText}</span
 						>
 					{/if}
@@ -74,8 +74,8 @@
 				<span
 					class="text-[11px]"
 					style="color: {isDark
-						? '#8888aa'
-						: '#6b7280'}; font-family: 'Inter', system-ui, sans-serif;"
+						? 'var(--color-text-muted)'
+						: 'var(--color-text-muted)'}; font-family: 'Inter', system-ui, sans-serif;"
 					>{dateStr} &bull; {timeStr}</span
 				>
 			</div>
@@ -102,8 +102,8 @@
 						<span
 							class="text-xs font-bold"
 							style="color: {isDark
-								? '#e8e8f0'
-								: '#111827'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
+								? 'var(--color-text-primary)'
+								: 'var(--color-text-primary)'}; font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;"
 							>Revolution Trading Pros</span
 						>
 					{/if}
@@ -111,8 +111,8 @@
 				<span
 					class="text-[11px]"
 					style="color: {isDark
-						? '#6366f1'
-						: '#4f46e5'}; font-family: 'Inter', system-ui, sans-serif;"
+						? 'var(--color-brand-primary)'
+						: 'var(--color-brand-primary)'}; font-family: 'Inter', system-ui, sans-serif;"
 					>revolutiontradingpros.com</span
 				>
 			</div>

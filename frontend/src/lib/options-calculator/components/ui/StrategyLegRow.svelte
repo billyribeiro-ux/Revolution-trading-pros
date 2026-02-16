@@ -160,8 +160,8 @@
 		onclick={togglePosition}
 		class="text-[10px] font-bold px-2 py-1 rounded-lg transition-colors cursor-pointer"
 		style={leg.position === 1
-			? 'background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3);'
-			: 'background: rgba(255,68,119,0.15); color: #ff4477; border: 1px solid rgba(255,68,119,0.3);'}
+			? 'background: var(--color-success-bg); color: var(--color-success); border: 1px solid var(--color-success-border);'
+			: 'background: var(--color-loss-bg); color: var(--color-loss); border: 1px solid var(--color-loss-border);'}
 	>
 		{leg.position === 1 ? 'LONG' : 'SHORT'}
 	</button>

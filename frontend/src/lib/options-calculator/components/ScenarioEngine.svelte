@@ -44,7 +44,7 @@
 				timeChange: customTimeDays || undefined,
 				rateChange: customRateBp ? customRateBp / 10000 : undefined
 			},
-			color: '#8b5cf6'
+			color: 'var(--color-brand-secondary)'
 		};
 		calc.toggleScenario(custom);
 		showCustom = false;

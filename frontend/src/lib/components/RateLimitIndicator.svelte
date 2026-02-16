@@ -96,15 +96,15 @@
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'critical':
-				return '#ef4444';
+				return 'var(--color-loss)';
 			case 'warning':
-				return '#f59e0b';
+				return 'var(--color-warning)';
 			case 'ok':
-				return '#10b981';
+				return 'var(--color-success)';
 			case 'none':
-				return '#6b7280';
+				return 'var(--color-text-muted)';
 			default:
-				return '#6b7280';
+				return 'var(--color-text-muted)';
 		}
 	}
 
@@ -276,10 +276,10 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.2);
+		background: var(--color-success-bg);
+		border: 1px solid var(--color-success-border);
 		border-radius: 8px;
-		color: #10b981;
+		color: var(--color-success);
 		font-size: 0.8125rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -287,37 +287,37 @@
 	}
 
 	.rate-limit-btn:hover {
-		background: rgba(16, 185, 129, 0.2);
+		background: var(--color-success-bg-hover);
 	}
 
 	.rate-limit-btn.warning {
-		background: rgba(245, 158, 11, 0.1);
-		border-color: rgba(245, 158, 11, 0.2);
-		color: #f59e0b;
+		background: var(--color-warning-bg);
+		border-color: var(--color-warning-border);
+		color: var(--color-warning);
 	}
 
 	.rate-limit-btn.warning:hover {
-		background: rgba(245, 158, 11, 0.2);
+		background: var(--color-warning-bg-hover);
 	}
 
 	.rate-limit-btn.critical {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.2);
-		color: #ef4444;
+		background: var(--color-loss-bg);
+		border-color: var(--color-loss-border);
+		color: var(--color-loss);
 	}
 
 	.rate-limit-btn.critical:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: var(--color-loss-bg-hover);
 	}
 
 	.rate-limit-btn.disconnected {
-		background: rgba(107, 114, 128, 0.1);
-		border-color: rgba(107, 114, 128, 0.2);
-		color: #6b7280;
+		background: var(--color-bg-subtle);
+		border-color: var(--color-border-subtle);
+		color: var(--color-text-muted);
 	}
 
 	.rate-limit-btn.disconnected:hover {
-		background: rgba(107, 114, 128, 0.2);
+		background: var(--color-bg-hover);
 	}
 
 	.chevron {
@@ -349,7 +349,7 @@
 	.dropdown-header h4 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--color-text-primary);
 		margin: 0 0 0.375rem 0;
 	}
 
@@ -368,15 +368,15 @@
 		justify-content: center;
 		padding: 2rem;
 		gap: 0.75rem;
-		color: #64748b;
+		color: var(--color-text-muted);
 		font-size: 0.8125rem;
 	}
 
 	.loading-spinner {
 		width: 24px;
 		height: 24px;
-		border: 2px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 2px solid var(--color-brand-primary-subtle);
+		border-top-color: var(--color-brand-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -400,24 +400,24 @@
 		width: 56px;
 		height: 56px;
 		border-radius: 14px;
-		background: rgba(107, 114, 128, 0.1);
+		background: var(--color-bg-subtle);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #6b7280;
+		color: var(--color-text-muted);
 		margin-bottom: 1rem;
 	}
 
 	.no-services-title {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--color-text-primary);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.no-services-desc {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--color-text-muted);
 		margin: 0 0 1rem 0;
 		line-height: 1.5;
 	}
@@ -426,8 +426,8 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.625rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: var(--color-brand-gradient);
+		color: var(--color-bg-card);
 		font-size: 0.8125rem;
 		font-weight: 600;
 		border-radius: 8px;
@@ -437,7 +437,7 @@
 
 	.connect-btn:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 12px var(--color-brand-shadow);
 	}
 
 	/* Limits List */
@@ -477,7 +477,7 @@
 	.service-name {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #e2e8f0;
+		color: var(--color-text-primary);
 	}
 
 	.limit-status {
@@ -487,7 +487,7 @@
 
 	.limit-bar-container {
 		height: 4px;
-		background: rgba(99, 102, 241, 0.1);
+		background: var(--color-bg-subtle);
 		border-radius: 2px;
 		overflow: hidden;
 		margin-bottom: 0.5rem;
@@ -510,22 +510,22 @@
 		align-items: center;
 		gap: 0.25rem;
 		font-size: 0.6875rem;
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 
 	.percentage {
 		font-size: 0.6875rem;
-		color: #94a3b8;
+		color: var(--color-text-tertiary);
 	}
 
 	.dropdown-footer {
 		padding: 0.75rem 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-		background: rgba(15, 23, 42, 0.5);
+		border-top: 1px solid var(--color-border-subtle);
+		background: var(--color-bg-subtle);
 	}
 
 	.footer-note {
 		font-size: 0.6875rem;
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 </style>

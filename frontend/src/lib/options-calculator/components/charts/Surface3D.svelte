@@ -254,7 +254,7 @@
 	<div
 		bind:this={containerEl}
 		class="relative w-full rounded-xl overflow-hidden"
-		style="min-height: 320px; background: #0a0e1a;"
+		style="min-height: 320px; background: var(--color-bg-card);"
 	>
 		{#if isLoading}
 			<div
@@ -275,15 +275,15 @@
 	<!-- Legend -->
 	<div class="flex items-center justify-center gap-4">
 		<div class="flex items-center gap-1.5">
-			<div class="w-3 h-3 rounded-sm" style="background: #cc3333;"></div>
+			<div class="w-3 h-3 rounded-sm" style="background: var(--color-loss);"></div>
 			<span class="text-[10px]" style="color: var(--calc-text-muted);">Max Loss</span>
 		</div>
 		<div class="flex items-center gap-1.5">
-			<div class="w-3 h-3 rounded-sm" style="background: #4d4d4d;"></div>
+			<div class="w-3 h-3 rounded-sm" style="background: var(--color-text-muted);"></div>
 			<span class="text-[10px]" style="color: var(--calc-text-muted);">Breakeven</span>
 		</div>
 		<div class="flex items-center gap-1.5">
-			<div class="w-3 h-3 rounded-sm" style="background: #00d4aa;"></div>
+			<div class="w-3 h-3 rounded-sm" style="background: var(--color-success);"></div>
 			<span class="text-[10px]" style="color: var(--calc-text-muted);">Max Profit</span>
 		</div>
 	</div>
