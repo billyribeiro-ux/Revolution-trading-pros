@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/environment';\nimport { logger } from '$lib/utils/logger';
 import type { ConsentState, ConsentStorageOptions } from './types';
 import { DEFAULT_CONSENT_STATE, DEFAULT_STORAGE_OPTIONS, CONSENT_SCHEMA_VERSION } from './types';
 
@@ -216,7 +216,7 @@ export function saveConsent(
 	// Try cookie first
 	if (setCookie(options.cookieName, serialized, options)) {
 		saved = true;
-		console.debug('[Consent] Saved consent to cookie');
+		logger.debug('[Consent] Saved consent to cookie');
 	}
 
 	// Also save to localStorage as backup
@@ -224,14 +224,14 @@ export function saveConsent(
 		try {
 			localStorage.setItem(options.localStorageKey, serialized);
 			saved = true;
-			console.debug('[Consent] Saved consent to localStorage');
+			logger.debug('[Consent] Saved consent to localStorage');
 		} catch (e) {
-			console.debug('[Consent] Failed to save to localStorage:', e);
+			logger.debug('[Consent] Failed to save to localStorage:', e);
 		}
 	}
 
 	if (!saved) {
-		console.warn('[Consent] Could not persist consent preferences');
+		logger.warn('[Consent] Could not persist consent preferences');
 	}
 
 	return saved;
@@ -253,7 +253,7 @@ export function clearConsent(options: ConsentStorageOptions = DEFAULT_STORAGE_OP
 		}
 	}
 
-	console.debug('[Consent] Cleared stored consent');
+	logger.debug('[Consent] Cleared stored consent');
 }
 
 /**

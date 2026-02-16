@@ -220,7 +220,8 @@ export interface ConditionalLogic {
 export interface ConditionalRule {
 	field: string;
 	operator: ConditionalOperator;
-	value?: any;
+	/** Value can be string, number, boolean, or null depending on field type */
+	value?: string | number | boolean | null;
 }
 
 export type ConditionalOperator =

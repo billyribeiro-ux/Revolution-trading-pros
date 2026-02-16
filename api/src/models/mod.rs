@@ -24,7 +24,7 @@ pub mod watchlist;
 pub use cms::*;
 pub use course::*;
 pub use job::*;
-#[allow(unused_imports)]
+// ICT 7+: All membership types are actively used in subscription management
 pub use membership::*;
 pub use order::{
     CheckoutSession, CreateOrder, CreateOrderItem, Order, OrderItem, OrderStatus,

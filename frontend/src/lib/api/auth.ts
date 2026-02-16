@@ -37,6 +37,7 @@
 import { authStore } from '$lib/stores/auth.svelte';
 import type { User } from '$lib/stores/auth.svelte';
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -267,7 +268,7 @@ class AuthenticationService {
 		// Setup security monitoring
 		this.setupSecurityMonitoring();
 
-		console.debug('[AuthService] Initialized');
+		logger.debug('[AuthService] Initialized');
 	}
 
 	/**
@@ -343,7 +344,7 @@ class AuthenticationService {
 			const requestUrl = useLocalProxy ? endpoint : endpoint;
 
 			if (useLocalProxy) {
-				console.debug('[AuthService] Using local proxy for:', endpoint);
+				logger.debug('[AuthService] Using local proxy for:', endpoint);
 			}
 
 			// Make request
@@ -364,7 +365,7 @@ class AuthenticationService {
 			// Handle errors with retry
 			if (retriesLeft > 0 && this.shouldRetry(error)) {
 				const delay = RETRY_DELAY_BASE * Math.pow(2, MAX_RETRIES - retriesLeft);
-				console.warn(`[AuthService] Retrying request to ${endpoint} after ${delay}ms`);
+				logger.warn(`[AuthService] Retrying request to ${endpoint} after ${delay}ms`);
 
 				await new Promise((resolve) => setTimeout(resolve, delay));
 				return this.executeRequest<T>(endpoint, options, skipAuth, retriesLeft - 1);
@@ -426,7 +427,7 @@ class AuthenticationService {
 				// ICT 7 FIX: Don't clear auth - token might still be valid for a few more minutes
 				// The actual API call will fail with 401 if token is truly invalid,
 				// and the 401 handler will properly redirect to login
-				console.warn('[AuthService] Token refresh failed, using existing token:', error);
+				logger.warn('[AuthService] Token refresh failed, using existing token:', error);
 				// Return the existing token - let the actual API call determine if it's still valid
 				return token;
 			}
@@ -595,7 +596,7 @@ class AuthenticationService {
 		// ICT 7 SECURITY: Log login attempt without any password metadata
 		// Apple Principal Engineer Grade: Never log credentials or password characteristics
 		if (import.meta.env.DEV) {
-			console.debug('[AuthService] Login attempt:', {
+			logger.debug('[AuthService] Login attempt:', {
 				email: loginData.email?.replace(/(.{2}).*(@.*)/, '$1***$2'),
 				hasCredentials: !!loginData.password
 			});
@@ -655,11 +656,11 @@ class AuthenticationService {
 		} catch (error) {
 			// CRITICAL: Log at ERROR level so this is visible in production
 			// Returning response.user as fallback, but callers should know user fetch failed
-			console.error(
+			logger.error(
 				'[AuthService] CRITICAL: Failed to fetch full user data after login. Using initial response data as fallback. Error:',
 				error
 			);
-			console.warn(
+			logger.warn(
 				'[AuthService] Login succeeded but user profile fetch failed - user data may be incomplete'
 			);
 			return response.user;
@@ -722,14 +723,14 @@ class AuthenticationService {
 				this.trackEvent('user_logged_out', { email: user.email });
 			}
 		} catch (error) {
-			console.error('[AuthService] Logout API call failed:', error);
+			logger.error('[AuthService] Logout API call failed:', error);
 		} finally {
 			// ICT11+ Pattern: Clear httpOnly cookies for server-side auth
 			if (browser) {
 				try {
 					await fetch('/api/auth/set-session', { method: 'DELETE' });
 				} catch (cookieError) {
-					console.warn('[AuthService] Failed to clear session cookies:', cookieError);
+					logger.warn('[AuthService] Failed to clear session cookies:', cookieError);
 				}
 			}
 
@@ -1071,7 +1072,7 @@ class AuthenticationService {
 			}
 		}
 
-		console.debug('[AuthService] Token refreshed successfully');
+		logger.debug('[AuthService] Token refreshed successfully');
 
 		return {
 			token: token || '',
@@ -1100,12 +1101,12 @@ class AuthenticationService {
 
 		this.tokenRefreshTimeout = window.setTimeout(() => {
 			this.refreshToken().catch((error) => {
-				console.error('[AuthService] Scheduled token refresh failed:', error);
+				logger.error('[AuthService] Scheduled token refresh failed:', error);
 				this.clearAuth();
 			});
 		}, refreshTime);
 
-		console.debug(`[AuthService] Token refresh scheduled in ${refreshTime}ms`);
+		logger.debug(`[AuthService] Token refresh scheduled in ${refreshTime}ms`);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1186,7 +1187,7 @@ class AuthenticationService {
 			} catch (error) {
 				// Only clear auth on actual 401 Unauthorized responses
 				if (error instanceof UnauthorizedError) {
-					console.warn('[AuthService] Session invalid (401), clearing auth');
+					logger.warn('[AuthService] Session invalid (401), clearing auth');
 					this.clearAuth();
 					return;
 				}
@@ -1201,7 +1202,7 @@ class AuthenticationService {
 				if (isNetworkError && !isLastAttempt) {
 					// Network error - wait and retry
 					const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
-					console.debug(
+					logger.debug(
 						`[AuthService] Session check network error, retrying in ${delay}ms (attempt ${attempt}/${MAX_CHECK_RETRIES})`
 					);
 					await new Promise((resolve) => setTimeout(resolve, delay));
@@ -1211,11 +1212,11 @@ class AuthenticationService {
 				// Non-network error or final retry - log but don't clear auth
 				// The user might just have a temporary network issue
 				if (isNetworkError) {
-					console.debug(
+					logger.debug(
 						'[AuthService] Session check failed due to network issues, will retry on next interval'
 					);
 				} else {
-					console.warn('[AuthService] Session check failed with unexpected error:', error);
+					logger.warn('[AuthService] Session check failed with unexpected error:', error);
 				}
 				return;
 			}
@@ -1244,7 +1245,7 @@ class AuthenticationService {
 		// Clear request queue
 		this.requestQueue.clear();
 
-		console.debug('[AuthService] Auth cleared');
+		logger.debug('[AuthService] Auth cleared');
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1267,7 +1268,7 @@ class AuthenticationService {
 					const nodes = Array.from(mutation.addedNodes);
 					for (const node of nodes) {
 						if (node instanceof HTMLScriptElement && node.src && !this.isTrustedScript(node.src)) {
-							console.error('[AuthService] Suspicious script detected:', node.src);
+							logger.error('[AuthService] Suspicious script detected:', node.src);
 							node.remove();
 							this.trackSecurityEvent('suspicious_script', { src: node.src });
 						}
@@ -1366,7 +1367,7 @@ class AuthenticationService {
 			(window as any).analytics.track(event, data);
 		}
 
-		console.debug(`[AuthService] Event tracked: ${event}`, data);
+		logger.debug(`[AuthService] Event tracked: ${event}`, data);
 	}
 
 	/**
@@ -1375,7 +1376,7 @@ class AuthenticationService {
 	 */
 	private trackSecurityEvent(type: string, data?: Record<string, any>): void {
 		// Log locally instead of making API call
-		console.debug('[AuthService] Security event:', type, data);
+		logger.debug('[AuthService] Security event:', type, data);
 	}
 }
 
@@ -1453,23 +1454,23 @@ export async function initializeAuth(): Promise<boolean> {
 			// Token refreshed successfully, fetch user data (also with timeout)
 			try {
 				await Promise.race([authService.getUser(), timeoutPromise]);
-				console.debug('[Auth] Session restored successfully');
+				logger.debug('[Auth] Session restored successfully');
 				return true;
 			} catch (userError) {
-				console.debug('[Auth] Failed to fetch user after token refresh:', userError);
+				logger.debug('[Auth] Failed to fetch user after token refresh:', userError);
 				authStore.clearAuth();
 				return false;
 			}
 		} else {
 			// Token refresh failed - session expired
-			console.debug('[Auth] Token refresh failed - session expired');
+			logger.debug('[Auth] Token refresh failed - session expired');
 			authStore.clearAuth();
 			return false;
 		}
 	} catch (error) {
-		// CRITICAL: Use console.warn so errors are visible in production
+		// CRITICAL: Use logger.warn so errors are visible in production
 		// Session restoration failures should be noticeable for debugging auth issues
-		console.warn('[Auth] Session restoration failed:', error);
+		logger.warn('[Auth] Session restoration failed:', error);
 		authStore.completeInitialization(false);
 		return false;
 	}

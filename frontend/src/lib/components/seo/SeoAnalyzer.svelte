@@ -8,6 +8,40 @@
 		IconTrendingUp
 	} from '$lib/icons';
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPES - ICT 7+ Strict Type Safety
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface SEOAnalysisResult {
+		test: string;
+		status: 'good' | 'warning' | 'error';
+		message: string;
+	}
+
+	interface SEOAnalysis {
+		score: number;
+		grade?: 'A' | 'B' | 'C' | 'D' | 'F';
+		passed: number;
+		warnings: number;
+		errors: number;
+		results: SEOAnalysisResult[];
+	}
+
+	interface ReadabilityDetails {
+		words: number;
+		sentences: number;
+		avg_words_per_sentence: number;
+		avg_syllables_per_word: number;
+		complex_words: number;
+	}
+
+	interface ReadabilityMetrics {
+		score: number;
+		grade: string;
+		level: string;
+		details: ReadabilityDetails;
+	}
+
 	interface Props {
 		content?: string;
 		title?: string;
@@ -24,8 +58,12 @@
 		additionalKeywords = []
 	}: Props = $props();
 
-	let analysis: any = $state(null);
-	let readability: any = $state(null);
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE - Properly Typed (No 'any')
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let analysis: SEOAnalysis | null = $state(null);
+	let readability: ReadabilityMetrics | null = $state(null);
 	let loading = $state(false);
 
 	$effect(() => {
@@ -34,7 +72,7 @@
 		}
 	});
 
-	let debounceTimer: any;
+	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	function analyzeDebounced() {
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => {

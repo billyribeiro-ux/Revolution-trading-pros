@@ -66,7 +66,8 @@ export default [
 			'no-useless-catch': 'warn',
 			'no-control-regex': 'off',
 			'no-empty': 'warn',
-			'no-console': 'off',
+			// ICT 7+ Standard: No console statements in production code
+			'no-console': 'warn',
 			'no-undef': 'off'
 		}
 	},

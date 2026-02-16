@@ -7,6 +7,7 @@
 		IconPlugConnected,
 		IconPlugConnectedX
 	} from '$lib/icons';
+	import { logger } from '$lib/utils/logger';
 
 	// State using Svelte 5 runes
 	let status = $state<any>(null);
@@ -28,7 +29,7 @@
 				loadSites();
 			}
 		} catch (error) {
-			console.error('Failed to check status:', error);
+			logger.error('Failed to check status:', error);
 		} finally {
 			_loading = false;
 		}

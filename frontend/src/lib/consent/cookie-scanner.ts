@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentCategory, CookieInfo } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Known cookie patterns and their categories.
@@ -482,7 +483,7 @@ export function deleteCookie(name: string, domain?: string): void {
 	// Also try without domain
 	document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 
-	console.debug(`[CookieScanner] Deleted cookie: ${name}`);
+	logger.debug(`[CookieScanner] Deleted cookie: ${name}`);
 }
 
 /**
@@ -496,7 +497,7 @@ export function deleteCookiesByCategory(category: ConsentCategory): number {
 		deleteCookie(cookie.name);
 	});
 
-	console.debug(`[CookieScanner] Deleted ${toDelete.length} ${category} cookies`);
+	logger.debug(`[CookieScanner] Deleted ${toDelete.length} ${category} cookies`);
 	return toDelete.length;
 }
 

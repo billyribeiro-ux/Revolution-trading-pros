@@ -134,7 +134,7 @@ impl FromRequestParts<AppState> for User {
 }
 
 /// Optional user extractor (for routes that work with or without auth)
-#[allow(dead_code)]
+/// ICT 7+: Used in public routes that provide enhanced features for authenticated users
 pub struct OptionalUser(pub Option<User>);
 
 #[axum::async_trait]

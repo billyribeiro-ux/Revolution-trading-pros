@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentCategory, ConsentAnalytics, ConsentInteractionEvent } from './types';
+import { logger } from '$lib/utils/logger';
 
 const ANALYTICS_STORAGE_KEY = 'rtp_consent_analytics';
 const EVENTS_STORAGE_KEY = 'rtp_consent_events';
@@ -47,7 +48,7 @@ export function getConsentAnalytics(): ConsentAnalytics {
 			return { ...getDefaultAnalytics(), ...JSON.parse(stored) };
 		}
 	} catch (e) {
-		console.debug('[ConsentAnalytics] Failed to load analytics:', e);
+		logger.debug('[ConsentAnalytics] Failed to load analytics:', e);
 	}
 
 	return getDefaultAnalytics();
@@ -62,7 +63,7 @@ function saveAnalytics(analytics: ConsentAnalytics): void {
 	try {
 		localStorage.setItem(ANALYTICS_STORAGE_KEY, JSON.stringify(analytics));
 	} catch (e) {
-		console.debug('[ConsentAnalytics] Failed to save analytics:', e);
+		logger.debug('[ConsentAnalytics] Failed to save analytics:', e);
 	}
 }
 
@@ -78,7 +79,7 @@ export function getInteractionEvents(): ConsentInteractionEvent[] {
 			return JSON.parse(stored);
 		}
 	} catch (e) {
-		console.debug('[ConsentAnalytics] Failed to load events:', e);
+		logger.debug('[ConsentAnalytics] Failed to load events:', e);
 	}
 
 	return [];
@@ -95,7 +96,7 @@ function saveEvents(events: ConsentInteractionEvent[]): void {
 		const trimmed = events.slice(-1000);
 		localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify(trimmed));
 	} catch (e) {
-		console.debug('[ConsentAnalytics] Failed to save events:', e);
+		logger.debug('[ConsentAnalytics] Failed to save events:', e);
 	}
 }
 
@@ -148,7 +149,7 @@ export function trackConsentInteraction(
 	// Send to behavior tracker if available
 	sendToBehaviorTracker(event);
 
-	console.debug('[ConsentAnalytics] Tracked interaction:', event);
+	logger.debug('[ConsentAnalytics] Tracked interaction:', event);
 }
 
 /**
@@ -248,7 +249,7 @@ function sendToBehaviorTracker(event: ConsentInteractionEvent): void {
 			});
 		}
 	} catch (e) {
-		console.debug('[ConsentAnalytics] Failed to send to behavior tracker:', e);
+		logger.debug('[ConsentAnalytics] Failed to send to behavior tracker:', e);
 	}
 }
 
@@ -322,9 +323,9 @@ export function clearAnalytics(): void {
 	try {
 		localStorage.removeItem(ANALYTICS_STORAGE_KEY);
 		localStorage.removeItem(EVENTS_STORAGE_KEY);
-		console.debug('[ConsentAnalytics] Cleared analytics data');
+		logger.debug('[ConsentAnalytics] Cleared analytics data');
 	} catch (e) {
-		console.debug('[ConsentAnalytics] Failed to clear analytics:', e);
+		logger.debug('[ConsentAnalytics] Failed to clear analytics:', e);
 	}
 }
 
@@ -347,7 +348,7 @@ export async function syncAnalyticsToServer(endpoint: string): Promise<boolean> 
 
 		return response.ok;
 	} catch (e) {
-		console.error('[ConsentAnalytics] Failed to sync to server:', e);
+		logger.error('[ConsentAnalytics] Failed to sync to server:', e);
 		return false;
 	}
 }

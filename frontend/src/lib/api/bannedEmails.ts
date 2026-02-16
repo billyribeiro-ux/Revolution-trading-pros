@@ -125,12 +125,23 @@ export interface User {
 	role?: string;
 }
 
+/** Evidence data for risk assessment - can contain various data types */
+export interface RiskEvidence {
+	pattern?: string;
+	frequency?: number;
+	timestamp?: string;
+	source?: string;
+	metadata?: Record<string, string | number | boolean>;
+	[key: string]: unknown;
+}
+
 export interface RiskFactor {
 	type: RiskFactorType;
 	score: number;
 	confidence: number;
 	description: string;
-	evidence?: any;
+	/** Evidence supporting this risk factor */
+	evidence?: RiskEvidence;
 }
 
 export type RiskFactorType =
@@ -179,7 +190,8 @@ export interface EnforcementAction {
 	status: 'pending' | 'completed' | 'failed' | 'reversed';
 	executed_at?: string;
 	executed_by?: string;
-	details?: Record<string, any>;
+	/** Additional details about the enforcement action - typed for safety */
+	details?: Record<string, string | number | boolean | null>;
 	reversal_reason?: string;
 }
 

@@ -11,7 +11,7 @@
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/environment';\nimport { logger } from '$lib/utils/logger';
 
 export interface PendingAction {
 	id: string;
@@ -53,7 +53,7 @@ function savePendingActions(actions: PendingAction[]) {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(actions));
 	} catch (e) {
-		console.error('Failed to save pending actions:', e);
+		logger.error('Failed to save pending actions:', e);
 	}
 }
 

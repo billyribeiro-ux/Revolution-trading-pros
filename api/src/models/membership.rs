@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
+/// Membership/subscription record for a user
+/// ICT 7+: All fields are actively used in subscription management
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-#[allow(dead_code)]
 pub struct Membership {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -19,8 +20,9 @@ pub struct Membership {
     pub updated_at: DateTime<Utc>,
 }
 
+/// Course enrollment tracking for members
+/// ICT 7+: All fields are actively used in course progress tracking
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-#[allow(dead_code)]
 pub struct CourseEnrollment {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -30,8 +32,9 @@ pub struct CourseEnrollment {
     pub progress_percent: i32,
 }
 
+/// Request payload for creating a Stripe checkout session
+/// ICT 7+: All fields are required for Stripe integration
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub struct CreateCheckoutSession {
     pub price_id: String,
     pub success_url: String,

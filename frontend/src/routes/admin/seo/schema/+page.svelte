@@ -2,10 +2,30 @@
 	import { onMount } from 'svelte';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 
-	// State using Svelte 5 runes
-	let schemas = $state<any[]>([]);
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPES - ICT 7+ Strict Type Safety
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface SchemaOrgType {
+		id: number;
+		schema_type: string; // e.g., 'Article', 'Product', 'Organization'
+		name: string;
+		data: Record<string, unknown>;
+		entity_type?: string; // e.g., 'post', 'product', 'page'
+		entity_id?: number;
+		page_url?: string;
+		is_active: boolean;
+		created_at: string;
+		updated_at: string;
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE - Properly Typed (No 'any')
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let schemas = $state<SchemaOrgType[]>([]);
 	let loading = $state(false);
-	let showPreview = $state<any>(null);
+	let showPreview = $state<Record<string, unknown> | null>(null);
 
 	const schemaTypes = [
 		'Article',

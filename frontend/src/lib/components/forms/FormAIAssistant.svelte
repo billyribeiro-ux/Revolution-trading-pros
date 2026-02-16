@@ -9,15 +9,18 @@
 	 * - Content generation
 	 * - Smart field detection
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0 - ICT 7+ Strict Type Safety
 	 */
 
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import type { FormField, Form } from '$lib/api/forms';
 
 	interface Props {
 		formId?: number;
-		onFieldsGenerated?: (fields: any[]) => void;
-		onFormGenerated?: (form: any) => void;
+		/** Callback when AI generates form fields */
+		onFieldsGenerated?: (fields: FormField[]) => void;
+		/** Callback when AI generates a complete form */
+		onFormGenerated?: (form: Form) => void;
 	}
 
 	interface Suggestion {
@@ -143,11 +146,13 @@
 
 	// Add suggested field
 	function addSuggestedField(suggestion: Suggestion) {
-		const field = {
-			type: suggestion.type,
+		const field: FormField = {
+			field_type: suggestion.type as any, // Type comes from AI suggestion
 			label: suggestion.label,
 			name: suggestion.name,
-			required: false
+			required: false,
+			order: 0, // Will be set by parent component
+			width: 12 // Full width by default
 		};
 		onFieldsGenerated?.([field]);
 

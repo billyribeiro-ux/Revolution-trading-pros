@@ -12,7 +12,7 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/environment';\nimport { logger } from '$lib/utils/logger';
 import type { ConsentState, ConsentCategory, PrivacySignals } from './types';
 import {
 	DEFAULT_CONSENT_STATE,
@@ -55,7 +55,7 @@ function createConsentStore() {
 			if (stored.expiresAt) {
 				const expiry = new Date(stored.expiresAt);
 				if (expiry < new Date()) {
-					console.debug('[ConsentStore] Consent expired, resetting');
+					logger.debug('[ConsentStore] Consent expired, resetting');
 					stored = { ...DEFAULT_CONSENT_STATE };
 				}
 			}
@@ -215,7 +215,7 @@ function createConsentStore() {
 				// Dispatch event
 				dispatchConsentEvent(previousState, newState);
 
-				console.debug('[ConsentStore] Rejected non-essential categories');
+				logger.debug('[ConsentStore] Rejected non-essential categories');
 				return newState;
 			});
 		},
@@ -278,7 +278,7 @@ function createConsentStore() {
 			set(resetState);
 			saveConsent(resetState);
 
-			console.debug('[ConsentStore] Reset to defaults');
+			logger.debug('[ConsentStore] Reset to defaults');
 		},
 
 		/**

@@ -117,6 +117,13 @@ export interface WorkflowCanvas {
 	pan: NodePosition;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Workflow Configuration Types - ICT 7+ Strict Type Safety
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Base configuration for workflow triggers and actions */
+export type WorkflowConfig = Record<string, string | number | boolean | null | undefined>;
+
 export interface TriggerTemplate {
 	type: string;
 	name: string;
@@ -134,7 +141,8 @@ export interface TriggerTemplate {
 		| 'ecommerce'
 		| 'trading'
 		| 'system';
-	config: Record<string, any>;
+	/** Configuration object with string, number, boolean, or null values */
+	config: WorkflowConfig;
 }
 
 export interface ActionTemplate {
@@ -153,7 +161,8 @@ export interface ActionTemplate {
 		| 'integration'
 		| 'flow'
 		| 'ai';
-	config: Record<string, any>;
+	/** Configuration object with string, number, boolean, or null values */
+	config: WorkflowConfig;
 	requiredFields: string[];
 }
 

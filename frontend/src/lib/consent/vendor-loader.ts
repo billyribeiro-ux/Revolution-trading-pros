@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentState, ConsentCategory, VendorConfig } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Track which vendors have been loaded to prevent double-loading.
@@ -38,18 +39,18 @@ export async function loadVendor(vendor: VendorConfig, consent: ConsentState): P
 
 	// Skip if already loaded or loading
 	if (loadedVendors.has(vendor.id)) {
-		console.debug(`[VendorLoader] ${vendor.id} already loaded, skipping`);
+		logger.debug(`[VendorLoader] ${vendor.id} already loaded, skipping`);
 		return true;
 	}
 
 	if (loadingVendors.has(vendor.id)) {
-		console.debug(`[VendorLoader] ${vendor.id} is currently loading, skipping`);
+		logger.debug(`[VendorLoader] ${vendor.id} is currently loading, skipping`);
 		return false;
 	}
 
 	// Check consent
 	if (!hasRequiredConsent(vendor, consent)) {
-		console.debug(
+		logger.debug(
 			`[VendorLoader] ${vendor.id} requires consent for: ${vendor.requiredCategories.join(', ')}`
 		);
 		return false;
@@ -57,7 +58,7 @@ export async function loadVendor(vendor: VendorConfig, consent: ConsentState): P
 
 	try {
 		loadingVendors.add(vendor.id);
-		console.debug(`[VendorLoader] Loading ${vendor.id}...`);
+		logger.debug(`[VendorLoader] Loading ${vendor.id}...`);
 
 		await vendor.load();
 
@@ -65,11 +66,11 @@ export async function loadVendor(vendor: VendorConfig, consent: ConsentState): P
 		vendor._loaded = true;
 		loadingVendors.delete(vendor.id);
 
-		console.debug(`[VendorLoader] Successfully loaded ${vendor.id}`);
+		logger.debug(`[VendorLoader] Successfully loaded ${vendor.id}`);
 		return true;
 	} catch (error) {
 		loadingVendors.delete(vendor.id);
-		console.error(`[VendorLoader] Failed to load ${vendor.id}:`, error);
+		logger.error(`[VendorLoader] Failed to load ${vendor.id}:`, error);
 		return false;
 	}
 }
@@ -85,9 +86,9 @@ export function handleConsentRevoked(vendor: VendorConfig, consent: ConsentState
 		if (vendor.onConsentRevoked) {
 			try {
 				vendor.onConsentRevoked();
-				console.debug(`[VendorLoader] Called onConsentRevoked for ${vendor.id}`);
+				logger.debug(`[VendorLoader] Called onConsentRevoked for ${vendor.id}`);
 			} catch (error) {
-				console.error(`[VendorLoader] Error in onConsentRevoked for ${vendor.id}:`, error);
+				logger.error(`[VendorLoader] Error in onConsentRevoked for ${vendor.id}:`, error);
 			}
 		}
 	}
@@ -105,7 +106,7 @@ export async function loadVendorsForConsent(
 ): Promise<void> {
 	if (!browser) return;
 
-	console.debug('[VendorLoader] Loading vendors for consent state:', consent);
+	logger.debug('[VendorLoader] Loading vendors for consent state:', consent);
 
 	// Process vendors in parallel
 	const results = await Promise.allSettled(
@@ -122,7 +123,7 @@ export async function loadVendorsForConsent(
 
 	const loaded = results.filter((r) => r.status === 'fulfilled' && r.value === true).length;
 
-	console.debug(`[VendorLoader] Loaded ${loaded}/${vendors.length} vendors`);
+	logger.debug(`[VendorLoader] Loaded ${loaded}/${vendors.length} vendors`);
 }
 
 /**
@@ -169,7 +170,7 @@ export function injectScript(
 
 		// Check if script already exists
 		if (options.id && document.getElementById(options.id)) {
-			console.debug(`[VendorLoader] Script ${options.id} already exists`);
+			logger.debug(`[VendorLoader] Script ${options.id} already exists`);
 			resolve();
 			return;
 		}
@@ -206,7 +207,7 @@ export function injectInlineScript(code: string, options: { id?: string } = {}):
 
 	// Check if script already exists
 	if (options.id && document.getElementById(options.id)) {
-		console.debug(`[VendorLoader] Inline script ${options.id} already exists`);
+		logger.debug(`[VendorLoader] Inline script ${options.id} already exists`);
 		return;
 	}
 

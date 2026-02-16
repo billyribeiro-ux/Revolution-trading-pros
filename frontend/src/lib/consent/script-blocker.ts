@@ -13,6 +13,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentCategory, ConsentState } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Blocked script patterns by category.
@@ -304,7 +305,7 @@ function scanAndBlockExistingScripts(): void {
 			script.setAttribute('data-blocked-category', category);
 			script.removeAttribute('src');
 
-			console.debug(`[ScriptBlocker] Blocked existing script: ${src}`);
+			logger.debug(`[ScriptBlocker] Blocked existing script: ${src}`);
 		}
 	});
 }

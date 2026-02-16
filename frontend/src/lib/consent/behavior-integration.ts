@@ -12,6 +12,7 @@ import { browser } from '$app/environment';
 import type { ConsentState } from './types';
 import { consentStore } from './store.svelte';
 import { get } from 'svelte/store';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Track if the behavior tracker has been initialized.
@@ -40,7 +41,7 @@ export async function initConsentAwareBehaviorTracking(): Promise<void> {
 
 	// Avoid double initialization
 	if (trackerInitialized) {
-		console.debug('[BehaviorIntegration] Already initialized');
+		logger.debug('[BehaviorIntegration] Already initialized');
 		return;
 	}
 
@@ -53,13 +54,13 @@ export async function initConsentAwareBehaviorTracking(): Promise<void> {
 	if (consent.analytics) {
 		await enableTracking();
 	} else {
-		console.debug('[BehaviorIntegration] Analytics consent not granted, tracking disabled');
+		logger.debug('[BehaviorIntegration] Analytics consent not granted, tracking disabled');
 	}
 
 	// Subscribe to consent changes
 	consentUnsubscribe = consentStore.subscribe(handleConsentChange);
 
-	console.debug('[BehaviorIntegration] Initialized with consent:', consent.analytics);
+	logger.debug('[BehaviorIntegration] Initialized with consent:', consent.analytics);
 }
 
 /**
@@ -105,9 +106,9 @@ async function enableTracking(): Promise<void> {
 		(window as any).__behaviorTracker = behaviorTracker;
 
 		trackerEnabled = true;
-		console.debug('[BehaviorIntegration] Tracking enabled');
+		logger.debug('[BehaviorIntegration] Tracking enabled');
 	} catch (e) {
-		console.error('[BehaviorIntegration] Failed to enable tracking:', e);
+		logger.error('[BehaviorIntegration] Failed to enable tracking:', e);
 	}
 }
 
@@ -126,9 +127,9 @@ function disableTracking(): void {
 		(window as any).__behaviorTracker = null;
 		trackerEnabled = false;
 
-		console.debug('[BehaviorIntegration] Tracking disabled');
+		logger.debug('[BehaviorIntegration] Tracking disabled');
 	} catch (e) {
-		console.error('[BehaviorIntegration] Failed to disable tracking:', e);
+		logger.error('[BehaviorIntegration] Failed to disable tracking:', e);
 	}
 }
 
@@ -140,7 +141,7 @@ export function setBehaviorUserId(userId: string | null): void {
 
 	if (userId && typeof behaviorTracker.setUserId === 'function') {
 		behaviorTracker.setUserId(userId);
-		console.debug('[BehaviorIntegration] Set user ID');
+		logger.debug('[BehaviorIntegration] Set user ID');
 	}
 }
 
@@ -149,7 +150,7 @@ export function setBehaviorUserId(userId: string | null): void {
  */
 export function trackBehaviorEvent(eventType: string, metadata?: Record<string, unknown>): void {
 	if (!browser || !trackerEnabled || !behaviorTracker) {
-		console.debug('[BehaviorIntegration] Cannot track event - tracking not enabled');
+		logger.debug('[BehaviorIntegration] Cannot track event - tracking not enabled');
 		return;
 	}
 
@@ -161,7 +162,7 @@ export function trackBehaviorEvent(eventType: string, metadata?: Record<string, 
 			event_metadata: metadata
 		});
 	} catch (e) {
-		console.error('[BehaviorIntegration] Failed to track event:', e);
+		logger.error('[BehaviorIntegration] Failed to track event:', e);
 	}
 }
 
@@ -191,7 +192,7 @@ export function cleanupBehaviorIntegration(): void {
 	disableTracking();
 	trackerInitialized = false;
 
-	console.debug('[BehaviorIntegration] Cleaned up');
+	logger.debug('[BehaviorIntegration] Cleaned up');
 }
 
 /**
@@ -203,9 +204,9 @@ export async function flushBehaviorEvents(): Promise<void> {
 	try {
 		if (typeof behaviorTracker.flush === 'function') {
 			await behaviorTracker.flush();
-			console.debug('[BehaviorIntegration] Flushed pending events');
+			logger.debug('[BehaviorIntegration] Flushed pending events');
 		}
 	} catch (e) {
-		console.error('[BehaviorIntegration] Failed to flush events:', e);
+		logger.error('[BehaviorIntegration] Failed to flush events:', e);
 	}
 }
