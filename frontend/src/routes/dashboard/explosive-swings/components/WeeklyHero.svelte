@@ -5,16 +5,15 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Hero section with video breakdown and trade plan tabs
-	 * @version 5.1.0 - ICT 7 compliance: focus states, reduced-motion, a11y improvements
+	 * @version 6.0.0 - Refactored into smaller components (<300 lines each)
 	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
-	 *
-	 * Layout: 50/50 split on desktop, stacked on mobile
-	 * Play Button: 80px frosted glass with vibrancy effect
-	 * Typography: Montserrat headers, system UI body
-	 * Grid: 8pt spacing system (8, 16, 24, 32, 48, 64px)
-	 * Easing: cubic-bezier(0.16, 1, 0.3, 1) for all animations
 	 */
+
+	import VideoPlayer from './VideoPlayer.svelte';
+	import VideoInfo from './VideoInfo.svelte';
+	import HeroTabs from './HeroTabs.svelte';
+	import TradePlanTable from './TradePlanTable.svelte';
 
 	interface WeeklyContent {
 		title: string;
@@ -68,15 +67,11 @@
 	// Derived values
 	const embedUrl = $derived(videoUrl || weeklyContent.videoUrl || '');
 	const watchFullUrl = $derived(fullVideoUrl || `/dashboard/${roomSlug}/video/weekly`);
-	// Safe embed URL for iframe (computed from embedUrl)
 	const safeEmbedUrl = $derived.by(() => getEmbedUrl(embedUrl));
 
-	// Component state (Svelte 5 $state rune)
+	// Component state
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
-	let expandedTradeNotes = $state(new Set<string>());
-
-	// Video player state
 	let isVideoPlaying = $state(false);
 	let isVideoExpanded = $state(false);
 
@@ -97,7 +92,6 @@
 		isVideoExpanded = !isVideoExpanded;
 	}
 
-	// Keyboard handler - Escape closes video/expanded mode
 	function handleVideoKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
 			if (isVideoExpanded) {
@@ -108,7 +102,6 @@
 		}
 	}
 
-	// Bunny.net embed URL generator with strict validation
 	function getEmbedUrl(url: string): string {
 		if (!url || url.startsWith('/')) return '';
 
@@ -124,16 +117,6 @@
 		} catch {
 			return '';
 		}
-	}
-
-	function toggleTradeNotes(ticker: string) {
-		const newSet = new Set(expandedTradeNotes);
-		if (newSet.has(ticker)) {
-			newSet.delete(ticker);
-		} else {
-			newSet.add(ticker);
-		}
-		expandedTradeNotes = newSet;
 	}
 </script>
 
@@ -175,324 +158,51 @@
 
 	{#if !isCollapsed}
 		<!-- Tab Navigation -->
-		<nav class="hero-tabs-bar" aria-label="Hero content tabs">
-			<button
-				class="hero-tab"
-				class:active={heroTab === 'video'}
-				onclick={() => (heroTab = 'video')}
-				type="button"
-				aria-pressed={heroTab === 'video'}
-			>
-				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
-					<path d="M8 5v14l11-7z" />
-				</svg>
-				Video Breakdown
-			</button>
-			<button
-				class="hero-tab"
-				class:active={heroTab === 'entries'}
-				onclick={() => (heroTab = 'entries')}
-				type="button"
-				aria-pressed={heroTab === 'entries'}
-			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					width="18"
-					height="18"
-					aria-hidden="true"
-				>
-					<rect x="3" y="3" width="18" height="18" rx="2" />
-					<path d="M3 9h18M9 21V9" />
-				</svg>
-				Trade Plan & Entries
-			</button>
-		</nav>
+		<HeroTabs activeTab={heroTab} onTabChange={(tab) => (heroTab = tab)} />
 
 		<!-- Main Content Area -->
 		<div class="hero-content">
 			{#if heroTab === 'video'}
-				<!-- ════════════════════════════════════════════════════════════════
-				     VIDEO TAB - Player with Info Panel
-				     ════════════════════════════════════════════════════════════════ -->
+				<!-- VIDEO TAB - Player with Info Panel -->
 				<div class="video-section" class:video-expanded={isVideoExpanded}>
-					<!-- Blur backdrop when video is playing -->
 					{#if isVideoPlaying}
 						<div class="video-backdrop" class:expanded={isVideoExpanded}></div>
 					{/if}
 
 					<div class="video-layout" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
-						<!-- Video Player Container -->
-						<div
-							class="video-player-container"
-							class:playing={isVideoPlaying}
-							class:expanded={isVideoExpanded}
-						>
-							{#if isVideoPlaying}
-								<!-- Active Video Player with iframe -->
-								<div class="video-frame">
-									{#if safeEmbedUrl}
-										<iframe
-											src={safeEmbedUrl}
-											title={weeklyContent.videoTitle}
-											frameborder="0"
-											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-										></iframe>
-									{:else}
-										<div class="video-error">
-											<p>Video unavailable</p>
-										</div>
-									{/if}
-								</div>
+						<VideoPlayer
+							thumbnail={weeklyContent.thumbnail}
+							videoTitle={weeklyContent.videoTitle}
+							duration={weeklyContent.duration}
+							embedUrl={safeEmbedUrl}
+							isPlaying={isVideoPlaying}
+							isExpanded={isVideoExpanded}
+							onPlay={playVideo}
+							onClose={closeVideo}
+							onToggleExpand={toggleExpand}
+						/>
 
-								<!-- Video Controls Bar -->
-								<div class="video-controls">
-									<button
-										class="control-btn close-btn"
-										onclick={closeVideo}
-										type="button"
-										aria-label="Close video"
-									>
-										<svg
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											width="20"
-											height="20"
-											aria-hidden="true"
-										>
-											<path d="M18 6L6 18M6 6l12 12" />
-										</svg>
-									</button>
-									<span class="video-title-bar">{weeklyContent.videoTitle}</span>
-									<button
-										class="control-btn expand-btn"
-										onclick={toggleExpand}
-										type="button"
-										aria-label={isVideoExpanded ? 'Exit fullscreen' : 'Enter fullscreen'}
-									>
-										{#if isVideoExpanded}
-											<svg
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-												width="20"
-												height="20"
-												aria-hidden="true"
-											>
-												<path
-													d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"
-												/>
-											</svg>
-										{:else}
-											<svg
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-												width="20"
-												height="20"
-												aria-hidden="true"
-											>
-												<path
-													d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"
-												/>
-											</svg>
-										{/if}
-									</button>
-								</div>
-							{:else}
-								<!-- Thumbnail State with Play Button -->
-								<div
-									class="video-thumbnail"
-									style="background-image: url('{weeklyContent.thumbnail}')"
-								>
-									<button
-										class="play-btn"
-										onclick={playVideo}
-										type="button"
-										aria-label="Play video: {weeklyContent.videoTitle}"
-									>
-										<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-											<path d="M8 5v14l11-7z" />
-										</svg>
-									</button>
-									<span class="duration-badge" aria-label="Duration: {weeklyContent.duration}">
-										{weeklyContent.duration}
-									</span>
-								</div>
-							{/if}
-						</div>
-
-						<!-- Video Info Panel (hidden when playing) -->
 						{#if !isVideoPlaying}
-							<div class="video-info">
-								<h2>{weeklyContent.videoTitle}</h2>
-								<p class="published-date">Published {weeklyContent.publishedDate}</p>
-								<div class="video-actions">
-									{#if isAdmin && onUploadVideo}
-										<button class="admin-upload-btn" onclick={onUploadVideo} type="button">
-											<svg
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-												width="18"
-												height="18"
-												aria-hidden="true"
-											>
-												<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-											</svg>
-											Upload New Video
-										</button>
-									{/if}
-									<a href={watchFullUrl} class="watch-btn">
-										Watch Full Video
-										<svg
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											width="18"
-											height="18"
-											aria-hidden="true"
-										>
-											<path d="M5 12h14M12 5l7 7-7 7" />
-										</svg>
-									</a>
-								</div>
-							</div>
+							<VideoInfo
+								videoTitle={weeklyContent.videoTitle}
+								publishedDate={`Published ${weeklyContent.publishedDate}`}
+								watchFullUrl={watchFullUrl}
+								isAdmin={isAdmin}
+								onUploadVideo={onUploadVideo}
+							/>
 						{/if}
 					</div>
 				</div>
 			{:else}
 				<!-- ENTRIES TAB - Trade Plan Sheet -->
 				<div class="entries-container">
-					<div class="entries-header">
-						<div class="entries-title-row">
-							<div>
-								<h2>This Week's Trade Plan</h2>
-								<p>Complete breakdown with entries, targets, stops, and options plays</p>
-							</div>
-							{#if isAdmin && onAddEntry}
-								<button class="admin-add-btn" onclick={onAddEntry}>
-									<svg
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										width="18"
-										height="18"
-									>
-										<path d="M12 5v14M5 12h14" />
-									</svg>
-									Add Entry
-								</button>
-							{/if}
-						</div>
-					</div>
-					<div class="trade-sheet-wrapper">
-						<table class="trade-sheet">
-							<thead>
-								<tr>
-									<th>Ticker</th>
-									<th>Bias</th>
-									<th>Entry</th>
-									<th>Target 1</th>
-									<th>Target 2</th>
-									<th>Target 3</th>
-									<th>Runner</th>
-									<th>Stop</th>
-									<th>Options</th>
-									<th>Exp</th>
-									<th class="notes-th">Notes</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each tradePlan as trade (trade.ticker)}
-									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
-										<td class="ticker-cell">
-											<strong>{trade.ticker}</strong>
-											{#if isAdmin && onEditEntry}
-												<button
-													class="edit-entry-btn"
-													onclick={() => onEditEntry(trade)}
-													aria-label="Edit {trade.ticker}"
-												>
-													<svg
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														stroke-width="2"
-														width="14"
-														height="14"
-													>
-														<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-														<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-													</svg>
-												</button>
-											{/if}
-										</td>
-										<td>
-											<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
-										</td>
-										<td class="entry-cell">{trade.entry}</td>
-										<td class="target-cell">{trade.target1}</td>
-										<td class="target-cell">{trade.target2}</td>
-										<td class="target-cell">{trade.target3}</td>
-										<td class="runner-cell">{trade.runner}</td>
-										<td class="stop-cell">{trade.stop}</td>
-										<td class="options-cell">{trade.optionsStrike}</td>
-										<td class="exp-cell">{trade.optionsExp}</td>
-										<td class="notes-toggle-cell">
-											<button
-												class="table-notes-btn"
-												class:expanded={expandedTradeNotes.has(trade.ticker)}
-												onclick={() => toggleTradeNotes(trade.ticker)}
-												aria-label="Toggle notes for {trade.ticker}"
-											>
-												<svg
-													class="chevron-icon"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke="currentColor"
-													stroke-width="2.5"
-													width="18"
-													height="18"
-												>
-													<path d="M19 9l-7 7-7-7" />
-												</svg>
-											</button>
-										</td>
-									</tr>
-									{#if expandedTradeNotes.has(trade.ticker)}
-										<tr class="notes-row expanded">
-											<td colspan="11">
-												<div class="trade-notes-panel">
-													<div class="trade-notes-badge">{trade.ticker}</div>
-													<p>{trade.notes}</p>
-												</div>
-											</td>
-										</tr>
-									{/if}
-								{/each}
-							</tbody>
-						</table>
-					</div>
-					<div class="sheet-footer">
-						<a href={sheetUrl} target="_blank" class="google-sheet-link">
-							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-								<path
-									d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
-								/>
-							</svg>
-							Open in Google Sheets
-						</a>
-					</div>
+					<TradePlanTable
+						tradePlan={tradePlan}
+						sheetUrl={sheetUrl}
+						isAdmin={isAdmin}
+						onAddEntry={onAddEntry}
+						onEditEntry={onEditEntry}
+					/>
 				</div>
 			{/if}
 		</div>
@@ -501,8 +211,8 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   HERO SECTION - Collapsible Accordion
-	   Apple ICT 7 Responsive Design - All Breakpoints
+	   HERO SECTION - Main Orchestrator Component
+	   Apple ICT 7 Responsive Design - Refactored for <300 lines
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
 		background: linear-gradient(135deg, var(--color-brand-secondary) 0%, #e8850d 50%, #d4790a 100%);
@@ -570,44 +280,6 @@
 		transform: rotate(180deg);
 	}
 
-	.hero-tabs-bar {
-		display: flex;
-		gap: 12px;
-		justify-content: center;
-		padding: 0 24px 24px;
-	}
-
-	.hero-tab {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 12px 24px;
-		background: rgba(255, 255, 255, 0.15);
-		border: 2px solid rgba(255, 255, 255, 0.25);
-		border-radius: 10px;
-		color: var(--color-bg-card);
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.hero-tab:hover {
-		background: rgba(255, 255, 255, 0.25);
-		border-color: rgba(255, 255, 255, 0.35);
-	}
-
-	.hero-tab.active {
-		background: var(--color-bg-card);
-		border-color: var(--color-bg-card);
-		color: var(--color-brand-secondary);
-	}
-
-	.hero-tab:focus-visible {
-		outline: 3px solid rgba(255, 255, 255, 0.8);
-		outline-offset: 2px;
-	}
-
 	.hero-content {
 		position: relative;
 		padding: var(--space-2);
@@ -615,9 +287,7 @@
 		overflow: hidden;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO SECTION - Contained within max-width
-	   ═══════════════════════════════════════════════════════════════════════════ */
+	/* Video Section */
 	.video-section {
 		position: relative;
 		max-width: 1200px;
@@ -634,7 +304,6 @@
 		justify-content: center;
 	}
 
-	/* Blur backdrop when video is playing */
 	.video-backdrop {
 		position: absolute;
 		inset: 0;
@@ -660,9 +329,6 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO LAYOUT - Mobile stacked, desktop side-by-side
-	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-layout {
 		display: flex;
 		gap: var(--space-3);
@@ -684,661 +350,13 @@
 		padding: 24px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO PLAYER CONTAINER - Full width on mobile, 50% on desktop
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.video-player-container {
-		position: relative;
-		width: 100%;
-		max-width: none;
-		aspect-ratio: 16 / 9;
-		border-radius: 12px;
-		overflow: hidden;
-		background: var(--color-brand-primary);
-		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.video-player-container.playing {
-		flex: none;
-		width: 85%;
-		max-width: 1000px;
-		transform: translateY(-8px);
-		box-shadow:
-			0 32px 64px rgba(0, 0, 0, 0.5),
-			0 16px 32px rgba(0, 0, 0, 0.3);
-		border-radius: 16px;
-	}
-
-	.video-player-container.expanded {
-		width: 100%;
-		max-width: 100%;
-		height: 100%;
-		max-height: 100%;
-		aspect-ratio: unset;
-		transform: none;
-		border-radius: 12px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO THUMBNAIL - Navy fallback with gradient overlay
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.video-thumbnail {
-		position: absolute;
-		inset: 0;
-		background-color: var(--color-brand-primary);
-		background-size: cover;
-		background-position: center;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.video-thumbnail::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, rgba(20, 62, 89, 0.4) 0%, rgba(0, 0, 0, 0.5) 100%);
-		transition: background 0.3s ease;
-	}
-
-	.video-player-container:hover .video-thumbnail::before {
-		background: linear-gradient(135deg, rgba(20, 62, 89, 0.3) 0%, rgba(0, 0, 0, 0.4) 100%);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   PLAY BUTTON - Frosted Glass with responsive sizing
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.play-btn {
-		position: relative;
-		z-index: 2;
-		width: 64px;
-		height: 64px;
-		border-radius: 50%;
-		cursor: pointer;
-
-		/* Frosted Glass Effect */
-		background: rgba(255, 255, 255, 0.25);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-
-		/* Border for definition */
-		border: 2px solid rgba(255, 255, 255, 0.3);
-
-		/* Shadow for depth */
-		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.3),
-			0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-
-		/* Layout */
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		/* Transition */
-		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.play-btn:hover {
-		transform: scale(1.1);
-		background: rgba(255, 255, 255, 0.4);
-		border-color: rgba(255, 255, 255, 0.5);
-		box-shadow:
-			0 12px 48px rgba(0, 0, 0, 0.4),
-			0 0 80px rgba(255, 255, 255, 0.2),
-			0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-	}
-
-	.play-btn:active {
-		transform: scale(0.95);
-		background: rgba(255, 255, 255, 0.5);
-	}
-
-	.play-btn:focus-visible {
-		outline: 3px solid rgba(255, 255, 255, 0.8);
-		outline-offset: 4px;
-	}
-
-	.play-btn svg {
-		width: 28px;
-		height: 28px;
-		color: var(--color-bg-card);
-		margin-left: 4px; /* Optical center adjustment */
-		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-		transition: all 0.3s ease;
-	}
-
-	.play-btn:hover svg {
-		transform: scale(1.05);
-		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DURATION BADGE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.duration-badge {
-		position: absolute;
-		bottom: 12px;
-		right: 12px;
-		padding: 6px 12px;
-		background: rgba(0, 0, 0, 0.8);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
-		border-radius: 6px;
-		font-size: 13px;
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
-		color: var(--color-bg-card);
-		z-index: 5;
-	}
-
-	/* Video Frame (iframe container) */
-	.video-frame {
-		position: absolute;
-		inset: 0;
-	}
-
-	.video-frame iframe {
-		width: 100%;
-		height: 100%;
-		border: none;
-	}
-
-	.video-error {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #1a1a1a;
-		color: #888;
-		font-size: 14px;
-	}
-
-	.video-error p {
-		margin: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO CONTROLS - Top Bar
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.video-controls {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 16px 20px;
-		background: linear-gradient(
-			to bottom,
-			rgba(0, 0, 0, 0.8) 0%,
-			rgba(0, 0, 0, 0.4) 60%,
-			transparent 100%
-		);
-		z-index: 20;
-		opacity: 0;
-		transition: opacity 0.25s ease;
-	}
-
-	.video-player-container:hover .video-controls {
-		opacity: 1;
-	}
-
-	/* Always show controls in expanded mode */
-	.video-player-container.expanded .video-controls {
-		opacity: 1;
-		padding: 20px 24px;
-	}
-
-	.control-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		background: rgba(255, 255, 255, 0.2);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 10px;
-		color: var(--color-bg-card);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.control-btn:hover {
-		background: rgba(255, 255, 255, 0.35);
-		transform: scale(1.05);
-		border-color: rgba(255, 255, 255, 0.2);
-	}
-
-	.control-btn:active {
-		transform: scale(0.95);
-	}
-
-	.control-btn:focus-visible {
-		outline: 2px solid var(--color-bg-card);
-		outline-offset: 2px;
-	}
-
-	.video-title-bar {
-		flex: 1;
-		text-align: center;
-		color: var(--color-bg-card);
-		font-size: 14px;
-		font-weight: 600;
-		padding: 0 16px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO INFO PANEL - Typography & Buttons
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.video-info {
-		flex: 1;
-		min-width: 280px;
-		color: var(--color-bg-card);
-		text-align: center;
-	}
-
-	.video-info h2 {
-		font-family:
-			'Montserrat',
-			-apple-system,
-			BlinkMacSystemFont,
-			sans-serif;
-		font-size: 28px;
-		font-weight: 700;
-		line-height: 1.2;
-		color: var(--color-bg-card);
-		margin: 0 0 8px 0;
-		/* Modern text wrapping - balanced lines */
-		text-wrap: balance; /* stylelint-disable-line property-no-unknown */
-	}
-
-	.video-info .published-date {
-		font-size: 14px;
-		font-weight: 500;
-		color: rgba(255, 255, 255, 0.8);
-		margin: 0 0 24px 0;
-	}
-
-	.video-actions {
-		display: flex;
-		gap: 12px;
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-
-	/* Primary Button - Watch Full Video */
-	.watch-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		padding: 14px 28px;
-		background: var(--color-brand-primary);
-		color: var(--color-bg-card);
-		border: 2px solid var(--color-brand-primary);
-		border-radius: 10px;
-		font-size: 15px;
-		font-weight: 700;
-		text-decoration: none;
-		transition: all 0.2s ease;
-	}
-
-	.watch-btn:hover {
-		background: var(--color-brand-primary-hover);
-		border-color: var(--color-brand-primary-hover);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(20, 62, 89, 0.4);
-	}
-
-	.watch-btn:focus-visible {
-		outline: 3px solid rgba(255, 255, 255, 0.8);
-		outline-offset: 3px;
-	}
-
-	/* Secondary Button - Upload (Admin Only) */
-	.admin-upload-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 14px 24px;
-		background: transparent;
-		color: var(--color-bg-card);
-		border: 2px solid rgba(255, 255, 255, 0.4);
-		border-radius: 10px;
-		font-size: 15px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.admin-upload-btn:hover {
-		background: rgba(255, 255, 255, 0.1);
-		border-color: rgba(255, 255, 255, 0.6);
-	}
-
-	.admin-upload-btn:focus-visible {
-		outline: 3px solid rgba(255, 255, 255, 0.8);
-		outline-offset: 3px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   ENTRIES TAB - Trade Sheet
-	   ═══════════════════════════════════════════════════════════════════════════ */
+	/* Entries Container */
 	.entries-container {
-		max-width: 1200px;
+		max-width: 1400px;
 		margin: 0 auto;
 	}
 
-	.entries-header {
-		text-align: center;
-		color: var(--color-bg-card);
-		margin-bottom: 30px;
-	}
-
-	.entries-title-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 16px;
-	}
-
-	.entries-header h2 {
-		font-size: 28px;
-		font-weight: 700;
-		margin: 0 0 8px 0;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.entries-header p {
-		font-size: 15px;
-		opacity: 0.9;
-		margin: 0;
-	}
-
-	.admin-add-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 16px;
-		background: var(--color-brand-primary);
-		border: none;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 600;
-		color: white;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		white-space: nowrap;
-	}
-
-	.admin-add-btn:hover {
-		background: var(--color-brand-primary-hover);
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
-	}
-
-	.trade-sheet-wrapper {
-		background: var(--color-bg-card);
-		border-radius: 16px;
-		overflow-x: auto;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: thin;
-	}
-
-	.trade-sheet {
-		width: 100%;
-		min-width: 900px;
-		border-collapse: collapse;
-		font-size: var(--text-sm);
-	}
-
-	.trade-sheet thead {
-		background: var(--color-brand-primary);
-		color: var(--color-bg-card);
-	}
-
-	.trade-sheet th {
-		padding: 16px 12px;
-		text-align: center;
-		font-weight: 700;
-		font-size: 12px;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.trade-sheet tbody tr:nth-child(4n + 1),
-	.trade-sheet tbody tr:nth-child(4n + 2) {
-		background: var(--color-bg-subtle);
-	}
-
-	.trade-sheet td {
-		padding: 14px 12px;
-		text-align: center;
-		border-bottom: 1px solid var(--color-border-default);
-	}
-
-	.ticker-cell {
-		position: relative;
-	}
-
-	.ticker-cell strong {
-		font-size: 16px;
-		color: var(--color-brand-primary);
-	}
-
-	.edit-entry-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		margin-left: 8px;
-		padding: 0;
-		background: transparent;
-		border: 1px solid var(--color-border-default);
-		border-radius: 6px;
-		color: var(--color-text-muted);
-		cursor: pointer;
-		transition: all 0.15s ease;
-		vertical-align: middle;
-	}
-
-	.edit-entry-btn:hover {
-		background: var(--color-brand-primary);
-		border-color: var(--color-brand-primary);
-		color: var(--color-bg-card);
-		transform: scale(1.1);
-	}
-
-	.bias {
-		display: inline-block;
-		padding: 4px 10px;
-		border-radius: 4px;
-		font-size: 11px;
-		font-weight: 700;
-	}
-
-	.bias--bullish {
-		background: var(--color-profit-bg);
-		color: var(--color-profit-dark);
-	}
-
-	.bias--bearish {
-		background: var(--color-loss-bg);
-		color: var(--color-loss-dark);
-	}
-
-	.bias--neutral {
-		background: var(--color-watching-bg);
-		color: var(--color-watching-dark);
-	}
-
-	.entry-cell {
-		font-weight: 700;
-		color: var(--color-brand-primary);
-	}
-
-	.target-cell {
-		color: var(--color-profit);
-		font-weight: 600;
-	}
-
-	.runner-cell {
-		color: #0ea5e9;
-		font-weight: 700;
-	}
-
-	.stop-cell {
-		color: var(--color-loss);
-		font-weight: 600;
-	}
-
-	.options-cell {
-		font-weight: 600;
-		color: var(--color-purple-dark);
-	}
-
-	.exp-cell {
-		font-size: 12px;
-		color: var(--color-text-tertiary);
-	}
-
-	.notes-th {
-		width: 60px;
-		text-align: center;
-	}
-
-	.notes-toggle-cell {
-		text-align: center;
-		vertical-align: middle;
-	}
-
-	.table-notes-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		background: var(--color-bg-subtle);
-		border: 1.5px solid var(--color-border-default);
-		border-radius: 8px;
-		cursor: pointer;
-		transition: all 0.25s ease;
-		color: var(--color-text-muted);
-	}
-
-	.table-notes-btn:hover {
-		background: var(--color-border-default);
-		border-color: var(--color-brand-primary);
-		color: var(--color-brand-primary);
-	}
-
-	.table-notes-btn.expanded {
-		background: var(--color-brand-primary);
-		border-color: var(--color-brand-primary);
-		color: var(--color-bg-card);
-	}
-
-	.table-notes-btn .chevron-icon {
-		transition: transform 0.3s ease;
-	}
-
-	.table-notes-btn.expanded .chevron-icon {
-		transform: rotate(180deg);
-	}
-
-	.table-notes-btn:focus-visible {
-		outline: 2px solid var(--color-brand-primary);
-		outline-offset: 2px;
-	}
-
-	tr.has-notes-open td {
-		background: #f0f9ff !important;
-	}
-
-	.notes-row.expanded td {
-		text-align: left;
-		padding: 0;
-		background: transparent !important;
-		border-bottom: 2px solid var(--color-brand-primary);
-	}
-
-	.trade-notes-panel {
-		display: flex;
-		align-items: flex-start;
-		gap: 16px;
-		padding: 18px 24px;
-		background: linear-gradient(135deg, #f0f9ff 0%, var(--color-info-bg) 100%);
-		animation: notesSlide 0.3s ease;
-	}
-
-	@keyframes notesSlide {
-		from {
-			opacity: 0;
-			transform: translateY(-8px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.trade-notes-badge {
-		flex-shrink: 0;
-		background: var(--color-brand-primary);
-		color: var(--color-bg-card);
-		font-size: 12px;
-		font-weight: 800;
-		padding: 6px 14px;
-		border-radius: 6px;
-		letter-spacing: 0.05em;
-	}
-
-	.trade-notes-panel p {
-		flex: 1;
-		font-size: 14px;
-		color: #0c4a6e;
-		line-height: 1.7;
-		margin: 0;
-		font-weight: 500;
-	}
-
-	.sheet-footer {
-		padding: 20px;
-		text-align: center;
-	}
-
-	.google-sheet-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		background: var(--color-brand-primary);
-		color: var(--color-bg-card);
-		padding: 14px 28px;
-		border-radius: 10px;
-		font-size: 14px;
-		font-weight: 700;
-		text-decoration: none;
-		transition: all 0.3s;
-	}
-
-	.google-sheet-link:hover {
-		background: var(--color-brand-primary-hover);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE BREAKPOINTS - Mobile-first using design tokens
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Tablet (768px+) - Side by side layout */
+	/* Responsive Breakpoints */
 	@media (min-width: 768px) {
 		.hero-content {
 			padding: var(--space-4);
@@ -1349,24 +367,8 @@
 			flex-direction: row;
 			gap: var(--space-4);
 		}
-
-		.video-player-container {
-			flex: 0 0 50%;
-			max-width: 640px;
-		}
-
-		.play-btn {
-			width: 80px;
-			height: 80px;
-		}
-
-		.play-btn svg {
-			width: 36px;
-			height: 36px;
-		}
 	}
 
-	/* Desktop (1024px+) */
 	@media (min-width: 1024px) {
 		.hero-content {
 			padding: var(--space-5);
@@ -1376,14 +378,8 @@
 		.video-layout {
 			gap: var(--space-6);
 		}
-
-		.trade-sheet {
-			font-size: var(--text-base);
-			min-width: 100%;
-		}
 	}
 
-	/* Large Desktop (1440px+) */
 	@media (min-width: 1440px) {
 		.hero-content {
 			padding: var(--space-5);
@@ -1393,13 +389,8 @@
 		.entries-container {
 			max-width: none;
 		}
-
-		.video-info h2 {
-			font-size: 32px;
-		}
 	}
 
-	/* Full HD (1920px+) - Netflix-grade scaling */
 	@media (min-width: 1920px) {
 		.hero-content {
 			padding: var(--space-6) var(--space-8);
@@ -1409,46 +400,8 @@
 		.hero-header-compact h1 {
 			font-size: 20px;
 		}
-
-		.hero-tab {
-			padding: 14px 28px;
-			font-size: 15px;
-		}
-
-		.video-info h2 {
-			font-size: 36px;
-		}
-
-		.video-info .published-date {
-			font-size: 16px;
-		}
-
-		.watch-btn {
-			padding: 16px 32px;
-			font-size: 16px;
-		}
-
-		.play-btn {
-			width: 100px;
-			height: 100px;
-		}
-
-		.play-btn svg {
-			width: 44px;
-			height: 44px;
-		}
-
-		.trade-sheet th {
-			padding: 18px 16px;
-			font-size: 13px;
-		}
-
-		.trade-sheet td {
-			padding: 16px;
-		}
 	}
 
-	/* Ultra-wide (2560px+) */
 	@media (min-width: 2560px) {
 		.hero-content {
 			padding: var(--space-8) var(--space-10);
@@ -1458,46 +411,17 @@
 		.hero-header-compact h1 {
 			font-size: 22px;
 		}
-
-		.video-info h2 {
-			font-size: 42px;
-		}
-
-		.play-btn {
-			width: 120px;
-			height: 120px;
-		}
-
-		.play-btn svg {
-			width: 52px;
-			height: 52px;
-		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   REDUCED MOTION - Respect user preferences
-	   ═══════════════════════════════════════════════════════════════════════════ */
+	/* Reduced Motion */
 	@media (prefers-reduced-motion: reduce) {
 		.hero,
-		.video-player-container,
-		.play-btn,
-		.control-btn,
-		.hero-tab,
-		.watch-btn,
-		.admin-upload-btn,
-		.table-notes-btn,
 		.collapse-chevron {
 			transition: none;
 		}
 
-		.video-backdrop,
-		.modal-container,
-		.trade-notes-panel {
+		.video-backdrop {
 			animation: none;
-		}
-
-		.play-btn:hover {
-			transform: none;
 		}
 	}
 </style>

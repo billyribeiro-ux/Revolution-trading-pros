@@ -9,7 +9,8 @@
  * @level L8 Principal Engineer
  */
 
-import { browser } from '$app/environment';\nimport { logger } from '$lib/utils/logger';
+import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import { websocketService, type NotificationPayload } from '$lib/services/websocket';
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error' | 'system';

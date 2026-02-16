@@ -12,7 +12,8 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';\nimport { logger } from '$lib/utils/logger';
+import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 import type { ConsentState, ConsentCategory, PrivacySignals } from './types';
 import {
 	DEFAULT_CONSENT_STATE,
