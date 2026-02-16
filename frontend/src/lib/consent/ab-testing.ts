@@ -13,6 +13,7 @@
 
 import { browser } from '$app/environment';
 import { writable, get } from 'svelte/store';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Banner variant types
@@ -200,7 +201,7 @@ export function initializeABTest(
 	localStorage.setItem(VARIANT_STORAGE_KEY, variant.id);
 	currentVariant.set(variant);
 
-	console.debug('[ABTest] Assigned variant:', variant.id);
+	logger.debug('[ABTest] Assigned variant:', variant.id);
 
 	return variant;
 }
@@ -216,7 +217,7 @@ export function recordImpression(): void {
 	// Load existing results
 	loadResults();
 
-	console.debug('[ABTest] Banner impression recorded');
+	logger.debug('[ABTest] Banner impression recorded');
 }
 
 /**
@@ -241,7 +242,7 @@ export function recordDecision(action: ABTestResult['action']): void {
 	// Save to localStorage
 	saveResults();
 
-	console.debug('[ABTest] Decision recorded:', result);
+	logger.debug('[ABTest] Decision recorded:', result);
 }
 
 /**
@@ -256,7 +257,7 @@ function loadResults(): void {
 			testResults.set(JSON.parse(stored));
 		}
 	} catch (e) {
-		console.debug('[ABTest] Failed to load results:', e);
+		logger.debug('[ABTest] Failed to load results:', e);
 	}
 }
 

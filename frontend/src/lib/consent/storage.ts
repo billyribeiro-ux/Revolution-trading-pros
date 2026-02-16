@@ -91,7 +91,7 @@ function setCookie(name: string, value: string, options: ConsentStorageOptions):
 		document.cookie = cookieString;
 		return true;
 	} catch (e) {
-		console.debug('[Consent] Failed to set cookie:', e);
+		logger.debug('[Consent] Failed to set cookie:', e);
 		return false;
 	}
 }
@@ -130,7 +130,7 @@ function validateAndMigrate(data: unknown): ConsentState | null {
 	// Migrate from older versions if needed
 	const version = state.version ?? 0;
 	if (version < CONSENT_SCHEMA_VERSION) {
-		console.debug(
+		logger.debug(
 			`[Consent] Migrating consent state from v${version} to v${CONSENT_SCHEMA_VERSION}`
 		);
 		// Future migrations would go here
@@ -164,11 +164,11 @@ export function loadConsent(
 			const parsed = JSON.parse(cookieValue);
 			const validated = validateAndMigrate(parsed);
 			if (validated) {
-				console.debug('[Consent] Loaded consent from cookie');
+				logger.debug('[Consent] Loaded consent from cookie');
 				return validated;
 			}
 		} catch (e) {
-			console.debug('[Consent] Failed to parse cookie:', e);
+			logger.debug('[Consent] Failed to parse cookie:', e);
 		}
 	}
 
@@ -180,18 +180,18 @@ export function loadConsent(
 				const parsed = JSON.parse(stored);
 				const validated = validateAndMigrate(parsed);
 				if (validated) {
-					console.debug('[Consent] Loaded consent from localStorage');
+					logger.debug('[Consent] Loaded consent from localStorage');
 					// Sync back to cookie if available
 					saveConsent(validated, options);
 					return validated;
 				}
 			}
 		} catch (e) {
-			console.debug('[Consent] Failed to load from localStorage:', e);
+			logger.debug('[Consent] Failed to load from localStorage:', e);
 		}
 	}
 
-	console.debug('[Consent] No stored consent found, using defaults');
+	logger.debug('[Consent] No stored consent found, using defaults');
 	return { ...DEFAULT_CONSENT_STATE };
 }
 

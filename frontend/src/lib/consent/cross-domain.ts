@@ -15,6 +15,7 @@ import { browser } from '$app/environment';
 import type { ConsentState } from './types';
 import { consentStore } from './store.svelte';
 import { loadConsent } from './storage';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Cross-domain configuration
@@ -72,7 +73,7 @@ interface CrossDomainMessage {
  */
 export function configureCrossDomain(newConfig: Partial<CrossDomainConfig>): void {
 	config = { ...config, ...newConfig };
-	console.debug('[CrossDomain] Configured:', config);
+	logger.debug('[CrossDomain] Configured:', config);
 }
 
 /**
@@ -109,7 +110,7 @@ export function initializeCrossDomain(): () => void {
 		}
 	});
 
-	console.debug('[CrossDomain] Initialized');
+	logger.debug('[CrossDomain] Initialized');
 
 	// Return cleanup function
 	return () => {
@@ -153,7 +154,7 @@ function setDomainCookie(consent: ConsentState): void {
 
 	document.cookie = `rtp_consent_shared=${value}; ${expires} domain=${config.cookieDomain}; path=/; SameSite=Lax; Secure`;
 
-	console.debug('[CrossDomain] Set domain cookie');
+	logger.debug('[CrossDomain] Set domain cookie');
 }
 
 /**
@@ -169,7 +170,7 @@ function getDomainCookie(): Partial<ConsentState> | null {
 			try {
 				return JSON.parse(decodeURIComponent(value));
 			} catch (_e) {
-				console.debug('[CrossDomain] Failed to parse domain cookie');
+				logger.debug('[CrossDomain] Failed to parse domain cookie');
 			}
 		}
 	}
@@ -235,7 +236,7 @@ function handleConsentRequest(source: Window, origin: string): void {
 	};
 
 	source.postMessage(response, origin);
-	console.debug('[CrossDomain] Sent consent response to:', origin);
+	logger.debug('[CrossDomain] Sent consent response to:', origin);
 }
 
 /**
@@ -248,7 +249,7 @@ function handleConsentSync(consent?: Partial<ConsentState>): void {
 
 	// Only sync if we don't have consent yet
 	if (!currentConsent.hasInteracted && consent.hasInteracted) {
-		console.debug('[CrossDomain] Syncing consent from another domain');
+		logger.debug('[CrossDomain] Syncing consent from another domain');
 
 		consentStore.updateCategories(
 			{
@@ -324,7 +325,7 @@ export function requestConsentFromParent(): void {
 	};
 
 	window.parent.postMessage(message, '*');
-	console.debug('[CrossDomain] Requested consent from parent');
+	logger.debug('[CrossDomain] Requested consent from parent');
 }
 
 /**
@@ -340,7 +341,7 @@ function checkUrlParameters(): void {
 		try {
 			const decoded = decodeConsentParam(consentParam);
 			if (decoded) {
-				console.debug('[CrossDomain] Found consent in URL params');
+				logger.debug('[CrossDomain] Found consent in URL params');
 				handleConsentSync(decoded);
 
 				// Clean up URL
@@ -348,7 +349,7 @@ function checkUrlParameters(): void {
 				window.history.replaceState({}, '', url.toString());
 			}
 		} catch (_e) {
-			console.debug('[CrossDomain] Failed to decode URL consent param');
+			logger.debug('[CrossDomain] Failed to decode URL consent param');
 		}
 	}
 }
@@ -407,7 +408,7 @@ export function syncFromDomainCookie(): boolean {
 
 	// If we don't have consent but cookie does, sync it
 	if (!currentConsent.hasInteracted && cookieConsent.consentId) {
-		console.debug('[CrossDomain] Syncing from domain cookie');
+		logger.debug('[CrossDomain] Syncing from domain cookie');
 
 		consentStore.updateCategories(
 			{

@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Shared Authentication Utilities
@@ -54,7 +55,7 @@ export async function checkAdminStatus(): Promise<boolean> {
 
 		return false;
 	} catch (error) {
-		console.error('Auth check failed:', error);
+		logger.error('Auth check failed:', error);
 		return false;
 	}
 }

@@ -1,5 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Payment Methods Page Server Load
@@ -35,7 +36,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 			paymentMethods: data.paymentMethods || []
 		};
 	} catch (err) {
-		console.error('Error loading payment methods:', err);
+		logger.error('Error loading payment methods:', err);
 		return {
 			paymentMethods: []
 		};
@@ -82,7 +83,7 @@ export const actions = {
 				message: 'Payment method deleted successfully'
 			};
 		} catch (err) {
-			console.error('Error deleting payment method:', err);
+			logger.error('Error deleting payment method:', err);
 			return fail(500, { error: 'An error occurred while deleting the payment method' });
 		}
 	}

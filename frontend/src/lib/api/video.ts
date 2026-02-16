@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './client.svelte';
+import { logger } from '$lib/utils/logger';
 
 export interface Video {
 	id: number;
@@ -305,7 +306,7 @@ export class VideoTracker {
 				await trackVideoEvent(this.videoId, event);
 			}
 		} catch (error) {
-			console.error('Failed to flush video analytics:', error);
+			logger.error('Failed to flush video analytics:', error);
 			// Re-queue failed events
 			this.eventQueue.unshift(...events);
 		}

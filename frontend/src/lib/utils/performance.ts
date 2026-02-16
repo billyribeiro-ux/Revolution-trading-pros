@@ -121,7 +121,7 @@ export class PerformanceMonitor {
 	markEnd(name: string, metadata?: Record<string, unknown>): number | null {
 		const startTime = this.marks.get(name);
 		if (startTime === undefined) {
-			console.warn(`[PerformanceMonitor] No start mark found for: ${name}`);
+			logger.warn(`[PerformanceMonitor] No start mark found for: ${name}`);
 			return null;
 		}
 
@@ -1290,7 +1290,7 @@ export function initPerformanceMonitoring(): void {
 	perfMonitor.startFPSMonitoring();
 
 	// Log initialization
-	console.debug('[Performance] Monitoring initialized');
+	logger.debug('[Performance] Monitoring initialized');
 }
 
 // ============================================================================
@@ -1299,6 +1299,7 @@ export function initPerformanceMonitoring(): void {
 
 // Import from centralized config - single source of truth
 import { API_ENDPOINTS } from '$lib/api/config';
+import { logger } from '$lib/utils/logger';
 
 export interface LegacyPerformanceMetric {
 	name: string;
@@ -1313,7 +1314,7 @@ export interface LegacyPerformanceMetric {
  */
 export function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
 	if (import.meta.env.DEV) {
-		console.log(`[Performance] ${metric.name}:`, {
+		logger.info(`[Performance] ${metric.name}:`, {
 			value: Math.round(metric.value),
 			rating: metric.rating
 		});
@@ -1356,10 +1357,10 @@ export function measureCustomMetric(name: string, startMark: string, endMark: st
 		const measure = performance.getEntriesByName(name)[0];
 
 		if (measure) {
-			console.log(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
+			logger.info(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
 		}
 	} catch (error) {
-		console.error(`Custom metric measurement failed for ${name}:`, error);
+		logger.error(`Custom metric measurement failed for ${name}:`, error);
 	}
 }
 

@@ -9,6 +9,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -31,7 +32,7 @@ async function fetchFromBackend(
 		const data = await response.json();
 		return { data, status: response.status };
 	} catch (err) {
-		console.error(`Backend error for ${endpoint}:`, err);
+		logger.error(`Backend error for ${endpoint}:`, err);
 		return { data: null, status: 500 };
 	}
 }
@@ -78,7 +79,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(data);
 	} catch (err) {
-		console.error('POST /api/admin/posts error:', err);
+		logger.error('POST /api/admin/posts error:', err);
 		error(400, 'Invalid request body');
 	}
 };
@@ -107,7 +108,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 
 		return json(data);
 	} catch (err) {
-		console.error('PUT /api/admin/posts error:', err);
+		logger.error('PUT /api/admin/posts error:', err);
 		error(400, 'Invalid request body');
 	}
 };

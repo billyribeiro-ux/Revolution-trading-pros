@@ -5,6 +5,7 @@
 
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
@@ -50,7 +51,7 @@ export function initSentry(): void {
  */
 export function captureException(error: Error, context?: Record<string, any>): void {
 	if (dev) {
-		console.error('Error:', error, context);
+		logger.error('Error:', error, context);
 		return;
 	}
 
@@ -64,7 +65,7 @@ export function captureException(error: Error, context?: Record<string, any>): v
  */
 export function captureMessage(message: string, level: Sentry.SeverityLevel = 'info'): void {
 	if (dev) {
-		console.log(`[${level}]`, message);
+		logger.info(`[${level}]`, message);
 		return;
 	}
 

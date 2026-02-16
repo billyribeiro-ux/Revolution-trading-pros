@@ -12,6 +12,7 @@
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -41,7 +42,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 		});
 
 		if (!response.ok) {
-			console.warn(`[API Proxy] Backend returned ${response.status} for course player: ${slug}`);
+			logger.warn(`[API Proxy] Backend returned ${response.status} for course player: ${slug}`);
 
 			// Return structured empty response
 			return json(
@@ -57,7 +58,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 		const data = await response.json();
 		return json(data);
 	} catch (error) {
-		console.error('[API Proxy] Error fetching course player:', error);
+		logger.error('[API Proxy] Error fetching course player:', error);
 
 		return json(
 			{

@@ -12,6 +12,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * In-memory store for demo. Replace with database in production.
@@ -47,7 +48,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			config
 		});
 	} catch (err) {
-		console.error('[TemplatesAPI] GET error:', err);
+		logger.error('[TemplatesAPI] GET error:', err);
 		error(500, 'Internal server error');
 	}
 };
@@ -76,7 +77,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
 		templateStore.set(siteId, config);
 
-		console.log(`[TemplatesAPI] Saved template config for site: ${siteId}`);
+		logger.info(`[TemplatesAPI] Saved template config for site: ${siteId}`);
 
 		return json({
 			success: true,
@@ -84,7 +85,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			config
 		});
 	} catch (err) {
-		console.error('[TemplatesAPI] POST error:', err);
+		logger.error('[TemplatesAPI] POST error:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -118,7 +119,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 			config: updated
 		});
 	} catch (err) {
-		console.error('[TemplatesAPI] PUT error:', err);
+		logger.error('[TemplatesAPI] PUT error:', err);
 		error(500, 'Internal server error');
 	}
 };
@@ -132,14 +133,14 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		templateStore.delete(siteId);
 
-		console.log(`[TemplatesAPI] Reset template config for site: ${siteId}`);
+		logger.info(`[TemplatesAPI] Reset template config for site: ${siteId}`);
 
 		return json({
 			success: true,
 			message: 'Template configuration reset to default'
 		});
 	} catch (err) {
-		console.error('[TemplatesAPI] DELETE error:', err);
+		logger.error('[TemplatesAPI] DELETE error:', err);
 		error(500, 'Internal server error');
 	}
 };

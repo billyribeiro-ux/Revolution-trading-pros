@@ -31,6 +31,7 @@ import {
 	type TextSelection
 } from './awareness';
 import type { Block } from '../types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // RE-EXPORTS
@@ -150,14 +151,14 @@ export interface CollaborationState {
  *     userId: 'user-1',
  *     userName: 'John Doe',
  *     onRemoteChange: (blocks) => {
- *       console.log('Remote change:', blocks);
+ *       logger.info('Remote change:', blocks);
  *     }
  *   });
  *
  *   // Access reactive state
  *   $effect(() => {
- *     console.log('Connected:', collaboration.isConnected);
- *     console.log('Collaborators:', collaboration.collaborators);
+ *     logger.info('Connected:', collaboration.isConnected);
+ *     logger.info('Collaborators:', collaboration.collaborators);
  *   });
  *
  *   // Update a block
@@ -249,7 +250,7 @@ export function useCollaboration(
 			},
 			onError: (err) => {
 				error = err;
-				console.error('[Collaboration] Error:', err);
+				logger.error('[Collaboration] Error:', err);
 			}
 		});
 
@@ -282,10 +283,10 @@ export function useCollaboration(
 					}
 				},
 				onCollaboratorJoin: (collaborator) => {
-					console.log('[Collaboration] Collaborator joined:', collaborator.name);
+					logger.info('[Collaboration] Collaborator joined:', collaborator.name);
 				},
 				onCollaboratorLeave: (collaborator) => {
-					console.log('[Collaboration] Collaborator left:', collaborator.name);
+					logger.info('[Collaboration] Collaborator left:', collaborator.name);
 				}
 			});
 		}
@@ -307,7 +308,7 @@ export function useCollaboration(
 	 */
 	function updateBlock(index: number, block: Block): void {
 		if (index < 0 || index >= yBlocks.length) {
-			console.warn('[Collaboration] Invalid block index:', index);
+			logger.warn('[Collaboration] Invalid block index:', index);
 			return;
 		}
 
@@ -335,7 +336,7 @@ export function useCollaboration(
 	 */
 	function deleteBlock(index: number): void {
 		if (index < 0 || index >= yBlocks.length) {
-			console.warn('[Collaboration] Invalid block index:', index);
+			logger.warn('[Collaboration] Invalid block index:', index);
 			return;
 		}
 
@@ -349,7 +350,7 @@ export function useCollaboration(
 	 */
 	function moveBlock(fromIndex: number, toIndex: number): void {
 		if (fromIndex < 0 || fromIndex >= yBlocks.length) {
-			console.warn('[Collaboration] Invalid from index:', fromIndex);
+			logger.warn('[Collaboration] Invalid from index:', fromIndex);
 			return;
 		}
 
@@ -440,7 +441,7 @@ export function useCollaboration(
 	 * Cleanup function
 	 */
 	function destroy(): void {
-		console.log('[Collaboration] Destroying');
+		logger.info('[Collaboration] Destroying');
 
 		// Destroy awareness manager
 		if (awarenessManager) {

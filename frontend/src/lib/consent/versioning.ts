@@ -13,6 +13,7 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 import type { ConsentState } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Version change type
@@ -149,7 +150,7 @@ export function checkForPolicyUpdates(consent: ConsentState): void {
 
 	if (result.needsReconsent || result.missedVersions.length > 0) {
 		policyUpdateAvailable.set(result);
-		console.debug('[Versioning] Policy update detected:', result);
+		logger.debug('[Versioning] Policy update detected:', result);
 	} else {
 		policyUpdateAvailable.set(null);
 	}

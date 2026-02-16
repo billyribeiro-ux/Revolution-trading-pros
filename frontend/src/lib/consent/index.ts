@@ -514,6 +514,7 @@ import {
 import { trackConsentInteraction } from './analytics';
 import { initializeTemplateStore } from './templates';
 import type { ConsentState } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Initialize the complete consent system.
@@ -574,7 +575,7 @@ export function initializeConsent(): () => void {
 		loadVendorsForConsent(consent, vendors);
 	});
 
-	console.debug('[Consent] System initialized with consent-magic-pro v5.1.0 features');
+	logger.debug('[Consent] System initialized with consent-magic-pro v5.1.0 features');
 
 	// Return cleanup function
 	return () => {
@@ -588,7 +589,7 @@ export function initializeConsent(): () => void {
  */
 export function onPageNavigation(): void {
 	if (!browser) return;
-	console.debug('[Consent] Page navigation detected');
+	logger.debug('[Consent] Page navigation detected');
 }
 
 /**

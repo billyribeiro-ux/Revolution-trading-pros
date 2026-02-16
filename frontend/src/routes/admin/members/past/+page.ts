@@ -21,6 +21,7 @@ import pastMembersApi, {
 	preloadDashboardData
 } from '$lib/api/past-members-dashboard';
 import type { Load } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -102,7 +103,7 @@ export const load: Load = async ({ url }) => {
 			campaigns
 		};
 	} catch (error) {
-		console.error('[PastMembers Load] Error:', error);
+		logger.error('[PastMembers Load] Error:', error);
 
 		return {
 			...pageData,

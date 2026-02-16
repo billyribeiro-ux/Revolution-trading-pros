@@ -13,6 +13,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentState, GoogleConsentParams } from './types';
+import { logger } from '$lib/utils/logger';
 
 declare global {
 	interface Window {
@@ -92,7 +93,7 @@ export function setDefaultConsent(consent: ConsentState, waitForUpdate?: number)
 
 	window.gtag!('consent', 'default', consentParams);
 
-	console.debug('[GoogleConsentMode] Set default consent:', consentParams);
+	logger.debug('[GoogleConsentMode] Set default consent:', consentParams);
 }
 
 /**
@@ -110,7 +111,7 @@ export function updateConsent(consent: ConsentState): void {
 
 	window.gtag!('consent', 'update', params);
 
-	console.debug('[GoogleConsentMode] Updated consent:', params);
+	logger.debug('[GoogleConsentMode] Updated consent:', params);
 }
 
 /**
@@ -169,7 +170,7 @@ export function grantAllConsent(): void {
 	window.gtag!('consent', 'update', params);
 	consentInitialized = true;
 
-	console.debug('[GoogleConsentMode] Granted all consent');
+	logger.debug('[GoogleConsentMode] Granted all consent');
 }
 
 /**
@@ -193,5 +194,5 @@ export function denyNonEssentialConsent(): void {
 	window.gtag!('consent', 'update', params);
 	consentInitialized = true;
 
-	console.debug('[GoogleConsentMode] Denied non-essential consent');
+	logger.debug('[GoogleConsentMode] Denied non-essential consent');
 }

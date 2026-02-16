@@ -11,6 +11,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
@@ -342,13 +343,13 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 		});
 
 		if (!response.ok) {
-			console.warn(`Backend returned ${response.status} for ${endpoint}`);
+			logger.warn(`Backend returned ${response.status} for ${endpoint}`);
 			return null;
 		}
 
 		return await response.json();
 	} catch (error) {
-		console.warn(`Failed to fetch from backend: ${error}`);
+		logger.warn(`Failed to fetch from backend: ${error}`);
 		return null;
 	}
 }

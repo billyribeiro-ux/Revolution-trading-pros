@@ -18,6 +18,7 @@ import {
 	type PendingChange
 } from './db';
 import type { Block } from '../types';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Types
@@ -186,7 +187,7 @@ class SyncManager {
 				try {
 					callback(event);
 				} catch (error) {
-					console.error('[SyncManager] Error in event listener:', error);
+					logger.error('[SyncManager] Error in event listener:', error);
 				}
 			}
 		}
@@ -206,7 +207,7 @@ class SyncManager {
 		this.status.consecutiveFailures = 0;
 
 		if (import.meta.env.DEV) {
-			console.debug('[SyncManager] Network online');
+			logger.debug('[SyncManager] Network online');
 		}
 
 		if (this.options.autoSyncOnOnline) {
@@ -219,7 +220,7 @@ class SyncManager {
 		this.status.isOnline = false;
 
 		if (import.meta.env.DEV) {
-			console.debug('[SyncManager] Network offline');
+			logger.debug('[SyncManager] Network offline');
 		}
 
 		// Abort any in-progress sync
@@ -241,7 +242,7 @@ class SyncManager {
 			if (this.status.isOnline && !this.status.isSyncing) {
 				this.syncNow().catch((error) => {
 					if (import.meta.env.DEV) {
-						console.error('[SyncManager] Periodic sync failed:', error);
+						logger.error('[SyncManager] Periodic sync failed:', error);
 					}
 				});
 			}
@@ -796,7 +797,7 @@ export async function registerBackgroundSync(): Promise<boolean> {
 		return true;
 	} catch (error) {
 		if (import.meta.env.DEV) {
-			console.warn('[SyncManager] Background sync registration failed:', error);
+			logger.warn('[SyncManager] Background sync registration failed:', error);
 		}
 		return false;
 	}

@@ -9,6 +9,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
@@ -89,7 +90,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Videos API proxy error:', err);
+		logger.error('Videos API proxy error:', err);
 		return json(
 			{
 				success: false,
@@ -160,7 +161,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('Videos API create error:', err);
+		logger.error('Videos API create error:', err);
 		error(500, 'Failed to create video');
 	}
 };

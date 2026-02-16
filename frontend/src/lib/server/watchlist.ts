@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Weekly Watchlist Server-Side Fetch Helper
  * ═══════════════════════════════════════════════════════════════════════════
@@ -67,7 +68,7 @@ export async function getLatestWatchlist(
 		});
 
 		if (!response.ok) {
-			console.warn('[getLatestWatchlist] API returned:', response.status);
+			logger.warn('[getLatestWatchlist] API returned:', response.status);
 			return null;
 		}
 
@@ -79,7 +80,7 @@ export async function getLatestWatchlist(
 
 		return null;
 	} catch (err) {
-		console.error('[getLatestWatchlist] Failed to fetch:', err);
+		logger.error('[getLatestWatchlist] Failed to fetch:', err);
 		return null;
 	}
 }
@@ -124,7 +125,7 @@ export async function getWatchlistBySlug(
 
 		return null;
 	} catch (err) {
-		console.error('[getWatchlistBySlug] Failed to fetch:', err);
+		logger.error('[getWatchlistBySlug] Failed to fetch:', err);
 		return null;
 	}
 }

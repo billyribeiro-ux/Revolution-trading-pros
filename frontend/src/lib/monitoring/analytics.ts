@@ -5,6 +5,7 @@
  */
 
 import { dev } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 interface AnalyticsEvent {
 	action: string;
@@ -18,7 +19,7 @@ interface AnalyticsEvent {
  */
 export function trackPageView(url: string): void {
 	if (dev) {
-		console.log('[Analytics] Page view:', url);
+		logger.info('[Analytics] Page view:', url);
 		return;
 	}
 
@@ -40,7 +41,7 @@ export function trackPageView(url: string): void {
  */
 export function trackEvent({ action, category, label, value }: AnalyticsEvent): void {
 	if (dev) {
-		console.log('[Analytics] Event:', { action, category, label, value });
+		logger.info('[Analytics] Event:', { action, category, label, value });
 		return;
 	}
 

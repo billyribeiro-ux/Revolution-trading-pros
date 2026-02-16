@@ -12,6 +12,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -38,13 +39,13 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 			headers['Authorization'] = `Bearer ${accessToken}`;
 		}
 
-		console.log(`[Weekly Video Status] Checking ${slug} video ${guid}`);
+		logger.info(`[Weekly Video Status] Checking ${slug} video ${guid}`);
 		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, {
 			headers
 		});
 
 		if (!response.ok) {
-			console.error(`[Weekly Video Status] Backend error: ${response.status}`);
+			logger.error(`[Weekly Video Status] Backend error: ${response.status}`);
 			return json({
 				success: true,
 				room_slug: slug,
@@ -77,7 +78,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 			duration: null
 		});
 	} catch (err) {
-		console.error('[Weekly Video Status] Error:', err);
+		logger.error('[Weekly Video Status] Error:', err);
 		return json({
 			success: true,
 			room_slug: slug,

@@ -10,6 +10,7 @@
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -154,7 +155,7 @@ export async function getUserIndicators(options?: {
 			{ ttl: CACHE_TTL, persist: true }
 		);
 	} catch (error) {
-		console.error('[UserIndicators] Error fetching indicators:', error);
+		logger.error('[UserIndicators] Error fetching indicators:', error);
 
 		// Return mock data for development/demo
 		if (import.meta.env.DEV) {

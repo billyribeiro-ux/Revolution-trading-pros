@@ -10,6 +10,7 @@
 
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 // Video response from API
 interface VideoResponse {
@@ -163,7 +164,7 @@ export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageD
 			error: null
 		};
 	} catch (err) {
-		console.error('Swing Trading Room Archive load error:', err);
+		logger.error('Swing Trading Room Archive load error:', err);
 		return {
 			videos: [],
 			meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },

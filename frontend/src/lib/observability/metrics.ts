@@ -35,6 +35,7 @@ import type {
 	AnalyticsConfig
 } from './adapters/types';
 import { AnalyticsEvents } from './adapters/types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Re-export Types for Backward Compatibility
@@ -161,10 +162,10 @@ class MetricsService {
 			this._initialized = true;
 
 			if (config?.debug) {
-				console.debug('[Metrics] Service initialized');
+				logger.debug('[Metrics] Service initialized');
 			}
 		} catch (error) {
-			console.error('[Metrics] Initialization failed:', error);
+			logger.error('[Metrics] Initialization failed:', error);
 		}
 	}
 

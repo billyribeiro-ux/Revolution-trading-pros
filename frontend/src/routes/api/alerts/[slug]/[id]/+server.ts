@@ -16,6 +16,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import type { RoomAlert, AlertUpdateInput } from '$lib/types/trading';
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND CONFIGURATION
@@ -29,7 +30,7 @@ const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Alert API] Fetching: ${BACKEND_URL}${endpoint}`);
+		logger.info(`[Alert API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -40,15 +41,15 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) {
-			console.error(`[Alert API] Backend error: ${response.status} ${response.statusText}`);
+			logger.error(`[Alert API] Backend error: ${response.status} ${response.statusText}`);
 			return null;
 		}
 
 		const data = await response.json();
-		console.log(`[Alert API] Backend success`);
+		logger.info(`[Alert API] Backend success`);
 		return data;
 	} catch (err) {
-		console.error('[Alert API] Backend fetch failed:', err);
+		logger.error('[Alert API] Backend fetch failed:', err);
 		return null;
 	}
 }

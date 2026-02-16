@@ -38,6 +38,7 @@ import type {
 import { getGoogleAnalyticsAdapter } from './adapters/google-analytics';
 import { getConsoleAdapter } from './adapters/console';
 import { getBackendAdapter } from './adapters/backend';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -243,8 +244,8 @@ class AnalyticsOrchestrator {
 		this._updateStore();
 
 		if (this._config.debug) {
-			console.debug('[Orchestrator] Initialized with config:', this._config);
-			console.debug('[Orchestrator] Registered adapters:', Array.from(this._adapters.keys()));
+			logger.debug('[Orchestrator] Initialized with config:', this._config);
+			logger.debug('[Orchestrator] Registered adapters:', Array.from(this._adapters.keys()));
 		}
 	}
 
@@ -253,7 +254,7 @@ class AnalyticsOrchestrator {
 	 */
 	async registerAdapter(adapter: AnalyticsAdapter): Promise<void> {
 		if (this._adapters.has(adapter.id)) {
-			console.warn(`[Orchestrator] Adapter "${adapter.id}" already registered, replacing...`);
+			logger.warn(`[Orchestrator] Adapter "${adapter.id}" already registered, replacing...`);
 		}
 
 		try {
@@ -262,10 +263,10 @@ class AnalyticsOrchestrator {
 			this._updateStore();
 
 			if (this._config.debug) {
-				console.debug(`[Orchestrator] Registered adapter: ${adapter.id}`);
+				logger.debug(`[Orchestrator] Registered adapter: ${adapter.id}`);
 			}
 		} catch (error) {
-			console.error(`[Orchestrator] Failed to register adapter "${adapter.id}":`, error);
+			logger.error(`[Orchestrator] Failed to register adapter "${adapter.id}":`, error);
 		}
 	}
 
@@ -294,7 +295,7 @@ class AnalyticsOrchestrator {
 		this._updateStore();
 
 		if (this._config.debug) {
-			console.debug('[Orchestrator] Consent updated:', consent);
+			logger.debug('[Orchestrator] Consent updated:', consent);
 		}
 	}
 
@@ -453,7 +454,7 @@ class AnalyticsOrchestrator {
 				}
 			} catch (error) {
 				this._failedEvents++;
-				console.error(`[Orchestrator] Error in adapter "${adapter.id}":`, error);
+				logger.error(`[Orchestrator] Error in adapter "${adapter.id}":`, error);
 			}
 		}
 	}

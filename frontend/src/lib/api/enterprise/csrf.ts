@@ -19,6 +19,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -76,7 +77,7 @@ export function getCsrfTokenFromCookie(): string | null {
 			}
 		}
 	} catch (error) {
-		console.warn('[CSRF] Failed to read cookie:', error);
+		logger.warn('[CSRF] Failed to read cookie:', error);
 	}
 
 	return null;
@@ -108,7 +109,7 @@ export function setCsrfCookie(
 
 		document.cookie = cookieValue;
 	} catch (error) {
-		console.error('[CSRF] Failed to set cookie:', error);
+		logger.error('[CSRF] Failed to set cookie:', error);
 	}
 }
 
@@ -121,7 +122,7 @@ export function clearCsrfCookie(): void {
 	try {
 		document.cookie = `${CSRF_COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Strict`;
 	} catch (error) {
-		console.warn('[CSRF] Failed to clear cookie:', error);
+		logger.warn('[CSRF] Failed to clear cookie:', error);
 	}
 }
 

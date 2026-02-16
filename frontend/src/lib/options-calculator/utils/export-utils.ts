@@ -11,6 +11,7 @@ import type {
 	ScreenshotConfig
 } from '../engine/types.js';
 import { formatCurrency, formatGreek } from './formatters.js';
+import { logger } from '$lib/utils/logger';
 
 /** Default screenshot configuration */
 export const DEFAULT_SCREENSHOT_CONFIG: ScreenshotConfig = {
@@ -267,7 +268,7 @@ export async function captureScreenshot(
 			);
 		});
 	} catch (error) {
-		console.error('[ExportUtils] PNG capture failed:', error);
+		logger.error('[ExportUtils] PNG capture failed:', error);
 		return null;
 	}
 }

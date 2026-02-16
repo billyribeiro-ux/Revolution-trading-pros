@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Subscriptions Page Server Load
@@ -29,14 +30,14 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		const duration = Math.round(performance.now() - startTime);
 
 		if (!response.ok) {
-			console.warn(`[Subscriptions:PageLoad] API returned ${response.status} (${duration}ms)`);
+			logger.warn(`[Subscriptions:PageLoad] API returned ${response.status} (${duration}ms)`);
 			return { subscriptions: [] };
 		}
 
 		const data = await response.json();
 		const subscriptions = data.subscriptions || [];
 
-		console.debug(
+		logger.debug(
 			`[Subscriptions:PageLoad] Loaded ${subscriptions.length} subscriptions (${duration}ms)`
 		);
 
@@ -46,7 +47,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		const duration = Math.round(performance.now() - startTime);
 		const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
-		console.error(`[Subscriptions:PageLoad] Failed: ${errorMessage} (${duration}ms)`);
+		logger.error(`[Subscriptions:PageLoad] Failed: ${errorMessage} (${duration}ms)`);
 
 		// ICT 7: Graceful degradation - return empty array, never crash
 		return { subscriptions: [] };

@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Logout Page Server Load
@@ -30,7 +31,7 @@ export const load = async ({ locals, cookies, fetch }: RequestEvent) => {
 			});
 		} catch (err) {
 			// ICT 11 Protocol: Log but don't block logout on API failure
-			console.error('[Logout] API error:', err);
+			logger.error('[Logout] API error:', err);
 		}
 	}
 

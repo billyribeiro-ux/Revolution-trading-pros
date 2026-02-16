@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
@@ -40,7 +41,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		});
 	} catch (error) {
 		// Backend failure shouldn't prevent logout
-		console.error('[Logout Proxy] Backend logout failed:', error);
+		logger.error('[Logout Proxy] Backend logout failed:', error);
 	}
 
 	// ALWAYS clear cookies regardless of backend response

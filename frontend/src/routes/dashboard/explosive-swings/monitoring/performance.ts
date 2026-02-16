@@ -166,7 +166,7 @@ class PerformanceMonitor {
 			if (import.meta.env.DEV) {
 				const threshold = PERFORMANCE_THRESHOLDS[name];
 				if (threshold && duration > threshold.needsImprovement) {
-					console.warn(
+					logger.warn(
 						`[PerformanceMonitor] Slow operation: ${name} took ${duration.toFixed(2)}ms`
 					);
 				}

@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Orders Page Server Load
@@ -32,7 +33,7 @@ export const load: PageServerLoad = async ({ parent, fetch }) => {
 			}
 		}
 	} catch (error) {
-		console.error('[Orders Page] Failed to fetch orders from API:', error);
+		logger.error('[Orders Page] Failed to fetch orders from API:', error);
 	}
 
 	// ICT 11+ FIX: Return mock orders for testing/demo purposes

@@ -17,6 +17,7 @@ import { env } from '$env/dynamic/private';
 import { getLatestWatchlist } from '$lib/server/watchlist';
 import type { PageServerLoad } from './$types';
 import { ROOM_SLUG } from '../constants';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONSTANTS - ICT 7 Single Source of Truth
@@ -52,7 +53,7 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 		};
 	} catch (error) {
 		// ICT 7: Never throw 500 - graceful degradation
-		console.error(`${LOG_PREFIX} FATAL ERROR:`, error);
+		logger.error(`${LOG_PREFIX} FATAL ERROR:`, error);
 
 		return {
 			watchlist: null

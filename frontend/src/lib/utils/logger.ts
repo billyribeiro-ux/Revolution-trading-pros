@@ -75,7 +75,7 @@ export const perfLogger = {
 				performance.measure(label, `${label}-start`, `${label}-end`);
 				const measure = performance.getEntriesByName(label)[0];
 				if (measure) {
-					console.log(`[PERF] ${label}: ${measure.duration.toFixed(2)}ms`);
+					logger.info(`[PERF] ${label}: ${measure.duration.toFixed(2)}ms`);
 				}
 			} catch {
 				// Ignore if marks don't exist

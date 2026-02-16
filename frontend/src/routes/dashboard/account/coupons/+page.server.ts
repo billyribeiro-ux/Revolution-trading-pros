@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Coupons Page Server Load
@@ -26,7 +27,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 		});
 
 		if (!response.ok) {
-			console.error('Failed to fetch coupons:', response.status);
+			logger.error('Failed to fetch coupons:', response.status);
 			return {
 				coupons: []
 			};
@@ -38,7 +39,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 			coupons: data.coupons || []
 		};
 	} catch (err) {
-		console.error('Error loading coupons:', err);
+		logger.error('Error loading coupons:', err);
 		return {
 			coupons: []
 		};

@@ -14,6 +14,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -43,7 +44,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			error(400, 'No file data provided');
 		}
 
-		console.log(`[Bunny Upload] Uploading ${fileBuffer.byteLength} bytes to video ${videoGuid}`);
+		logger.info(`[Bunny Upload] Uploading ${fileBuffer.byteLength} bytes to video ${videoGuid}`);
 
 		// Forward to backend upload endpoint
 		const uploadUrl = `${BACKEND_URL}/api/admin/bunny/upload?video_guid=${videoGuid}&library_id=${libraryId}`;
@@ -60,14 +61,14 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error(`[Bunny Upload] Backend error: ${response.status}`, errorText);
+			logger.error(`[Bunny Upload] Backend error: ${response.status}`, errorText);
 			error(response.status, errorText || 'Upload failed');
 		}
 
 		const result = await response.json();
 		return json(result);
 	} catch (err) {
-		console.error('[Bunny Upload] Error:', err);
+		logger.error('[Bunny Upload] Error:', err);
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}

@@ -1,4 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * View Subscription Page Server
@@ -58,7 +59,7 @@ export const actions: Actions = {
 		const reason = formData.get('reason') as string;
 
 		// TODO: Call actual API when backend is ready
-		console.log('Cancel subscription requested with reason:', reason);
+		logger.info('Cancel subscription requested with reason:', reason);
 
 		return {
 			success: true,
@@ -71,7 +72,7 @@ export const actions: Actions = {
 		const reason = formData.get('reason') as string;
 
 		// TODO: Call actual API when backend is ready
-		console.log('Pause subscription requested with reason:', reason);
+		logger.info('Pause subscription requested with reason:', reason);
 
 		return {
 			success: true,

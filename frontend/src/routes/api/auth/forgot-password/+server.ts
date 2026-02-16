@@ -8,6 +8,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -16,7 +17,7 @@ export const POST = async ({ request }: RequestEvent) => {
 		const body = await request.json();
 
 		// ICT 11+ Debug: Log request details
-		console.log('[Auth Proxy] Forgot password request:', {
+		logger.info('[Auth Proxy] Forgot password request:', {
 			email: body.email
 		});
 
@@ -36,12 +37,12 @@ export const POST = async ({ request }: RequestEvent) => {
 		try {
 			data = JSON.parse(responseText);
 		} catch {
-			console.error('[Auth Proxy] Non-JSON response:', responseText);
+			logger.error('[Auth Proxy] Non-JSON response:', responseText);
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
 		// ICT 11+ Debug: Log response for diagnosis
-		console.log('[Auth Proxy] Forgot password response:', {
+		logger.info('[Auth Proxy] Forgot password response:', {
 			status: response.status,
 			message: data.message
 		});
@@ -49,7 +50,7 @@ export const POST = async ({ request }: RequestEvent) => {
 		// Return the response with proper status
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[Auth Proxy] Forgot password error:', error);
+		logger.error('[Auth Proxy] Forgot password error:', error);
 		return json({ error: 'Password reset service unavailable' }, { status: 503 });
 	}
 };

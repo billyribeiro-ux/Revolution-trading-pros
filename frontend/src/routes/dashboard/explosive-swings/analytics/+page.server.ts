@@ -17,6 +17,7 @@
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 import { ROOM_SLUG } from '../constants';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -109,7 +110,7 @@ async function fetchAnalyticsData(
 		const response = await fetchFn(`${baseUrl}/api/analytics/${ROOM_SLUG}?period=${period}`);
 
 		if (!response.ok) {
-			console.warn(`${LOG_PREFIX} Analytics fetch returned:`, response.status);
+			logger.warn(`${LOG_PREFIX} Analytics fetch returned:`, response.status);
 			return {};
 		}
 
@@ -181,7 +182,7 @@ async function fetchAnalyticsData(
 				: null
 		};
 	} catch (error) {
-		console.error(`${LOG_PREFIX} Analytics fetch error:`, error);
+		logger.error(`${LOG_PREFIX} Analytics fetch error:`, error);
 		return {};
 	}
 }
@@ -213,7 +214,7 @@ export const load = (async ({ fetch, url }) => {
 			period
 		};
 	} catch (error) {
-		console.error(`${LOG_PREFIX} FATAL ERROR in load function:`, error);
+		logger.error(`${LOG_PREFIX} FATAL ERROR in load function:`, error);
 
 		return {
 			performance: null,

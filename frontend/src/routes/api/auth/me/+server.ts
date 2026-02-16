@@ -8,6 +8,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -43,7 +44,7 @@ export const GET = async ({ cookies }: RequestEvent) => {
 
 		return json(data, { status: 200 });
 	} catch (error) {
-		console.error('[Auth Me] Error:', error);
+		logger.error('[Auth Me] Error:', error);
 		return json({ user: null, error: 'Authentication service unavailable' }, { status: 503 });
 	}
 };

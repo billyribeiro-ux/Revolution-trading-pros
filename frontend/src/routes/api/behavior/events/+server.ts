@@ -7,6 +7,7 @@
  */
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -25,7 +26,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		// 4. Process for real-time dashboards
 
 		if (import.meta.env.DEV && import.meta.env.VITE_DEBUG_BEHAVIOR) {
-			console.log(
+			logger.info(
 				`[Behavior] Received ${batch.events.length} events from session ${batch.session_id}`
 			);
 		}

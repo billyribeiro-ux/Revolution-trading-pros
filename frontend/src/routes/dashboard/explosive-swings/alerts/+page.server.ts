@@ -10,6 +10,7 @@
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 import type { RoomAlert } from '$lib/types/trading';
+import { logger } from '$lib/utils/logger';
 
 const ROOM_SLUG = 'explosive-swings';
 
@@ -47,7 +48,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 			error: undefined
 		};
 	} catch (err) {
-		console.error('[alerts/+page.server.ts] Failed to fetch alerts:', err);
+		logger.error('[alerts/+page.server.ts] Failed to fetch alerts:', err);
 		return {
 			alerts: [] as RoomAlert[],
 			total: 0,

@@ -13,6 +13,7 @@
  */
 
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 interface SPXAlert {
 	id: number;
@@ -82,14 +83,14 @@ export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
 		const response = await fetch('/api/dashboard/spx-profit-pulse');
 
 		if (!response.ok) {
-			console.warn('[SPX SSR] API returned non-ok status:', response.status);
+			logger.warn('[SPX SSR] API returned non-ok status:', response.status);
 			return getDefaultData();
 		}
 
 		const result = await response.json();
 
 		if (!result.success || !result.data) {
-			console.warn('[SPX SSR] API returned unsuccessful response');
+			logger.warn('[SPX SSR] API returned unsuccessful response');
 			return getDefaultData();
 		}
 
@@ -114,7 +115,7 @@ export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
 			}
 		} satisfies DashboardData;
 	} catch (error) {
-		console.error('[SPX SSR] Error fetching dashboard data:', error);
+		logger.error('[SPX SSR] Error fetching dashboard data:', error);
 		return getDefaultData();
 	}
 };

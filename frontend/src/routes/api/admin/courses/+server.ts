@@ -5,6 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 const BACKEND_URL = PROD_BACKEND;
@@ -44,7 +45,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 		const data = await response.json();
 		return json(data);
 	} catch (error) {
-		console.error('[API] Admin courses list error:', error);
+		logger.error('[API] Admin courses list error:', error);
 		return json({
 			success: true,
 			data: {
@@ -76,7 +77,7 @@ export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 		const data = await response.json();
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[API] Admin courses create error:', error);
+		logger.error('[API] Admin courses create error:', error);
 		return json({ success: false, error: 'Failed to create course' }, { status: 500 });
 	}
 };

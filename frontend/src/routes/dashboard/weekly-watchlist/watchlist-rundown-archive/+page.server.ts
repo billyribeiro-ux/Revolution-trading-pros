@@ -11,6 +11,7 @@
  */
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /** API response structure from backend */
 interface WatchlistApiEntry {
@@ -112,14 +113,14 @@ export async function load({ fetch }: ServerLoadEvent) {
 		);
 
 		if (!response.ok) {
-			console.error('[WatchlistRundown] API error:', response.status, '- using mock data');
+			logger.error('[WatchlistRundown] API error:', response.status, '- using mock data');
 			return { videos: MOCK_VIDEOS };
 		}
 
 		const data: WatchlistApiResponse = await response.json();
 
 		if (!data.entries || data.entries.length === 0) {
-			console.log('[WatchlistRundown] No API data - using mock data');
+			logger.info('[WatchlistRundown] No API data - using mock data');
 			return { videos: MOCK_VIDEOS };
 		}
 
@@ -136,7 +137,7 @@ export async function load({ fetch }: ServerLoadEvent) {
 
 		return { videos };
 	} catch (error) {
-		console.error('[WatchlistRundown] Load error - using mock data:', error);
+		logger.error('[WatchlistRundown] Load error - using mock data:', error);
 		return { videos: MOCK_VIDEOS };
 	}
 }

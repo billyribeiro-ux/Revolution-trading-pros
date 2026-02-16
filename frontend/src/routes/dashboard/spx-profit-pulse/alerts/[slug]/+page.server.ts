@@ -10,6 +10,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 export const load: PageServerLoad = async ({ params, fetch, setHeaders }) => {
 	const { slug } = params;
@@ -46,7 +47,7 @@ export const load: PageServerLoad = async ({ params, fetch, setHeaders }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[SPX Alert SSR] Error:', err);
+		logger.error('[SPX Alert SSR] Error:', err);
 		error(500, 'Failed to load alert');
 	}
 };

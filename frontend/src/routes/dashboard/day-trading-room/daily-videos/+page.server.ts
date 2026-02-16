@@ -14,6 +14,7 @@
  */
 
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true; // Enable server-side rendering
@@ -101,10 +102,10 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 		}
 
 		// If API fails, return fallback mock data for development
-		console.warn('Backend API unavailable, using mock data');
+		logger.warn('Backend API unavailable, using mock data');
 		return getMockData(page, perPage, search);
 	} catch (error) {
-		console.error('Failed to fetch videos:', error);
+		logger.error('Failed to fetch videos:', error);
 		// Return mock data as fallback
 		return getMockData(page, perPage, search);
 	}

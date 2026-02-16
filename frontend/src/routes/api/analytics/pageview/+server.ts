@@ -5,6 +5,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
 const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
@@ -33,7 +34,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 		const data = await response.json();
 		return json(data, { status: 200 });
 	} catch (error) {
-		console.error('[Analytics Pageview Proxy] Error:', error);
+		logger.error('[Analytics Pageview Proxy] Error:', error);
 		return json({ success: false }, { status: 200 });
 	}
 };

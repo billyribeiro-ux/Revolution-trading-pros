@@ -12,6 +12,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -34,13 +35,13 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 			headers['Authorization'] = `Bearer ${accessToken}`;
 		}
 
-		console.log(`[Bunny API] Fetching: ${BACKEND_URL}/api/admin/bunny/video-status/${guid}`);
+		logger.info(`[Bunny API] Fetching: ${BACKEND_URL}/api/admin/bunny/video-status/${guid}`);
 		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, {
 			headers
 		});
 
 		if (!response.ok) {
-			console.error(`[Bunny API] Backend error: ${response.status}`);
+			logger.error(`[Bunny API] Backend error: ${response.status}`);
 			// Return pending status if backend unavailable
 			return json({
 				success: true,
@@ -70,7 +71,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 			duration: null
 		});
 	} catch (err) {
-		console.error('[Bunny API] Error:', err);
+		logger.error('[Bunny API] Error:', err);
 		// Return pending status on error
 		return json({
 			success: true,

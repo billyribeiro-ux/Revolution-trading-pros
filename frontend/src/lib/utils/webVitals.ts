@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Web Vitals Monitoring - Svelte 5 / SvelteKit
  * Captures Core Web Vitals and reports to analytics endpoint
@@ -86,7 +87,7 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 				: metric.rating === 'needs-improvement'
 					? '#f59e0b'
 					: '#ef4444';
-		console.log(
+		logger.info(
 			`%c[Web Vitals] ${metric.name}: ${metric.value.toFixed(2)} (${metric.rating})`,
 			`color: ${color}; font-weight: bold;`
 		);
@@ -124,7 +125,7 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 			});
 		} catch (error) {
 			if (options.debug) {
-				console.error('[Web Vitals] Failed to report metric:', error);
+				logger.error('[Web Vitals] Failed to report metric:', error);
 			}
 		}
 	}
@@ -419,7 +420,7 @@ export function initWebVitals(userOptions: WebVitalsOptions = {}): void {
 	observeINP(options);
 
 	if (options.debug) {
-		console.log('[Web Vitals] Monitoring initialized');
+		logger.info('[Web Vitals] Monitoring initialized');
 	}
 }
 

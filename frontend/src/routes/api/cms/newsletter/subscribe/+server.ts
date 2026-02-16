@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { API_URL } from '$lib/config';
+import { logger } from '$lib/utils/logger';
 
 interface SubscribeRequest {
 	email: string;
@@ -69,7 +70,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 			message: 'Successfully subscribed to newsletter!'
 		} as SubscribeResponse);
 	} catch (error) {
-		console.error('[Newsletter Subscribe] Error:', error);
+		logger.error('[Newsletter Subscribe] Error:', error);
 		return json({ success: false, error: 'Internal server error' } as SubscribeResponse, {
 			status: 500
 		});

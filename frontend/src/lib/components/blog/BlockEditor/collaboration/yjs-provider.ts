@@ -20,6 +20,7 @@ import { IndexeddbPersistence } from 'y-indexeddb';
 import { browser } from '$app/environment';
 import { WS_URL } from '$lib/api/config';
 import type { Block } from '../types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -134,7 +135,7 @@ export interface YjsProviderInstance {
  *   roomId: 'post-123',
  *   user: { id: 'user-1', name: 'John', color: '#ff0000' },
  *   enablePersistence: true,
- *   onSync: () => console.log('Synced!')
+ *   onSync: () => logger.info('Synced!')
  * });
  *
  * // Access the blocks array
@@ -259,7 +260,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 				status: 'error',
 				error: new Error('Maximum reconnection attempts reached')
 			});
-			console.error('[YjsProvider] Max reconnection attempts reached');
+			logger.error('[YjsProvider] Max reconnection attempts reached');
 			return;
 		}
 
@@ -269,7 +270,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 			reconnectAttempts: state.reconnectAttempts + 1
 		});
 
-		console.log(
+		logger.info(
 			`[YjsProvider] Reconnecting in ${Math.round(delay)}ms (attempt ${state.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`
 		);
 
@@ -292,19 +293,19 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 			persistence = new IndexeddbPersistence(`collab-${roomId}`, doc);
 
 			persistence.on('synced', () => {
-				console.log('[YjsProvider] IndexedDB synced');
+				logger.info('[YjsProvider] IndexedDB synced');
 				updateState({ isPersisted: true });
 			});
 
 			persistence.whenSynced
 				.then(() => {
-					console.log('[YjsProvider] IndexedDB initial sync complete');
+					logger.info('[YjsProvider] IndexedDB initial sync complete');
 				})
 				.catch((err: unknown) => {
-					console.warn('[YjsProvider] IndexedDB sync failed:', err);
+					logger.warn('[YjsProvider] IndexedDB sync failed:', err);
 				});
 		} catch (err) {
-			console.warn('[YjsProvider] Failed to initialize IndexedDB persistence:', err);
+			logger.warn('[YjsProvider] Failed to initialize IndexedDB persistence:', err);
 		}
 	}
 
@@ -321,7 +322,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 		try {
 			const wsUrlFull = getWebSocketUrl();
 
-			console.log('[YjsProvider] Connecting to:', wsUrlFull);
+			logger.info('[YjsProvider] Connecting to:', wsUrlFull);
 
 			wsProvider = new WebsocketProvider(wsUrlFull, roomId, doc, {
 				connect: true,
@@ -348,7 +349,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 
 			// Connection status handlers
 			wsProvider.on('status', (event: { status: string }) => {
-				console.log('[YjsProvider] Status:', event.status);
+				logger.info('[YjsProvider] Status:', event.status);
 
 				if (event.status === 'connected') {
 					updateState({
@@ -370,7 +371,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 
 			// Sync status handler
 			wsProvider.on('sync', (isSynced: boolean) => {
-				console.log('[YjsProvider] Sync status:', isSynced);
+				logger.info('[YjsProvider] Sync status:', isSynced);
 
 				if (isSynced) {
 					updateState({
@@ -387,7 +388,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 
 			// Error handler
 			wsProvider.on('connection-error', (event: Event) => {
-				console.error('[YjsProvider] Connection error:', event);
+				logger.error('[YjsProvider] Connection error:', event);
 				updateState({
 					status: 'error',
 					error: new Error('WebSocket connection error')
@@ -398,7 +399,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 			wsProvider.on(
 				'connection-close',
 				(event: CloseEvent | null, _provider: WebsocketProvider) => {
-					console.log('[YjsProvider] Connection closed:', event?.code, event?.reason);
+					logger.info('[YjsProvider] Connection closed:', event?.code, event?.reason);
 
 					if (!isManualDisconnect && event?.code !== 1000) {
 						scheduleReconnect();
@@ -408,7 +409,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 
 			updateState({ status: 'connecting' });
 		} catch (err) {
-			console.error('[YjsProvider] Failed to create WebSocket provider:', err);
+			logger.error('[YjsProvider] Failed to create WebSocket provider:', err);
 			updateState({
 				status: 'error',
 				error: err instanceof Error ? err : new Error('Failed to connect')
@@ -459,7 +460,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 			isSynced: false
 		});
 
-		console.log('[YjsProvider] Disconnected');
+		logger.info('[YjsProvider] Disconnected');
 	}
 
 	/**
@@ -480,7 +481,7 @@ export function createYjsProvider(options: YjsProviderOptions): YjsProviderInsta
 	 * Destroy the provider and cleanup all resources
 	 */
 	function destroy(): void {
-		console.log('[YjsProvider] Destroying provider');
+		logger.info('[YjsProvider] Destroying provider');
 
 		isManualDisconnect = true;
 		clearReconnectTimer();

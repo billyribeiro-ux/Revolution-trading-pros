@@ -64,6 +64,7 @@ import {
 	executeErrorInterceptors
 } from './interceptor';
 import type { InterceptorChain } from './types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -832,7 +833,7 @@ export class EnterpriseClient {
 			try {
 				handler(event);
 			} catch (e) {
-				console.error('Event handler error:', e);
+				logger.error('Event handler error:', e);
 			}
 		});
 	}

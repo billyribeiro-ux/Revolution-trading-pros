@@ -14,6 +14,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import type { TradePlanEntry, TradePlanCreateInput } from '$lib/types/trading';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND CONFIGURATION
@@ -27,7 +28,7 @@ const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
+		logger.info(`[Trade Plans API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -38,15 +39,15 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) {
-			console.error(`[Trade Plans API] Backend error: ${response.status} ${response.statusText}`);
+			logger.error(`[Trade Plans API] Backend error: ${response.status} ${response.statusText}`);
 			return null;
 		}
 
 		const data = await response.json();
-		console.log(`[Trade Plans API] Backend success:`, data?.data?.length || 0, 'items');
+		logger.info(`[Trade Plans API] Backend success:`, data?.data?.length || 0, 'items');
 		return data;
 	} catch (err) {
-		console.error('[Trade Plans API] Backend fetch failed:', err);
+		logger.error('[Trade Plans API] Backend fetch failed:', err);
 		return null;
 	}
 }
@@ -143,7 +144,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	}
 
 	// Fallback to mock data
-	console.log(`[Trade Plans API] Using mock data for ${slug}`);
+	logger.info(`[Trade Plans API] Using mock data for ${slug}`);
 	let plans = mockTradePlans[slug] || [];
 
 	// Filter by week if specified

@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './enhanced-client';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Example 1: Simple GET Request with Caching
@@ -18,7 +19,7 @@ export async function getUsers() {
 
 		return response.data;
 	} catch (error) {
-		console.error('Failed to fetch users:', error);
+		logger.error('Failed to fetch users:', error);
 		throw error;
 	}
 }
@@ -40,7 +41,7 @@ export async function createOrder(orderData: any) {
 
 		return response.data;
 	} catch (error) {
-		console.error('Failed to create order:', error);
+		logger.error('Failed to create order:', error);
 		throw error;
 	}
 }
@@ -79,7 +80,7 @@ export async function processPayment(paymentData: any) {
 
 		return response.data;
 	} catch (error) {
-		console.error('Payment processing failed:', error);
+		logger.error('Payment processing failed:', error);
 		throw error;
 	}
 }
@@ -161,7 +162,7 @@ apiClient.addRequestInterceptor(async (config) => {
 
 // Log all successful responses
 apiClient.addResponseInterceptor(async (response) => {
-	console.log(`API Response: ${response.status} - ${response.duration}ms`);
+	logger.info(`API Response: ${response.status} - ${response.duration}ms`);
 	return response;
 });
 
@@ -173,12 +174,12 @@ apiClient.addResponseInterceptor(async (response) => {
 apiClient.addErrorInterceptor(async (error: any) => {
 	if (error.status === 429) {
 		// Rate limited - show user-friendly message
-		console.warn('Rate limit exceeded. Please try again later.');
+		logger.warn('Rate limit exceeded. Please try again later.');
 	}
 
 	if (error.status === 503) {
 		// Service unavailable - circuit breaker likely open
-		console.warn('Service temporarily unavailable. Please try again.');
+		logger.warn('Service temporarily unavailable. Please try again.');
 	}
 
 	return error;
@@ -242,7 +243,7 @@ export async function fetchDashboardData() {
 			metrics: metrics.data
 		};
 	} catch (error) {
-		console.error('Failed to fetch dashboard data:', error);
+		logger.error('Failed to fetch dashboard data:', error);
 		throw error;
 	}
 }
@@ -293,7 +294,7 @@ export async function pollJobStatus(jobId: string): Promise<any> {
 			// Wait before next poll
 			await new Promise((resolve) => setTimeout(resolve, pollInterval));
 		} catch (error) {
-			console.error(`Poll attempt ${attempt + 1} failed:`, error);
+			logger.error(`Poll attempt ${attempt + 1} failed:`, error);
 
 			if (attempt === maxAttempts - 1) {
 				throw error;
@@ -364,7 +365,7 @@ export async function completeCheckout(checkoutData: {
 			payment: payment.data
 		};
 	} catch (error) {
-		console.error('Checkout failed:', error);
+		logger.error('Checkout failed:', error);
 		throw error;
 	}
 }

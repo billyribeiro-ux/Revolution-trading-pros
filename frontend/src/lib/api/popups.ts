@@ -53,6 +53,7 @@ import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import type { Popup } from '$lib/stores/popups.svelte';
 import { ML_API_URL } from './config';
+import { logger } from '$lib/utils/logger';
 
 // Re-export Popup type for convenience
 export type { Popup } from '$lib/stores/popups.svelte';
@@ -560,7 +561,7 @@ class PopupEngagementService {
 		// Start analytics processing
 		this.startAnalyticsProcessing();
 
-		console.debug('[PopupService] Initialized');
+		logger.debug('[PopupService] Initialized');
 	}
 
 	/**
@@ -588,7 +589,7 @@ class PopupEngagementService {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/popups`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[PopupService] WebSocket connected');
+				logger.debug('[PopupService] WebSocket connected');
 				this.sendSessionInfo();
 			};
 
@@ -644,7 +645,7 @@ class PopupEngagementService {
 					break;
 			}
 		} catch (error) {
-			console.error('[PopupService] Failed to handle WebSocket message:', error);
+			logger.error('[PopupService] Failed to handle WebSocket message:', error);
 		}
 	}
 
@@ -672,7 +673,7 @@ class PopupEngagementService {
 	}
 
 	private handleABTestResult(data: { popupId: string; winnerId: string }): void {
-		console.log('[PopupService] A/B test winner:', data);
+		logger.info('[PopupService] A/B test winner:', data);
 	}
 
 	/**
@@ -872,7 +873,7 @@ class PopupEngagementService {
 			this.processActivePopups(popups);
 		} catch (_error) {
 			// Gracefully handle missing endpoint
-			console.debug('[PopupService] Popups not available');
+			logger.debug('[PopupService] Popups not available');
 		}
 	}
 
@@ -1179,7 +1180,7 @@ class PopupEngagementService {
 				})
 			});
 		} catch (error) {
-			console.error('[PopupService] Failed to record impression:', error);
+			logger.error('[PopupService] Failed to record impression:', error);
 		}
 	}
 
@@ -1220,7 +1221,7 @@ class PopupEngagementService {
 				})
 			});
 		} catch (error) {
-			console.error('[PopupService] Failed to record conversion:', error);
+			logger.error('[PopupService] Failed to record conversion:', error);
 		}
 
 		// Close popup on conversion
@@ -1408,7 +1409,7 @@ class PopupEngagementService {
 		// Apply entrance animation
 		if (popup.animations?.entrance) {
 			// Implementation depends on rendering framework
-			console.debug(`[PopupService] Applying ${popup.animations.entrance} animation`);
+			logger.debug(`[PopupService] Applying ${popup.animations.entrance} animation`);
 		}
 
 		// Schedule attention animation
@@ -1421,7 +1422,7 @@ class PopupEngagementService {
 
 	private applyExitAnimation(popup: EnhancedPopup): void {
 		if (popup.animations?.exit) {
-			console.debug(`[PopupService] Applying ${popup.animations.exit} exit animation`);
+			logger.debug(`[PopupService] Applying ${popup.animations.exit} exit animation`);
 		}
 	}
 
@@ -1429,18 +1430,18 @@ class PopupEngagementService {
 		const popup = get(this.activePopup);
 		if (popup && popup.design?.position) {
 			// Reposition based on new viewport size
-			console.debug('[PopupService] Repositioning popup');
+			logger.debug('[PopupService] Repositioning popup');
 		}
 	}
 
 	private pauseActivePopups(): void {
 		// Pause any active timers, animations, etc.
-		console.debug('[PopupService] Pausing active popups');
+		logger.debug('[PopupService] Pausing active popups');
 	}
 
 	private resumeActivePopups(): void {
 		// Resume timers, animations, etc.
-		console.debug('[PopupService] Resuming active popups');
+		logger.debug('[PopupService] Resuming active popups');
 	}
 
 	private triggerExitIntentPopups(): void {
@@ -1497,7 +1498,7 @@ class PopupEngagementService {
 				return { ...popup, ...optimized };
 			}
 		} catch (error) {
-			console.error('[PopupService] AI optimization failed:', error);
+			logger.error('[PopupService] AI optimization failed:', error);
 		}
 
 		return popup;
@@ -1516,7 +1517,7 @@ class PopupEngagementService {
 			},
 			body: JSON.stringify({ events })
 		}).catch((error) => {
-			console.error('[PopupService] Failed to send events:', error);
+			logger.error('[PopupService] Failed to send events:', error);
 			// Re-add events to buffer
 			this.eventBuffer.unshift(...events);
 		});
@@ -1695,7 +1696,7 @@ export async function submitPopupForm(
 
 		return result;
 	} catch (error: any) {
-		console.error('[PopupService] Form submission failed:', error);
+		logger.error('[PopupService] Form submission failed:', error);
 		return {
 			status: 'error',
 			message: error.message || 'Failed to submit form'

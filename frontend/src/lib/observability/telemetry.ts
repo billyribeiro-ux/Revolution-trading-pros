@@ -11,6 +11,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -119,7 +120,7 @@ class TelemetryService {
 			});
 		});
 
-		console.debug('[Telemetry] Initialized', this.config);
+		logger.debug('[Telemetry] Initialized', this.config);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -153,7 +154,7 @@ class TelemetryService {
 	endSpan(spanId: string, status: SpanStatus = { code: 'OK' }): void {
 		const span = this.spans.get(spanId);
 		if (!span) {
-			console.warn('[Telemetry] Span not found:', spanId);
+			logger.warn('[Telemetry] Span not found:', spanId);
 			return;
 		}
 
@@ -170,7 +171,7 @@ class TelemetryService {
 			status: status.code
 		});
 
-		console.debug('[Telemetry] Span ended:', {
+		logger.debug('[Telemetry] Span ended:', {
 			name: span.name,
 			duration: `${duration.toFixed(2)}ms`,
 			status: status.code
@@ -406,13 +407,13 @@ class TelemetryService {
 			this.metrics = [];
 			this.logs = [];
 
-			console.debug('[Telemetry] Flushed', {
+			logger.debug('[Telemetry] Flushed', {
 				spans: spans.length,
 				metrics: metrics.length,
 				logs: logs.length
 			});
 		} catch (error) {
-			console.error('[Telemetry] Failed to flush:', error);
+			logger.error('[Telemetry] Failed to flush:', error);
 		}
 	}
 
@@ -420,7 +421,7 @@ class TelemetryService {
 		// In production, send to OpenTelemetry collector
 		// For now, log to console in development
 		if (this.config.environment === 'development') {
-			console.debug('[Telemetry] Data:', data);
+			logger.debug('[Telemetry] Data:', data);
 			return;
 		}
 
@@ -435,7 +436,7 @@ class TelemetryService {
 			});
 		} catch (error) {
 			// Silently fail to avoid affecting user experience
-			console.error('[Telemetry] Send failed:', error);
+			logger.error('[Telemetry] Send failed:', error);
 		}
 	}
 

@@ -12,6 +12,7 @@
 
 import { browser } from '$app/environment';
 import type { PrivacySignals } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * EU/EEA country codes requiring strict GDPR consent.
@@ -128,7 +129,7 @@ export function detectRegion(): string | undefined {
 			return getCountryFromTimezone(timezone);
 		}
 	} catch (e) {
-		console.debug('[PrivacySignals] Failed to detect region:', e);
+		logger.debug('[PrivacySignals] Failed to detect region:', e);
 	}
 
 	return undefined;
@@ -263,7 +264,7 @@ export function detectPrivacySignals(): PrivacySignals {
 		requiresStrictConsent: requiresStrict
 	};
 
-	console.debug('[PrivacySignals] Detected:', signals);
+	logger.debug('[PrivacySignals] Detected:', signals);
 
 	return signals;
 }
@@ -278,7 +279,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 } {
 	// If GPC is enabled, respect it (legally required in some jurisdictions)
 	if (signals.gpc) {
-		console.debug('[PrivacySignals] GPC enabled - denying all non-essential');
+		logger.debug('[PrivacySignals] GPC enabled - denying all non-essential');
 		return {
 			analytics: false,
 			marketing: false,
@@ -288,7 +289,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 
 	// If DNT is enabled, respect it as a strong signal
 	if (signals.dnt) {
-		console.debug('[PrivacySignals] DNT enabled - denying marketing and analytics');
+		logger.debug('[PrivacySignals] DNT enabled - denying marketing and analytics');
 		return {
 			analytics: false,
 			marketing: false,
@@ -298,7 +299,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 
 	// Strict consent regions - require opt-in
 	if (signals.requiresStrictConsent) {
-		console.debug('[PrivacySignals] Strict consent region - requiring opt-in');
+		logger.debug('[PrivacySignals] Strict consent region - requiring opt-in');
 		return {
 			analytics: false,
 			marketing: false,
@@ -308,7 +309,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 
 	// Non-strict regions - can use legitimate interest for analytics
 	// But still require opt-in for marketing
-	console.debug('[PrivacySignals] Non-strict region - legitimate interest for analytics');
+	logger.debug('[PrivacySignals] Non-strict region - legitimate interest for analytics');
 	return {
 		analytics: false, // Still default to false for safety
 		marketing: false,

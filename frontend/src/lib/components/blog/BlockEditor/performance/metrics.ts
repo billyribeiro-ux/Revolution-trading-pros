@@ -13,6 +13,7 @@
 import { browser } from '$app/environment';
 import { onCLS, onLCP, onINP, onTTFB, onFCP } from 'web-vitals';
 import type { Metric } from 'web-vitals';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Types
@@ -157,7 +158,7 @@ class PerformanceMetricsStore {
 		// Start memory monitoring
 		this.startMemoryMonitoring();
 
-		console.debug('[PerformanceMetrics] Initialized');
+		logger.debug('[PerformanceMetrics] Initialized');
 	}
 
 	/**
@@ -204,7 +205,7 @@ class PerformanceMetricsStore {
 
 			this.longTaskObserver.observe({ entryTypes: ['longtask'] });
 		} catch (_e) {
-			console.debug('[PerformanceMetrics] Long task observer not supported');
+			logger.debug('[PerformanceMetrics] Long task observer not supported');
 		}
 	}
 
@@ -232,7 +233,7 @@ class PerformanceMetricsStore {
 				buffered: true
 			});
 		} catch (_e) {
-			console.debug('[PerformanceMetrics] Layout shift observer not supported');
+			logger.debug('[PerformanceMetrics] Layout shift observer not supported');
 		}
 	}
 

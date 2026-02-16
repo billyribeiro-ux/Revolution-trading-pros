@@ -1,6 +1,7 @@
 import type { Load } from '@sveltejs/kit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { PaginatedPosts } from '$lib/types/post';
+import { logger } from '$lib/utils/logger';
 
 export const prerender = false; // Disable prerendering - dynamic content
 // SSR enabled for SEO - blog content should be server-rendered
@@ -21,7 +22,7 @@ export const load: Load = async ({ fetch: svelteKitFetch }) => {
 			}
 		};
 	} catch (error) {
-		console.error('Failed to load posts:', error);
+		logger.error('Failed to load posts:', error);
 		return {
 			posts: [],
 			pagination: {

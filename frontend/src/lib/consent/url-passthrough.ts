@@ -12,6 +12,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentState } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * URL passthrough configuration
@@ -88,7 +89,7 @@ export function captureUrlParameters(): Record<string, string> {
 	storedParams = { ...storedParams, ...params };
 
 	if (Object.keys(params).length > 0) {
-		console.debug('[UrlPassthrough] Captured parameters:', params);
+		logger.debug('[UrlPassthrough] Captured parameters:', params);
 	}
 
 	return params;
@@ -147,7 +148,7 @@ export function configureGoogleUrlPassthrough(enabled: boolean): void {
 	// Set url_passthrough parameter
 	window.gtag('set', 'url_passthrough', enabled);
 
-	console.debug('[UrlPassthrough] Google URL passthrough:', enabled ? 'enabled' : 'disabled');
+	logger.debug('[UrlPassthrough] Google URL passthrough:', enabled ? 'enabled' : 'disabled');
 }
 
 /**
@@ -160,7 +161,7 @@ export function enableUrlPassthrough(): void {
 	captureUrlParameters();
 	configureGoogleUrlPassthrough(true);
 
-	console.debug('[UrlPassthrough] URL passthrough enabled');
+	logger.debug('[UrlPassthrough] URL passthrough enabled');
 }
 
 /**
@@ -172,7 +173,7 @@ export function disableUrlPassthrough(): void {
 	passthroughEnabled = false;
 	configureGoogleUrlPassthrough(false);
 
-	console.debug('[UrlPassthrough] URL passthrough disabled');
+	logger.debug('[UrlPassthrough] URL passthrough disabled');
 }
 
 /**
@@ -233,7 +234,7 @@ export function decorateLinks(): void {
 	});
 
 	if (decoratedCount > 0) {
-		console.debug(`[UrlPassthrough] Decorated ${decoratedCount} links`);
+		logger.debug(`[UrlPassthrough] Decorated ${decoratedCount} links`);
 	}
 }
 

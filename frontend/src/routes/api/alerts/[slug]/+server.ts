@@ -15,6 +15,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import type { RoomAlert, AlertCreateInput } from '$lib/types/trading';
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND CONFIGURATION
@@ -28,7 +29,7 @@ const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Alerts API] Fetching: ${BACKEND_URL}${endpoint}`);
+		logger.info(`[Alerts API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -39,15 +40,15 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) {
-			console.error(`[Alerts API] Backend error: ${response.status} ${response.statusText}`);
+			logger.error(`[Alerts API] Backend error: ${response.status} ${response.statusText}`);
 			return null;
 		}
 
 		const data = await response.json();
-		console.log(`[Alerts API] Backend success:`, data?.data?.length || 0, 'items');
+		logger.info(`[Alerts API] Backend success:`, data?.data?.length || 0, 'items');
 		return data;
 	} catch (err) {
-		console.error('[Alerts API] Backend fetch failed:', err);
+		logger.error('[Alerts API] Backend fetch failed:', err);
 		return null;
 	}
 }
@@ -152,7 +153,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	}
 
 	// Fallback to mock data
-	console.log(`[Alerts API] Using mock data for ${slug}`);
+	logger.info(`[Alerts API] Using mock data for ${slug}`);
 	let alerts = mockAlerts[slug] || [];
 
 	// Filter by alert type

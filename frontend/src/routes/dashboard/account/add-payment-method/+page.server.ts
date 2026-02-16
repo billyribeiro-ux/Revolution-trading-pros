@@ -1,5 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Add Payment Method Page Server
@@ -62,7 +63,7 @@ export const actions = {
 				throw err;
 			}
 
-			console.error('Error adding payment method:', err);
+			logger.error('Error adding payment method:', err);
 			return fail(500, { error: 'An error occurred while adding the payment method' });
 		}
 	}

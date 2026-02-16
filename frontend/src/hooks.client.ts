@@ -12,6 +12,7 @@
  */
 
 import type { HandleClientError } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Error severity levels for categorization
@@ -124,8 +125,8 @@ async function reportError(
 	// Only report in production
 	if (import.meta.env.DEV) {
 		console.group(`🚨 Client Error [${errorId}]`);
-		console.error('Error:', error);
-		console.info('Metadata:', metadata);
+		logger.error('Error:', error);
+		logger.info('Metadata:', metadata);
 		console.groupEnd();
 		return;
 	}
@@ -161,7 +162,7 @@ async function reportError(
 	} catch (reportingError) {
 		// Silently fail - don't create infinite error loops
 		if (import.meta.env.DEV) {
-			console.warn('Failed to report error:', reportingError);
+			logger.warn('Failed to report error:', reportingError);
 		}
 	}
 }
@@ -199,12 +200,12 @@ function forceReloadForFreshChunks(): void {
 
 	// Prevent reload loop - only reload once per 30 seconds
 	if (lastReload && now - parseInt(lastReload, 10) < 30000) {
-		console.warn('[ChunkError] Already reloaded recently, not reloading again');
+		logger.warn('[ChunkError] Already reloaded recently, not reloading again');
 		return;
 	}
 
 	sessionStorage.setItem(RELOAD_KEY, now.toString());
-	console.info('[ChunkError] Stale chunks detected, forcing page reload...');
+	logger.info('[ChunkError] Stale chunks detected, forcing page reload...');
 	window.location.reload();
 }
 
@@ -253,7 +254,7 @@ export const handleError: HandleClientError = async ({
 
 	// Development: Log full error details
 	if (import.meta.env.DEV) {
-		console.error(`[${errorId}] Unhandled client error:`, error);
+		logger.error(`[${errorId}] Unhandled client error:`, error);
 	}
 
 	// Return user-friendly error message
@@ -298,7 +299,7 @@ if (typeof window !== 'undefined') {
 		reportError(error, metadata, errorId);
 
 		if (import.meta.env.DEV) {
-			console.error(`[${errorId}] Unhandled promise rejection:`, error);
+			logger.error(`[${errorId}] Unhandled promise rejection:`, error);
 		}
 	});
 
@@ -340,7 +341,7 @@ if (typeof window !== 'undefined') {
 				const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
 
 				if (import.meta.env.DEV) {
-					console.info(`📊 LCP: ${lastEntry.startTime.toFixed(2)}ms`);
+					logger.info(`📊 LCP: ${lastEntry.startTime.toFixed(2)}ms`);
 				}
 
 				// Report to analytics
@@ -367,7 +368,7 @@ if (typeof window !== 'undefined') {
 					const fid = fidEntry.processingStart - fidEntry.startTime;
 
 					if (import.meta.env.DEV) {
-						console.info(`📊 FID: ${fid.toFixed(2)}ms`);
+						logger.info(`📊 FID: ${fid.toFixed(2)}ms`);
 					}
 
 					if (typeof window !== 'undefined' && 'gtag' in window) {
@@ -400,7 +401,7 @@ if (typeof window !== 'undefined') {
 			document.addEventListener('visibilitychange', () => {
 				if (document.visibilityState === 'hidden') {
 					if (import.meta.env.DEV) {
-						console.info(`📊 CLS: ${clsValue.toFixed(4)}`);
+						logger.info(`📊 CLS: ${clsValue.toFixed(4)}`);
 					}
 
 					if (typeof window !== 'undefined' && 'gtag' in window) {

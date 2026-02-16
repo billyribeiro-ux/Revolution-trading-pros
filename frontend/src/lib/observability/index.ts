@@ -135,6 +135,7 @@ import { browser } from '$app/environment';
 import { metrics } from './metrics';
 import { getOrchestrator } from './orchestrator';
 import type { AnalyticsConfig } from './adapters';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Initialize the complete analytics system.
@@ -160,7 +161,7 @@ export async function initializeAnalytics(config?: Partial<AnalyticsConfig>): Pr
 
 	await metrics.initialize(config);
 
-	console.debug('[Observability] Analytics initialized');
+	logger.debug('[Observability] Analytics initialized');
 }
 
 /**
@@ -182,7 +183,7 @@ export function updateAnalyticsConsent(consent: { analytics: boolean; marketing:
 
 	getOrchestrator().updateConsent(consent);
 
-	console.debug('[Observability] Consent updated:', consent);
+	logger.debug('[Observability] Consent updated:', consent);
 }
 
 /**

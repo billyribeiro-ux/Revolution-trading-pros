@@ -5,6 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 const BACKEND_URL = PROD_BACKEND;
@@ -31,7 +32,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, params }) => {
 		const data = await response.json();
 		return json(data);
 	} catch (error) {
-		console.error('[API] Admin course get error:', error);
+		logger.error('[API] Admin course get error:', error);
 		return json({ success: false, error: 'Failed to fetch course' }, { status: 500 });
 	}
 };
@@ -55,7 +56,7 @@ export const PUT: RequestHandler = async ({ cookies, fetch, params, request }) =
 		const data = await response.json();
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[API] Admin course update error:', error);
+		logger.error('[API] Admin course update error:', error);
 		return json({ success: false, error: 'Failed to update course' }, { status: 500 });
 	}
 };
@@ -77,7 +78,7 @@ export const DELETE: RequestHandler = async ({ cookies, fetch, params }) => {
 		const data = await response.json();
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[API] Admin course delete error:', error);
+		logger.error('[API] Admin course delete error:', error);
 		return json({ success: false, error: 'Failed to delete course' }, { status: 500 });
 	}
 };

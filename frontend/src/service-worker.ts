@@ -40,14 +40,15 @@
  */
 
 import { build, files, version } from '$service-worker';
+import { logger } from '$lib/utils/logger';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 // ICT 11+ Production Mode: Silent operation (no console noise)
 const IS_PRODUCTION = true; // Set to false for debugging
-const log = (...args: any[]) => !IS_PRODUCTION && console.log(...args);
-const warn = (...args: any[]) => !IS_PRODUCTION && console.warn(...args);
-const error = (...args: any[]) => console.error(...args); // Always log errors
+const log = (...args: any[]) => !IS_PRODUCTION && logger.info(...args);
+const warn = (...args: any[]) => !IS_PRODUCTION && logger.warn(...args);
+const error = (...args: any[]) => logger.error(...args); // Always log errors
 
 // Cache name includes version to ensure fresh caches on new deployments
 const CACHE_NAME = `cache-${version}`;
@@ -403,7 +404,7 @@ async function handleVideoCDNFetch(event: FetchEvent): Promise<Response> {
 		// Try cache first
 		const cached = await getCachedVideo(request);
 		if (cached) {
-			console.debug(`[SW] Video cache hit: ${url.pathname}`);
+			logger.debug(`[SW] Video cache hit: ${url.pathname}`);
 			return cached;
 		}
 

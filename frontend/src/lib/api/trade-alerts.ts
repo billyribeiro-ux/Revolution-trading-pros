@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '/api';
@@ -122,7 +123,7 @@ export async function getTradeAlerts(
 
 		return await handleResponse<TradeAlertsResponse>(response);
 	} catch (error) {
-		console.error('[TradeAlerts] Error fetching alerts:', error);
+		logger.error('[TradeAlerts] Error fetching alerts:', error);
 		// Return empty instead of throwing - let UI handle gracefully
 		return { alerts: [], total: 0, page: 1, per_page: 20 };
 	}
@@ -147,7 +148,7 @@ export async function getTradeAlert(alertId: string): Promise<TradeAlert | null>
 
 		return await handleResponse<TradeAlert>(response);
 	} catch (error) {
-		console.error('[TradeAlerts] Error fetching alert:', error);
+		logger.error('[TradeAlerts] Error fetching alert:', error);
 		return null;
 	}
 }

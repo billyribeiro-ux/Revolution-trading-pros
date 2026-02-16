@@ -1,5 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Edit Account Page Server Load
@@ -40,7 +41,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 			}
 		};
 	} catch (err) {
-		console.error('Error loading account details:', err);
+		logger.error('Error loading account details:', err);
 		return {
 			profile: {
 				firstName: '',
@@ -125,7 +126,7 @@ export const actions = {
 				message: 'Account details updated successfully'
 			};
 		} catch (err) {
-			console.error('Error updating account:', err);
+			logger.error('Error updating account:', err);
 			return fail(500, { error: 'An error occurred while updating your account' });
 		}
 	}

@@ -6,6 +6,7 @@
 
 import { browser } from '$app/environment';
 import { BehaviorTracker } from './tracker';
+import { logger } from '$lib/utils/logger';
 
 let tracker: BehaviorTracker | null = null;
 
@@ -23,7 +24,7 @@ export function initBehaviorTracking() {
 			sampleRate: 1.0 // 100% sampling
 		});
 
-		console.log('[RevolutionBehavior-L8] Tracker initialized');
+		logger.info('[RevolutionBehavior-L8] Tracker initialized');
 	}
 
 	return tracker;

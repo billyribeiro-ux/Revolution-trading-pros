@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import Anthropic from '@anthropic-ai/sdk';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 function getAnthropicClient() {
 	const apiKey = env.ANTHROPIC_API_KEY;
@@ -56,7 +57,7 @@ ${body.context ? `Context: ${body.context}` : ''}`;
 			}
 		});
 	} catch (err: unknown) {
-		console.error('[AI Generate] Error:', err);
+		logger.error('[AI Generate] Error:', err);
 
 		if (err instanceof Anthropic.APIError) {
 			return json(

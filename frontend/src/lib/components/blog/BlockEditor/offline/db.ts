@@ -12,6 +12,7 @@
 import { browser } from '$app/environment';
 import type { Block, Revision } from '../types';
 import type { Post } from '$lib/types/post';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Database Configuration
@@ -183,7 +184,7 @@ class DatabaseConnection {
 				};
 
 				this.db.onerror = (event) => {
-					console.error('[BlogEditorDB] Database error:', event);
+					logger.error('[BlogEditorDB] Database error:', event);
 				};
 
 				resolve(this.db);
@@ -203,7 +204,7 @@ class DatabaseConnection {
 			};
 
 			request.onblocked = () => {
-				console.warn('[BlogEditorDB] Database upgrade blocked - close other tabs');
+				logger.warn('[BlogEditorDB] Database upgrade blocked - close other tabs');
 			};
 		});
 
@@ -328,7 +329,7 @@ class DatabaseConnection {
 		}
 
 		if (import.meta.env.DEV) {
-			console.debug('[BlogEditorDB] Cleanup complete:', result);
+			logger.debug('[BlogEditorDB] Cleanup complete:', result);
 		}
 
 		return result;
@@ -707,7 +708,7 @@ class DatabaseConnection {
 			request.onsuccess = () => resolve();
 			request.onerror = () => reject(request.error);
 			request.onblocked = () => {
-				console.warn('[BlogEditorDB] Database deletion blocked');
+				logger.warn('[BlogEditorDB] Database deletion blocked');
 			};
 		});
 	}

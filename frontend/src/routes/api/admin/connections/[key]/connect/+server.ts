@@ -9,6 +9,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // In-memory storage (shared with main connections endpoint)
 // In production, this would be a database
@@ -59,7 +60,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Connection error:', err);
+		logger.error('Connection error:', err);
 		return json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to connect service' },
 			{ status: 500 }

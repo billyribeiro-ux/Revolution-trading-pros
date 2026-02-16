@@ -9,6 +9,7 @@
  */
 
 import { apiClient } from './client.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -81,7 +82,7 @@ export async function enterTradingRoom(roomSlug: string): Promise<void> {
 			throw new Error('Failed to generate SSO token');
 		}
 	} catch (error) {
-		console.error('[SSO] Failed to enter trading room:', error);
+		logger.error('[SSO] Failed to enter trading room:', error);
 		throw error;
 	}
 }

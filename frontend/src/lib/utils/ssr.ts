@@ -9,6 +9,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Safe localStorage access with SSR support
@@ -33,7 +34,7 @@ export function setLocalStorage<T>(key: string, value: T): void {
 	try {
 		localStorage.setItem(key, JSON.stringify(value));
 	} catch (error) {
-		console.error('Failed to set localStorage:', error);
+		logger.error('Failed to set localStorage:', error);
 	}
 }
 
@@ -213,7 +214,7 @@ export async function lazyImport<T>(
 		const module = await importFn();
 		return module.default;
 	} catch (error) {
-		console.error('Failed to lazy load module:', error);
+		logger.error('Failed to lazy load module:', error);
 		return fallback;
 	}
 }

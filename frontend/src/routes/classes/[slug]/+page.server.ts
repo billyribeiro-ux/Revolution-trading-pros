@@ -14,6 +14,7 @@
 
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -91,7 +92,7 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 			}
 		}
 	} catch (err) {
-		console.error('[SSR] Failed to fetch course data:', err);
+		logger.error('[SSR] Failed to fetch course data:', err);
 		error = 'Failed to load course data';
 	}
 

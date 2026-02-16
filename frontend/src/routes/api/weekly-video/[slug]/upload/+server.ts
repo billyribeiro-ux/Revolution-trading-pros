@@ -14,6 +14,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -69,7 +70,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error(`[Weekly Video Upload] Backend error: ${response.status}`, errorText);
+			logger.error(`[Weekly Video Upload] Backend error: ${response.status}`, errorText);
 			error(response.status, errorText || 'Failed to create video');
 		}
 
@@ -85,7 +86,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 		error(500, 'Failed to create video on Bunny.net');
 	} catch (err) {
-		console.error('[Weekly Video Upload] Error:', err);
+		logger.error('[Weekly Video Upload] Error:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
@@ -123,7 +124,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 			error(400, 'No file data provided');
 		}
 
-		console.log(
+		logger.info(
 			`[Weekly Video Upload] Uploading ${fileBuffer.byteLength} bytes to ${slug} video ${videoGuid}`
 		);
 
@@ -141,7 +142,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error(`[Weekly Video Upload] Backend error: ${response.status}`, errorText);
+			logger.error(`[Weekly Video Upload] Backend error: ${response.status}`, errorText);
 			error(response.status, errorText || 'Upload failed');
 		}
 
@@ -151,7 +152,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 			room_slug: slug
 		});
 	} catch (err) {
-		console.error('[Weekly Video Upload] Error:', err);
+		logger.error('[Weekly Video Upload] Error:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

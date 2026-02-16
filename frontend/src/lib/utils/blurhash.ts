@@ -11,6 +11,7 @@
  */
 
 import { decode, encode } from 'blurhash';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -46,7 +47,7 @@ export function decodeBlurhash(hash: string, options: BlurhashOptions = {}): str
 		const pixels = decode(hash, width, height, punch);
 		return pixelsToDataURL(pixels, width, height);
 	} catch (error) {
-		console.warn('[Blurhash] Failed to decode:', error);
+		logger.warn('[Blurhash] Failed to decode:', error);
 		return null;
 	}
 }
@@ -75,7 +76,7 @@ export function decodeBlurhashToCanvas(
 		imageData.data.set(pixels);
 		ctx.putImageData(imageData, 0, 0);
 	} catch (error) {
-		console.warn('[Blurhash] Failed to decode to canvas:', error);
+		logger.warn('[Blurhash] Failed to decode to canvas:', error);
 	}
 }
 
@@ -109,7 +110,7 @@ export async function encodeBlurhash(
 		const imageData = ctx.getImageData(0, 0, width, height);
 		return encode(imageData.data, width, height, componentX, componentY);
 	} catch (error) {
-		console.warn('[Blurhash] Failed to encode:', error);
+		logger.warn('[Blurhash] Failed to encode:', error);
 		return null;
 	}
 }

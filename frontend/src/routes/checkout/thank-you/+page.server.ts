@@ -13,6 +13,7 @@
 import type { ServerLoad } from '@sveltejs/kit';
 import { API_BASE_URL } from '$lib/api/config';
 import type { OrderDetail } from './types';
+import { logger } from '$lib/utils/logger';
 
 // Disable prerendering - this page requires dynamic URL parameters
 export const prerender = false;
@@ -62,7 +63,7 @@ export const load: ServerLoad = async ({ url, fetch, cookies }) => {
 				fetchError = 'Unable to load order details. Your order was successful.';
 			}
 		} catch (error) {
-			console.error('Failed to fetch order details:', error);
+			logger.error('Failed to fetch order details:', error);
 			fetchError = 'Unable to load order details. Your order was successful.';
 		}
 	}

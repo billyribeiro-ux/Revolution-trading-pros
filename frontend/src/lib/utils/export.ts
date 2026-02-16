@@ -19,6 +19,7 @@
 
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Escape HTML entities to prevent XSS attacks in PDF export
@@ -106,7 +107,7 @@ export function exportToPDF(options: ExportOptions): void {
 	// Create a new window for printing
 	const printWindow = window.open('', '_blank');
 	if (!printWindow) {
-		console.error('Failed to open print window');
+		logger.error('Failed to open print window');
 		return;
 	}
 

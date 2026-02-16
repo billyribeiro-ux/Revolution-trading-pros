@@ -9,6 +9,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
@@ -89,7 +90,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 			}
 		});
 	} catch (err) {
-		console.error('CRM Contacts API proxy error:', err);
+		logger.error('CRM Contacts API proxy error:', err);
 		return json(
 			{
 				success: false,
@@ -160,7 +161,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('CRM Contacts API create error:', err);
+		logger.error('CRM Contacts API create error:', err);
 		error(500, 'Failed to create contact');
 	}
 };

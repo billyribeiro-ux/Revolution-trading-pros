@@ -16,6 +16,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // ICT 7: Centralized configuration with fallback
 const API_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
@@ -44,7 +45,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 
 	if (!token) {
 		// ICT 7: Structured logging with context
-		console.debug(`[Subscriptions:${requestId}] No auth token - returning empty`);
+		logger.debug(`[Subscriptions:${requestId}] No auth token - returning empty`);
 		return json({
 			subscriptions: [],
 			total: 0
@@ -64,7 +65,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 
 		if (!response.ok) {
 			// ICT 7: Structured warning with context (no sensitive data)
-			console.warn(
+			logger.warn(
 				`[Subscriptions:${requestId}] Backend returned ${response.status} (${duration}ms)`
 			);
 			return json({
@@ -79,7 +80,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 		const subscriptions = data.data || data.subscriptions || [];
 		const total = data.total ?? subscriptions.length;
 
-		console.debug(`[Subscriptions:${requestId}] Success: ${total} subscriptions (${duration}ms)`);
+		logger.debug(`[Subscriptions:${requestId}] Success: ${total} subscriptions (${duration}ms)`);
 
 		return json({
 			subscriptions,
@@ -90,7 +91,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 		const duration = Math.round(performance.now() - startTime);
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-		console.error(`[Subscriptions:${requestId}] Failed: ${errorMessage} (${duration}ms)`);
+		logger.error(`[Subscriptions:${requestId}] Failed: ${errorMessage} (${duration}ms)`);
 
 		// ICT 7: Graceful degradation - never crash the UI
 		return json({

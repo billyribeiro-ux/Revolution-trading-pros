@@ -15,6 +15,7 @@ import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
 import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -244,12 +245,12 @@ export async function getUserMemberships(options?: {
 	// If no token AND no user in store, we're truly not authenticated
 	// But if we have a user (from server sync), try the API with cookies
 	if (!token && !storeUser) {
-		console.log('[UserMemberships] No auth token or user - not authenticated');
+		logger.info('[UserMemberships] No auth token or user - not authenticated');
 		return categorizeMemberships([]);
 	}
 
 	if (!token) {
-		console.log('[UserMemberships] No in-memory token - will use cookies for auth');
+		logger.info('[UserMemberships] No in-memory token - will use cookies for auth');
 	}
 
 	// ICT 7: ENTERPRISE DEVELOPER ACCESS - Check via environment-based config
@@ -258,7 +259,7 @@ export async function getUserMemberships(options?: {
 		storeUser && (isDeveloperEmail(storeUser.email) || isSuperadminEmail(storeUser.email));
 
 	if (isDeveloper) {
-		console.debug('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
+		logger.debug('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
 		// Skip cache to always get latest products
 		return await getDeveloperMemberships();
 	}
@@ -292,7 +293,7 @@ export async function getUserMemberships(options?: {
 
 		return result;
 	} catch (error) {
-		console.error('[UserMemberships] Error fetching memberships:', error);
+		logger.error('[UserMemberships] Error fetching memberships:', error);
 		// Return empty - let UI show appropriate message
 		return categorizeMemberships([]);
 	}
@@ -437,7 +438,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			}
 
 			// STRATEGY 2: Fallback to products proxy endpoint
-			console.debug('[Developer] membership-plans empty, trying products endpoint');
+			logger.debug('[Developer] membership-plans empty, trying products endpoint');
 			const productsResponse = await fetch('/api/products?product_type=membership&per_page=100', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
@@ -456,10 +457,10 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			}
 
 			// STRATEGY 3: Return mock data — backend not ready yet (expected)
-			console.debug('[Developer] API endpoints not ready, using mock memberships');
+			logger.debug('[Developer] API endpoints not ready, using mock memberships');
 			return getDeveloperMockMemberships();
 		} catch (_error) {
-			console.debug('[Developer] API unavailable, using mock memberships');
+			logger.debug('[Developer] API unavailable, using mock memberships');
 			return getDeveloperMockMemberships();
 		} finally {
 			developerMembershipsPromise = null;
@@ -546,7 +547,7 @@ function getDefaultIcon(type: MembershipType): string {
  * Ensures developers always have access even if API is down
  */
 function getDeveloperMockMemberships(): UserMembershipsResponse {
-	console.debug('[Developer] Using mock membership data (API not ready)');
+	logger.debug('[Developer] Using mock membership data (API not ready)');
 
 	const mockMemberships: UserMembership[] = [
 		// ═══════════════════════════════════════════════════════════════════════════
@@ -746,7 +747,7 @@ export async function checkProductOwnership(
 			};
 		}
 	} catch (error) {
-		console.error('[UserMemberships] Error checking ownership:', error);
+		logger.error('[UserMemberships] Error checking ownership:', error);
 		return { owned: false };
 	}
 }
@@ -789,7 +790,7 @@ export async function checkProductVariantOwnership(
 			) || null
 		);
 	} catch (error) {
-		console.error('[UserMemberships] Error checking variant ownership:', error);
+		logger.error('[UserMemberships] Error checking variant ownership:', error);
 		return null;
 	}
 }
@@ -820,7 +821,7 @@ export async function getOwnedProducts(): Promise<{
 				}))
 		};
 	} catch (error) {
-		console.error('[UserMemberships] Error getting owned products:', error);
+		logger.error('[UserMemberships] Error getting owned products:', error);
 		return { courses: [], indicators: [], subscriptions: [] };
 	}
 }

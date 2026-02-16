@@ -9,6 +9,7 @@
 
 import { redirect, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -56,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw error;
 		}
 
-		console.error('[Apple Callback] Error:', error);
+		logger.error('[Apple Callback] Error:', error);
 		// Redirect to login with error on failure
 		redirect(302, '/login?error=apple_callback_failed');
 	}

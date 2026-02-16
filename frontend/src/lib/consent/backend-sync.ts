@@ -14,6 +14,7 @@
 import { browser } from '$app/environment';
 import type { ConsentState, ConsentAuditEntry } from './types';
 import { getAuditLog } from './audit-log';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Backend sync configuration
@@ -92,7 +93,7 @@ let lastSyncedState: string | null = null;
  */
 export function configureBackendSync(newConfig: Partial<BackendSyncConfig>): void {
 	config = { ...config, ...newConfig };
-	console.debug('[BackendSync] Configured:', config);
+	logger.debug('[BackendSync] Configured:', config);
 }
 
 /**
@@ -174,7 +175,7 @@ export async function syncConsentToBackend(
 	});
 
 	if (stateHash === lastSyncedState) {
-		console.debug('[BackendSync] State unchanged, skipping sync');
+		logger.debug('[BackendSync] State unchanged, skipping sync');
 		return {
 			success: true,
 			consentId: consent.consentId || '',
@@ -209,11 +210,11 @@ export async function syncConsentToBackend(
 		const result: ConsentSyncResponse = await response.json();
 
 		lastSyncedState = stateHash;
-		console.debug('[BackendSync] Sync successful:', result);
+		logger.debug('[BackendSync] Sync successful:', result);
 
 		return result;
 	} catch (error) {
-		console.error('[BackendSync] Sync failed:', error);
+		logger.error('[BackendSync] Sync failed:', error);
 		return {
 			success: false,
 			consentId: consent.consentId || '',
@@ -261,18 +262,18 @@ export async function fetchConsentFromBackend(userId: string): Promise<ConsentSt
 
 		if (!response.ok) {
 			if (response.status === 404) {
-				console.debug('[BackendSync] No consent found for user');
+				logger.debug('[BackendSync] No consent found for user');
 				return null;
 			}
 			throw new Error(`HTTP ${response.status}`);
 		}
 
 		const data = await response.json();
-		console.debug('[BackendSync] Fetched consent from backend:', data);
+		logger.debug('[BackendSync] Fetched consent from backend:', data);
 
 		return data.consent as ConsentState;
 	} catch (error) {
-		console.error('[BackendSync] Fetch failed:', error);
+		logger.error('[BackendSync] Fetch failed:', error);
 		return null;
 	}
 }
@@ -302,10 +303,10 @@ export async function deleteConsentFromBackend(consentId: string): Promise<boole
 			throw new Error(`HTTP ${response.status}`);
 		}
 
-		console.debug('[BackendSync] Consent deleted from backend');
+		logger.debug('[BackendSync] Consent deleted from backend');
 		return true;
 	} catch (error) {
-		console.error('[BackendSync] Delete failed:', error);
+		logger.error('[BackendSync] Delete failed:', error);
 		return false;
 	}
 }
@@ -338,11 +339,11 @@ export async function exportConsentFromBackend(
 		}
 
 		const data = await response.json();
-		console.debug('[BackendSync] Exported consent data');
+		logger.debug('[BackendSync] Exported consent data');
 
 		return data;
 	} catch (error) {
-		console.error('[BackendSync] Export failed:', error);
+		logger.error('[BackendSync] Export failed:', error);
 		return null;
 	}
 }

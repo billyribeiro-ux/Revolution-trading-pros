@@ -22,6 +22,7 @@
  */
 
 import { apiClient } from './client.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions
@@ -169,7 +170,7 @@ export const accountApi = {
 				}
 			};
 		} catch (error) {
-			console.error('[Account API] Failed to fetch account data:', error);
+			logger.error('[Account API] Failed to fetch account data:', error);
 			throw error;
 		}
 	},
@@ -185,7 +186,7 @@ export const accountApi = {
 			const response = await apiClient.get<ApiResponse<UserProfile>>('/api/user/profile');
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to fetch profile:', error);
+			logger.error('[Account API] Failed to fetch profile:', error);
 			throw error;
 		}
 	},
@@ -204,7 +205,7 @@ export const accountApi = {
 				);
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to fetch memberships:', error);
+			logger.error('[Account API] Failed to fetch memberships:', error);
 			throw error;
 		}
 	},
@@ -220,7 +221,7 @@ export const accountApi = {
 			const response = await apiClient.get<ApiResponse<BillingInfo>>('/api/user/billing');
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to fetch billing info:', error);
+			logger.error('[Account API] Failed to fetch billing info:', error);
 			throw error;
 		}
 	},
@@ -235,10 +236,10 @@ export const accountApi = {
 	async updateProfile(data: UpdateProfileRequest): Promise<UserProfile> {
 		try {
 			const response = await apiClient.put<ApiResponse<UserProfile>>('/api/user/profile', data);
-			console.log('[Account API] Profile updated successfully');
+			logger.info('[Account API] Profile updated successfully');
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to update profile:', error);
+			logger.error('[Account API] Failed to update profile:', error);
 			throw error;
 		}
 	},
@@ -256,10 +257,10 @@ export const accountApi = {
 				'/api/user/password',
 				data
 			);
-			console.log('[Account API] Password updated successfully');
+			logger.info('[Account API] Password updated successfully');
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to update password:', error);
+			logger.error('[Account API] Failed to update password:', error);
 			throw error;
 		}
 	},
@@ -286,10 +287,10 @@ export const accountApi = {
 				}
 			);
 
-			console.log('[Account API] Avatar uploaded successfully');
+			logger.info('[Account API] Avatar uploaded successfully');
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to upload avatar:', error);
+			logger.error('[Account API] Failed to upload avatar:', error);
 			throw error;
 		}
 	},
@@ -303,10 +304,10 @@ export const accountApi = {
 	async deleteAvatar(): Promise<UserProfile> {
 		try {
 			const response = await apiClient.delete<ApiResponse<UserProfile>>('/api/user/avatar');
-			console.log('[Account API] Avatar deleted successfully');
+			logger.info('[Account API] Avatar deleted successfully');
 			return response.data;
 		} catch (error) {
-			console.error('[Account API] Failed to delete avatar:', error);
+			logger.error('[Account API] Failed to delete avatar:', error);
 			throw error;
 		}
 	}

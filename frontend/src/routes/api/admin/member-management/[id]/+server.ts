@@ -7,6 +7,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
@@ -45,7 +46,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 			return json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
-		console.error('[API] Delete member error:', error);
+		logger.error('[API] Delete member error:', error);
 		return json({ error: 'Failed to delete member' }, { status: 500 });
 	}
 };
@@ -84,7 +85,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 			return json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
-		console.error('[API] Get member error:', error);
+		logger.error('[API] Get member error:', error);
 		return json({ error: 'Failed to get member' }, { status: 500 });
 	}
 };
@@ -125,7 +126,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			return json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
-		console.error('[API] Update member error:', error);
+		logger.error('[API] Update member error:', error);
 		return json({ error: 'Failed to update member' }, { status: 500 });
 	}
 };

@@ -53,6 +53,7 @@ import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import type { CartItem } from '$lib/stores/cart.svelte';
 import { websocketService, type CartUpdatePayload } from '$lib/services/websocket';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -461,7 +462,7 @@ class CheckoutCartService {
 		// Track analytics
 		this.setupAnalytics();
 
-		console.debug('[CheckoutService] Initialized');
+		logger.debug('[CheckoutService] Initialized');
 	}
 
 	/**
@@ -537,7 +538,7 @@ class CheckoutCartService {
 
 			// Subscribe to cart updates via WebSocket service
 			websocketService.subscribeToCart(userId, sessionId, (cartUpdate: CartUpdatePayload) => {
-				console.debug('[CheckoutService] Received cart update via WebSocket:', cartUpdate.action);
+				logger.debug('[CheckoutService] Received cart update via WebSocket:', cartUpdate.action);
 
 				// Update local cart state based on WebSocket message
 				this.cart.update((cart) => {
@@ -568,11 +569,11 @@ class CheckoutCartService {
 				}
 			});
 
-			console.debug('[CheckoutService] WebSocket cart subscription active');
+			logger.debug('[CheckoutService] WebSocket cart subscription active');
 		} catch (error) {
-			console.error('[CheckoutService] Failed to setup WebSocket:', error);
+			logger.error('[CheckoutService] Failed to setup WebSocket:', error);
 			// Fallback to polling if WebSocket fails
-			console.debug('[CheckoutService] Falling back to polling for cart updates');
+			logger.debug('[CheckoutService] Falling back to polling for cart updates');
 		}
 	}
 
@@ -593,7 +594,7 @@ class CheckoutCartService {
 					localStorage.removeItem(CART_PERSISTENCE_KEY);
 				}
 			} catch (error) {
-				console.error('[CheckoutService] Failed to load persisted cart:', error);
+				logger.error('[CheckoutService] Failed to load persisted cart:', error);
 			}
 		}
 
@@ -609,7 +610,7 @@ class CheckoutCartService {
 		try {
 			localStorage.setItem(CART_PERSISTENCE_KEY, JSON.stringify(cart));
 		} catch (error) {
-			console.error('[CheckoutService] Failed to persist cart:', error);
+			logger.error('[CheckoutService] Failed to persist cart:', error);
 		}
 	}
 
@@ -666,7 +667,7 @@ class CheckoutCartService {
 				this.persistCart(mergedCart);
 			}
 		} catch (error) {
-			console.error('[CheckoutService] Sync failed:', error);
+			logger.error('[CheckoutService] Sync failed:', error);
 		} finally {
 			this.isSyncing.set(false);
 		}
@@ -726,7 +727,7 @@ class CheckoutCartService {
 				this.updatePrices(prices);
 			}
 		} catch (error) {
-			console.error('[CheckoutService] Price check failed:', error);
+			logger.error('[CheckoutService] Price check failed:', error);
 		}
 	}
 
@@ -782,7 +783,7 @@ class CheckoutCartService {
 				this.updateInventory(inventory);
 			}
 		} catch (error) {
-			console.error('[CheckoutService] Inventory check failed:', error);
+			logger.error('[CheckoutService] Inventory check failed:', error);
 		}
 	}
 
@@ -863,7 +864,7 @@ class CheckoutCartService {
 					body: JSON.stringify({ cartId: cart.id })
 				});
 			} catch (error) {
-				console.error('[CheckoutService] Failed to report abandonment:', error);
+				logger.error('[CheckoutService] Failed to report abandonment:', error);
 			}
 		}
 	}
@@ -1046,7 +1047,7 @@ class CheckoutCartService {
 					}
 				});
 			} catch (error) {
-				console.error('[CheckoutService] Failed to clear cart on server:', error);
+				logger.error('[CheckoutService] Failed to clear cart on server:', error);
 			}
 		}
 
@@ -1303,7 +1304,7 @@ class CheckoutCartService {
 				this.recommendations.set(recommendations);
 			}
 		} catch (error) {
-			console.error('[CheckoutService] Failed to load recommendations:', error);
+			logger.error('[CheckoutService] Failed to load recommendations:', error);
 		}
 	}
 
@@ -1358,7 +1359,7 @@ class CheckoutCartService {
 				body: JSON.stringify(item)
 			});
 		} catch (error) {
-			console.error(`[CheckoutService] Failed to ${action} item on server:`, error);
+			logger.error(`[CheckoutService] Failed to ${action} item on server:`, error);
 		}
 	}
 
@@ -1392,7 +1393,7 @@ class CheckoutCartService {
 		message: string,
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
-		console.log(`[${type.toUpperCase()}] ${message}`);
+		logger.info(`[${type.toUpperCase()}] ${message}`);
 		// Implement actual notification system
 	}
 
@@ -1430,7 +1431,7 @@ class CheckoutCartService {
 				body: JSON.stringify({ events })
 			});
 		} catch (error) {
-			console.error('[CheckoutService] Failed to send analytics:', error);
+			logger.error('[CheckoutService] Failed to send analytics:', error);
 			// Re-add events to buffer
 			this.analyticsBuffer.unshift(...events);
 		}

@@ -16,6 +16,7 @@
 
 import { browser } from '$app/environment';
 import type { Awareness as YAwareness } from 'y-protocols/awareness';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -161,7 +162,7 @@ export interface AwarenessManagerInstance {
  *   awareness: provider.getAwareness(),
  *   user: { id: 'user-1', name: 'John', color: '#ff0000' },
  *   onCollaboratorsChange: (collaborators) => {
- *     console.log('Collaborators:', collaborators);
+ *     logger.info('Collaborators:', collaborators);
  *   }
  * });
  *
@@ -459,7 +460,7 @@ export function createAwarenessManager(options: AwarenessManagerOptions): Awaren
 		// Clear collaborators
 		collaboratorsMap.clear();
 
-		console.log('[Awareness] Destroyed');
+		logger.info('[Awareness] Destroyed');
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

@@ -7,6 +7,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
@@ -92,7 +93,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ message: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
-		console.error('[API] Create coupon error:', error);
+		logger.error('[API] Create coupon error:', error);
 		return json({ message: 'Failed to create coupon' }, { status: 500 });
 	}
 };

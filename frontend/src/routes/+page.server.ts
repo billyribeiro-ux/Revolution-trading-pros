@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
+import { logger } from '$lib/utils/logger';
 
 // ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
 // Cloudflare Pages secrets not available via import.meta.env on server
@@ -33,7 +34,7 @@ async function fetchPosts(fetch: typeof globalThis.fetch) {
 		const timeoutId = setTimeout(() => controller.abort(), 5000); // Increased timeout
 
 		const url = `${PRODUCTION_API_URL}/api/posts?per_page=6`;
-		console.log('[SSR] Fetching posts from:', url);
+		logger.info('[SSR] Fetching posts from:', url);
 
 		const response = await fetch(url, {
 			signal: controller.signal,
@@ -45,15 +46,15 @@ async function fetchPosts(fetch: typeof globalThis.fetch) {
 		clearTimeout(timeoutId);
 
 		if (!response.ok) {
-			console.log('[SSR] Posts fetch failed:', response.status);
+			logger.info('[SSR] Posts fetch failed:', response.status);
 			return [];
 		}
 
 		const data = await response.json();
-		console.log('[SSR] Posts fetched:', data.data?.length || 0);
+		logger.info('[SSR] Posts fetched:', data.data?.length || 0);
 		return data.data || [];
 	} catch (e) {
-		console.log('[SSR] Posts fetch error:', e);
+		logger.info('[SSR] Posts fetch error:', e);
 		return [];
 	}
 }

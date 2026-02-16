@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '/api';
@@ -125,7 +126,7 @@ export async function getLearningVideos(membershipSlug: string): Promise<VideoCa
 
 		return categorized;
 	} catch (error) {
-		console.error('[LearningContent] Error fetching videos:', error);
+		logger.error('[LearningContent] Error fetching videos:', error);
 		return [];
 	}
 }
@@ -165,7 +166,7 @@ export async function getResources(membershipSlug: string): Promise<ResourceCate
 
 		return categorized;
 	} catch (error) {
-		console.error('[LearningContent] Error fetching resources:', error);
+		logger.error('[LearningContent] Error fetching resources:', error);
 		return [];
 	}
 }

@@ -11,6 +11,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -137,7 +138,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Export failed:', err);
+		logger.error('Export failed:', err);
 		error(500, 'Failed to export watchlist');
 	}
 };

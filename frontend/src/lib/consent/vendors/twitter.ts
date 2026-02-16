@@ -10,6 +10,7 @@
 
 import { browser, dev } from '$app/environment';
 import type { VendorConfig } from '../types';
+import { logger } from '$lib/utils/logger';
 
 declare global {
 	interface Window {
@@ -60,7 +61,7 @@ function initializeTwitter(pixelId: string): void {
 		window.twq?.('config', pixelId);
 		twitterReady = true;
 		processEventQueue();
-		console.debug('[Twitter] Pixel initialized:', pixelId);
+		logger.debug('[Twitter] Pixel initialized:', pixelId);
 	};
 
 	document.head.appendChild(script);
@@ -90,7 +91,7 @@ export function trackTwitterEvent(event: string, data?: Record<string, unknown>)
 	}
 
 	window.twq?.('event', event, data || {});
-	console.debug('[Twitter] Tracked event:', event, data);
+	logger.debug('[Twitter] Tracked event:', event, data);
 }
 
 /**
@@ -105,7 +106,7 @@ export function trackTwitterPageView(): void {
 	}
 
 	window.twq?.('track', 'PageView');
-	console.debug('[Twitter] Tracked page view');
+	logger.debug('[Twitter] Tracked page view');
 }
 
 /**
@@ -168,7 +169,7 @@ export const twitterVendor: VendorConfig = {
 	load: () => {
 		const pixelId = PUBLIC_TWITTER_PIXEL_ID;
 		if (!pixelId) {
-			if (!dev) console.warn('[Twitter] Missing PUBLIC_TWITTER_PIXEL_ID environment variable');
+			if (!dev) logger.warn('[Twitter] Missing PUBLIC_TWITTER_PIXEL_ID environment variable');
 			return;
 		}
 		initializeTwitter(pixelId);
@@ -177,6 +178,6 @@ export const twitterVendor: VendorConfig = {
 	onConsentRevoked: () => {
 		twitterReady = false;
 		eventQueue.length = 0;
-		console.debug('[Twitter] Consent revoked');
+		logger.debug('[Twitter] Consent revoked');
 	}
 };

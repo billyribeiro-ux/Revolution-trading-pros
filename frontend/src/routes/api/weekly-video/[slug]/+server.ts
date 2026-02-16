@@ -13,6 +13,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BACKEND CONFIGURATION
@@ -49,7 +50,7 @@ interface WeeklyVideo {
 
 async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
 	try {
-		console.log(`[Weekly Video API] Fetching: ${BACKEND_URL}${endpoint}`);
+		logger.info(`[Weekly Video API] Fetching: ${BACKEND_URL}${endpoint}`);
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
 			headers: {
@@ -60,15 +61,15 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 		});
 
 		if (!response.ok) {
-			console.error(`[Weekly Video API] Backend error: ${response.status} ${response.statusText}`);
+			logger.error(`[Weekly Video API] Backend error: ${response.status} ${response.statusText}`);
 			return null;
 		}
 
 		const data = await response.json();
-		console.log(`[Weekly Video API] Backend success`);
+		logger.info(`[Weekly Video API] Backend success`);
 		return data;
 	} catch (err) {
-		console.error('[Weekly Video API] Backend fetch failed:', err);
+		logger.error('[Weekly Video API] Backend fetch failed:', err);
 		return null;
 	}
 }

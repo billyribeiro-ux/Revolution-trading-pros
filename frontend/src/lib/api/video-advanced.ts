@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Advanced Video API - Revolution Trading Pros
  * ═══════════════════════════════════════════════════════════════════════════
@@ -282,7 +283,7 @@ async function apiRequest<T>(
 
 		return { success: true, data: data.data || data };
 	} catch (error) {
-		console.error('API Error:', error);
+		logger.error('API Error:', error);
 		return { success: false, error: error instanceof Error ? error.message : 'Network error' };
 	}
 }

@@ -13,6 +13,7 @@
 import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; archiveUrl: string }> = {
@@ -154,7 +155,7 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDe
 		const response = await fetch(`${API_URL}/api/videos?${apiParams.toString()}`);
 
 		if (!response.ok) {
-			console.error('Failed to fetch archive videos:', response.status);
+			logger.error('Failed to fetch archive videos:', response.status);
 			return {
 				roomSlug,
 				roomName: roomConfig.name,
@@ -184,7 +185,7 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDe
 			error: null
 		};
 	} catch (err) {
-		console.error('Error fetching archive videos:', err);
+		logger.error('Error fetching archive videos:', err);
 		return {
 			roomSlug,
 			roomName: roomConfig.name,

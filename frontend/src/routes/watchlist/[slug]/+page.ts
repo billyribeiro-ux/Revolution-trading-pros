@@ -9,6 +9,7 @@
  */
 
 import type { WatchlistItem } from '$lib/api/watchlist';
+import { logger } from '$lib/utils/logger';
 
 export const load = async ({
 	params,
@@ -66,7 +67,7 @@ export const load = async ({
 			nextEntry
 		};
 	} catch (error) {
-		console.error('Failed to load watchlist data:', error);
+		logger.error('Failed to load watchlist data:', error);
 		return {
 			entries: [],
 			currentEntry: null,

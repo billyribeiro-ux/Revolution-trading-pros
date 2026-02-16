@@ -8,6 +8,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -16,7 +17,7 @@ export const POST = async ({ request }: RequestEvent) => {
 		const body = await request.json();
 
 		// ICT 11+ Debug: Log request details (mask sensitive data)
-		console.log('[Auth Proxy] Register request:', {
+		logger.info('[Auth Proxy] Register request:', {
 			email: body.email,
 			hasPassword: !!body.password,
 			name: body.name
@@ -38,12 +39,12 @@ export const POST = async ({ request }: RequestEvent) => {
 		try {
 			data = JSON.parse(responseText);
 		} catch {
-			console.error('[Auth Proxy] Non-JSON response:', responseText);
+			logger.error('[Auth Proxy] Non-JSON response:', responseText);
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
 		// ICT 11+ Debug: Log response for diagnosis
-		console.log('[Auth Proxy] Register response:', {
+		logger.info('[Auth Proxy] Register response:', {
 			status: response.status,
 			message: data.message,
 			error: data.error
@@ -52,7 +53,7 @@ export const POST = async ({ request }: RequestEvent) => {
 		// Return the response with proper status
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[Auth Proxy] Register error:', error);
+		logger.error('[Auth Proxy] Register error:', error);
 		return json({ error: 'Registration service unavailable' }, { status: 503 });
 	}
 };

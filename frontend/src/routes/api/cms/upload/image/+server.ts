@@ -4,6 +4,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { logger } from '$lib/utils/logger';
 
 const UPLOAD_DIR = 'static/uploads/cms';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -74,7 +75,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(response);
 	} catch (error) {
-		console.error('[Image Upload] Error:', error);
+		logger.error('[Image Upload] Error:', error);
 		return json({ success: false, error: 'Failed to upload file' } as UploadResponse, {
 			status: 500
 		});
@@ -99,7 +100,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		return json({ success: true });
 	} catch (error) {
-		console.error('[Image Delete] Error:', error);
+		logger.error('[Image Delete] Error:', error);
 		return json({ success: false, error: 'Failed to delete file' }, { status: 500 });
 	}
 };

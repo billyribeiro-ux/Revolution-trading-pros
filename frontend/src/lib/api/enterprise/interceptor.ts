@@ -150,6 +150,7 @@ import { getAuthToken, authStore } from '$lib/stores/auth.svelte';
 import { getTraceHeaders, log } from './tracing';
 import { getCsrfHeaders, csrfResponseInterceptor } from './csrf';
 import { createApiError, ErrorCodes } from './errors';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Authentication interceptor - adds auth token to requests
@@ -316,7 +317,7 @@ export function createTokenRefreshInterceptor(options: {
 			endpoint.includes('/auth/login') ||
 			endpoint.includes('/auth/logout')
 		) {
-			console.debug('[Interceptor] Skipping refresh for auth endpoint:', endpoint);
+			logger.debug('[Interceptor] Skipping refresh for auth endpoint:', endpoint);
 			return error;
 		}
 
@@ -324,12 +325,12 @@ export function createTokenRefreshInterceptor(options: {
 		if (context.isRetry && context.metadata?.['tokenRefreshed']) {
 			// Token was already refreshed but still got 401
 			consecutiveRefreshFailures++;
-			console.warn(
+			logger.warn(
 				`[Interceptor] Token refreshed but still 401 (failure ${consecutiveRefreshFailures}/${MAX_REFRESH_FAILURES})`
 			);
 
 			if (consecutiveRefreshFailures >= MAX_REFRESH_FAILURES) {
-				console.error('[Interceptor] Max refresh failures reached, triggering logout');
+				logger.error('[Interceptor] Max refresh failures reached, triggering logout');
 				consecutiveRefreshFailures = 0; // Reset for next session
 				options.onRefreshFailed?.();
 			}
@@ -378,7 +379,7 @@ export function createTokenRefreshInterceptor(options: {
 			if (success) {
 				// ICT 7: Reset failure counter on successful refresh
 				consecutiveRefreshFailures = 0;
-				console.debug('[Interceptor] Token refresh successful, will retry request');
+				logger.debug('[Interceptor] Token refresh successful, will retry request');
 
 				// Return error with retry flag
 				return createApiError({
@@ -395,12 +396,12 @@ export function createTokenRefreshInterceptor(options: {
 
 			// ICT 7: Track failure but don't logout immediately
 			consecutiveRefreshFailures++;
-			console.warn(
+			logger.warn(
 				`[Interceptor] Token refresh returned false (failure ${consecutiveRefreshFailures}/${MAX_REFRESH_FAILURES})`
 			);
 
 			if (consecutiveRefreshFailures >= MAX_REFRESH_FAILURES) {
-				console.error('[Interceptor] Max refresh failures reached, triggering logout');
+				logger.error('[Interceptor] Max refresh failures reached, triggering logout');
 				consecutiveRefreshFailures = 0;
 				options.onRefreshFailed?.();
 			}
@@ -414,13 +415,13 @@ export function createTokenRefreshInterceptor(options: {
 
 			// ICT 7: Track failure but don't logout immediately
 			consecutiveRefreshFailures++;
-			console.warn(
+			logger.warn(
 				`[Interceptor] Token refresh threw error (failure ${consecutiveRefreshFailures}/${MAX_REFRESH_FAILURES}):`,
 				refreshError
 			);
 
 			if (consecutiveRefreshFailures >= MAX_REFRESH_FAILURES) {
-				console.error('[Interceptor] Max refresh failures reached, triggering logout');
+				logger.error('[Interceptor] Max refresh failures reached, triggering logout');
 				consecutiveRefreshFailures = 0;
 				options.onRefreshFailed?.();
 			}

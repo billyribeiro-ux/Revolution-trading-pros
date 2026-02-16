@@ -35,6 +35,7 @@ import { getLatestWatchlist } from '$lib/server/watchlist';
 import type { PageServerLoad } from './$types';
 import type { RoomResource } from '$lib/api/room-resources';
 import { ROOM_RESOURCES_ID, ROOM_SLUG } from './constants';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES - ICT 7 Type Safety
@@ -85,13 +86,13 @@ async function fetchRoomResources(
 		const response = await fetchFn(url, { headers });
 
 		if (!response.ok) {
-			console.warn(`${LOG_PREFIX} ${resourceType} fetch returned:`, response.status);
+			logger.warn(`${LOG_PREFIX} ${resourceType} fetch returned:`, response.status);
 			return { data: [] };
 		}
 
 		return await response.json();
 	} catch (error) {
-		console.error(`${LOG_PREFIX} ${resourceType} fetch error:`, error);
+		logger.error(`${LOG_PREFIX} ${resourceType} fetch error:`, error);
 		return { data: [] };
 	}
 }
@@ -147,7 +148,7 @@ export const load = (async ({ fetch, locals }) => {
 		const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 			// Weekly watchlist
 			getLatestWatchlist(ROOM_SLUG, fetch, baseUrl, accessToken).catch((err): null => {
-				console.error(`${LOG_PREFIX} Watchlist fetch error:`, err);
+				logger.error(`${LOG_PREFIX} Watchlist fetch error:`, err);
 				return null;
 			}),
 
@@ -197,7 +198,7 @@ export const load = (async ({ fetch, locals }) => {
 		};
 	} catch (error) {
 		// ICT 7: Never throw 500 - graceful degradation with fallback data
-		console.error(`${LOG_PREFIX} FATAL ERROR in load function:`, error);
+		logger.error(`${LOG_PREFIX} FATAL ERROR in load function:`, error);
 
 		return {
 			watchlist: null,

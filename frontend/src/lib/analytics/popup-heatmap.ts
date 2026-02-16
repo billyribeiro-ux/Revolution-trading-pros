@@ -17,6 +17,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -134,7 +135,7 @@ export class PopupHeatmapTracker {
 		this.attachFormListeners();
 		this.attachMouseMoveListener();
 
-		console.debug('[HeatmapTracker] Started tracking popup:', this.popupId);
+		logger.debug('[HeatmapTracker] Started tracking popup:', this.popupId);
 	}
 
 	/**
@@ -164,7 +165,7 @@ export class PopupHeatmapTracker {
 			attentionZones
 		};
 
-		console.debug('[HeatmapTracker] Stopped tracking, data collected:', {
+		logger.debug('[HeatmapTracker] Stopped tracking, data collected:', {
 			clicks: this.clicks.length,
 			scrolls: this.scrolls.length,
 			formInteractions: this.formInteractions.length,

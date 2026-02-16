@@ -9,6 +9,7 @@
 
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 const ROOM_SLUG = 'explosive-swings';
 
@@ -25,7 +26,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			videos: videosData.data || []
 		};
 	} catch (error) {
-		console.error('Failed to load video library:', error);
+		logger.error('Failed to load video library:', error);
 		return {
 			videos: []
 		};

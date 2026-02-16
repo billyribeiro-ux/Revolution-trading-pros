@@ -257,7 +257,7 @@ export function startScriptBlocking(): void {
 						const category = getScriptCategory(value);
 						if (category) {
 							// Block this script
-							console.debug(`[ScriptBlocker] Blocked: ${value} (${category})`);
+							logger.debug(`[ScriptBlocker] Blocked: ${value} (${category})`);
 
 							blockedScripts.push({
 								src: value,
@@ -285,7 +285,7 @@ export function startScriptBlocking(): void {
 	// Also scan and block existing scripts in the DOM
 	scanAndBlockExistingScripts();
 
-	console.debug('[ScriptBlocker] Script blocking enabled');
+	logger.debug('[ScriptBlocker] Script blocking enabled');
 }
 
 /**
@@ -338,7 +338,7 @@ export function releaseBlockedScripts(consent: ConsentState): void {
 			});
 
 			document.head.appendChild(script);
-			console.debug(`[ScriptBlocker] Released: ${scriptInfo.src}`);
+			logger.debug(`[ScriptBlocker] Released: ${scriptInfo.src}`);
 		}
 	});
 
@@ -352,7 +352,7 @@ export function releaseBlockedScripts(consent: ConsentState): void {
 			script.setAttribute('src', src);
 			script.removeAttribute('data-blocked-src');
 			script.removeAttribute('data-blocked-category');
-			console.debug(`[ScriptBlocker] Released DOM script: ${src}`);
+			logger.debug(`[ScriptBlocker] Released DOM script: ${src}`);
 		}
 	});
 }
@@ -392,7 +392,7 @@ export function generateBlockingScript(): string {
     // SSR safety: localStorage may not be available or consent data may be corrupted
     // Log error in development for debugging
     if (typeof console !== 'undefined' && console.warn) {
-      console.warn('[ScriptBlocker] Failed to read consent from localStorage:', e.message || e);
+      logger.warn('[ScriptBlocker] Failed to read consent from localStorage:', e.message || e);
     }
   }
 
@@ -409,7 +409,7 @@ export function generateBlockingScript(): string {
         set: function(v) {
           for (var cat in patterns) {
             if (new RegExp(patterns[cat], 'i').test(v)) {
-              console.debug('[Blocker] Blocked:', v);
+              logger.debug('[Blocker] Blocked:', v);
               el.setAttribute('data-blocked-src', v);
               el.setAttribute('data-blocked-category', cat);
               return;

@@ -10,6 +10,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -239,7 +240,7 @@ export const GET: RequestHandler = async ({ params }) => {
 			}
 		);
 	} catch (error) {
-		console.error('[SPX Alert API] Error:', error);
+		logger.error('[SPX Alert API] Error:', error);
 		return json({ success: false, error: 'Failed to fetch alert' }, { status: 500 });
 	}
 };

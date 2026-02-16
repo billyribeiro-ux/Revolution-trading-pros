@@ -10,6 +10,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -38,13 +39,13 @@ async function fetchFromBackend(
 		});
 
 		if (!response.ok) {
-			console.error(`[Favorites API] Backend error: ${response.status}`);
+			logger.error(`[Favorites API] Backend error: ${response.status}`);
 			return null;
 		}
 
 		return await response.json();
 	} catch (err) {
-		console.error('[Favorites API] Backend fetch failed:', err);
+		logger.error('[Favorites API] Backend fetch failed:', err);
 		return null;
 	}
 }

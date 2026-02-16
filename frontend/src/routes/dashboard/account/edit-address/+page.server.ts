@@ -1,5 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Edit Address Page Server Load
@@ -48,7 +49,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 			}
 		};
 	} catch (err) {
-		console.error('Error loading address:', err);
+		logger.error('Error loading address:', err);
 		return {
 			address: {
 				firstName: '',
@@ -128,7 +129,7 @@ export const actions = {
 
 			return { success: true, message: 'Address updated successfully' };
 		} catch (err) {
-			console.error('Error updating address:', err);
+			logger.error('Error updating address:', err);
 			return fail(500, { message: 'An error occurred while updating address' });
 		}
 	}

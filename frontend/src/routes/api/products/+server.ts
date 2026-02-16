@@ -5,6 +5,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -34,7 +35,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 		return json(data);
 	} catch (err) {
-		console.error('[API Proxy] Failed to fetch products:', err);
+		logger.error('[API Proxy] Failed to fetch products:', err);
 		return error(500, 'Failed to fetch products');
 	}
 };

@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
@@ -49,13 +50,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			const cookieToken = cookies.get('rtp_refresh_token');
 			if (cookieToken) {
 				body.refresh_token = cookieToken;
-				console.debug(`[Refresh:${requestId}] Using httpOnly cookie token`);
+				logger.debug(`[Refresh:${requestId}] Using httpOnly cookie token`);
 			}
 		}
 
 		// If still no token, return error
 		if (!body.refresh_token) {
-			console.warn(`[Refresh:${requestId}] No refresh token available`);
+			logger.warn(`[Refresh:${requestId}] No refresh token available`);
 			return json({ error: 'No refresh token', message: 'Please log in again' }, { status: 401 });
 		}
 
@@ -91,7 +92,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				sameSite: 'lax',
 				maxAge: expiresIn || 900 // 15 min default
 			});
-			console.debug(`[Refresh:${requestId}] Access token cookie updated`);
+			logger.debug(`[Refresh:${requestId}] Access token cookie updated`);
 
 			// Set new refresh token cookie (token rotation)
 			if (refreshToken) {
@@ -102,10 +103,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 					sameSite: 'lax',
 					maxAge: 60 * 60 * 24 * 30 // 30 days (matches login proxy)
 				});
-				console.debug(`[Refresh:${requestId}] Refresh token cookie rotated`);
+				logger.debug(`[Refresh:${requestId}] Refresh token cookie rotated`);
 			}
 
-			console.debug(`[Refresh:${requestId}] Success (${duration}ms)`);
+			logger.debug(`[Refresh:${requestId}] Success (${duration}ms)`);
 
 			// Return normalized response with data wrapper for frontend compatibility
 			return json(
@@ -119,13 +120,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				{ status: response.status }
 			);
 		} else {
-			console.warn(`[Refresh:${requestId}] Backend returned ${response.status} (${duration}ms)`);
+			logger.warn(`[Refresh:${requestId}] Backend returned ${response.status} (${duration}ms)`);
 			return json(rawData, { status: response.status });
 		}
 	} catch (error) {
 		const duration = Math.round(performance.now() - startTime);
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-		console.error(`[Refresh:${requestId}] Error: ${errorMessage} (${duration}ms)`);
+		logger.error(`[Refresh:${requestId}] Error: ${errorMessage} (${duration}ms)`);
 		return json(
 			{ error: 'Token refresh failed', message: 'Unable to refresh authentication token' },
 			{ status: 500 }

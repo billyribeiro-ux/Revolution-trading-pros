@@ -9,6 +9,7 @@
  */
 
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 const BACKEND_URL = `${API_ROOT}/api`;
@@ -54,7 +55,7 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 		// Fallback to mock data
 		return getMockVideoData(slug);
 	} catch (error) {
-		console.error('Failed to fetch video:', error);
+		logger.error('Failed to fetch video:', error);
 		return getMockVideoData(slug);
 	}
 };

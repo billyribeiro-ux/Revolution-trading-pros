@@ -21,6 +21,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL } from '$lib/api/config';
 import type { Post, PaginatedPosts } from '$lib/types/post';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -424,14 +425,14 @@ async function fetchPublishedPosts(fetchFn: typeof fetch): Promise<FeedPost[]> {
 		});
 
 		if (!response.ok) {
-			console.error(`[RSS Feed] API Error: ${response.status} ${response.statusText}`);
+			logger.error(`[RSS Feed] API Error: ${response.status} ${response.statusText}`);
 			return [];
 		}
 
 		const data: PaginatedPosts = await response.json();
 		return data.data || [];
 	} catch (error) {
-		console.error('[RSS Feed] Failed to fetch posts:', error);
+		logger.error('[RSS Feed] Failed to fetch posts:', error);
 		return [];
 	}
 }

@@ -9,6 +9,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -30,9 +31,9 @@ export const GET: RequestHandler = async ({ request }) => {
 			return json({ success: true, data: data.data || data });
 		}
 
-		console.warn(`Backend tags returned ${response.status}`);
+		logger.warn(`Backend tags returned ${response.status}`);
 	} catch (err) {
-		console.warn('Backend tags not available:', err);
+		logger.warn('Backend tags not available:', err);
 	}
 
 	return json({

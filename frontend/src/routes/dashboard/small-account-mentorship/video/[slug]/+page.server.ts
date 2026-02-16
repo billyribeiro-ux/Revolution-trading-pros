@@ -10,6 +10,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
 const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
@@ -108,10 +109,10 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<
 		}
 
 		// If API fails, return mock data for development
-		console.warn('Backend API unavailable, using mock data for video:', slug);
+		logger.warn('Backend API unavailable, using mock data for video:', slug);
 		return getMockVideoData(slug);
 	} catch (err) {
-		console.error('Failed to fetch video:', err);
+		logger.error('Failed to fetch video:', err);
 		// Return mock data as fallback
 		return getMockVideoData(slug);
 	}

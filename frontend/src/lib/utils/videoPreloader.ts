@@ -17,6 +17,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -281,7 +282,7 @@ class VideoPreloader {
 			}
 		} catch (error) {
 			// Silent fail - preloading is best-effort
-			console.debug('[VideoPreloader] Manifest preload failed:', error);
+			logger.debug('[VideoPreloader] Manifest preload failed:', error);
 		}
 	}
 

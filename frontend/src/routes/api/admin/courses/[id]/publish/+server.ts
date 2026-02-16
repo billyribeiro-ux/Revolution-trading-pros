@@ -5,6 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 const BACKEND_URL = PROD_BACKEND;
@@ -26,7 +27,7 @@ export const POST: RequestHandler = async ({ cookies, fetch, params }) => {
 		const data = await response.json();
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[API] Admin course publish error:', error);
+		logger.error('[API] Admin course publish error:', error);
 		return json({ success: false, error: 'Failed to publish course' }, { status: 500 });
 	}
 };

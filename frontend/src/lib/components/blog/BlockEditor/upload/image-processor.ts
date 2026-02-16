@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Image Processor - Client-side Image Optimization
  * =============================================================================
@@ -149,8 +150,8 @@ function generateSimpleBlurhash(
  *   quality: 0.85,
  *   convertToWebP: true,
  * });
- * console.log(processed.blurhash); // Placeholder hash
- * console.log(processed.file); // Optimized file for upload
+ * logger.info(processed.blurhash); // Placeholder hash
+ * logger.info(processed.file); // Optimized file for upload
  * ```
  */
 export async function processImage(
@@ -221,7 +222,7 @@ export async function processImage(
 				blurhash = generateSimpleBlurhash(imageData);
 			}
 		} catch (e) {
-			console.warn('Failed to generate blurhash:', e);
+			logger.warn('Failed to generate blurhash:', e);
 		}
 	}
 

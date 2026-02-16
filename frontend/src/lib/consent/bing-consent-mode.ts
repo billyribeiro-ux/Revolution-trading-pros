@@ -11,6 +11,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentState } from './types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Bing/Microsoft consent parameters
@@ -62,7 +63,7 @@ export function setBingDefaultConsent(consent: ConsentState): void {
 		ad_storage: params.ad_storage
 	});
 
-	console.debug('[BingConsentMode] Set default consent:', params);
+	logger.debug('[BingConsentMode] Set default consent:', params);
 }
 
 /**
@@ -83,7 +84,7 @@ export function updateBingConsent(consent: ConsentState): void {
 		ad_storage: params.ad_storage
 	});
 
-	console.debug('[BingConsentMode] Updated consent:', params);
+	logger.debug('[BingConsentMode] Updated consent:', params);
 }
 
 /**
@@ -132,7 +133,7 @@ export function grantAllBingConsent(): void {
 	});
 
 	bingConsentInitialized = true;
-	console.debug('[BingConsentMode] Granted all consent');
+	logger.debug('[BingConsentMode] Granted all consent');
 }
 
 /**
@@ -148,7 +149,7 @@ export function denyAllBingConsent(): void {
 	});
 
 	bingConsentInitialized = true;
-	console.debug('[BingConsentMode] Denied all consent');
+	logger.debug('[BingConsentMode] Denied all consent');
 }
 
 /**

@@ -9,6 +9,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 const API_BASE = '/api';
 
@@ -197,14 +198,14 @@ export async function getPublicConsentConfig(): Promise<PublicConsentConfig | nu
 		});
 
 		if (!response.ok) {
-			console.warn('Failed to fetch consent config, using defaults');
+			logger.warn('Failed to fetch consent config, using defaults');
 			return null;
 		}
 
 		const data: ApiResponse<PublicConsentConfig> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error fetching consent config:', error);
+		logger.error('Error fetching consent config:', error);
 		return null;
 	}
 }
@@ -233,7 +234,7 @@ export async function getConsentSettings(group?: string): Promise<ConsentSetting
 		const data: ApiResponse<ConsentSettingsData> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error fetching consent settings:', error);
+		logger.error('Error fetching consent settings:', error);
 		return null;
 	}
 }
@@ -255,7 +256,7 @@ export async function updateConsentSetting(
 
 		return response.ok;
 	} catch (error) {
-		console.error('Error updating consent setting:', error);
+		logger.error('Error updating consent setting:', error);
 		return false;
 	}
 }
@@ -275,7 +276,7 @@ export async function bulkUpdateConsentSettings(
 
 		return response.ok;
 	} catch (error) {
-		console.error('Error bulk updating consent settings:', error);
+		logger.error('Error bulk updating consent settings:', error);
 		return false;
 	}
 }
@@ -297,7 +298,7 @@ export async function resetConsentSettings(): Promise<ConsentSettingsData | null
 		const data: ApiResponse<ConsentSettingsData> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error resetting consent settings:', error);
+		logger.error('Error resetting consent settings:', error);
 		return null;
 	}
 }
@@ -326,7 +327,7 @@ export async function getBannerTemplates(): Promise<{
 			await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error fetching banner templates:', error);
+		logger.error('Error fetching banner templates:', error);
 		return null;
 	}
 }
@@ -347,7 +348,7 @@ export async function getActiveTemplate(): Promise<BannerTemplate | null> {
 		const data: ApiResponse<BannerTemplate> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error fetching active template:', error);
+		logger.error('Error fetching active template:', error);
 		return null;
 	}
 }
@@ -368,7 +369,7 @@ export async function getTemplate(id: number): Promise<BannerTemplate | null> {
 		const data: ApiResponse<BannerTemplate> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error fetching template:', error);
+		logger.error('Error fetching template:', error);
 		return null;
 	}
 }
@@ -393,7 +394,7 @@ export async function createTemplate(
 		const data: ApiResponse<BannerTemplate> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error creating template:', error);
+		logger.error('Error creating template:', error);
 		return null;
 	}
 }
@@ -419,7 +420,7 @@ export async function updateTemplate(
 		const data: ApiResponse<BannerTemplate> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error updating template:', error);
+		logger.error('Error updating template:', error);
 		return null;
 	}
 }
@@ -436,7 +437,7 @@ export async function deleteTemplate(id: number): Promise<boolean> {
 
 		return response.ok;
 	} catch (error) {
-		console.error('Error deleting template:', error);
+		logger.error('Error deleting template:', error);
 		return false;
 	}
 }
@@ -453,7 +454,7 @@ export async function activateTemplate(id: number): Promise<boolean> {
 
 		return response.ok;
 	} catch (error) {
-		console.error('Error activating template:', error);
+		logger.error('Error activating template:', error);
 		return false;
 	}
 }
@@ -475,7 +476,7 @@ export async function duplicateTemplate(id: number): Promise<BannerTemplate | nu
 		const data: ApiResponse<BannerTemplate> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error duplicating template:', error);
+		logger.error('Error duplicating template:', error);
 		return null;
 	}
 }
@@ -496,7 +497,7 @@ export async function exportTemplate(id: number): Promise<Partial<BannerTemplate
 		const data: ApiResponse<Partial<BannerTemplate>> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error exporting template:', error);
+		logger.error('Error exporting template:', error);
 		return null;
 	}
 }
@@ -521,7 +522,7 @@ export async function importTemplate(
 		const data: ApiResponse<BannerTemplate> = await response.json();
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
-		console.error('Error importing template:', error);
+		logger.error('Error importing template:', error);
 		return null;
 	}
 }
@@ -538,7 +539,7 @@ export async function initializeConsentSystem(): Promise<boolean> {
 
 		return response.ok;
 	} catch (error) {
-		console.error('Error initializing consent system:', error);
+		logger.error('Error initializing consent system:', error);
 		return false;
 	}
 }

@@ -51,6 +51,7 @@
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { api, type ApiResponse } from './client.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -595,7 +596,7 @@ class SeoManagementService {
 		if (!browser) return;
 
 		if (SEO_DISABLED) {
-			console.debug('[SeoService] Disabled via VITE_SEO_DISABLED');
+			logger.debug('[SeoService] Disabled via VITE_SEO_DISABLED');
 			return;
 		}
 
@@ -605,7 +606,7 @@ class SeoManagementService {
 		this.startAlertMonitoring();
 		this.loadInitialData();
 
-		console.debug('[SeoService] Initialized (missing endpoints handled gracefully)');
+		logger.debug('[SeoService] Initialized (missing endpoints handled gracefully)');
 	}
 
 	/**
@@ -626,7 +627,7 @@ class SeoManagementService {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/seo`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[SeoService] WebSocket connected');
+				logger.debug('[SeoService] WebSocket connected');
 				this.subscribeToUpdates();
 			};
 
@@ -677,7 +678,7 @@ class SeoManagementService {
 					break;
 			}
 		} catch (error) {
-			console.error('[SeoService] Failed to handle WebSocket message:', error);
+			logger.error('[SeoService] Failed to handle WebSocket message:', error);
 		}
 	}
 
@@ -740,7 +741,7 @@ class SeoManagementService {
 				this.loadBacklinks()
 			]);
 		} catch (error) {
-			console.error('[SeoService] Failed to load initial data:', error);
+			logger.error('[SeoService] Failed to load initial data:', error);
 		}
 	}
 
@@ -764,7 +765,7 @@ class SeoManagementService {
 			const rankings = await api.get<{ rankings: RankTracking[] }>('/admin/seo/rankings/check');
 			this.rankings.set(rankings.rankings);
 		} catch (error) {
-			console.error('[SeoService] Failed to check rankings:', error);
+			logger.error('[SeoService] Failed to check rankings:', error);
 		}
 	}
 
@@ -791,7 +792,7 @@ class SeoManagementService {
 				}
 			});
 		} catch (error) {
-			console.error('[SeoService] Failed to check alerts:', error);
+			logger.error('[SeoService] Failed to check alerts:', error);
 		}
 	}
 
@@ -1032,7 +1033,7 @@ class SeoManagementService {
 			);
 			return response.suggestions;
 		} catch (error) {
-			console.error('[SeoService] Failed to generate AI suggestions:', error);
+			logger.error('[SeoService] Failed to generate AI suggestions:', error);
 			return [];
 		}
 	}
@@ -1097,7 +1098,7 @@ class SeoManagementService {
 			return response.data;
 		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
-			console.debug('[SeoService] loadRedirects endpoint not available');
+			logger.debug('[SeoService] loadRedirects endpoint not available');
 			return [];
 		}
 	}
@@ -1174,7 +1175,7 @@ class SeoManagementService {
 			return response.data;
 		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
-			console.debug('[SeoService] load404Errors endpoint not available');
+			logger.debug('[SeoService] load404Errors endpoint not available');
 			return [];
 		}
 	}
@@ -1243,7 +1244,7 @@ class SeoManagementService {
 			return response.rankings;
 		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
-			console.debug('[SeoService] loadRankings endpoint not available');
+			logger.debug('[SeoService] loadRankings endpoint not available');
 			return [];
 		}
 	}
@@ -1289,7 +1290,7 @@ class SeoManagementService {
 			return response.profile;
 		} catch (_error) {
 			// ICT 7: Silently fail if endpoint doesn't exist
-			console.debug('[SeoService] loadBacklinks endpoint not available');
+			logger.debug('[SeoService] loadBacklinks endpoint not available');
 			return null;
 		}
 	}
@@ -1383,7 +1384,7 @@ class SeoManagementService {
 				return analysis;
 			});
 		} catch (error) {
-			console.error('[SeoService] Failed to load technical issues:', error);
+			logger.error('[SeoService] Failed to load technical issues:', error);
 		}
 	}
 
@@ -1392,7 +1393,7 @@ class SeoManagementService {
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
 		// Implement notification system
-		console.log(`[${type.toUpperCase()}] ${message}`);
+		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
 	private trackEvent(event: string, data: any): void {

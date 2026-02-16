@@ -16,6 +16,7 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 // SvelteKit auto-generates types - this import will be available after build
 import type { RequestHandler } from './$types';
+import { logger } from '$lib/utils/logger';
 
 export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) => {
 	try {
@@ -52,11 +53,11 @@ export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) =
 			});
 		}
 
-		console.log('[Set Session] Cookies set successfully');
+		logger.info('[Set Session] Cookies set successfully');
 
 		return json({ success: true });
 	} catch (error) {
-		console.error('[Set Session] Error:', error);
+		logger.error('[Set Session] Error:', error);
 		return json({ error: 'Failed to set session' }, { status: 500 });
 	}
 };

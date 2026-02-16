@@ -8,6 +8,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -16,7 +17,7 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 		const body = await request.json();
 
 		// ICT 7 Debug: Log request details (mask password)
-		console.log('[Auth Proxy] Login request:', {
+		logger.info('[Auth Proxy] Login request:', {
 			email: body.email,
 			hasPassword: !!body.password,
 			passwordLength: body.password?.length || 0
@@ -38,12 +39,12 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 		try {
 			data = JSON.parse(responseText);
 		} catch {
-			console.error('[Auth Proxy] Non-JSON response:', responseText);
+			logger.error('[Auth Proxy] Non-JSON response:', responseText);
 			return json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
 		// ICT 7 Debug: Log full response for diagnosis
-		console.log('[Auth Proxy] Backend response:', {
+		logger.info('[Auth Proxy] Backend response:', {
 			status: response.status,
 			error: data.error,
 			hasToken: !!data.token,
@@ -75,13 +76,13 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 				});
 			}
 
-			console.log('[Auth Proxy] Cookies set successfully');
+			logger.info('[Auth Proxy] Cookies set successfully');
 		}
 
 		// Return the response with proper status
 		return json(data, { status: response.status });
 	} catch (error) {
-		console.error('[Auth Proxy] Error:', error);
+		logger.error('[Auth Proxy] Error:', error);
 		return json({ error: 'Authentication service unavailable' }, { status: 503 });
 	}
 };

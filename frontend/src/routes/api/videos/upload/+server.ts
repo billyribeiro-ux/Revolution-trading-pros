@@ -8,6 +8,7 @@
  */
 
 import { json, error, type RequestEvent } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Production fallback - Rust API on Fly.io
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
@@ -140,7 +141,7 @@ async function handlePresignRequest(request: Request, token?: string) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('Presign error:', err);
+		logger.error('Presign error:', err);
 		error(500, 'Failed to generate presigned URL');
 	}
 }
@@ -281,7 +282,7 @@ async function handleDirectUpload(request: Request, token?: string) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('Upload error:', err);
+		logger.error('Upload error:', err);
 		error(500, 'Failed to upload file');
 	}
 }

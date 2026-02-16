@@ -12,6 +12,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -47,7 +48,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error(`[Bunny API] Backend error: ${response.status}`, errorText);
+			logger.error(`[Bunny API] Backend error: ${response.status}`, errorText);
 			error(response.status, errorText || 'Failed to create video');
 		}
 
@@ -63,7 +64,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 		error(500, 'Failed to create video on Bunny.net');
 	} catch (err) {
-		console.error('[Bunny API] Error:', err);
+		logger.error('[Bunny API] Error:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

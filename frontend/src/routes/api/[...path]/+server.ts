@@ -19,6 +19,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler, Cookies } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -116,7 +117,7 @@ function recordFailure(): void {
 	circuitBreaker.lastFailure = Date.now();
 	if (circuitBreaker.failures >= circuitBreaker.threshold) {
 		circuitBreaker.isOpen = true;
-		console.warn('[API Proxy] Circuit breaker OPEN - too many failures');
+		logger.warn('[API Proxy] Circuit breaker OPEN - too many failures');
 	}
 }
 
@@ -210,7 +211,7 @@ async function proxyRequest(
 	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 		if (attempt > 0) {
 			const delay = calculateBackoff(attempt - 1);
-			console.log(`[API Proxy] Retry ${attempt}/${MAX_RETRIES} for ${path} after ${delay}ms`);
+			logger.info(`[API Proxy] Retry ${attempt}/${MAX_RETRIES} for ${path} after ${delay}ms`);
 			await sleep(delay);
 		}
 
@@ -234,7 +235,7 @@ async function proxyRequest(
 
 				const duration = Date.now() - startTime;
 				if (duration > 5000) {
-					console.warn(`[API Proxy] Slow request: ${path} took ${duration}ms`);
+					logger.warn(`[API Proxy] Slow request: ${path} took ${duration}ms`);
 				}
 
 				// Parse and return response
@@ -274,10 +275,10 @@ async function proxyRequest(
 			// Timeout or network error
 			if (lastError.name === 'AbortError') {
 				lastStatus = 504;
-				console.error(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
+				logger.error(`[API Proxy] Timeout after ${timeout}ms for ${path}`);
 			} else {
 				lastStatus = 502;
-				console.error(`[API Proxy] Network error for ${path}:`, lastError.message);
+				logger.error(`[API Proxy] Network error for ${path}:`, lastError.message);
 			}
 		}
 	}
@@ -285,7 +286,7 @@ async function proxyRequest(
 	// All retries exhausted
 	recordFailure();
 	const duration = Date.now() - startTime;
-	console.error(
+	logger.error(
 		`[API Proxy] Failed after ${MAX_RETRIES} retries: ${path} (${duration}ms)`,
 		lastError?.message
 	);

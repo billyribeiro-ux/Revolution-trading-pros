@@ -9,6 +9,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { track } from './metrics';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -231,7 +232,7 @@ async function fetchExperimentConfig(): Promise<void> {
 		}
 	} catch (_error) {
 		// Silently fail - use local defaults
-		console.debug('[Experiments] Failed to fetch config from server, using defaults');
+		logger.debug('[Experiments] Failed to fetch config from server, using defaults');
 	}
 }
 
@@ -268,7 +269,7 @@ export function useExperiment(experimentId: string): string {
 	const experiment = EXPERIMENTS[experimentId];
 
 	if (!experiment) {
-		console.warn(`[Experiments] Unknown experiment: ${experimentId}`);
+		logger.warn(`[Experiments] Unknown experiment: ${experimentId}`);
 		return 'control';
 	}
 
@@ -296,7 +297,7 @@ export function useFeatureFlag(flagId: string): boolean {
 	const flag = FEATURE_FLAGS[flagId];
 
 	if (!flag) {
-		console.warn(`[Experiments] Unknown feature flag: ${flagId}`);
+		logger.warn(`[Experiments] Unknown feature flag: ${flagId}`);
 		return false;
 	}
 
@@ -327,7 +328,7 @@ export function trackConversion(
 	const variant = state.assignments[experimentId];
 
 	if (!variant) {
-		console.warn(`[Experiments] No assignment for experiment: ${experimentId}`);
+		logger.warn(`[Experiments] No assignment for experiment: ${experimentId}`);
 		return;
 	}
 

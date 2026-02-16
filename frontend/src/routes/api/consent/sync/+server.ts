@@ -12,6 +12,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 /**
  * In-memory store for demo purposes.
@@ -74,7 +75,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			consentStore.set(`user:${userId}`, record);
 		}
 
-		console.log(`[ConsentAPI] Saved consent: ${consentId} for user: ${userId || 'anonymous'}`);
+		logger.info(`[ConsentAPI] Saved consent: ${consentId} for user: ${userId || 'anonymous'}`);
 
 		return json({
 			success: true,
@@ -83,7 +84,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			message: 'Consent saved successfully'
 		});
 	} catch (err) {
-		console.error('[ConsentAPI] POST error:', err);
+		logger.error('[ConsentAPI] POST error:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -128,7 +129,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			}
 		});
 	} catch (err) {
-		console.error('[ConsentAPI] GET error:', err);
+		logger.error('[ConsentAPI] GET error:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -165,14 +166,14 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			error(404, 'Consent not found');
 		}
 
-		console.log(`[ConsentAPI] Deleted consent for: ${userId || consentId}`);
+		logger.info(`[ConsentAPI] Deleted consent for: ${userId || consentId}`);
 
 		return json({
 			success: true,
 			message: 'Consent deleted successfully'
 		});
 	} catch (err) {
-		console.error('[ConsentAPI] DELETE error:', err);
+		logger.error('[ConsentAPI] DELETE error:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

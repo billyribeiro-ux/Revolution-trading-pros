@@ -7,6 +7,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 // Default SMTP settings (in production, these would come from database)
 let emailSettings = {
@@ -28,7 +29,7 @@ export const GET: RequestHandler = async () => {
 			password: emailSettings.password ? '••••••••' : ''
 		});
 	} catch (error) {
-		console.error('Failed to get email settings:', error);
+		logger.error('Failed to get email settings:', error);
 		return json({ error: 'Failed to load email settings' }, { status: 500 });
 	}
 };
@@ -56,14 +57,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		};
 
 		// In production, save to database here
-		console.log('Email settings updated successfully');
+		logger.info('Email settings updated successfully');
 
 		return json({
 			success: true,
 			message: 'Settings saved successfully!'
 		});
 	} catch (error) {
-		console.error('Failed to save email settings:', error);
+		logger.error('Failed to save email settings:', error);
 		return json({ success: false, error: 'Failed to save settings' }, { status: 500 });
 	}
 };

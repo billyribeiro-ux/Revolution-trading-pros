@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Reading Analytics - Track user engagement with blog posts
  * Svelte 5 / SvelteKit Compatible
@@ -113,7 +114,7 @@ export function initReadingAnalytics(config: {
 
 	const contentElement = document.querySelector(contentSelector);
 	if (!contentElement) {
-		if (opts.debug) console.warn('[Reading Analytics] Content element not found:', contentSelector);
+		if (opts.debug) logger.warn('[Reading Analytics] Content element not found:', contentSelector);
 		return () => {};
 	}
 
@@ -175,7 +176,7 @@ export function initReadingAnalytics(config: {
 				metrics.milestones.add(milestone);
 
 				if (opts.debug) {
-					console.log(`[Reading Analytics] Milestone reached: ${milestone}%`, {
+					logger.info(`[Reading Analytics] Milestone reached: ${milestone}%`, {
 						timeOnPage: `${(metrics.timeOnPage / 1000).toFixed(1)}s`,
 						engagement: metrics.engagementScore
 					});
@@ -203,7 +204,7 @@ export function initReadingAnalytics(config: {
 		reported = true;
 
 		if (opts.debug) {
-			console.log('[Reading Analytics] Read completed!', {
+			logger.info('[Reading Analytics] Read completed!', {
 				timeOnPage: `${(metrics.timeOnPage / 1000).toFixed(1)}s`,
 				engagement: metrics.engagementScore,
 				completion: metrics.readCompletion
@@ -284,7 +285,7 @@ export function initReadingAnalytics(config: {
 	updateMetrics();
 
 	if (opts.debug) {
-		console.log('[Reading Analytics] Initialized for:', slug);
+		logger.info('[Reading Analytics] Initialized for:', slug);
 	}
 
 	// Return cleanup function

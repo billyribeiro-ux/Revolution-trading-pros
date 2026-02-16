@@ -12,6 +12,7 @@ import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import type { BannerTemplate, TemplateCustomization, ActiveTemplateConfig } from './types';
 import { BANNER_TEMPLATES, getTemplate, DEFAULT_TEMPLATE_ID } from './registry';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // API CONFIGURATION
@@ -398,7 +399,7 @@ async function fetchTemplatesFromBackend(): Promise<void> {
 			}
 		}
 	} catch (error) {
-		console.error('[TemplateStore] Failed to fetch templates from backend:', error);
+		logger.error('[TemplateStore] Failed to fetch templates from backend:', error);
 	}
 }
 
@@ -423,7 +424,7 @@ async function createTemplateInBackend(template: BannerTemplate): Promise<string
 			}
 		}
 	} catch (error) {
-		console.error('[TemplateStore] Failed to create template:', error);
+		logger.error('[TemplateStore] Failed to create template:', error);
 	}
 	return null;
 }
@@ -449,7 +450,7 @@ async function updateTemplateInBackend(
 			return true;
 		}
 	} catch (error) {
-		console.error('[TemplateStore] Failed to update template:', error);
+		logger.error('[TemplateStore] Failed to update template:', error);
 	}
 	return false;
 }
@@ -471,7 +472,7 @@ async function deleteTemplateFromBackend(id: string): Promise<boolean> {
 			return true;
 		}
 	} catch (error) {
-		console.error('[TemplateStore] Failed to delete template:', error);
+		logger.error('[TemplateStore] Failed to delete template:', error);
 	}
 	return false;
 }
@@ -493,7 +494,7 @@ async function activateTemplateInBackend(id: string): Promise<boolean> {
 			return true;
 		}
 	} catch (error) {
-		console.error('[TemplateStore] Failed to activate template:', error);
+		logger.error('[TemplateStore] Failed to activate template:', error);
 	}
 	return false;
 }
@@ -512,7 +513,7 @@ export async function initializeTemplateStore(): Promise<void> {
 	// Only fetch from backend if user has an auth token
 	const token = localStorage.getItem('access_token');
 	if (!token) {
-		console.debug('[TemplateStore] Skipping backend fetch - user not authenticated');
+		logger.debug('[TemplateStore] Skipping backend fetch - user not authenticated');
 		return;
 	}
 
@@ -521,12 +522,12 @@ export async function initializeTemplateStore(): Promise<void> {
 	try {
 		await fetchTemplatesFromBackend();
 	} catch (error) {
-		console.error('[TemplateStore] Failed to initialize:', error);
+		logger.error('[TemplateStore] Failed to initialize:', error);
 	} finally {
 		isLoading.set(false);
 	}
 
-	console.debug('[TemplateStore] Initialized with backend data');
+	logger.debug('[TemplateStore] Initialized with backend data');
 }
 
 /**
@@ -539,7 +540,7 @@ export async function setActiveTemplate(templateId: string): Promise<void> {
 		get(backendTemplates).find((t) => t.id === templateId);
 
 	if (!template) {
-		console.warn('[TemplateStore] Template not found:', templateId);
+		logger.warn('[TemplateStore] Template not found:', templateId);
 		return;
 	}
 
@@ -557,7 +558,7 @@ export async function setActiveTemplate(templateId: string): Promise<void> {
 		await activateTemplateInBackend(templateId);
 	}
 
-	console.debug('[TemplateStore] Active template set:', templateId);
+	logger.debug('[TemplateStore] Active template set:', templateId);
 }
 
 /**
@@ -612,7 +613,7 @@ export async function saveAsCustomTemplate(name: string): Promise<string> {
 	const backendId = await createTemplateInBackend(customTemplate);
 
 	if (backendId) {
-		console.debug('[TemplateStore] Custom template saved to backend:', backendId);
+		logger.debug('[TemplateStore] Custom template saved to backend:', backendId);
 		return backendId;
 	}
 
@@ -622,7 +623,7 @@ export async function saveAsCustomTemplate(name: string): Promise<string> {
 		return new Map(map);
 	});
 
-	console.debug('[TemplateStore] Custom template saved locally:', customTemplate.id);
+	logger.debug('[TemplateStore] Custom template saved locally:', customTemplate.id);
 	return customTemplate.id;
 }
 
@@ -751,10 +752,10 @@ export async function importTemplateConfig(json: string): Promise<boolean> {
 		// Refresh from backend
 		await fetchTemplatesFromBackend();
 
-		console.debug('[TemplateStore] Configuration imported');
+		logger.debug('[TemplateStore] Configuration imported');
 		return true;
 	} catch (e) {
-		console.error('[TemplateStore] Failed to import configuration:', e);
+		logger.error('[TemplateStore] Failed to import configuration:', e);
 		return false;
 	}
 }

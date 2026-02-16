@@ -4,6 +4,7 @@ import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { Post } from '$lib/types/post';
 import type { SEOInput } from '$lib/seo/types';
 import { articleSchema, breadcrumbSchema } from '$lib/seo/jsonld';
+import { logger } from '$lib/utils/logger';
 
 const SITE_URL = 'https://revolution-trading-pros.pages.dev';
 
@@ -16,7 +17,7 @@ export const load: Load = async ({ params, url }) => {
 	try {
 		post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''));
 	} catch (err) {
-		console.error('Failed to load post:', err);
+		logger.error('Failed to load post:', err);
 		error(404, {
 			message: 'Blog post not found'
 		});

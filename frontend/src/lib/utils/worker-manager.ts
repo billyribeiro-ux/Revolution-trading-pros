@@ -5,6 +5,7 @@
  */
 
 import type { Block, BlockContent } from '$lib/components/cms/blocks/types';
+import { logger } from '$lib/utils/logger';
 
 export class WorkerManager {
 	private worker: Worker | null = null;
@@ -34,10 +35,10 @@ export class WorkerManager {
 			};
 
 			this.worker.onerror = (e) => {
-				console.error('Worker error:', e);
+				logger.error('Worker error:', e);
 			};
 		} catch (_error) {
-			console.warn('Web Workers not available, falling back to main thread');
+			logger.warn('Web Workers not available, falling back to main thread');
 		}
 	}
 

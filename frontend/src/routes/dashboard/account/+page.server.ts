@@ -28,6 +28,7 @@ import {
 } from '$lib/api/account';
 // SvelteKit auto-generates types - this import will be available after build
 import type { PageServerLoad, Actions } from './$types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Page load function
@@ -50,7 +51,7 @@ export const load: PageServerLoad = async ({
 	// ICT 11+ FIX: Don't throw on missing user - hooks.server.ts handles auth redirect
 	// If we get here without a user, return minimal data and let the page handle it
 	if (!parentData.user) {
-		console.warn('[Account Page] No user data from parent - returning minimal data');
+		logger.warn('[Account Page] No user data from parent - returning minimal data');
 		return {
 			profile: {
 				firstName: '',
@@ -77,7 +78,7 @@ export const load: PageServerLoad = async ({
 	const accessToken = parentData.accessToken;
 
 	if (!accessToken) {
-		console.warn('[Account Page] No access token from parent - using user data only');
+		logger.warn('[Account Page] No access token from parent - using user data only');
 		return {
 			profile: {
 				firstName: '',
@@ -127,7 +128,7 @@ export const load: PageServerLoad = async ({
 			avatarUrl: profileData.avatar_url
 		};
 
-		console.log('[Account Page] Loaded account data successfully via server-side fetch');
+		logger.info('[Account Page] Loaded account data successfully via server-side fetch');
 
 		return {
 			profile,
@@ -144,7 +145,7 @@ export const load: PageServerLoad = async ({
 			user: parentData.user
 		};
 	} catch (error) {
-		console.error('[Account Page] Failed to load account data:', error);
+		logger.error('[Account Page] Failed to load account data:', error);
 
 		// Return minimal data on error to prevent page crash
 		// Use parent user data for display name fallback
@@ -217,7 +218,7 @@ export const actions: Actions = {
 
 			const updatedProfile = await accountApi.updateProfile(updateData);
 
-			console.log('[Account] Profile updated successfully:', updatedProfile);
+			logger.info('[Account] Profile updated successfully:', updatedProfile);
 
 			return {
 				success: true,
@@ -230,7 +231,7 @@ export const actions: Actions = {
 				}
 			};
 		} catch (error: any) {
-			console.error('[Account] Profile update failed:', error);
+			logger.error('[Account] Profile update failed:', error);
 
 			// Handle API errors with proper messages
 			if (error?.errors) {
@@ -299,14 +300,14 @@ export const actions: Actions = {
 
 			const result = await accountApi.updatePassword(updateData);
 
-			console.log('[Account] Password updated successfully');
+			logger.info('[Account] Password updated successfully');
 
 			return {
 				success: true,
 				message: result.message || 'Password changed successfully!'
 			};
 		} catch (error: any) {
-			console.error('[Account] Password update failed:', error);
+			logger.error('[Account] Password update failed:', error);
 
 			// Handle API errors with proper messages
 			if (error?.errors) {

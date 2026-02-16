@@ -22,6 +22,7 @@
 
 import { browser } from '$app/environment';
 import type { VendorConfig } from '../types';
+import { logger } from '$lib/utils/logger';
 
 // Use environment variable (optional at build time)
 const PUBLIC_META_PIXEL_ID = import.meta.env['PUBLIC_META_PIXEL_ID'] || '';
@@ -123,12 +124,12 @@ function injectPixelScript(): Promise<void> {
  */
 export function trackPixelEvent(eventName: string, params?: Record<string, unknown>): void {
 	if (!browser || !pixelInitialized || !pixelConsentGranted) {
-		console.debug('[MetaPixel] Cannot track event - pixel not ready or consent not granted');
+		logger.debug('[MetaPixel] Cannot track event - pixel not ready or consent not granted');
 		return;
 	}
 
 	window.fbq!('track', eventName, params);
-	console.debug('[MetaPixel] Tracked event:', eventName, params);
+	logger.debug('[MetaPixel] Tracked event:', eventName, params);
 }
 
 /**
@@ -139,12 +140,12 @@ export function trackPixelEvent(eventName: string, params?: Record<string, unkno
  */
 export function trackCustomPixelEvent(eventName: string, params?: Record<string, unknown>): void {
 	if (!browser || !pixelInitialized || !pixelConsentGranted) {
-		console.debug('[MetaPixel] Cannot track custom event - pixel not ready or consent not granted');
+		logger.debug('[MetaPixel] Cannot track custom event - pixel not ready or consent not granted');
 		return;
 	}
 
 	window.fbq!('trackCustom', eventName, params);
-	console.debug('[MetaPixel] Tracked custom event:', eventName, params);
+	logger.debug('[MetaPixel] Tracked custom event:', eventName, params);
 }
 
 /**
@@ -168,11 +169,11 @@ export function setLimitedDataUse(enabled: boolean, state: number = 0): void {
 	if (enabled) {
 		// Enable LDU - limits data processing to anonymized data
 		window.fbq!('dataProcessingOptions', ['LDU'], 1, state);
-		console.debug('[MetaPixel] Limited Data Use enabled');
+		logger.debug('[MetaPixel] Limited Data Use enabled');
 	} else {
 		// Disable LDU - full data processing
 		window.fbq!('dataProcessingOptions', []);
-		console.debug('[MetaPixel] Limited Data Use disabled');
+		logger.debug('[MetaPixel] Limited Data Use disabled');
 	}
 }
 
@@ -190,7 +191,7 @@ export const metaPixelVendor: VendorConfig = {
 	async load(): Promise<void> {
 		// Validate environment variable
 		if (!PUBLIC_META_PIXEL_ID) {
-			console.debug(
+			logger.debug(
 				'[MetaPixel] PUBLIC_META_PIXEL_ID not set. Skipping Meta Pixel initialization. ' +
 					'Set this environment variable to enable Meta Pixel tracking.'
 			);
@@ -199,7 +200,7 @@ export const metaPixelVendor: VendorConfig = {
 
 		// Validate pixel ID format (should be numeric)
 		if (!/^\d+$/.test(PUBLIC_META_PIXEL_ID)) {
-			console.warn(
+			logger.warn(
 				'[MetaPixel] Invalid pixel ID format. Expected numeric value. Got:',
 				PUBLIC_META_PIXEL_ID
 			);
@@ -210,7 +211,7 @@ export const metaPixelVendor: VendorConfig = {
 
 		// Prevent double initialization
 		if (pixelInitialized) {
-			console.debug('[MetaPixel] Already initialized');
+			logger.debug('[MetaPixel] Already initialized');
 			return;
 		}
 
@@ -231,12 +232,12 @@ export const metaPixelVendor: VendorConfig = {
 
 			pixelInitialized = true;
 
-			console.debug('[MetaPixel] Initialized successfully with ID:', PUBLIC_META_PIXEL_ID);
+			logger.debug('[MetaPixel] Initialized successfully with ID:', PUBLIC_META_PIXEL_ID);
 
 			// Step 5: Track initial page view
 			trackPixelPageView();
 		} catch (error) {
-			console.error('[MetaPixel] Failed to initialize:', error);
+			logger.error('[MetaPixel] Failed to initialize:', error);
 			throw error;
 		}
 	},
@@ -252,9 +253,9 @@ export const metaPixelVendor: VendorConfig = {
 			try {
 				// Revoke consent - tells Meta to stop collecting data
 				window.fbq!('consent', 'revoke');
-				console.debug('[MetaPixel] Consent revoked - stopped event tracking');
+				logger.debug('[MetaPixel] Consent revoked - stopped event tracking');
 			} catch (error) {
-				console.debug('[MetaPixel] Error revoking consent:', error);
+				logger.debug('[MetaPixel] Error revoking consent:', error);
 			}
 		}
 

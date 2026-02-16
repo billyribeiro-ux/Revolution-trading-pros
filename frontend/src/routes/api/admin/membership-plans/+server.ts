@@ -5,6 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
@@ -35,7 +36,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
 		const data = await response.json();
 		return json(data);
 	} catch (err) {
-		console.error('[API Proxy] Failed to fetch membership plans:', err);
+		logger.error('[API Proxy] Failed to fetch membership plans:', err);
 		return json({ error: 'Failed to fetch membership plans' }, { status: 500 });
 	}
 };
