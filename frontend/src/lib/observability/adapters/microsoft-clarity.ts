@@ -32,6 +32,7 @@ import type {
 	IdentifyPayload,
 	AdapterMetrics
 } from './types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -224,7 +225,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		// Validate project ID
 		if (!clarityConfig?.projectId) {
-			console.debug('[Clarity] No project ID provided, adapter disabled');
+			logger.debug('[Clarity] No project ID provided, adapter disabled');
 			this._state = 'disabled';
 			return;
 		}
@@ -238,7 +239,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		try {
 			await this._initPromise;
 		} catch (error) {
-			console.error('[Clarity] Initialization failed:', error);
+			logger.error('[Clarity] Initialization failed:', error);
 			this._state = 'error';
 		}
 	}
@@ -253,7 +254,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 				try {
 					// Only load if consent granted
 					if (!this._consent.analytics) {
-						console.debug('[Clarity] Analytics consent not granted, deferring initialization');
+						logger.debug('[Clarity] Analytics consent not granted, deferring initialization');
 						this._state = 'ready'; // Ready but waiting for consent
 						resolve();
 						return;
@@ -276,7 +277,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 					this._state = 'ready';
 
 					if (this._config?.debug) {
-						console.debug('[Clarity] Initialized successfully', {
+						logger.debug('[Clarity] Initialized successfully', {
 							projectId: this._projectId,
 							consent: this._consent
 						});
@@ -311,7 +312,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[Clarity] Consent updated:', consent);
+			logger.debug('[Clarity] Consent updated:', consent);
 		}
 	}
 
@@ -333,11 +334,11 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 			this._metrics.lastEventTime = Date.now();
 
 			if (this._config?.debug) {
-				console.debug('[Clarity] Page view tracked:', payload);
+				logger.debug('[Clarity] Page view tracked:', payload);
 			}
 		} catch (error) {
 			this._metrics.eventsFailed++;
-			console.error('[Clarity] Failed to track page view:', error);
+			logger.error('[Clarity] Failed to track page view:', error);
 		}
 	}
 
@@ -360,11 +361,11 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 			this._metrics.lastEventTime = Date.now();
 
 			if (this._config?.debug) {
-				console.debug('[Clarity] Event tracked:', eventName, payload);
+				logger.debug('[Clarity] Event tracked:', eventName, payload);
 			}
 		} catch (error) {
 			this._metrics.eventsFailed++;
-			console.error('[Clarity] Failed to track event:', error);
+			logger.error('[Clarity] Failed to track event:', error);
 		}
 	}
 
@@ -398,11 +399,11 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 			this._metrics.lastEventTime = Date.now();
 
 			if (this._config?.debug) {
-				console.debug('[Clarity] Popup event tracked:', { popupId, eventType, metadata });
+				logger.debug('[Clarity] Popup event tracked:', { popupId, eventType, metadata });
 			}
 		} catch (error) {
 			this._metrics.eventsFailed++;
-			console.error('[Clarity] Failed to track popup event:', error);
+			logger.error('[Clarity] Failed to track popup event:', error);
 		}
 	}
 
@@ -450,7 +451,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[Clarity] User identified:', payload.user_id);
+			logger.debug('[Clarity] User identified:', payload.user_id);
 		}
 	}
 
@@ -465,7 +466,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		});
 
 		if (this._config?.debug) {
-			console.debug('[Clarity] User properties set:', properties);
+			logger.debug('[Clarity] User properties set:', properties);
 		}
 	}
 
@@ -478,7 +479,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		window.clarity!('upgrade', reason);
 
 		if (this._config?.debug) {
-			console.debug('[Clarity] Session upgraded:', reason);
+			logger.debug('[Clarity] Session upgraded:', reason);
 		}
 	}
 
@@ -503,7 +504,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		this._state = 'disabled';
 
 		if (this._config?.debug) {
-			console.debug('[Clarity] Adapter destroyed');
+			logger.debug('[Clarity] Adapter destroyed');
 		}
 	}
 }

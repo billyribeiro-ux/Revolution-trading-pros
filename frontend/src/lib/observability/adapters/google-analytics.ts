@@ -33,6 +33,7 @@ import type {
 	QueuedEvent,
 	AdapterMetrics
 } from './types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Window Type Extension
@@ -213,13 +214,13 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 
 		// Validate measurement ID
 		if (!gaConfig?.measurementId) {
-			console.debug('[GA4] No measurement ID provided, adapter disabled');
+			logger.debug('[GA4] No measurement ID provided, adapter disabled');
 			this._state = 'disabled';
 			return;
 		}
 
 		if (!gaConfig.measurementId.startsWith('G-')) {
-			console.warn('[GA4] Invalid measurement ID format. Expected "G-XXXXXXXXXX"');
+			logger.warn('[GA4] Invalid measurement ID format. Expected "G-XXXXXXXXXX"');
 			this._state = 'error';
 			return;
 		}
@@ -233,7 +234,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		try {
 			await this._initPromise;
 		} catch (error) {
-			console.error('[GA4] Initialization failed:', error);
+			logger.error('[GA4] Initialization failed:', error);
 			this._state = 'error';
 		}
 	}
@@ -283,7 +284,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 					this._state = 'ready';
 
 					if (this._config?.debug) {
-						console.debug('[GA4] Initialized successfully', {
+						logger.debug('[GA4] Initialized successfully', {
 							measurementId: this._measurementId,
 							consent: this._consent
 						});
@@ -338,7 +339,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		});
 
 		if (this._config?.debug) {
-			console.debug('[GA4] Consent updated:', consent);
+			logger.debug('[GA4] Consent updated:', consent);
 		}
 
 		// Flush queue if consent was just granted
@@ -452,7 +453,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[GA4] User identified:', payload.user_id);
+			logger.debug('[GA4] User identified:', payload.user_id);
 		}
 	}
 
@@ -467,7 +468,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[GA4] User properties set:', properties);
+			logger.debug('[GA4] User properties set:', properties);
 		}
 	}
 
@@ -484,7 +485,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[GA4] User identity reset');
+			logger.debug('[GA4] User identity reset');
 		}
 	}
 
@@ -512,7 +513,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		this._state = 'disabled';
 
 		if (this._config?.debug) {
-			console.debug('[GA4] Adapter destroyed');
+			logger.debug('[GA4] Adapter destroyed');
 		}
 	}
 
@@ -527,7 +528,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		// Skip if no consent
 		if (!this._consent.analytics) {
 			if (this._config?.debug) {
-				console.debug('[GA4] Event skipped (no analytics consent):', eventName);
+				logger.debug('[GA4] Event skipped (no analytics consent):', eventName);
 			}
 			return;
 		}
@@ -562,11 +563,11 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 			this._metrics.averageLatencyMs = this._latencySum / this._metrics.eventsTracked;
 
 			if (this._config?.debug) {
-				console.debug('[GA4] Event sent:', eventName, payload, `(${latency.toFixed(2)}ms)`);
+				logger.debug('[GA4] Event sent:', eventName, payload, `(${latency.toFixed(2)}ms)`);
 			}
 		} catch (error) {
 			this._metrics.eventsFailed++;
-			console.error('[GA4] Failed to send event:', eventName, error);
+			logger.error('[GA4] Failed to send event:', eventName, error);
 		}
 	}
 
@@ -589,7 +590,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		this._metrics.queueSize = this._eventQueue.length;
 
 		if (this._config?.debug) {
-			console.debug('[GA4] Event queued:', eventName, `(queue size: ${this._eventQueue.length})`);
+			logger.debug('[GA4] Event queued:', eventName, `(queue size: ${this._eventQueue.length})`);
 		}
 	}
 
@@ -615,7 +616,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[GA4] Queue flushed:', events.length, 'events');
+			logger.debug('[GA4] Queue flushed:', events.length, 'events');
 		}
 	}
 }

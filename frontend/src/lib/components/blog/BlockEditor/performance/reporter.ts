@@ -22,6 +22,7 @@ import {
 	type WebVitalMetric,
 	getPercentiles
 } from './metrics';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Types
@@ -271,7 +272,7 @@ class PerformanceReporter {
 				this.log(`Loaded ${this.pendingPayloads.length} pending payloads`);
 			}
 		} catch (e) {
-			console.error('[PerformanceReporter] Failed to load pending payloads:', e);
+			logger.error('[PerformanceReporter] Failed to load pending payloads:', e);
 		}
 	}
 
@@ -284,7 +285,7 @@ class PerformanceReporter {
 			const toSave = this.pendingPayloads.slice(-50);
 			localStorage.setItem(STORAGE_KEYS.PENDING_METRICS, JSON.stringify(toSave));
 		} catch (e) {
-			console.error('[PerformanceReporter] Failed to save pending payloads:', e);
+			logger.error('[PerformanceReporter] Failed to save pending payloads:', e);
 		}
 	}
 
@@ -610,7 +611,7 @@ class PerformanceReporter {
 
 			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 		} catch (error) {
-			console.error('[PerformanceReporter] Failed to send metrics:', error);
+			logger.error('[PerformanceReporter] Failed to send metrics:', error);
 
 			// Retry with exponential backoff
 			if (this.retryCount < this.config.maxRetries) {
@@ -635,18 +636,18 @@ class PerformanceReporter {
 		// Web Vitals
 		console.group('Web Vitals');
 		const vitals = payload.webVitals;
-		if (vitals.lcp) console.log(`LCP: ${vitals.lcp.value.toFixed(0)}ms (${vitals.lcp.rating})`);
-		if (vitals.fcp) console.log(`FCP: ${vitals.fcp.value.toFixed(0)}ms (${vitals.fcp.rating})`);
-		if (vitals.cls) console.log(`CLS: ${vitals.cls.value.toFixed(3)} (${vitals.cls.rating})`);
-		if (vitals.inp) console.log(`INP: ${vitals.inp.value.toFixed(0)}ms (${vitals.inp.rating})`);
-		if (vitals.ttfb) console.log(`TTFB: ${vitals.ttfb.value.toFixed(0)}ms (${vitals.ttfb.rating})`);
+		if (vitals.lcp) logger.info(`LCP: ${vitals.lcp.value.toFixed(0)}ms (${vitals.lcp.rating})`);
+		if (vitals.fcp) logger.info(`FCP: ${vitals.fcp.value.toFixed(0)}ms (${vitals.fcp.rating})`);
+		if (vitals.cls) logger.info(`CLS: ${vitals.cls.value.toFixed(3)} (${vitals.cls.rating})`);
+		if (vitals.inp) logger.info(`INP: ${vitals.inp.value.toFixed(0)}ms (${vitals.inp.rating})`);
+		if (vitals.ttfb) logger.info(`TTFB: ${vitals.ttfb.value.toFixed(0)}ms (${vitals.ttfb.rating})`);
 		console.groupEnd();
 
 		// Editor Metrics
 		if (Object.keys(payload.editorMetrics).length > 0) {
 			console.group('Editor Metrics');
 			for (const [key, metric] of Object.entries(payload.editorMetrics)) {
-				console.log(
+				logger.info(
 					`${key}: avg=${metric.avg.toFixed(2)}ms, p95=${metric.p95.toFixed(2)}ms (n=${metric.count})`
 				);
 			}
@@ -657,7 +658,7 @@ class PerformanceReporter {
 		if (Object.keys(payload.blockRenderStats).length > 0) {
 			console.group('Block Render Stats');
 			for (const [type, stats] of Object.entries(payload.blockRenderStats)) {
-				console.log(
+				logger.info(
 					`${type}: avg=${stats.avgRenderTime.toFixed(2)}ms, p95=${stats.p95.toFixed(2)}ms (n=${stats.count})`
 				);
 			}
@@ -666,10 +667,10 @@ class PerformanceReporter {
 
 		// Memory & FPS
 		console.group('System');
-		console.log(`FPS: ${payload.avgFps}`);
-		console.log(`Block Count: ${payload.totalBlockCount}`);
+		logger.info(`FPS: ${payload.avgFps}`);
+		logger.info(`Block Count: ${payload.totalBlockCount}`);
 		if (payload.memoryUsage) {
-			console.log(
+			logger.info(
 				`Memory: ${payload.memoryUsage.usedMB.toFixed(1)}MB / ${payload.memoryUsage.limitMB.toFixed(0)}MB (${payload.memoryUsage.usagePercentage.toFixed(1)}%)`
 			);
 		}
@@ -683,7 +684,7 @@ class PerformanceReporter {
 	 */
 	private log(message: string): void {
 		if (this.config.verbose || dev) {
-			console.debug(`[PerformanceReporter] ${message}`);
+			logger.debug(`[PerformanceReporter] ${message}`);
 		}
 	}
 

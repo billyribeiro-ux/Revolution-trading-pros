@@ -29,6 +29,7 @@ import type {
 	IdentifyPayload,
 	AdapterMetrics
 } from './types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -134,7 +135,7 @@ function storeAttributionData(data: Record<string, unknown>): void {
 		const updated = { ...parsed, ...data, timestamp: Date.now() };
 		sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 	} catch (e) {
-		console.debug('[AppleAttribution] Failed to store data:', e);
+		logger.debug('[AppleAttribution] Failed to store data:', e);
 	}
 }
 
@@ -246,7 +247,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		this._state = 'ready';
 
 		if (this._config?.debug) {
-			console.debug('[AppleAttribution] Initialized', {
+			logger.debug('[AppleAttribution] Initialized', {
 				isAppleDevice: this.isAppleDevice,
 				isPCMSupported: this.isPCMSupported,
 				sessionId: this._sessionId
@@ -260,7 +261,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 	onConsentChange(consent: { analytics: boolean; marketing: boolean }): void {
 		// Consent state is tracked by the orchestrator
 		if (this._config?.debug) {
-			console.debug('[AppleAttribution] Consent updated:', consent);
+			logger.debug('[AppleAttribution] Consent updated:', consent);
 		}
 	}
 
@@ -310,7 +311,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		});
 
 		if (this._config?.debug) {
-			console.debug('[AppleAttribution] Popup conversion tracked:', {
+			logger.debug('[AppleAttribution] Popup conversion tracked:', {
 				popupId,
 				eventType,
 				conversionValue: this._currentConversionValue
@@ -346,10 +347,10 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			});
 
 			if (this._config?.debug) {
-				console.debug('[AppleAttribution] PCM attribution registered:', attributionData);
+				logger.debug('[AppleAttribution] PCM attribution registered:', attributionData);
 			}
 		} catch (error) {
-			console.error('[AppleAttribution] Failed to register PCM:', error);
+			logger.error('[AppleAttribution] Failed to register PCM:', error);
 		}
 	}
 
@@ -372,10 +373,10 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			});
 
 			if (this._config?.debug) {
-				console.debug('[AppleAttribution] PCM conversion triggered:', triggerData);
+				logger.debug('[AppleAttribution] PCM conversion triggered:', triggerData);
 			}
 		} catch (error) {
-			console.error('[AppleAttribution] Failed to trigger PCM conversion:', error);
+			logger.error('[AppleAttribution] Failed to trigger PCM conversion:', error);
 		}
 	}
 
@@ -405,7 +406,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		// Instead, we use hashed session-based attribution
 
 		if (this._config?.debug) {
-			console.debug('[AppleAttribution] User identification skipped (privacy mode)');
+			logger.debug('[AppleAttribution] User identification skipped (privacy mode)');
 		}
 	}
 
@@ -440,7 +441,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		}
 
 		if (this._config?.debug) {
-			console.debug('[AppleAttribution] Attribution data reset');
+			logger.debug('[AppleAttribution] Attribution data reset');
 		}
 	}
 
@@ -458,7 +459,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		this._state = 'disabled';
 
 		if (this._config?.debug) {
-			console.debug('[AppleAttribution] Adapter destroyed');
+			logger.debug('[AppleAttribution] Adapter destroyed');
 		}
 	}
 
@@ -510,7 +511,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			this._metrics.lastEventTime = Date.now();
 
 			if (this._config?.debug) {
-				console.debug('[AppleAttribution] Event tracked:', {
+				logger.debug('[AppleAttribution] Event tracked:', {
 					eventName,
 					payload,
 					conversionValue: this._currentConversionValue
@@ -518,7 +519,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			}
 		} catch (error) {
 			this._metrics.eventsFailed++;
-			console.error('[AppleAttribution] Failed to track event:', error);
+			logger.error('[AppleAttribution] Failed to track event:', error);
 		}
 	}
 }

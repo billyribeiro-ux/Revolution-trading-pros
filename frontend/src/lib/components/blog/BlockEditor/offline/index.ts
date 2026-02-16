@@ -34,6 +34,7 @@ import {
 	type SyncStatus,
 	type SyncIndicatorState
 } from './sync';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Re-exports
@@ -188,7 +189,7 @@ class OfflineEditorStore {
 			const changes = await blogEditorDB.getAllPendingChanges();
 			this._pendingChanges = changes.length;
 		} catch (error) {
-			console.error('[OfflineEditorStore] Failed to get pending count:', error);
+			logger.error('[OfflineEditorStore] Failed to get pending count:', error);
 		}
 	}
 
@@ -231,7 +232,7 @@ class OfflineEditorStore {
 			try {
 				fn(snapshot);
 			} catch (error) {
-				console.error('[OfflineEditorStore] Error in subscriber:', error);
+				logger.error('[OfflineEditorStore] Error in subscriber:', error);
 			}
 		}
 	}

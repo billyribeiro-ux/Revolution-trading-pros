@@ -87,6 +87,7 @@ import {
 	flushAnalytics,
 	destroyAnalytics
 } from '../index';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TEST SUITE: Adapter Types
@@ -960,4 +961,4 @@ describe('Integration Tests', () => {
 	});
 });
 
-console.log('✅ All test suites defined successfully');
+logger.info('✅ All test suites defined successfully');

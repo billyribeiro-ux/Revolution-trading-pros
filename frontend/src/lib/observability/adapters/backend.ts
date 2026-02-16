@@ -27,6 +27,7 @@ import type {
 	QueuedEvent,
 	AdapterMetrics
 } from './types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Constants
@@ -117,7 +118,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 		this._state = 'ready';
 
 		if (config.debug) {
-			console.debug('[Backend] Adapter initialized', {
+			logger.debug('[Backend] Adapter initialized', {
 				endpoint: this._endpoint,
 				flushInterval: this._flushIntervalMs,
 				maxBatchSize: this._maxBatchSize
@@ -360,7 +361,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			this._metrics.eventsFailed += events.length - retryEvents.length;
 
 			if (this._config?.debug) {
-				console.error('[Backend] Flush failed:', error);
+				logger.error('[Backend] Flush failed:', error);
 			}
 		} finally {
 			this._isFlushing = false;

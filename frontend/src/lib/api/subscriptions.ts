@@ -58,6 +58,7 @@ import type {
 	SubscriptionStats,
 	SubscriptionPayment
 } from '$lib/stores/subscriptions.svelte';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -432,7 +433,7 @@ class SubscriptionService {
 		// Process retry queue
 		this.processRetryQueue();
 
-		console.debug('[SubscriptionService] Initialized');
+		logger.debug('[SubscriptionService] Initialized');
 	}
 
 	/**
@@ -579,7 +580,7 @@ class SubscriptionService {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/subscriptions`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[SubscriptionService] WebSocket connected');
+				logger.debug('[SubscriptionService] WebSocket connected');
 				this.authenticate();
 				this.subscribeToUpdates();
 			};
@@ -637,7 +638,7 @@ class SubscriptionService {
 					break;
 			}
 		} catch (error) {
-			console.error('[SubscriptionService] Failed to handle WebSocket message:', error);
+			logger.error('[SubscriptionService] Failed to handle WebSocket message:', error);
 		}
 	}
 
@@ -709,7 +710,7 @@ class SubscriptionService {
 	}
 
 	private handleAlert(alert: any): void {
-		console.warn('[SubscriptionService] Alert:', alert);
+		logger.warn('[SubscriptionService] Alert:', alert);
 		this.showNotification(alert.message, alert.severity);
 	}
 
@@ -741,7 +742,7 @@ class SubscriptionService {
 			if (stats) this.stats.set(stats);
 		} catch (_error) {
 			// Gracefully handle missing endpoints
-			console.debug('[SubscriptionService] Metrics not available');
+			logger.debug('[SubscriptionService] Metrics not available');
 		}
 	}
 
@@ -775,7 +776,7 @@ class SubscriptionService {
 					if (item.attempts >= RETRY_ATTEMPTS) {
 						// Remove after max attempts
 						this.retryQueue = this.retryQueue.filter((i) => i !== item);
-						console.error('[SubscriptionService] Max retries reached:', item);
+						logger.error('[SubscriptionService] Max retries reached:', item);
 					}
 				}
 			}
@@ -838,7 +839,7 @@ class SubscriptionService {
 		type: 'info' | 'success' | 'warning' | 'error' = 'info'
 	): void {
 		// Implement notification system
-		console.log(`[${type.toUpperCase()}] ${message}`);
+		logger.info(`[${type.toUpperCase()}] ${message}`);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
