@@ -139,8 +139,17 @@
 <Seo seo={resolvedSeo} />
 
 <svelte:head>
-	<!-- Non-SEO head tags (theme-color, RSS feeds) stay here -->
+	<!-- Non-SEO head tags (theme-color, favicons, PWA, RSS feeds) stay here -->
 	<meta name="theme-color" content="#FFFFFF" />
+
+	<!-- Favicons — explicit declarations prevent browser auto-probe 404s -->
+	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+	<link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
+	<link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="192x192" href="/apple-touch-icon-precomposed.png" />
+
+	<!-- PWA Manifest -->
+	<link rel="manifest" href="/manifest.json" />
 
 	<!-- RSS/Atom Feed Discovery Links (SEO: Auto-discovery for feed readers) -->
 	<link
