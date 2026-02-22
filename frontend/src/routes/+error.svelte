@@ -12,6 +12,7 @@
 	 */
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
+	import { logger } from '$lib/utils/logger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// Error details from SvelteKit
