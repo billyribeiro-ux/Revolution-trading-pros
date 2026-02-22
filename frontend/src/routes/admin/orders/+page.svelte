@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Orders Management Page
 	 * ICT 7 Fix: Complete admin orders dashboard
@@ -90,7 +91,7 @@
 			pagination = data.pagination || null;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load orders';
-			console.error('Error loading orders:', err);
+			logger.error('Error loading orders:', err);
 		} finally {
 			loading = false;
 		}

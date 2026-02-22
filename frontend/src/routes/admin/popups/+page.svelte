@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import {
 		IconPlus,
@@ -42,7 +43,7 @@
 		try {
 			popups = await getAllPopups();
 		} catch (error) {
-			console.error('Error loading popups:', error);
+			logger.error('Error loading popups:', error);
 			popups = [];
 		} finally {
 			loading = false;
@@ -54,7 +55,7 @@
 			await togglePopupStatus(popup.id, !popup.isActive);
 			await loadPopups();
 		} catch (error) {
-			console.error('Error toggling popup status:', error);
+			logger.error('Error toggling popup status:', error);
 		}
 	}
 
@@ -72,7 +73,7 @@
 			await deletePopup(popupId);
 			await loadPopups();
 		} catch (error) {
-			console.error('Error deleting popup:', error);
+			logger.error('Error deleting popup:', error);
 		}
 	}
 
@@ -81,7 +82,7 @@
 			await duplicatePopup(popupId);
 			await loadPopups();
 		} catch (error) {
-			console.error('Error duplicating popup:', error);
+			logger.error('Error duplicating popup:', error);
 		}
 	}
 

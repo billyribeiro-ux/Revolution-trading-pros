@@ -9,6 +9,7 @@
 	@version 2.0.0 - Complete CRUD with dark theme
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
 
 	interface Props {
@@ -187,7 +188,7 @@
 			errorMessage = isEditMode
 				? 'Failed to update entry. Please try again.'
 				: 'Failed to add entry. Please try again.';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isSaving = false;
 		}
@@ -205,7 +206,7 @@
 			onClose();
 		} catch (err) {
 			errorMessage = 'Failed to delete entry. Please try again.';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isDeleting = false;
 			showDeleteConfirm = false;

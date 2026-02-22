@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Root Layout - Apple Principal Engineer ICT Level 7 Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -86,7 +87,7 @@
 			try {
 				trackPageView(to.url.href);
 			} catch (err) {
-				console.debug('[Layout] Page view tracking failed (non-critical):', err);
+				logger.debug('[Layout] Page view tracking failed (non-critical):', err);
 			}
 		}
 	});
@@ -110,25 +111,25 @@
 
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
-			console.debug('[Layout] Auth init failed (non-critical):', err);
+			logger.debug('[Layout] Auth init failed (non-critical):', err);
 		});
 
 		try {
 			registerServiceWorker();
 		} catch (err) {
-			console.debug('[Layout] Service worker registration failed (non-critical):', err);
+			logger.debug('[Layout] Service worker registration failed (non-critical):', err);
 		}
 
 		try {
 			initPerformanceMonitoring();
 		} catch (err) {
-			console.debug('[Layout] Performance monitoring init failed (non-critical):', err);
+			logger.debug('[Layout] Performance monitoring init failed (non-critical):', err);
 		}
 
 		try {
 			initializeConsent();
 		} catch (err) {
-			console.debug('[Layout] Consent init failed (non-critical):', err);
+			logger.debug('[Layout] Consent init failed (non-critical):', err);
 		}
 	});
 </script>

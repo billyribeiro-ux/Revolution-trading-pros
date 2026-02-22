@@ -37,6 +37,7 @@
 -->
 
 <script lang="ts" module>
+import { logger } from '$lib/utils/logger';
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MODULE CONTEXT - Shared across all instances
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -504,7 +505,7 @@
 		try {
 			await logoutApi();
 		} catch (error) {
-			console.error('[NavBar] Logout failed:', error);
+			logger.error('[NavBar] Logout failed:', error);
 		}
 
 		authStore.clearAuth();

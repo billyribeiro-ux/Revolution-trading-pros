@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Edit Page
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -91,7 +92,7 @@
 				};
 			}
 		} catch (err) {
-			console.error('Failed to load watchlist:', err);
+			logger.error('Failed to load watchlist:', err);
 			error = err instanceof Error ? err.message : 'Failed to load watchlist item';
 		} finally {
 			isLoading = false;
@@ -128,7 +129,7 @@
 			});
 			await goto('/admin/watchlist');
 		} catch (err) {
-			console.error('Failed to save:', err);
+			logger.error('Failed to save:', err);
 			error = err instanceof Error ? err.message : 'Failed to save changes';
 		} finally {
 			isSaving = false;
@@ -141,7 +142,7 @@
 			await watchlistApi.delete(slug);
 			await goto('/admin/watchlist');
 		} catch (err) {
-			console.error('Failed to delete:', err);
+			logger.error('Failed to delete:', err);
 			error = err instanceof Error ? err.message : 'Failed to delete item';
 			showDeleteModal = false;
 		}

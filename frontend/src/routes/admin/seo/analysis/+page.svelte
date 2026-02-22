@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
@@ -31,7 +32,7 @@
 			const response = await getForms();
 			_forms = response.forms || [];
 		} catch (error) {
-			console.error('Failed to load forms:', error);
+			logger.error('Failed to load forms:', error);
 		}
 	}
 

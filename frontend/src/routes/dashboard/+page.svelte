@@ -19,6 +19,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
@@ -242,11 +243,11 @@
 
 		isLoading = true;
 		try {
-			console.log('[Dashboard] Loading memberships for user:', $user?.email);
+			logger.info('[Dashboard] Loading memberships for user:', $user?.email);
 			membershipsData = await getUserMemberships();
-			console.log('[Dashboard] Memberships loaded:', membershipsData);
+			logger.info('[Dashboard] Memberships loaded:', membershipsData);
 		} catch (error) {
-			console.error('[Dashboard] Failed to load memberships:', error);
+			logger.error('[Dashboard] Failed to load memberships:', error);
 			membershipsData = null;
 		} finally {
 			isLoading = false;

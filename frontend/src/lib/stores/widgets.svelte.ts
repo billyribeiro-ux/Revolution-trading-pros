@@ -12,6 +12,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 export type WidgetSize = 'small' | 'medium' | 'large' | 'full';
 
@@ -199,7 +200,7 @@ function loadConfig(): WidgetConfig {
 			};
 		}
 	} catch (e) {
-		console.error('Failed to load widget config:', e);
+		logger.error('Failed to load widget config:', e);
 	}
 
 	return defaultConfig;
@@ -212,7 +213,7 @@ function saveConfig(config: WidgetConfig) {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
 	} catch (e) {
-		console.error('Failed to save widget config:', e);
+		logger.error('Failed to save widget config:', e);
 	}
 }
 

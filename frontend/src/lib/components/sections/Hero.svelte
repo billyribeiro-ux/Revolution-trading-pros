@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * HeroSection - Netflix L11+ Enhanced Slider Hero
 	 * ══════════════════════════════════════════════════════════════════════════════
@@ -720,7 +721,7 @@
 				animateSlideIn(currentSlide);
 			}
 		} catch (e) {
-			console.warn('GSAP failed to load:', e);
+			logger.warn('GSAP failed to load:', e);
 		}
 
 		// Start slide rotation

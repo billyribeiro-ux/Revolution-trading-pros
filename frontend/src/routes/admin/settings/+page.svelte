@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * API Settings & Integrations - Apple ICT9+ Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -158,7 +159,7 @@
 				needs_attention: 0
 			};
 		} catch (error) {
-			console.error('Failed to fetch services:', error);
+			logger.error('Failed to fetch services:', error);
 			// Fallback to static services
 			initializeStaticServices();
 		} finally {

@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * CRM Leads Management - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -305,7 +306,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load leads';
-			console.error('Load leads error:', err);
+			logger.error('Load leads error:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -335,7 +336,7 @@
 			await loadData();
 		} catch (err) {
 			formError = err instanceof Error ? err.message : 'Failed to create lead';
-			console.error('Create lead error:', err);
+			logger.error('Create lead error:', err);
 		} finally {
 			formLoading = false;
 		}
@@ -365,7 +366,7 @@
 			await loadData();
 		} catch (err) {
 			formError = err instanceof Error ? err.message : 'Failed to update lead';
-			console.error('Update lead error:', err);
+			logger.error('Update lead error:', err);
 		} finally {
 			formLoading = false;
 		}
@@ -381,7 +382,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete lead';
-			console.error('Delete lead error:', err);
+			logger.error('Delete lead error:', err);
 		}
 	}
 
@@ -391,7 +392,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update lead status';
-			console.error('Update status error:', err);
+			logger.error('Update status error:', err);
 		}
 	}
 
@@ -402,7 +403,7 @@
 			});
 			lead.is_starred = !lead.is_starred;
 		} catch (err) {
-			console.error('Toggle starred error:', err);
+			logger.error('Toggle starred error:', err);
 		}
 	}
 
@@ -416,7 +417,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to convert lead';
-			console.error('Convert lead error:', err);
+			logger.error('Convert lead error:', err);
 		}
 	}
 
@@ -431,7 +432,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete leads';
-			console.error('Bulk delete error:', err);
+			logger.error('Bulk delete error:', err);
 		}
 	}
 
@@ -447,7 +448,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update leads';
-			console.error('Bulk update error:', err);
+			logger.error('Bulk update error:', err);
 		}
 	}
 

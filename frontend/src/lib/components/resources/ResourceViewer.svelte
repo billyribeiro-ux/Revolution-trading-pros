@@ -11,6 +11,7 @@
   - Access control indication
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { trackDownload } from '$lib/api/room-resources';
 
@@ -57,7 +58,7 @@
 				versions = data.data;
 			}
 		} catch (e) {
-			console.error('Failed to load version history:', e);
+			logger.error('Failed to load version history:', e);
 		} finally {
 			loadingVersions = false;
 		}
@@ -93,7 +94,7 @@
 
 			onDownload?.(resource);
 		} catch (e) {
-			console.error('Download failed:', e);
+			logger.error('Download failed:', e);
 		} finally {
 			downloading = false;
 		}

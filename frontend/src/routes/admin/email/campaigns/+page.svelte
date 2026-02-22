@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Campaigns - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -142,7 +143,7 @@
 			campaigns = response.data;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';
-			console.error('Failed to load campaigns:', err);
+			logger.error('Failed to load campaigns:', err);
 		} finally {
 			loading = false;
 		}
@@ -152,7 +153,7 @@
 		try {
 			stats = await getCampaignStats();
 		} catch (err) {
-			console.error('Failed to load stats:', err);
+			logger.error('Failed to load stats:', err);
 		}
 	}
 
@@ -164,7 +165,7 @@
 				name: t.name
 			}));
 		} catch (err) {
-			console.error('Failed to load templates:', err);
+			logger.error('Failed to load templates:', err);
 		}
 	}
 
@@ -194,7 +195,7 @@
 				];
 			}
 		} catch (err) {
-			console.error('Failed to load segments:', err);
+			logger.error('Failed to load segments:', err);
 			// Use fallback segments on error
 			segments = [
 				{ id: 1, name: 'All Members', count: 12847 },

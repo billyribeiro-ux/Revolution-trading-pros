@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
 	import { behaviorAPI } from '$lib/api/behavior';
@@ -31,7 +32,7 @@
 			const data = await behaviorAPI.getDashboard(selectedPeriod);
 			dashboardData.set(data);
 		} catch (error) {
-			console.error('Failed to load behavior dashboard:', error);
+			logger.error('Failed to load behavior dashboard:', error);
 		} finally {
 			isLoading.set(false);
 		}

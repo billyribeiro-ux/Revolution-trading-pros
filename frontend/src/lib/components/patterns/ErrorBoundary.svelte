@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * ErrorBoundary Component
 	 * Catches and displays errors gracefully
@@ -22,7 +23,7 @@
 		const err = e instanceof Error ? e : new Error(String(e));
 		error = err;
 		props.onError?.(err);
-		console.error('[ErrorBoundary] Caught error:', err);
+		logger.error('[ErrorBoundary] Caught error:', err);
 	}
 
 	function reset() {

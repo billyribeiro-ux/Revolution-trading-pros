@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * TUS Video Uploader for Bunny.net Stream
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -130,7 +131,7 @@
 					LibraryId: library_id
 				},
 				onError: (error: Error) => {
-					console.error('TUS upload error:', error);
+					logger.error('TUS upload error:', error);
 					errorMessage = error.message || 'Upload failed';
 					status = 'error';
 					_uploading = false;

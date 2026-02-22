@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * CourseReviews Component
 	 * Apple Principal Engineer ICT 7 Grade - February 2026
@@ -73,7 +74,7 @@
 				summary = res.data.summary || null;
 			}
 		} catch (e) {
-			console.error('Failed to load reviews:', e);
+			logger.error('Failed to load reviews:', e);
 		} finally {
 			isLoading = false;
 		}
@@ -119,7 +120,7 @@
 				await loadReviews();
 			}
 		} catch (e) {
-			console.error('Failed to delete review:', e);
+			logger.error('Failed to delete review:', e);
 		}
 	}
 

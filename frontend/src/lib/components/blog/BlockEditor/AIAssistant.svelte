@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { fade, slide } from 'svelte/transition';
 	import {
 		IconRobot,
@@ -525,7 +526,7 @@
 				await streamGenerate();
 			} catch (streamError) {
 				// If streaming fails, try non-streaming as fallback
-				console.warn('Streaming failed, trying non-streaming:', streamError);
+				logger.warn('Streaming failed, trying non-streaming:', streamError);
 				await nonStreamingGenerate();
 			}
 		};
@@ -556,11 +557,11 @@
 					await attemptGenerate();
 				} catch (retryErr) {
 					error = retryErr instanceof Error ? retryErr.message : 'Failed after retries';
-					console.error('AI generation error after retry:', retryErr);
+					logger.error('AI generation error after retry:', retryErr);
 				}
 			} else {
 				error = errorMessage;
-				console.error('AI generation error:', err);
+				logger.error('AI generation error:', err);
 			}
 		} finally {
 			isGenerating = false;

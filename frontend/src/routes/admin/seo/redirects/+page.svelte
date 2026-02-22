@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		IconPlus,
@@ -33,7 +34,7 @@
 			const data = await response.json();
 			redirects = data.data || [];
 		} catch (error) {
-			console.error('Failed to load redirects:', error);
+			logger.error('Failed to load redirects:', error);
 		} finally {
 			loading = false;
 		}
@@ -44,7 +45,7 @@
 			const response = await fetch('/api/seo/redirects/stats');
 			stats = await response.json();
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats:', error);
 		}
 	}
 
@@ -66,7 +67,7 @@
 			loadRedirects();
 			loadStats();
 		} catch (error) {
-			console.error('Failed to delete redirect:', error);
+			logger.error('Failed to delete redirect:', error);
 		}
 	}
 
@@ -76,7 +77,7 @@
 			redirect.is_active = !redirect.is_active;
 			redirects = [...redirects];
 		} catch (error) {
-			console.error('Failed to toggle redirect:', error);
+			logger.error('Failed to toggle redirect:', error);
 		}
 	}
 
@@ -101,7 +102,7 @@
 			loadRedirects();
 			loadStats();
 		} catch (error) {
-			console.error('Failed to delete redirects:', error);
+			logger.error('Failed to delete redirects:', error);
 		}
 	}
 

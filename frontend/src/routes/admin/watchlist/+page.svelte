@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Content Management
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -88,7 +89,7 @@
 			const response = await watchlistApi.getAll({ per_page: 50 });
 			items = response.data || [];
 		} catch (err) {
-			console.error('Failed to fetch watchlist items:', err);
+			logger.error('Failed to fetch watchlist items:', err);
 			error = err instanceof Error ? err.message : 'Failed to load watchlist items';
 		} finally {
 			isLoading = false;
@@ -149,7 +150,7 @@
 			await watchlistApi.delete(itemToDelete.slug);
 			items = items.filter((i) => i.slug !== itemToDelete!.slug);
 		} catch (err) {
-			console.error('Failed to delete item:', err);
+			logger.error('Failed to delete item:', err);
 		}
 
 		showDeleteModal = false;
@@ -161,7 +162,7 @@
 			const response = await watchlistApi.publish(item.slug);
 			items = items.map((i) => (i.slug === item.slug ? response.data : i));
 		} catch (err) {
-			console.error('Failed to publish item:', err);
+			logger.error('Failed to publish item:', err);
 		}
 		activeDropdown = null;
 	}
@@ -171,7 +172,7 @@
 			const response = await watchlistApi.archive(item.slug);
 			items = items.map((i) => (i.slug === item.slug ? response.data : i));
 		} catch (err) {
-			console.error('Failed to archive item:', err);
+			logger.error('Failed to archive item:', err);
 		}
 		activeDropdown = null;
 	}
@@ -228,7 +229,7 @@
 			showCreateModal = false;
 			resetCreateForm();
 		} catch (err) {
-			console.error('Failed to create item:', err);
+			logger.error('Failed to create item:', err);
 		}
 		isSaving = false;
 	}

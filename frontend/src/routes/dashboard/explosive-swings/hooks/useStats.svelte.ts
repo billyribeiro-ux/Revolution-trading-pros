@@ -17,6 +17,7 @@
 import { getEnterpriseClient } from '$lib/api/enterprise/client';
 import { ROOM_SLUG } from '../constants';
 import type { QuickStats, WeeklyPerformance } from '../types';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -211,7 +212,7 @@ export function useStats(options: UseStatsOptions = {}): UseStatsReturn {
 			};
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to fetch stats';
-			console.error('Failed to fetch stats:', e);
+			logger.error('Failed to fetch stats:', e);
 		} finally {
 			isLoading = false;
 		}

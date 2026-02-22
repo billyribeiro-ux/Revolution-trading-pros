@@ -9,6 +9,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import type { ActivePosition } from '../types';
 	import { formatPrice, formatPercent } from '../utils/formatters';
 
@@ -151,7 +152,7 @@
 			}
 		} catch (err) {
 			errorMessage = 'Failed to close position. Please try again.';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isSaving = false;
 		}

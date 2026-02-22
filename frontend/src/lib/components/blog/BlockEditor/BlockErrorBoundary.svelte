@@ -21,6 +21,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import type { Snippet } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
@@ -151,7 +152,7 @@
 
 		errorRecordId = record.id;
 
-		console.error(`[BlockErrorBoundary] Error in ${block.type} block:`, err);
+		logger.error(`[BlockErrorBoundary] Error in ${block.type} block:`, err);
 	}
 
 	// ==========================================================================
@@ -201,7 +202,7 @@
 		// Log recovery attempt with ErrorType context for debugging
 		// ErrorType values: RENDER_ERROR, VALIDATION_ERROR, SAVE_ERROR, NETWORK_ERROR, AI_ERROR, MEDIA_ERROR, UNKNOWN_ERROR
 		const errorTypeLabel = errorType ?? ErrorType.UNKNOWN_ERROR;
-		console.debug(`[BlockErrorBoundary] Recovery attempted for block ${block.id}`, {
+		logger.debug(`[BlockErrorBoundary] Recovery attempted for block ${block.id}`, {
 			errorType: errorTypeLabel,
 			recoveredBlock: recoveredBlock ? recoveredBlock.id : null
 		});

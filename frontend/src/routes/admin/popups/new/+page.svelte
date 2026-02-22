@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { Card, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
@@ -140,7 +141,7 @@
 			addToast({ type: 'success', message: 'Popup created successfully!' });
 			goto('/admin/popups');
 		} catch (error: any) {
-			console.error('Failed to create popup:', error);
+			logger.error('Failed to create popup:', error);
 			addToast({
 				type: 'error',
 				message: error.response?.data?.message || 'Failed to create popup'

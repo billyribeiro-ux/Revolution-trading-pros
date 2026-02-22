@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Checkout Page - WordPress Revolution Trading Style (Multi-Step)
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -237,7 +238,7 @@
 				window.location.href = session.url;
 			}
 		} catch (error) {
-			console.error('Checkout error:', error);
+			logger.error('Checkout error:', error);
 			checkoutError =
 				error instanceof Error ? error.message : 'Failed to process order. Please try again.';
 		} finally {

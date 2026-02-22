@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	interface Coupon {
 		id: number;
 		code: string;
@@ -54,7 +55,7 @@
 				copiedCode = null;
 			}, 2000);
 		} catch (err) {
-			console.error('Failed to copy code:', err);
+			logger.error('Failed to copy code:', err);
 		}
 	}
 </script>

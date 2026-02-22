@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, BoardReport, ReportPeriod } from '$lib/boards/types';
@@ -34,7 +35,7 @@
 				await loadReport();
 			}
 		} catch (error) {
-			console.error('Failed to load boards:', error);
+			logger.error('Failed to load boards:', error);
 		}
 	}
 
@@ -44,7 +45,7 @@
 		try {
 			report = await boardsAPI.getBoardReport(selectedBoardId, period);
 		} catch (error) {
-			console.error('Failed to load report:', error);
+			logger.error('Failed to load report:', error);
 		} finally {
 			loading = false;
 		}
@@ -74,7 +75,7 @@
 			a.click();
 			URL.revokeObjectURL(url);
 		} catch (error) {
-			console.error('Failed to export report:', error);
+			logger.error('Failed to export report:', error);
 		}
 	}
 </script>

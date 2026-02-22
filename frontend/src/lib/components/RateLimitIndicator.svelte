@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * API Rate Limit Indicator - Apple ICT9+ Design
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -73,7 +74,7 @@
 			hasConnectedServices = limits.length > 0;
 			return limits;
 		} catch (error) {
-			console.warn('Failed to fetch rate limits:', error);
+			logger.warn('Failed to fetch rate limits:', error);
 			hasConnectedServices = false;
 			return [];
 		}

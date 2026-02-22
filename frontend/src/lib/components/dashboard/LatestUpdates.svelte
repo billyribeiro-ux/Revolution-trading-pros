@@ -11,6 +11,7 @@
 	@svelte5 Fully compliant with Nov/Dec 2025 best practices
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 
 	/**
@@ -77,7 +78,7 @@
 					isLoading = false;
 				})
 				.catch((err) => {
-					console.error('LatestUpdates fetch error:', err);
+					logger.error('LatestUpdates fetch error:', err);
 					error = 'Failed to load updates';
 					isLoading = false;
 				});

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Embed Generator - Generate embed codes for forms
 	 *
@@ -85,7 +86,7 @@
 				embedCode = data.code;
 			}
 		} catch (error) {
-			console.error('Failed to generate embed:', error);
+			logger.error('Failed to generate embed:', error);
 		}
 		loading = false;
 	}
@@ -113,7 +114,7 @@
 				qrCodeUrl = data.qr_code;
 			}
 		} catch (error) {
-			console.error('Failed to generate share link:', error);
+			logger.error('Failed to generate share link:', error);
 		}
 	}
 
@@ -124,7 +125,7 @@
 			copied = true;
 			setTimeout(() => (copied = false), 2000);
 		} catch (error) {
-			console.error('Failed to copy:', error);
+			logger.error('Failed to copy:', error);
 		}
 	}
 

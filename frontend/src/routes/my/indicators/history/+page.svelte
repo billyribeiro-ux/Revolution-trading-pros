@@ -10,6 +10,7 @@
 	- Track download status
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 
 	interface DownloadRecord {
@@ -51,7 +52,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to load download history';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			loading = false;
 		}

@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Create Membership Plan - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -152,7 +153,7 @@
 			});
 			goto('/admin/memberships');
 		} catch (err) {
-			console.error('Failed to save membership:', err);
+			logger.error('Failed to save membership:', err);
 			error = err instanceof Error ? err.message : 'Failed to save membership plan';
 		} finally {
 			saving = false;

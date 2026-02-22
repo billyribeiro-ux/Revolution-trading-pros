@@ -18,6 +18,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 
@@ -153,7 +154,7 @@
 				pendingSchedules = data.schedules || [];
 			}
 		} catch (e) {
-			console.error('Failed to load schedules:', e);
+			logger.error('Failed to load schedules:', e);
 		}
 	}
 
@@ -165,7 +166,7 @@
 				releases = data.releases || [];
 			}
 		} catch (e) {
-			console.error('Failed to load releases:', e);
+			logger.error('Failed to load releases:', e);
 		}
 	}
 
@@ -181,7 +182,7 @@
 				calendarEntries = await response.json();
 			}
 		} catch (e) {
-			console.error('Failed to load calendar:', e);
+			logger.error('Failed to load calendar:', e);
 		}
 	}
 
@@ -195,7 +196,7 @@
 				scheduleHistory = data.history || [];
 			}
 		} catch (e) {
-			console.error('Failed to load history:', e);
+			logger.error('Failed to load history:', e);
 		}
 	}
 

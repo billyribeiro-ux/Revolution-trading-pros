@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Past Members Dashboard - Svelte 5 / SvelteKit Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -148,7 +149,7 @@
 			churnReasons = reasonsData;
 			await loadPeriodMembers();
 		} catch (e) {
-			console.error('[PastMembers] Failed to load dashboard:', e);
+			logger.error('[PastMembers] Failed to load dashboard:', e);
 			error = e instanceof Error ? e.message : 'Failed to load dashboard';
 			toastStore.error('Failed to load dashboard data');
 		} finally {
@@ -175,7 +176,7 @@
 
 			toastStore.success('Dashboard refreshed');
 		} catch (e) {
-			console.error('[PastMembers] Failed to refresh:', e);
+			logger.error('[PastMembers] Failed to refresh:', e);
 			toastStore.error('Failed to refresh dashboard');
 		} finally {
 			isRefreshing = false;
@@ -202,7 +203,7 @@
 				total: result.pagination.total
 			};
 		} catch (e) {
-			console.error('[PastMembers] Failed to load members:', e);
+			logger.error('[PastMembers] Failed to load members:', e);
 		} finally {
 			isLoadingMembers = false;
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -35,7 +36,7 @@
 			// Load analytics data - getAnalytics returns PopupAnalytics directly
 			analytics = await popupsApi.getAnalytics(popupId);
 		} catch (error) {
-			console.error('Failed to load analytics:', error);
+			logger.error('Failed to load analytics:', error);
 			addToast({ type: 'error', message: 'Failed to load analytics' });
 		} finally {
 			loading = false;

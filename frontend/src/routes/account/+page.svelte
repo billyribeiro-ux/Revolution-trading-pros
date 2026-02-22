@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { authStore, isAuthenticated } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -21,7 +22,7 @@
 			try {
 				memberships = await apiClient.getMyMemberships();
 			} catch (error) {
-				console.error('Failed to load memberships:', error);
+				logger.error('Failed to load memberships:', error);
 			} finally {
 				loadingMemberships = false;
 			}
@@ -29,7 +30,7 @@
 			try {
 				products = await apiClient.getMyProducts();
 			} catch (error) {
-				console.error('Failed to load products:', error);
+				logger.error('Failed to load products:', error);
 			} finally {
 				loadingProducts = false;
 			}

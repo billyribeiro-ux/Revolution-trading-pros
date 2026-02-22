@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Global Error Boundary - Enterprise L8 Pattern
 	 *
@@ -71,7 +72,7 @@
 		if (browser && status >= 400) {
 			// Log error to console in development
 			if (import.meta.env.DEV) {
-				console.error(`[Error ${status}]`, message, page.url.pathname);
+				logger.error(`[Error ${status}]`, message, page.url.pathname);
 			}
 
 			// Send to analytics/error tracking service

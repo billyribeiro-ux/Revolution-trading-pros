@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
 
@@ -46,7 +47,7 @@
 			const data = await response.json();
 			settings = data.data || {};
 		} catch (error) {
-			console.error('Failed to load settings:', error);
+			logger.error('Failed to load settings:', error);
 		} finally {
 			loading = false;
 		}
@@ -72,7 +73,7 @@
 
 			alert('Settings saved successfully!');
 		} catch (error) {
-			console.error('Failed to save settings:', error);
+			logger.error('Failed to save settings:', error);
 			alert('Failed to save settings');
 		} finally {
 			saving = false;

@@ -12,6 +12,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
 
@@ -94,7 +95,7 @@
 			entries = result.data;
 		} catch (err) {
 			onError?.('Failed to load trade plan entries');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isLoading = false;
 		}
@@ -141,7 +142,7 @@
 			await loadEntries();
 		} catch (err) {
 			onError?.('Failed to save trade plan entry');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isSaving = false;
 		}
@@ -166,7 +167,7 @@
 			await loadEntries();
 		} catch (err) {
 			onError?.('Failed to add entry');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isSaving = false;
 		}
@@ -189,7 +190,7 @@
 			await loadEntries();
 		} catch (err) {
 			onError?.('Failed to delete entry');
-			console.error(err);
+			logger.error(err);
 		}
 	}
 

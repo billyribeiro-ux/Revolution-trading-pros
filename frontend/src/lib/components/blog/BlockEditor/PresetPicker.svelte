@@ -17,6 +17,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -198,7 +199,7 @@
 			groupedPresets = await response.json();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Unknown error';
-			console.error('Failed to load presets:', e);
+			logger.error('Failed to load presets:', e);
 		} finally {
 			isLoading = false;
 		}
@@ -216,7 +217,7 @@
 
 			return await response.json();
 		} catch (e) {
-			console.error('Failed to load full preset:', e);
+			logger.error('Failed to load full preset:', e);
 			return null;
 		}
 	}

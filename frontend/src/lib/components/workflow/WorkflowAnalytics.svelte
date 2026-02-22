@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import type { WorkflowAnalytics } from '$lib/types/workflow';
 
@@ -43,7 +44,7 @@
 				analytics = getEmptyAnalytics();
 			}
 		} catch (error) {
-			console.error('Failed to load analytics:', error);
+			logger.error('Failed to load analytics:', error);
 			analytics = getEmptyAnalytics();
 		} finally {
 			isLoading = false;

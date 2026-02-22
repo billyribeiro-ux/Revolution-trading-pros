@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Deal Detail Page - FluentCRM Pro Style
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -144,7 +145,7 @@
 				notes = notesRes.value?.data || notesRes.value || [];
 			}
 		} catch (e) {
-			console.error('Failed to load deal:', e);
+			logger.error('Failed to load deal:', e);
 			error = 'Failed to load deal. Please try again.';
 		} finally {
 			loading = false;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { workflowApi } from '$lib/api/workflow';
@@ -13,7 +14,7 @@
 		try {
 			workflows = await workflowApi.getWorkflows();
 		} catch (error) {
-			console.error('Failed to load workflows:', error);
+			logger.error('Failed to load workflows:', error);
 		} finally {
 			isLoading = false;
 		}
@@ -33,7 +34,7 @@
 			await workflowApi.toggleWorkflowStatus(workflow.id, newStatus);
 			await loadWorkflows();
 		} catch (error) {
-			console.error('Failed to toggle status:', error);
+			logger.error('Failed to toggle status:', error);
 		}
 	}
 

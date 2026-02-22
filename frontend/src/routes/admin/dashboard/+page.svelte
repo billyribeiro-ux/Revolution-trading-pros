@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Dashboard - Apple ICT9+ Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -76,7 +77,7 @@
 				}
 			}
 		} catch (e) {
-			console.warn('Failed to fetch connection status:', e);
+			logger.warn('Failed to fetch connection status:', e);
 		}
 	}
 
@@ -88,7 +89,7 @@
 				const data = await adminFetch('/api/analytics/realtime');
 				metrics = { ...metrics, ...data };
 			} catch (e) {
-				console.warn('Analytics fetch failed:', e);
+				logger.warn('Analytics fetch failed:', e);
 			}
 		}
 
@@ -97,7 +98,7 @@
 				const data = await adminFetch('/api/payments/summary');
 				metrics = { ...metrics, revenue: data.revenue, mrr: data.mrr };
 			} catch (e) {
-				console.warn('Payments fetch failed:', e);
+				logger.warn('Payments fetch failed:', e);
 			}
 		}
 
@@ -113,7 +114,7 @@
 			}
 		} catch (e) {
 			// Room stats API may not exist yet - use empty defaults
-			console.warn('Failed to fetch room stats:', e);
+			logger.warn('Failed to fetch room stats:', e);
 			// Initialize with zeros for each room
 			roomStats = ROOMS.map((room) => ({
 				room_id: room.id,
@@ -128,7 +129,7 @@
 	function getStatsForRoom(roomId: string): RoomStats {
 		// Type check to ensure room exists in ROOMS config
 		const roomExists: Room | undefined = ROOMS.find((r) => r.id === roomId);
-		if (!roomExists) console.warn(`Room ${roomId} not found in ROOMS config`);
+		if (!roomExists) logger.warn(`Room ${roomId} not found in ROOMS config`);
 
 		return (
 			roomStats.find((s) => s.room_id === roomId) || {

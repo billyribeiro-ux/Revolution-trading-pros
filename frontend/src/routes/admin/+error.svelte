@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Error Boundary - Enterprise L8 Pattern
 	 *
@@ -104,7 +105,7 @@
 	// Log admin errors
 	$effect(() => {
 		if (browser && status >= 400) {
-			console.error(`[Admin Error ${status}]`, {
+			logger.error(`[Admin Error ${status}]`, {
 				message,
 				path: page.url.pathname,
 				timestamp: new Date().toISOString()

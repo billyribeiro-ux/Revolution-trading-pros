@@ -23,6 +23,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
@@ -179,7 +180,7 @@
 				recentAssets = data.filter((a: RecentAsset) => a.mime_type.startsWith('image/'));
 			}
 		} catch (error) {
-			console.error('Failed to load recent assets:', error);
+			logger.error('Failed to load recent assets:', error);
 		} finally {
 			_isLoadingRecent = false;
 		}
@@ -329,13 +330,13 @@
 		const validFiles = files.filter((file) => {
 			// Check type
 			if (!isValidImageType(file)) {
-				console.warn(`Invalid file type: ${file.type}`);
+				logger.warn(`Invalid file type: ${file.type}`);
 				return false;
 			}
 
 			// Check size
 			if (file.size > maxSize) {
-				console.warn(`File too large: ${formatFileSize(file.size)}`);
+				logger.warn(`File too large: ${formatFileSize(file.size)}`);
 				return false;
 			}
 

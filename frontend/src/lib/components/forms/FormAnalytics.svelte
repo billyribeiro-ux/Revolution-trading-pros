@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import type { Form } from '$lib/api/forms';
 	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';
@@ -36,7 +37,7 @@
 				fieldAnalytics = analyzeFieldCompletion(submissions.submissions);
 			}
 		} catch (err) {
-			console.error('Failed to load analytics:', err);
+			logger.error('Failed to load analytics:', err);
 		} finally {
 			loading = false;
 		}

@@ -57,6 +57,7 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
 import { API_BASE_URL, API_ENDPOINTS } from './config';
+import { logger } from '$lib/utils/logger';
 
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;
@@ -441,7 +442,7 @@ class EnterpriseApiClient {
 		// Setup performance monitoring
 		this.startPerformanceMonitoring();
 
-		console.debug('[ApiClient] Initialized');
+		logger.debug('[ApiClient] Initialized');
 	}
 
 	/**
@@ -513,7 +514,7 @@ class EnterpriseApiClient {
 		// Check for duplicate requests
 		const existingRequest = this.activeRequests.get(cacheKey);
 		if (existingRequest) {
-			console.debug(`[ApiClient] Deduplicating request: ${endpoint}`);
+			logger.debug(`[ApiClient] Deduplicating request: ${endpoint}`);
 			return existingRequest;
 		}
 
@@ -1008,7 +1009,7 @@ class EnterpriseApiClient {
 			this.wsConnection = new WebSocket(`${configuredWsUrl}/ws`);
 
 			this.wsConnection.onopen = () => {
-				console.debug('[ApiClient] WebSocket connected');
+				logger.debug('[ApiClient] WebSocket connected');
 				this._wsReconnectAttempts = 0;
 				this.authenticateWebSocket();
 			};
@@ -1063,7 +1064,7 @@ class EnterpriseApiClient {
 					break;
 			}
 		} catch (error) {
-			console.error('[ApiClient] Failed to handle WebSocket message:', error);
+			logger.error('[ApiClient] Failed to handle WebSocket message:', error);
 		}
 	}
 
@@ -1135,7 +1136,7 @@ class EnterpriseApiClient {
 			};
 
 			this.sseConnection.onopen = () => {
-				console.debug('[ApiClient] SSE connected');
+				logger.debug('[ApiClient] SSE connected');
 			};
 		} catch (_error) {
 			// Silently handle - SSE is optional
@@ -1146,9 +1147,9 @@ class EnterpriseApiClient {
 		try {
 			const data = JSON.parse(event.data);
 			// Handle SSE updates
-			console.debug('[ApiClient] SSE message:', data);
+			logger.debug('[ApiClient] SSE message:', data);
 		} catch (error) {
-			console.error('[ApiClient] Failed to handle SSE message:', error);
+			logger.error('[ApiClient] Failed to handle SSE message:', error);
 		}
 	}
 
@@ -1189,7 +1190,7 @@ class EnterpriseApiClient {
 		const cached = this.requestCache.get(key);
 
 		if (cached && Date.now() < cached.expiry) {
-			console.debug(`[ApiClient] Cache hit: ${key}`);
+			logger.debug(`[ApiClient] Cache hit: ${key}`);
 			return cached.data;
 		}
 
@@ -1222,7 +1223,7 @@ class EnterpriseApiClient {
 			for (const [key] of this.requestCache) {
 				if (regex.test(key)) {
 					this.requestCache.delete(key);
-					console.debug(`[ApiClient] Cache invalidated: ${key}`);
+					logger.debug(`[ApiClient] Cache invalidated: ${key}`);
 				}
 			}
 		});
@@ -1230,7 +1231,7 @@ class EnterpriseApiClient {
 
 	private clearCache(): void {
 		this.requestCache.clear();
-		console.debug('[ApiClient] Cache cleared');
+		logger.debug('[ApiClient] Cache cleared');
 	}
 
 	private createAbortSignal(timeout: number = REQUEST_TIMEOUT): AbortSignal {
@@ -1331,7 +1332,7 @@ class EnterpriseApiClient {
 		try {
 			await this.getMe();
 		} catch (error) {
-			console.error('[ApiClient] Failed to load user:', error);
+			logger.error('[ApiClient] Failed to load user:', error);
 		}
 	}
 
@@ -1339,7 +1340,7 @@ class EnterpriseApiClient {
 		try {
 			await Promise.all([this.getMyMemberships(), this.getMyProducts()]);
 		} catch (error) {
-			console.error('[ApiClient] Failed to load user data:', error);
+			logger.error('[ApiClient] Failed to load user data:', error);
 		}
 	}
 

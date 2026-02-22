@@ -6,6 +6,7 @@
  */
 
 import {
+import { logger } from '$lib/utils/logger';
 	membersApi,
 	type Member,
 	type MemberStats,
@@ -198,7 +199,7 @@ export const membersStore = {
 			const stats = await membersApi.getStats();
 			membersState = { ...membersState, stats };
 		} catch (error) {
-			console.error('Failed to load member stats:', error);
+			logger.error('Failed to load member stats:', error);
 		}
 	},
 
@@ -210,7 +211,7 @@ export const membersStore = {
 			const response = await membersApi.getServices();
 			membersState = { ...membersState, services: response.services };
 		} catch (error) {
-			console.error('Failed to load services:', error);
+			logger.error('Failed to load services:', error);
 		}
 	},
 

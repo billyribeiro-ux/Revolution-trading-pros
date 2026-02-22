@@ -15,6 +15,7 @@
  */
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -87,7 +88,7 @@
 			}
 		} catch (e) {
 			_error = 'Failed to load watch history';
-			console.error('Watch history fetch error:', e);
+			logger.error('Watch history fetch error:', e);
 		} finally {
 			isLoading = false;
 		}

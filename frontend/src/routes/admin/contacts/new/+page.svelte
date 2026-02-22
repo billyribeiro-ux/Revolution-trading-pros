@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { IconUserPlus, IconArrowLeft } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
@@ -32,7 +33,7 @@
 			});
 			goto('/admin/contacts');
 		} catch (error) {
-			console.error('Failed to create contact:', error);
+			logger.error('Failed to create contact:', error);
 			errorMessage = error instanceof Error ? error.message : 'Failed to create contact';
 			isSubmitting = false;
 		}

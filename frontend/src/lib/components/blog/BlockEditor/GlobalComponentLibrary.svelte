@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { fade, slide, fly } from 'svelte/transition';
 	import {
 		IconLayoutRows,
@@ -252,7 +253,7 @@
 			categories = data.categories || [];
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load components';
-			console.error('Load components error:', err);
+			logger.error('Load components error:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -275,7 +276,7 @@
 			const data = await response.json();
 			versions = data.versions || [];
 		} catch (err) {
-			console.error('Load versions error:', err);
+			logger.error('Load versions error:', err);
 		}
 	}
 
@@ -296,7 +297,7 @@
 			const data = await response.json();
 			usages = data.usages || [];
 		} catch (err) {
-			console.error('Load usages error:', err);
+			logger.error('Load usages error:', err);
 		}
 	}
 
@@ -332,7 +333,7 @@
 			oninsert(component.component_data, component.id, instanceId);
 			onclose();
 		} catch (err) {
-			console.error('Insert component error:', err);
+			logger.error('Insert component error:', err);
 			// Still insert even if tracking fails
 			const instanceId = `gc_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 			oninsert(component.component_data, component.id, instanceId);

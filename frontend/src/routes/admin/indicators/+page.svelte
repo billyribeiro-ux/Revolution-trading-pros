@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Indicator List Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -49,7 +50,7 @@
 				total = data.data.total;
 			}
 		} catch (e) {
-			console.error('Failed to fetch indicators:', e);
+			logger.error('Failed to fetch indicators:', e);
 		} finally {
 			loading = false;
 		}
@@ -67,7 +68,7 @@
 				total--;
 			}
 		} catch (e) {
-			console.error('Failed to delete:', e);
+			logger.error('Failed to delete:', e);
 		} finally {
 			deleting = null;
 		}

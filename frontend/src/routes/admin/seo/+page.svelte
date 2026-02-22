@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * SEO Dashboard - Apple ICT9+ Enterprise Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -283,7 +284,7 @@
 			// seoData = await response.json();
 			lastUpdated = new Date();
 		} catch (error) {
-			console.error('Failed to load SEO data:', error);
+			logger.error('Failed to load SEO data:', error);
 		}
 	}
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 
@@ -56,7 +57,7 @@
 			const data = await response.json();
 			schemas = data.data || [];
 		} catch (error) {
-			console.error('Failed to load schemas:', error);
+			logger.error('Failed to load schemas:', error);
 		} finally {
 			loading = false;
 		}
@@ -69,7 +70,7 @@
 			await fetch(`/api/seo/schema/${id}`, { method: 'DELETE' });
 			loadSchemas();
 		} catch (error) {
-			console.error('Failed to delete schema:', error);
+			logger.error('Failed to delete schema:', error);
 		}
 	}
 
@@ -79,7 +80,7 @@
 			const data = await response.json();
 			showPreview = data.json_ld;
 		} catch (error) {
-			console.error('Failed to generate JSON-LD:', error);
+			logger.error('Failed to generate JSON-LD:', error);
 		}
 	}
 

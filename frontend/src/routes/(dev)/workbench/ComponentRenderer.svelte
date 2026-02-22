@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Component Renderer - Dynamic Component Loader with Error Boundary
@@ -86,7 +87,7 @@
 			renderTime = Math.round(performance.now() - startTime);
 		} catch (e) {
 			loadError = e instanceof Error ? e.message : 'Failed to load component';
-			console.error('[Workbench] Load error:', e);
+			logger.error('[Workbench] Load error:', e);
 		} finally {
 			isLoading = false;
 		}
@@ -98,7 +99,7 @@
 
 	function _handleRenderError(error: Error) {
 		renderError = error.message;
-		console.error('[Workbench] Render error:', error);
+		logger.error('[Workbench] Render error:', error);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

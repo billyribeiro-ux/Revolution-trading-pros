@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import {
@@ -318,7 +319,7 @@
 
 			lastUpdated = new Date();
 		} catch (err) {
-			console.error('Failed to fetch dashboard stats:', err);
+			logger.error('Failed to fetch dashboard stats:', err);
 			error = 'Failed to load some statistics. Please try again.';
 		} finally {
 			isLoading = false;
@@ -355,7 +356,7 @@
 		analyticsConnected = getIsAnalyticsConnected();
 		seoConnected = getIsSeoConnected();
 		// Log active connections for debugging
-		console.debug(`[Admin Dashboard] Active connections: ${activeConnectionCount}`);
+		logger.debug(`[Admin Dashboard] Active connections: ${activeConnectionCount}`);
 		fetchDashboardStats();
 	});
 </script>

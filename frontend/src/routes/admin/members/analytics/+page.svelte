@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import {
@@ -142,7 +143,7 @@
 					'Member analytics data is not available. Ensure your analytics service is connected and configured.';
 			}
 		} catch (err) {
-			console.error('Failed to load member analytics:', err);
+			logger.error('Failed to load member analytics:', err);
 			_isConnected = false;
 			hasData = false;
 			connectionError =

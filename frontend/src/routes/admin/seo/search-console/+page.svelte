@@ -41,7 +41,7 @@
 			const data = await response.json();
 			sites = data.sites || [];
 		} catch (error) {
-			console.error('Failed to load sites:', error);
+			logger.error('Failed to load sites:', error);
 		}
 	}
 
@@ -54,7 +54,7 @@
 				window.location.href = data.auth_url;
 			}
 		} catch (error) {
-			console.error('Failed to get auth URL:', error);
+			logger.error('Failed to get auth URL:', error);
 			alert('Failed to initiate connection');
 		}
 	}
@@ -74,7 +74,7 @@
 			const data = await response.json();
 			alert(`Successfully imported ${data.count} analytics records`);
 		} catch (error) {
-			console.error('Failed to import analytics:', error);
+			logger.error('Failed to import analytics:', error);
 			alert('Failed to import analytics data');
 		} finally {
 			importing = false;
@@ -87,7 +87,7 @@
 			const data = await response.json();
 			alert(`Updated ${data.count} keywords`);
 		} catch (error) {
-			console.error('Failed to update keywords:', error);
+			logger.error('Failed to update keywords:', error);
 			alert('Failed to update keywords');
 		}
 	}

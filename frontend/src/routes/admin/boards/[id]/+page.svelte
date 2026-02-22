@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { boardsAPI } from '$lib/api/boards';
@@ -156,7 +157,7 @@
 			_customFields = fieldsRes;
 			// Suppress unused warning - _customFields loaded for future use
 		} catch (error) {
-			console.error('Failed to load board:', error);
+			logger.error('Failed to load board:', error);
 		} finally {
 			loading = false;
 		}
@@ -175,7 +176,7 @@
 			newTaskTitle = '';
 			showNewTaskInput = null;
 		} catch (error) {
-			console.error('Failed to create task:', error);
+			logger.error('Failed to create task:', error);
 		}
 	}
 
@@ -192,7 +193,7 @@
 			newStageTitle = '';
 			showNewStageInput = false;
 		} catch (error) {
-			console.error('Failed to create stage:', error);
+			logger.error('Failed to create stage:', error);
 		}
 	}
 
@@ -213,7 +214,7 @@
 			taskAttachments = attachments;
 			taskSubtasks = subtasks;
 		} catch (error) {
-			console.error('Failed to load task details:', error);
+			logger.error('Failed to load task details:', error);
 		}
 	}
 
@@ -235,7 +236,7 @@
 			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
-			console.error('Failed to update task:', error);
+			logger.error('Failed to update task:', error);
 		}
 	}
 
@@ -253,7 +254,7 @@
 			tasks = tasks.filter((t) => t.id !== selectedTask!.id);
 			closeTaskModal();
 		} catch (error) {
-			console.error('Failed to delete task:', error);
+			logger.error('Failed to delete task:', error);
 		}
 	}
 
@@ -265,7 +266,7 @@
 			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
-			console.error('Failed to complete task:', error);
+			logger.error('Failed to complete task:', error);
 		}
 	}
 
@@ -277,7 +278,7 @@
 			taskComments = [...taskComments, comment];
 			newComment = '';
 		} catch (error) {
-			console.error('Failed to add comment:', error);
+			logger.error('Failed to add comment:', error);
 		}
 	}
 
@@ -291,7 +292,7 @@
 			taskSubtasks = [...taskSubtasks, subtask];
 			newSubtaskTitle = '';
 		} catch (error) {
-			console.error('Failed to add subtask:', error);
+			logger.error('Failed to add subtask:', error);
 		}
 	}
 
@@ -302,7 +303,7 @@
 			const updated = await boardsAPI.toggleSubtaskComplete(boardId, selectedTask.id, subtask.id);
 			taskSubtasks = taskSubtasks.map((s) => (s.id === subtask.id ? updated : s));
 		} catch (error) {
-			console.error('Failed to toggle subtask:', error);
+			logger.error('Failed to toggle subtask:', error);
 		}
 	}
 
@@ -313,7 +314,7 @@
 			await boardsAPI.startTimer(boardId, selectedTask.id);
 			activeTimer = { taskId: selectedTask.id, startedAt: new Date() };
 		} catch (error) {
-			console.error('Failed to start timer:', error);
+			logger.error('Failed to start timer:', error);
 		}
 	}
 
@@ -325,7 +326,7 @@
 			activeTimer = null;
 			timerDisplay = '00:00:00';
 		} catch (error) {
-			console.error('Failed to stop timer:', error);
+			logger.error('Failed to stop timer:', error);
 		}
 	}
 
@@ -364,7 +365,7 @@
 				}
 			});
 		} catch (error) {
-			console.error('Failed to move task:', error);
+			logger.error('Failed to move task:', error);
 		} finally {
 			draggedTask = null;
 			dragOverStage = null;

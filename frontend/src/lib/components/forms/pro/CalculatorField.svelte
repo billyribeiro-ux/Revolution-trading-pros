@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import type { FormField } from '$lib/api/forms';
 	import { tryMathEval } from '$lib/utils/safe-math-parser';
 
@@ -53,7 +54,7 @@
 
 			return numericResult;
 		} catch {
-			console.error('Calculator evaluation error');
+			logger.error('Calculator evaluation error');
 			return 0;
 		}
 	});

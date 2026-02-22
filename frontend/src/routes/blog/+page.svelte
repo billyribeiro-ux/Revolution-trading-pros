@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog List Page - Svelte 5 Runes Implementation
 	 * @version 4.0.0 - January 2026
@@ -130,7 +131,7 @@
 			}
 
 			error = err instanceof Error ? err.message : 'An unexpected error occurred';
-			console.error('Error loading posts:', err);
+			logger.error('Error loading posts:', err);
 		} finally {
 			loading = false;
 			abortController = null;

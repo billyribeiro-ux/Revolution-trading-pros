@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
@@ -128,7 +129,7 @@
 			const data = await api.get('/api/admin/tags');
 			availableTags = data.data || data || [];
 		} catch (error) {
-			console.error('Failed to load tags:', error);
+			logger.error('Failed to load tags:', error);
 		}
 	}
 
@@ -201,7 +202,7 @@
 			post.tags = [...post.tags, newTagData.id];
 			newTag = '';
 		} catch (error) {
-			console.error('Failed to create tag:', error);
+			logger.error('Failed to create tag:', error);
 		}
 	}
 
@@ -255,7 +256,7 @@
 			// Navigate after short delay to show success message
 			setTimeout(() => goto('/admin/blog'), 1000);
 		} catch (error: any) {
-			console.error('Failed to save post:', error);
+			logger.error('Failed to save post:', error);
 			saveError = error.message || 'Failed to save post. Please try again.';
 		} finally {
 			saving = false;
@@ -287,7 +288,7 @@
 					post.featured_image_title = result.file.title || file.name.replace(/\.[^/.]+$/, '');
 				}
 			} catch (error: any) {
-				console.error('Failed to upload featured image:', error);
+				logger.error('Failed to upload featured image:', error);
 				uploadError = error.message || 'Failed to upload image';
 			} finally {
 				uploadingImage = false;

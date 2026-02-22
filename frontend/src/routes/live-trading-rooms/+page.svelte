@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
@@ -269,7 +270,7 @@
 					});
 				}); // End of GSAP context
 			} catch (error) {
-				console.warn('[Live Trading Rooms] GSAP initialization failed:', error);
+				logger.warn('[Live Trading Rooms] GSAP initialization failed:', error);
 			}
 		})();
 

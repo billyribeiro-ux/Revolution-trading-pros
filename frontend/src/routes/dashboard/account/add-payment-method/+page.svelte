@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 
 	interface PageData {
@@ -72,7 +73,7 @@
 				stripeLoaded = true;
 			})
 			.catch((err) => {
-				console.error('Error loading Stripe:', err);
+				logger.error('Error loading Stripe:', err);
 				errorMessage = 'Failed to load payment form. Please refresh the page.';
 			});
 	}
@@ -114,7 +115,7 @@
 			// Now submit the form
 			form.submit();
 		} catch (err) {
-			console.error('Error creating payment method:', err);
+			logger.error('Error creating payment method:', err);
 			errorMessage = 'An error occurred. Please try again.';
 			isLoading = false;
 		}

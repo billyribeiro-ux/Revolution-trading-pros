@@ -15,6 +15,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -346,7 +347,7 @@
 			const data = await response.json();
 			schedules = data.data || data.schedules || [];
 		} catch (e) {
-			console.error('Failed to load schedules:', e);
+			logger.error('Failed to load schedules:', e);
 			error = e instanceof Error ? e.message : 'Failed to load schedules';
 			schedules = [];
 		} finally {

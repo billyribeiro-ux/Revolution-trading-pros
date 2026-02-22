@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * ErrorBoundary Component - Explosive Swings Error Resilience
@@ -37,7 +38,7 @@
 		onError?.(e);
 
 		// Log to monitoring
-		console.error('[ErrorBoundary]', e);
+		logger.error('[ErrorBoundary]', e);
 	}
 
 	function reset() {

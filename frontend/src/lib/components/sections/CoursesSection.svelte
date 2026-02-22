@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * CoursesSection - Apple/Netflix Cinematic Design
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
@@ -225,7 +226,7 @@
 				);
 			}
 		} catch (e) {
-			console.debug('[CoursesSection] GSAP not available:', e);
+			logger.debug('[CoursesSection] GSAP not available:', e);
 		}
 	}
 

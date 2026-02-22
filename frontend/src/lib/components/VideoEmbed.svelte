@@ -52,6 +52,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -1013,7 +1014,7 @@
 			isFullscreen = true;
 			trackEvent('fullscreen_enter');
 		} catch (error) {
-			console.error('Failed to enter fullscreen:', error);
+			logger.error('Failed to enter fullscreen:', error);
 		}
 	}
 
@@ -1027,7 +1028,7 @@
 			isFullscreen = false;
 			trackEvent('fullscreen_exit');
 		} catch (error) {
-			console.error('Failed to exit fullscreen:', error);
+			logger.error('Failed to exit fullscreen:', error);
 		}
 	}
 
@@ -1044,7 +1045,7 @@
 			}
 			analytics.interactions++;
 		} catch (error) {
-			console.error('Picture-in-Picture not supported:', error);
+			logger.error('Picture-in-Picture not supported:', error);
 		}
 	}
 

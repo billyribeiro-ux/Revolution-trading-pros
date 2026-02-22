@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Revolution Trading Pros - Active Sessions Management
 	 * Microsoft-style single-session authentication management
@@ -49,7 +50,7 @@
 			sessions = response.sessions;
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to load sessions';
-			console.error('Failed to load sessions:', e);
+			logger.error('Failed to load sessions:', e);
 		} finally {
 			loading = false;
 		}

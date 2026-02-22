@@ -13,6 +13,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
@@ -87,7 +88,7 @@
 			ws = new WebSocket(wsUrl);
 
 			ws.onopen = () => {
-				console.log(`[RoomChat] Connected to ${roomSlug}`);
+				logger.info(`[RoomChat] Connected to ${roomSlug}`);
 				isConnected = true;
 				isConnecting = false;
 				error = null;
@@ -111,12 +112,12 @@
 						scrollToBottom();
 					}
 				} catch (err) {
-					console.error('[RoomChat] Error parsing message:', err);
+					logger.error('[RoomChat] Error parsing message:', err);
 				}
 			};
 
 			ws.onclose = () => {
-				console.log(`[RoomChat] Disconnected from ${roomSlug}`);
+				logger.info(`[RoomChat] Disconnected from ${roomSlug}`);
 				isConnected = false;
 				// Attempt to reconnect after 5 seconds
 				setTimeout(connectWebSocket, 5000);
@@ -128,7 +129,7 @@
 				isConnected = false;
 			};
 		} catch (err) {
-			console.error('[RoomChat] Error connecting:', err);
+			logger.error('[RoomChat] Error connecting:', err);
 			error = 'Failed to connect to chat';
 			isConnecting = false;
 		}

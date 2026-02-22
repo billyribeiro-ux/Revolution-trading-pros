@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconX } from '$lib/icons';
@@ -71,7 +72,7 @@
 			} else {
 				error = 'Failed to save template';
 			}
-			console.error('Failed to save template:', e);
+			logger.error('Failed to save template:', e);
 		} finally {
 			loading = false;
 		}

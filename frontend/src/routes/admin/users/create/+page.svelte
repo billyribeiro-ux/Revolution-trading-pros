@@ -50,6 +50,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import {
@@ -441,7 +442,7 @@
 				onboardingPlans = [{ id: 'standard', name: 'Standard Onboarding', duration: 5 }];
 			}
 		} catch (error) {
-			console.error('Failed to load lookup data:', error);
+			logger.error('Failed to load lookup data:', error);
 			// Set minimal defaults on complete failure
 			departments = [{ id: 'general', name: 'General' }];
 			locations = [{ id: 'remote', name: 'Remote', timezone: 'UTC' }];
@@ -537,7 +538,7 @@
 			} else {
 				errors = [{ field: 'general', message: 'Failed to create user', severity: 'error' }];
 			}
-			console.error('Failed to create user:', err);
+			logger.error('Failed to create user:', err);
 		} finally {
 			saving = false;
 		}
@@ -704,7 +705,7 @@
 				usernameAvailable = null;
 			}
 		} catch (error) {
-			console.error('Failed to check username:', error);
+			logger.error('Failed to check username:', error);
 			usernameAvailable = null; // Don't block user, server will validate on submit
 		} finally {
 			checkingUsername = false;
@@ -731,7 +732,7 @@
 				emailAvailable = null;
 			}
 		} catch (error) {
-			console.error('Failed to check email:', error);
+			logger.error('Failed to check email:', error);
 			emailAvailable = null; // Don't block user, server will validate on submit
 		} finally {
 			checkingEmail = false;
@@ -1001,12 +1002,12 @@
 
 	async function sendNotifications(user: any) {
 		// Mock notification sending
-		console.log('Sending notifications for user:', user);
+		logger.info('Sending notifications for user:', user);
 	}
 
 	function trackUserCreation(user: any) {
 		// Analytics tracking
-		console.log('Tracking user creation:', user);
+		logger.info('Tracking user creation:', user);
 	}
 
 	function shouldCreateAnother(): boolean {
@@ -1049,7 +1050,7 @@
 	}
 
 	function showSuccessMessage(message: string) {
-		console.log('Success:', message);
+		logger.info('Success:', message);
 		// Could use a toast notification system here
 	}
 

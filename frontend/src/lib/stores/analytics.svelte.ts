@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import { analyticsApi, type DashboardData, type RealTimeMetrics } from '$lib/api/analytics';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -117,7 +118,7 @@ export const analyticsStore = {
 				realtime: metrics
 			};
 		} catch (error) {
-			console.error('Failed to load realtime metrics:', error);
+			logger.error('Failed to load realtime metrics:', error);
 		}
 	},
 
@@ -223,7 +224,7 @@ async function track(eventName: string, properties?: Record<string, any>) {
 	try {
 		await analyticsApi.trackEvent(eventData);
 	} catch (error) {
-		console.error('Failed to track event:', error);
+		logger.error('Failed to track event:', error);
 		// Queue for retry
 		eventQueue.push(eventData);
 	}
@@ -243,7 +244,7 @@ async function trackPageView(data?: { page_type?: string; referrer?: string }) {
 			referrer: data?.referrer || document.referrer
 		});
 	} catch (error) {
-		console.error('Failed to track page view:', error);
+		logger.error('Failed to track page view:', error);
 	}
 }
 
@@ -323,7 +324,7 @@ async function flushQueue() {
 	try {
 		await analyticsApi.trackBatch(events);
 	} catch (error) {
-		console.error('Failed to flush event queue:', error);
+		logger.error('Failed to flush event queue:', error);
 		// Re-add to queue
 		eventQueue.unshift(...events);
 	}

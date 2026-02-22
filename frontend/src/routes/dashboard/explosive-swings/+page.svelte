@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Explosive Swings - Member Dashboard
 	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)
@@ -143,7 +144,7 @@
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'An unexpected error occurred';
 			saveAlertError = message;
-			console.error('Failed to save alert:', err);
+			logger.error('Failed to save alert:', err);
 			// Don't re-throw - show error in UI instead
 		}
 	}
@@ -163,7 +164,7 @@
 			});
 			await ps.fetchAlerts();
 		} catch (err) {
-			console.error('Failed to delete alert:', err);
+			logger.error('Failed to delete alert:', err);
 		}
 		pendingDeleteAlertId = null;
 	}

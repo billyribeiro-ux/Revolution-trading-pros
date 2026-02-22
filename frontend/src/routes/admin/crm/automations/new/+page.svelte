@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
@@ -171,7 +172,7 @@
 			availableTags = tagsResponse.data || [];
 			availableLists = listsResponse.data || [];
 		} catch (err) {
-			console.error('Failed to load dependencies:', err);
+			logger.error('Failed to load dependencies:', err);
 		}
 	}
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import {
 		IconPlus,
@@ -33,7 +34,7 @@
 			const data = await response.json();
 			keywords = data.data || [];
 		} catch (error) {
-			console.error('Failed to load keywords:', error);
+			logger.error('Failed to load keywords:', error);
 		} finally {
 			loading = false;
 		}
@@ -44,7 +45,7 @@
 			const response = await fetch('/api/seo/keywords/stats');
 			stats = await response.json();
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats:', error);
 		}
 	}
 
@@ -63,7 +64,7 @@
 			loadKeywords();
 			loadStats();
 		} catch (error) {
-			console.error('Failed to delete keyword:', error);
+			logger.error('Failed to delete keyword:', error);
 		}
 	}
 

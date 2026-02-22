@@ -11,6 +11,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
@@ -352,7 +353,7 @@
 			const response = await tradePlanApi.list(slug);
 			tradePlanEntries = response.data || [];
 		} catch (err) {
-			console.error('Failed to load trade plan:', err);
+			logger.error('Failed to load trade plan:', err);
 			errorMessage = 'Failed to load trade plan entries';
 		} finally {
 			isLoadingTradePlan = false;
@@ -365,7 +366,7 @@
 			const response = await alertsApi.list(slug, { per_page: 50 });
 			alerts = response.data || [];
 		} catch (err) {
-			console.error('Failed to load alerts:', err);
+			logger.error('Failed to load alerts:', err);
 			errorMessage = 'Failed to load alerts';
 		} finally {
 			isLoadingAlerts = false;
@@ -382,7 +383,7 @@
 			currentVideo = currentRes.data;
 			archivedVideos = (archiveRes.data || []).filter((v) => !v.is_current);
 		} catch (err) {
-			console.error('Failed to load weekly video:', err);
+			logger.error('Failed to load weekly video:', err);
 		} finally {
 			isLoadingVideo = false;
 		}
@@ -394,7 +395,7 @@
 			const response = await roomStatsApi.get(slug);
 			roomStats = response.data;
 		} catch (err) {
-			console.error('Failed to load room stats:', err);
+			logger.error('Failed to load room stats:', err);
 		} finally {
 			isLoadingStats = false;
 		}
@@ -406,7 +407,7 @@
 			const response = await tradesApi.list(slug, { per_page: 100 });
 			trades = response.data || [];
 		} catch (err) {
-			console.error('Failed to load trades:', err);
+			logger.error('Failed to load trades:', err);
 			errorMessage = 'Failed to load trades';
 		} finally {
 			isLoadingTrades = false;
@@ -423,7 +424,7 @@
 			} as ResourceListQuery & { room_slug: string });
 			videoResources = response.data || [];
 		} catch (err) {
-			console.error('Failed to load video resources:', err);
+			logger.error('Failed to load video resources:', err);
 		} finally {
 			isLoadingVideos = false;
 		}

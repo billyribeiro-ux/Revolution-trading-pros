@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Indicator Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - February 2026
@@ -127,7 +128,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			loading = false;
 		}
@@ -142,7 +143,7 @@
 				files = data.data || [];
 			}
 		} catch (e) {
-			console.error('Failed to load files:', e);
+			logger.error('Failed to load files:', e);
 		} finally {
 			loadingFiles = false;
 		}
@@ -157,7 +158,7 @@
 				videos = data.data || [];
 			}
 		} catch (e) {
-			console.error('Failed to load videos:', e);
+			logger.error('Failed to load videos:', e);
 		} finally {
 			loadingVideos = false;
 		}
@@ -241,7 +242,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to upload file';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			uploadingFile = false;
 		}
@@ -314,7 +315,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to add video';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			addingVideo = false;
 		}

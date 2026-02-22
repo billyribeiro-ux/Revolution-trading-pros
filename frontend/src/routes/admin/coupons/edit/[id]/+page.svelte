@@ -16,6 +16,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
@@ -176,7 +177,7 @@
 			} else {
 				errors = [{ field: 'general', message: 'Failed to load coupon', severity: 'error' }];
 			}
-			console.error('Failed to load coupon:', err);
+			logger.error('Failed to load coupon:', err);
 		} finally {
 			loading = false;
 		}
@@ -230,7 +231,7 @@
 			} else {
 				errors = [{ field: 'general', message: 'Failed to update coupon', severity: 'error' }];
 			}
-			console.error('Failed to update coupon:', err);
+			logger.error('Failed to update coupon:', err);
 		} finally {
 			saving = false;
 		}
@@ -254,7 +255,7 @@
 			} else {
 				errors = [{ field: 'general', message: 'Failed to delete coupon', severity: 'error' }];
 			}
-			console.error('Failed to delete coupon:', err);
+			logger.error('Failed to delete coupon:', err);
 		} finally {
 			deleting = false;
 		}

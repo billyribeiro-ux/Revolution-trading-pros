@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
@@ -48,7 +49,7 @@
 			const response = await seoApi.get404Stats();
 			stats = response as any;
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats:', error);
 		}
 	}
 

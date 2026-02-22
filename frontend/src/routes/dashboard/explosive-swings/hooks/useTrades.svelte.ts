@@ -18,6 +18,7 @@ import { getEnterpriseClient } from '$lib/api/enterprise/client';
 import { getPriceFeed } from '$lib/services/price-feed';
 import { ROOM_SLUG, TRADES_PER_PAGE } from '../constants';
 import type { ApiTrade, ActivePosition, ClosedTrade } from '../types';
+import { logger } from '$lib/utils/logger';
 
 /** Price data from the price feed service */
 interface PriceData {
@@ -282,7 +283,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			allTrades = response.data;
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to fetch trades';
-			console.error('Failed to fetch trades:', e);
+			logger.error('Failed to fetch trades:', e);
 		} finally {
 			isLoading = false;
 		}
@@ -310,7 +311,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			await fetchTrades();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to close trade';
-			console.error('Failed to close trade:', e);
+			logger.error('Failed to close trade:', e);
 			throw e;
 		} finally {
 			isLoading = false;
@@ -342,7 +343,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			await fetchTrades();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to update trade';
-			console.error('Failed to update trade:', e);
+			logger.error('Failed to update trade:', e);
 			throw e;
 		} finally {
 			isLoading = false;
@@ -367,7 +368,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			await fetchTrades();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to invalidate trade';
-			console.error('Failed to invalidate trade:', e);
+			logger.error('Failed to invalidate trade:', e);
 			throw e;
 		} finally {
 			isLoading = false;
@@ -391,7 +392,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			allTrades = allTrades.filter((t) => String(t.id) !== String(tradeId));
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to delete trade';
-			console.error('Failed to delete trade:', e);
+			logger.error('Failed to delete trade:', e);
 			throw e;
 		} finally {
 			isLoading = false;
@@ -426,7 +427,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			await fetchTrades();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to add trade';
-			console.error('Failed to add trade:', e);
+			logger.error('Failed to add trade:', e);
 			throw e;
 		} finally {
 			isLoading = false;

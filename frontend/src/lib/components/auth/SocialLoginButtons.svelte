@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * SocialLoginButtons - OAuth Social Sign-In
 	 * Apple Principal Engineer ICT 11 Grade
@@ -50,7 +51,7 @@
 			const message = err instanceof Error ? err.message : 'Failed to sign in with Google';
 			error = message;
 			onError?.(message);
-			console.error('[SocialLogin] Google login error:', err);
+			logger.error('[SocialLogin] Google login error:', err);
 		} finally {
 			isGoogleLoading = false;
 		}
@@ -72,7 +73,7 @@
 			const message = err instanceof Error ? err.message : 'Failed to sign in with Apple';
 			error = message;
 			onError?.(message);
-			console.error('[SocialLogin] Apple login error:', err);
+			logger.error('[SocialLogin] Apple login error:', err);
 		} finally {
 			isAppleLoading = false;
 		}

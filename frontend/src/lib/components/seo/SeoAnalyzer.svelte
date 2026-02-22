@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		IconCircleCheck,
@@ -103,7 +104,7 @@
 				readability = data.readability;
 			}
 		} catch (error) {
-			console.error('Analysis failed:', error);
+			logger.error('Analysis failed:', error);
 		} finally {
 			loading = false;
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * My Courses Dashboard
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -44,7 +45,7 @@
 				enrollments = data.data;
 			}
 		} catch (e) {
-			console.error('Failed to fetch enrollments:', e);
+			logger.error('Failed to fetch enrollments:', e);
 		} finally {
 			loading = false;
 		}

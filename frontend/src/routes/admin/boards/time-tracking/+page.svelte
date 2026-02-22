@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { TimeEntry, Board, TimeTrackingStats } from '$lib/boards/types';
@@ -69,7 +70,7 @@
 				by_date: []
 			};
 		} catch (error) {
-			console.error('Failed to load time entries:', error);
+			logger.error('Failed to load time entries:', error);
 		} finally {
 			loading = false;
 		}

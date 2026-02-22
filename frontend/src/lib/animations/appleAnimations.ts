@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Apple-Style Animations Library
  *
@@ -277,7 +278,7 @@ export function parallax(
 
 /**
  * Sticky scroll section with progress tracking
- * Usage: <div use:stickyScroll={{ onProgress: (p) => console.log(p) }}>
+ * Usage: <div use:stickyScroll={{ onProgress: (p) => logger.info(p) }}>
  */
 export function stickyScroll(
 	node: HTMLElement,

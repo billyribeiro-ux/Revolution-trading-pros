@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * LoginForm - Premium Trading-Themed Login Form
 	 * Apple Principal Engineer ICT 11 Grade
@@ -151,7 +152,7 @@
 	function validateRedirectUrl(url: string): string {
 		// DEFENSIVE: Handle null/undefined
 		if (!url || typeof url !== 'string') {
-			console.warn('[LoginForm:ICT11] Invalid redirect URL type:', typeof url);
+			logger.warn('[LoginForm:ICT11] Invalid redirect URL type:', typeof url);
 			return '/dashboard';
 		}
 
@@ -182,14 +183,14 @@
 				}
 			}
 
-			console.warn('[LoginForm:ICT11] Redirect URL failed validation:', {
+			logger.warn('[LoginForm:ICT11] Redirect URL failed validation:', {
 				original: url,
 				decoded: decoded,
 				reason: 'Security checks failed'
 			});
 		} catch (decodeError) {
 			// Handle malformed URL encoding
-			console.error('[LoginForm:ICT11] URL decode failed:', {
+			logger.error('[LoginForm:ICT11] URL decode failed:', {
 				url: url,
 				error: decodeError instanceof Error ? decodeError.message : String(decodeError)
 			});
@@ -314,7 +315,7 @@
 	async function performRedirect(): Promise<void> {
 		// DEFENSIVE: Ensure we're in browser environment
 		if (!browser) {
-			console.warn('[LoginForm:ICT11] Server-side redirect attempt blocked');
+			logger.warn('[LoginForm:ICT11] Server-side redirect attempt blocked');
 			return;
 		}
 
@@ -329,7 +330,7 @@
 			// Security validation: prevent open redirects and XSS
 			const validatedUrl = validateRedirectUrl(targetUrl);
 
-			console.log('[LoginForm:ICT11] Redirect flow:', {
+			logger.info('[LoginForm:ICT11] Redirect flow:', {
 				raw: rawRedirect,
 				target: targetUrl,
 				validated: validatedUrl,
@@ -345,10 +346,10 @@
 				noScroll: false // Allow natural scroll to top
 			});
 
-			console.log('[LoginForm:ICT11] Navigation completed successfully');
+			logger.info('[LoginForm:ICT11] Navigation completed successfully');
 		} catch (navigationError) {
 			// ICT 11+ Error Recovery: Log error and use native navigation as fallback
-			console.error('[LoginForm:ICT11] SvelteKit navigation failed:', {
+			logger.error('[LoginForm:ICT11] SvelteKit navigation failed:', {
 				error: navigationError,
 				type:
 					navigationError instanceof Error
@@ -364,7 +365,7 @@
 				new URLSearchParams(window.location.search).get('redirect') || '/dashboard'
 			);
 
-			console.log('[LoginForm:ICT11] Using native navigation fallback:', fallbackUrl);
+			logger.info('[LoginForm:ICT11] Using native navigation fallback:', fallbackUrl);
 			window.location.href = fallbackUrl;
 		}
 	}
@@ -372,7 +373,7 @@
 	// --- Form Submit ---
 	async function handleSubmit() {
 		// ICT 11+ Debug: Entry point logging for troubleshooting silent failures
-		console.log('[LoginForm:ICT11] handleSubmit called', {
+		logger.info('[LoginForm:ICT11] handleSubmit called', {
 			email: email ? email.substring(0, 3) + '***' : '(empty)',
 			passwordLength: password?.length || 0,
 			timestamp: new Date().toISOString()
@@ -387,7 +388,7 @@
 
 		if (emailError || passwordError) {
 			// ICT 11+ Debug: Log validation failures
-			console.log('[LoginForm:ICT11] Validation failed', { emailError, passwordError });
+			logger.info('[LoginForm:ICT11] Validation failed', { emailError, passwordError });
 
 			// ICT 11+ Svelte 5 Fix: Create complete object in single assignment
 			// Mutating after assignment may not trigger reactivity in Svelte 5
@@ -424,7 +425,7 @@
 
 		try {
 			// ICT 11+: Structured logging with context
-			console.log('[LoginForm:ICT11] Authentication flow initiated', {
+			logger.info('[LoginForm:ICT11] Authentication flow initiated', {
 				email: email.substring(0, 3) + '***', // Privacy: mask email
 				rememberMe,
 				timestamp: new Date().toISOString()
@@ -433,7 +434,7 @@
 			// Execute login with comprehensive error handling in auth service
 			await login({ email, password, remember: rememberMe });
 
-			console.log('[LoginForm:ICT11] Authentication successful', {
+			logger.info('[LoginForm:ICT11] Authentication successful', {
 				timestamp: new Date().toISOString()
 			});
 
@@ -451,25 +452,25 @@
 			// - Too fast (<200ms): User misses success confirmation
 			// - Too slow (>600ms): Feels sluggish
 			// - 400ms: Sweet spot for recognition without impatience
-			console.log('[LoginForm:ICT11] Scheduling redirect (400ms delay for UX)');
+			logger.info('[LoginForm:ICT11] Scheduling redirect (400ms delay for UX)');
 
 			// ICT 11+: Fire-and-forget timer pattern
 			// Timer ID intentionally not stored - component will unmount during navigation
 			// No cleanup needed as navigation replaces the entire page context
 			setTimeout(() => {
-				console.log('[LoginForm:ICT11] Redirect timer executed');
+				logger.info('[LoginForm:ICT11] Redirect timer executed');
 				// Fire-and-forget: performRedirect handles all errors internally
 				performRedirect().catch((err) => {
 					// This should never happen as performRedirect catches all errors
 					// But ICT 11+ requires defensive programming
-					console.error('[LoginForm:ICT11] Unexpected redirect error:', err);
+					logger.error('[LoginForm:ICT11] Unexpected redirect error:', err);
 					// Last resort: force navigation
 					window.location.href = '/dashboard';
 				});
 			}, 400);
 		} catch (error: unknown) {
 			// ICT 11+ Debug: Log all caught errors for diagnosis
-			console.error('[LoginForm:ICT11] Login error caught:', {
+			logger.error('[LoginForm:ICT11] Login error caught:', {
 				error,
 				type: error instanceof Error ? error.constructor.name : typeof error,
 				message: error instanceof Error ? error.message : String(error),
@@ -518,7 +519,7 @@
 				generalError = '';
 			} else {
 				// ICT 7 Debug: Log before setting generalError
-				console.log('[LoginForm:ICT7] Setting generalError to:', errorMessage);
+				logger.info('[LoginForm:ICT7] Setting generalError to:', errorMessage);
 				generalError = errorMessage;
 			}
 		} finally {

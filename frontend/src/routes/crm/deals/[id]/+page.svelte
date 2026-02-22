@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -26,7 +27,7 @@
 		try {
 			deal = await crmAPI.getDeal(dealId);
 		} catch (e) {
-			console.error('Failed to load deal', e);
+			logger.error('Failed to load deal', e);
 			error = 'Failed to load deal. Please try again.';
 		} finally {
 			loading = false;

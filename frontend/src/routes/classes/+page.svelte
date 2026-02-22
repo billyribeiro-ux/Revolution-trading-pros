@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Course Catalog Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -56,7 +57,7 @@
 				courses = data.data.courses;
 			}
 		} catch (e) {
-			console.error('Failed to fetch courses:', e);
+			logger.error('Failed to fetch courses:', e);
 		} finally {
 			loading = false;
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Trade Tracker - Explosive Swings
@@ -96,7 +97,7 @@
 			stats = result.stats;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load trades';
-			console.error('Failed to fetch trades:', err);
+			logger.error('Failed to fetch trades:', err);
 		} finally {
 			isLoading = false;
 		}

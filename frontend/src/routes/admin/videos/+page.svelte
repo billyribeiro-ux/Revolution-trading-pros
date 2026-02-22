@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Trading Room Video Management - Admin Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -231,7 +232,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load rooms and traders';
-			console.error('Error loading rooms/traders:', err);
+			logger.error('Error loading rooms/traders:', err);
 		} finally {
 			isLoadingRooms = false;
 		}
@@ -264,7 +265,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load videos';
-			console.error('Error loading videos:', err);
+			logger.error('Error loading videos:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -353,7 +354,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to replace video';
-			console.error('Error replacing video:', err);
+			logger.error('Error replacing video:', err);
 		} finally {
 			isSaving = false;
 		}
@@ -397,7 +398,7 @@
 			await loadVideos();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to save video';
-			console.error('Error saving video:', err);
+			logger.error('Error saving video:', err);
 		} finally {
 			isSaving = false;
 		}
@@ -425,7 +426,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete video';
-			console.error('Error deleting video:', err);
+			logger.error('Error deleting video:', err);
 		} finally {
 			isDeleting = false;
 		}
@@ -444,7 +445,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update video';
-			console.error('Error toggling publish status:', err);
+			logger.error('Error toggling publish status:', err);
 		}
 	}
 
@@ -527,7 +528,7 @@
 						await uploadFileToBunny(uploadItem.upload_url, file, uploadItem.id);
 						bunnyUploadProgress = Math.round(((i + 1) / response.data.uploads.length) * 100);
 					} catch (uploadErr) {
-						console.error(`Failed to upload ${file.name}:`, uploadErr);
+						logger.error(`Failed to upload ${file.name}:`, uploadErr);
 						await bulkUploadApi.updateItemStatus(uploadItem.id, {
 							status: 'failed',
 							error_message: uploadErr instanceof Error ? uploadErr.message : 'Upload failed'
@@ -542,7 +543,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to initialize Bunny upload';
-			console.error('Bunny upload error:', err);
+			logger.error('Bunny upload error:', err);
 		} finally {
 			isUploadingToBunny = false;
 		}
@@ -621,7 +622,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load analytics';
-			console.error('Analytics error:', err);
+			logger.error('Analytics error:', err);
 		} finally {
 			isLoadingAnalytics = false;
 		}

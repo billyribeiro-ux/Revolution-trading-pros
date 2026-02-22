@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import {
 		IconPlayerPlay,
 		IconPlayerPause,
@@ -52,7 +53,7 @@
 		blockId: props.blockId,
 		onError: props.onError,
 		onEnded: () => {
-			console.log('Audio playback ended');
+			logger.info('Audio playback ended');
 		}
 	});
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Analytics Dashboard - Enterprise-grade analytics visualization
 	 *
@@ -188,7 +189,7 @@
 			a.click();
 			URL.revokeObjectURL(url);
 		} catch (err) {
-			console.error('Export error:', err);
+			logger.error('Export error:', err);
 		}
 	}
 

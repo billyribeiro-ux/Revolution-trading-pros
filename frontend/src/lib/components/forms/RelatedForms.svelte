@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Related Forms - Display related form suggestions
 	 *
@@ -50,7 +51,7 @@
 				relatedForms = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch related forms:', error);
+			logger.error('Failed to fetch related forms:', error);
 		}
 	}
 
@@ -66,7 +67,7 @@
 				trendingForms = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch trending forms:', error);
+			logger.error('Failed to fetch trending forms:', error);
 		}
 	}
 

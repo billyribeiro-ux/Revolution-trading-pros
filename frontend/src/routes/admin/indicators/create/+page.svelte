@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
@@ -243,7 +244,7 @@
 			throw new Error(response.message || 'Upload failed');
 		} catch (error: any) {
 			// Fallback: Create local blob URL for preview (will need proper upload later)
-			console.warn('Server upload failed, using local preview:', error.message);
+			logger.warn('Server upload failed, using local preview:', error.message);
 			return {
 				name: file.name,
 				url: URL.createObjectURL(file),
@@ -553,7 +554,7 @@
 									installation_notes: pf.installation_notes || undefined,
 									is_latest: true
 								})
-							}).catch((e) => console.warn('Failed to save platform file:', e));
+							}).catch((e) => logger.warn('Failed to save platform file:', e));
 						}
 					}
 
@@ -569,7 +570,7 @@
 									file_name: doc.file.name,
 									is_published: true
 								})
-							}).catch((e) => console.warn('Failed to save documentation:', e));
+							}).catch((e) => logger.warn('Failed to save documentation:', e));
 						}
 					}
 				}
@@ -580,7 +581,7 @@
 				formError = response.error || 'Failed to create indicator';
 			}
 		} catch (error: any) {
-			console.error('Failed to save indicator:', error);
+			logger.error('Failed to save indicator:', error);
 			formError = error.message || 'Failed to save indicator. Please try again.';
 		} finally {
 			saving = false;

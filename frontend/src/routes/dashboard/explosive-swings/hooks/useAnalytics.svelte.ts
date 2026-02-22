@@ -17,6 +17,7 @@
 
 import { getEnterpriseClient } from '$lib/api/enterprise/client';
 import { ROOM_SLUG } from '../constants';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -284,7 +285,7 @@ export function useAnalytics(options: UseAnalyticsOptions = {}): UseAnalyticsRet
 			}));
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to fetch analytics';
-			console.error('Failed to fetch analytics:', e);
+			logger.error('Failed to fetch analytics:', e);
 
 			// Set defaults on error
 			metrics = defaultMetrics;

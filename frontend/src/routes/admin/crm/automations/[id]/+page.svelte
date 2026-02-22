@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';
@@ -93,7 +94,7 @@
 			const response = await crmAPI.getFunnelSubscribers(funnelId, { per_page: 50 });
 			subscribers = response.data || [];
 		} catch (err) {
-			console.error('Failed to load subscribers:', err);
+			logger.error('Failed to load subscribers:', err);
 		} finally {
 			isLoadingSubscribers = false;
 		}

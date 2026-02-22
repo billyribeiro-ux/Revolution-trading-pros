@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * My Indicators Dashboard
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -33,7 +34,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to load your indicators';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			loading = false;
 		}

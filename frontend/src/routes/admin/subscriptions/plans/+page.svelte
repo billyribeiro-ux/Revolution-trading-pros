@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Subscription Plans Management
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -102,7 +103,7 @@
 			plans = data.data || [];
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load plans';
-			console.error('[Plans] Load error:', err);
+			logger.error('[Plans] Load error:', err);
 		} finally {
 			loading = false;
 		}

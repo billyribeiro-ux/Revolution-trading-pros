@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Video Library - Explosive Swings
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -93,7 +94,7 @@
 				dataSource = 'mock';
 			}
 		} catch (err) {
-			console.error('Failed to fetch videos:', err);
+			logger.error('Failed to fetch videos:', err);
 			dataSource = 'mock';
 		} finally {
 			isLoading = false;

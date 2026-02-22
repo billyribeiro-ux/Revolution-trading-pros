@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * OAuth Callback Page - ICT Level 7 Principal Engineer Grade
 	 *
@@ -39,7 +40,7 @@
 			if (error) {
 				status = 'error';
 				errorMessage = decodeURIComponent(error);
-				console.error('[OAuth Callback] Error from provider:', errorMessage);
+				logger.error('[OAuth Callback] Error from provider:', errorMessage);
 				// Redirect to login after delay
 				setTimeout(() => goto('/login?error=' + encodeURIComponent(errorMessage)), 2000);
 				return;
@@ -49,7 +50,7 @@
 			if (!token || !sessionId) {
 				status = 'error';
 				errorMessage = 'Missing authentication parameters';
-				console.error('[OAuth Callback] Missing required parameters');
+				logger.error('[OAuth Callback] Missing required parameters');
 				setTimeout(() => goto('/login?error=missing_params'), 2000);
 				return;
 			}
@@ -74,10 +75,10 @@
 				});
 
 				if (!sessionResponse.ok) {
-					console.warn('[OAuth Callback] Failed to set session cookie');
+					logger.warn('[OAuth Callback] Failed to set session cookie');
 				}
 			} catch (cookieError) {
-				console.warn('[OAuth Callback] Session cookie error:', cookieError);
+				logger.warn('[OAuth Callback] Session cookie error:', cookieError);
 				// Continue anyway - tokens are in memory
 			}
 
@@ -108,7 +109,7 @@
 
 			status = 'success';
 
-			console.info('[OAuth Callback] Authentication successful:', {
+			logger.info('[OAuth Callback] Authentication successful:', {
 				provider,
 				userId: user.id,
 				email: user.email
@@ -121,7 +122,7 @@
 		} catch (error) {
 			status = 'error';
 			errorMessage = error instanceof Error ? error.message : 'Authentication failed';
-			console.error('[OAuth Callback] Error:', error);
+			logger.error('[OAuth Callback] Error:', error);
 
 			// Redirect to login after delay
 			setTimeout(() => goto('/login?error=callback_failed'), 2000);

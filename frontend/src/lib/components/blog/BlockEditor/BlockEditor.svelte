@@ -21,6 +21,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
@@ -1085,7 +1086,7 @@
 			editorState.hasUnsavedChanges = false;
 		} catch (err) {
 			saveError = 'Failed to save. Please try again.';
-			console.error('Save failed:', err);
+			logger.error('Save failed:', err);
 		} finally {
 			isSaving = false;
 		}
@@ -1953,7 +1954,7 @@
 		isOpen={showScheduling}
 		onClose={() => (showScheduling = false)}
 		onScheduleCreated={(schedule) => {
-			console.log('Schedule created:', schedule);
+			logger.info('Schedule created:', schedule);
 		}}
 	/>
 {/if}

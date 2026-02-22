@@ -13,6 +13,7 @@
   @version 2.0.0 - Svelte 5 Runes Migration
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { decode } from 'blurhash';
 
@@ -82,7 +83,7 @@
 			imageData.data.set(pixels);
 			ctx.putImageData(imageData, 0, 0);
 		} catch (err) {
-			console.warn('BlurHash decode failed:', err);
+			logger.warn('BlurHash decode failed:', err);
 		}
 	}
 

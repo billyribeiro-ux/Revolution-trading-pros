@@ -10,6 +10,7 @@
 
 import { browser } from '$app/environment';
 import { mediaApi, type MediaFile, type MediaFolder, type UploadProgress } from '$lib/api/media';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -152,7 +153,7 @@ export const mediaStore = {
 			const response = await mediaApi.getFolders();
 			mediaState = { ...mediaState, folders: response.folders };
 		} catch (error) {
-			console.error('Failed to load folders:', error);
+			logger.error('Failed to load folders:', error);
 		}
 	},
 

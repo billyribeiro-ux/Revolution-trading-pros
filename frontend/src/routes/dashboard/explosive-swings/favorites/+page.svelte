@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Favorites Page - Explosive Swings
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -39,7 +40,7 @@
 				error = 'Failed to load favorites';
 			}
 		} catch (err) {
-			console.error('Failed to fetch favorites:', err);
+			logger.error('Failed to fetch favorites:', err);
 			error = 'Failed to load favorites';
 		} finally {
 			isLoading = false;
@@ -53,7 +54,7 @@
 				favorites = favorites.filter((f) => f.id !== id);
 			}
 		} catch (err) {
-			console.error('Failed to remove favorite:', err);
+			logger.error('Failed to remove favorite:', err);
 		}
 	}
 

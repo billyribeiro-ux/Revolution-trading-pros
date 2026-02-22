@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Keyboard Shortcuts System for Content Editor
  *
@@ -510,7 +511,7 @@ export const DEFAULT_SHORTCUTS: ShortcutConfig[] = [
  *
  * // Handle keyboard event
  * registry.handleKeyDown(event, {
- *   save: () => console.log('Saving...')
+ *   save: () => logger.info('Saving...')
  * });
  * ```
  */
@@ -1068,7 +1069,7 @@ export function getAllShortcutDisplays(
  *       undo: () => history.undo()
  *     },
  *     onShortcutTriggered: (action) => {
- *       console.log(`Shortcut triggered: ${action}`);
+ *       logger.info(`Shortcut triggered: ${action}`);
  *     }
  *   });
  * });

@@ -24,6 +24,7 @@
 	/>
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { weeklyVideoApi } from '$lib/api/room-content';
 	import DatePicker from '$lib/components/ui/DatePicker.svelte';
 	import FileDropZone from '$lib/components/ui/FileDropZone.svelte';
@@ -453,7 +454,7 @@
 			onClose();
 		} catch (err) {
 			errorMessage = 'Failed to publish video. Please try again.';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isSaving = false;
 		}

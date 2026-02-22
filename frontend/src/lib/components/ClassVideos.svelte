@@ -16,6 +16,7 @@
  */
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 
@@ -157,7 +158,7 @@
 				error = data.error || 'Failed to load course data';
 			}
 		} catch (err) {
-			console.error('[ClassVideos] Error fetching course:', err);
+			logger.error('[ClassVideos] Error fetching course:', err);
 			error = 'Unable to load course videos';
 		} finally {
 			loading = false;

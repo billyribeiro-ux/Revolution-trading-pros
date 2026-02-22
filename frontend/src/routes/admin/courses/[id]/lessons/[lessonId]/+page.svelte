@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Lesson Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -86,7 +87,7 @@
 				modules = modulesData.data || [];
 			}
 		} catch (e) {
-			console.error('Failed to fetch lesson:', e);
+			logger.error('Failed to fetch lesson:', e);
 		} finally {
 			loading = false;
 		}

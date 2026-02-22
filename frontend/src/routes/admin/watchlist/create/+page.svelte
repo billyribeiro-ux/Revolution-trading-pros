@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Create Entry
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -167,7 +168,7 @@
 				error = 'Failed to create watchlist entry';
 			}
 		} catch (err) {
-			console.error('Create failed:', err);
+			logger.error('Create failed:', err);
 			error = err instanceof Error ? err.message : 'Network error. Please try again.';
 		} finally {
 			isSubmitting = false;

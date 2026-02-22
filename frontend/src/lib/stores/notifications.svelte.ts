@@ -66,7 +66,7 @@ function getInitialState(): NotificationState {
 				};
 			}
 		} catch (error) {
-			console.error('Failed to load notifications:', error);
+			logger.error('Failed to load notifications:', error);
 		}
 	}
 	return {

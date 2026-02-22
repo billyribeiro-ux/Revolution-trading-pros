@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * SegmentDetailDrawer - Segment Analytics & Preview
 	 * Revolution Trading Pros - Apple ICT 11+ Principal Engineer Grade
@@ -165,7 +166,7 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load segment data';
-			console.error('Segment load error:', err);
+			logger.error('Segment load error:', err);
 		} finally {
 			isLoading = false;
 		}

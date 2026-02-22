@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * User Subscription Management Page
 	 * =========================================================================
@@ -105,7 +106,7 @@
 			}
 		} catch (err) {
 			error = 'Failed to load subscription data';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			loading = false;
 		}
@@ -183,7 +184,7 @@
 				prorationPreview = await res.json();
 			}
 		} catch (err) {
-			console.error('Failed to preview plan change:', err);
+			logger.error('Failed to preview plan change:', err);
 		}
 	}
 

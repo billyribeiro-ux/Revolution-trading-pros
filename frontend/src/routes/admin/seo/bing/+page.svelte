@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
@@ -52,7 +53,7 @@
 			recentSubmissions = submissionsData.submissions;
 			topQueries = queriesData;
 		} catch (err) {
-			console.error('Failed to load Bing SEO data:', err);
+			logger.error('Failed to load Bing SEO data:', err);
 		} finally {
 			loading = false;
 		}

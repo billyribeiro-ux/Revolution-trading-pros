@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -28,7 +29,7 @@
 			contact = await crmAPI.getContact(contactId);
 			timeline = await crmAPI.getContactTimeline(contactId);
 		} catch (e) {
-			console.error('Failed to load contact', e);
+			logger.error('Failed to load contact', e);
 			error = 'Failed to load contact. Please try again.';
 		} finally {
 			loading = false;

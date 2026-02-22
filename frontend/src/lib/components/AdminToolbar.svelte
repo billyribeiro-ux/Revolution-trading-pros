@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * AdminToolbar Component - Google L7+ Enterprise Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -197,13 +198,13 @@
 			if (!$authStore.isAuthenticated) return false;
 
 			if (!currentUser) {
-				console.debug('[AdminToolbar] No user data yet, checking auth...');
+				logger.debug('[AdminToolbar] No user data yet, checking auth...');
 				return false;
 			}
 
 			// Use centralized admin check
 			const result = checkIsAdmin(currentUser);
-			console.debug(
+			logger.debug(
 				'[AdminToolbar] Admin check for:',
 				currentUser?.email || 'unknown',
 				'isSuperadmin:',
@@ -253,7 +254,7 @@
 			// Verify session is still valid by fetching user data
 			await getUser();
 		} catch (error) {
-			console.warn('[AdminToolbar] Session check failed:', error);
+			logger.warn('[AdminToolbar] Session check failed:', error);
 			// Session may have expired
 			await handleSessionExpired();
 		}
@@ -294,7 +295,7 @@
 			// Redirect with success message - use replaceState to prevent history pollution
 			await goto('/?message=logged_out', { replaceState: true });
 		} catch (error) {
-			console.error('[AdminToolbar] Logout failed:', error);
+			logger.error('[AdminToolbar] Logout failed:', error);
 
 			// Force logout even on error
 			authStore.clearAuth();
@@ -497,7 +498,7 @@
 				lastRetry: 0
 			};
 		} catch (error) {
-			console.error('[AdminToolbar] Retry failed:', error);
+			logger.error('[AdminToolbar] Retry failed:', error);
 			errorState.hasError = true;
 			errorState.message = 'Failed to load user data';
 
@@ -527,7 +528,7 @@
 
 	function showNotification(message: string, type: 'info' | 'warning' | 'error' = 'info'): void {
 		// Implement your notification system here
-		console.log(`[Notification] ${type}: ${message}`);
+		logger.info(`[Notification] ${type}: ${message}`);
 
 		// Announce to screen readers
 		announceToScreenReader(message);
@@ -545,7 +546,7 @@
 				});
 			}
 		} catch (error) {
-			console.error('[Analytics] Failed to track event:', error);
+			logger.error('[Analytics] Failed to track event:', error);
 		}
 
 		// Telemetry removed - use proper analytics service if needed
@@ -564,7 +565,7 @@
 
 		// Log slow operations
 		if (duration > 1000) {
-			console.warn(`[AdminToolbar] Slow operation: ${action} took ${duration}ms`);
+			logger.warn(`[AdminToolbar] Slow operation: ${action} took ${duration}ms`);
 		}
 	}
 
@@ -575,7 +576,7 @@
 	onMount(async () => {
 		if (!browser) return;
 
-		console.debug('[AdminToolbar] Mounting...');
+		logger.debug('[AdminToolbar] Mounting...');
 
 		try {
 			// ICT9+ Pattern: Don't attempt token refresh in AdminToolbar
@@ -585,17 +586,17 @@
 
 			// Only load user if we already have a valid token
 			if (token && !$userStore) {
-				console.debug('[AdminToolbar] Loading user data...');
+				logger.debug('[AdminToolbar] Loading user data...');
 				isLoading = true;
 				try {
 					await getUser();
 					// Type-safe access with proper null checking
 					const user = $userStore as AdminUser | null;
 					if (user?.email) {
-						console.debug('[AdminToolbar] User loaded:', user.email);
+						logger.debug('[AdminToolbar] User loaded:', user.email);
 					}
 				} catch (error) {
-					console.error('[AdminToolbar] Failed to load user:', error);
+					logger.error('[AdminToolbar] Failed to load user:', error);
 					errorState.hasError = true;
 					errorState.message = 'Failed to load user data';
 					// Don't clear auth here - let the auth service handle it
@@ -628,7 +629,7 @@
 			// Track toolbar load
 			trackEvent('toolbar_loaded', { isAdmin });
 		} catch (error) {
-			console.error('[AdminToolbar] Mount error:', error);
+			logger.error('[AdminToolbar] Mount error:', error);
 			errorState.hasError = true;
 		}
 	});
@@ -636,7 +637,7 @@
 	onDestroy(() => {
 		if (!browser) return;
 
-		console.debug('[AdminToolbar] Unmounting...');
+		logger.debug('[AdminToolbar] Unmounting...');
 
 		// Cleanup
 		abortController.abort();

@@ -51,6 +51,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { spring, tweened } from 'svelte/motion';
@@ -160,7 +161,7 @@
 
 		// Log performance metrics
 		if (import.meta.env.DEV) {
-			console.log(`[PopupModal] Load time: ${loadTime.toFixed(2)}ms`);
+			logger.info(`[PopupModal] Load time: ${loadTime.toFixed(2)}ms`);
 		}
 	});
 
@@ -639,7 +640,7 @@
 			setTimeout(() => closePopup(), 2000);
 		} catch (error) {
 			submitError = 'Something went wrong. Please try again.';
-			console.error('Form submission error:', error);
+			logger.error('Form submission error:', error);
 
 			// Track error
 			trackEvent('popup_form_error', {
@@ -862,7 +863,7 @@
 
 		// Log in development
 		if (import.meta.env.DEV) {
-			console.log(`[Analytics] ${eventName}`, data);
+			logger.info(`[Analytics] ${eventName}`, data);
 		}
 	}
 

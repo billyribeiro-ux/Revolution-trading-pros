@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Dynamic Room Checkout Page
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -55,7 +56,7 @@
 			selectedPlanId = popular?.id || quarterly?.id || plans[0]?.id;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load pricing';
-			console.error('[Checkout] Load error:', err);
+			logger.error('[Checkout] Load error:', err);
 		} finally {
 			loading = false;
 		}

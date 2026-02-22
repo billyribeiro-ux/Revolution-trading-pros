@@ -1,4 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: `<script>` was left open
+<!-- @migration-task Error while migrating Svelte code: `<script>
+import { logger } from '$lib/utils/logger';` was left open
 https://svelte.dev/e/element_unclosed -->
 <!--
 	Indicator Detail & Download Page
@@ -110,7 +111,7 @@ https://svelte.dev/e/element_unclosed -->
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			loading = false;
 		}
@@ -131,7 +132,7 @@ https://svelte.dev/e/element_unclosed -->
 			}
 		} catch (e) {
 			error = 'Failed to download file';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			downloading = null;
 		}
@@ -183,7 +184,7 @@ https://svelte.dev/e/element_unclosed -->
 				licenseKey = data.data.license_key;
 			}
 		} catch (e) {
-			console.error('Failed to fetch license key:', e);
+			logger.error('Failed to fetch license key:', e);
 		} finally {
 			loadingLicense = false;
 		}
@@ -196,7 +197,7 @@ https://svelte.dev/e/element_unclosed -->
 			copiedLicense = true;
 			setTimeout(() => (copiedLicense = false), 2000);
 		} catch (e) {
-			console.error('Failed to copy license key:', e);
+			logger.error('Failed to copy license key:', e);
 		}
 	};
 
@@ -218,7 +219,7 @@ https://svelte.dev/e/element_unclosed -->
 				installGuide = 'Failed to load installation guide.';
 			}
 		} catch (e) {
-			console.error('Failed to fetch installation guide:', e);
+			logger.error('Failed to fetch installation guide:', e);
 			installGuide = 'Failed to load installation guide.';
 		} finally {
 			loadingGuide = false;

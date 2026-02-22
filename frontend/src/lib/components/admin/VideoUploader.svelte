@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * VideoUploader - Real Video Upload Component
 	 *
@@ -100,7 +101,7 @@
 				instructors = data.data.instructors || [];
 			}
 		} catch (err) {
-			console.error('Failed to load form data:', err);
+			logger.error('Failed to load form data:', err);
 		}
 	}
 

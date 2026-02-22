@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
@@ -34,7 +35,7 @@
 			} else {
 				error = 'Error connecting to server';
 			}
-			console.error('Failed to load users:', err);
+			logger.error('Failed to load users:', err);
 		} finally {
 			loading = false;
 		}
@@ -55,7 +56,7 @@
 			await loadUsers();
 		} catch (err) {
 			error = 'Failed to delete user';
-			console.error(err);
+			logger.error(err);
 		}
 	}
 

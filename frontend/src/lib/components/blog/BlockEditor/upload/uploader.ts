@@ -9,6 +9,7 @@
 
 import { API_BASE_URL, CDN_URL } from '$lib/api/config';
 import { getAuthToken } from '$lib/stores/auth.svelte';
+import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Types
@@ -129,9 +130,9 @@ export class UploadController {
  * ```typescript
  * const result = await uploadImage(file, {
  *   collection: 'blog-images',
- *   onProgress: (progress) => console.log(`${progress}%`),
+ *   onProgress: (progress) => logger.info(`${progress}%`),
  * });
- * console.log(result.url); // CDN URL
+ * logger.info(result.url); // CDN URL
  * ```
  */
 export async function uploadImage(file: File, options: UploadOptions = {}): Promise<UploadResult> {

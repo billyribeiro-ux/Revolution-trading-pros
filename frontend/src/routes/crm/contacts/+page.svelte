@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -61,7 +62,7 @@
 			const response = await crmAPI.getContacts(crmStore.contactFilters);
 			crmStore.setContacts(response.data);
 		} catch (e) {
-			console.error('Failed to load contacts', e);
+			logger.error('Failed to load contacts', e);
 			crmStore.setError('Failed to load contacts. Please try again.');
 		} finally {
 			crmStore.setLoading(false);

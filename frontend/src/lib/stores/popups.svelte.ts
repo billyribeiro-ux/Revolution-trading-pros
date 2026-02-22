@@ -4,6 +4,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 // Popup configuration types for a fully customizable popup system
 export interface PopupButton {
@@ -306,7 +307,7 @@ function loadPopupState(): PopupState {
 		try {
 			return JSON.parse(stored);
 		} catch (e) {
-			console.error('Failed to parse popup state:', e);
+			logger.error('Failed to parse popup state:', e);
 		}
 	}
 
@@ -388,7 +389,7 @@ export const popupStore = {
 		if (browser) {
 			import('$lib/api/popups').then(({ recordPopupImpression }) => {
 				recordPopupImpression(popupId).catch((err) => {
-					console.error('Failed to record impression:', err);
+					logger.error('Failed to record impression:', err);
 				});
 			});
 		}
@@ -400,7 +401,7 @@ export const popupStore = {
 		if (browser) {
 			import('$lib/api/popups').then(({ recordPopupConversion }) => {
 				recordPopupConversion(popupId, data).catch((err) => {
-					console.error('Failed to record conversion:', err);
+					logger.error('Failed to record conversion:', err);
 				});
 			});
 		}

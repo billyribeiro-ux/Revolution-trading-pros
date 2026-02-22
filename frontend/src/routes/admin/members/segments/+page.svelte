@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Member Segments - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -296,7 +297,7 @@
 				];
 			}
 		} catch (error) {
-			console.error('Failed to load segments data:', error);
+			logger.error('Failed to load segments data:', error);
 			toastStore.error('Failed to load data. Using cached data.');
 		} finally {
 			loading = false;

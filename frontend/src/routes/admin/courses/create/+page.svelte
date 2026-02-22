@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
@@ -961,7 +962,7 @@
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error: any) {
-			console.error('Failed to upload image:', error);
+			logger.error('Failed to upload image:', error);
 			formError = error.message || 'Failed to upload image. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
@@ -1018,7 +1019,7 @@
 				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
 		} catch (error: any) {
-			console.error('Failed to upload video:', error);
+			logger.error('Failed to upload video:', error);
 			formError = error.message || 'Failed to upload video. Please try again.';
 
 			// Fallback: Use local preview if server upload fails
@@ -1284,7 +1285,7 @@
 				pendingDraft = { course: draft.course || draft, date };
 				showLoadDraftModal = true;
 			} catch (e) {
-				console.error('Failed to load draft:', e);
+				logger.error('Failed to load draft:', e);
 			}
 		}
 	}
@@ -1427,7 +1428,7 @@
 			} else {
 				formError = error.message || 'Failed to save course. Please try again.';
 			}
-			console.error('Save error:', error);
+			logger.error('Save error:', error);
 		} finally {
 			saving = false;
 		}
@@ -1517,7 +1518,7 @@
 
 	function showNotification(message: string) {
 		// Implementation would show toast notification
-		console.log('Notification:', message);
+		logger.info('Notification:', message);
 	}
 
 	function getCompletionStatus() {

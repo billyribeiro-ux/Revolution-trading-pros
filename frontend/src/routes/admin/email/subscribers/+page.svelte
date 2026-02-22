@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -67,7 +68,7 @@
 			total = response.total;
 		} catch (err) {
 			toastStore.error('Failed to load subscribers');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			loading = false;
 		}
@@ -78,7 +79,7 @@
 			const data = await adminFetch('/api/admin/email/subscribers/stats');
 			stats = data.data || data;
 		} catch (err) {
-			console.error('Failed to load stats:', err);
+			logger.error('Failed to load stats:', err);
 		}
 	}
 

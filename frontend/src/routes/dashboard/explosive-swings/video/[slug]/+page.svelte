@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Video Detail Page - Explosive Swings
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -69,7 +70,7 @@
 			video = null;
 			error = 'No video found for this week';
 		} catch (err) {
-			console.error('Failed to fetch video:', err);
+			logger.error('Failed to fetch video:', err);
 			error = 'Failed to load video';
 		} finally {
 			isLoading = false;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Props Editor - Auto-Generated Props Form
@@ -141,7 +142,7 @@
 	}
 
 	function handleFunctionCall(prop: PropDefinition) {
-		console.log(`[Workbench] ${prop.name}() called`);
+		logger.info(`[Workbench] ${prop.name}() called`);
 		const fn = values[prop.name];
 		if (typeof fn === 'function') {
 			fn();

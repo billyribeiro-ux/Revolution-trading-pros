@@ -54,6 +54,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -777,8 +778,8 @@
 			// This reduces console noise while still alerting to serious SEO issues
 			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
 				console.group('🔍 SEO Warnings');
-				console.log(`SEO Score: ${seoScore}/100`);
-				seoWarnings.forEach((warning) => console.warn(warning));
+				logger.info(`SEO Score: ${seoScore}/100`);
+				seoWarnings.forEach((warning) => logger.warn(warning));
 				console.groupEnd();
 			}
 

@@ -9,6 +9,7 @@
   - Accessible design
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { addFavorite, removeFavorite, checkFavorite } from '$lib/api/room-resources';
 
 	interface Props {
@@ -52,7 +53,7 @@
 			const response = await checkFavorite(resourceId);
 			isFavorited = response.is_favorited ?? false;
 		} catch (e) {
-			console.error('Failed to check favorite state:', e);
+			logger.error('Failed to check favorite state:', e);
 		} finally {
 			loading = false;
 		}
@@ -78,7 +79,7 @@
 		} catch (e) {
 			// Revert on error
 			isFavorited = previousState;
-			console.error('Failed to update favorite:', e);
+			logger.error('Failed to update favorite:', e);
 		} finally {
 			updating = false;
 		}

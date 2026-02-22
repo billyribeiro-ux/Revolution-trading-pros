@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog Layout - Error Boundary and Shared Context
 	 *
@@ -35,7 +36,7 @@
 		} catch (error) {
 			// Silently fail analytics - non-critical
 			if (import.meta.env.DEV) {
-				console.debug('[BlogLayout] Analytics tracking failed:', error);
+				logger.debug('[BlogLayout] Analytics tracking failed:', error);
 			}
 		}
 	});

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * IndicatorsSection - Apple/Netflix Cinematic Design
 	 * Mobile-First + GSAP Animations Fixed
@@ -294,7 +295,7 @@
 
 		// Ensure we have valid dimensions
 		if (rect.width === 0 || rect.height === 0) {
-			console.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
+			logger.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
 			return;
 		}
 
@@ -308,7 +309,7 @@
 			// Reset transform before scaling
 			chartCtx.setTransform(1, 0, 0, 1, 0, 0);
 			chartCtx.scale(dpr, dpr);
-			console.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height);
+			logger.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height);
 		}
 	}
 
@@ -353,7 +354,7 @@
 				);
 			}
 		} catch (e) {
-			console.debug('[IndicatorsSection] GSAP not available:', e);
+			logger.debug('[IndicatorsSection] GSAP not available:', e);
 		}
 	}
 

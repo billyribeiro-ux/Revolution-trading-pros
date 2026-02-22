@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
@@ -86,7 +87,7 @@
 			} else {
 				error = 'Failed to load products';
 			}
-			console.error('Failed to load products:', err);
+			logger.error('Failed to load products:', err);
 		} finally {
 			loading = false;
 		}
@@ -114,7 +115,7 @@
 			} else {
 				error = 'Failed to delete product';
 			}
-			console.error('Delete failed:', err);
+			logger.error('Delete failed:', err);
 		} finally {
 			deleting = null;
 		}
@@ -134,7 +135,7 @@
 			}
 		} catch (err) {
 			error = 'Failed to update product status';
-			console.error(err);
+			logger.error(err);
 		}
 	}
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Bandwidth Savings Dashboard - Apple ICT 7 Grade Analytics
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -139,7 +140,7 @@
 					'Media optimization service is not connected. Connect your image optimization service to view real analytics.';
 			}
 		} catch (e) {
-			console.error('Failed to load analytics:', e);
+			logger.error('Failed to load analytics:', e);
 			isConnected = false;
 			connectionError =
 				'Failed to connect to media analytics service. Please check your connection settings.';

@@ -9,6 +9,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import type { TradeType, OptionType, ContractType, TradeSetup } from '$lib/types/trading';
 
 	interface Props {
@@ -117,7 +118,7 @@
 		} catch (err) {
 			errorMessage =
 				err instanceof Error ? err.message : 'Failed to create trade. Please try again.';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isSaving = false;
 		}

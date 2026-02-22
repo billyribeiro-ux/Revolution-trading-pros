@@ -13,6 +13,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 
@@ -135,7 +136,7 @@
 			currentVideo = currentRes.data ?? null;
 			archivedVideos = archived.data.filter((v) => !v.is_current);
 		} catch (err) {
-			console.error('Failed to load videos:', err);
+			logger.error('Failed to load videos:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -163,7 +164,7 @@
 			await loadVideos();
 		} catch (err) {
 			onError?.('Failed to publish video');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isUploading = false;
 		}
@@ -205,7 +206,7 @@
 			onSuccess?.('Video uploaded to Bunny.net');
 		} catch (err) {
 			onError?.('Failed to upload video');
-			console.error(err);
+			logger.error(err);
 		} finally {
 			isUploading = false;
 		}

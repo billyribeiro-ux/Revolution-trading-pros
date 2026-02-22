@@ -4,6 +4,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
@@ -159,7 +160,7 @@
 			} else {
 				loadError = 'Failed to load product';
 			}
-			console.error('Failed to load product:', err);
+			logger.error('Failed to load product:', err);
 		} finally {
 			loading = false;
 		}
@@ -226,7 +227,7 @@
 			} else {
 				error = 'Failed to update product';
 			}
-			console.error('Failed to update product:', err);
+			logger.error('Failed to update product:', err);
 		} finally {
 			saving = false;
 		}
@@ -246,7 +247,7 @@
 			} else {
 				error = 'Failed to delete product';
 			}
-			console.error('Failed to delete product:', err);
+			logger.error('Failed to delete product:', err);
 			showDeleteConfirm = false;
 		} finally {
 			deleting = false;

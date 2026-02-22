@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import type { Form } from '$lib/api/forms';
 
 	interface Props {
@@ -40,7 +41,7 @@
   // Listen for form submission events
   window.addEventListener('message', function(event) {
     if (event.data.type === 'form-submitted' && event.data.formSlug === '${props.form.slug}') {
-      console.log('Form submitted:', event.data.submissionId);
+      logger.info('Form submitted:', event.data.submissionId);
       // You can add custom handling here
     }
   });

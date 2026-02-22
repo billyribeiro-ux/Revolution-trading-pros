@@ -27,6 +27,7 @@
 	/>
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import {
 		weeklyVideoApi,
 		tradePlanApi,
@@ -243,7 +244,7 @@
 				errorMessage = 'No previous trade plan entries found';
 			}
 		} catch (err) {
-			console.error('Failed to copy from last week:', err);
+			logger.error('Failed to copy from last week:', err);
 			errorMessage = 'Failed to load previous entries';
 		} finally {
 			isLoadingLastWeek = false;
@@ -315,7 +316,7 @@
 				handleClose();
 			}, 1500);
 		} catch (err) {
-			console.error('Publish failed:', err);
+			logger.error('Publish failed:', err);
 			errorMessage = err instanceof Error ? err.message : 'Failed to publish weekly breakdown';
 		} finally {
 			isPublishing = false;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Batch Operations Component - Apple ICT9+ Design
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -49,7 +50,7 @@
 			icon: IconTrash,
 			variant: 'danger',
 			action: async (ids) => {
-				console.log('Deleting:', ids);
+				logger.info('Deleting:', ids);
 				await new Promise((r) => setTimeout(r, 1000));
 			}
 		},
@@ -58,7 +59,7 @@
 			label: 'Archive',
 			icon: IconInbox,
 			action: async (ids) => {
-				console.log('Archiving:', ids);
+				logger.info('Archiving:', ids);
 				await new Promise((r) => setTimeout(r, 1000));
 			}
 		},
@@ -67,7 +68,7 @@
 			label: 'Export',
 			icon: IconDownload,
 			action: async (ids) => {
-				console.log('Exporting:', ids);
+				logger.info('Exporting:', ids);
 				await new Promise((r) => setTimeout(r, 1000));
 			}
 		}
@@ -87,7 +88,7 @@
 			await action.action(selectedIds);
 			onClearSelection?.();
 		} catch (error) {
-			console.error('Batch action failed:', error);
+			logger.error('Batch action failed:', error);
 		} finally {
 			isProcessing = false;
 			processingAction = null;

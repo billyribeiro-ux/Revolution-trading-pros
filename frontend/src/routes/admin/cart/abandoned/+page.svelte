@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import abandonedCartsApi, {
@@ -70,7 +71,7 @@
 				total: cartsData.total
 			};
 		} catch (error) {
-			console.error('Failed to load dashboard:', error);
+			logger.error('Failed to load dashboard:', error);
 			toastStore.error('Failed to load abandoned carts data');
 		} finally {
 			loading = false;
@@ -92,7 +93,7 @@
 				total: result.total
 			};
 		} catch (error) {
-			console.error('Failed to load carts:', error);
+			logger.error('Failed to load carts:', error);
 		}
 	}
 

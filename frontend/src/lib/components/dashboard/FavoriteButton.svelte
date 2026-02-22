@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * FavoriteButton - Persistent bookmark toggle
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -49,7 +50,7 @@
 				}
 			}
 		} catch (err) {
-			console.error('Failed to check favorite status:', err);
+			logger.error('Failed to check favorite status:', err);
 		}
 	}
 
@@ -93,7 +94,7 @@
 				}
 			}
 		} catch (err) {
-			console.error('Failed to toggle favorite:', err);
+			logger.error('Failed to toggle favorite:', err);
 		} finally {
 			isLoading = false;
 		}

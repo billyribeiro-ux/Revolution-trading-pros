@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { ImportJob, ImportSource } from '$lib/boards/types';
 	import {
@@ -112,7 +113,7 @@
 					setTimeout(poll, 2000);
 				}
 			} catch (err) {
-				console.error('Failed to poll import status:', err);
+				logger.error('Failed to poll import status:', err);
 			}
 		};
 

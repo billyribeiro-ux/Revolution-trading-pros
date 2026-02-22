@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
@@ -33,7 +34,7 @@
 			title = data.title;
 			blocks = Array.isArray(data.content) ? data.content : deserializeBlocks(data.content);
 		} catch (error) {
-			console.error('Load error:', error);
+			logger.error('Load error:', error);
 		}
 	}
 
@@ -55,7 +56,7 @@
 			// Show success message
 			alert('Post saved successfully!');
 		} catch (error) {
-			console.error('Save error:', error);
+			logger.error('Save error:', error);
 			alert('Failed to save post');
 		} finally {
 			isSaving = false;

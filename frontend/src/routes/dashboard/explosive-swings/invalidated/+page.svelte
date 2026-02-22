@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Invalidated Trades Archive
 	 * @version 1.0.0
@@ -54,7 +55,7 @@
 			}));
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load';
-			console.error('Failed to fetch invalidated trades:', err);
+			logger.error('Failed to fetch invalidated trades:', err);
 		} finally {
 			isLoading = false;
 		}

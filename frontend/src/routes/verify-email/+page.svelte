@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Verification Page - Svelte 5 January 2026
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -114,9 +115,9 @@
 			if (typeof window !== 'undefined' && (window as any).gtag) {
 				(window as any).gtag('event', eventName, properties);
 			}
-			console.log(`[Analytics] ${eventName}`, properties);
+			logger.info(`[Analytics] ${eventName}`, properties);
 		} catch (error) {
-			console.error('Analytics tracking failed:', error);
+			logger.error('Analytics tracking failed:', error);
 		}
 	}
 

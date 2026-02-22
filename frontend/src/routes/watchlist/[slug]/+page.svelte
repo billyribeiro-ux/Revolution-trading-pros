@@ -15,6 +15,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 
 	// Mock data for weekly watchlist entries - in production this would come from API
@@ -119,7 +120,7 @@
 	function selectDate(index: number) {
 		// Validate index is within bounds
 		if (!currentEntry?.watchlistDates || index < 0 || index >= currentEntry.watchlistDates.length) {
-			console.warn('Invalid date index:', index);
+			logger.warn('Invalid date index:', index);
 			return;
 		}
 
@@ -165,7 +166,7 @@
 		// Priority 3: No spreadsheet available
 		else {
 			currentSpreadsheetUrl = '';
-			console.warn('No spreadsheet URL found for watchlist:', currentEntry.slug);
+			logger.warn('No spreadsheet URL found for watchlist:', currentEntry.slug);
 		}
 	});
 </script>

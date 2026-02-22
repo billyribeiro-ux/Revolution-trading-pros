@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import {
 		IconTag,
@@ -87,7 +88,7 @@
 				totalPages = Math.ceil(response.meta.total / perPage) || 1;
 			}
 		} catch (err) {
-			console.error('Failed to load contacts:', err);
+			logger.error('Failed to load contacts:', err);
 		} finally {
 			isLoadingContacts = false;
 		}

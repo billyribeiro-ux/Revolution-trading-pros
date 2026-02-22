@@ -11,6 +11,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart.svelte';
@@ -110,7 +111,7 @@
 				showSuccessMessage = false;
 			}, 3000);
 		} catch (error) {
-			console.error('Failed to add to cart:', error);
+			logger.error('Failed to add to cart:', error);
 			alert('Failed to add to cart. Please try again.');
 		} finally {
 			isAddingToCart = false;

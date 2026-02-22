@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
@@ -185,7 +186,7 @@
 			const res = await boardsAPI.getTemplates();
 			templates = res.length > 0 ? res : defaultTemplates;
 		} catch (error) {
-			console.error('Failed to load templates:', error);
+			logger.error('Failed to load templates:', error);
 			templates = defaultTemplates;
 		} finally {
 			loading = false;
@@ -216,7 +217,7 @@
 			const board = await boardsAPI.createFromTemplate(template.id, template.title);
 			goto(`/admin/boards/${board.id}`);
 		} catch (error) {
-			console.error('Failed to create board from template:', error);
+			logger.error('Failed to create board from template:', error);
 			// Fallback: Create board manually with template config
 			try {
 				const board = await boardsAPI.createBoard({
@@ -237,7 +238,7 @@
 
 				goto(`/admin/boards/${board.id}`);
 			} catch (err) {
-				console.error('Failed to create board:', err);
+				logger.error('Failed to create board:', err);
 			}
 		} finally {
 			creatingBoard = null;

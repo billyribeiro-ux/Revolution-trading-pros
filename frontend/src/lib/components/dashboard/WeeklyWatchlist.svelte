@@ -17,6 +17,7 @@
 	@version 2.0.0 - January 2026 - SSR-first with auto-fetch fallback
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { watchlistApi } from '$lib/api/watchlist';
 
@@ -99,7 +100,7 @@
 				}
 			})
 			.catch((err) => {
-				console.warn('[WeeklyWatchlist] Failed to fetch:', err);
+				logger.warn('[WeeklyWatchlist] Failed to fetch:', err);
 				hasError = true;
 			})
 			.finally(() => {

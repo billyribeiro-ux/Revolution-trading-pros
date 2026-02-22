@@ -16,6 +16,7 @@
 
 import { browser } from '$app/environment';
 import type {
+import { logger } from '$lib/utils/logger';
 	AnalyticsAdapter,
 	AnalyticsConfig,
 	AdapterState,
@@ -123,7 +124,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	 * Print initialization banner.
 	 */
 	private _printBanner(): void {
-		console.log(
+		logger.info(
 			`%c ═══════════════════════════════════════════════════════════════
  ║  🚀 Analytics Console Adapter - Active                      ║
  ║  Environment: ${this._config?.environment?.padEnd(15) ?? 'unknown'}                        ║
@@ -296,7 +297,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	setUserProperties(properties: Record<string, unknown>): void {
 		if (!this._enabled) return;
 
-		console.log('%c👤 USER PROPERTIES%c', `${STYLES.badge} ${STYLES.identify}`, STYLES.value);
+		logger.info('%c👤 USER PROPERTIES%c', `${STYLES.badge} ${STYLES.identify}`, STYLES.value);
 		this._logPayload(properties);
 	}
 
@@ -306,7 +307,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	reset(): void {
 		if (!this._enabled) return;
 
-		console.log(
+		logger.info(
 			'%c🔄 USER RESET%c Identity cleared',
 			`${STYLES.badge} ${STYLES.identify}`,
 			STYLES.value
@@ -319,7 +320,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	onConsentChange(consent: { analytics: boolean; marketing: boolean }): void {
 		if (!this._enabled) return;
 
-		console.log('%c🔒 CONSENT UPDATED', `${STYLES.badge} background: #6366f1; color: white;`);
+		logger.info('%c🔒 CONSENT UPDATED', `${STYLES.badge} background: #6366f1; color: white;`);
 		this._logPayload({
 			Analytics: consent.analytics ? '✅ Granted' : '❌ Denied',
 			Marketing: consent.marketing ? '✅ Granted' : '❌ Denied'
@@ -333,7 +334,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 		if (!this._enabled) return;
 
 		const sessionDuration = ((Date.now() - this._sessionStart) / 1000).toFixed(1);
-		console.log(
+		logger.info(
 			`%c📊 SESSION STATS%c ${this._eventCount} events in ${sessionDuration}s`,
 			`${STYLES.badge} background: #374151; color: white;`,
 			STYLES.value
@@ -357,10 +358,10 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	private _logPayload(payload: Record<string, unknown>): void {
 		if (this._prettyPrint) {
 			for (const [key, value] of Object.entries(payload)) {
-				console.log(`%c  ${key}:%c ${this._formatValue(value)}`, STYLES.label, STYLES.value);
+				logger.info(`%c  ${key}:%c ${this._formatValue(value)}`, STYLES.label, STYLES.value);
 			}
 		} else {
-			console.log(payload);
+			logger.info(payload);
 		}
 	}
 

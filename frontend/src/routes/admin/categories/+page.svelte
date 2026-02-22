@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
@@ -183,7 +184,7 @@
 			await loadCategories();
 			closeCategoryModal();
 		} catch (err) {
-			console.error('Failed to save category:', err);
+			logger.error('Failed to save category:', err);
 			if (err instanceof AdminApiError) {
 				if (err.isValidationError && err.response?.errors) {
 					formErrors = Object.values(err.response.errors).flat() as string[];
@@ -230,7 +231,7 @@
 			selectedIds = new Set(selectedIds);
 			await loadCategories();
 		} catch (err) {
-			console.error('Failed to delete category:', err);
+			logger.error('Failed to delete category:', err);
 			if (err instanceof AdminApiError) {
 				showToastMessage(err.message, 'error');
 			} else {

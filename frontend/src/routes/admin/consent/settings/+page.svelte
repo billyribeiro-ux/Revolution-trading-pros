@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Consent Settings Page
 	 *
@@ -214,7 +215,7 @@
 				settings = { ...settings, ...data.data };
 			}
 		} catch (error) {
-			console.error('Failed to load settings:', error);
+			logger.error('Failed to load settings:', error);
 			showNotification('Failed to load settings', 'error');
 		}
 		loading = false;
@@ -229,7 +230,7 @@
 			});
 			showNotification('Settings saved successfully', 'success');
 		} catch (error) {
-			console.error('Failed to save settings:', error);
+			logger.error('Failed to save settings:', error);
 			showNotification('Failed to save settings', 'error');
 		}
 		saving = false;
@@ -249,7 +250,7 @@
 			}
 			showNotification('Settings reset to defaults', 'success');
 		} catch (error) {
-			console.error('Failed to reset settings:', error);
+			logger.error('Failed to reset settings:', error);
 			showNotification('Failed to reset settings', 'error');
 		}
 		saving = false;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
@@ -108,7 +109,7 @@
 			const [membersResult] = results;
 			if (membersResult.status === 'rejected') {
 				initError = 'Failed to load members. Please refresh the page.';
-				console.error('Members load error:', membersResult.reason);
+				logger.error('Members load error:', membersResult.reason);
 			}
 		};
 		init();

@@ -27,6 +27,7 @@ import {
 	type WebSocketService
 } from '$lib/services/websocket.svelte';
 import { formatTimeAgo } from './utils/formatters';
+import { logger } from '$lib/utils/logger';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -113,7 +114,7 @@ function showToast(options: ToastOptions): void {
 	window.dispatchEvent(event);
 
 	// Console log for development
-	console.log(`[Toast] ${options.type.toUpperCase()}: ${options.title} - ${options.message}`);
+	logger.info(`[Toast] ${options.type.toUpperCase()}: ${options.title} - ${options.message}`);
 }
 
 /**
@@ -562,7 +563,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// ICT 7 Fix: Prevent duplicate connections and memory leaks
 		if (state.isConnected || state.isReconnecting) {
-			console.warn('[realtime] Already connected or reconnecting, skipping connect()');
+			logger.warn('[realtime] Already connected or reconnecting, skipping connect()');
 			return;
 		}
 

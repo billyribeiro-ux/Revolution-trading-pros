@@ -42,7 +42,7 @@ function loadPendingActions(): PendingAction[] {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		return stored ? JSON.parse(stored) : [];
 	} catch (e) {
-		console.error('Failed to load pending actions:', e);
+		logger.error('Failed to load pending actions:', e);
 		return [];
 	}
 }
@@ -110,7 +110,7 @@ async function syncPendingActions() {
 			// Attempt to sync the action
 			await performSync(action);
 		} catch (error) {
-			console.error('Failed to sync action:', action.id, error);
+			logger.error('Failed to sync action:', action.id, error);
 			// Increment retry count and keep for later
 			if (action.retryCount < 3) {
 				failedActions.push({
@@ -254,7 +254,7 @@ export const offlineStore = {
 				cacheSize: 0
 			};
 		} catch (error) {
-			console.error('Failed to clear cache:', error);
+			logger.error('Failed to clear cache:', error);
 		}
 	}
 };

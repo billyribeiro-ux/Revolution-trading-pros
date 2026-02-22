@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Membership Plans Management - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -241,7 +242,7 @@
 			plans = data?.data || data?.plans || data || [];
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load membership plans';
-			console.error('Load plans error:', err);
+			logger.error('Load plans error:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -274,7 +275,7 @@
 			await loadData();
 		} catch (err) {
 			formError = err instanceof Error ? err.message : 'Failed to update plan';
-			console.error('Update plan error:', err);
+			logger.error('Update plan error:', err);
 		} finally {
 			formLoading = false;
 		}
@@ -292,7 +293,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete plan';
-			console.error('Delete plan error:', err);
+			logger.error('Delete plan error:', err);
 		}
 	}
 
@@ -305,7 +306,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update plan status';
-			console.error('Toggle status error:', err);
+			logger.error('Toggle status error:', err);
 		}
 	}
 
@@ -328,7 +329,7 @@
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to duplicate plan';
-			console.error('Duplicate plan error:', err);
+			logger.error('Duplicate plan error:', err);
 		}
 	}
 

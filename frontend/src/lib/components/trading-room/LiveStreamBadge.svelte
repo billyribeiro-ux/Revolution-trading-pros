@@ -13,6 +13,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
@@ -64,7 +65,7 @@
 			ws = new WebSocket(wsUrl);
 
 			ws.onopen = () => {
-				console.log(`[LiveStreamBadge] Connected to ${roomSlug}`);
+				logger.info(`[LiveStreamBadge] Connected to ${roomSlug}`);
 				isLoading = false;
 			};
 
@@ -88,22 +89,22 @@
 						}
 					}
 				} catch (err) {
-					console.error('[LiveStreamBadge] Error parsing message:', err);
+					logger.error('[LiveStreamBadge] Error parsing message:', err);
 				}
 			};
 
 			ws.onclose = () => {
-				console.log(`[LiveStreamBadge] Disconnected from ${roomSlug}`);
+				logger.info(`[LiveStreamBadge] Disconnected from ${roomSlug}`);
 				// Attempt to reconnect after 5 seconds
 				setTimeout(connectWebSocket, 5000);
 			};
 
 			ws.onerror = (err) => {
-				console.error('[LiveStreamBadge] WebSocket error:', err);
+				logger.error('[LiveStreamBadge] WebSocket error:', err);
 				isLoading = false;
 			};
 		} catch (err) {
-			console.error('[LiveStreamBadge] Error connecting:', err);
+			logger.error('[LiveStreamBadge] Error connecting:', err);
 			isLoading = false;
 		}
 	}
@@ -134,7 +135,7 @@
 
 			isLoading = false;
 		} catch (err) {
-			console.error('[LiveStreamBadge] Error checking schedule:', err);
+			logger.error('[LiveStreamBadge] Error checking schedule:', err);
 			isLoading = false;
 		}
 	}

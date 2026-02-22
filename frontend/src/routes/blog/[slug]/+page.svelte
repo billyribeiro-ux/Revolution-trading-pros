@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
 	 * ICT11+ Production-Grade with Full Analytics & Engagement Features
@@ -73,7 +74,7 @@
 			post = response;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'An error occurred';
-			console.error('Error loading post:', err);
+			logger.error('Error loading post:', err);
 		} finally {
 			loading = false;
 		}
@@ -141,7 +142,7 @@
 
 	// Track social shares
 	function handleSocialShare(platform: string) {
-		console.log(`Shared on ${platform}:`, post?.slug);
+		logger.info(`Shared on ${platform}:`, post?.slug);
 	}
 
 	// Derived SEO values - Svelte 5 runes

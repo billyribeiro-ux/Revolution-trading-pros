@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		IconTrendingUp,
@@ -51,7 +52,7 @@
 			const data = await response.json();
 			stats = data.stats;
 		} catch (error) {
-			console.error('Failed to load stats:', error);
+			logger.error('Failed to load stats:', error);
 		}
 	}
 
@@ -67,7 +68,7 @@
 			const data = await response.json();
 			topPages = data.data || [];
 		} catch (error) {
-			console.error('Failed to load top pages:', error);
+			logger.error('Failed to load top pages:', error);
 		}
 	}
 
@@ -76,7 +77,7 @@
 			const response = await fetch('/api/seo/analytics/comparison');
 			comparison = await response.json();
 		} catch (error) {
-			console.error('Failed to load comparison:', error);
+			logger.error('Failed to load comparison:', error);
 		}
 	}
 

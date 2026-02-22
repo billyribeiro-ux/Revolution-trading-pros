@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Watchlist - Explosive Swings
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -41,7 +42,7 @@
 				error = 'Failed to load trade plan';
 			}
 		} catch (err) {
-			console.error('Failed to fetch trade plan:', err);
+			logger.error('Failed to fetch trade plan:', err);
 			error = 'Failed to load trade plan';
 		} finally {
 			isLoading = false;

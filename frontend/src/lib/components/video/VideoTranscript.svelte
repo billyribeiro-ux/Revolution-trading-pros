@@ -17,6 +17,7 @@
  */
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -118,7 +119,7 @@
 			transcriptCues = parseVTT(vttText);
 		} catch (e) {
 			error = 'Failed to load transcript';
-			console.error('Transcript load error:', e);
+			logger.error('Transcript load error:', e);
 		} finally {
 			isLoading = false;
 		}
@@ -216,7 +217,7 @@
 				copied = false;
 			}, 2000);
 		} catch (e) {
-			console.error('Failed to copy transcript:', e);
+			logger.error('Failed to copy transcript:', e);
 		}
 	}
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Templates - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -87,7 +88,7 @@
 			} else {
 				error = 'Failed to load templates. Please refresh the page or contact support.';
 			}
-			console.error('Failed to load templates:', e);
+			logger.error('Failed to load templates:', e);
 		} finally {
 			loading = false;
 		}
@@ -105,7 +106,7 @@
 			toastStore.success('Template deleted successfully');
 		} catch (e) {
 			toastStore.error('Failed to delete template');
-			console.error(e);
+			logger.error(e);
 		}
 	}
 </script>

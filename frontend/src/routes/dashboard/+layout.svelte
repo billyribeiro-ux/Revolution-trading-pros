@@ -21,6 +21,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	// Dashboard Design System - Only loaded in dashboard area, not globally
 	import '$lib/styles/main.css';
 	import '$lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
@@ -448,7 +449,7 @@
 			// ICT 11+ FIX: On page refresh, server has validated auth but client store is empty
 			// We need to restore auth state before making API calls that require token
 			if (data.user && !$isAuthenticated) {
-				console.debug('[Dashboard] Server auth valid, syncing to client store...');
+				logger.debug('[Dashboard] Server auth valid, syncing to client store...');
 
 				// ALWAYS set user first from server data - this is the source of truth
 				const serverUser = {
@@ -459,19 +460,19 @@
 					created_at: new Date().toISOString()
 				};
 				authStore.setUser(serverUser);
-				console.debug('[Dashboard] User synced to client store:', serverUser.email);
+				logger.debug('[Dashboard] User synced to client store:', serverUser.email);
 
 				// Try to refresh the token to get a valid access token in memory
 				// The refresh token is persisted in localStorage
 				try {
 					const refreshed = await authStore.refreshToken();
 					if (refreshed) {
-						console.debug('[Dashboard] Token refreshed successfully');
+						logger.debug('[Dashboard] Token refreshed successfully');
 					} else {
-						console.debug('[Dashboard] Token refresh failed, will use cookies for API calls');
+						logger.debug('[Dashboard] Token refresh failed, will use cookies for API calls');
 					}
 				} catch (error) {
-					console.warn('[Dashboard] Token refresh error (will use cookies):', error);
+					logger.warn('[Dashboard] Token refresh error (will use cookies):', error);
 				}
 			}
 
@@ -506,7 +507,7 @@
 		try {
 			membershipsData = await getUserMemberships();
 		} catch (error) {
-			console.error('[Dashboard] Failed to load memberships:', error);
+			logger.error('[Dashboard] Failed to load memberships:', error);
 			membershipsData = null;
 		} finally {
 			isLoadingData = false;

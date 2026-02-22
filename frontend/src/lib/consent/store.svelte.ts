@@ -74,7 +74,7 @@ function createConsentStore() {
 			set(stored);
 			initialized = true;
 
-			console.debug('[ConsentStore] Initialized:', stored);
+			logger.debug('[ConsentStore] Initialized:', stored);
 
 			return stored;
 		},
@@ -91,7 +91,7 @@ function createConsentStore() {
 		 */
 		setCategory(category: ConsentCategory, granted: boolean): void {
 			if (category === 'necessary') {
-				console.debug('[ConsentStore] Cannot change necessary consent');
+				logger.debug('[ConsentStore] Cannot change necessary consent');
 				return;
 			}
 
@@ -168,7 +168,7 @@ function createConsentStore() {
 				// Dispatch event
 				dispatchConsentEvent(previousState, newState);
 
-				console.debug('[ConsentStore] Accepted all categories');
+				logger.debug('[ConsentStore] Accepted all categories');
 				return newState;
 			});
 		},
@@ -261,7 +261,7 @@ function createConsentStore() {
 				// Dispatch event
 				dispatchConsentEvent(previousState, newState);
 
-				console.debug('[ConsentStore] Updated categories:', categories);
+				logger.debug('[ConsentStore] Updated categories:', categories);
 				return newState;
 			});
 		},

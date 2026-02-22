@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
@@ -34,7 +35,7 @@
 			}
 			await loadDeals();
 		} catch (e) {
-			console.error('Failed to load pipelines/deals', e);
+			logger.error('Failed to load pipelines/deals', e);
 			crmStore.setError('Failed to load deals. Please try again.');
 		} finally {
 			crmStore.setLoading(false);
@@ -51,7 +52,7 @@
 			});
 			crmStore.setDeals(response.data);
 		} catch (e) {
-			console.error('Failed to load deals', e);
+			logger.error('Failed to load deals', e);
 			crmStore.setError('Failed to load deals. Please try again.');
 		} finally {
 			crmStore.setLoading(false);
@@ -62,7 +63,7 @@
 		try {
 			forecast = await crmAPI.getDealForecast(forecastPeriod);
 		} catch (e) {
-			console.error('Failed to load forecast', e);
+			logger.error('Failed to load forecast', e);
 		}
 	}
 

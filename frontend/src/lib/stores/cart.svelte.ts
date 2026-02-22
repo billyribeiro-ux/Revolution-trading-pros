@@ -4,6 +4,7 @@
  */
 
 import { browser } from '$app/environment';
+import { logger } from '$lib/utils/logger';
 
 export interface CartItem {
 	id: string;
@@ -98,7 +99,7 @@ function loadCart(): CartState {
 			return JSON.parse(stored);
 		}
 	} catch (error) {
-		console.error('Error loading cart from localStorage:', error);
+		logger.error('Error loading cart from localStorage:', error);
 	}
 
 	return { items: [] };
@@ -125,7 +126,7 @@ if (browser) {
 			try {
 				localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
 			} catch (error) {
-				console.error('Error saving cart to localStorage:', error);
+				logger.error('Error saving cart to localStorage:', error);
 			}
 		});
 	});

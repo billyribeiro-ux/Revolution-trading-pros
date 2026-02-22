@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Media Library - Apple ICT 7 Grade Enterprise Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -156,7 +157,7 @@
 				statsProgress.set(percent);
 			}
 		} catch (e) {
-			console.error('Failed to load statistics', e);
+			logger.error('Failed to load statistics', e);
 		}
 	}
 

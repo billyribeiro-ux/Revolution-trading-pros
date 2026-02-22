@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
@@ -33,7 +34,7 @@
 			const data = (await apiFetch('/admin/email/settings')) as any;
 			settings = data;
 		} catch (error) {
-			console.error('Failed to load settings:', error);
+			logger.error('Failed to load settings:', error);
 		}
 	}
 
@@ -106,7 +107,7 @@
 				message = 'Test failed: An unexpected error occurred. Please try again.';
 			}
 			messageType = 'error';
-			console.error('Email test connection error:', error);
+			logger.error('Email test connection error:', error);
 		} finally {
 			testing = false;
 		}

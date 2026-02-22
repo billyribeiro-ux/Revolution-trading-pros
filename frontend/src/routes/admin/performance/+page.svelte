@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
@@ -48,7 +49,7 @@
 			recommendations = recommendationsData.recommendations || [];
 			coreWebVitals = dashboardData?.core_web_vitals || null;
 		} catch (err) {
-			console.error('Failed to load performance data:', err);
+			logger.error('Failed to load performance data:', err);
 		} finally {
 			loading = false;
 		}

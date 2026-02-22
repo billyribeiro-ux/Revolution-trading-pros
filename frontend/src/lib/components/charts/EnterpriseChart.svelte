@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * EnterpriseChart Component
 	 * Wrapper for chart libraries with consistent styling
@@ -62,13 +63,13 @@
 	function initChart() {
 		// Placeholder for chart initialization
 		// In production, integrate with lightweight-charts, ApexCharts, or Chart.js
-		console.log('[EnterpriseChart] Chart initialized with type:', type);
+		logger.info('[EnterpriseChart] Chart initialized with type:', type);
 	}
 
 	$effect(() => {
 		if (browser && chartInstance && series) {
 			// Update chart data
-			console.log('[EnterpriseChart] Data updated');
+			logger.info('[EnterpriseChart] Data updated');
 		}
 	});
 </script>

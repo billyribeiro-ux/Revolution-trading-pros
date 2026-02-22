@@ -1,6 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
 https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
@@ -66,7 +67,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			settings = settingsRes;
 			storageConfig = storageRes;
 		} catch (error) {
-			console.error('Failed to load settings:', error);
+			logger.error('Failed to load settings:', error);
 		} finally {
 			loading = false;
 		}
@@ -78,7 +79,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			await boardsAPI.updateSettings(settings);
 			alert('Settings saved successfully!');
 		} catch (error) {
-			console.error('Failed to save settings:', error);
+			logger.error('Failed to save settings:', error);
 			alert('Failed to save settings');
 		} finally {
 			saving = false;
@@ -92,7 +93,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			await boardsAPI.updateStorageConfig(storageConfig);
 			alert('Storage configuration saved!');
 		} catch (error) {
-			console.error('Failed to save storage config:', error);
+			logger.error('Failed to save storage config:', error);
 			alert('Failed to save storage configuration');
 		} finally {
 			saving = false;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		IconFileText,
@@ -67,7 +68,7 @@
 				meta = { ...meta, ...data.data };
 			}
 		} catch (error) {
-			console.error('Failed to load SEO meta:', error);
+			logger.error('Failed to load SEO meta:', error);
 		}
 	}
 
@@ -88,7 +89,7 @@
 				onsaved?.();
 			}
 		} catch (error) {
-			console.error('Failed to save SEO meta:', error);
+			logger.error('Failed to save SEO meta:', error);
 		} finally {
 			saving = false;
 		}

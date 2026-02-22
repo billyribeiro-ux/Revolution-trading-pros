@@ -12,6 +12,7 @@
 	@version 2.0.0 - February 2026
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	interface EnrolledCourse {
 		id: number;
@@ -56,7 +57,7 @@
 				error = data.error || 'Failed to load courses';
 			}
 		} catch (e) {
-			console.error('Failed to fetch enrolled courses:', e);
+			logger.error('Failed to fetch enrolled courses:', e);
 			error = 'Failed to load your courses. Please try again.';
 		} finally {
 			loading = false;

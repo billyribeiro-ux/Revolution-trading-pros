@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * SEO Analyzer - Enterprise-Grade SEO Analysis
 	 * ==============================================
@@ -184,7 +185,7 @@
 
 			return await response.json();
 		} catch (err) {
-			console.warn('[SEOAnalyzer] API call failed, using fallback:', err);
+			logger.warn('[SEOAnalyzer] API call failed, using fallback:', err);
 			throw err;
 		}
 	}
@@ -324,7 +325,7 @@
 			}
 		} catch (err) {
 			apiError = err instanceof Error ? err.message : 'API error';
-			console.warn('[SEOAnalyzer] Falling back to client-side analysis');
+			logger.warn('[SEOAnalyzer] Falling back to client-side analysis');
 		}
 
 		// Fallback to client-side analysis

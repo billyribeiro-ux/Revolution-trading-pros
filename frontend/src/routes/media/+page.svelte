@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		mediaStore,
@@ -125,7 +126,7 @@
 				onFolderSelect={handleFolderSelect}
 				onCreateFolder={() => {
 					// TODO: Implement CreateFolderModal
-					console.warn('Create folder modal not yet implemented');
+					logger.warn('Create folder modal not yet implemented');
 				}}
 			/>
 		</aside>

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
@@ -151,7 +152,7 @@
 		try {
 			localStorage.setItem(`form_progress_${form.slug}`, JSON.stringify(progressData));
 		} catch (e) {
-			console.warn('Failed to save form progress:', e);
+			logger.warn('Failed to save form progress:', e);
 		}
 	}
 
@@ -176,7 +177,7 @@
 			currentStep = Math.min(progressData.currentStep || 0, steps.length - 1);
 			visitedSteps = new Set(progressData.visitedSteps || [0]);
 		} catch (e) {
-			console.warn('Failed to restore form progress:', e);
+			logger.warn('Failed to restore form progress:', e);
 		}
 	}
 

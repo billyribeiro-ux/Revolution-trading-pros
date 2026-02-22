@@ -4,6 +4,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import {
@@ -151,7 +152,7 @@
 			} else {
 				error = 'Failed to create product';
 			}
-			console.error('Failed to create product:', err);
+			logger.error('Failed to create product:', err);
 		} finally {
 			saving = false;
 		}

@@ -6,6 +6,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
@@ -39,7 +40,7 @@
 			eventTypes = response.event_types;
 			totalPages = response.pagination.total_pages;
 		} catch (error) {
-			console.error('Failed to load events:', error);
+			logger.error('Failed to load events:', error);
 		} finally {
 			loading = false;
 		}

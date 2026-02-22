@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import {
 		getSubscriptions,
@@ -138,11 +139,11 @@
 			// Check if main subscriptions call failed
 			if (subsResult.status === 'rejected') {
 				error = 'Failed to load subscriptions. Some data may be unavailable.';
-				console.error('Subscriptions load error:', subsResult.reason);
+				logger.error('Subscriptions load error:', subsResult.reason);
 			}
 		} catch (err) {
 			error = 'Failed to load subscription data';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			loading = false;
 		}
@@ -191,7 +192,7 @@
 			selectedSubscription = null;
 			await loadData();
 		} catch (err) {
-			console.error('Failed to pause subscription:', err);
+			logger.error('Failed to pause subscription:', err);
 		}
 	}
 
@@ -200,7 +201,7 @@
 			await resumeSubscription(subscription.id);
 			await loadData();
 		} catch (err) {
-			console.error('Failed to resume subscription:', err);
+			logger.error('Failed to resume subscription:', err);
 		}
 	}
 
@@ -220,7 +221,7 @@
 			selectedSubscription = null;
 			await loadData();
 		} catch (err) {
-			console.error('Failed to cancel subscription:', err);
+			logger.error('Failed to cancel subscription:', err);
 		}
 	}
 
@@ -229,7 +230,7 @@
 			await reactivateSubscription(subscription.id);
 			await loadData();
 		} catch (err) {
-			console.error('Failed to reactivate subscription:', err);
+			logger.error('Failed to reactivate subscription:', err);
 		}
 	}
 
@@ -238,7 +239,7 @@
 			await retryPayment(subscriptionId, paymentId);
 			await loadData();
 		} catch (err) {
-			console.error('Failed to retry payment:', err);
+			logger.error('Failed to retry payment:', err);
 		}
 	}
 

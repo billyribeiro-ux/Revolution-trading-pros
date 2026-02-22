@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog Error Page - Svelte 5 Implementation
 	 *
@@ -58,7 +59,7 @@
 		if (browser && status >= 400) {
 			// Log error in development
 			if (import.meta.env.DEV) {
-				console.error(`[Blog Error ${status}]`, errorMessage, page.url.pathname);
+				logger.error(`[Blog Error ${status}]`, errorMessage, page.url.pathname);
 			}
 
 			// Send to analytics

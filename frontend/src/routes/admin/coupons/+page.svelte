@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
 	import { IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
@@ -74,7 +75,7 @@
 			} else {
 				error = 'Error connecting to server';
 			}
-			console.error('Failed to load coupons:', err);
+			logger.error('Failed to load coupons:', err);
 		} finally {
 			loading = false;
 		}
@@ -94,7 +95,7 @@
 			} else {
 				alert('Failed to delete coupon. Please try again.');
 			}
-			console.error('Delete coupon error:', err);
+			logger.error('Delete coupon error:', err);
 		} finally {
 			deleting = null;
 		}
@@ -105,7 +106,7 @@
 			await couponsApi.update(coupon.id, { is_active: !coupon.is_active });
 			coupons = coupons.map((c) => (c.id === coupon.id ? { ...c, is_active: !c.is_active } : c));
 		} catch (err) {
-			console.error('Toggle status error:', err);
+			logger.error('Toggle status error:', err);
 			alert('Failed to update coupon status');
 		}
 	}

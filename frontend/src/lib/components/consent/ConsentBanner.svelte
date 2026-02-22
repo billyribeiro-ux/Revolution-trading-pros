@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -186,7 +187,7 @@
 			showBanner = false;
 			showPreferences = false;
 		} catch (error) {
-			console.error('Failed to save consent preferences:', error);
+			logger.error('Failed to save consent preferences:', error);
 		} finally {
 			isSaving = false;
 		}

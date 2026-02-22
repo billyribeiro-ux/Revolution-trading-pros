@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -71,7 +72,7 @@
 			countries = data.countries || {};
 		} catch (err) {
 			error = 'Failed to load invoice settings';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			loading = false;
 		}
@@ -95,7 +96,7 @@
 			setTimeout(() => (success = ''), 3000);
 		} catch (err) {
 			error = 'Failed to save settings';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			saving = false;
 		}
@@ -127,7 +128,7 @@
 			setTimeout(() => (success = ''), 3000);
 		} catch (err) {
 			error = 'Failed to upload logo';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			uploading = false;
 		}

@@ -1,6 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
 https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -158,7 +159,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 				if (!formData.design.buttonPadding) formData.design.buttonPadding = '0.875rem 1.5rem';
 			}
 		} catch (error) {
-			console.error('Failed to load popup:', error);
+			logger.error('Failed to load popup:', error);
 			addToast({ type: 'error', message: 'Failed to load popup' });
 			goto('/admin/popups');
 		} finally {
@@ -213,7 +214,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 			addToast({ type: 'success', message: 'Popup updated successfully!' });
 			goto('/admin/popups');
 		} catch (error: any) {
-			console.error('Failed to update popup:', error);
+			logger.error('Failed to update popup:', error);
 			addToast({
 				type: 'error',
 				message: error.response?.data?.message || 'Failed to update popup'

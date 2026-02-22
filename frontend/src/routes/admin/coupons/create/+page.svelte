@@ -16,6 +16,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
@@ -153,7 +154,7 @@
 			availableProducts = productsResponse.data || [];
 			availablePlans = plansResponse.data || [];
 		} catch (err) {
-			console.error('Failed to load products and plans:', err);
+			logger.error('Failed to load products and plans:', err);
 			errors = ['Failed to load products and membership plans. Please refresh the page.'];
 		} finally {
 			loadingData = false;
@@ -286,7 +287,7 @@
 				goto('/admin/coupons');
 			}, 1500);
 		} catch (err: any) {
-			console.error('Failed to create coupon:', err);
+			logger.error('Failed to create coupon:', err);
 			if (err.response?.errors) {
 				// Validation errors from backend
 				const validationErrors = Object.entries(err.response.errors)

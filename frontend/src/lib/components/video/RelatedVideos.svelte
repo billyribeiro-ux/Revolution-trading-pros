@@ -14,6 +14,7 @@
  */
 -->
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -95,7 +96,7 @@
 			}
 		} catch (e) {
 			_error = 'Failed to load related videos';
-			console.error('Related videos fetch error:', e);
+			logger.error('Related videos fetch error:', e);
 		} finally {
 			isLoading = false;
 		}

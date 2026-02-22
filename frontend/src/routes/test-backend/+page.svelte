@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
@@ -42,7 +43,7 @@
 				}, 3000);
 			}
 		} catch (error) {
-			console.error('Error loading popups:', error);
+			logger.error('Error loading popups:', error);
 		}
 	});
 

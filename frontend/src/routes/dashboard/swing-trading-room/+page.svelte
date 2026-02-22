@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Swing Trading Room Dashboard - Pixel-Perfect WordPress Match
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -104,7 +105,7 @@
 			setTimeout(initCalendar, 100);
 		};
 		script.onerror = () => {
-			console.warn('Failed to load Google Calendar API');
+			logger.warn('Failed to load Google Calendar API');
 		};
 		document.head.appendChild(script);
 
@@ -124,7 +125,7 @@
 
 		// @ts-ignore - gapi is loaded from external script
 		if (typeof gapi === 'undefined' || !gapi.client) {
-			console.warn('Google API not loaded yet');
+			logger.warn('Google API not loaded yet');
 			return;
 		}
 
@@ -170,11 +171,11 @@
 						}
 					})
 					.catch((error: any) => {
-						console.warn('Calendar Error:', error);
+						logger.warn('Calendar Error:', error);
 					});
 			});
 		} catch (error) {
-			console.warn('Failed to initialize Google Calendar:', error);
+			logger.warn('Failed to initialize Google Calendar:', error);
 		}
 	}
 </script>

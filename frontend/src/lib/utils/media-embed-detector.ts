@@ -1,3 +1,4 @@
+import { logger } from '$lib/utils/logger';
 /**
  * Media Embed Detector - URL Parsing and Embed Generation
  * ========================================================
@@ -603,8 +604,8 @@ function generateEmbedHtml(config: EmbedConfig): string {
  * ```typescript
  * const result = detectEmbed('https://youtube.com/watch?v=dQw4w9WgXcQ');
  * if (result.isEmbed && result.config) {
- *   console.log(result.config.platform); // 'youtube'
- *   console.log(result.config.html); // Generated iframe HTML
+ *   logger.info(result.config.platform); // 'youtube'
+ *   logger.info(result.config.html); // Generated iframe HTML
  * }
  * ```
  */

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Site Health Dashboard - Apple ICT9+ Enterprise Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -156,7 +157,7 @@
 			lastUpdated = new Date();
 			scoreDisplay.set(healthData.overallScore);
 		} catch (error) {
-			console.error('Failed to load health data:', error);
+			logger.error('Failed to load health data:', error);
 			healthData = getDefaultHealthData();
 			scoreDisplay.set(0);
 		}
@@ -264,7 +265,7 @@
 			scoreDisplay.set(healthData.overallScore);
 			toastStore.success('Health tests completed');
 		} catch (error) {
-			console.error('Failed to run health tests:', error);
+			logger.error('Failed to run health tests:', error);
 			toastStore.error('Failed to run health tests');
 		} finally {
 			isRunningTests = false;

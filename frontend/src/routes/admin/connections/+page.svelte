@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * System Connections & Integrations
 	 *
@@ -116,7 +117,7 @@
 			connections = data.connections;
 			categories = data.categories;
 		} catch (error) {
-			console.error('Failed to fetch connections:', error);
+			logger.error('Failed to fetch connections:', error);
 		} finally {
 			isLoading = false;
 		}

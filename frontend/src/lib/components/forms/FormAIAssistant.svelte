@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Form AI Assistant - AI-powered form generation and optimization
 	 *
@@ -90,7 +91,7 @@
 			}
 		} catch (err) {
 			error = 'Failed to connect to AI service';
-			console.error('Generation error:', err);
+			logger.error('Generation error:', err);
 		}
 
 		isGenerating = false;
@@ -114,7 +115,7 @@
 			}
 		} catch (err) {
 			error = 'Failed to get suggestions';
-			console.error('Suggestion error:', err);
+			logger.error('Suggestion error:', err);
 		}
 
 		isGenerating = false;
@@ -138,7 +139,7 @@
 			}
 		} catch (err) {
 			error = 'Failed to analyze form';
-			console.error('Analysis error:', err);
+			logger.error('Analysis error:', err);
 		}
 
 		isAnalyzing = false;

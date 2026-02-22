@@ -18,6 +18,7 @@
 -->
 
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onDestroy } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -208,7 +209,7 @@
 			// totalPages available in data.meta.total_pages if needed for pagination UI
 			hasMore = data.meta.has_more;
 		} catch (error) {
-			console.error('Failed to fetch assets:', error);
+			logger.error('Failed to fetch assets:', error);
 		} finally {
 			isLoading = false;
 			isLoadingMore = false;
@@ -224,7 +225,7 @@
 				folders = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch folders:', error);
+			logger.error('Failed to fetch folders:', error);
 		}
 	}
 
@@ -238,7 +239,7 @@
 				await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch tags:', error);
+			logger.error('Failed to fetch tags:', error);
 		}
 	}
 
@@ -252,7 +253,7 @@
 				assetUsage = await response.json();
 			}
 		} catch (error) {
-			console.error('Failed to fetch usage:', error);
+			logger.error('Failed to fetch usage:', error);
 		} finally {
 			isLoadingUsage = false;
 		}
@@ -268,7 +269,7 @@
 	// 			return await response.json();
 	// 		}
 	// 	} catch (error) {
-	// 		console.error('Failed to fetch recent:', error);
+	// 		logger.error('Failed to fetch recent:', error);
 	// 	}
 	// 	return [];
 	// }
@@ -310,7 +311,7 @@
 				editingMetadata = false;
 			}
 		} catch (error) {
-			console.error('Failed to update metadata:', error);
+			logger.error('Failed to update metadata:', error);
 		}
 	}
 
@@ -333,7 +334,7 @@
 				}
 			}
 		} catch (error) {
-			console.error('Failed to delete asset:', error);
+			logger.error('Failed to delete asset:', error);
 		}
 	}
 
@@ -358,7 +359,7 @@
 				sidebarOpen = false;
 			}
 		} catch (error) {
-			console.error('Failed to bulk delete:', error);
+			logger.error('Failed to bulk delete:', error);
 		}
 	}
 
@@ -382,7 +383,7 @@
 	// 			selectedAssets = new Set();
 	// 		}
 	// 	} catch (error) {
-	// 		console.error('Failed to move assets:', error);
+	// 		logger.error('Failed to move assets:', error);
 	// 	}
 	// }
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Course Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -104,7 +105,7 @@
 				downloads = data.data.downloads || [];
 			}
 		} catch (e) {
-			console.error('Failed to fetch course:', e);
+			logger.error('Failed to fetch course:', e);
 		} finally {
 			loading = false;
 		}
@@ -179,7 +180,7 @@
 			await adminFetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
 			modules = modules.filter((m) => m.id !== moduleId);
 		} catch {
-			console.error('Failed to delete module');
+			logger.error('Failed to delete module');
 		}
 	};
 
@@ -260,7 +261,7 @@
 				alert(createData.error || 'Failed to create download record');
 			}
 		} catch (e) {
-			console.error('Upload error:', e);
+			logger.error('Upload error:', e);
 			alert('Failed to upload file');
 		} finally {
 			uploading = false;
@@ -286,7 +287,7 @@
 			});
 			downloads = downloads.filter((d) => d.id !== downloadId);
 		} catch {
-			console.error('Failed to delete download');
+			logger.error('Failed to delete download');
 		}
 	};
 
@@ -319,7 +320,7 @@
 				unassignedLessons = unassignedLessons.filter((l) => l.id !== lessonId);
 			}
 		} catch {
-			console.error('Failed to delete lesson');
+			logger.error('Failed to delete lesson');
 		}
 	};
 </script>

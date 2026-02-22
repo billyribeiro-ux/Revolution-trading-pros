@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -122,7 +123,7 @@
 			await loadEmailHistory();
 		} catch (err) {
 			error = 'Failed to load member details';
-			console.error(err);
+			logger.error(err);
 		} finally {
 			loading = false;
 		}
@@ -139,7 +140,7 @@
 				notes = [];
 			}
 		} catch (err) {
-			console.error('Failed to load member notes:', err);
+			logger.error('Failed to load member notes:', err);
 			notes = []; // Empty array, not mock data
 		}
 	}
@@ -155,7 +156,7 @@
 				emailHistory = [];
 			}
 		} catch (err) {
-			console.error('Failed to load email history:', err);
+			logger.error('Failed to load email history:', err);
 			emailHistory = []; // Empty array, not mock data
 		}
 	}
@@ -214,7 +215,7 @@
 				toastStore.warning('Note added locally - sync pending');
 			}
 		} catch (err) {
-			console.error('Failed to save note:', err);
+			logger.error('Failed to save note:', err);
 			toastStore.error('Failed to save note');
 		}
 	}
@@ -330,7 +331,7 @@
 				availablePlans = await response.json();
 			}
 		} catch (err) {
-			console.error('Failed to load plans:', err);
+			logger.error('Failed to load plans:', err);
 		}
 	}
 
@@ -379,7 +380,7 @@
 				toastStore.error(data.error || 'Failed to extend membership');
 			}
 		} catch (err) {
-			console.error('Failed to extend membership:', err);
+			logger.error('Failed to extend membership:', err);
 			toastStore.error('Failed to extend membership');
 		} finally {
 			extending = false;
@@ -414,7 +415,7 @@
 				toastStore.error(data.error || 'Failed to grant membership');
 			}
 		} catch (err) {
-			console.error('Failed to grant membership:', err);
+			logger.error('Failed to grant membership:', err);
 			toastStore.error('Failed to grant membership');
 		} finally {
 			granting = false;
@@ -446,7 +447,7 @@
 				toastStore.error(data.error || 'Failed to revoke membership');
 			}
 		} catch (err) {
-			console.error('Failed to revoke membership:', err);
+			logger.error('Failed to revoke membership:', err);
 			toastStore.error('Failed to revoke membership');
 		}
 	}

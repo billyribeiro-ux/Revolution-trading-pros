@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Block Settings Panel - Enterprise-Grade Settings Editor
 	 * ========================================================
@@ -67,7 +68,7 @@
 				datasources = data.data || [];
 			}
 		} catch (err) {
-			console.error('Failed to fetch datasources:', err);
+			logger.error('Failed to fetch datasources:', err);
 		} finally {
 			loadingDatasources = false;
 		}
@@ -89,7 +90,7 @@
 				return entries;
 			}
 		} catch (err) {
-			console.error(`Failed to fetch entries for ${slug}:`, err);
+			logger.error(`Failed to fetch entries for ${slug}:`, err);
 		} finally {
 			loadingEntries = { ...loadingEntries, [slug]: false };
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * ClassDownloads Component - Box.com Identical UI
@@ -106,7 +107,7 @@
 				error = data.error || 'Failed to load downloads';
 			}
 		} catch (e) {
-			console.error('Failed to fetch downloads:', e);
+			logger.error('Failed to fetch downloads:', e);
 			error = 'Failed to load downloads';
 		} finally {
 			loading = false;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Component - FluentForm-Style Form Embedding
 	 *
@@ -16,7 +17,7 @@
 	 *      theme="card"
 	 *      hideTitle
 	 *      cssClasses="my-form"
-	 *      onSuccess={(id) => console.log('Submitted:', id)}
+	 *      onSuccess={(id) => logger.info('Submitted:', id)}
 	 *    />
 	 *
 	 * @see https://fluentforms.com/wordpress-form-shortcode/

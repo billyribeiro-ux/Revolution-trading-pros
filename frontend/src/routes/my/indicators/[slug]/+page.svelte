@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * My Indicator Downloads Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -92,7 +93,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			loading = false;
 		}
@@ -112,7 +113,7 @@
 			}
 		} catch (e) {
 			error = 'Failed to download file';
-			console.error(e);
+			logger.error(e);
 		} finally {
 			downloading = null;
 		}

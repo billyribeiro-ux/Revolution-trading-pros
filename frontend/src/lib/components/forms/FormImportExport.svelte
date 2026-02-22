@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Import/Export - Multi-format data interchange UI
 	 *
@@ -96,7 +97,7 @@
 				window.URL.revokeObjectURL(url);
 			}
 		} catch (error) {
-			console.error('Export failed:', error);
+			logger.error('Export failed:', error);
 		}
 
 		exporting = false;
@@ -140,7 +141,7 @@
 				success: false,
 				message: 'Failed to process import'
 			};
-			console.error('Import failed:', error);
+			logger.error('Import failed:', error);
 		}
 
 		importing = false;
@@ -171,7 +172,7 @@
 				alert('Template saved successfully!');
 			}
 		} catch (error) {
-			console.error('Failed to save template:', error);
+			logger.error('Failed to save template:', error);
 		}
 	}
 </script>

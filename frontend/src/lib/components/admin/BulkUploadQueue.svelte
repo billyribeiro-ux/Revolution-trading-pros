@@ -1,4 +1,5 @@
 <script lang="ts">
+import { logger } from '$lib/utils/logger';
 	/**
 	 * Bulk Upload Queue - Revolution Trading Pros
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -143,7 +144,7 @@
 			try {
 				await uploadViaTus(file, upload);
 			} catch (err) {
-				console.error(`Failed to upload ${file.name}:`, err);
+				logger.error(`Failed to upload ${file.name}:`, err);
 				await bulkUploadApi.updateItemStatus(upload.id, {
 					status: 'failed',
 					error_message: err instanceof Error ? err.message : 'Upload failed'
