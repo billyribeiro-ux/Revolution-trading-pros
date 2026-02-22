@@ -6,7 +6,6 @@
  */
 
 import {
-import { logger } from '$lib/utils/logger';
 	membersApi,
 	type Member,
 	type MemberStats,
@@ -17,6 +16,7 @@ import { logger } from '$lib/utils/logger';
 	type PaginationInfo,
 	type EmailTemplate
 } from '$lib/api/members';
+import { logger } from '$lib/utils/logger';
 
 // State interfaces
 interface MembersState {

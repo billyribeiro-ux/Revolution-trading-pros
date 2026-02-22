@@ -1,6 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: `<script>
-import { logger } from '$lib/utils/logger';` was left open
-https://svelte.dev/e/element_unclosed -->
 <!--
 	Indicator Detail & Download Page
 	═══════════════════════════════════════════════════════════════════════════
@@ -21,6 +18,7 @@ https://svelte.dev/e/element_unclosed -->
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { logger } from '$lib/utils/logger';
 
 	// Platform logo mapping
 	const platformLogos: Record<string, string> = {

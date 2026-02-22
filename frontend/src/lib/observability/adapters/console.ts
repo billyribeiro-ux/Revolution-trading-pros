@@ -15,8 +15,8 @@
  */
 
 import { browser } from '$app/environment';
-import type {
 import { logger } from '$lib/utils/logger';
+import type {
 	AnalyticsAdapter,
 	AnalyticsConfig,
 	AdapterState,

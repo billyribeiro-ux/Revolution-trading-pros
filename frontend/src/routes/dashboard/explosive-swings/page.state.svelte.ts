@@ -23,6 +23,7 @@ import type {
 	PaginationState,
 	QuickStats
 } from './types';
+import { logger } from '$lib/utils/logger';
 import { fallbackData, ROOM_SLUG, ALERTS_PER_PAGE } from './data/fallbacks';
 import {
 	getAlerts,
@@ -37,7 +38,6 @@ import { deleteTrade as remoteDeleteTrade } from './commands.remote';
 import type { RoomAlert } from '$lib/types/trading';
 import type { TradePlanEntry as ApiTradePlanEntry } from '$lib/types/trading';
 import {
-import { logger } from '$lib/utils/logger';
 	performanceMonitor,
 	analyticsTracker,
 	trackFilterApplied,

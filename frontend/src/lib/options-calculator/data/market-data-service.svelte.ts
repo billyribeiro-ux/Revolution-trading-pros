@@ -9,8 +9,8 @@ import { createCache, CACHE_TTL } from './cache.js';
 import { createMockAdapter } from './adapters/mock.js';
 import { createPolygonAdapter } from './adapters/polygon.js';
 import { createFREDAdapter } from './adapters/fred.js';
-import type {
 import { logger } from '$lib/utils/logger';
+import type {
 	StockQuote,
 	OptionsChain,
 	ExpirationList,
