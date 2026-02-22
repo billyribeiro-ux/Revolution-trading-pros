@@ -80,6 +80,7 @@
 		"embla-carousel-autoplay": "^8.6.0",
 		"embla-carousel-svelte": "^8.6.0",
 		"gsap": "^3.14.2",
+		"heroicons-svelte": "^2.0.2",
 		"html2canvas": "^1.4.1",
 		"isomorphic-dompurify": "^2.36.0",
 		"lightweight-charts": "^5.1.0",
