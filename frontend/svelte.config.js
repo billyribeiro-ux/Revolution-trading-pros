@@ -83,6 +83,7 @@ const config = {
 				],
 				'frame-src': ['self', 'https://iframe.mediadelivery.net', 'https://*.mediadelivery.net'],
 				'frame-ancestors': ['none'],
+				'worker-src': ['self', 'blob:'],
 				'base-uri': ['self'],
 				'form-action': ['self']
 			}
