@@ -18,6 +18,7 @@
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
+	import { sanitizePopupContent } from '$lib/utils/sanitize';
 	import { IconX } from '$lib/icons';
 	import {
 		activePopup,
@@ -511,7 +512,7 @@
 
 				{#if currentPopup.content}
 					<div class="popup-body">
-						{@html currentPopup.content}
+						{@html sanitizePopupContent(currentPopup.content)}
 					</div>
 				{/if}
 

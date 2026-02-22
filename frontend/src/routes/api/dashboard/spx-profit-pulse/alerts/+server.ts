@@ -148,7 +148,11 @@ function getAlerts(): SPXAlert[] {
 // REQUEST HANDLER
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, request, locals }) => {
+	const token =
+		request.headers.get('Authorization')?.replace('Bearer ', '') ||
+		(locals as any).accessToken;
+	if (!token) return json({ success: false, error: 'Unauthorized' }, { status: 401 });
 	try {
 		const page = parseInt(url.searchParams.get('page') || '1');
 		const perPage = parseInt(url.searchParams.get('per_page') || '6');

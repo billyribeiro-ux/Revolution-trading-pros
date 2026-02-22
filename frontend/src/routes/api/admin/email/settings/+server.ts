@@ -9,6 +9,16 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { logger } from '$lib/utils/logger';
 
+function requireAdmin(request: Request, locals: App.Locals): Response | null {
+	const token =
+		request.headers.get('Authorization')?.replace('Bearer ', '') ||
+		(locals as any).accessToken;
+	if (!token) {
+		return json({ error: 'Unauthorized' }, { status: 401 }) as unknown as Response;
+	}
+	return null;
+}
+
 // Default SMTP settings (in production, these would come from database)
 let emailSettings = {
 	provider: 'smtp',
@@ -21,7 +31,9 @@ let emailSettings = {
 	from_name: 'Revolution Trading Pros'
 };
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ request, locals }) => {
+	const authError = requireAdmin(request, locals);
+	if (authError) return authError as unknown as ReturnType<typeof json>;
 	try {
 		// Return settings (with password masked for security)
 		return json({
@@ -34,7 +46,9 @@ export const GET: RequestHandler = async () => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const authError = requireAdmin(request, locals);
+	if (authError) return authError as unknown as ReturnType<typeof json>;
 	try {
 		const body = await request.json();
 

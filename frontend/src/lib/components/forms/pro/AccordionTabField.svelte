@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	/**
 	 * AccordionTabField Component (FluentForms 6.1.5 - November 2025)
 	 *
@@ -120,7 +121,7 @@
 				>
 					<div class="content-inner">
 						{#if section.content}
-							{@html section.content}
+							{@html sanitizeHtml(section.content, 'rich')}
 						{/if}
 					</div>
 				</div>
@@ -162,7 +163,7 @@
 					aria-labelledby="tab-{section.id}"
 				>
 					{#if section.content}
-						{@html section.content}
+						{@html sanitizeHtml(section.content, 'rich')}
 					{/if}
 				</div>
 			{/each}

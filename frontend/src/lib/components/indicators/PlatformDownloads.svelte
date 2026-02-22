@@ -6,6 +6,7 @@
 -->
 <script lang="ts">
 	import DownloadButton from './DownloadButton.svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	interface DownloadFile {
 		name: string;
@@ -20,6 +21,7 @@
 	}
 
 	let { platform, logo, files, notes }: Props = $props();
+	const safeNotes = $derived(sanitizeHtml(notes, 'standard'));
 </script>
 
 <div class="st_box {platform.toLowerCase()}">
@@ -46,7 +48,7 @@
 
 	{#if notes}
 		<div class="platform_notes">
-			{@html notes}
+			{@html safeNotes}
 		</div>
 	{/if}
 </div>

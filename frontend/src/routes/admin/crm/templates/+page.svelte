@@ -16,6 +16,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -787,7 +788,7 @@
 					<div class="preview-content">
 						<h3>Email Content</h3>
 						<div class="preview-frame">
-							{@html previewTemplate.content || '<p class="no-content">No content available</p>'}
+							{@html sanitizeHtml(previewTemplate.content || '<p class="no-content">No content available</p>', 'rich')}
 						</div>
 					</div>
 				{/if}

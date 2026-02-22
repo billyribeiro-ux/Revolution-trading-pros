@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
@@ -205,7 +206,7 @@
 					<IconTrendingUp size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html stats.recovered_revenue.value}</span>
+					<span class="stat-value">{@html sanitizeHtml(stats.recovered_revenue.value, 'minimal')}</span>
 					<span class="stat-label">{stats.recovered_revenue.title}</span>
 					<span class="stat-count">{stats.recovered_revenue.count} carts</span>
 				</div>
@@ -215,7 +216,7 @@
 					<IconShoppingCart size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html stats.processing_revenue.value}</span>
+					<span class="stat-value">{@html sanitizeHtml(stats.processing_revenue.value, 'minimal')}</span>
 					<span class="stat-label">{stats.processing_revenue.title}</span>
 					<span class="stat-count">{stats.processing_revenue.count} carts</span>
 				</div>
@@ -225,7 +226,7 @@
 					<IconTrendingDown size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html stats.lost_revenue.value}</span>
+					<span class="stat-value">{@html sanitizeHtml(stats.lost_revenue.value, 'minimal')}</span>
 					<span class="stat-label">{stats.lost_revenue.title}</span>
 					<span class="stat-count">{stats.lost_revenue.count} carts</span>
 				</div>
