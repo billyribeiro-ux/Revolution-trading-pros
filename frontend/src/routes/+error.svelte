@@ -1,5 +1,4 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
 	/**
 	 * Global Error Boundary - Enterprise L8 Pattern
 	 *

@@ -17,7 +17,23 @@ const config = {
 		adapter: adapter({
 			routes: {
 				include: ['/*'],
-				exclude: ['<all>']
+				exclude: [
+					'/favicon.ico',
+					'/favicon.png',
+					'/apple-touch-icon.png',
+					'/apple-touch-icon-precomposed.png',
+					'/manifest.json',
+					'/robots.txt',
+					'/sitemap.xml',
+					'/sitemap-*.xml',
+					'/_app/*',
+					'/images/*',
+					'/icons/*',
+					'/logos/*',
+					'/fonts/*',
+					'/uploads/*',
+					'/static/*'
+				]
 			}
 		}),
 		alias: {
