@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	interface OrderItem {
 		id: number;
 		name: string;
@@ -254,7 +255,7 @@
 
 						<address>
 							{order.billingAddress.name}<br />
-							{@html order.billingAddress.address.replace(/\n/g, '<br />')}
+							{@html sanitizeHtml(order.billingAddress.address.replace(/\n/g, '<br />'), 'strict')}
 							{#if order.billingAddress.phone}
 								<p class="woocommerce-customer-details--phone">{order.billingAddress.phone}</p>
 							{/if}

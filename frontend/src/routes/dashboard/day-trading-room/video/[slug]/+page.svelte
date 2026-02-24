@@ -12,6 +12,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import type { PageData } from './+page.server';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
@@ -127,7 +128,7 @@
 			</div>
 		</div>
 		<div class="dv-description">
-			{@html video.description}
+			{@html sanitizeHtml(video.description, 'standard')}
 		</div>
 	</div>
 </section>

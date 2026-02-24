@@ -10,6 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -199,7 +200,7 @@
 			</div>
 		</div>
 		<div class="dv-description">
-			{@html video.description}
+			{@html sanitizeHtml(video.description, 'standard')}
 		</div>
 	</div>
 </section>

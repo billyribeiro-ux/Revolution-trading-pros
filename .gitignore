@@ -133,6 +133,26 @@ backend/vendor/
 
 # Retired/archived code and build artifacts
 _retired/
+retired/
+frontend/retired/
+
+# One-off scripts & audit reports (never track)
+*.py
+*.sh
+!.github/**/*.sh
+!api/scripts/**/*.sh
+*AUDIT*.md
+*REPORT*.md
+*FORENSIC*.md
+*INVESTIGATION*.md
+
+# Binary blobs & reference files
+frontend/SimpletTGWatkins
+frontend/blogsample
+frontend/Implementation/
+
+# Production env files (secrets)
+frontend/.env.production
 
 # Rust build artifacts
 backend-rust/target/

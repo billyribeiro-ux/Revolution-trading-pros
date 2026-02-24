@@ -7,12 +7,13 @@
 
 	Individual video/resource detail page matching WordPress implementation.
 
-	@version 1.0.0
+	@version 1.0.1
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	interface LearningResource {
 		id: number;
@@ -289,7 +290,7 @@
 
 						<!-- Content -->
 						<div class="resource-content">
-							{@html resource.content}
+							{@html sanitizeHtml(resource.content, 'rich')}
 						</div>
 
 						<!-- Back Link -->

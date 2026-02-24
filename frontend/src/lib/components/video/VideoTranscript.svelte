@@ -18,6 +18,7 @@
 -->
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -224,7 +225,8 @@ import { logger } from '$lib/utils/logger';
 	function highlightSearch(text: string): string {
 		if (!searchQuery.trim()) return text;
 		const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-		return text.replace(regex, '<mark>$1</mark>');
+		const raw = text.replace(regex, '<mark>$1</mark>');
+		return sanitizeHtml(raw, 'strict');
 	}
 </script>
 

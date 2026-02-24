@@ -1,5 +1,6 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -1024,7 +1025,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="flex-1 overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
 					<div class="bg-white shadow-lg mx-auto" style="max-width: 800px;">
-						{@html previewHtml}
+						{@html sanitizeHtml(previewHtml, 'rich')}
 					</div>
 				</div>
 			</div>

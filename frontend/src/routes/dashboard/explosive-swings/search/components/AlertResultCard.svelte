@@ -3,6 +3,7 @@
 	 * AlertResultCard - Individual alert search result
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+
 	 */
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import type { AlertSearchResult } from '../search.state.svelte';
 
 	interface Props {
@@ -17,7 +18,8 @@
 		if (!query || !text) return text;
 		const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		const regex = new RegExp(`(${escaped})`, 'gi');
-		return text.replace(regex, '<mark>$1</mark>');
+		const raw = text.replace(regex, '<mark>$1</mark>');
+		return sanitizeHtml(raw, 'strict');
 	}
 
 	// Alert type styling
@@ -65,7 +67,7 @@
 	{/if}
 
 	<div class="card-highlight">
-		{@html alert.highlight}
+		{@html sanitizeHtml(alert.highlight, 'strict')}
 	</div>
 
 	<div class="card-message">
