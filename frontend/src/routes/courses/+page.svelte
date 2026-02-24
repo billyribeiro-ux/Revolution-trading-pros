@@ -23,7 +23,6 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Assumed existing component based on your snippet
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- TYPES ---
@@ -373,14 +372,6 @@
 </script>
 
 <svelte:window bind:scrollY bind:innerHeight bind:innerWidth />
-
-<SEOHead
-	title="Trading Courses & Mentorship | Revolution Trading Pros"
-	description="Institutional-grade trading education. Learn to read order flow, manage risk, and execute with precision. Join the top 1% of disciplined traders."
-	canonical="/courses"
-	{schema}
-	schemaType="Course"
-/>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div

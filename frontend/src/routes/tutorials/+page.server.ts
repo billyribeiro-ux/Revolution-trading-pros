@@ -13,6 +13,7 @@
  */
 
 import type { PageServerLoad } from './$types';
+import type { SEOInput } from '$lib/seo/types';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true;
@@ -36,6 +37,7 @@ export interface PageData {
 		page: number;
 		totalPages: number;
 	};
+	seo: SEOInput;
 }
 
 // ThinkorSwim tutorials data
@@ -201,12 +203,20 @@ export const load: PageServerLoad = async ({ url }) => {
 	const endIndex = startIndex + perPage;
 	const paginatedTosTutorials = tosTutorials.slice(startIndex, endIndex);
 
+	const seo: SEOInput = {
+		title: 'Platform Tutorials - ThinkorSwim & TradeStation',
+		description: 'Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels.',
+		canonical: '/tutorials',
+		og: { type: 'website' }
+	};
+
 	return {
 		tosTutorials: paginatedTosTutorials,
 		tradestationTutorials,
 		tosPagination: {
 			page,
 			totalPages: Math.ceil(tosTutorials.length / perPage)
-		}
+		},
+		seo
 	} satisfies PageData;
 };

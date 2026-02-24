@@ -3,7 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Pricing State (Svelte 5 Runes) ---
@@ -186,30 +185,6 @@
 
 	const combinedSchema = [productSchema, faqSchema];
 </script>
-
-<SEOHead
-	title="Swing Trading Alerts | Multi-Day Stock & Options Signals"
-	description="The #1 swing trading room for part-time traders. Get high-precision stock and options alerts (3-7 day holds) sent via SMS & Push. 82% historical win rate."
-	canonical="/live-trading-rooms/swing-trading"
-	ogType="product"
-	ogImage="/images/og-swings.jpg"
-	ogImageAlt="Swing Trading Room - Multi-Day Trading Opportunities"
-	keywords={[
-		'swing trading room',
-		'swing trading alerts',
-		'multi-day trading strategies',
-		'stock options alerts sms',
-		'swing trade signals',
-		'options swing trading',
-		'part time trading',
-		'swing trading for beginners'
-	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={97}
-	productCurrency="USD"
-	productAvailability="in stock"
-/>
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-emerald selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">

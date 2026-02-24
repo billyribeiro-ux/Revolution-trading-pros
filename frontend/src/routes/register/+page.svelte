@@ -18,7 +18,6 @@
 		IconEyeOff
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// Svelte 5 state runes
 	let name = $state('');
@@ -249,14 +248,6 @@
 		}
 	}
 </script>
-
-<SEOHead
-	title="Register - Join Revolution Trading Pros"
-	description="Create your Revolution Trading Pros account. Get started with live trading rooms, professional alerts, and expert-led courses."
-	canonical="/register"
-	ogType="website"
-	keywords={['register trading account', 'join revolution trading pros', 'create trading account']}
-/>
 
 <div class="register-page">
 	<!-- Animated gradient background -->

@@ -3,7 +3,6 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Pricing State ---
@@ -198,31 +197,6 @@
 	// Schema for SEOHead
 	const combinedSchema = schemaOrg['@graph'];
 </script>
-
-<SEOHead
-	title="Explosive Swings Trading Alerts | High-Probability Multi-Day Signals"
-	description="Catch 20%+ moves with 3-7 day swing trading alerts. Institutional dark pool analysis and precise options signals for traders with day jobs. 82% historical win rate."
-	canonical="/alerts/explosive-swings"
-	ogType="product"
-	ogImage="/images/og-swings.jpg"
-	ogImageAlt="Explosive Swings Trading Alerts - Multi-Day Opportunities"
-	keywords={[
-		'swing trading alerts',
-		'stock options alerts',
-		'swing trade signals',
-		'multi-day trading strategies',
-		'SPX swing trading',
-		'dark pool trading',
-		'options swing trading',
-		'trading signals for beginners',
-		'part time trading strategy'
-	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={97}
-	productCurrency="USD"
-	productAvailability="in stock"
-/>
 
 <div
 	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"

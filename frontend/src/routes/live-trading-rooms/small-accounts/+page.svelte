@@ -3,7 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Pricing State (Svelte 5 Runes) ---
@@ -188,29 +187,6 @@
 
 	const combinedSchema = [productSchema, faqSchema];
 </script>
-
-<SEOHead
-	title="Small Accounts Day Trading Room | Grow Accounts Under $25k"
-	description="The #1 live trading room for small accounts. Learn to trade SPX 0DTE options without PDT restrictions. Live screen share, real-time alerts, and risk management."
-	canonical="/live-trading-rooms/small-accounts"
-	ogType="product"
-	ogImage="/images/day-trading-og.jpg"
-	ogImageAlt="Small Accounts Day Trading Room - PDT-Free Strategies"
-	keywords={[
-		'small account day trading',
-		'how to trade under 25k',
-		'PDT workaround strategies',
-		'SPX 0DTE for small accounts',
-		'cash account options trading',
-		'live trading room discord',
-		'growing a small trading account'
-	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={197}
-	productCurrency="USD"
-	productAvailability="in stock"
-/>
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">

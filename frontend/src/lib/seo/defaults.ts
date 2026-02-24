@@ -12,7 +12,7 @@
 
 import type { SEODefaults } from './types';
 
-const SITE_URL = 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 export const seoDefaults: SEODefaults = {
 	siteUrl: SITE_URL,
@@ -111,6 +111,64 @@ export const seoDefaults: SEODefaults = {
 					urlTemplate: `${SITE_URL}/search?q={search_term_string}`
 				},
 				'query-input': 'required name=search_term_string'
+			}
+		},
+		{
+			'@context': 'https://schema.org',
+			'@type': 'FinancialService',
+			'@id': `${SITE_URL}/#financial-service`,
+			name: 'Revolution Trading Pros',
+			url: SITE_URL,
+			description:
+				'Professional trading education platform offering live trading rooms, institutional-grade indicators, and real-time alert services for active traders.',
+			serviceType: 'Trading Education & Alert Services',
+			areaServed: {
+				'@type': 'Country',
+				name: 'United States'
+			},
+			hasOfferCatalog: {
+				'@type': 'OfferCatalog',
+				name: 'Trading Services',
+				itemListElement: [
+					{
+						'@type': 'Offer',
+						itemOffered: {
+							'@type': 'Service',
+							name: 'Live Trading Rooms',
+							description:
+								'Real-time voice-guided trading rooms with professional traders'
+						}
+					},
+					{
+						'@type': 'Offer',
+						itemOffered: {
+							'@type': 'Service',
+							name: 'Trading Alert Services',
+							description:
+								'Swing trading and 0DTE options alerts with precise entries and exits'
+						}
+					},
+					{
+						'@type': 'Offer',
+						itemOffered: {
+							'@type': 'Service',
+							name: 'Custom Trading Indicators',
+							description:
+								'Institutional-grade indicators for ThinkorSwim and TradeStation'
+						}
+					}
+				]
+			},
+			founder: {
+				'@type': 'Person',
+				name: 'Billy Ribeiro',
+				jobTitle: 'Founder & Head Trader'
+			},
+			foundingDate: '2018',
+			numberOfEmployees: {
+				'@type': 'QuantitativeValue',
+				value: '18000',
+				unitText: 'active members'
 			}
 		}
 	],

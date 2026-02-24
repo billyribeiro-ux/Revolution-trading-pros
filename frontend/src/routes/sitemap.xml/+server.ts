@@ -23,7 +23,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { response } from 'super-sitemap';
 
-const SITE_URL = 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 export const prerender = true;
 

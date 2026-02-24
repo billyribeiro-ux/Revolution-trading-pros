@@ -9,7 +9,6 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
@@ -182,17 +181,7 @@ import { logger } from '$lib/utils/logger';
 </script>
 
 {#if post}
-	<SEOHead
-		title={seoTitle ?? post.title}
-		description={seoDescription ?? ''}
-		canonical={`/blog/${post.slug}`}
-		ogType="article"
-		ogImage={post.featured_image}
-		author={post.author?.name ?? null}
-		publishedTime={post.published_at}
-		schema={articleSchema}
-	/>
-{/if}
+	{/if}
 
 <!-- Reading Progress Indicator -->
 <ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />

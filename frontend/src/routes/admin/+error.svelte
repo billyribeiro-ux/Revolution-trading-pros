@@ -14,7 +14,6 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import {
 		IconAlertTriangle,
@@ -130,12 +129,6 @@ import { logger } from '$lib/utils/logger';
 		await goto(`/login?redirect=${encodeURIComponent(page.url.pathname)}`);
 	}
 </script>
-
-<SEOHead
-	title="Error {status} - Admin | Revolution Trading Pros"
-	description={config.description}
-	noindex
-/>
 
 <div class="admin-error-page">
 	<div class="error-card">

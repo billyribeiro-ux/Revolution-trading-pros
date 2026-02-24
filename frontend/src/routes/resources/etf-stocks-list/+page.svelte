@@ -7,7 +7,6 @@
 	 * ETF Stock List Page - Google L11 Enterprise Standard
 	 * Comprehensive ETF education and reference resource
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -289,22 +288,6 @@
 		}
 	];
 </script>
-
-<SEOHead
-	title="ETF Stock List"
-	description="Explore our complete ETF stock list with detailed information on ETFs and their underlying stocks. Perfect for traders and investors looking to diversify."
-	canonical="/resources/etf-stocks-list"
-	ogType="website"
-	keywords={[
-		'ETF list',
-		'exchange traded funds',
-		'SPY',
-		'QQQ',
-		'sector ETFs',
-		'ETF investing',
-		'stock market ETFs'
-	]}
-/>
 
 <div class="etf-page">
 	<!-- Hero Section -->

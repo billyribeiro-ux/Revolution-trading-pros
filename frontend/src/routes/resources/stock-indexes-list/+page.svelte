@@ -7,7 +7,6 @@
 	 * Stock Indexes List Page - Google L11 Enterprise Standard
 	 * Comprehensive stock index education and reference resource
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import {
@@ -178,22 +177,6 @@
 		expandedFaq = expandedFaq === index ? null : index;
 	}
 </script>
-
-<SEOHead
-	title="Stock Indexes List"
-	description="The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on major U.S. exchanges. Learn about major stock indexes and how to trade them."
-	canonical="/resources/stock-indexes-list"
-	ogType="website"
-	keywords={[
-		'stock indexes',
-		'S&P 500',
-		'Dow Jones',
-		'NASDAQ',
-		'Russell 2000',
-		'market indexes',
-		'stock market'
-	]}
-/>
 
 <div class="indexes-page">
 	<!-- Hero Section -->

@@ -20,7 +20,6 @@
 	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// ICT 11+ CORB Fix: Use same-origin endpoints
@@ -70,14 +69,6 @@
 		}
 	];
 </script>
-
-<SEOHead
-	title="Live Trading Rooms, Alerts & Pro Tools"
-	description="Professional trading education and tools."
-	canonical="/"
-	ogType="website"
-	schema={homepageSchema}
-/>
 
 <Hero />
 <TradingRoomsSection />

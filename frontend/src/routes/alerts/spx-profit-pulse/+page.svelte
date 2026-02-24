@@ -3,7 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Pricing State ---
@@ -185,31 +184,6 @@
 
 	const combinedSchema = [productSchema, faqSchema];
 </script>
-
-<SEOHead
-	title="SPX 0DTE Options Alerts | Daily Income Signals & Gamma Scalping"
-	description="Trade SPX 0DTE options with confidence. Real-time SMS alerts, Section 1256 tax benefits, and precise gamma scalping strategies. 78% win rate."
-	canonical="/alerts/spx-profit-pulse"
-	ogType="product"
-	ogImage="/images/og-spx-pulse.jpg"
-	ogImageAlt="SPX Profit Pulse - Real-Time 0DTE Options Alerts"
-	keywords={[
-		'SPX 0DTE alerts',
-		'options trading signals',
-		'SPX signals',
-		'0DTE trading strategy',
-		'same day expiration options',
-		'SPX options alerts',
-		'Section 1256 contracts',
-		'options trading service',
-		'gamma scalping'
-	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={97}
-	productCurrency="USD"
-	productAvailability="in stock"
-/>
 
 <div
 	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"

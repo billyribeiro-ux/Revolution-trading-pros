@@ -8,7 +8,6 @@ import { logger } from '$lib/utils/logger';
 	 */
 	import { preloadData } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
@@ -230,14 +229,6 @@ import { logger } from '$lib/utils/logger';
 		<link rel="prefetch" href="/blog/{post.slug}" />
 	{/each}
 </svelte:head>
-
-<SEOHead
-	title="Blog - Trading Insights & Tutorials"
-	description="Expert trading insights, tutorials, and market analysis from Revolution Trading Pros. Learn day trading, swing trading, options strategies, and more."
-	canonical="/blog"
-	ogType="website"
-	schema={blogSchema}
-/>
 
 <div class="blog-container">
 	<div class="blog-header">

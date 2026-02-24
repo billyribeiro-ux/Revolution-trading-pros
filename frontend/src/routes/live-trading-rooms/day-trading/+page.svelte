@@ -3,7 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Pricing State (Svelte 5 Runes) ---
@@ -193,30 +192,6 @@
 
 	const combinedSchema = [productSchema, faqSchema];
 </script>
-
-<SEOHead
-	title="Live SPX 0DTE Trading Room | Real-Time Voice & Screen Share"
-	description="Join the #1 live options trading room. Watch professional traders execute SPX 0DTE strategies with live voice commentary, 1080p screen sharing, and real-time mentorship."
-	canonical="/live-trading-rooms/day-trading"
-	ogType="product"
-	ogImage="/images/og-live-room.jpg"
-	ogImageAlt="Live SPX Day Trading Room - Trade with Professional Traders"
-	keywords={[
-		'day trading room',
-		'live trading discord',
-		'spx 0dte strategy',
-		'options trading community',
-		'live stock market commentary',
-		'professional trading signals',
-		'learn to trade options',
-		'spx gamma levels'
-	]}
-	schema={combinedSchema}
-	schemaType="Product"
-	productPrice={197}
-	productCurrency="USD"
-	productAvailability="in stock"
-/>
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">

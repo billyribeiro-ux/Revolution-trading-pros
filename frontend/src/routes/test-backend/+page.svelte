@@ -7,7 +7,6 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { IconMail, IconUser, IconCheck } from '$lib/icons';
 
 	// Form state
@@ -160,14 +159,6 @@ import { logger } from '$lib/utils/logger';
 		url: 'https://revolution-trading-pros.pages.dev/test-backend'
 	};
 </script>
-
-<SEOHead
-	title="Backend Test - Forms, Popups & SEO"
-	description="Testing forms, popups, and SEO integration with Laravel backend. Newsletter signup, contact forms, and popup functionality."
-	canonical="/test-backend"
-	ogType="website"
-	schema={pageSchema}
-/>
 
 <div class="test-page">
 	<div class="container">

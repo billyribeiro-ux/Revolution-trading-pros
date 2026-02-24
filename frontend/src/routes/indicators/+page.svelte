@@ -17,7 +17,6 @@
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Data & types extracted for maintainability
@@ -186,27 +185,6 @@
 		};
 	});
 </script>
-
-<SEOHead
-	title="Best Technical Indicators for Day Trading (2026 Guide)"
-	description="Stop guessing. Master the RSI, VWAP, MACD, and Bollinger Bands. Get the exact 'Golden Setup' configurations used by professional traders."
-	canonical="/indicators"
-	ogType="article"
-	ogImage="/og-indicators-guide.webp"
-	ogImageAlt="Technical Analysis Indicators Guide"
-	keywords={[
-		'trading indicators',
-		'technical analysis',
-		'RSI strategy',
-		'VWAP trading',
-		'MACD divergence',
-		'day trading tools',
-		'best indicators for day trading',
-		'chart reading',
-		'golden setup'
-	]}
-	schema={indicatorsSchema['@graph']}
-/>
 
 <div class="indicators-page antialiased">
 	<div

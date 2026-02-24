@@ -23,7 +23,6 @@
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
@@ -218,13 +217,6 @@
 		'VIX -4.5%'
 	];
 </script>
-
-<SEOHead
-	title="Revolution Trading Pros | The #1 Supportive Live Trading Community"
-	description="Join a professional trading floor that genuinely cares. Real trades, real-time voice guidance, and institutional data without the hype. Established 2018."
-	canonical="/"
-	schema={[organizationSchema, faqSchema]}
-/>
 
 <svelte:head>
 	<style>

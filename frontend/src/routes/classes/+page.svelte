@@ -8,7 +8,6 @@ import { logger } from '$lib/utils/logger';
 
 	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	interface Course {
@@ -81,21 +80,6 @@ import { logger } from '$lib/utils/logger';
 		}
 	});
 </script>
-
-<SEOHead
-	title="Trading Classes & Courses"
-	description="Browse our trading courses and classes. Learn from professional traders and improve your trading skills with beginner to advanced programs."
-	canonical="/classes"
-	ogType="website"
-	schemaType="CollectionPage"
-	keywords={[
-		'trading classes',
-		'trading courses',
-		'learn to trade',
-		'stock market education',
-		'day trading course'
-	]}
-/>
 
 <div class="courses-page">
 	<header class="page-header">

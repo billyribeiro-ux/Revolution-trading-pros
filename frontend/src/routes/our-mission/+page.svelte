@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
@@ -304,28 +303,6 @@
 		'We are fiduciaries to our own education.'
 	];
 </script>
-
-<SEOHead
-	title="Our Mission | The Institutional Bridge"
-	description="Dismantling the retail trader stereotype. We bridge the gap between gambling and institutional risk management through data, discipline, and transparency. Join the 1% of traders who treat this as a business."
-	canonical="/our-mission"
-	ogType="website"
-	ogImage="/og-image.webp"
-	ogImageAlt="Revolution Trading Pros Mission - Building Trading Careers"
-	keywords={[
-		'trading mission',
-		'institutional trading',
-		'retail trading education',
-		'auction market theory',
-		'risk management',
-		'trading psychology',
-		'order flow',
-		'trading career',
-		'professional trading'
-	]}
-	schema={jsonLd['@graph']}
-	author="Billy Ribeiro"
-/>
 
 <div class="bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white">
 	<div class="fixed inset-0 z-0 pointer-events-none">

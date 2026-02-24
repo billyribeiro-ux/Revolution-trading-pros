@@ -3,7 +3,6 @@
 -->
 
 <script lang="ts">
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Resources page structured data
@@ -55,28 +54,6 @@
 		}
 	];
 </script>
-
-<SEOHead
-	title="Free Trading Resources & Education Tools"
-	description="Free trading resources, guides, calculators, and tools. Start your trading education with our comprehensive resource library. Position size calculators, trading journal templates, and more."
-	canonical="/resources"
-	ogType="website"
-	ogImage="/og-image.webp"
-	ogImageAlt="Revolution Trading Pros Free Trading Resources"
-	keywords={[
-		'free trading resources',
-		'trading guides',
-		'trading calculators',
-		'position size calculator',
-		'trading journal',
-		'trading education',
-		'beginner trading',
-		'trading tools',
-		'market analysis',
-		'trading psychology'
-	]}
-	schema={resourcesSchema}
-/>
 
 <!-- Hero - 2026 Mobile-First Responsive -->
 <section

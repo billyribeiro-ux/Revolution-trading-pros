@@ -14,7 +14,6 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);
@@ -93,8 +92,6 @@ import { logger } from '$lib/utils/logger';
 		}
 	}
 </script>
-
-<SEOHead title="{config.title} - Blog" description={config.description} noindex />
 
 <div class="blog-error-container">
 	<div class="error-content">

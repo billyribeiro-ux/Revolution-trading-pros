@@ -11,7 +11,6 @@
 	 *
 	 * @version 3.0.0 - Complete Order Details Display
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
 	import type { OrderDetail, OrderItem } from './types';
 
@@ -113,12 +112,6 @@
 		}
 	];
 </script>
-
-<SEOHead
-	title="Thanks for Your Purchase"
-	description="Welcome to Revolution Trading Pros! You've taken the first step towards strategic trading."
-	noindex
-/>
 
 <!-- Breadcrumbs -->
 <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb">
