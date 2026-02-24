@@ -66,15 +66,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Quickstart To Precision Trading - Revolution Trading Pros</title>
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Quickstart To Precision Trading" />
-	<meta property="og:site_name" content="Simpler Trading" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-</svelte:head>
-
 <!-- Breadcrumbs -->
 <DashboardBreadcrumbs />
 

@@ -52,14 +52,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Tax Loss Harvest - Simpler Trading</title>
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Tax Loss Harvest" />
-	<meta property="og:site_name" content="Simpler Trading" />
-</svelte:head>
-
 <div class="class-page-wrapper">
 	<div class="class-page-container">
 		<ClassHeaderSection title="Tax Loss Harvest" />

@@ -29,15 +29,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{data.displayDate} | {data.roomName} Archives | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Watch recorded trading sessions from {data.displayDate} in the {data.roomName}."
-	/>
-	<meta name="robots" content="noindex, nofollow" />
-</svelte:head>
-
 <!-- Breadcrumb Navigation -->
 <nav class="breadcrumbs" aria-label="Breadcrumb">
 	<div class="container">

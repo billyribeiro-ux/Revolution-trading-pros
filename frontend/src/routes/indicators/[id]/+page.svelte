@@ -177,14 +177,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{indicator.name} - Simpler Trading</title>
-	<meta
-		name="description"
-		content="Download and install {indicator.name} for your trading platform"
-	/>
-</svelte:head>
-
 <!-- Breadcrumbs - Auto-generated from path -->
 <DashboardBreadcrumbs />
 

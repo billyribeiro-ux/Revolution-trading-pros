@@ -137,10 +137,6 @@ import { logger } from '$lib/utils/logger';
 
 <svelte:window onkeydown={handleKeyDown} />
 
-<svelte:head>
-	<title>Edit: {title || 'Untitled'}</title>
-</svelte:head>
-
 <div class="editor-layout">
 	<!-- Toolbar -->
 	<header class="editor-toolbar">

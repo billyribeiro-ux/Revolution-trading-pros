@@ -257,10 +257,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Advanced Popup Features Demo | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="demo-page">
 	<div class="demo-container">
 		<!-- Header -->

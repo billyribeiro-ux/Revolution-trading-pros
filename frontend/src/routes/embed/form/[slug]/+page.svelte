@@ -57,11 +57,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{form?.title || 'Form'}</title>
-	<meta name="robots" content="noindex, nofollow" />
-</svelte:head>
-
 <div class="embed-container">
 	{#if loading}
 		<div class="loading-state">

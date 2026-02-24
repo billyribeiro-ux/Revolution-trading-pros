@@ -94,11 +94,6 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{$t.cookiePolicyTitle} | Revolution Trading Pros</title>
-	<meta name="description" content={$t.cookiePolicyIntro} />
-</svelte:head>
-
 <div class="cookie-policy">
 	<div class="container">
 		<!-- Header -->

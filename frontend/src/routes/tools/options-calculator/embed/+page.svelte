@@ -30,11 +30,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Options Calculator | Revolution Trading Pros</title>
-	<meta name="robots" content="noindex" />
-</svelte:head>
-
 <div
 	class="min-h-screen flex flex-col"
 	style="background: var(--calc-bg); color: var(--calc-text);"

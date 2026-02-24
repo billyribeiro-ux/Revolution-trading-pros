@@ -88,32 +88,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{seo?.title || classData.title}</title>
-	<meta name="description" content={seo?.description || classData.description} />
-	<link
-		rel="canonical"
-		href={seo?.canonical || `https://revolution-trading-pros.com/classes/${classData.slug}`}
-	/>
-
-	<!-- Open Graph -->
-	<meta property="og:title" content={seo?.title || classData.title} />
-	<meta property="og:description" content={seo?.description || classData.description} />
-	<meta
-		property="og:url"
-		content={seo?.canonical || `https://revolution-trading-pros.com/classes/${classData.slug}`}
-	/>
-	<meta property="og:type" content={seo?.ogType || 'article'} />
-	{#if seo?.ogImage}
-		<meta property="og:image" content={seo.ogImage} />
-	{/if}
-
-	<!-- Twitter Card -->
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={seo?.title || classData.title} />
-	<meta name="twitter:description" content={seo?.description || classData.description} />
-</svelte:head>
-
 <!-- Breadcrumbs -->
 <DashboardBreadcrumbs />
 

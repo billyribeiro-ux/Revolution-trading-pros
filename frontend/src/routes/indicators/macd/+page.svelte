@@ -35,26 +35,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>MACD - Moving Average Convergence Divergence | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master the MACD indicator to identify trend changes and momentum shifts with this powerful trend-following tool."
-	/>
-	<meta property="og:title" content="MACD Indicator | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master the MACD indicator to identify trend changes and momentum shifts with this powerful trend-following tool."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="MACD Indicator | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master the MACD indicator to identify trend changes and momentum shifts with this powerful trend-following tool."
-	/>
-</svelte:head>
-
 <div class="indicator-page">
 	<section class="hero-section" class:visible={heroVisible}>
 		<div class="hero-background">

@@ -56,26 +56,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>RSI - Relative Strength Index | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	/>
-	<meta property="og:title" content="RSI - Relative Strength Index | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="RSI Indicator | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master the RSI indicator to identify overbought/oversold conditions and reversal points with precision."
-	/>
-</svelte:head>
-
 <div class="indicator-page">
 	<!-- Hero Section -->
 	<section class="hero-section" class:visible={heroVisible}>

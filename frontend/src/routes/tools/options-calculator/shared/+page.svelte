@@ -5,18 +5,6 @@
 	const ogMeta = generateOGMeta();
 </script>
 
-<svelte:head>
-	<title>Shared Options Analysis | Revolution Trading Pros</title>
-	<meta name="description" content={ogMeta['og:description']} />
-	<meta property="og:title" content="Shared Options Analysis | Revolution Trading Pros" />
-	<meta property="og:description" content={ogMeta['og:description']} />
-	<meta property="og:type" content="website" />
-	<meta property="og:image" content={ogMeta['og:image']} />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Shared Options Analysis" />
-	<meta name="twitter:description" content={ogMeta['og:description']} />
-</svelte:head>
-
 <!-- Shared Banner -->
 <div
 	class="w-full py-2.5 px-4 text-center text-xs"

@@ -138,69 +138,6 @@
 	}
 </script>
 
-<svelte:head>
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     PRIMARY META TAGS - Google Dec 2025 Standards
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<title>{seo.title}</title>
-	<meta name="description" content={seo.description} />
-	<meta name="keywords" content={seo.keywords.join(', ')} />
-	<link rel="canonical" href={seo.canonical} />
-
-	<!-- Robots Meta -->
-	<meta
-		name="robots"
-		content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-	/>
-	<meta name="googlebot" content="index, follow" />
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     OPEN GRAPH - Social Media Sharing
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<meta property="og:type" content={seo.ogType} />
-	<meta property="og:title" content={seo.title} />
-	<meta property="og:description" content={seo.description} />
-	<meta property="og:url" content={seo.canonical} />
-	<meta property="og:image" content={seo.ogImage} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Revolution Trading Pros - Trading Scanners" />
-	<meta property="og:site_name" content="Revolution Trading Pros" />
-	<meta property="og:locale" content="en_US" />
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     TWITTER CARD - Twitter Sharing
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<meta name="twitter:card" content={seo.twitterCard} />
-	<meta name="twitter:title" content={seo.title} />
-	<meta name="twitter:description" content={seo.description} />
-	<meta name="twitter:image" content={seo.ogImage} />
-	<meta name="twitter:image:alt" content="Revolution Trading Pros - Trading Scanners" />
-	<meta name="twitter:site" content="@revolutiontrading" />
-	<meta name="twitter:creator" content="@revolutiontrading" />
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     STRUCTURED DATA - JSON-LD for Google Rich Snippets
-	     Google Dec 2025: Critical for product listings
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	{@html '<scr' +
-		'ipt type="application/ld+json">' +
-		JSON.stringify(structuredData) +
-		'</scr' +
-		'ipt>'}
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     PERFORMANCE HINTS - Core Web Vitals Optimization
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
-
-	<!-- Preload critical assets -->
-	<link rel="preload" as="image" href="/revolution-trading-pros.png" fetchpriority="high" />
-</svelte:head>
-
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SEMANTIC HTML5 - Proper heading hierarchy for SEO
      Google Dec 2025: Semantic structure is a ranking factor

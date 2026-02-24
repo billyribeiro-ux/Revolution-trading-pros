@@ -112,16 +112,6 @@
 	});
 </script>
 
-<svelte:head>
-	{#if currentVideo}
-		<title>{currentVideo.title} | Day Trading Room | Revolution Trading Pros</title>
-		<meta name="description" content={currentVideo.excerpt} />
-		<meta name="robots" content="index, follow" />
-	{:else}
-		<title>Video Not Found | Revolution Trading Pros</title>
-	{/if}
-</svelte:head>
-
 {#if loading}
 	<div class="loading-container">
 		<div class="loading">

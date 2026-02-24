@@ -126,11 +126,6 @@ import { logger } from '$lib/utils/logger';
 	}
 </script>
 
-<svelte:head>
-	<title>{product.name} - $119/month | Revolution Trading Pros</title>
-	<meta name="description" content={product.description} />
-</svelte:head>
-
 <div class="product-page">
 	<!-- Hero Section -->
 	<section class="hero">

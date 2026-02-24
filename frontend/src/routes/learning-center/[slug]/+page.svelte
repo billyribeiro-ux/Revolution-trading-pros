@@ -221,16 +221,6 @@
 	}
 </script>
 
-<svelte:head>
-	{#if resource}
-		<title>{resource.title} - Learning Center | Revolution Trading Pros</title>
-		<meta name="description" content={resource.excerpt} />
-	{:else}
-		<title>Learning Center | Revolution Trading Pros</title>
-	{/if}
-	<meta name="robots" content="noindex, nofollow" />
-</svelte:head>
-
 <!-- Breadcrumbs -->
 <nav class="breadcrumbs" aria-label="Breadcrumb">
 	<div class="breadcrumbs-inner">
