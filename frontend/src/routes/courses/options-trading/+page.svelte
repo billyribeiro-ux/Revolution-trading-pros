@@ -31,26 +31,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Options Trading Fundamentals | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master options trading with comprehensive training on strategies, Greeks, volatility analysis, and institutional-grade risk management."
-	/>
-	<meta property="og:title" content="Options Trading Fundamentals | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master options trading with comprehensive training on strategies, Greeks, volatility analysis, and institutional-grade risk management."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Options Trading Fundamentals | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master options trading with comprehensive training on strategies, Greeks, volatility analysis, and institutional-grade risk management."
-	/>
-</svelte:head>
-
 <div class="course-page">
 	<section class="hero-section" class:visible={heroVisible}>
 		<div class="hero-background">

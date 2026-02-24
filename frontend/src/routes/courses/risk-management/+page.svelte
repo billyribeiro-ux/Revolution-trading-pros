@@ -31,26 +31,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Risk Management Mastery | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Learn professional risk management techniques used by institutional traders to preserve capital and maximize long-term profitability."
-	/>
-	<meta property="og:title" content="Risk Management Mastery | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Learn professional risk management techniques used by institutional traders to preserve capital and maximize long-term profitability."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Risk Management Mastery | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Learn professional risk management techniques used by institutional traders to preserve capital and maximize long-term profitability."
-	/>
-</svelte:head>
-
 <div class="course-page">
 	<section class="hero-section" class:visible={heroVisible}>
 		<div class="hero-background">

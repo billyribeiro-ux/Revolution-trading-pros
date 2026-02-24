@@ -416,7 +416,7 @@ export const load: PageServerLoad = async ({
 		benefits: benefitsData,
 		symbols: tickerSymbols,
 
-		// SEO metadata
+		// Legacy SEO metadata (used by page template)
 		seo: seoMetadata,
 		structuredData,
 

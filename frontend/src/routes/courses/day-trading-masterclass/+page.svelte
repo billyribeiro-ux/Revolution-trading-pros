@@ -215,26 +215,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Day Trading Masterclass | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master day trading with institutional-grade strategies, real-time execution tactics, and professional risk management."
-	/>
-	<meta property="og:title" content="Day Trading Masterclass | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master day trading with institutional-grade strategies, real-time execution tactics, and professional risk management."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Day Trading Masterclass | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master day trading with institutional-grade strategies, real-time execution tactics, and professional risk management."
-	/>
-</svelte:head>
-
 <div class="course-page">
 	<!-- Hero Section -->
 	<section class="hero-section" class:visible={heroVisible}>

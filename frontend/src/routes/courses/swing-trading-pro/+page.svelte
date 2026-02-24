@@ -153,26 +153,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Swing Trading Pro | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master swing trading with professional strategies to capture multi-day moves and optimal risk-reward setups."
-	/>
-	<meta property="og:title" content="Swing Trading Pro | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master swing trading with professional strategies to capture multi-day moves and optimal risk-reward setups."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Swing Trading Pro | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master swing trading with professional strategies to capture multi-day moves and optimal risk-reward setups."
-	/>
-</svelte:head>
-
 <div class="course-page">
 	<!-- Hero Section -->
 	<section class="hero-section" class:visible={heroVisible}>
