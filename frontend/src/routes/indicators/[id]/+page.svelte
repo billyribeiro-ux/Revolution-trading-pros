@@ -177,6 +177,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{indicator.name} | Revolution Trading Pros</title>
+</svelte:head>
+
 <!-- Breadcrumbs - Auto-generated from path -->
 <DashboardBreadcrumbs />
 
