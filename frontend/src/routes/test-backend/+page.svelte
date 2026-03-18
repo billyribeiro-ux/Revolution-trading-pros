@@ -151,7 +151,7 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	// SEO Schema
-	const pageSchema = {
+	const _pageSchema = {
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
 		name: 'Backend Test Page',

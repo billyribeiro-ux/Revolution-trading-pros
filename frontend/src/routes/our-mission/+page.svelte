@@ -115,7 +115,7 @@
 
 	// --- SEO SCHEMA (JSON-LD) ---
 	// Comprehensive Schema for Institutional Authority
-	const jsonLd = {
+	const _jsonLd = {
 		'@context': 'https://schema.org',
 		'@graph': [
 			{
@@ -538,7 +538,7 @@
 						<div>
 							<label
 								for="sim-risk"
-								class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-4 block flex justify-between"
+								class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-4 flex justify-between"
 							>
 								<span>Risk Per Trade (%)</span>
 								<span class={riskColor}>{simRisk}%</span>
@@ -844,7 +844,7 @@
 								{#if openSyllabus === i}
 									<div
 										transition:slide
-										class="px-6 pb-8 pl-[5.5rem] text-slate-400 leading-relaxed border-t border-white/5 pt-6 text-sm"
+										class="px-6 pb-8 pl-22 text-slate-400 leading-relaxed border-t border-white/5 pt-6 text-sm"
 									>
 										{module.desc}
 										<div class="mt-4 flex gap-4">

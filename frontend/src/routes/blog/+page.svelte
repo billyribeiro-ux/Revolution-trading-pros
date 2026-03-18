@@ -206,7 +206,7 @@ import { logger } from '$lib/utils/logger';
 	});
 
 	// Structured data for blog list
-	const blogSchema = {
+	const _blogSchema = {
 		'@context': 'https://schema.org',
 		'@type': 'Blog',
 		name: 'Revolution Trading Pros Blog',

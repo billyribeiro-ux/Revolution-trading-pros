@@ -2,7 +2,7 @@
 	import { generateOGMeta } from '$lib/options-calculator/utils/seo.js';
 	import Calculator from '$lib/options-calculator/components/Calculator.svelte';
 
-	const ogMeta = generateOGMeta();
+	const _ogMeta = generateOGMeta();
 </script>
 
 <!-- Shared Banner -->

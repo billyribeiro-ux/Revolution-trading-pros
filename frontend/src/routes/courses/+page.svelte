@@ -346,7 +346,7 @@
 	});
 
 	// Schema for SEO
-	const schema = {
+	const _schema = {
 		'@context': 'https://schema.org',
 		'@type': 'ItemList',
 		'@id': 'https://revolution-trading-pros.pages.dev/courses/#courselist',
@@ -388,7 +388,7 @@
 			class="absolute inset-0 z-0 bg-linear-to-b from-black/0 via-black/50 to-black pointer-events-none"
 		></div>
 		<div
-			class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"
+			class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"
 		></div>
 
 		<div class="relative z-10 container mx-auto px-6 flex flex-col items-center text-center">

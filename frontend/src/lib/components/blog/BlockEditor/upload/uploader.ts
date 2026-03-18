@@ -9,7 +9,6 @@
 
 import { API_BASE_URL, CDN_URL } from '$lib/api/config';
 import { getAuthToken } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
 
 // =============================================================================
 // Types

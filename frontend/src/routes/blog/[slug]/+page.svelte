@@ -145,7 +145,7 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	// Derived SEO values - Svelte 5 runes
-	let articleSchema = $derived(
+	let _articleSchema = $derived(
 		post &&
 			(post.schema_markup || {
 				'@context': 'https://schema.org',
@@ -176,12 +176,9 @@ import { logger } from '$lib/utils/logger';
 			})
 	);
 
-	let seoTitle = $derived(post && (post.meta_title || post.title));
-	let seoDescription = $derived(post && (post.meta_description || post.excerpt || ''));
+	let _seoTitle = $derived(post && (post.meta_title || post.title));
+	let _seoDescription = $derived(post && (post.meta_description || post.excerpt || ''));
 </script>
-
-{#if post}
-	{/if}
 
 <!-- Reading Progress Indicator -->
 <ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />

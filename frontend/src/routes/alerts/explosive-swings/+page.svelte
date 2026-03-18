@@ -195,7 +195,7 @@
 	};
 
 	// Schema for SEOHead
-	const combinedSchema = schemaOrg['@graph'];
+	const _combinedSchema = schemaOrg['@graph'];
 </script>
 
 <div
@@ -335,7 +335,7 @@
 			</div>
 
 			<div
-				class="hidden lg:block relative [perspective:1000px]"
+				class="hidden lg:block relative perspective-[1000px]"
 				style="contain: layout style paint;"
 			>
 				<div
@@ -343,7 +343,7 @@
 				></div>
 
 				<div
-					class="relative bg-slate-900/90 backdrop-blur-md border border-slate-700 p-8 rounded-3xl shadow-2xl transform rotate-y-[-12deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out will-change-transform"
+					class="relative bg-slate-900/90 backdrop-blur-md border border-slate-700 p-8 rounded-3xl shadow-2xl transform -rotate-y-12 rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out will-change-transform"
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>

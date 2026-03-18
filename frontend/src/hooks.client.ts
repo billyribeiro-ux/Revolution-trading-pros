@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * SvelteKit Client Hooks - Enterprise Error Tracking & Performance Monitoring
  *

@@ -182,7 +182,7 @@
 		}))
 	};
 
-	const combinedSchema = [productSchema, faqSchema];
+	const _combinedSchema = [productSchema, faqSchema];
 </script>
 
 <div

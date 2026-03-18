@@ -25,7 +25,7 @@ import { logger } from '$lib/utils/logger';
 	let rooms = $derived(data.rooms);
 	let benefits = $derived(data.benefits);
 	let symbols = $derived(data.symbols);
-	let seo = $derived(data.seo);
+	let _seo = $derived(data.seo);
 	let tickerItems = $derived([...symbols, ...symbols, ...symbols, ...symbols]);
 
 	/**

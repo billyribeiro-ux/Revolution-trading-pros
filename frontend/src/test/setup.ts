@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';

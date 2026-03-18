@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Request Tracing - Apple ICT9+ Observability
  * ═══════════════════════════════════════════════════════════════════════════════

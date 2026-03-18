@@ -182,7 +182,7 @@
 	];
 
 	// Schema Logic
-	const organizationSchema = {
+	const _organizationSchema = {
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
 		name: 'Revolution Trading Pros',
@@ -192,7 +192,7 @@
 		sameAs: ['https://twitter.com/revolutiontradingpros'] // Example
 	};
 
-	const faqSchema = {
+	const _faqSchema = {
 		'@context': 'https://schema.org',
 		'@type': 'FAQPage',
 		mainEntity: faqs.map((f) => ({
@@ -311,7 +311,7 @@
 >
 	<div class="fixed inset-0 pointer-events-none z-0">
 		<div
-			class="absolute inset-0 opacity-[0.04] mix-blend-overlay z-[2]"
+			class="absolute inset-0 opacity-[0.04] mix-blend-overlay z-2"
 			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"
 		></div>
 
@@ -457,7 +457,7 @@
 					class="order-2 lg:order-1 relative group perspective-1000"
 				>
 					<div
-						class="relative w-full aspect-[4/3] bg-[#050505] border border-white/10 rounded-lg overflow-hidden shadow-2xl transform transition-transform duration-1000 group-hover:rotate-y-3 group-hover:rotate-x-2 preserve-3d"
+						class="relative w-full aspect-4/3 bg-[#050505] border border-white/10 rounded-lg overflow-hidden shadow-2xl transform transition-transform duration-1000 group-hover:rotate-y-3 group-hover:rotate-x-2 preserve-3d"
 					>
 						<div
 							class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[3rem_3rem]"
@@ -558,7 +558,7 @@
 					<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
 						<div>
 							<span
-								class="text-amber-600 font-mono text-[10px] tracking-[0.3em] uppercase mb-4 block flex items-center gap-2"
+								class="text-amber-600 font-mono text-[10px] tracking-[0.3em] uppercase mb-4 flex items-center gap-2"
 							>
 								<span class="w-8 h-px bg-amber-600"></span> The Ecosystem
 							</span>
@@ -580,7 +580,7 @@
 								class="group interactive-card bg-[#050505] border border-white/10 p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
 							>
 								<div
-									class="absolute -top-6 -right-6 text-white opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-700 pointer-events-none transform group-hover:scale-110 group-hover:-rotate-12 transition-transform"
+									class="absolute -top-6 -right-6 text-white opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 pointer-events-none transform group-hover:scale-110 group-hover:-rotate-12"
 								>
 									<Icon size={200} />
 								</div>

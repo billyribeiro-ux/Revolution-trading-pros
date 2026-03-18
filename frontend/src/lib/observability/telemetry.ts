@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Enterprise Observability - OpenTelemetry Integration
  * Google L7+ Principal Engineer Level

@@ -15,7 +15,7 @@
 	let email = $state('');
 	let submitStatus = $state<'idle' | 'submitting' | 'success' | 'error'>('idle');
 	let errorMessage = $state('');
-	let mounted = $state(false);
+	let _mounted = $state(false);
 	let showContent = $state(false);
 	let showHeadline = $state(false);
 	let showSubtext = $state(false);
@@ -380,7 +380,7 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 	onMount(() => {
-		mounted = true;
+		_mounted = true;
 
 		// Staggered content reveal (cinematic)
 		setTimeout(() => (showContent = true), 300);
@@ -432,10 +432,7 @@
 		}
 
 		let animFrame: number;
-		let frameCount = 0;
-
 		function animate() {
-			frameCount++;
 			scrollOffset += scrollSpeed;
 
 			// Regenerate candles when scrolled past

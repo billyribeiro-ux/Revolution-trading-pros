@@ -190,7 +190,7 @@
 		}))
 	};
 
-	const combinedSchema = [productSchema, faqSchema];
+	const _combinedSchema = [productSchema, faqSchema];
 </script>
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">

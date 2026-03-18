@@ -1,4 +1,3 @@
-import { logger } from '$lib/utils/logger';
 /**
  * Media Embed Detector - URL Parsing and Embed Generation
  * ========================================================

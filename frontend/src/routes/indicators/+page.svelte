@@ -20,7 +20,7 @@
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Data & types extracted for maintainability
-	import { indicators, goldenSetup, faqs, categories, indicatorsSchema } from './data';
+	import { indicators, goldenSetup, faqs, categories, indicatorsSchema as _indicatorsSchema } from './data';
 
 	// --- State Management (Svelte 5 Runes) ---
 	let heroVisible = $state(false);

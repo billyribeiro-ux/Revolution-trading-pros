@@ -1,4 +1,3 @@
-import { logger } from '$lib/utils/logger';
 /**
  * Apple-Style Animations Library
  *

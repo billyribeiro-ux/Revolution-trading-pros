@@ -158,7 +158,7 @@ describe('GoogleAnalytics Adapter', () => {
 			const el = originalCreateElement(tag);
 			if (tag === 'script') {
 				setTimeout(() => {
-					if (el.onload) (el.onload as Function)(new Event('load'));
+					if (el.onload) (el.onload as (...args: unknown[]) => void)(new Event('load'));
 				}, 0);
 			}
 			return el;

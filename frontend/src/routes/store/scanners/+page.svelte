@@ -54,7 +54,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Svelte 5 $derived.by() for complex computations - Apple ICT 11+ pattern
-	const structuredData = $derived.by(() => ({
+	const _structuredData = $derived.by(() => ({
 		'@context': 'https://schema.org',
 		'@graph': [
 			// BreadcrumbList Schema

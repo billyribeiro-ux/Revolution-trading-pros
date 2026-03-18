@@ -6,7 +6,7 @@
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Resources page structured data
-	const resourcesSchema = [
+	const _resourcesSchema = [
 		{
 			'@context': 'https://schema.org',
 			'@type': 'CollectionPage',

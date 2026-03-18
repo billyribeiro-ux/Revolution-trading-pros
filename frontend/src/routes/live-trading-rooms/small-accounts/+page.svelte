@@ -185,7 +185,7 @@
 		}))
 	};
 
-	const combinedSchema = [productSchema, faqSchema];
+	const _combinedSchema = [productSchema, faqSchema];
 </script>
 
 <div class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white">
@@ -867,7 +867,7 @@
 					Secure checkout powered by Stripe. Cancel anytime.
 				</p>
 				<div
-					class="flex items-center justify-center gap-2 text-rtp-muted text-sm bg-rtp-surface inline-flex px-4 py-2 rounded-full border border-rtp-border"
+					class="inline-flex items-center justify-center gap-2 text-rtp-muted text-sm bg-rtp-surface px-4 py-2 rounded-full border border-rtp-border"
 				>
 					<svg
 						class="w-4 h-4 text-emerald-500"

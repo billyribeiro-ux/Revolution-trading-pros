@@ -670,7 +670,7 @@ class FormsService {
 			this.wsConnection.onclose = () => {
 				// Don't auto-reconnect - WebSocket is optional
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Silently handle - WebSocket is optional
 		}
 	}
@@ -841,7 +841,7 @@ class FormsService {
 				body: JSON.stringify({ events: batch }),
 				skipCache: true
 			});
-		} catch (error) {
+		} catch (_error) {
 			// Re-queue on failure
 			this.analyticsQueue.unshift(...batch);
 		}

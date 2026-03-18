@@ -51,7 +51,7 @@
 
 	let { data }: Props = $props();
 	let classData = $derived(data.classData);
-	let seo = $derived(data.seo);
+	let _seo = $derived(data.seo);
 	let slug = $derived(data.slug);
 	let mounted = $state(false);
 

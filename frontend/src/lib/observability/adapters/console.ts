@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Console Analytics Adapter - Development & Debug Mode
  * ═══════════════════════════════════════════════════════════════════════════

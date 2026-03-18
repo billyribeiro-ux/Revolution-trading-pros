@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Revolution Trading Pros - Performance Metrics Reporter
  * ===============================================================================

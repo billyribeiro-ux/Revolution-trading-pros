@@ -1,4 +1,3 @@
-import { logger } from '$lib/utils/logger';
 /**
  * Keyboard Shortcuts System for Content Editor
  *
