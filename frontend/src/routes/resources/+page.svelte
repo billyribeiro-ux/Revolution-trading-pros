@@ -57,7 +57,7 @@
 
 <!-- Hero - 2026 Mobile-First Responsive -->
 <section
-	class="resources-hero relative bg-gradient-to-br from-rtp-blue via-rtp-primary to-rtp-emerald text-white"
+	class="resources-hero relative bg-linear-to-br from-rtp-blue via-rtp-primary to-rtp-emerald text-white"
 >
 	<div class="absolute inset-0 bg-black/20"></div>
 	<div class="resources-hero__content relative max-w-7xl mx-auto text-center">
@@ -97,7 +97,7 @@
 				<ul class="resource-card__list text-rtp-muted">
 					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="resource-card__check text-rtp-emerald flex-shrink-0"
+							class="resource-card__check text-rtp-emerald shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -111,7 +111,7 @@
 					</li>
 					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="resource-card__check text-rtp-emerald flex-shrink-0"
+							class="resource-card__check text-rtp-emerald shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -125,7 +125,7 @@
 					</li>
 					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="resource-card__check text-rtp-emerald flex-shrink-0"
+							class="resource-card__check text-rtp-emerald shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -139,7 +139,7 @@
 					</li>
 					<li class="resource-card__item flex items-start gap-2">
 						<svg
-							class="resource-card__check text-rtp-emerald flex-shrink-0"
+							class="resource-card__check text-rtp-emerald shrink-0"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -179,7 +179,7 @@
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -193,7 +193,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -207,7 +207,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -221,7 +221,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -257,7 +257,7 @@
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-indigo flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-indigo shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -271,7 +271,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-indigo flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-indigo shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -285,7 +285,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-indigo flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-indigo shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -299,7 +299,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-indigo flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-indigo shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -330,7 +330,7 @@
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-blue flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-blue shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -344,7 +344,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-blue flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-blue shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -358,7 +358,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-blue flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-blue shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -372,7 +372,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-blue flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-blue shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -408,7 +408,7 @@
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-emerald shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -422,7 +422,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-emerald shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -436,7 +436,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-emerald shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -450,7 +450,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-emerald flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-emerald shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -486,7 +486,7 @@
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -500,7 +500,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -514,7 +514,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -528,7 +528,7 @@
 					</li>
 					<li class="flex items-start gap-2">
 						<svg
-							class="w-5 h-5 text-rtp-primary flex-shrink-0 mt-0.5"
+							class="w-5 h-5 text-rtp-primary shrink-0 mt-0.5"
 							fill="currentColor"
 							viewBox="0 0 20 20"
 						>
@@ -547,7 +547,7 @@
 </section>
 
 <!-- CTA - 2026 Mobile-First Responsive -->
-<section class="resources-cta bg-gradient-to-br from-rtp-blue to-rtp-primary text-white">
+<section class="resources-cta bg-linear-to-br from-rtp-blue to-rtp-primary text-white">
 	<div class="resources-cta__content max-w-4xl mx-auto text-center">
 		<h2 class="resources-cta__title font-heading font-bold">Ready to Take the Next Step?</h2>
 		<p class="resources-cta__text text-white/90 max-w-2xl mx-auto">

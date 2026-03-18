@@ -56,7 +56,7 @@
 		>
 			<!-- Icon -->
 			<span
-				class="flex-shrink-0"
+				class="shrink-0"
 				class:motion-safe:animate-spin={toast.type === 'loading'}
 				aria-hidden="true"
 			>
@@ -71,7 +71,7 @@
 				<button
 					type="button"
 					onclick={() => removeToast(toast.id)}
-					class="flex-shrink-0 text-gray-500 hover:text-gray-700 transition-colors
+					class="shrink-0 text-gray-500 hover:text-gray-700 transition-colors
 						rounded p-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 					aria-label="Dismiss notification"
 				>

@@ -350,7 +350,7 @@
 				We Don't Sell Dreams.<br />
 				We Build
 				<span
-					class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary via-blue-400 to-indigo-400"
+					class="text-transparent bg-clip-text bg-linear-to-r from-rtp-primary via-blue-400 to-indigo-400"
 					>Careers.</span
 				>
 			</h1>
@@ -365,32 +365,32 @@
 			</div>
 
 			<div data-gsap class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-white font-mono">90%</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
 						Retail Failure Rate
 					</div>
 				</div>
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-rtp-primary font-mono">10+</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
 						Years Experience
 					</div>
 				</div>
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-emerald-400 font-mono">100%</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">
 						Verified Audits
 					</div>
 				</div>
-				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
+				<div class="bg-white/2 border border-white/10 p-6 rounded-xl backdrop-blur-sm">
 					<div class="text-3xl font-bold text-white font-mono">$0</div>
 					<div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">Hidden Fees</div>
 				</div>
 			</div>
 		</section>
 
-		<section class="py-32 border-y border-white/5 bg-white/[0.01]">
+		<section class="py-32 border-y border-white/5 bg-white/1">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="grid lg:grid-cols-12 gap-16 items-center">
 					<div class="lg:col-span-5" data-gsap>
@@ -438,7 +438,7 @@
 							class="relative bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
 						>
 							<div
-								class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-emerald-500"
+								class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-red-500 to-emerald-500"
 							></div>
 							<div class="overflow-x-auto">
 								<table class="w-full text-left border-collapse">
@@ -446,7 +446,7 @@
 										<tr
 											class="text-xs uppercase tracking-widest border-b border-white/10 text-slate-500"
 										>
-											<th class="p-6 font-medium bg-white/[0.02]">Metric</th>
+											<th class="p-6 font-medium bg-white/2">Metric</th>
 											<th class="p-6 font-medium text-red-400 bg-red-900/10 border-l border-white/5"
 												>The Amateur</th
 											>
@@ -593,21 +593,21 @@
 
 					<div class="md:col-span-8 flex flex-col justify-center border-l border-white/5 md:pl-12">
 						<div class="grid grid-cols-2 gap-6 mb-8">
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
+							<div class="p-4 bg-white/2 rounded-lg border border-white/5">
 								<div class="text-xs text-slate-500 uppercase mb-1">Dollar Risk (1R)</div>
 								<div class="text-2xl text-white font-mono font-bold">${riskAmount}</div>
 							</div>
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
+							<div class="p-4 bg-white/2 rounded-lg border border-white/5">
 								<div class="text-xs text-slate-500 uppercase mb-1">Potential Reward</div>
 								<div class="text-2xl text-emerald-400 font-mono font-bold">${winAmount}</div>
 							</div>
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
+							<div class="p-4 bg-white/2 rounded-lg border border-white/5">
 								<div class="text-xs text-slate-500 uppercase mb-1">Trades to Double</div>
 								<div class="text-2xl text-rtp-primary font-mono font-bold">
 									{tradesToDouble > 0 ? tradesToDouble : '∞'}
 								</div>
 							</div>
-							<div class="p-4 bg-white/[0.02] rounded-lg border border-white/5">
+							<div class="p-4 bg-white/2 rounded-lg border border-white/5">
 								<div class="text-xs text-slate-500 uppercase mb-1">Expectancy (per trade)</div>
 								<div
 									class="text-2xl font-mono font-bold {expectedValue > 0
@@ -691,7 +691,7 @@
 									{@html pillar.icon}
 								</div>
 								<h3 class="text-2xl font-bold text-white mb-4">{pillar.title}</h3>
-								<p class="text-slate-400 leading-relaxed flex-grow">
+								<p class="text-slate-400 leading-relaxed grow">
 									{pillar.desc}
 								</p>
 								<div
@@ -706,7 +706,7 @@
 			</div>
 		</section>
 
-		<section class="py-32 bg-gradient-to-b from-[#050505] to-[#0a0a0a] border-y border-white/5">
+		<section class="py-32 bg-linear-to-b from-[#050505] to-[#0a0a0a] border-y border-white/5">
 			<div class="max-w-3xl mx-auto px-6">
 				<div class="flex justify-center mb-12">
 					<div
@@ -791,7 +791,7 @@
 								class="aspect-video bg-[#0f172a] rounded-lg flex items-center justify-center relative overflow-hidden group"
 							>
 								<div
-									class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"
+									class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[20px_20px]"
 								></div>
 								<div class="absolute left-0 bottom-20 h-4 w-32 bg-blue-500/20 rounded-r"></div>
 								<div class="absolute left-0 bottom-24 h-4 w-48 bg-blue-500/40 rounded-r"></div>
@@ -867,7 +867,7 @@
 			</div>
 		</section>
 
-		<section class="py-24 bg-white/[0.01] border-y border-white/5">
+		<section class="py-24 bg-white/1 border-y border-white/5">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 					<div>
@@ -912,7 +912,7 @@
 			<div class="max-w-6xl mx-auto">
 				<div
 					data-gsap
-					class="relative bg-gradient-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-3xl p-8 md:p-16 overflow-hidden shadow-2xl"
+					class="relative bg-linear-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-3xl p-8 md:p-16 overflow-hidden shadow-2xl"
 				>
 					<div class="absolute top-0 right-0 text-white/5 -mr-8 -mt-8 transform rotate-12">
 						<div class="w-64 h-64">{@html Icons.Quote}</div>
@@ -952,7 +952,7 @@
 			</div>
 		</section>
 
-		<section class="py-24 bg-white/[0.02] border-t border-white/5">
+		<section class="py-24 bg-white/2 border-t border-white/5">
 			<div class="max-w-3xl mx-auto px-4">
 				<div class="text-center mb-12">
 					<h2 class="text-3xl font-bold text-white mb-4">Common Questions</h2>
@@ -1033,7 +1033,7 @@
 
 		<section class="py-32 text-center relative overflow-hidden">
 			<div
-				class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-rtp-primary/5 to-transparent pointer-events-none"
+				class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-linear-to-b from-rtp-primary/5 to-transparent pointer-events-none"
 			></div>
 
 			<div data-gsap class="max-w-4xl mx-auto px-4 relative z-10">

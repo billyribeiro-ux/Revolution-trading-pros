@@ -32,7 +32,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
+					gradient: 'bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500'
 				},
 				{
 					text: 'Maybe Later',
@@ -103,7 +103,7 @@
 					link: '/alerts/explosive-swings',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-red-500 to-orange-500'
+					gradient: 'bg-linear-to-r from-red-500 to-orange-500'
 				},
 				{
 					text: 'No Thanks',
@@ -184,7 +184,7 @@
 					text: 'Subscribe Now',
 					action: 'submit',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-emerald-500 to-teal-500'
+					gradient: 'bg-linear-to-r from-emerald-500 to-teal-500'
 				}
 			],
 			closeButton: true,
@@ -328,7 +328,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500'
+					gradient: 'bg-linear-to-r from-orange-500 via-red-500 to-pink-500'
 				},
 				{
 					text: 'Learn More',

@@ -204,7 +204,7 @@
 	<section class="relative min-h-[90vh] flex items-center py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40"
+				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-size-[48px_48px] opacity-40"
 			></div>
 			<div
 				class="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl"
@@ -239,7 +239,7 @@
 				>
 					Catch the <br />
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-200"
+						class="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-emerald-300 to-teal-200"
 						>Institutional Moves.</span
 					>
 				</h1>
@@ -339,7 +339,7 @@
 				style="contain: layout style paint;"
 			>
 				<div
-					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
+					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-linear-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
 				></div>
 
 				<div
@@ -805,7 +805,7 @@
 			<div class="grid md:grid-cols-2 gap-8 text-left">
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						1
 					</div>
@@ -819,7 +819,7 @@
 				</div>
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						2
 					</div>
@@ -833,7 +833,7 @@
 				</div>
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						3
 					</div>
@@ -847,7 +847,7 @@
 				</div>
 				<div class="flex gap-4">
 					<div
-						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
+						class="w-10 h-10 rounded-full bg-emerald-500/10 shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
 						4
 					</div>
@@ -1064,7 +1064,7 @@
 						>
 							<span class="pr-8">{item.q}</span>
 							<svg
-								class="w-5 h-5 text-slate-500 transform transition-transform duration-300 flex-shrink-0 {openFaq ===
+								class="w-5 h-5 text-slate-500 transform transition-transform duration-300 shrink-0 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1103,7 +1103,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-emerald-600 to-teal-800 text-white relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-emerald-600 to-teal-800 text-white relative overflow-hidden"
 	>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
 			<h2 class="text-4xl md:text-6xl font-heading font-extrabold mb-6 tracking-tight">

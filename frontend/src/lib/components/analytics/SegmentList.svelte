@@ -87,7 +87,7 @@
 				</div>
 
 				<!-- Stats -->
-				<div class="text-right flex-shrink-0">
+				<div class="text-right shrink-0">
 					<div class="font-semibold text-gray-900">
 						{formatNumber(segment.user_count)}
 					</div>
@@ -97,7 +97,7 @@
 				</div>
 
 				<!-- Progress bar -->
-				<div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
+				<div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden shrink-0">
 					<div
 						class="h-full rounded-full transition-all"
 						style="width: {Math.min(segment.percentage, 100)}%; background-color: {segment.color ||

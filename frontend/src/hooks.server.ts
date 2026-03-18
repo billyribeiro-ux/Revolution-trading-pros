@@ -25,6 +25,44 @@ import { logger } from '$lib/utils/logger';
 const API_BASE_URL = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 /**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * MAINTENANCE MODE - Set to true to redirect ALL visitors to /maintenance
+ * Set to false to restore normal site access.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+const MAINTENANCE_MODE = true;
+
+/** Paths that should NOT be redirected during maintenance */
+const MAINTENANCE_BYPASS_PREFIXES = [
+	'/maintenance',
+	'/api/newsletter',
+	'/_app',
+	'/favicon',
+	'/manifest',
+	'/robots',
+	'/sitemap'
+];
+
+/**
+ * Maintenance Mode Handler
+ * Redirects all visitors to /maintenance when MAINTENANCE_MODE is true.
+ * Bypasses static assets, the maintenance page itself, and newsletter API.
+ */
+const maintenanceHandler: Handle = async ({ event, resolve }) => {
+	if (!MAINTENANCE_MODE) return resolve(event);
+
+	const { pathname } = event.url;
+
+	// Allow bypass paths (maintenance page, static assets, newsletter API)
+	const isBypassed =
+		MAINTENANCE_BYPASS_PREFIXES.some((p) => pathname.startsWith(p)) || pathname.includes('.'); // Static files (css, js, images, fonts)
+	if (isBypassed) return resolve(event);
+
+	// Redirect everything else to /maintenance
+	redirect(307, '/maintenance');
+};
+
+/**
  * Protected routes that require authentication
  * These routes will redirect to login if user is not authenticated
  */
@@ -503,6 +541,7 @@ const timingHandler: Handle = async ({ event, resolve }) => {
 // Combine all handlers in sequence
 // Auth handler runs FIRST to protect routes before any data loading
 export const handle: Handle = sequence(
+	maintenanceHandler,
 	authHandler,
 	timingHandler,
 	securityHeaders,

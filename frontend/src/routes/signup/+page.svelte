@@ -203,7 +203,7 @@
 				<button
 					type="submit"
 					disabled={isLoading}
-					class="w-full py-4 px-4 bg-gradient-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-h-[48px] text-base"
+					class="w-full py-4 px-4 bg-linear-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-h-[48px] text-base"
 				>
 					{#if isLoading}
 						<span class="inline-flex items-center">

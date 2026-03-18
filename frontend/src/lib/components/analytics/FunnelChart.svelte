@@ -73,7 +73,7 @@
 					</div>
 
 					<!-- Conversion Rate Badge -->
-					<div class="ml-4 flex-shrink-0">
+					<div class="ml-4 shrink-0">
 						<span
 							class="text-sm font-semibold {step.conversion_rate >= 80
 								? 'text-green-600'

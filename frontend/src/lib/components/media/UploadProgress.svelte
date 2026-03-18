@@ -208,7 +208,7 @@
 				>
 					<!-- Thumbnail -->
 					<div
-						class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center"
+						class="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center"
 						aria-hidden="true"
 					>
 						{#if upload.result?.thumbnailUrl}
@@ -299,7 +299,7 @@
 					</div>
 
 					<!-- Actions -->
-					<div class="flex-shrink-0">
+					<div class="shrink-0">
 						{#if upload.status === 'uploading' || upload.status === 'pending'}
 							<button
 								class="p-1.5 rounded-lg transition-colors text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"

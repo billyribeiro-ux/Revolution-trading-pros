@@ -108,7 +108,7 @@
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
-			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40"
+			class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40"
 		></div>
 	</div>
 
@@ -285,7 +285,7 @@
 						{/if}
 
 						<div
-							class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent opacity-90 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none"
+							class="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-transparent opacity-90 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none"
 						></div>
 
 						<div class="relative z-10 flex justify-between items-start mb-8">
@@ -301,7 +301,7 @@
 							</span>
 						</div>
 
-						<div class="relative z-10 flex-grow">
+						<div class="relative z-10 grow">
 							<h3
 								class="text-xl font-medium text-white mb-2 group-hover:scale-105 transition-transform duration-500 origin-left"
 							>

@@ -185,7 +185,7 @@
 						<button
 							onclick={handleSubmit}
 							disabled={!isValidEmail || isSubmitting}
-							class="text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
+							class="text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 shrink-0"
 							style="background: var(--calc-accent); color: white; opacity: {isValidEmail &&
 							!isSubmitting
 								? 1

@@ -1078,7 +1078,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Header -->
 			<div class="relative p-6 border-b border-white/10">
 				<div
-					class="absolute inset-0 bg-gradient-to-r opacity-50"
+					class="absolute inset-0 bg-linear-to-r opacity-50"
 					style="background: linear-gradient(135deg, {selectedService.color}15, transparent);"
 				></div>
 				<div class="relative flex items-center gap-4">
@@ -1228,7 +1228,7 @@ import { logger } from '$lib/utils/logger';
 				<button
 					onclick={connectService}
 					disabled={isConnecting}
-					class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
+					class="flex-1 px-4 py-3 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
 				>
 					{#if isConnecting}
 						<span class="flex items-center justify-center gap-2">

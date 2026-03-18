@@ -440,7 +440,7 @@
 	<div class="max-w-7xl mx-auto">
 		<div class="mb-12 text-center">
 			<h1
-				class="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+				class="text-4xl md:text-6xl font-bold mb-4 bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 			>
 				TRADING ICON LIBRARY
 			</h1>
@@ -457,7 +457,7 @@
 		<div class="mb-16">
 			<div class="flex items-center gap-4 mb-8">
 				<h2
-					class="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent"
+					class="text-3xl font-bold bg-linear-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent"
 				>
 					D3.js Charts
 				</h2>
@@ -487,7 +487,7 @@
 		<div class="mb-16">
 			<div class="flex items-center gap-4 mb-8">
 				<h2
-					class="text-3xl font-bold bg-gradient-to-r from-pink-400 to-rose-500 bg-clip-text text-transparent"
+					class="text-3xl font-bold bg-linear-to-r from-pink-400 to-rose-500 bg-clip-text text-transparent"
 				>
 					ApexCharts
 				</h2>
@@ -517,7 +517,7 @@
 		<div class="mb-16">
 			<div class="flex items-center gap-4 mb-8">
 				<h2
-					class="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-violet-500 bg-clip-text text-transparent"
+					class="text-3xl font-bold bg-linear-to-r from-indigo-400 to-violet-500 bg-clip-text text-transparent"
 				>
 					Chart.js
 				</h2>
@@ -547,7 +547,7 @@
 		<div class="mb-16">
 			<div class="flex items-center gap-4 mb-8">
 				<h2
-					class="text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent"
+					class="text-3xl font-bold bg-linear-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent"
 				>
 					Lightweight Charts
 				</h2>

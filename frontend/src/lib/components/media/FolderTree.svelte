@@ -215,7 +215,7 @@
 	}
 
 	.folder-item :global(.folder-icon) {
-		@apply flex-shrink-0;
+		@apply shrink-0;
 	}
 
 	.folder-item.active :global(.folder-icon) {

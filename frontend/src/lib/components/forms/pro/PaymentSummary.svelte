@@ -66,7 +66,7 @@
 		class="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-gray-50 border-b border-gray-200"
 	>
 		<svg
-			class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 flex-shrink-0"
+			class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0"
 			viewBox="0 0 24 24"
 			fill="none"
 			stroke="currentColor"
@@ -93,13 +93,13 @@
 						<span class="text-sm sm:text-base text-gray-700 truncate">{item.name}</span>
 						{#if item.quantity > 1}
 							<span
-								class="text-xs sm:text-sm text-gray-500 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded flex-shrink-0"
+								class="text-xs sm:text-sm text-gray-500 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded shrink-0"
 							>
 								x{item.quantity}
 							</span>
 						{/if}
 					</div>
-					<span class="text-sm sm:text-base font-medium text-gray-900 ml-3 flex-shrink-0">
+					<span class="text-sm sm:text-base font-medium text-gray-900 ml-3 shrink-0">
 						{formatCurrency(item.subtotal)}
 					</span>
 				</div>
@@ -120,7 +120,7 @@
 			<div class="flex justify-between items-center py-1 sm:py-1.5 min-h-[36px] sm:min-h-[40px]">
 				<span class="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base text-emerald-600">
 					<svg
-						class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
+						class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0"
 						viewBox="0 0 24 24"
 						fill="none"
 						stroke="currentColor"
@@ -135,13 +135,13 @@
 					<span class="truncate">Discount ({discount.code})</span>
 					{#if discount.type === 'percentage'}
 						<span
-							class="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded flex-shrink-0"
+							class="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded shrink-0"
 						>
 							-{discount.value}%
 						</span>
 					{/if}
 				</span>
-				<span class="text-sm sm:text-base font-medium text-emerald-600 flex-shrink-0">
+				<span class="text-sm sm:text-base font-medium text-emerald-600 shrink-0">
 					-{formatCurrency(discountAmount)}
 				</span>
 			</div>
@@ -170,7 +170,7 @@
 			class="flex items-center justify-center gap-2 p-3 sm:p-4 bg-emerald-50 text-emerald-700 min-h-[44px]"
 		>
 			<svg
-				class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
+				class="w-4 h-4 sm:w-5 sm:h-5 shrink-0"
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"

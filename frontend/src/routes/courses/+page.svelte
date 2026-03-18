@@ -385,7 +385,7 @@
 		</div>
 
 		<div
-			class="absolute inset-0 z-0 bg-gradient-to-b from-black/0 via-black/50 to-black pointer-events-none"
+			class="absolute inset-0 z-0 bg-linear-to-b from-black/0 via-black/50 to-black pointer-events-none"
 		></div>
 		<div
 			class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"
@@ -413,7 +413,7 @@
 					EXECUTION
 				</span>
 				<span
-					class="hero-title-line block text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-white tracking-tight -mt-2 md:-mt-6"
+					class="hero-title-line block text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-purple-400 to-white tracking-tight -mt-2 md:-mt-6"
 				>
 					OVER OPINION
 				</span>
@@ -433,7 +433,7 @@
 					class="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg tracking-tight overflow-hidden transition-transform hover:scale-105 active:scale-95"
 				>
 					<div
-						class="absolute inset-0 bg-gradient-to-r from-blue-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"
+						class="absolute inset-0 bg-linear-to-r from-blue-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"
 					></div>
 					<span class="relative flex items-center gap-2">
 						View Curriculum
@@ -600,7 +600,7 @@
 
 							<div class="h-px w-full bg-white/5 mb-6"></div>
 
-							<p class="text-slate-400 leading-relaxed mb-8 flex-grow">{course.description}</p>
+							<p class="text-slate-400 leading-relaxed mb-8 grow">{course.description}</p>
 
 							<div class="space-y-3 mb-8">
 								{#each course.features as feature}
@@ -638,7 +638,7 @@
 				{#each faqs as faq, i}
 					<button
 						onclick={() => toggleFaq(i)}
-						class="w-full text-left group bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 rounded-xl transition-all duration-300 overflow-hidden"
+						class="w-full text-left group bg-white/2 hover:bg-white/4 border border-white/5 rounded-xl transition-all duration-300 overflow-hidden"
 					>
 						<div class="p-6 flex items-center justify-between">
 							<span

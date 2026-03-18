@@ -41,7 +41,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500'
+					gradient: 'bg-linear-to-r from-red-500 via-orange-500 to-yellow-500'
 				}
 			],
 			closeButton: true,
@@ -112,7 +112,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-blue-500 to-purple-500'
+					gradient: 'bg-linear-to-r from-blue-500 to-purple-500'
 				},
 				{
 					text: 'Learn More',
@@ -201,7 +201,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
+					gradient: 'bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500'
 				}
 			],
 			closeButton: true,

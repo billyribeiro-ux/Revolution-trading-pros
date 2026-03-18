@@ -135,7 +135,7 @@
 
 				<button
 					onclick={() => dismiss(mp.option.symbol)}
-					class="cursor-pointer flex-shrink-0"
+					class="cursor-pointer shrink-0"
 					style="color: var(--calc-text-muted);"
 					aria-label="Dismiss"
 				>

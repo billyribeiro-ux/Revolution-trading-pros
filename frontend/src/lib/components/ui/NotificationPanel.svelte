@@ -231,7 +231,7 @@
 							<div class="flex gap-3 pl-2">
 								<!-- Icon -->
 								<div
-									class="flex-shrink-0 w-10 h-10 rounded-lg {colorMap[
+									class="shrink-0 w-10 h-10 rounded-lg {colorMap[
 										notification.type
 									]} flex items-center justify-center"
 								>
@@ -267,7 +267,7 @@
 										e.stopPropagation();
 										notificationStore.dismiss(notification.id);
 									}}
-									class="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100
+									class="shrink-0 p-1 rounded opacity-0 group-hover:opacity-100
 										hover:bg-slate-700/50 transition-all"
 									aria-label="Dismiss"
 								>
@@ -278,7 +278,7 @@
 							<!-- Priority indicator for urgent -->
 							{#if notification.priority === 'urgent'}
 								<div
-									class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"
+									class="absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r from-red-500 to-orange-500"
 								></div>
 							{/if}
 						</div>

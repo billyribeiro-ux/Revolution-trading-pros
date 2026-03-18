@@ -414,7 +414,7 @@ import { logger } from '$lib/utils/logger';
 <div class="bg-gray-100 dark:bg-gray-900 flex flex-col">
 	<!-- Header -->
 	<div
-		class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0"
+		class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0"
 	>
 		<div class="px-4 py-3">
 			<div class="flex items-center justify-between">
@@ -580,10 +580,10 @@ import { logger } from '$lib/utils/logger';
 			<div class="flex gap-4 h-full min-h-[calc(100vh-180px)]">
 				{#each stages as stage}
 					<div
-						class="flex-shrink-0 w-72 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex flex-col max-h-full"
+						class="shrink-0 w-72 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex flex-col max-h-full"
 					>
 						<!-- Stage Header -->
-						<div class="p-3 flex items-center justify-between flex-shrink-0">
+						<div class="p-3 flex items-center justify-between shrink-0">
 							<div class="flex items-center gap-2">
 								<div class="w-3 h-3 rounded-full" style="background-color: {stage.color}"></div>
 								<h3 class="font-medium text-gray-900 dark:text-white">{stage.title}</h3>
@@ -763,7 +763,7 @@ import { logger } from '$lib/utils/logger';
 
 						<!-- Add Task Button -->
 						{#if showNewTaskInput !== stage.id}
-							<div class="p-2 flex-shrink-0">
+							<div class="p-2 shrink-0">
 								<button
 									onclick={() => (showNewTaskInput = stage.id)}
 									class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-300/50 dark:hover:bg-gray-700/50 rounded-lg flex items-center gap-2"
@@ -777,7 +777,7 @@ import { logger } from '$lib/utils/logger';
 				{/each}
 
 				<!-- Add Stage -->
-				<div class="flex-shrink-0 w-72">
+				<div class="shrink-0 w-72">
 					{#if showNewStageInput}
 						<div class="bg-gray-200/50 dark:bg-gray-800/50 rounded-xl p-3">
 							<input
@@ -1001,7 +1001,7 @@ import { logger } from '$lib/utils/logger';
 								{#each taskComments as comment}
 									<div class="flex gap-3">
 										<div
-											class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm flex-shrink-0"
+											class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm shrink-0"
 										>
 											{comment.author?.name?.charAt(0).toUpperCase() || 'U'}
 										</div>
@@ -1020,7 +1020,7 @@ import { logger } from '$lib/utils/logger';
 								{/each}
 								<div class="flex gap-3">
 									<div
-										class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm flex-shrink-0"
+										class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm shrink-0"
 									>
 										<IconUser class="w-4 h-4" />
 									</div>

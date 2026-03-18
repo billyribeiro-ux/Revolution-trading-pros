@@ -489,7 +489,7 @@ import { logger } from '$lib/utils/logger';
 
 			<!-- Sidebar (description & version history) -->
 			<aside
-				class="hidden w-80 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900 lg:block"
+				class="hidden w-80 shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900 lg:block"
 			>
 				<!-- Description -->
 				{#if resource.description}

@@ -197,7 +197,7 @@
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-30"
+				class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-size-[40px_40px] opacity-30"
 			></div>
 			<div
 				class="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] bg-rtp-blue/10 rounded-full blur-[120px] animate-pulse"
@@ -232,7 +232,7 @@
 				>
 					Never Trade <br />
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-blue via-indigo-400 to-white"
+						class="text-transparent bg-clip-text bg-linear-to-r from-rtp-blue via-indigo-400 to-white"
 						>Alone Again.</span
 					>
 				</h1>
@@ -276,17 +276,17 @@
 				>
 					<div class="flex -space-x-3">
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
 						>
 							JD
 						</div>
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
 						>
 							MK
 						</div>
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-linear-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm"
 						>
 							SR
 						</div>
@@ -305,7 +305,7 @@
 
 			<div class="hidden lg:block relative perspective-1000">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
+					class="absolute inset-0 bg-linear-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>
 
 				<div
@@ -622,7 +622,7 @@
 				</div>
 				<div class="relative rounded-2xl overflow-hidden border border-rtp-border shadow-2xl">
 					<div
-						class="absolute inset-0 bg-gradient-to-t from-rtp-bg to-transparent opacity-60 z-10"
+						class="absolute inset-0 bg-linear-to-t from-rtp-bg to-transparent opacity-60 z-10"
 					></div>
 					<div class="bg-gray-900 aspect-video flex items-center justify-center relative">
 						<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20"></div>
@@ -675,7 +675,7 @@
 			</div>
 
 			<div
-				class="relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rtp-border before:to-transparent"
+				class="relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-rtp-border before:to-transparent"
 			>
 				<div
 					data-gsap
@@ -981,7 +981,7 @@
 						>
 							<span class="text-base pr-4">{faq.question}</span>
 							<svg
-								class="w-5 h-5 text-rtp-primary flex-shrink-0 transform transition-transform duration-300 {openFaq ===
+								class="w-5 h-5 text-rtp-primary shrink-0 transform transition-transform duration-300 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1011,7 +1011,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-rtp-primary to-rtp-indigo text-white relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-rtp-primary to-rtp-indigo text-white relative overflow-hidden"
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">

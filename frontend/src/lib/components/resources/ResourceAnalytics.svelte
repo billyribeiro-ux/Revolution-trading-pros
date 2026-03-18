@@ -346,7 +346,7 @@
 					{#each analytics.top_viewed.slice(0, 5) as item, i}
 						<div class="flex items-start gap-3">
 							<span
-								class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+								class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
 							>
 								{i + 1}
 							</span>
@@ -372,7 +372,7 @@
 					{#each analytics.top_downloaded.slice(0, 5) as item, i}
 						<div class="flex items-start gap-3">
 							<span
-								class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+								class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
 							>
 								{i + 1}
 							</span>
@@ -398,7 +398,7 @@
 					{#each analytics.recent_uploads.slice(0, 5) as item}
 						<div class="flex items-start gap-3">
 							<svg
-								class="h-5 w-5 flex-shrink-0 text-gray-400"
+								class="h-5 w-5 shrink-0 text-gray-400"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"

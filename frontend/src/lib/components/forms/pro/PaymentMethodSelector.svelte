@@ -129,7 +129,7 @@
 
 				<!-- Custom radio indicator -->
 				<span
-					class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+					class="shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
 					class:border-blue-600={(props.value ?? '') === method.id}
 					class:bg-blue-600={(props.value ?? '') === method.id}
 					class:border-gray-300={(props.value ?? '') !== method.id}
@@ -141,7 +141,7 @@
 
 				<!-- Method Icon -->
 				<span
-					class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 rounded-lg"
+					class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 rounded-lg"
 				>
 					<svg
 						class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
@@ -169,7 +169,7 @@
 				<!-- Checkmark for selected -->
 				{#if (props.value ?? '') === method.id}
 					<span
-						class="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center"
+						class="shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center"
 					>
 						<svg
 							class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
@@ -215,7 +215,7 @@
 			<!-- Security Note -->
 			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
 				<svg
-					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0"
+					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"
@@ -231,7 +231,7 @@
 		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-amber-500">
 			<p class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 m-0">
 				<svg
-					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0"
+					class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"

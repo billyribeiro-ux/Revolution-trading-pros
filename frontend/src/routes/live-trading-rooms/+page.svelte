@@ -316,7 +316,7 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
 				<div
-					class="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] z-10"
+					class="absolute inset-0 bg-linear-to-b from-[#050505] via-transparent to-[#050505] z-10"
 				></div>
 				<div class="grid-lines w-full h-full"></div>
 			</div>
@@ -368,7 +368,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="relative z-20 max-w-5xl mx-auto mt-12">
 				<div
-					class="hero-badge inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] hover:bg-white/[0.05] transition-colors cursor-default"
+					class="hero-badge inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/3 border border-white/8 backdrop-blur-md mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] hover:bg-white/5 transition-colors cursor-default"
 				>
 					<span class="relative flex h-2 w-2">
 						<span
@@ -389,7 +389,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 					<div class="hero-title-line overflow-hidden">
 						<span
-							class="inline-block bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent pb-4"
+							class="inline-block bg-linear-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent pb-4"
 							>Intelligence</span
 						>
 					</div>
@@ -403,7 +403,7 @@ import { logger } from '$lib/utils/logger';
 				</p>
 
 				<div
-					class="hero-line w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-12 opacity-0"
+					class="hero-line w-24 h-px bg-linear-to-r from-transparent via-blue-500 to-transparent mx-auto mt-12 opacity-0"
 				></div>
 			</div>
 		</section>
@@ -421,7 +421,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label={room.name}
 				>
 					<div
-						class={`absolute -inset-[1px] rounded-3xl bg-gradient-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
+						class={`absolute -inset-px rounded-3xl bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
                         ${room.accent === 'cyan' ? 'from-cyan-500/50' : ''}
                         ${room.accent === 'emerald' ? 'from-emerald-500/50' : ''}
                         ${room.accent === 'amber' ? 'from-amber-500/50' : ''}
@@ -431,7 +431,7 @@ import { logger } from '$lib/utils/logger';
 						class="relative h-full flex flex-col bg-[#0A0A0A] border border-white/5 hover:border-white/10 rounded-3xl p-1 shadow-2xl overflow-hidden transition-colors duration-300"
 					>
 						<div
-							class="flex-1 flex flex-col p-6 lg:p-8 rounded-[20px] bg-gradient-to-b from-white/[0.02] to-transparent"
+							class="flex-1 flex flex-col p-6 lg:p-8 rounded-[20px] bg-linear-to-b from-white/2 to-transparent"
 						>
 							{#if room.badge}
 								<div class="absolute top-6 right-6">
@@ -626,7 +626,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
 			<div class="text-center mb-16 relative z-10">
 				<h2
-					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
 				>
 					Why the Pros Choose Us
 				</h2>
@@ -705,7 +705,7 @@ import { logger } from '$lib/utils/logger';
 
 		<section
 			bind:this={ctaRef}
-			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-gradient-to-b from-blue-900/20 to-black border border-white/10"
+			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-linear-to-b from-blue-900/20 to-black border border-white/10"
 		>
 			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 			<div class="relative z-10 max-w-3xl mx-auto px-4">

@@ -134,7 +134,7 @@ import { logger } from '$lib/utils/logger';
 							<ol class="space-y-3 text-xs">
 								{#each timeline as event}
 									<li class="flex gap-3">
-										<div class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-sky-400"></div>
+										<div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-sky-400"></div>
 										<div class="flex-1 border-l border-slate-800 pl-3">
 											<div class="flex items-center justify-between gap-2">
 												<p class="text-[13px] font-medium text-slate-100">{event.title}</p>

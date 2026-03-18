@@ -110,7 +110,7 @@
 	{#if loading}
 		<div class="flex gap-4 overflow-x-auto pb-2">
 			{#each Array(4) as _}
-				<div class="w-40 flex-shrink-0 animate-pulse {compact ? '' : 'w-48'}">
+				<div class="w-40 shrink-0 animate-pulse {compact ? '' : 'w-48'}">
 					<div class="aspect-video rounded-lg bg-gray-200 dark:bg-gray-700"></div>
 					<div class="mt-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
 					<div class="mt-1 h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
@@ -155,7 +155,7 @@
 		>
 			{#each items as item (item.id)}
 				<button
-					class="group w-40 flex-shrink-0 text-left transition-transform hover:scale-[1.02] {compact
+					class="group w-40 shrink-0 text-left transition-transform hover:scale-[1.02] {compact
 						? ''
 						: 'w-48'}"
 					onclick={() => handleItemClick(item)}
@@ -173,7 +173,7 @@
 							/>
 						{:else}
 							<div
-								class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
+								class="flex h-full w-full items-center justify-center bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
 							>
 								<svg
 									class="h-8 w-8 text-gray-400"

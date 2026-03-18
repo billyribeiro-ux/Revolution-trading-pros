@@ -35,7 +35,7 @@
 			>{config.name}</span
 		>
 		<span
-			class="text-[9px] px-1.5 py-0.5 rounded flex-shrink-0"
+			class="text-[9px] px-1.5 py-0.5 rounded shrink-0"
 			style="background: var(--calc-surface-hover); color: var(--calc-text-muted);">{dateStr}</span
 		>
 	</div>

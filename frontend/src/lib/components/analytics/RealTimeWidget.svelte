@@ -59,7 +59,7 @@
 	}
 </script>
 
-<div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 text-white">
+<div class="bg-linear-to-br from-slate-900 to-slate-800 rounded-xl p-4 text-white">
 	<!-- Header -->
 	<div class="flex items-center justify-between mb-4">
 		<div class="flex items-center gap-2">

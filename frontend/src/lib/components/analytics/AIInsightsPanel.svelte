@@ -172,7 +172,7 @@
 	}
 
 	.insight-icon {
-		@apply flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center;
+		@apply shrink-0 w-10 h-10 rounded-lg flex items-center justify-center;
 		@apply bg-purple-500/20 text-purple-400;
 	}
 

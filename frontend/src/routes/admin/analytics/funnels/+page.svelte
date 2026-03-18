@@ -116,13 +116,13 @@
 	<title>Conversion Funnels | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-violet-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-violet-500/20"
 				>
 					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -143,7 +143,7 @@
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<button
 						onclick={() => (showCreateModal = true)}
-						class="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 text-sm font-semibold transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
+						class="px-5 py-2.5 bg-linear-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 text-sm font-semibold transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
 					>
 						Create Funnel
 					</button>
@@ -221,7 +221,7 @@
 				</p>
 				<button
 					onclick={() => (showCreateModal = true)}
-					class="px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 font-semibold shadow-lg shadow-violet-500/25 transition-all"
+					class="px-6 py-3 bg-linear-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 font-semibold shadow-lg shadow-violet-500/25 transition-all"
 				>
 					Create Your First Funnel
 				</button>
@@ -238,7 +238,7 @@
 						<div class="flex items-center justify-between mb-4">
 							<h3 class="font-semibold text-white">{funnel.name}</h3>
 							<span
-								class="text-2xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent"
+								class="text-2xl font-bold bg-linear-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent"
 							>
 								{funnel.overall_conversion.toFixed(1)}%
 							</span>
@@ -355,7 +355,7 @@
 												<div class="flex items-center justify-end gap-3">
 													<div class="w-20 h-2 bg-slate-700 rounded-full overflow-hidden">
 														<div
-															class="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"
+															class="h-full bg-linear-to-r from-violet-500 to-purple-500 rounded-full"
 															style="width: {fromStart}%"
 														></div>
 													</div>
@@ -448,7 +448,7 @@
 								class="flex items-center gap-3 p-4 bg-slate-800/30 rounded-xl border border-white/5"
 							>
 								<span
-									class="w-7 h-7 bg-violet-500/20 text-violet-400 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
+									class="w-7 h-7 bg-violet-500/20 text-violet-400 rounded-lg flex items-center justify-center text-xs font-semibold shrink-0"
 								>
 									{index + 1}
 								</span>
@@ -500,7 +500,7 @@
 				<button
 					onclick={createFunnel}
 					disabled={!newFunnel.name || newFunnel.steps.some((s) => !s.name || !s.event_name)}
-					class="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25"
+					class="px-5 py-2.5 bg-linear-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25"
 				>
 					Create Funnel
 				</button>

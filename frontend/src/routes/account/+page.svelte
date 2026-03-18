@@ -256,7 +256,7 @@ import { logger } from '$lib/utils/logger';
 								<p class="text-rtp-muted mb-4">Unlock premium features with a membership plan</p>
 								<a
 									href="/live-trading-rooms/day-trading"
-									class="inline-block px-6 py-3 bg-gradient-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transition-all"
+									class="inline-block px-6 py-3 bg-linear-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transition-all"
 								>
 									View Membership Plans
 								</a>
@@ -335,7 +335,7 @@ import { logger } from '$lib/utils/logger';
 								<div class="flex gap-4 justify-center">
 									<a
 										href="/courses"
-										class="px-6 py-3 bg-gradient-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transition-all"
+										class="px-6 py-3 bg-linear-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transition-all"
 									>
 										Browse Courses
 									</a>

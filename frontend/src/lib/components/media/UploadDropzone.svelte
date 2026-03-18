@@ -217,7 +217,7 @@
 	}
 
 	.upload-item-icon {
-		@apply flex-shrink-0;
+		@apply shrink-0;
 	}
 
 	.upload-item-details {

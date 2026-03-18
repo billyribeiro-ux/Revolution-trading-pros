@@ -172,7 +172,7 @@ import { logger } from '$lib/utils/logger';
 		{:else}
 			<div class="flex gap-8">
 				<!-- Sidebar -->
-				<div class="w-48 flex-shrink-0">
+				<div class="w-48 shrink-0">
 					<nav class="space-y-1">
 						<button
 							onclick={() => (activeTab = 'general')}

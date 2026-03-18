@@ -191,7 +191,7 @@
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-slate-950 z-0">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
+				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 			></div>
 			<div
 				class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse"
@@ -226,7 +226,7 @@
 				>
 					Conquer Volatility with
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-500 to-emerald-500"
+						class="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 via-blue-500 to-emerald-500"
 						>SPX 0DTE</span
 					>
 				</h1>
@@ -317,7 +317,7 @@
 
 			<div class="relative hidden lg:block perspective-1000 overflow-hidden">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
+					class="absolute inset-0 bg-linear-to-tr from-indigo-600/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>
 
 				<div
@@ -326,7 +326,7 @@
 					<div class="flex items-center justify-between mb-6 border-b border-slate-800/30 pb-4">
 						<div class="flex items-center gap-3">
 							<div
-								class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner"
+								class="w-10 h-10 rounded-full bg-linear-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner"
 							>
 								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 									><path
@@ -391,7 +391,7 @@
 			<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group">
 					<div
-						class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 to-emerald-600 mb-2 group-hover:scale-110 transition-transform"
+						class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-br from-emerald-400 to-emerald-600 mb-2 group-hover:scale-110 transition-transform"
 					>
 						78%
 					</div>
@@ -688,7 +688,7 @@
 								<button class="group text-left w-full">
 									<div class="relative bg-slate-900 rounded-lg overflow-hidden aspect-video mb-1.5">
 										<div
-											class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+											class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"
 										></div>
 										<div class="absolute inset-0 flex items-center justify-center">
 											<div
@@ -1006,7 +1006,7 @@
 
 			<div class="relative">
 				<div
-					class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 to-slate-800"
+					class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-linear-to-b from-emerald-500 via-blue-500 to-slate-800"
 				></div>
 
 				<div
@@ -1263,7 +1263,7 @@
 					<div class="mt-8 space-y-4 text-sm text-slate-400">
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-500 flex-shrink-0"
+								class="w-5 h-5 text-emerald-500 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1278,7 +1278,7 @@
 						</div>
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-500 flex-shrink-0"
+								class="w-5 h-5 text-emerald-500 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1322,7 +1322,7 @@
 					<div class="space-y-4 text-sm text-white/90">
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-400 flex-shrink-0"
+								class="w-5 h-5 text-emerald-400 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1337,7 +1337,7 @@
 						</div>
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-400 flex-shrink-0"
+								class="w-5 h-5 text-emerald-400 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1352,7 +1352,7 @@
 						</div>
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-400 flex-shrink-0"
+								class="w-5 h-5 text-emerald-400 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1390,7 +1390,7 @@
 					<div class="mt-8 space-y-4 text-sm text-slate-400">
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-500 flex-shrink-0"
+								class="w-5 h-5 text-emerald-500 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1405,7 +1405,7 @@
 						</div>
 						<div class="flex gap-3">
 							<svg
-								class="w-5 h-5 text-emerald-500 flex-shrink-0"
+								class="w-5 h-5 text-emerald-500 shrink-0"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -1453,7 +1453,7 @@
 						>
 							<span class="pr-8">{faq.q}</span>
 							<svg
-								class="w-5 h-5 text-slate-400 transform transition-transform duration-300 flex-shrink-0 {openFaq ===
+								class="w-5 h-5 text-slate-400 transform transition-transform duration-300 shrink-0 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1483,7 +1483,7 @@
 	</section>
 
 	<section class="py-24 relative overflow-hidden">
-		<div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-indigo-500 z-0"></div>
+		<div class="absolute inset-0 bg-linear-to-br from-indigo-600 to-indigo-500 z-0"></div>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 z-0"></div>
 
 		<div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

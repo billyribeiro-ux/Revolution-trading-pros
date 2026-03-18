@@ -89,7 +89,7 @@
 						const el = (e.currentTarget as HTMLElement).closest('[role="alert"]') as HTMLElement;
 						handleDismiss(toast.id, el);
 					}}
-					class="flex-shrink-0 cursor-pointer rounded-md p-0.5 transition-colors"
+					class="shrink-0 cursor-pointer rounded-md p-0.5 transition-colors"
 					style="color: var(--calc-text-muted);"
 					aria-label="Dismiss notification"
 				>

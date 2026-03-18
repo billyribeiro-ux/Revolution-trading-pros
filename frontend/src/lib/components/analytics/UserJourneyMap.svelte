@@ -162,7 +162,7 @@
 
 	.step-number {
 		@apply w-8 h-8 rounded-full bg-yellow-500 text-gray-900 font-bold;
-		@apply flex items-center justify-center flex-shrink-0;
+		@apply flex items-center justify-center shrink-0;
 	}
 
 	.step-info {
@@ -226,7 +226,7 @@
 	}
 
 	.connector-line {
-		@apply w-0.5 h-8 bg-gradient-to-b from-gray-600 to-gray-700;
+		@apply w-0.5 h-8 bg-linear-to-b from-gray-600 to-gray-700;
 	}
 
 	.connector-stats {

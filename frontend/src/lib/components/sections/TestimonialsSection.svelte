@@ -175,7 +175,7 @@
 	</div>
 
 	<div
-		class="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#020202] via-transparent to-[#020202]"
+		class="absolute inset-0 pointer-events-none bg-linear-to-b from-[#020202] via-transparent to-[#020202]"
 	></div>
 	<div
 		class="absolute inset-0 pointer-events-none opacity-40 transition-opacity duration-300"
@@ -249,7 +249,7 @@
 						</div>
 
 						<div
-							class="flex items-center justify-between bg-white/[0.02] -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/[0.05] transition-colors duration-500"
+							class="flex items-center justify-between bg-white/2 -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/5 transition-colors duration-500"
 						>
 							<div class="flex flex-col">
 								<span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest mb-1">

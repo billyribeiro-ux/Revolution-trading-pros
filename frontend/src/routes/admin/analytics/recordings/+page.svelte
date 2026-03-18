@@ -130,13 +130,13 @@
 	<title>Session Recordings | Analytics</title>
 </svelte:head>
 
-<div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+<div class="bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20"
+					class="w-12 h-12 rounded-2xl bg-linear-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20"
 				>
 					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -279,7 +279,7 @@
 					</p>
 					<a
 						href="/admin/settings/tracking"
-						class="inline-block px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-xl hover:from-indigo-400 hover:to-blue-500 font-semibold shadow-lg shadow-indigo-500/25 transition-all"
+						class="inline-block px-6 py-3 bg-linear-to-r from-indigo-500 to-blue-600 text-white rounded-xl hover:from-indigo-400 hover:to-blue-500 font-semibold shadow-lg shadow-indigo-500/25 transition-all"
 					>
 						Enable Recordings
 					</a>

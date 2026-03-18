@@ -398,7 +398,7 @@ import { logger } from '$lib/utils/logger';
 							/>
 						</div>
 
-						<div class="form-group flex-grow">
+						<div class="form-group grow">
 							<label for="newDateSpreadsheet">Spreadsheet URL</label>
 							<input
 								type="url"
@@ -638,7 +638,7 @@ import { logger } from '$lib/utils/logger';
 		grid-column: 1 / -1;
 	}
 
-	.form-group.flex-grow {
+	.form-group.grow {
 		flex: 1;
 	}
 

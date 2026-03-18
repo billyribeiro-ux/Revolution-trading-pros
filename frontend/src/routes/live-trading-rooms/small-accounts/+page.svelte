@@ -192,7 +192,7 @@
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-rtp-bg z-0 pointer-events-none">
 			<div
-				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
+				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[40px_40px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 			></div>
 			<div
 				class="absolute top-0 right-0 w-[600px] h-[600px] bg-rtp-primary/10 rounded-full blur-[120px] animate-pulse"
@@ -226,7 +226,7 @@
 					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
 				>
 					Master <span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary to-emerald-400"
+						class="text-transparent bg-clip-text bg-linear-to-r from-rtp-primary to-emerald-400"
 						>0DTE Options</span
 					> <br />Without The PDT Rule.
 				</h1>
@@ -286,7 +286,7 @@
 
 			<div class="hidden lg:block relative perspective-1000">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-y-10"
+					class="absolute inset-0 bg-linear-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-y-10"
 				></div>
 
 				<div
@@ -437,7 +437,7 @@
 				</div>
 				<div class="relative">
 					<div
-						class="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-3xl blur-2xl"
+						class="absolute inset-0 bg-linear-to-r from-emerald-500/20 to-blue-500/20 rounded-3xl blur-2xl"
 					></div>
 					<div class="relative bg-rtp-surface border border-rtp-border rounded-2xl p-8 shadow-2xl">
 						[Image of trading chart with support and resistance lines]
@@ -568,7 +568,7 @@
 			</div>
 
 			<div
-				class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rtp-border before:to-transparent"
+				class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-rtp-border before:to-transparent"
 			>
 				<div
 					data-gsap
@@ -934,7 +934,7 @@
 	</section>
 
 	<section
-		class="py-24 bg-gradient-to-br from-rtp-primary to-indigo-900 text-white text-center relative overflow-hidden"
+		class="py-24 bg-linear-to-br from-rtp-primary to-indigo-900 text-white text-center relative overflow-hidden"
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
