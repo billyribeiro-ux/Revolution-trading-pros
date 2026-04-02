@@ -7,9 +7,9 @@ import { logger } from '$lib/utils/logger';
 	 * Enterprise-grade slide-out drawer showing segment details,
 	 * analytics, member preview, and quick actions.
 	 */
-	import { Icon, IconX, IconUsers, IconChartBar, IconMail, IconDownload, IconEdit, IconTrash, IconFilter, IconTrendingUp, IconTrendingDown, IconCalendar, IconClock, IconRefresh, IconExternalLink } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { goto } from '$app/navigation';
+	import { Icon, IconCalendar, IconChartBar, IconClock, IconDownload, IconEdit, IconExternalLink, IconFilter, IconMail, IconRefresh, IconTrash, IconTrendingDown, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 
 	interface Segment {
 		id: number;

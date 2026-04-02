@@ -19,8 +19,8 @@
 		retryPayment,
 		getPaymentHistory
 	} from '$lib/api/subscriptions';
-	import { Icon, IconX, IconCreditCard, IconCalendar, IconEdit, IconPlayerPause, IconPlayerPlay, IconBan, IconRefresh, IconReceipt, IconChartBar, IconClock, IconCheck, IconAlertTriangle, IconMail, IconCurrencyDollar } from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
+	import { Icon, IconAlertTriangle, IconBan, IconCalendar, IconChartBar, IconCheck, IconClock, IconCreditCard, IconCurrencyDollar, IconEdit, IconMail, IconPlayerPause, IconPlayerPlay, IconReceipt, IconRefresh, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

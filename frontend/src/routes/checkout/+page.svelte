@@ -20,7 +20,6 @@ import { logger } from '$lib/utils/logger';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import { Icon, IconArrowLeft, IconArrowRight, IconCheck, IconCreditCard, IconLoader, IconLock, IconShieldCheck, IconTicket, IconX } from '$lib/icons';
-									
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════

@@ -9,7 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Deal } from '$lib/crm/types';
-	import { Icon, IconArrowLeft, IconCurrencyDollar, IconActivity } from '$lib/icons';
+	import { Icon, IconActivity, IconArrowLeft, IconCurrencyDollar } from '$lib/icons';
 
 	let deal = $state<Deal | null>(null);
 	let loading = $state(true);

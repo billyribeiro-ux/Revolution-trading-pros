@@ -18,7 +18,7 @@
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import { Icon, IconSearch, IconCode, IconArrowUp, IconArrowDown, IconHome, IconChartBar, IconUsers, IconMail, IconSettings, IconShoppingCart, IconFileText, IconPhoto, IconPlugConnected, IconActivity, IconBrandGoogle, IconForms, IconVideo, IconCreditCard, IconDatabase, IconRefresh, IconDownload, IconUpload, IconLogout } from '$lib/icons';
+	import { Icon, IconActivity, IconArrowDown, IconArrowUp, IconBrandGoogle, IconChartBar, IconCode, IconCreditCard, IconDatabase, IconDownload, IconFileText, IconForms, IconHome, IconLogout, IconMail, IconPhoto, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconUpload, IconUsers, IconVideo } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -360,7 +360,7 @@
 							<div class="group-label">{category}</div>
 							{#each items as item}
 								{@const globalIndex = flatResults.indexOf(item)}
-								{@const Icon = item.icon}
+								{@const iconStr = item.icon}
 								<button
 									class="result-item"
 									class:selected={selectedIndex === globalIndex}
@@ -368,7 +368,7 @@
 									onmouseenter={() => (selectedIndex = globalIndex)}
 								>
 									<div class="item-icon">
-										<Icon size={18} />
+										<Icon icon={iconStr} size={18} />
 									</div>
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Icon, IconChartCandle, IconClock, IconUsers, IconStar, IconCertificate, IconTrendingUp, IconCheck, IconVideo, IconFileText, IconHeadset, IconBolt, IconTarget, IconChartLine, IconShield, IconTrophy } from '$lib/icons';
+	import { Icon, IconBolt, IconCertificate, IconChartCandle, IconChartLine, IconCheck, IconClock, IconFileText, IconHeadset, IconShield, IconStar, IconTarget, IconTrendingUp, IconTrophy, IconUsers, IconVideo } from '$lib/icons';
 
 	interface Module {
 		week: number;
@@ -371,7 +371,7 @@
 					{@const FeatureIcon = feature.icon}
 					<div class="feature-card">
 						<div class="feature-icon">
-							<FeatureIcon size={28} stroke={1.5} />
+							<Icon icon={FeatureIcon} size={28} stroke={1.5} />
 						</div>
 						<div class="feature-content">
 							<h4>{feature.title}</h4>

@@ -6,12 +6,11 @@
 
 	import { onMount } from 'svelte';
 	import {
-	import { Icon, IconChartBar, IconClock, IconDeviceDesktop, IconDeviceMobile, IconDeviceTablet, IconEye, IconRefresh, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 		analyticsApi,
 		type AnalyticsDashboard,
 		type VideoAnalytics
 	} from '$lib/api/video-advanced';
-										
+	import { Icon, IconChartBar, IconClock, IconDeviceDesktop, IconDeviceMobile, IconDeviceTablet, IconEye, IconRefresh, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 	interface Props {
 		videoId?: number;
 		onClose?: () => void;
@@ -261,7 +260,7 @@
 						{@const DeviceIcon = getDeviceIcon(device)}
 						{@const total = Object.values(dashboard.device_breakdown).reduce((a, b) => a + b, 0)}
 						<div class="device-item">
-							<DeviceIcon size={24} />
+							<Icon icon={DeviceIcon} size={24} />
 							<div class="device-info">
 								<div class="device-name">{device}</div>
 								<div class="device-percent">{Math.round((count / total) * 100)}%</div>

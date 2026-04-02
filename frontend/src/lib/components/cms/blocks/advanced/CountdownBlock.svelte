@@ -11,7 +11,6 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconSparkles, IconTrophy } from '$lib/icons';
 	import {
 		getBlockStateManager,
 		type BlockId,
@@ -19,6 +18,7 @@
 	} from '$lib/stores/blockState.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconSparkles, IconTrophy } from '$lib/icons';
 
 	// =========================================================================
 	// Types

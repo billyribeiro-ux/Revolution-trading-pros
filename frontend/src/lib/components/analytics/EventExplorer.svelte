@@ -9,7 +9,7 @@
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
-	import { Icon, IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
+	import { Icon, IconDownload, IconFilter, IconRefresh, IconSearch } from '$lib/icons';
 
 	interface Props {
 		period?: string;

@@ -10,9 +10,9 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { Icon, IconChevronRight } from '$lib/icons';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import type { PageData } from './$types';
+	import { Icon, IconChevronRight } from '$lib/icons';
 
 	// Svelte 5 props with proper typing
 	interface Props {

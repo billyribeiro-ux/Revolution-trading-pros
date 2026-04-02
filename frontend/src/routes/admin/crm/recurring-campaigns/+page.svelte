@@ -13,7 +13,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-												import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type {
 		RecurringCampaign,
 		RecurringCampaignFilters,

@@ -5,7 +5,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Icon, IconWaveSine, IconTrendingUp, IconCheck, IconAlertTriangle, IconBolt, IconChartLine, IconTarget } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconBolt, IconChartLine, IconCheck, IconTarget, IconTrendingUp, IconWaveSine } from '$lib/icons';
 
 	let heroVisible = $state(false);
 

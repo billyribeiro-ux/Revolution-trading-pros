@@ -7,7 +7,7 @@
 	 */
 	import type { Subscription, SubscriptionInterval } from '$lib/stores/subscriptions.svelte';
 	import { createSubscription, updateSubscription } from '$lib/api/subscriptions';
-	import { Icon, IconX, IconCreditCard, IconPlus, IconEdit, IconCalendar, IconCurrencyDollar } from '$lib/icons';
+	import { Icon, IconCalendar, IconCreditCard, IconCurrencyDollar, IconEdit, IconPlus, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

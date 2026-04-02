@@ -13,7 +13,6 @@
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconArrowLeft, IconArrowRight, IconShieldCheck, IconShoppingCart, IconX } from '$lib/icons';
-					
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════

@@ -8,7 +8,6 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-																																															
 	import type { BlockType, BlockContent, BlockSettings } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
 	import PresetPicker from './PresetPicker.svelte';
@@ -248,7 +247,7 @@
 								<div class="blocks-grid">
 									{#each filteredBlocks as type}
 										{@const def = BLOCK_DEFINITIONS[type]}
-										{@const Icon = BLOCK_ICONS[type] || IconBox}
+										{@const iconStr = BLOCK_ICONS[type] || IconBox}
 										<button
 											type="button"
 											class="block-item"
@@ -262,7 +261,7 @@
 												style:background={getCategoryColor(def.category) + '15'}
 												style:color={getCategoryColor(def.category)}
 											>
-												<Icon size={24} />
+												<Icon icon={iconStr} size={24} />
 											</div>
 											<span class="block-name">{def.name}</span>
 											{#if hasPresets(type)}
@@ -298,7 +297,7 @@
 										<div class="category-blocks" transition:fly={{ y: -10, duration: 200 }}>
 											{#each category.blocks as type}
 												{@const def = BLOCK_DEFINITIONS[type]}
-												{@const Icon = BLOCK_ICONS[type] || IconBox}
+												{@const iconStr = BLOCK_ICONS[type] || IconBox}
 												<button
 													type="button"
 													class="block-item"
@@ -312,7 +311,7 @@
 														style:background={category.color + '15'}
 														style:color={category.color}
 													>
-														<Icon size={20} />
+														<Icon icon={iconStr} size={20} />
 													</div>
 													<div class="block-info">
 														<span class="block-name">{def.name}</span>
@@ -362,7 +361,7 @@
 				<div class="blocks-grid compact">
 					{#each category.blocks as type}
 						{@const def = BLOCK_DEFINITIONS[type]}
-						{@const Icon = BLOCK_ICONS[type] || IconBox}
+						{@const iconStr = BLOCK_ICONS[type] || IconBox}
 						<button
 							type="button"
 							class="block-btn"
@@ -372,7 +371,7 @@
 								? `${def.description} - Has presets available`
 								: def.description}
 						>
-							<Icon size={18} />
+							<Icon icon={iconStr} size={18} />
 							<span>{def.name}</span>
 							{#if hasPresets(type)}
 								<Icon icon={IconTemplate} size={14} class="preset-icon" />

@@ -8,7 +8,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconPlus, IconEdit, IconTrash, IconBook, IconChartLine, IconCrown, IconShoppingCart, IconRefresh, IconSearch } from '$lib/icons';
+	import { Icon, IconBook, IconChartLine, IconCrown, IconEdit, IconPlus, IconRefresh, IconSearch, IconShoppingCart, IconTrash } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let loading = $state(true);
@@ -131,7 +131,7 @@ import { logger } from '$lib/utils/logger';
 
 	// Helper functions
 	function getTypeIcon(type: string) {
-		const typeMap: Record<string, typeof IconBook> = {
+		const typeMap: Record<string, string> = {
 			course: IconBook,
 			indicator: IconChartLine,
 			membership: IconCrown,
@@ -199,13 +199,13 @@ import { logger } from '$lib/utils/logger';
 		<div class="filter-bar">
 			<div class="type-filter">
 				{#each productTypes as type}
-					{@const Icon = type.icon}
+					{@const iconStr = type.icon}
 					<button
 						class="type-btn"
 						class:active={selectedType === type.value}
 						onclick={() => (selectedType = type.value)}
 					>
-						<Icon size={18} />
+						<Icon icon={iconStr} size={18} />
 						{type.label}
 						{#if type.value !== 'all' && productCountByType[type.value]}
 							<span class="count-badge">{productCountByType[type.value]}</span>
@@ -261,7 +261,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="product-card" class:deleting={deleting === product.id}>
 						<div class="product-header">
 							<div class="product-type-badge">
-								<TypeIcon size={14} />
+								<Icon icon={TypeIcon} size={14} />
 								{product.type}
 							</div>
 							<button

@@ -13,7 +13,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-																		import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconAlertCircle, IconArrowLeft, IconBolt, IconCheck, IconClock, IconEdit, IconGripVertical, IconList, IconLoader2, IconMail, IconPlayerPlay, IconPlus, IconTag, IconTrash, IconUser, IconWorldWww, IconX } from '$lib/icons';
@@ -507,7 +507,7 @@
 					</div>
 					<div class="card-header">
 						<div class="card-icon">
-							<ActionIcon size={24} />
+							<Icon icon={ActionIcon} size={24} />
 						</div>
 						<div class="card-title">
 							<span class="card-type"
@@ -600,7 +600,7 @@
 								onclick={() => (actionForm.action_type = actionType.value as ActionType)}
 							>
 								<div class="action-type-icon {getIconColor(actionType.color)}">
-									<TypeIcon size={24} />
+									<Icon icon={TypeIcon} size={24} />
 								</div>
 								<div class="action-type-info">
 									<span class="action-type-label">{actionType.label}</span>
@@ -615,7 +615,7 @@
 					<div class="action-config">
 						<div class="selected-action-header">
 							<div class="selected-action-icon {getActionColor(actionForm.action_type)}">
-								<SelectedIcon size={24} />
+								<Icon icon={SelectedIcon} size={24} />
 							</div>
 							<div class="selected-action-info">
 								<span class="selected-action-type">

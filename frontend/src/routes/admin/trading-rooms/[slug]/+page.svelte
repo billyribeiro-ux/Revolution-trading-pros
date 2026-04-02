@@ -39,7 +39,7 @@ import { logger } from '$lib/utils/logger';
 	} from '$lib/api/room-resources';
 
 	// Icons
-															import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconBell, IconChartLine, IconCheck, IconChevronLeft, IconCurrencyDollar, IconEdit, IconPin, IconPinFilled, IconPlayerPlay, IconPlus, IconTable, IconTrash, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════

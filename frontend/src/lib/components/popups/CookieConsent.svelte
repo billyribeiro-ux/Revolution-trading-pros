@@ -23,7 +23,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Icon, IconSettings, IconCheck } from '$lib/icons';
+	import { Icon, IconCheck, IconSettings } from '$lib/icons';
 
 	// Props
 	interface Props {

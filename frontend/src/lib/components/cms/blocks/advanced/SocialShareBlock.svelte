@@ -11,10 +11,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconLink, IconCheck } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { browser } from '$app/environment';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconCheck, IconLink } from '$lib/icons';
 
 	// =========================================================================
 	// Types

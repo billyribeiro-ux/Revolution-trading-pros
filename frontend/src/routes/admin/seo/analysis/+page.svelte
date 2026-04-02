@@ -5,7 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
 	import { getForms, type Form } from '$lib/api/forms';
-	import { Icon, IconSearch, IconChartBar } from '$lib/icons';
+	import { Icon, IconChartBar, IconSearch } from '$lib/icons';
 
 	let contentType = $state('posts');
 	let contentId = $state('');

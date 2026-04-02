@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { ImportJob, ImportSource } from '$lib/boards/types';
-	import { Icon, IconUpload, IconArrowLeft, IconBrandTrello, IconBrandAsana, IconFileSpreadsheet, IconCheck, IconX, IconLoader, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconBrandAsana, IconBrandTrello, IconCheck, IconFileSpreadsheet, IconLoader, IconUpload, IconX } from '$lib/icons';
 
 	// State
 	let selectedSource = $state<ImportSource | null>(null);
@@ -362,7 +362,7 @@ import { logger } from '$lib/utils/logger';
 						class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-left hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all flex items-center gap-4"
 					>
 						<div class="p-3 {source.color} rounded-xl">
-							<source.icon class="w-8 h-8 text-white" />
+							<Icon icon={source.icon} class="w-8 h-8 text-white" />
 						</div>
 						<div>
 							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{source.name}</h3>

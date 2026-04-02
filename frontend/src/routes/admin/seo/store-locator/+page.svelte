@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Icon, IconMapPin, IconPlus, IconEdit, IconTrash, IconDownload, IconExternalLink, IconCheck, IconClock, IconPhone, IconMail, IconWorld } from '$lib/icons';
 	import {
 		locations,
 		generateLocationSchema,
@@ -14,6 +13,7 @@
 		type BusinessType
 	} from '$lib/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconCheck, IconClock, IconDownload, IconEdit, IconExternalLink, IconMail, IconMapPin, IconPhone, IconPlus, IconTrash, IconWorld } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let locationList = $state<Location[]>([]);

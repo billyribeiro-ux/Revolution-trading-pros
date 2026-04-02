@@ -15,7 +15,7 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
-	import { Icon, IconAlertTriangle, IconLock, IconServer, IconSearch, IconHome, IconRefresh, IconArrowLeft } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconArrowLeft, IconHome, IconLock, IconRefresh, IconSearch, IconServer } from '$lib/icons';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);
@@ -81,7 +81,7 @@ import { logger } from '$lib/utils/logger';
 	);
 
 	// Determine icon based on status
-	let ErrorIcon = $derived(
+	let errorIconStr = $derived(
 		status === 401
 			? IconLock
 			: status === 403
@@ -127,7 +127,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Error Header -->
 		<div class="error-header" style="--accent-color: {config.color}">
 			<div class="error-icon-wrapper">
-				<ErrorIcon size={48} stroke={1.5} />
+				<Icon icon={errorIconStr} size={48} stroke={1.5} />
 			</div>
 			<div class="error-status-badge">
 				{status}

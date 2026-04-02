@@ -3,6 +3,7 @@
 	import gsap from 'gsap';
 	import type { ToastType } from '../../engine/types.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
+	import { Icon } from '$lib/icons';
 
 	interface Props {
 		calc: CalculatorState;
@@ -47,10 +48,26 @@
 	};
 
 	const COLORS: Record<ToastType, { bg: string; border: string; icon: string }> = {
-		success: { bg: 'var(--color-success-bg)', border: 'var(--color-success-border)', icon: 'var(--color-success)' },
-		error: { bg: 'var(--color-loss-bg)', border: 'var(--color-loss-border)', icon: 'var(--color-loss)' },
-		info: { bg: 'var(--color-brand-primary-bg)', border: 'var(--color-brand-primary-border)', icon: 'var(--color-brand-primary)' },
-		warning: { bg: 'var(--color-warning-bg)', border: 'var(--color-warning-border)', icon: 'var(--color-warning)' }
+		success: {
+			bg: 'var(--color-success-bg)',
+			border: 'var(--color-success-border)',
+			icon: 'var(--color-success)'
+		},
+		error: {
+			bg: 'var(--color-loss-bg)',
+			border: 'var(--color-loss-border)',
+			icon: 'var(--color-loss)'
+		},
+		info: {
+			bg: 'var(--color-brand-primary-bg)',
+			border: 'var(--color-brand-primary-border)',
+			icon: 'var(--color-brand-primary)'
+		},
+		warning: {
+			bg: 'var(--color-warning-bg)',
+			border: 'var(--color-warning-border)',
+			icon: 'var(--color-warning)'
+		}
 	};
 
 	function handleDismiss(id: string, el: HTMLElement) {
@@ -73,14 +90,14 @@
 	>
 		{#each visibleToasts as toast (toast.id)}
 			{@const colors = COLORS[toast.type]}
-			{@const Icon = ICONS[toast.type]}
+			{@const iconStr = ICONS[toast.type]}
 			<div
 				class="pointer-events-auto flex items-center gap-2.5 rounded-xl px-4 py-3 min-w-[280px] max-w-[400px] shadow-lg"
 				style="background: {colors.bg}; border: 1px solid {colors.border}; backdrop-filter: blur(16px);"
 				role="alert"
 				use:animateIn
 			>
-				<Icon size={16} style="color: {colors.icon}; flex-shrink: 0;" />
+				<Icon icon={iconStr} size={16} style="color: {colors.icon}; flex-shrink: 0;" />
 				<span class="flex-1 text-xs font-medium" style="color: var(--calc-text);">
 					{toast.message}
 				</span>

@@ -28,11 +28,11 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { browser } from '$app/environment';
-	import { Icon, IconUsers, IconUserPlus, IconSearch, IconFilter, IconEdit, IconEye, IconTrash, IconChartBar, IconTrendingUp, IconRefresh, IconBuilding, IconCheck, IconX, IconChevronDown, IconTarget, IconFlame, IconStar, IconStarFilled, IconArrowRight } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { Icon, IconArrowRight, IconBuilding, IconChartBar, IconCheck, IconChevronDown, IconEdit, IconEye, IconFilter, IconFlame, IconRefresh, IconSearch, IconStar, IconStarFilled, IconTarget, IconTrash, IconTrendingUp, IconUserPlus, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

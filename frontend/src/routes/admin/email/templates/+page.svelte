@@ -16,7 +16,7 @@ import { logger } from '$lib/utils/logger';
 	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
+	import { Icon, IconEdit, IconEye, IconPlus, IconRefresh, IconTrash } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes

@@ -12,9 +12,9 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconPlus, IconX, IconCheck, IconCircleCheck, IconProgress } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconCheck, IconCircleCheck, IconPlus, IconProgress, IconX } from '$lib/icons';
 
 	// =========================================================================
 	// Types

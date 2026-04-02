@@ -19,7 +19,6 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { browser } from '$app/environment';
-	import { Icon, IconVideo, IconSearch, IconPlayerPlay, IconEdit, IconTrash, IconRefresh, IconPlus, IconLink, IconCheck, IconX, IconChartBar, IconUser, IconBuilding, IconTags, IconAlertCircle, IconCloudUpload, IconProgressCheck, IconCode, IconCheckbox, IconSquare, IconStar, IconStarOff } from '$lib/icons';
 	import {
 		tradingRoomApi,
 		type TradingRoom,
@@ -36,6 +35,7 @@ import { logger } from '$lib/utils/logger';
 		type BatchStatus
 	} from '$lib/api/video-advanced';
 						import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconBuilding, IconChartBar, IconCheck, IconCheckbox, IconCloudUpload, IconCode, IconEdit, IconLink, IconPlayerPlay, IconPlus, IconProgressCheck, IconRefresh, IconSearch, IconSquare, IconStar, IconStarOff, IconTags, IconTrash, IconUser, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)

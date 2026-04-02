@@ -11,12 +11,12 @@ import { logger } from '$lib/utils/logger';
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { Icon, IconTrash, IconInbox, IconDownload, IconX, IconCheck, IconLoader } from '$lib/icons';
+	import { Icon, IconCheck, IconDownload, IconInbox, IconLoader, IconTrash, IconX } from '$lib/icons';
 
 	interface BatchAction {
 		id: string;
 		label: string;
-		icon: typeof IconTrash;
+		icon: string;
 		variant?: 'default' | 'danger' | 'success';
 		action: (selectedIds: string[]) => Promise<void>;
 	}
@@ -149,7 +149,7 @@ import { logger } from '$lib/utils/logger';
 						{#if processingAction === action.id}
 							<Icon icon={IconLoader} size={18} class="spinning" />
 						{:else}
-							<ActionIcon size={18} />
+							<Icon icon={ActionIcon} size={18} />
 						{/if}
 						<span>{action.label}</span>
 					</button>

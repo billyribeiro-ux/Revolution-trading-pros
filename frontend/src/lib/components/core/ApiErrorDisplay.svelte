@@ -10,13 +10,13 @@
 	 * - Severity-based styling
 	 */
 
-	import { Icon, IconAlertCircle, IconAlertTriangle, IconInfoCircle, IconRefresh, IconX } from '$lib/icons';
 	import {
 		isApiError,
 		getUserFriendlyMessage,
 		getValidationErrors
 	} from '$lib/api/enterprise/errors';
 	import type { EnterpriseApiError, ErrorSeverity } from '$lib/api/enterprise/types';
+	import { Icon, IconAlertCircle, IconAlertTriangle, IconInfoCircle, IconRefresh, IconX } from '$lib/icons';
 
 	// Props
 	interface Props {
@@ -73,7 +73,7 @@
 </script>
 
 {#if error}
-	{@const Icon = IconComponent}
+	{@const iconStr = IconComponent}
 	<div
 		class="api-error {variant}"
 		class:critical={severity === 'critical'}
@@ -84,7 +84,7 @@
 		aria-live="polite"
 	>
 		<div class="error-icon">
-			<Icon size={20} />
+			<Icon icon={iconStr} size={20} />
 		</div>
 
 		<div class="error-body">

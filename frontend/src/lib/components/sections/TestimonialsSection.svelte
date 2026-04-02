@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import { Icon, IconActivity, IconChartDots, IconCircleCheckFilled, IconQuote, IconShieldCheck, IconTrendingUp, IconUserCircle } from '$lib/icons';
-							
 	// --- Institutional Client Data ---
 	const reviews = [
 		{

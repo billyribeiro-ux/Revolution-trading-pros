@@ -191,7 +191,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="dropdown-header">
 				<h4>API Rate Limits</h4>
 				<span class="header-status" style="color: {getStatusColor(status)}">
-					<StatusIcon size={14} />
+					<Icon icon={StatusIcon} size={14} />
 					{#if status === 'none'}
 						No services connected
 					{:else if status === 'ok'}

@@ -17,10 +17,10 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Icon, IconMail, IconMailForward, IconPlus, IconSearch, IconEdit, IconTrash, IconPlayerPlay, IconPlayerPause, IconCopy, IconRefresh, IconUsers, IconChartBar, IconClock, IconX, IconSend, IconCheck, IconAlertCircle } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconChartBar, IconCheck, IconClock, IconCopy, IconEdit, IconMail, IconMailForward, IconPlayerPause, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconSend, IconTrash, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -238,7 +238,7 @@
 	}
 
 	function getStatusIcon(status: SequenceStatus) {
-		const icons: Record<SequenceStatus, typeof IconEdit> = {
+		const icons: Record<SequenceStatus, string> = {
 			draft: IconEdit,
 			active: IconPlayerPlay,
 			paused: IconPlayerPause,
@@ -472,7 +472,7 @@
 								</td>
 								<td>
 									<span class="status-badge {getStatusColor(sequence.status)}">
-										<StatusIcon size={12} />
+										<Icon icon={StatusIcon} size={12} />
 										{sequence.status}
 									</span>
 								</td>

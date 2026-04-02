@@ -25,7 +25,6 @@ import { logger } from '$lib/utils/logger';
 	import type { Snippet } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
-	import { Icon, IconAlertTriangle, IconRefresh, IconTrash, IconArrowBackUp } from '$lib/icons';
 
 	import type { Block } from './types';
 	import { BLOCK_DEFINITIONS } from './types';
@@ -42,6 +41,7 @@ import { logger } from '$lib/utils/logger';
 		ErrorSeverity,
 		type BlockErrorContext
 	} from './error-handling';
+	import { Icon, IconAlertTriangle, IconArrowBackUp, IconRefresh, IconTrash } from '$lib/icons';
 
 	// ==========================================================================
 	// Props

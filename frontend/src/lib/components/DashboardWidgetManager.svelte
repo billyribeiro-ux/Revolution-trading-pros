@@ -16,7 +16,6 @@
 	import { quintOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import {
-	import { Icon, IconActivity, IconBolt, IconCaretDown, IconCaretUp, IconChartLine, IconCurrencyDollar, IconEye, IconEyeCheck, IconEyeOff, IconFileText, IconGripVertical, IconLayoutGrid, IconList, IconMail, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconUsers, IconWorld, IconX } from '$lib/icons';
 		widgetStore,
 		getVisibleWidgets,
 		getHiddenWidgets,
@@ -25,7 +24,7 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets.svelte';
-																						
+	import { Icon, IconActivity, IconBolt, IconCaretDown, IconCaretUp, IconChartLine, IconCurrencyDollar, IconEye, IconEyeCheck, IconEyeOff, IconFileText, IconGripVertical, IconLayoutGrid, IconList, IconMail, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconUsers, IconWorld, IconX } from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;
@@ -43,7 +42,7 @@
 	const widgetLayout = $derived(getWidgetLayout());
 	const autoRefreshEnabled = $derived(getAutoRefreshEnabled());
 
-	const iconMap: Record<string, typeof IconChartLine> = {
+	const iconMap: Record<string, string> = {
 		'chart-line': IconChartLine,
 		world: IconWorld,
 		article: IconFileText,
@@ -199,7 +198,7 @@
 										widget.category
 									]}"
 								>
-									<WidgetIcon size={18} />
+									<Icon icon={WidgetIcon} size={18} />
 								</div>
 								<div class="widget-info">
 									<span class="widget-title">{widget.title}</span>
@@ -257,7 +256,7 @@
 											widget.category
 										]}"
 									>
-										<WidgetIcon size={18} />
+										<Icon icon={WidgetIcon} size={18} />
 									</div>
 									<div class="widget-info">
 										<span class="widget-title">{widget.title}</span>

@@ -9,7 +9,7 @@
 	 */
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconChartLine, IconCoin, IconBuildingBank, IconHeartbeat, IconBolt, IconCpu, IconShoppingCart, IconHome, IconTools, IconLeaf, IconArrowRight, IconCheck, IconExternalLink } from '$lib/icons';
+	import { Icon, IconArrowRight, IconBolt, IconBuildingBank, IconChartLine, IconCheck, IconCoin, IconCpu, IconExternalLink, IconHeartbeat, IconHome, IconLeaf, IconShoppingCart, IconTools } from '$lib/icons';
 
 	// Featured ETFs with full descriptions
 	const featuredETFs = [
@@ -388,10 +388,10 @@
 
 			<div class="sector-grid">
 				{#each sectorETFs as sector, i}
-					{@const Icon = sector.icon}
+					{@const iconStr = sector.icon}
 					<div class="sector-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
 						<div class="sector-card__icon bg-linear-to-br {sector.color}">
-							<Icon size={28} />
+							<Icon icon={iconStr} size={28} />
 						</div>
 						<h3 class="sector-card__title">{sector.sector}</h3>
 						<div class="sector-card__etfs">

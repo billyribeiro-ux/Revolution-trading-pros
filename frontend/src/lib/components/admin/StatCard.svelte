@@ -8,12 +8,12 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import type { ComponentType } from 'svelte';
+	import { Icon } from '$lib/icons';
 
 	interface Props {
 		title: string;
 		value: string | number;
-		icon: ComponentType;
+		icon: string;
 		trend?: string;
 		trendUp?: boolean;
 		color?: 'blue' | 'green' | 'purple' | 'amber';
@@ -24,7 +24,7 @@
 	// Destructure with defaults for internal use
 	const title = $derived(props.title);
 	const value = $derived(props.value);
-	const Icon = $derived(props.icon);
+	const iconStr = $derived(props.icon);
 	const trend = $derived(props.trend ?? '');
 	const trendUp = $derived(props.trendUp ?? true);
 	const color = $derived(props.color ?? 'blue');
@@ -43,7 +43,7 @@
 			{/if}
 		</div>
 		<div class="stat-icon {color}">
-			<Icon size={24} />
+			<Icon icon={iconStr} size={24} />
 		</div>
 	</div>
 </div>

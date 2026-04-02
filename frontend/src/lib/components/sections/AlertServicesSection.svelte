@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import { Icon, IconActivity, IconAntenna, IconArrowUpRight, IconBolt, IconClock, IconTarget, IconTrendingUp } from '$lib/icons';
-							
 	// --- Data Configuration ---
 	const signals = [
 		{
@@ -146,7 +145,7 @@
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
 			{#each signals as item, i}
-				{@const IconComponent = item.icon}
+				{@const iconStr = item.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}
@@ -264,7 +263,7 @@
 											? 'text-amber-500'
 											: 'text-orange-500'}"
 									>
-										<IconComponent size={20} />
+										<Icon icon={iconStr} size={20} />
 									</div>
 									<div>
 										<h3 class="text-xl font-medium text-white">{item.title}</h3>

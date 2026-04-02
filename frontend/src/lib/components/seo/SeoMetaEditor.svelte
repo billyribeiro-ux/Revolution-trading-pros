@@ -1,9 +1,9 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { Icon, IconFileText, IconBrandTwitter, IconBrandFacebook, IconRobot, IconDeviceFloppy, IconRefresh, IconEye, IconCode } from '$lib/icons';
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
+	import { Icon, IconBrandFacebook, IconBrandTwitter, IconCode, IconDeviceFloppy, IconEye, IconFileText, IconRefresh, IconRobot } from '$lib/icons';
 
 	interface Props {
 		entity: any;
@@ -119,7 +119,7 @@ import { logger } from '$lib/utils/logger';
 		{#each tabs as tab}
 			{@const TabIcon = tab.icon}
 			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
-				<TabIcon size={18} />
+				<Icon icon={TabIcon} size={18} />
 				{tab.label}
 			</button>
 		{/each}

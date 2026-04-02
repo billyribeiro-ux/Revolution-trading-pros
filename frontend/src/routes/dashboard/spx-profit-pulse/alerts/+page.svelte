@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Icon, IconSearch } from '$lib/icons';
+
 	/**
 	 * SPX Profit Pulse - Alerts Archive Page
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -7,7 +9,6 @@
 	 *
 	 * @version 1.0.0
 	 */
-	import { Icon, IconSearch } from '$lib/icons';
 
 	// Filter state
 	let selectedFilter = $state('all');

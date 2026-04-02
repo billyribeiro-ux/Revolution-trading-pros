@@ -1,7 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { Icon, IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
+	import { Icon, IconCode, IconCopy, IconEye, IconPlus, IconTrash } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - ICT 7+ Strict Type Safety

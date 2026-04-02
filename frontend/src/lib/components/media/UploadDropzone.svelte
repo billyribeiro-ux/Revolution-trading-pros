@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { uploadStore } from '$lib/stores/media.svelte';
-	import { Icon, IconUpload, IconX, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconCheck, IconUpload, IconX } from '$lib/icons';
 
 	interface Props {
 		folderId?: string | null;

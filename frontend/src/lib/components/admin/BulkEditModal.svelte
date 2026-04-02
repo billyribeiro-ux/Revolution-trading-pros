@@ -6,7 +6,6 @@
 
 	import { videoOpsApi } from '$lib/api/video-advanced';
 	import { Icon, IconCheck, IconEdit, IconMinus, IconPlus, IconX } from '$lib/icons';
-					
 	interface Props {
 		selectedIds: number[];
 		contentTypes?: { value: string; label: string }[];

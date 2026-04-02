@@ -3,7 +3,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { TimeEntry, Board, TimeTrackingStats } from '$lib/boards/types';
-	import { Icon, IconClock, IconArrowLeft, IconLayoutKanban, IconCurrencyDollar, IconDownload, IconRefresh } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconClock, IconCurrencyDollar, IconDownload, IconLayoutKanban, IconRefresh } from '$lib/icons';
 
 	// State
 	let timeEntries = $state<TimeEntry[]>([]);

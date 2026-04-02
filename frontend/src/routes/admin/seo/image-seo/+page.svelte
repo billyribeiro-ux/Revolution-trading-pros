@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Icon, IconPhoto, IconRefresh, IconSparkles, IconCheck, IconAlertTriangle, IconSettings } from '$lib/icons';
 	import {
 		imageSeoSettings,
 		processImages,
@@ -9,6 +8,7 @@
 		type ImageMetadata,
 		type ProcessedImage
 	} from '$lib/seo';
+	import { Icon, IconAlertTriangle, IconCheck, IconPhoto, IconRefresh, IconSettings, IconSparkles } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let images = $state<ProcessedImage[]>([]);

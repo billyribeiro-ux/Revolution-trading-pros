@@ -20,7 +20,6 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { tick, onMount, onDestroy } from 'svelte';
-	import { Icon, IconGripVertical, IconTrash, IconCopy, IconChevronUp, IconChevronDown } from '$lib/icons';
 	import BlockRenderer from './BlockRenderer.svelte';
 	import type {
 		VirtualBlockListProps,
@@ -30,6 +29,7 @@ import { logger } from '$lib/utils/logger';
 	} from './VirtualBlockList.types';
 	import type { Block } from './types';
 	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
+	import { Icon, IconChevronDown, IconChevronUp, IconCopy, IconGripVertical, IconTrash } from '$lib/icons';
 
 	// ==========================================================================
 	// Props

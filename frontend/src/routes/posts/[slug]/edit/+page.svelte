@@ -5,9 +5,9 @@ import { logger } from '$lib/utils/logger';
 	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
 	import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
 	import { createBlock, deserializeBlocks } from '$lib/utils/blocks';
-	import { Icon, IconPlus } from '$lib/icons';
 	import type { Block } from '$lib/components/cms/blocks/types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconPlus } from '$lib/icons';
 
 	// Initialize state manager
 	const stateManager = new BlockStateManager();

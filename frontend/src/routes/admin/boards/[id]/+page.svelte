@@ -14,8 +14,8 @@ import { logger } from '$lib/utils/logger';
 		Subtask,
 		CustomFieldDefinition
 	} from '$lib/boards/types';
-	import { Icon, IconArrowLeft, IconPlus, IconDots, IconStar, IconStarFilled, IconUsers, IconSettings, IconFilter, IconSearch, IconCalendar, IconPaperclip, IconMessage, IconChecklist, IconX, IconTrash, IconCheck, IconUser, IconPlayerPlay, IconPlayerStop, IconSubtask } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconArrowLeft, IconCalendar, IconCheck, IconChecklist, IconDots, IconFilter, IconMessage, IconPaperclip, IconPlayerPlay, IconPlayerStop, IconPlus, IconSearch, IconSettings, IconStar, IconStarFilled, IconSubtask, IconTrash, IconUser, IconUsers, IconX } from '$lib/icons';
 
 	// Get board ID from URL
 	const boardId = $derived(page.params['id'] ?? '');

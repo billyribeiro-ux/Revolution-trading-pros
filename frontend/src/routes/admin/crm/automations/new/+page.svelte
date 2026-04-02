@@ -14,7 +14,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
-																			import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { TriggerType, FunnelStatus } from '$lib/crm/types';
 	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconCalendar, IconCheck, IconCode, IconCreditCard, IconForms, IconLink, IconList, IconLoader2, IconLogin, IconMail, IconShare, IconShoppingCart, IconTag, IconUserPlus, IconX } from '$lib/icons';
 
@@ -420,7 +420,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => selectTrigger(trigger.value as TriggerType)}
 						>
 							<div class="trigger-icon {getIconColor(trigger.color)}">
-								<TriggerIcon size={24} />
+								<Icon icon={TriggerIcon} size={24} />
 							</div>
 							<div class="trigger-info">
 								<span class="trigger-label">{trigger.label}</span>
@@ -549,7 +549,7 @@ import { logger } from '$lib/utils/logger';
 							{#if selectedTriggerInfo}
 								{@const TriggerIcon = selectedTriggerInfo.icon}
 								<span class="trigger-badge">
-									<TriggerIcon size={16} />
+									<Icon icon={TriggerIcon} size={16} />
 									{selectedTriggerInfo.label}
 								</span>
 							{/if}

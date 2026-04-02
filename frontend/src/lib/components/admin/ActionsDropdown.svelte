@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Icon, IconDotsVertical } from '$lib/icons';
+
 	/**
 	 * ActionsDropdown - Row Actions Menu
 	 * Revolution Trading Pros - Apple ICT 11+ Principal Engineer Grade
@@ -6,7 +8,6 @@
 	 * Reusable dropdown menu for table row actions.
 	 * Supports icons, dividers, and danger actions.
 	 */
-	import { Icon, IconDotsVertical } from '$lib/icons';
 
 	interface Action {
 		id: string;
@@ -113,8 +114,8 @@
 					disabled={action.disabled}
 				>
 					{#if action.icon}
-						{@const Icon = action.icon}
-						<Icon size={16} />
+						{@const iconStr = action.icon}
+						<Icon icon={iconStr} size={16} />
 					{/if}
 					<span>{action.label}</span>
 				</button>

@@ -21,7 +21,6 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconPhoto, IconPlus, IconTrash, IconX, IconChevronLeft, IconChevronRight, IconLayoutGrid, IconColumns } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import {
 		getBlockStateManager,
@@ -29,6 +28,7 @@
 		type LightboxState
 	} from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconChevronLeft, IconChevronRight, IconColumns, IconLayoutGrid, IconPhoto, IconPlus, IconTrash, IconX } from '$lib/icons';
 
 	// ============================================================================
 	// Types

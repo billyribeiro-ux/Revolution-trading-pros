@@ -6,7 +6,7 @@ import { logger } from '$lib/utils/logger';
 	import { Card, Button, Badge } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
-	import { Icon, IconArrowLeft, IconTrendingUp, IconEye, IconClick, IconDevices, IconCalendar } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconCalendar, IconClick, IconDevices, IconEye, IconTrendingUp } from '$lib/icons';
 
 	const popupId = parseInt(page.params.id!);
 

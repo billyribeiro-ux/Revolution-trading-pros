@@ -30,8 +30,8 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { Icon, IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle, IconEdit, IconTrash, IconTag, IconPlus, IconX, IconCheck, IconClock, IconChartBar, IconTrendingUp, IconBuilding, IconBriefcase, IconCalendar, IconRefresh, IconFlame, IconStar, IconStarFilled, IconArrowRight, IconNote, IconTarget, IconWorld } from '$lib/icons';
 	import { api } from '$lib/api/config';
+	import { Icon, IconActivity, IconArrowLeft, IconArrowRight, IconBriefcase, IconBuilding, IconCalendar, IconChartBar, IconCheck, IconClock, IconEdit, IconFlame, IconMail, IconNote, IconPhone, IconPlus, IconRefresh, IconStar, IconStarFilled, IconTag, IconTarget, IconTrash, IconTrendingUp, IconUserCircle, IconWorld, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

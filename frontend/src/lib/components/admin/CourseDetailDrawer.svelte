@@ -12,8 +12,8 @@
 		type CourseWithContent,
 		type CourseModule
 	} from '$lib/api/courses';
-	import { Icon, IconX, IconBook, IconUsers, IconChartBar, IconEdit, IconEye, IconEyeOff, IconPlus, IconTrash, IconGripVertical, IconClock, IconCalendar, IconCurrencyDollar, IconCheck, IconAlertTriangle, IconPlayerPlay, IconVideo, IconFile } from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
+	import { Icon, IconAlertTriangle, IconBook, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconEdit, IconEye, IconEyeOff, IconFile, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconUsers, IconVideo, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

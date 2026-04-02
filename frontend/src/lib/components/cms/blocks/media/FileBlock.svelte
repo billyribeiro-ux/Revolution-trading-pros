@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconFile, IconDownload, IconFileTypePdf, IconFileTypeDoc, IconFileSpreadsheet, IconFileZip } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconDownload, IconFile, IconFileSpreadsheet, IconFileTypeDoc, IconFileTypePdf, IconFileZip } from '$lib/icons';
 
 	interface Props {
 		block: Block;
@@ -64,14 +64,14 @@
 		return name.split('.').pop()?.toUpperCase() || 'FILE';
 	}
 
-	let FileIcon = $derived(getFileIcon(fileName));
+	let fileIconStr = $derived(getFileIcon(fileName));
 </script>
 
 <div class="file-block" role="article" aria-label="File download">
 	{#if props.isEditing}
 		<div class="file-edit">
 			<div class="file-icon-wrapper">
-				<FileIcon size={28} aria-hidden="true" />
+				<Icon icon={fileIconStr} size={28} aria-hidden="true" />
 			</div>
 			<div class="file-inputs">
 				<input
@@ -103,7 +103,7 @@
 			aria-label="Download {fileName}"
 		>
 			<div class="file-icon-wrapper">
-				<FileIcon size={28} aria-hidden="true" />
+				<Icon icon={fileIconStr} size={28} aria-hidden="true" />
 			</div>
 			<div class="file-info">
 				<span class="file-name">{fileName}</span>

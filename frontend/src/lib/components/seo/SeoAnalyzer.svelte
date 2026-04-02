@@ -1,7 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { Icon, IconCircleCheck, IconAlertTriangle, IconCircleX, IconRefresh, IconTrendingUp } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconCircleCheck, IconCircleX, IconRefresh, IconTrendingUp } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - ICT 7+ Strict Type Safety
@@ -188,7 +188,7 @@ import { logger } from '$lib/utils/logger';
 					{@const StatusIcon = getStatusIcon(result.status)}
 					<div class="result-item {getStatusColor(result.status)}">
 						<div class="result-icon">
-							<StatusIcon size={20} />
+							<Icon icon={StatusIcon} size={20} />
 						</div>
 						<div class="result-content">
 							<div class="result-test">{result.test.replace(/_/g, ' ')}</div>

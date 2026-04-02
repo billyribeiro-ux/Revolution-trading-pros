@@ -7,11 +7,11 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconList, IconChevronDown } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconChevronDown, IconList } from '$lib/icons';
 
 	interface Props {
 		block: Block;

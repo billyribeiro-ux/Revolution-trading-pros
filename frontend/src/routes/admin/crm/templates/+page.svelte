@@ -17,9 +17,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
-																			import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconCheck, IconChevronLeft, IconChevronRight, IconCopy, IconDownload, IconEdit, IconEye, IconFileExport, IconFolder, IconPlus, IconRefresh, IconSearch, IconSquare, IconSquareCheck, IconTemplate, IconTrash, IconX } from '$lib/icons';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -523,7 +524,6 @@
 						No templates match your current filters. Try adjusting your search criteria.
 					{:else}
 						Create your first template or import from the pre-built library.
-	import { Icon, IconAlertCircle, IconCheck, IconChevronLeft, IconChevronRight, IconCopy, IconDownload, IconEdit, IconEye, IconFileExport, IconFolder, IconPlus, IconRefresh, IconSearch, IconSquare, IconSquareCheck, IconTemplate, IconTrash, IconX } from '$lib/icons';
 					{/if}
 				</p>
 				<div class="empty-actions">

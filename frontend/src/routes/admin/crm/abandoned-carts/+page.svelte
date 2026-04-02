@@ -13,7 +13,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
-											import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconExternalLink, IconReceipt, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconTrash, IconTrendingDown, IconTrendingUp, IconUser } from '$lib/icons';

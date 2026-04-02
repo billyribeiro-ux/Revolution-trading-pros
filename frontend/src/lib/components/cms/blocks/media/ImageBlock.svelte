@@ -8,11 +8,11 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconPhoto, IconMaximize, IconX } from '$lib/icons';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import { generateSrcSet } from '$lib/utils/performance';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconMaximize, IconPhoto, IconX } from '$lib/icons';
 
 	// ==========================================================================
 	// Props

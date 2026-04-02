@@ -1,20 +1,17 @@
 <script lang="ts">
+	import { Icon } from '$lib/icons';
+
 	/**
-	 * DynamicIcon Component - ICT 11+ Principal Engineer Pattern
+	 * DynamicIcon Component
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Renders Tabler icons dynamically based on icon name from data.
+	 * Renders icons dynamically based on icon name from data via @iconify/svelte.
 	 * No hardcoding - icon names come from database/API.
 	 *
 	 * Usage: <DynamicIcon name="chart-line" size={24} />
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0
 	 */
-
-	// Import all icons we might need - loaded lazily by Vite
-																																
-	// Type for Tabler icon components
-	type IconComponent = typeof IconChartLine;
 
 	interface Props {
 		name: string | null | undefined;
@@ -24,60 +21,60 @@
 
 	let { name, size = 24, class: className = '' }: Props = $props();
 
-	// Icon registry - maps icon names to components
+	// Icon registry - maps icon names to Tabler iconify strings
 	// This is the single source of truth for available icons
-	const iconRegistry: Record<string, IconComponent> = {
+	const iconRegistry: Record<string, string> = {
 		// Chart/Trading icons
-		'chart-line': IconChartLine,
-		'trending-up': IconTrendingUp,
-		'chart-candle': IconChartCandle,
-		'chart-pie': IconChartPie,
-		'chart-bar': IconChartBar,
-		'chart-dots': IconChartDots,
-		'report-analytics': IconReportAnalytics,
+		'chart-line': 'tabler:chart-line',
+		'trending-up': 'tabler:trending-up',
+		'chart-candle': 'tabler:chart-candle',
+		'chart-pie': 'tabler:chart-pie',
+		'chart-bar': 'tabler:chart-bar',
+		'chart-dots': 'tabler:chart-dots',
+		'report-analytics': 'tabler:report-analytics',
 
 		// Action icons
-		bell: IconBell,
-		rocket: IconRocket,
-		activity: IconActivity,
-		bolt: IconBolt,
-		flame: IconFlame,
-		target: IconTarget,
+		bell: 'tabler:bell',
+		rocket: 'tabler:rocket',
+		activity: 'tabler:activity',
+		bolt: 'tabler:bolt',
+		flame: 'tabler:flame',
+		target: 'tabler:target',
 
 		// Finance icons
-		wallet: IconWallet,
+		wallet: 'tabler:wallet',
 
 		// Media icons
-		'player-play': IconPlayerPlay,
-		video: IconVideo,
-		live: IconLive,
+		'player-play': 'tabler:player-play',
+		video: 'tabler:video',
+		live: 'tabler:live-photo',
 
 		// Education icons
-		book: IconBook,
-		school: IconSchool,
-		certificate: IconCertificate,
+		book: 'tabler:book',
+		school: 'tabler:school',
+		certificate: 'tabler:certificate',
 
 		// Status/Badge icons
-		star: IconStar,
-		diamond: IconDiamond,
-		crown: IconCrown,
-		award: IconAward,
+		star: 'tabler:star',
+		diamond: 'tabler:diamond',
+		crown: 'tabler:crown',
+		award: 'tabler:award',
 
 		// Social icons
-		users: IconUsers,
-		'message-circle': IconMessageCircle,
+		users: 'tabler:users',
+		'message-circle': 'tabler:message-circle',
 
 		// Utility icons
-		calendar: IconCalendar,
-		clock: IconClock,
-		settings: IconSettings,
-		help: IconHelp,
-		home: IconHome,
-		user: IconUser
+		calendar: 'tabler:calendar',
+		clock: 'tabler:clock',
+		settings: 'tabler:settings',
+		help: 'tabler:help',
+		home: 'tabler:home',
+		user: 'tabler:user'
 	};
 
-	// Get the icon component, fallback to chart-line if not found
-	const IconComponent = $derived(iconRegistry[name || ''] || IconChartLine);
+	// Get the icon name, fallback to chart-line if not found
+	const iconName = $derived(iconRegistry[name || ''] || 'tabler:chart-line');
 </script>
 
-<IconComponent {size} class={className} />
+<Icon icon={iconName} {size} class={className} />

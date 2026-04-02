@@ -6,7 +6,6 @@
 import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
-	import { Icon, IconReceipt, IconTicket, IconUsers, IconChartBar, IconRefresh, IconNews, IconForms, IconMail, IconBellRinging, IconPhoto, IconSettings, IconSeo, IconUserCircle, IconFilter, IconActivity, IconSend, IconAlertCircle, IconShoppingCart, IconVideo, IconTag, IconEye, IconClick, IconClock, IconArrowUpRight, IconWorld, IconBrandGoogle, IconLink, IconAlertTriangle, IconTrendingUp, IconCalendar, IconSearch, IconTarget, IconChartLine, IconDevices, IconBrowser, IconDeviceMobile, IconExternalLink, IconPlugConnected } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import {
 		connections,
@@ -14,6 +13,7 @@ import { logger } from '$lib/utils/logger';
 		getIsSeoConnected
 	} from '$lib/stores/connections.svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { Icon, IconActivity, IconAlertCircle, IconAlertTriangle, IconArrowUpRight, IconBellRinging, IconBrandGoogle, IconBrowser, IconCalendar, IconChartBar, IconChartLine, IconClick, IconClock, IconDeviceMobile, IconDevices, IconExternalLink, IconEye, IconFilter, IconForms, IconLink, IconMail, IconNews, IconPhoto, IconPlugConnected, IconReceipt, IconRefresh, IconSearch, IconSend, IconSeo, IconSettings, IconShoppingCart, IconTag, IconTarget, IconTicket, IconTrendingUp, IconUserCircle, IconUsers, IconVideo, IconWorld } from '$lib/icons';
 
 	// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoints
 	async function localFetch<T = any>(endpoint: string): Promise<T> {
@@ -423,7 +423,7 @@ import { logger } from '$lib/utils/logger';
 							in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}
 						>
 							<div class="metric-icon-wrap {metric.color}">
-								<MetricIcon size={20} />
+								<Icon icon={MetricIcon} size={20} />
 							</div>
 							<div class="metric-body">
 								<span class="metric-label">{metric.label}</span>
@@ -745,7 +745,7 @@ import { logger } from '$lib/utils/logger';
 						in:scale={{ duration: 400, delay: 350 + i * 50, easing: cubicOut }}
 					>
 						<div class="business-card-icon {item.color}">
-							<BusinessIcon size={28} />
+							<Icon icon={BusinessIcon} size={28} />
 						</div>
 						<div class="business-card-content">
 							<span class="business-card-value">
@@ -787,7 +787,7 @@ import { logger } from '$lib/utils/logger';
 						in:scale={{ duration: 300, delay: 450 + i * 30, easing: elasticOut }}
 					>
 						<div class="quick-action-icon {action.color}">
-							<ActionIcon size={20} />
+							<Icon icon={ActionIcon} size={20} />
 						</div>
 						<span class="quick-action-label">{action.label}</span>
 					</a>

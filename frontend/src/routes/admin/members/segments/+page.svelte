@@ -16,9 +16,9 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { Icon, IconFilter, IconPlus, IconUsers, IconTag, IconEdit, IconTrash, IconCopy, IconX, IconCheck, IconSearch, IconRefresh, IconDownload, IconArrowLeft, IconChartBar, IconMail, IconCurrencyDollar, IconCalendar, IconTrendingUp } from '$lib/icons';
 	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconArrowLeft, IconCalendar, IconChartBar, IconCheck, IconCopy, IconCurrencyDollar, IconDownload, IconEdit, IconFilter, IconMail, IconPlus, IconRefresh, IconSearch, IconTag, IconTrash, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes

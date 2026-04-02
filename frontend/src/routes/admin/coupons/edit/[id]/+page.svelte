@@ -21,8 +21,8 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '$lib/api/admin';
-	import { Icon, IconTicket, IconCheck, IconX, IconRefresh, IconAlertCircle, IconTrash } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconCheck, IconRefresh, IconTicket, IconTrash, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions

@@ -11,7 +11,7 @@
 		type CreateCourseRequest,
 		type UpdateCourseRequest
 	} from '$lib/api/courses';
-	import { Icon, IconX, IconBook, IconPlus, IconEdit, IconCurrencyDollar, IconUser, IconTag } from '$lib/icons';
+	import { Icon, IconBook, IconCurrencyDollar, IconEdit, IconPlus, IconTag, IconUser, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

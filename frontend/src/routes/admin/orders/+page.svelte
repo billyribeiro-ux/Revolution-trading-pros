@@ -7,8 +7,8 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { browser } from '$app/environment';
-	import { Icon, IconShoppingCart, IconCurrencyDollar, IconCheck, IconClock, IconRefresh, IconSearch, IconFilter, IconDownload, IconChevronLeft, IconChevronRight, IconExternalLink, IconX, IconAlertTriangle } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { Icon, IconAlertTriangle, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCurrencyDollar, IconDownload, IconExternalLink, IconFilter, IconRefresh, IconSearch, IconShoppingCart, IconX } from '$lib/icons';
 
 	// Types
 	interface Order {

@@ -1,9 +1,9 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { Icon, IconTrendingUp, IconTrendingDown, IconMinus, IconRefresh, IconCalendar } from '$lib/icons';
 	import { connections, getIsSeoConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
+	import { Icon, IconCalendar, IconMinus, IconRefresh, IconTrendingDown, IconTrendingUp } from '$lib/icons';
 
 	let connectionLoading = $state(true);
 	let stats: any = $state(null);
@@ -146,7 +146,7 @@ import { logger } from '$lib/utils/logger';
 					{#if comparison?.change?.impressions}
 						{@const ImpressionsIcon = getTrendIcon(comparison.change.impressions.direction)}
 						<div class="metric-change {getTrendClass(comparison.change.impressions.direction)}">
-							<ImpressionsIcon size={16} />
+							<Icon icon={ImpressionsIcon} size={16} />
 							{Math.abs(comparison.change.impressions.percentage)}%
 						</div>
 					{/if}
@@ -158,7 +158,7 @@ import { logger } from '$lib/utils/logger';
 					{#if comparison?.change?.clicks}
 						{@const ClicksIcon = getTrendIcon(comparison.change.clicks.direction)}
 						<div class="metric-change {getTrendClass(comparison.change.clicks.direction)}">
-							<ClicksIcon size={16} />
+							<Icon icon={ClicksIcon} size={16} />
 							{Math.abs(comparison.change.clicks.percentage)}%
 						</div>
 					{/if}
@@ -170,7 +170,7 @@ import { logger } from '$lib/utils/logger';
 					{#if comparison?.change?.ctr}
 						{@const CtrIcon = getTrendIcon(comparison.change.ctr.direction)}
 						<div class="metric-change {getTrendClass(comparison.change.ctr.direction)}">
-							<CtrIcon size={16} />
+							<Icon icon={CtrIcon} size={16} />
 							{Math.abs(comparison.change.ctr.percentage)}%
 						</div>
 					{/if}
@@ -182,7 +182,7 @@ import { logger } from '$lib/utils/logger';
 					{#if comparison?.change?.position}
 						{@const PositionIcon = getTrendIcon(comparison.change.position.direction)}
 						<div class="metric-change {getTrendClass(comparison.change.position.direction)}">
-							<PositionIcon size={16} />
+							<Icon icon={PositionIcon} size={16} />
 							{Math.abs(comparison.change.position.percentage)}%
 						</div>
 					{/if}

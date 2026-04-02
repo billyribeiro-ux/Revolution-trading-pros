@@ -27,8 +27,8 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { goto } from '$app/navigation';
-	import { Icon, IconCrown, IconPlus, IconX, IconCheck, IconArrowLeft, IconTarget } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { Icon, IconArrowLeft, IconCheck, IconCrown, IconPlus, IconTarget, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

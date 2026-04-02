@@ -24,8 +24,8 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { Icon, IconCheck, IconX, IconLoader, IconMail, IconRefresh, IconLogin, IconAlertTriangle, IconClock } from '$lib/icons';
 	import { verifyEmail, resendVerificationEmail } from '$lib/api/auth';
+	import { Icon, IconAlertTriangle, IconCheck, IconClock, IconLoader, IconLogin, IconMail, IconRefresh, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management

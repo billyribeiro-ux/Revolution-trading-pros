@@ -12,7 +12,6 @@
 	 */
 
 	import {
-	import { Icon, IconCheck, IconChevronDown, IconChevronRight, IconCopy, IconEdit, IconEye, IconFile, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconVideo, IconX } from '$lib/icons';
 		coursesApi,
 		sectionsApi,
 		lessonsApi,
@@ -21,8 +20,8 @@
 		type CreateSectionRequest,
 		type CreateLessonRequest
 	} from '$lib/api/courses-enhanced';
+	import { Icon, IconCheck, IconChevronDown, IconChevronRight, IconCopy, IconEdit, IconEye, IconFile, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconVideo, IconX } from '$lib/icons';
 
-													
 	interface Props {
 		courseId?: number;
 		onSave?: (course: Course) => void;

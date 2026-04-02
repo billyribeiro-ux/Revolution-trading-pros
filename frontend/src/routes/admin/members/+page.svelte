@@ -4,7 +4,6 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
-	import { Icon, IconUsers, IconTrendingUp, IconTrendingDown, IconCurrencyDollar, IconCrown, IconAlertTriangle, IconMail, IconSearch, IconFilter, IconDownload, IconRefresh, IconChevronLeft, IconChevronRight, IconExternalLink, IconUserCheck, IconCreditCard, IconChartBar, IconX, IconSend, IconUpload, IconUserPlus, IconEdit, IconTrash, IconBan, IconPlayerPlay, IconFileSpreadsheet, IconPdf } from '$lib/icons';
 	import { membersApi } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
@@ -13,6 +12,7 @@ import { logger } from '$lib/utils/logger';
 	import MemberFormModal from '$lib/components/admin/MemberFormModal.svelte';
 	import MemberDetailDrawer from '$lib/components/admin/MemberDetailDrawer.svelte';
 	import ActionsDropdown from '$lib/components/admin/ActionsDropdown.svelte';
+	import { Icon, IconAlertTriangle, IconBan, IconChartBar, IconChevronLeft, IconChevronRight, IconCreditCard, IconCrown, IconCurrencyDollar, IconDownload, IconEdit, IconExternalLink, IconFileSpreadsheet, IconFilter, IconMail, IconPdf, IconPlayerPlay, IconRefresh, IconSearch, IconSend, IconTrash, IconTrendingDown, IconTrendingUp, IconUpload, IconUserCheck, IconUserPlus, IconUsers, IconX } from '$lib/icons';
 
 	// Reactive state from stores
 	let members = $derived(membersStore.members);

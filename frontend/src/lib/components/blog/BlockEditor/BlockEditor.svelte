@@ -26,7 +26,6 @@ import { logger } from '$lib/utils/logger';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { Icon, IconPlus, IconGripVertical, IconTrash, IconCopy, IconSettings, IconChevronUp, IconChevronDown, IconArrowBackUp, IconArrowForwardUp, IconDeviceDesktop, IconDeviceTablet, IconDeviceMobile, IconEye, IconEdit, IconMaximize, IconMinimize, IconDeviceFloppy, IconCloudUpload, IconSearch, IconRobot, IconSeo, IconStack2, IconKeyboard, IconHistory, IconCalendar } from '$lib/icons';
 
 	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
 	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
@@ -42,6 +41,7 @@ import { logger } from '$lib/utils/logger';
 	import RevisionHistory from './RevisionHistory.svelte';
 	import KeyboardShortcuts from './KeyboardShortcuts.svelte';
 	import SchedulingPanel from './SchedulingPanel.svelte';
+	import { Icon, IconArrowBackUp, IconArrowForwardUp, IconCalendar, IconChevronDown, IconChevronUp, IconCloudUpload, IconCopy, IconDeviceDesktop, IconDeviceFloppy, IconDeviceMobile, IconDeviceTablet, IconEdit, IconEye, IconGripVertical, IconHistory, IconKeyboard, IconMaximize, IconMinimize, IconPlus, IconRobot, IconSearch, IconSeo, IconSettings, IconStack2, IconTrash } from '$lib/icons';
 
 	// ==========================================================================
 	// Props

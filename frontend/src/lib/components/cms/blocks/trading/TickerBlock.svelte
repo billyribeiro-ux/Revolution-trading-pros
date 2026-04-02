@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconTrendingUp, IconTrendingDown, IconPlus, IconX, IconChartLine } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
+	import { Icon, IconChartLine, IconPlus, IconTrendingDown, IconTrendingUp, IconX } from '$lib/icons';
 
 	interface Props {
 		block: Block;

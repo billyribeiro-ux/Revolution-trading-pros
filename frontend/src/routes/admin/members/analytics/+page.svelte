@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Icon, IconArrowLeft, IconChartBar, IconChartLine, IconTrendingUp, IconTrendingDown, IconUsers, IconCurrencyDollar, IconRefresh, IconDownload, IconCalendar, IconSettings } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconCalendar, IconChartBar, IconChartLine, IconCurrencyDollar, IconDownload, IconRefresh, IconSettings, IconTrendingDown, IconTrendingUp, IconUsers } from '$lib/icons';
 
 	// Analytics data
 	let loading = $state(true);

@@ -7,8 +7,16 @@
  * Static data that doesn't need reactivity - imported as constants.
  */
 
-import type { Component } from 'svelte';
-	import { Icon, IconActivity, IconAlertTriangle, IconChartBar, IconChartCandle, IconChartLine, IconClock, IconTarget, IconWaveSine } from '$lib/icons';
+import {
+	IconActivity,
+	IconAlertTriangle,
+	IconChartBar,
+	IconChartCandle,
+	IconChartLine,
+	IconClock,
+	IconTarget,
+	IconWaveSine
+} from '$lib/icons';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -22,7 +30,7 @@ export interface Indicator {
 	description: string;
 	useCase: string;
 	difficulty: string;
-	icon: Component;
+	icon: string;
 	color: string;
 	gradient: string;
 	features: string[];
@@ -37,7 +45,7 @@ export interface SetupItem {
 	title: string;
 	value: string;
 	detail: string;
-	icon: Component;
+	icon: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

@@ -14,9 +14,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-																		import { API_BASE_URL } from '$lib/api/config';
+	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconChevronRight, IconCopy, IconDatabase, IconDownload, IconEdit, IconGripVertical, IconLock, IconPlus, IconRefresh, IconSearch, IconTrash, IconUpload, IconWorld, IconX } from '$lib/icons';
 
 	// Types
 	interface Datasource {
@@ -460,7 +461,6 @@
 			await fetchEntries();
 		} catch (_err) {
 			showToastMessage('Failed to import CSV', 'error');
-	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconChevronRight, IconCopy, IconDatabase, IconDownload, IconEdit, IconGripVertical, IconLock, IconPlus, IconRefresh, IconSearch, IconTrash, IconUpload, IconWorld, IconX } from '$lib/icons';
 		} finally {
 			isSaving = false;
 		}

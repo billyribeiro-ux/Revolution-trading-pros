@@ -5,7 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
-	import { Icon, IconLayoutKanban, IconArrowLeft, IconSettings, IconCloud, IconClock, IconPalette, IconPlus, IconTrash, IconCheck, IconAlertCircle, IconRefresh } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconClock, IconCloud, IconLayoutKanban, IconPalette, IconPlus, IconRefresh, IconSettings, IconTrash } from '$lib/icons';
 
 	// State
 	let settings = $state<BoardsSettings>({

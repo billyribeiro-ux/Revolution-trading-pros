@@ -17,8 +17,8 @@ import { logger } from '$lib/utils/logger';
 	import { fade, fly } from 'svelte/transition';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
-	import { Icon, IconSearch, IconFileText, IconArrowForward, IconExternalLink, IconError404, IconCode, IconKey, IconChartBar, IconSettings, IconSitemap, IconBrandGoogle, IconNews, IconVideo, IconPhoto, IconMapPin, IconMail, IconPlugConnected, IconRefresh, IconTrendingUp, IconTrendingDown, IconWorld, IconLink, IconCheck, IconClock, IconTarget } from '$lib/icons';
 	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
+	import { Icon, IconArrowForward, IconBrandGoogle, IconChartBar, IconCheck, IconClock, IconCode, IconError404, IconExternalLink, IconFileText, IconKey, IconLink, IconMail, IconMapPin, IconNews, IconPhoto, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconSitemap, IconTarget, IconTrendingDown, IconTrendingUp, IconVideo, IconWorld } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
@@ -463,7 +463,7 @@ import { logger } from '$lib/utils/logger';
 							<span class="new-badge">NEW</span>
 						{/if}
 						<div class="card-icon" style="background: {section.gradient}">
-							<SectionIcon size={24} />
+							<Icon icon={SectionIcon} size={24} />
 						</div>
 						<h3>{section.title}</h3>
 						<p>{section.description}</p>

@@ -15,7 +15,7 @@
 	import { flip } from 'svelte/animate';
 	import { toasts, toastStore } from '$lib/stores/toast.svelte';
 	import type { Toast } from '$lib/stores/toast.svelte';
-	import { Icon, IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconCheck, IconInfoCircle, IconLoader, IconX } from '$lib/icons';
 
 	// Local derived from getter
 	const toastList = $derived(toasts.value);
@@ -38,7 +38,7 @@
 
 <div class="toast-container" aria-live="polite" aria-label="Notifications">
 	{#each toastList as toast, index (toast.id)}
-		{@const IconComponent = getIcon(toast.type)}
+		{@const iconStr = getIcon(toast.type)}
 		<div
 			class="toast toast-{toast.type}"
 			animate:flip={{ duration: 300, easing: quintOut }}
@@ -55,7 +55,7 @@
 			{/if}
 
 			<div class="toast-icon" class:spinning={toast.type === 'loading'}>
-				<IconComponent size={20} stroke={2} />
+				<Icon icon={iconStr} size={20} stroke={2} />
 			</div>
 			<div class="toast-content">
 				<span class="toast-message">{toast.message}</span>

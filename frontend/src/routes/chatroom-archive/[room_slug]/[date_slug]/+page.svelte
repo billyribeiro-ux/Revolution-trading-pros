@@ -12,8 +12,8 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { Icon, IconChevronLeft, IconChevronRight, IconFileText, IconArrowLeft } from '$lib/icons';
 	import type { ArchiveDetailPageData } from './+page.server';
+	import { Icon, IconArrowLeft, IconChevronLeft, IconChevronRight, IconFileText } from '$lib/icons';
 
 	// Server data
 	interface Props {

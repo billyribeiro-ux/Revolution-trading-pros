@@ -17,9 +17,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Icon, IconPlus, IconSearch, IconEdit, IconTrash, IconEye, IconPlayerPlay, IconPlayerPause, IconCopy, IconRefresh, IconUsers, IconChartBar, IconDownload, IconUpload, IconBolt, IconShare, IconX, IconCheck, IconAlertCircle, IconUserPlus } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
+	import { Icon, IconAlertCircle, IconBolt, IconChartBar, IconCheck, IconCopy, IconDownload, IconEdit, IconEye, IconPlayerPause, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconShare, IconTrash, IconUpload, IconUserPlus, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -389,7 +389,7 @@
 	}
 
 	function getStatusIcon(status: FunnelStatus) {
-		const icons: Record<FunnelStatus, typeof IconEdit> = {
+		const icons: Record<FunnelStatus, string> = {
 			draft: IconEdit,
 			active: IconPlayerPlay,
 			paused: IconPlayerPause
@@ -654,7 +654,7 @@
 							</td>
 							<td>
 								<span class="status-badge {getStatusColor(funnel.status)}">
-									<StatusIcon size={12} />
+									<Icon icon={StatusIcon} size={12} />
 									{funnel.status}
 								</span>
 							</td>

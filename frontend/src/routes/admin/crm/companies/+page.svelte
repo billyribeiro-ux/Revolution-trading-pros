@@ -12,11 +12,11 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Icon, IconBuilding, IconPlus, IconSearch, IconEdit, IconTrash, IconEye, IconRefresh, IconUsers, IconCurrencyDollar, IconBriefcase, IconWorld, IconCopy } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconBriefcase, IconBuilding, IconCopy, IconCurrencyDollar, IconEdit, IconEye, IconPlus, IconRefresh, IconSearch, IconTrash, IconUsers, IconWorld } from '$lib/icons';
 
 	let companies = $state<CrmCompany[]>([]);
 	let isLoading = $state(true);

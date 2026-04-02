@@ -58,10 +58,10 @@ import { logger } from '$lib/utils/logger';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import { Icon, IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
+	import { Icon, IconAlertCircle, IconCheck, IconLoader, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management

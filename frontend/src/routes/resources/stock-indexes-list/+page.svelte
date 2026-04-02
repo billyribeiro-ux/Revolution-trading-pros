@@ -9,7 +9,7 @@
 	 */
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconChartLine, IconWorld, IconArrowRight, IconQuestionMark, IconExternalLink, IconChartBar, IconBuildingSkyscraper } from '$lib/icons';
+	import { Icon, IconArrowRight, IconBuildingSkyscraper, IconChartBar, IconChartLine, IconExternalLink, IconQuestionMark, IconWorld } from '$lib/icons';
 
 	// Major Stock Indexes with detailed info
 	const majorIndexes = [

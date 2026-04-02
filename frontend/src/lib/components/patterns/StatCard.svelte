@@ -5,8 +5,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { Icon, IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
-	import type { ComponentType } from 'svelte';
+	import { Icon, IconMinus, IconTrendingDown, IconTrendingUp } from '$lib/icons';
 
 	interface Props {
 		title: string;
@@ -14,7 +13,7 @@
 		subtitle?: string;
 		trend?: number | null;
 		trendLabel?: string;
-		icon?: ComponentType | null;
+		icon?: string | null;
 		iconColor?: 'primary' | 'success' | 'warning' | 'error' | 'info';
 		loading?: boolean;
 	}
@@ -39,9 +38,9 @@
 
 <div class="stat-card">
 	{#if props.icon}
-		{@const IconComponent = props.icon}
+		{@const iconStr = props.icon}
 		<div class="stat-icon {iconColors[iconColor]}">
-			<IconComponent size={24} />
+			<Icon icon={iconStr} size={24} />
 		</div>
 	{/if}
 

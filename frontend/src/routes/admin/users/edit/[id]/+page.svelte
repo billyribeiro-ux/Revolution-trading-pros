@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Icon, IconCheck, IconX, IconUser } from '$lib/icons';
+	import { Icon, IconCheck, IconUser, IconX } from '$lib/icons';
 
 	let loading = $state(true);
 	let saving = $state(false);

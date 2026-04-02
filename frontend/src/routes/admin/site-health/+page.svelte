@@ -21,7 +21,7 @@ import { logger } from '$lib/utils/logger';
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-																											import {
+	import {
 		connections,
 		getConnectedCount,
 		getOverallHealth,
@@ -458,7 +458,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={activeTab === tab.id}
 							onclick={() => (activeTab = tab.id)}
 						>
-							<TabIcon size={18} />
+							<Icon icon={TabIcon} size={18} />
 							<span>{tab.label}</span>
 						</button>
 					{/each}
@@ -689,7 +689,7 @@ import { logger } from '$lib/utils/logger';
 										in:fly={{ y: 10, duration: 300, delay: 50 * i }}
 									>
 										<div class="check-icon" style="color: {getStatusColor(check.status)}">
-											<StatusIcon size={20} />
+											<Icon icon={StatusIcon} size={20} />
 										</div>
 										<div class="check-info">
 											<h4>{check.name}</h4>

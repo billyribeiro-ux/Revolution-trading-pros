@@ -4,8 +4,8 @@
 	 * @version 2.0.0
 	 */
 	import { register } from '$lib/api/auth';
-	import { Icon, IconUser, IconMail, IconLock, IconAlertCircle, IconUserPlus, IconSparkles, IconArrowRight, IconCircleCheck, IconInbox, IconEye, IconEyeOff } from '$lib/icons';
 	import { browser } from '$app/environment';
+	import { Icon, IconAlertCircle, IconArrowRight, IconCircleCheck, IconEye, IconEyeOff, IconInbox, IconLock, IconMail, IconSparkles, IconUser, IconUserPlus } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let name = $state('');

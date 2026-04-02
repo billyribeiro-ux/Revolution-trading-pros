@@ -17,9 +17,9 @@
 	import { untrack } from 'svelte';
 	import type { Action } from 'svelte/action';
 	import { browser } from '$app/environment';
-	import { Icon, IconChevronDown, IconPlus, IconMinus, IconX } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconChevronDown, IconMinus, IconPlus, IconX } from '$lib/icons';
 
 	interface AccordionItem {
 		id: string;

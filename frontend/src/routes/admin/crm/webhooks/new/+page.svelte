@@ -13,7 +13,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-										import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { WebhookEvent } from '$lib/crm/types';
 	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconKey, IconPlus, IconRefresh, IconTrash, IconWebhook, IconX } from '$lib/icons';

@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
-	import { Icon, IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
+	import { Icon, IconEdit, IconFilter, IconPlus, IconRefresh, IconSearch, IconTrash } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes

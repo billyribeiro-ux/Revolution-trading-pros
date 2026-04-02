@@ -21,11 +21,11 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { fade, slide, fly } from 'svelte/transition';
-	import { Icon, IconLayoutRows, IconClick, IconForms, IconMenu2, IconLayoutKanban, IconFlag, IconMaximize, IconId, IconLayoutDashboard, IconSearch, IconPlus, IconEdit, IconTrash, IconCopy, IconHistory, IconLink, IconRefresh, IconCheck, IconX, IconLoader, IconAlertCircle, IconFilter } from '$lib/icons';
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import type { Block } from './types';
+	import { Icon, IconAlertCircle, IconCheck, IconClick, IconCopy, IconEdit, IconFilter, IconFlag, IconForms, IconHistory, IconId, IconLayoutDashboard, IconLayoutKanban, IconLayoutRows, IconLink, IconLoader, IconMaximize, IconMenu2, IconPlus, IconRefresh, IconSearch, IconTrash, IconX } from '$lib/icons';
 
 	// ==========================================================================
 	// Types
@@ -143,7 +143,7 @@ import { logger } from '$lib/utils/logger';
 
 	const categoryConfig: Record<
 		ComponentCategory,
-		{ label: string; icon: typeof IconLayoutRows; color: string }
+		{ label: string; icon: string; color: string }
 	> = {
 		header: { label: 'Headers', icon: IconLayoutRows, color: '#3b82f6' },
 		footer: { label: 'Footers', icon: IconLayoutRows, color: '#10b981' },
@@ -572,7 +572,7 @@ import { logger } from '$lib/utils/logger';
 
 						{#each Object.entries(categoryConfig) as [key, config]}
 							{@const count = categories.find((c) => c.category === key)?.count || 0}
-							{@const Icon = config.icon}
+							{@const iconStr = config.icon}
 							<button
 								type="button"
 								class="category-item"
@@ -583,7 +583,7 @@ import { logger } from '$lib/utils/logger';
 								}}
 							>
 								<span class="category-icon" style="background-color: {config.color}">
-									<Icon size={16} />
+									<Icon icon={iconStr} size={16} />
 								</span>
 								<span class="category-label">{config.label}</span>
 								<span class="category-count">{count}</span>
@@ -630,7 +630,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="components-grid">
 							{#each filteredComponents as component (component.id)}
 								{@const config = categoryConfig[component.category]}
-								{@const Icon = config.icon}
+								{@const iconStr = config.icon}
 								<div
 									class="component-card"
 									class:selected={selectedComponent?.id === component.id}
@@ -645,7 +645,7 @@ import { logger } from '$lib/utils/logger';
 											<img src={component.thumbnail_url} alt={component.name} />
 										{:else}
 											<div class="thumbnail-placeholder" style="background-color: {config.color}20">
-												<Icon size={32} />
+												<Icon icon={iconStr} size={32} />
 											</div>
 										{/if}
 										{#if component.is_locked}
@@ -655,7 +655,7 @@ import { logger } from '$lib/utils/logger';
 
 									<div class="card-body">
 										<div class="card-category" style="color: {config.color}">
-											<Icon size={14} />
+											<Icon icon={iconStr} size={14} />
 											{config.label}
 										</div>
 										<h4 class="card-title">{component.name}</h4>

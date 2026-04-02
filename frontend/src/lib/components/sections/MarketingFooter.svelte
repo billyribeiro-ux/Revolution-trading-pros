@@ -19,7 +19,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconBrandTwitter, IconBrandInstagram, IconBrandYoutube, IconBrandFacebook } from '$lib/icons';
+	import { Icon, IconBrandFacebook, IconBrandInstagram, IconBrandTwitter, IconBrandYoutube } from '$lib/icons';
 
 	// --- State (Svelte 5 Runes) ---
 	let currentYear = $state(new Date().getFullYear());
@@ -143,7 +143,7 @@
 
 					<div class="social-links" aria-label="Social links">
 						{#each socialLinks as social}
-							{@const IconComponent = social.icon}
+							{@const iconStr = social.icon}
 							<a
 								href={social.href}
 								target="_blank"
@@ -152,7 +152,7 @@
 								aria-label={social.label}
 								title={social.label}
 							>
-								<IconComponent size={20} />
+								<Icon icon={iconStr} size={20} />
 							</a>
 						{/each}
 					</div>

@@ -11,6 +11,7 @@
 	import { browser } from '$app/environment';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
+	import { Icon } from '$lib/icons';
 
 	interface Props {
 		title: string;
@@ -189,11 +190,11 @@
 		<!-- Header with icon -->
 		<div class="flex items-start justify-between mb-4">
 			{#if icon}
-				{@const IconComponent = icon}
+				{@const iconStr = icon}
 				<div
 					class="stat-icon w-12 h-12 rounded-xl {colors.iconBg} flex items-center justify-center"
 				>
-					<IconComponent size={24} class={colors.icon} />
+					<Icon icon={iconStr} size={24} class={colors.icon} />
 				</div>
 			{/if}
 

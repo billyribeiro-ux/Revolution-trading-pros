@@ -15,7 +15,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart.svelte';
-	import { Icon, IconCheck, IconShoppingCart, IconChartLine, IconBell, IconFilter, IconClock } from '$lib/icons';
+	import { Icon, IconBell, IconChartLine, IconCheck, IconClock, IconFilter, IconShoppingCart } from '$lib/icons';
 
 	// Product configuration
 	const product = {
@@ -205,10 +205,10 @@ import { logger } from '$lib/utils/logger';
 			<div class="features-grid">
 				{#each product.features as feature}
 					<!-- Svelte 5: {@const} must be immediate child of {#each} -->
-					{@const Icon = feature.icon}
+					{@const iconStr = feature.icon}
 					<div class="feature-card">
 						<div class="feature-icon">
-							<Icon size={32} />
+							<Icon icon={iconStr} size={32} />
 						</div>
 						<h3>{feature.title}</h3>
 						<p>{feature.description}</p>

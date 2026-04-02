@@ -4,11 +4,11 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { Icon, IconEye, IconCursor, IconPointer, IconClock, IconChartBar, IconRefresh, IconArrowUpRight, IconPlay, IconClick } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsBehaviorConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { Icon, IconArrowUpRight, IconChartBar, IconClick, IconClock, IconCursor, IconEye, IconPlay, IconPointer, IconRefresh } from '$lib/icons';
 
 	let isLoading = $state(true);
 	let connectionLoading = $state(true);

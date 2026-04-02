@@ -19,7 +19,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
-	import { Icon, IconX } from '$lib/icons';
 	import {
 		activePopup,
 		getActivePopups,
@@ -29,6 +28,7 @@
 		type EnhancedPopup
 	} from '$lib/api/popups';
 	import { popupStore } from '$lib/stores/popups.svelte';
+	import { Icon, IconX } from '$lib/icons';
 
 	// Props
 	interface Props {

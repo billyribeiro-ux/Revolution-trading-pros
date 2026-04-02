@@ -4,7 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardTemplate } from '$lib/boards/types';
-	import { Icon, IconTemplate, IconArrowLeft, IconSearch, IconPlus, IconLayoutKanban, IconCode, IconBriefcase, IconUsers, IconRocket, IconBook, IconChartBar } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconBook, IconBriefcase, IconChartBar, IconCode, IconLayoutKanban, IconPlus, IconRocket, IconSearch, IconTemplate, IconUsers } from '$lib/icons';
 
 	// State
 	let templates = $state<BoardTemplate[]>([]);
@@ -303,7 +303,7 @@ import { logger } from '$lib/utils/logger';
 							? 'bg-[#E6B800] text-[#0D1117]'
 							: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
 					>
-						<category.icon class="w-4 h-4" />
+						<Icon icon={category.icon} class="w-4 h-4" />
 						{category.name}
 					</button>
 				{/each}
@@ -360,7 +360,7 @@ import { logger } from '$lib/utils/logger';
 						<!-- Content -->
 						<div class="p-4">
 							<div class="flex items-center gap-2 mb-2">
-								<CategoryIcon class="w-4 h-4 text-gray-400" />
+								<Icon icon={CategoryIcon} class="w-4 h-4 text-gray-400" />
 								<span class="text-xs text-gray-500 dark:text-gray-400 capitalize"
 									>{template.category}</span
 								>

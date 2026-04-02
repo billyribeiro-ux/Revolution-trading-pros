@@ -9,11 +9,11 @@
 
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
-	import { Icon, IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff, IconWaveSine, IconAlertCircle, IconUpload } from '$lib/icons';
 	import { useMediaControls } from '../hooks/useMediaControls.svelte';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconAlertCircle, IconPlayerPause, IconPlayerPlay, IconUpload, IconVolume, IconVolumeOff, IconWaveSine } from '$lib/icons';
 
 	// ==========================================================================
 	// Props

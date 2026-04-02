@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Icon, IconDashboard, IconForms, IconUsers, IconSeo, IconLink, IconError404, IconSettings, IconLogout } from '$lib/icons';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
+	import { Icon, IconDashboard, IconError404, IconForms, IconLink, IconLogout, IconSeo, IconSettings, IconUsers } from '$lib/icons';
 
 	// Props
 	interface Props {
@@ -87,7 +87,7 @@
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
 		{#each navigation as item}
-			{@const IconComponent = item.icon}
+			{@const iconStr = item.icon}
 			<div class="nav-group">
 				<a
 					href={item.href}
@@ -95,7 +95,7 @@
 					class:active={isActive(item.href)}
 					onclick={handleNavClick}
 				>
-					<IconComponent size={20} />
+					<Icon icon={iconStr} size={20} />
 					<span class="nav-label">{item.label}</span>
 				</a>
 

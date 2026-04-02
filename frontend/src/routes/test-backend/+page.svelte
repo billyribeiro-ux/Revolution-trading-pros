@@ -7,7 +7,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
-	import { Icon, IconMail, IconUser, IconCheck } from '$lib/icons';
+	import { Icon, IconCheck, IconMail, IconUser } from '$lib/icons';
 
 	// Form state
 	let formData = $state({

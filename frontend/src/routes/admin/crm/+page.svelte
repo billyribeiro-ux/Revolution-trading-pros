@@ -24,11 +24,11 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import { Icon, IconUsers, IconUserPlus, IconMail, IconBuilding, IconSearch, IconFilter, IconDotsVertical, IconEdit, IconEye, IconTag, IconChartBar, IconTrendingUp, IconCurrencyDollar, IconRefresh, IconListDetails, IconMailForward, IconRepeat, IconBook, IconPlayerPlay, IconLink, IconRobot, IconTarget } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { Icon, IconBook, IconBuilding, IconChartBar, IconCurrencyDollar, IconDotsVertical, IconEdit, IconEye, IconFilter, IconLink, IconListDetails, IconMail, IconMailForward, IconPlayerPlay, IconRefresh, IconRepeat, IconRobot, IconSearch, IconTag, IconTarget, IconTrendingUp, IconUserPlus, IconUsers } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - Apple ICT 7 Standard: No 'any' types
@@ -323,7 +323,7 @@
 						target={link.external ? '_blank' : undefined}
 						rel={link.external ? 'noopener noreferrer' : undefined}
 					>
-						<LinkIcon size={16} />
+						<Icon icon={LinkIcon} size={16} />
 						<span>{link.name}</span>
 					</a>
 				{/each}

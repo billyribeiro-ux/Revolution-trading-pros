@@ -150,7 +150,7 @@
 				{@const TabIcon = tab.icon}
 				{#if tab.href}
 					<a href={tab.href} class="tab">
-						<TabIcon size={18} />
+						<Icon icon={TabIcon} size={18} />
 						<span>{tab.name}</span>
 					</a>
 				{:else}
@@ -159,7 +159,7 @@
 						class:active={activeTab === tab.id}
 						onclick={() => (activeTab = tab.id)}
 					>
-						<TabIcon size={18} />
+						<Icon icon={TabIcon} size={18} />
 						<span>{tab.name}</span>
 					</button>
 				{/if}

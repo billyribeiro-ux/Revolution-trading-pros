@@ -8,7 +8,7 @@
 	 */
 	import { page } from '$app/state';
 	import { user } from '$lib/stores/auth.svelte';
-	import { Icon, IconDashboard, IconReceipt, IconTicket, IconUsers, IconUserCircle, IconSettings, IconLogout, IconX, IconForms, IconSeo, IconNews, IconMail, IconChartBar, IconSend, IconFilter, IconEye, IconPhoto, IconTag, IconVideo, IconShoppingCart, IconBellRinging, IconHeartbeat, IconPlugConnected, IconBook, IconFileText, IconTrendingUp } from '$lib/icons';
+	import { Icon, IconBellRinging, IconBook, IconChartBar, IconDashboard, IconEye, IconFileText, IconFilter, IconForms, IconHeartbeat, IconLogout, IconMail, IconNews, IconPhoto, IconPlugConnected, IconReceipt, IconSend, IconSeo, IconSettings, IconShoppingCart, IconTag, IconTicket, IconTrendingUp, IconUserCircle, IconUsers, IconVideo, IconX } from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;
@@ -99,14 +99,14 @@
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
 			{#each section.items as item}
-				{@const Icon = item.icon}
+				{@const iconStr = item.icon}
 				<a
 					href={item.href}
 					class="nav-item"
 					class:active={currentPath === item.href}
 					onclick={closeSidebar}
 				>
-					<Icon size={20} />
+					<Icon icon={iconStr} size={20} />
 					<span>{item.label}</span>
 				</a>
 			{/each}

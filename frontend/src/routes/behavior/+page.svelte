@@ -7,7 +7,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
 	import { behaviorAPI } from '$lib/api/behavior';
-	import { Icon, IconBrain, IconAlertTriangle, IconTarget, IconTrendingUp, IconUsers, IconChartBar } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconBrain, IconChartBar, IconTarget, IconTrendingUp, IconUsers } from '$lib/icons';
 
 	let selectedPeriod = $state('7d');
 

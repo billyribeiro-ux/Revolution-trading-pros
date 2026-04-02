@@ -13,9 +13,9 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import type { Snippet } from 'svelte';
-	import { Icon, IconX } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { Icon, IconX } from '$lib/icons';
 
 	interface Props {
 		open?: boolean;

@@ -38,6 +38,7 @@
 
 <script lang="ts" module>
 import { logger } from '$lib/utils/logger';
+	import { Icon, IconChevronDown, IconMenu2, IconShoppingCart, IconX } from '$lib/icons';
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MODULE CONTEXT - Shared across all instances
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -98,7 +99,6 @@ import { logger } from '$lib/utils/logger';
 	import { onMount, tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
-	import { Icon, IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import { getCartItemCount } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';

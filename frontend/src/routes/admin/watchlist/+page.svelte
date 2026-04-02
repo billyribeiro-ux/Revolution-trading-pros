@@ -28,7 +28,6 @@ import { logger } from '$lib/utils/logger';
 	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
 	import { Icon, IconCalendar, IconCheck, IconDots, IconEdit, IconEye, IconPlus, IconSearch, IconTrash, IconVideo, IconX } from '$lib/icons';
-										
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════

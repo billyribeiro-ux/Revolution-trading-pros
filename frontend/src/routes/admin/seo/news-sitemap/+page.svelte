@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Icon, IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
+	import { Icon, IconCheck, IconClock, IconExternalLink, IconNews, IconRefresh, IconX } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let articles = $state<any[]>([]);

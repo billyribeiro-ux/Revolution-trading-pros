@@ -1,14 +1,29 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconWorld as IconBrandBing, IconRocket, IconCheck, IconX, IconRefresh, IconSend, IconClock, IconTrendingUp, IconExternalLink, IconBolt, IconWorld, IconSearch, IconFileText } from '$lib/icons';
 	import {
 		bingSeoApi,
 		type BingSeoStats,
 		type BingSubmission,
 		type BingSearchPerformance
 	} from '$lib/api/bing-seo';
+	import {
+		Icon,
+		IconBolt,
+		IconBrandBing,
+		IconCheck,
+		IconClock,
+		IconExternalLink,
+		IconFileText,
+		IconRefresh,
+		IconRocket,
+		IconSearch,
+		IconSend,
+		IconTrendingUp,
+		IconWorld,
+		IconX
+	} from '$lib/icons';
 
 	// State
 	let loading = $state(true);

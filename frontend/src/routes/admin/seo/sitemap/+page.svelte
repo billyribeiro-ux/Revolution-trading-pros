@@ -1,7 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { Icon, IconRefresh, IconDownload, IconUpload, IconFileText } from '$lib/icons';
+	import { Icon, IconDownload, IconFileText, IconRefresh, IconUpload } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let stats = $state<any>(null);

@@ -11,10 +11,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconPhoto, IconExternalLink, IconLayoutGrid, IconList } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconExternalLink, IconLayoutGrid, IconList, IconPhoto } from '$lib/icons';
 
 	// =========================================================================
 	// Types

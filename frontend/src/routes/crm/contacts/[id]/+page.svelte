@@ -9,7 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, TimelineEvent } from '$lib/crm/types';
-	import { Icon, IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle } from '$lib/icons';
+	import { Icon, IconActivity, IconArrowLeft, IconMail, IconPhone, IconUserCircle } from '$lib/icons';
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);

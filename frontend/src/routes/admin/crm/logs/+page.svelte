@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-																import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
         import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import type { SystemLog, LogLevel, LogCategory } from '$lib/crm/types';
 	import { Icon, IconActivityHeartbeat, IconAlertCircle, IconAlertTriangle, IconApi, IconBug, IconExclamationCircle, IconInfoCircle, IconMail, IconRefresh, IconRoute, IconSearch, IconSettings, IconTrash, IconUpload, IconWebhook } from '$lib/icons';
@@ -240,11 +240,11 @@
 				<div class="log-entry {getLevelColor(log.level)}">
 					<div class="log-header">
 						<div class="log-level">
-							<LevelIcon size={16} />
+							<Icon icon={LevelIcon} size={16} />
 							<span>{log.level}</span>
 						</div>
 						<div class="log-category">
-							<CategoryIcon size={14} />
+							<Icon icon={CategoryIcon} size={14} />
 							<span>{log.category}</span>
 						</div>
 						<span class="log-time">{formatDate(log.created_at)}</span>

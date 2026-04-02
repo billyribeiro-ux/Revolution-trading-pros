@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import { Icon, IconBuilding, IconCheck, IconCpu, IconShield, IconSitemap } from '$lib/icons';
-					
 	const features = [
 		{
 			title: 'Structured Curriculum',
@@ -136,7 +135,7 @@
 		<!-- 3-Column Grid -->
 		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each features as feature, i}
-				{@const IconComponent = feature.icon}
+				{@const iconStr = feature.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}
@@ -189,7 +188,7 @@
 										? 'text-emerald-500 group-hover/card:border-emerald-500/30'
 										: 'text-indigo-500 group-hover/card:border-indigo-500/30'}"
 							>
-								<IconComponent size={28} stroke={1.5} />
+								<Icon icon={iconStr} size={28} stroke={1.5} />
 							</div>
 							<!-- Connecting Line -->
 							<div

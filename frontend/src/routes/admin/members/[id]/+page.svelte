@@ -6,8 +6,8 @@ import { logger } from '$lib/utils/logger';
 	import { membersApi } from '$lib/api/members';
 	import type { Member, Subscription } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconArrowLeft, IconMail, IconCalendar, IconCreditCard, IconReceipt, IconActivity, IconUser, IconEdit, IconSend, IconX, IconCheck, IconClock, IconAlertTriangle, IconTrendingUp, IconGift, IconPlus, IconTrash, IconChartBar, IconRefresh, IconDownload, IconExternalLink, IconFileText } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconActivity, IconAlertTriangle, IconArrowLeft, IconCalendar, IconChartBar, IconCheck, IconClock, IconCreditCard, IconDownload, IconEdit, IconExternalLink, IconFileText, IconGift, IconMail, IconPlus, IconReceipt, IconRefresh, IconSend, IconTrash, IconTrendingUp, IconUser, IconX } from '$lib/icons';
 
 	let memberId = $derived(Number(page.params.id));
 
@@ -607,10 +607,10 @@ import { logger } from '$lib/utils/logger';
 								</div>
 							{:else}
 								{#each timeline as event}
-									{@const Icon = getTimelineIcon(event.type)}
+									{@const iconStr = getTimelineIcon(event.type)}
 									<div class="timeline-item">
 										<div class="timeline-icon">
-											<Icon size={16} />
+											<Icon icon={iconStr} size={16} />
 										</div>
 										<div class="timeline-content">
 											<div class="timeline-title">{event.title}</div>

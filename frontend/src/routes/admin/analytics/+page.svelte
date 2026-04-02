@@ -29,7 +29,7 @@
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
-	import { Icon, IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
+	import { Icon, IconArrowRight, IconPlugConnected, IconRefresh } from '$lib/icons';
 
 	// State
 	let dashboardData: DashboardData | null = $state(null);

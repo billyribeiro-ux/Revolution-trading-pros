@@ -17,11 +17,11 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { fade, slide } from 'svelte/transition';
-	import { Icon, IconRobot, IconWand, IconSparkles, IconArrowRight, IconRefresh, IconCopy, IconCheck, IconAlertCircle, IconLanguage, IconFileDescription, IconPencil, IconBulb, IconMoodSmile, IconBriefcase, IconSend, IconLoader, IconX, IconClock } from '$lib/icons';
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import type { EditorState, AIWritingRequest } from './types';
+	import { Icon, IconAlertCircle, IconArrowRight, IconBriefcase, IconBulb, IconCheck, IconClock, IconCopy, IconFileDescription, IconLanguage, IconLoader, IconMoodSmile, IconPencil, IconRefresh, IconRobot, IconSend, IconSparkles, IconWand, IconX } from '$lib/icons';
 
 	// ==========================================================================
 	// Types
@@ -626,7 +626,7 @@ import { logger } from '$lib/utils/logger';
 		<span class="quick-label">Quick actions:</span>
 		<div class="quick-buttons">
 			{#each quickActions as action (action.id)}
-				{@const Icon = action.icon}
+				{@const iconStr = action.icon}
 				<button
 					type="button"
 					class="quick-btn"
@@ -634,7 +634,7 @@ import { logger } from '$lib/utils/logger';
 					title={action.prompt}
 					disabled={isGenerating}
 				>
-					<Icon size={14} />
+					<Icon icon={iconStr} size={14} />
 					{action.label}
 				</button>
 			{/each}

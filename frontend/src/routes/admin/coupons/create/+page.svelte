@@ -27,7 +27,7 @@ import { logger } from '$lib/utils/logger';
 		type Product,
 		type SubscriptionPlan
 	} from '$lib/api/admin';
-	import { Icon, IconCheck, IconX, IconTag, IconRefresh, IconAlertCircle, IconSparkles, IconPercentage, IconCurrencyDollar } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconCheck, IconCurrencyDollar, IconPercentage, IconRefresh, IconSparkles, IconTag, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types

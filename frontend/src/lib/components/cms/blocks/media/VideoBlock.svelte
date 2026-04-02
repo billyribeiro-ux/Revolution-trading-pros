@@ -9,10 +9,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconVideo } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconVideo } from '$lib/icons';
 
 	// ==========================================================================
 	// Type Definitions

@@ -3,7 +3,7 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-														import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
+	import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';

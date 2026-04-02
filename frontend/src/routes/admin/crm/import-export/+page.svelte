@@ -12,9 +12,24 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-														import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { ImportJob, ExportJob } from '$lib/crm/types';
-	import { Icon, IconCheck, IconClock, IconDownload, IconListDetails, IconMail, IconMailForward, IconRefresh, IconRoute, IconTags, IconTemplate, IconUpload, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCheck,
+		IconClock,
+		IconDownload,
+		IconListDetails,
+		IconMail,
+		IconMailForward,
+		IconRefresh,
+		IconRoute,
+		IconTags,
+		IconTemplate,
+		IconUpload,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	let importJobs = $state<ImportJob[]>([]);
 	let exportJobs = $state<ExportJob[]>([]);
@@ -206,10 +221,10 @@
 			<p class="section-description">Select what you want to import</p>
 
 			<div class="type-grid">
-				{#each importTypes as { type, name, icon: Icon, description }}
+				{#each importTypes as { type, name, icon: iconStr, description }}
 					<a href="/admin/crm/import-export/import/{type}" class="type-card">
 						<div class="type-icon">
-							<Icon size={24} />
+							<Icon icon={iconStr} size={24} />
 						</div>
 						<div class="type-info">
 							<h3>{name}</h3>
@@ -247,7 +262,7 @@
 									</td>
 									<td>
 										<span class="status-badge {getStatusColor(job.status)}">
-											<StatusIcon size={14} />
+											<Icon icon={StatusIcon} size={14} />
 											{job.status}
 										</span>
 									</td>
@@ -276,10 +291,10 @@
 			<p class="section-description">Select what you want to export</p>
 
 			<div class="type-grid">
-				{#each exportTypes as { type, name, icon: Icon, description }}
+				{#each exportTypes as { type, name, icon: iconStr, description }}
 					<button class="type-card" onclick={() => startExport(type)}>
 						<div class="type-icon">
-							<Icon size={24} />
+							<Icon icon={iconStr} size={24} />
 						</div>
 						<div class="type-info">
 							<h3>{name}</h3>
@@ -317,7 +332,7 @@
 									</td>
 									<td>
 										<span class="status-badge {getStatusColor(job.status)}">
-											<ExportStatusIcon size={14} />
+											<Icon icon={ExportStatusIcon} size={14} />
 											{job.status}
 										</span>
 									</td>

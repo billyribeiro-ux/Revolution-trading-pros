@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import { Icon, IconActivity, IconArrowUpRight, IconBuilding, IconTerminal, IconTrendingUp } from '$lib/icons';
-					
 	// --- Data Configuration ---
 	const products = [
 		{
@@ -147,7 +146,7 @@
 			class="grid md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
 		>
 			{#each products as item, i}
-				{@const IconComponent = item.icon}
+				{@const iconStr = item.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 100 }}
@@ -288,7 +287,7 @@
 							<div
 								class="p-3 bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-md text-zinc-400 group-hover:text-white group-hover:border-zinc-600 transition-all duration-300"
 							>
-								<IconComponent size={24} stroke={1.25} />
+								<Icon icon={iconStr} size={24} stroke={1.25} />
 							</div>
 							<span
 								class="font-mono text-[10px] tracking-widest text-zinc-600 uppercase border border-zinc-800 bg-zinc-950/50 backdrop-blur px-2 py-1 rounded"

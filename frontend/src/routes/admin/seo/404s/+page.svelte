@@ -4,8 +4,8 @@ import { logger } from '$lib/utils/logger';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type Error404 } from '$lib/api/seo';
-	import { Icon, IconAlertCircle, IconTrash } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconTrash } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let errors = $state<Error404[]>([]);

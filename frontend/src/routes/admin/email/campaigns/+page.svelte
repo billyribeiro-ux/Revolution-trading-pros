@@ -20,7 +20,6 @@ import { logger } from '$lib/utils/logger';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
-	import { Icon, IconMail, IconPlus, IconCalendar, IconUsers, IconChartBar, IconRefresh, IconSend, IconClock, IconCheck, IconX, IconEdit, IconTrash, IconEye, IconCopy, IconTrendingUp, IconArrowLeft } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getCampaigns,
@@ -33,6 +32,7 @@ import { logger } from '$lib/utils/logger';
 		type Campaign as APICampaign,
 		type CampaignStats
 	} from '$lib/api/campaigns';
+	import { Icon, IconArrowLeft, IconCalendar, IconChartBar, IconCheck, IconClock, IconCopy, IconEdit, IconEye, IconMail, IconPlus, IconRefresh, IconSend, IconTrash, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types

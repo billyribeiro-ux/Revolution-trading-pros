@@ -19,7 +19,7 @@
 		getAllConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections.svelte';
-	import { Icon, IconX, IconPlugConnected, IconPlugConnectedX, IconRefresh, IconLoader, IconCheck, IconAlertTriangle, IconAlertCircle, IconClock, IconActivity, IconChartLine, IconExternalLink } from '$lib/icons';
+	import { Icon, IconActivity, IconAlertCircle, IconAlertTriangle, IconChartLine, IconCheck, IconClock, IconExternalLink, IconLoader, IconPlugConnected, IconPlugConnectedX, IconRefresh, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -250,7 +250,7 @@
 								class:error={status === 'error'}
 							>
 								<div class="service-status" style="color: {getStatusColor(status)}">
-									<StatusIcon size={20} class={status === 'connecting' ? 'spinning' : ''} />
+									<Icon icon={StatusIcon} size={20} class={status === 'connecting' ? 'spinning' : ''} />
 								</div>
 								<div class="service-info">
 									<div class="service-header">

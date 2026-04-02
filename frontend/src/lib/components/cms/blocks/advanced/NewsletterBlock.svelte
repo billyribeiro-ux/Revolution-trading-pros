@@ -8,10 +8,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconMail, IconLoader2, IconCheck, IconAlertCircle } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { isValidEmail } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconAlertCircle, IconCheck, IconLoader2, IconMail } from '$lib/icons';
 
 	interface Props {
 		block: Block;

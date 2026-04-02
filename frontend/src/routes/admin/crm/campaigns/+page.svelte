@@ -21,10 +21,10 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { Icon, IconMail, IconPlus, IconSearch, IconEdit, IconTrash, IconRefresh, IconChartBar, IconCopy, IconSend, IconClock, IconCheck, IconX } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconChartBar, IconCheck, IconClock, IconCopy, IconEdit, IconMail, IconPlus, IconRefresh, IconSearch, IconSend, IconTrash, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -350,7 +350,7 @@
 							</td>
 							<td>
 								<span class="status-badge {getStatusColor(campaign.status)}">
-									<CampaignStatusIcon size={12} />
+									<Icon icon={CampaignStatusIcon} size={12} />
 									{campaign.status}
 								</span>
 							</td>

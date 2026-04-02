@@ -5,7 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconLayoutKanban, IconPlus, IconFolder, IconStar, IconStarFilled, IconArchive, IconSearch, IconClock, IconChecks, IconAlertTriangle, IconCalendar, IconChartBar, IconSettings, IconUpload, IconTemplate, IconUsers, IconList, IconLayoutGrid, IconRefresh, IconTrash, IconCopy, IconEye } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconArchive, IconCalendar, IconChartBar, IconChecks, IconClock, IconCopy, IconEye, IconFolder, IconLayoutGrid, IconLayoutKanban, IconList, IconPlus, IconRefresh, IconSearch, IconSettings, IconStar, IconStarFilled, IconTemplate, IconTrash, IconUpload, IconUsers } from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);

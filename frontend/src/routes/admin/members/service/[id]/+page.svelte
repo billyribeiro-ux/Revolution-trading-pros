@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { serviceMembersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
-	import { Icon, IconArrowLeft, IconUsers, IconUserCheck, IconAlertTriangle, IconCurrencyDollar, IconSearch, IconMail, IconChevronLeft, IconChevronRight, IconExternalLink, IconFilter, IconX, IconSend, IconCrown, IconChartBar } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconArrowLeft, IconChartBar, IconChevronLeft, IconChevronRight, IconCrown, IconCurrencyDollar, IconExternalLink, IconFilter, IconMail, IconSearch, IconSend, IconUserCheck, IconUsers, IconX } from '$lib/icons';
 
 	let serviceId = $derived(Number(page.params.id));
 

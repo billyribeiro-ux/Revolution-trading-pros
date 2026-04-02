@@ -2,13 +2,13 @@
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconGauge, IconServer, IconDatabase, IconRefresh, IconActivity, IconBolt, IconCheck, IconAlertTriangle, IconX, IconChartBar, IconClock, IconFlame } from '$lib/icons';
 	import {
 		bingSeoApi,
 		type PerformanceDashboard,
 		type CoreWebVitals,
 		type OptimizationRecommendation
 	} from '$lib/api/bing-seo';
+	import { Icon, IconActivity, IconAlertTriangle, IconBolt, IconChartBar, IconCheck, IconClock, IconDatabase, IconFlame, IconGauge, IconRefresh, IconServer, IconX } from '$lib/icons';
 
 	// State
 	let loading = $state(true);
@@ -166,7 +166,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
 							<div class="vital-rating {lcpRating.color}">
-								<lcpRating.icon size={16} />
+								<Icon icon={lcpRating.icon} size={16} />
 								{lcpRating.label}
 							</div>
 							<div class="vital-target">Target: &lt; 2.5s</div>
@@ -182,7 +182,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
 							<div class="vital-rating {fidRating.color}">
-								<fidRating.icon size={16} />
+								<Icon icon={fidRating.icon} size={16} />
 								{fidRating.label}
 							</div>
 							<div class="vital-target">Target: &lt; 100ms</div>
@@ -198,7 +198,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
 							<div class="vital-rating {clsRating.color}">
-								<clsRating.icon size={16} />
+								<Icon icon={clsRating.icon} size={16} />
 								{clsRating.label}
 							</div>
 							<div class="vital-target">Target: &lt; 0.1</div>
@@ -214,7 +214,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
 							<div class="vital-rating {inpRating.color}">
-								<inpRating.icon size={16} />
+								<Icon icon={inpRating.icon} size={16} />
 								{inpRating.label}
 							</div>
 							<div class="vital-target">Target: &lt; 200ms</div>

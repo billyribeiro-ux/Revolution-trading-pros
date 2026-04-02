@@ -23,7 +23,7 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-										import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
+	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 	import { Icon, IconAlertCircle, IconCheck, IconCloudUpload, IconFile, IconLoader2, IconPhoto, IconUpload, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -604,7 +604,7 @@
 							{#if item.previewUrl}
 								<img src={item.previewUrl} alt={item.file.name} />
 							{:else}
-								<TypeIcon size={24} />
+								<Icon icon={TypeIcon} size={24} />
 							{/if}
 						</div>
 
@@ -625,7 +625,7 @@
 
 						<!-- Status -->
 						<div class="item-status" style="color: {getStatusColor(item.status)}">
-							<StatusIcon
+							<Icon icon={StatusIcon}
 								size={20}
 								class={item.status === 'uploading' || item.status === 'processing'
 									? 'spinning'

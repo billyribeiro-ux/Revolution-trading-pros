@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconBrandYoutube, IconBrandVimeo, IconBrandTwitter, IconCode, IconLink } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconBrandTwitter, IconBrandVimeo, IconBrandYoutube, IconCode, IconLink } from '$lib/icons';
 
 	interface Props {
 		block: Block;
@@ -86,7 +86,7 @@
 		}
 	}
 
-	let TypeIcon = $derived(getTypeIcon(embedType));
+	let typeIconStr = $derived(getTypeIcon(embedType));
 	let processedUrl = $derived(getEmbedUrl(embedUrl, embedType));
 </script>
 
@@ -94,7 +94,7 @@
 	{#if props.isEditing}
 		<div class="embed-editor">
 			<div class="embed-header">
-				<TypeIcon size={20} aria-hidden="true" />
+				<Icon icon={typeIconStr} size={20} aria-hidden="true" />
 				<span class="embed-type">{embedType.charAt(0).toUpperCase() + embedType.slice(1)}</span>
 			</div>
 			<div class="embed-input-wrapper">
@@ -135,7 +135,7 @@
 	{:else if embedUrl}
 		<div class="embed-fallback">
 			<a href={sanitizeURL(embedUrl)} target="_blank" rel="noopener noreferrer">
-				<TypeIcon size={24} aria-hidden="true" />
+				<Icon icon={typeIconStr} size={24} aria-hidden="true" />
 				<span>View embedded content</span>
 			</a>
 		</div>

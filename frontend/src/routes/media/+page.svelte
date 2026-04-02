@@ -18,8 +18,8 @@ import { logger } from '$lib/utils/logger';
 	} from '$lib/stores/media.svelte';
 	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
 	import FolderTree from '$lib/components/media/FolderTree.svelte';
-	import { Icon, IconPhoto, IconVideo, IconFileText, IconSearch, IconTable, IconList, IconTrash, IconSparkles } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconFileText, IconList, IconPhoto, IconSearch, IconSparkles, IconTable, IconTrash, IconVideo } from '$lib/icons';
 
 	let showUploadModal = $state(false);
 	// TODO: Implement CreateFolderModal component
@@ -224,7 +224,7 @@ import { logger } from '$lib/utils/logger';
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}
 									<div class="file-icon-wrapper">
-										<FileIcon size={48} class="text-gray-400" />
+										<Icon icon={FileIcon} size={48} class="text-gray-400" />
 									</div>
 								{/if}
 

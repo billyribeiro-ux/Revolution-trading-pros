@@ -31,7 +31,7 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
-												import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 								import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage, TimelineEvent } from '$lib/crm/types';
 	import { api } from '$lib/api/config';

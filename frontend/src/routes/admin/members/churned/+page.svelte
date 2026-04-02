@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
-	import { Icon, IconArrowLeft, IconHeart, IconMail, IconGift, IconCurrencyDollar, IconSearch, IconFilter, IconSend, IconX, IconChevronLeft, IconChevronRight, IconExternalLink, IconCalendar, IconAlertTriangle, IconTrendingDown, IconSparkles, IconRefresh } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconArrowLeft, IconCalendar, IconChevronLeft, IconChevronRight, IconCurrencyDollar, IconExternalLink, IconFilter, IconGift, IconHeart, IconMail, IconRefresh, IconSearch, IconSend, IconSparkles, IconTrendingDown, IconX } from '$lib/icons';
 
 	// Store state (local derived from getters)
 	let members = $derived(churnedStore.members);

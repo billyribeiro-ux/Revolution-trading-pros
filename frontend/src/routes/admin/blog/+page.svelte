@@ -4,8 +4,8 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { Icon, IconPlus, IconSearch, IconFilter, IconEdit, IconTrash, IconEye, IconCopy, IconCalendar, IconUser, IconClock, IconChartBar, IconDownload, IconUpload, IconList, IconTrendingUp, IconExternalLink, IconPlayerPlay, IconPlayerPause, IconStar, IconStarFilled, IconSortAscending, IconSortDescending, IconRefresh, IconAlertCircle, IconCheck, IconX, IconMenu2, IconLayoutGrid } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconCalendar, IconChartBar, IconCheck, IconClock, IconCopy, IconDownload, IconEdit, IconExternalLink, IconEye, IconFilter, IconLayoutGrid, IconList, IconMenu2, IconPlayerPause, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconSortAscending, IconSortDescending, IconStar, IconStarFilled, IconTrash, IconTrendingUp, IconUpload, IconUser, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PREDEFINED BLOG CATEGORIES (same system as videos)

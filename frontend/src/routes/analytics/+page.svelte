@@ -23,7 +23,7 @@
 		CohortMatrix,
 		AttributionChart
 	} from '$lib/components/analytics';
-	import { Icon, IconTrendingUp, IconUsers, IconCurrencyDollar, IconChartBar, IconBolt, IconTarget, IconBrain, IconAlertTriangle } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconBolt, IconBrain, IconChartBar, IconCurrencyDollar, IconTarget, IconTrendingUp, IconUsers } from '$lib/icons';
 
 	let selectedTab = $state<
 		'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue'

@@ -21,7 +21,7 @@
 		getUnreadCount,
 		type Notification
 	} from '$lib/stores/notifications.svelte';
-	import { Icon, IconBell, IconX, IconCheck, IconTrash, IconInfoCircle, IconCircleCheck, IconAlertTriangle, IconAlertCircle, IconSettings, IconChevronRight } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconAlertTriangle, IconBell, IconCheck, IconChevronRight, IconCircleCheck, IconInfoCircle, IconSettings, IconTrash, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -213,14 +213,14 @@
 						>
 							<div class="group-label">{group}</div>
 							{#each items as notification (notification.id)}
-								{@const Icon = getIcon(notification.type)}
+								{@const iconStr = getIcon(notification.type)}
 								<button
 									class="notification-item"
 									class:unread={!notification.read}
 									onclick={() => handleNotificationClick(notification)}
 								>
 									<div class="item-icon" style="color: {getIconColor(notification.type)}">
-										<Icon size={20} />
+										<Icon icon={iconStr} size={20} />
 									</div>
 									<div class="item-content">
 										<div class="item-header">

@@ -33,8 +33,8 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
-																	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-											import { api } from '$lib/api/config';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { api } from '$lib/api/config';
 	import { Icon, IconActivity, IconArrowLeft, IconBriefcase, IconBuilding, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconCursor, IconEdit, IconList, IconMail, IconMailFast, IconMailOpened, IconNotes, IconPhone, IconPlus, IconRefresh, IconSend, IconTag, IconTrash, IconTrendingUp, IconUserCircle, IconWorld, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════

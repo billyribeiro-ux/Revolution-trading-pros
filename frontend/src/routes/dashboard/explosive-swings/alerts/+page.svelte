@@ -9,8 +9,8 @@
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import { Icon, IconSearch } from '$lib/icons';
 	import type { RoomAlert } from '$lib/types/trading';
+	import { Icon, IconSearch } from '$lib/icons';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {

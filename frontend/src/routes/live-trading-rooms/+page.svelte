@@ -287,7 +287,6 @@ import { logger } from '$lib/utils/logger';
 	});
 </script>
 
-
 <div class="bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative">
 	<div class="fixed inset-0 pointer-events-none z-0">
 		<div

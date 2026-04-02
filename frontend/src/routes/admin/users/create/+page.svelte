@@ -53,7 +53,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { Icon, IconCheck, IconUser, IconShield, IconBuilding, IconUserCheck, IconChartBar, IconShieldCheck, IconSettings, IconCheckupList } from '$lib/icons';
+	import { Icon, IconBuilding, IconChartBar, IconCheck, IconCheckupList, IconSettings, IconShield, IconShieldCheck, IconUser, IconUserCheck } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions
@@ -1095,7 +1095,7 @@ import { logger } from '$lib/utils/logger';
 							: 'bg-zinc-900 text-zinc-600'}"
 					onclick={() => goToStep(step.key as typeof activeStep)}
 				>
-					<StepIcon size={16} />
+					<Icon icon={StepIcon} size={16} />
 					{step.label}
 				</button>
 			{/each}
@@ -1329,7 +1329,7 @@ import { logger } from '$lib/utils/logger';
 									class="w-10 h-10 rounded-lg flex items-center justify-center"
 									style="background: {role.color}20; color: {role.color}"
 								>
-									<RoleIcon size={20} />
+									<Icon icon={RoleIcon} size={20} />
 								</div>
 								<div>
 									<h3 class="font-semibold">{role.name}</h3>

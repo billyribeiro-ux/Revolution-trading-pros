@@ -14,15 +14,15 @@
 import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-																				import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type {
-	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconBolt, IconChartBar, IconCheck, IconClock, IconDownload, IconEdit, IconList, IconLoader2, IconMail, IconPlayerPause, IconPlayerPlay, IconRefresh, IconShare, IconTag, IconUsers, IconX } from '$lib/icons';
 		AutomationFunnel,
 		FunnelAction,
 		FunnelSubscriber,
 		FunnelStats,
 		FunnelStatus
 	} from '$lib/crm/types';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconBolt, IconChartBar, IconCheck, IconClock, IconDownload, IconEdit, IconList, IconLoader2, IconMail, IconPlayerPause, IconPlayerPlay, IconRefresh, IconShare, IconTag, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -167,7 +167,7 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	function getActionIcon(actionType: string) {
-		const iconMap: Record<string, typeof IconMail> = {
+		const iconMap: Record<string, string> = {
 			send_email: IconMail,
 			wait: IconClock,
 			add_tag: IconTag,
@@ -461,7 +461,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="workflow-node action-node {getActionColor(action.action_type)}">
 								<div class="node-icon">
-									<ActionIcon size={20} />
+									<Icon icon={ActionIcon} size={20} />
 								</div>
 								<div class="node-content">
 									<span class="node-type"

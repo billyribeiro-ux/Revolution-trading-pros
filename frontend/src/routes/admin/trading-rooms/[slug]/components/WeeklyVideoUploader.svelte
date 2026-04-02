@@ -18,8 +18,6 @@ import { logger } from '$lib/utils/logger';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 	import { Icon, IconArchive, IconCalendar, IconCheck, IconCloudUpload, IconLink, IconPlayerPlay, IconUpload, IconVideo, IconX } from '$lib/icons';
 
-	// Icons
-									
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS
 	// ═══════════════════════════════════════════════════════════════════════════════

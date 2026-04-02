@@ -8,8 +8,8 @@ import { logger } from '$lib/utils/logger';
 		type CartStatus,
 		STATUS_LABELS
 	} from '$lib/api/abandoned-carts';
-	import { Icon, IconArrowLeft, IconShoppingCart, IconMail, IconSend, IconSearch, IconFilter, IconRefresh, IconChevronLeft, IconChevronRight, IconX, IconCurrencyDollar, IconCheck, IconClock, IconAlertCircle, IconGift, IconPercentage, IconChartBar, IconUsers, IconExternalLink } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconChartBar, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCurrencyDollar, IconExternalLink, IconFilter, IconGift, IconMail, IconPercentage, IconRefresh, IconSearch, IconSend, IconShoppingCart, IconUsers, IconX } from '$lib/icons';
 
 	// State
 	let loading = $state(true);

@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
-	import { Icon, IconCircleCheck, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconCircleCheck } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let verifying = $state(true);

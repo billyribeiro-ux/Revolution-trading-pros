@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
-	import { Icon, IconClock, IconVideo, IconRocket } from '$lib/icons';
+	import { Icon, IconClock, IconRocket, IconVideo } from '$lib/icons';
 
 	// Get date 24 hours from now for countdown demo
 	const tomorrow = new Date();

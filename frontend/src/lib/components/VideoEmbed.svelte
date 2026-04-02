@@ -72,8 +72,8 @@ import { logger } from '$lib/utils/logger';
 			onYouTubeIframeAPIReady?: () => void;
 		}
 	}
-	import { Icon, IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff, IconRefresh, IconSettings, IconMaximize, IconMinimize, IconTextCaption, IconPictureInPictureOn } from '$lib/icons';
 	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
+	import { Icon, IconMaximize, IconMinimize, IconPictureInPictureOn, IconPlayerPause, IconPlayerPlay, IconRefresh, IconSettings, IconTextCaption, IconVolume, IconVolumeOff } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props

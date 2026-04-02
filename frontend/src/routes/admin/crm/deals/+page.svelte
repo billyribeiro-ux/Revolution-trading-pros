@@ -28,7 +28,7 @@
 
 	import { onMount } from 'svelte';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
-																						import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconAlertTriangle, IconBriefcase, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconEdit, IconEye, IconGripVertical, IconLayoutKanban, IconList, IconPlus, IconRefresh, IconSearch, IconTarget, IconTrash, IconTrendingUp, IconTrophy, IconUser, IconX } from '$lib/icons';

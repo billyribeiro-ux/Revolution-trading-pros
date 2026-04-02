@@ -5,13 +5,13 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
+	import type { Snippet } from 'svelte';
 	import { Icon, IconInbox } from '$lib/icons';
-	import type { ComponentType, Snippet } from 'svelte';
 
 	interface Props {
 		title?: string;
 		description?: string;
-		icon?: ComponentType;
+		icon?: string;
 		actionLabel?: string;
 		size?: 'sm' | 'md' | 'lg';
 		onaction?: () => void;
@@ -31,12 +31,12 @@
 	};
 
 	let currentSize = $derived(props.size ?? 'md');
-	let Icon = $derived(props.icon ?? IconInbox);
+	let iconStr = $derived(props.icon ?? IconInbox);
 </script>
 
 <div class="empty-state size-{currentSize}" style="padding: {sizes[currentSize].padding}">
 	<div class="empty-icon">
-		<Icon size={sizes[currentSize].icon} />
+		<Icon icon={iconStr} size={sizes[currentSize].icon} />
 	</div>
 
 	<h3 class="empty-title">{props.title ?? 'No data found'}</h3>

@@ -20,7 +20,6 @@
 import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { onMount } from 'svelte';
-												
 	import type { Block, BlockContent, BlockSettings, BlockType } from './types';
 	import { Icon, IconBriefcase, IconCalendar, IconChartBar, IconDeviceFloppy, IconPalette, IconPlus, IconSearch, IconSettings, IconStarFilled, IconTag, IconTemplate, IconX } from '$lib/icons';
 
@@ -389,7 +388,7 @@ import { logger } from '$lib/utils/logger';
 					</button>
 					{#each allCategories as cat}
 						{@const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.custom}
-						{@const Icon = config.icon}
+						{@const iconStr = config.icon}
 						<button
 							type="button"
 							class="category-tab"
@@ -397,7 +396,7 @@ import { logger } from '$lib/utils/logger';
 							style:--tab-color={config.color}
 							onclick={() => (selectedCategory = cat)}
 						>
-							<Icon size={14} />
+							<Icon icon={iconStr} size={14} />
 							{config.name}
 						</button>
 					{/each}
@@ -437,11 +436,11 @@ import { logger } from '$lib/utils/logger';
 					<!-- Presets by Category -->
 					{#each filteredCategories as category}
 						{@const config = CATEGORY_CONFIG[category.category] || CATEGORY_CONFIG.custom}
-						{@const Icon = config.icon}
+						{@const iconStr = config.icon}
 						<div class="category-section" transition:fly={{ y: -10, duration: 200 }}>
 							<div class="category-header" style:--cat-color={config.color}>
 								<span class="category-dot"></span>
-								<Icon size={16} />
+								<Icon icon={iconStr} size={16} />
 								<span class="category-name">{config.name}</span>
 								<span class="category-count">{category.presets.length}</span>
 							</div>

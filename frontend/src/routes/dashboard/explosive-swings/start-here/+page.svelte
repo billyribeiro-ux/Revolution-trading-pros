@@ -10,7 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { Icon, IconPlus, IconMinus } from '$lib/icons';
+	import { Icon, IconMinus, IconPlus } from '$lib/icons';
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = $state<Set<number>>(new Set());

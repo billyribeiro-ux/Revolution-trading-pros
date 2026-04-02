@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconGif, IconSearch, IconLoader2, IconX } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
+	import { Icon, IconGif, IconLoader2, IconSearch, IconX } from '$lib/icons';
 
 	interface Props {
 		block: Block;

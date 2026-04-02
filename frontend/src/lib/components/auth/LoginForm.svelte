@@ -40,11 +40,11 @@ import { logger } from '$lib/utils/logger';
 	// GSAP loaded dynamically to prevent SSR blocking
 	let gsap: any = null;
 	let gsapContext: any = null; // GSAP 3.12+ context for proper cleanup
-	import { Icon, IconMail, IconLock, IconAlertCircle, IconTrendingUp, IconChartCandle, IconEye, IconEyeOff, IconArrowRight, IconCheck, IconLoader } from '$lib/icons';
 
 	// Import new components
 	import TypedHeadline from './TypedHeadline.svelte';
 	import SocialLoginButtons from './SocialLoginButtons.svelte';
+	import { Icon, IconAlertCircle, IconArrowRight, IconChartCandle, IconCheck, IconEye, IconEyeOff, IconLoader, IconLock, IconMail, IconTrendingUp } from '$lib/icons';
 
 	// --- Constants ---
 	const REMEMBERED_EMAIL_KEY = 'rtp_remembered_email';

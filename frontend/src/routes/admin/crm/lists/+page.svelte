@@ -11,10 +11,10 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Icon, IconList, IconPlus, IconSearch, IconEdit, IconTrash, IconRefresh, IconUsers, IconWorld, IconLock } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactList } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconEdit, IconList, IconLock, IconPlus, IconRefresh, IconSearch, IconTrash, IconUsers, IconWorld } from '$lib/icons';
 
 	let lists = $state<ContactList[]>([]);
 	let isLoading = $state(true);

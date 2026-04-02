@@ -7,8 +7,8 @@
 	 * with tabs for overview, subscriptions, orders, activity, and notes.
 	 */
 	import { membersApi, type MemberFullDetails } from '$lib/api/members';
-	import { Icon, IconX, IconUser, IconMail, IconCalendar, IconCreditCard, IconReceipt, IconActivity, IconNotes, IconEdit, IconBan, IconPlayerPlay, IconTrash, IconSend, IconClock, IconCheck, IconAlertTriangle } from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
+	import { Icon, IconActivity, IconAlertTriangle, IconBan, IconCalendar, IconCheck, IconClock, IconCreditCard, IconEdit, IconMail, IconNotes, IconPlayerPlay, IconReceipt, IconSend, IconTrash, IconUser, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

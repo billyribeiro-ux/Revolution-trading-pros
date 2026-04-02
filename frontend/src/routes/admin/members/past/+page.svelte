@@ -26,9 +26,9 @@ import { logger } from '$lib/utils/logger';
 		TIME_PERIOD_LABELS,
 		invalidateDashboardCache
 	} from '$lib/api/past-members-dashboard';
-	import { Icon, IconArrowLeft, IconUsers, IconClock, IconMail, IconSend, IconSearch, IconRefresh, IconChevronLeft, IconChevronRight, IconX, IconGift, IconCurrencyDollar, IconTrendingUp, IconChartPie, IconCalendar, IconFileAnalytics, IconSparkles, IconCheck, IconAlertTriangle } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { PastMembersPageData } from './+page';
+	import { Icon, IconAlertTriangle, IconArrowLeft, IconCalendar, IconChartPie, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCurrencyDollar, IconFileAnalytics, IconGift, IconMail, IconRefresh, IconSearch, IconSend, IconSparkles, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGE DATA

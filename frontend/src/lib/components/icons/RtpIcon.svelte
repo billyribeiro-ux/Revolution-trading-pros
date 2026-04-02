@@ -1,170 +1,138 @@
 <!--
 	RtpIcon - Revolution Trading Pros Icon System
 	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
-
-	Custom icon wrapper using Tabler Icons with RTP naming convention.
+	Custom icon wrapper using @iconify/svelte with RTP naming convention.
 	All dashboard icons use "rtp-icon-*" class names for consistency.
 
-	Svelte 5 Features:
-	- $props() for type-safe props
-	- $derived() for computed icon lookup
-
-	@version 1.0.0
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// Core icons for dashboard - using Tabler Icons
-							
-	// Education & Courses
-			
-	// Charts & Trading
-						
-	// Trading Specific
-							
-	// Lists & Tools
-				
-	// Account & Settings
-						
-	// Support & Communication
-							
-	// Commerce
-				
-	// Status & Feedback
-						
-	// Actions
-												
-	// Media
-				
-	// Business
-	
-	// Additional Navigation & Layout
-			
-	// Time
-	
+	import { Icon } from '$lib/icons';
+
 	// ═══════════════════════════════════════════════════════════════════════════
-	// ICON MAPPING - RTP names to Tabler components
+	// ICON MAPPING - RTP names to Tabler iconify strings
 	// Trading platform icons matching Simpler Trading aesthetic
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const iconMap: Record<string, any> = {
+	const iconMap: Record<string, string> = {
 		// Navigation
-		home: IconDashboard,
-		dashboard: IconDashboard,
-		menu: IconMenu2,
-		close: IconX,
-		'chevron-left': IconChevronLeft,
-		'chevron-right': IconChevronRight,
-		'chevron-down': IconChevronDown,
-		external: IconExternalLink,
-		'layout-dashboard': IconLayoutDashboard,
-		archive: IconArchive,
-		users: IconUsers,
-		'shopping-cart': IconShoppingCart,
+		home: 'tabler:dashboard',
+		dashboard: 'tabler:dashboard',
+		menu: 'tabler:menu-2',
+		close: 'tabler:x',
+		'chevron-left': 'tabler:chevron-left',
+		'chevron-right': 'tabler:chevron-right',
+		'chevron-down': 'tabler:chevron-down',
+		external: 'tabler:external-link',
+		'layout-dashboard': 'tabler:layout-dashboard',
+		archive: 'tabler:archive',
+		users: 'tabler:users',
+		'shopping-cart': 'tabler:shopping-cart',
 
 		// Education & Courses
-		courses: IconVideo,
-		classes: IconVideo,
-		book: IconBook,
-		school: IconSchool,
-		video: IconVideo,
+		courses: 'tabler:video',
+		classes: 'tabler:video',
+		book: 'tabler:book',
+		school: 'tabler:school',
+		video: 'tabler:video',
 
 		// Charts & Indicators
-		indicators: IconChartLine,
-		charts: IconChartCandle,
-		'chart-line': IconChartLine,
-		'chart-bar': IconChartBar,
-		'chart-candle': IconChartCandle,
-		activity: IconActivity,
+		indicators: 'tabler:chart-line',
+		charts: 'tabler:chart-candle',
+		'chart-line': 'tabler:chart-line',
+		'chart-bar': 'tabler:chart-bar',
+		'chart-candle': 'tabler:chart-candle',
+		activity: 'tabler:activity',
 
 		// Memberships (Trading Products)
-		'mastering-the-trade': IconTrendingUp,
-		'simpler-showcase': IconTarget,
-		'tr3ndy-spx-alerts': IconBolt,
-		'tr3ndy-spx-alerts-circle': IconBolt,
-		'consistent-growth': IconChartBar,
-		'compounding-growth': IconChartBar,
+		'mastering-the-trade': 'tabler:trending-up',
+		'simpler-showcase': 'tabler:target',
+		'tr3ndy-spx-alerts': 'tabler:bolt',
+		'tr3ndy-spx-alerts-circle': 'tabler:bolt',
+		'consistent-growth': 'tabler:chart-bar',
+		'compounding-growth': 'tabler:chart-bar',
 
 		// Trading Icons
-		'trending-up': IconTrendingUp,
-		'trending-down': IconTrendingDown,
-		target: IconTarget,
-		bolt: IconBolt,
-		lightning: IconBolt,
-		flame: IconFlame,
-		rocket: IconRocket,
-		crown: IconCrown,
-		trophy: IconTrophy,
-		award: IconAward,
+		'trending-up': 'tabler:trending-up',
+		'trending-down': 'tabler:trending-down',
+		target: 'tabler:target',
+		bolt: 'tabler:bolt',
+		lightning: 'tabler:bolt',
+		flame: 'tabler:flame',
+		rocket: 'tabler:rocket',
+		crown: 'tabler:crown',
+		trophy: 'tabler:trophy',
+		award: 'tabler:award',
 
 		// Tools & Lists
-		'weekly-watchlist': IconListCheck,
-		watchlist: IconListCheck,
-		list: IconClipboard,
-		checklist: IconListCheck,
-		file: IconFileText,
-		calendar: IconCalendar,
+		'weekly-watchlist': 'tabler:list-check',
+		watchlist: 'tabler:list-check',
+		list: 'tabler:clipboard',
+		checklist: 'tabler:list-check',
+		file: 'tabler:file-text',
+		calendar: 'tabler:calendar',
 
 		// Account & Settings
-		settings: IconSettings,
-		account: IconUserCircle,
-		user: IconUser,
-		profile: IconUserCircle,
-		logout: IconLogout,
-		lock: IconLock,
-		shield: IconShield,
+		settings: 'tabler:settings',
+		account: 'tabler:user-circle',
+		user: 'tabler:user',
+		profile: 'tabler:user-circle',
+		logout: 'tabler:logout',
+		lock: 'tabler:lock',
+		shield: 'tabler:shield',
 
 		// Support & Communication
-		support: IconHeadset,
-		help: IconHelp,
-		message: IconMessage,
-		mail: IconMail,
-		phone: IconPhone,
-		bell: IconBell,
-		notifications: IconBell,
-		location: IconMapPin,
+		support: 'tabler:headset',
+		help: 'tabler:help',
+		message: 'tabler:message',
+		mail: 'tabler:mail',
+		phone: 'tabler:phone',
+		bell: 'tabler:bell',
+		notifications: 'tabler:bell',
+		location: 'tabler:map-pin',
 
 		// Commerce
-		cart: IconShoppingCart,
-		payment: IconCreditCard,
-		coin: IconCoin,
-		receipt: IconReceipt,
+		cart: 'tabler:shopping-cart',
+		payment: 'tabler:credit-card',
+		coin: 'tabler:coin',
+		receipt: 'tabler:receipt',
 
 		// Status & Feedback
-		check: IconCircleCheck,
-		success: IconCircleCheck,
-		alert: IconAlertCircle,
-		warning: IconAlertTriangle,
-		info: IconInfoCircle,
-		heart: IconHeart,
-		star: IconStar,
+		check: 'tabler:circle-check',
+		success: 'tabler:circle-check',
+		alert: 'tabler:alert-circle',
+		warning: 'tabler:alert-triangle',
+		info: 'tabler:info-circle',
+		heart: 'tabler:heart',
+		star: 'tabler:star',
 
 		// Actions
-		search: IconSearch,
-		filter: IconFilter,
-		refresh: IconRefresh,
-		download: IconDownload,
-		upload: IconUpload,
-		plus: IconPlus,
-		minus: IconMinus,
-		edit: IconEdit,
-		delete: IconTrash,
-		copy: IconCopy,
-		eye: IconEye,
-		'eye-off': IconEyeOff,
+		search: 'tabler:search',
+		filter: 'tabler:filter',
+		refresh: 'tabler:refresh',
+		download: 'tabler:download',
+		upload: 'tabler:upload',
+		plus: 'tabler:plus',
+		minus: 'tabler:minus',
+		edit: 'tabler:edit',
+		delete: 'tabler:trash',
+		copy: 'tabler:copy',
+		eye: 'tabler:eye',
+		'eye-off': 'tabler:eye-off',
 
 		// Media
-		play: IconPlayerPlay,
-		pause: IconPlayerPause,
-		volume: IconVolume,
-		mute: IconVolumeOff,
+		play: 'tabler:player-play',
+		pause: 'tabler:player-pause',
+		volume: 'tabler:volume',
+		mute: 'tabler:volume-off',
 
 		// Business
-		building: IconBuilding,
-		store: IconBuilding,
+		building: 'tabler:building',
+		store: 'tabler:building',
 
 		// Time
-		clock: IconClock
+		clock: 'tabler:clock'
 	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -199,8 +167,7 @@
 	// DERIVED
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Get the icon component, fallback to alert if not found
-	const IconComponent = $derived(iconMap[name] ?? IconAlertCircle);
+	const iconName = $derived(iconMap[name] ?? 'tabler:alert-circle');
 	const isValidIcon = $derived(name in iconMap);
 </script>
 
@@ -212,7 +179,7 @@
 		role="img"
 		aria-label={ariaLabel ?? `Unknown icon: ${name}`}
 	>
-		<Icon icon={IconAlertCircle} {size} {color} {stroke} />
+		<Icon icon="tabler:alert-circle" {size} {color} />
 	</span>
 {:else}
 	<span
@@ -221,7 +188,7 @@
 		aria-label={ariaLabel ?? name}
 		aria-hidden={!ariaLabel}
 	>
-		<IconComponent {size} {color} {stroke} />
+		<Icon icon={iconName} {size} {color} />
 	</span>
 {/if}
 

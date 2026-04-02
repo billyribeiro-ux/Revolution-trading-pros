@@ -2,8 +2,8 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { Icon, IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconEdit, IconPlus, IconShield, IconTrash, IconUser } from '$lib/icons';
 
 	let loading = $state(true);
 	let users = $state<any[]>([]);

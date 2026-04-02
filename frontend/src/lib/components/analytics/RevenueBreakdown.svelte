@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
+	import { Icon, IconMinus, IconTrendingDown, IconTrendingUp } from '$lib/icons';
 
 	interface RevenueData {
 		mrr: number;
@@ -89,7 +89,7 @@
 					class:positive={safeData.mrr_change > 0}
 					class:negative={safeData.mrr_change < 0}
 				>
-					<TrendIcon size={16} />
+					<Icon icon={TrendIcon} size={16} />
 					{formatPercent(Math.abs(safeData.mrr_change))} vs last month
 				</div>
 			{/if}

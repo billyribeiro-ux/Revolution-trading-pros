@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
 	import { Icon, IconActivity, IconArrowRight, IconCheck, IconLockSquare, IconServer } from '$lib/icons';
-					
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });

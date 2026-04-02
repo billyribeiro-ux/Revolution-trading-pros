@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Icon, IconMail, IconPlus, IconEdit, IconTrash, IconPlayerPlay, IconCalendar, IconClock, IconCheck, IconX, IconDownload } from '$lib/icons';
 	import {
 		reportTemplates,
 		formatSchedule,
@@ -10,6 +9,7 @@
 		type ReportFrequency
 	} from '$lib/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconCalendar, IconCheck, IconClock, IconDownload, IconEdit, IconMail, IconPlayerPlay, IconPlus, IconTrash, IconX } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);

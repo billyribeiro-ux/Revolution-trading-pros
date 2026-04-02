@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Icon, IconAlertTriangle, IconCheck, IconInfoCircle, IconTrash, IconX } from '$lib/icons';
+
 	/**
 	 * ConfirmationModal - Enterprise Confirmation Dialog
 	 * Revolution Trading Pros - Apple ICT 11+ Principal Engineer Grade
@@ -6,7 +8,6 @@
 	 * Custom modal to replace browser confirm() dialogs.
 	 * Supports different variants: danger, warning, info, success
 	 */
-	import { Icon, IconX, IconAlertTriangle, IconTrash, IconInfoCircle, IconCheck } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -79,7 +80,7 @@
 	};
 
 	let config = $derived(variantConfig[variant]);
-	let VariantIcon = $derived(config.icon);
+	let variantIconStr = $derived(config.icon);
 
 	function handleBackdropClick(e: MouseEvent) {
 		if (e.target === e.currentTarget && !isLoading) {
@@ -124,7 +125,7 @@
 		<div class="modal-container">
 			<!-- Icon -->
 			<div class="modal-icon" style="--icon-color: {config.iconColor}; --icon-bg: {config.iconBg}">
-				<VariantIcon size={28} />
+				<Icon icon={variantIconStr} size={28} />
 			</div>
 
 			<!-- Content -->

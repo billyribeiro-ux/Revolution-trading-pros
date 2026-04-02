@@ -11,10 +11,10 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconAlertTriangle, IconCircleX, IconInfoCircle, IconChevronDown, IconChevronUp, IconShieldCheck, IconEdit, IconSquare, IconSquareCheck } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
+	import { Icon, IconAlertTriangle, IconChevronDown, IconChevronUp, IconCircleX, IconEdit, IconInfoCircle, IconShieldCheck, IconSquare, IconSquareCheck } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props Interface
@@ -150,7 +150,7 @@
 		return configs[style];
 	});
 
-	let IconComponent = $derived(styleConfig.icon);
+	let iconComponentStr = $derived(styleConfig.icon);
 	let ariaRole = $derived(styleConfig.role);
 
 	// Check if there's expanded content to show
@@ -347,7 +347,7 @@
 	<div class="disclaimer-container">
 		<!-- Icon -->
 		<div class="disclaimer-icon" aria-hidden="true">
-			<IconComponent size={24} />
+			<Icon icon={iconComponentStr} size={24} />
 		</div>
 
 		<!-- Content -->
@@ -443,7 +443,7 @@
 	<!-- Style Indicator Badge -->
 	{#if props.isEditing}
 		<div class="style-badge">
-			<IconComponent size={14} aria-hidden="true" />
+			<Icon icon={iconComponentStr} size={14} aria-hidden="true" />
 			<span>{style.charAt(0).toUpperCase() + style.slice(1)}</span>
 		</div>
 	{/if}

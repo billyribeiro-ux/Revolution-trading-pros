@@ -5,8 +5,8 @@
 	 */
 	import { goto } from '$app/navigation';
 	import { resetPassword } from '$lib/api/auth';
-	import { Icon, IconLock, IconAlertCircle, IconCheck, IconShieldCheck, IconEye, IconEyeOff } from '$lib/icons';
 	import { browser } from '$app/environment';
+	import { Icon, IconAlertCircle, IconCheck, IconEye, IconEyeOff, IconLock, IconShieldCheck } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let email = $state('');

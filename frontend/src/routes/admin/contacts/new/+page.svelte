@@ -5,8 +5,8 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
-	import { Icon, IconUserPlus, IconArrowLeft } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
+	import { Icon, IconArrowLeft, IconUserPlus } from '$lib/icons';
 
 	let formData = $state({
 		first_name: '',

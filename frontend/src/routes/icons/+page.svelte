@@ -3,7 +3,7 @@
 	import ApexChartIcons from '$lib/components/ApexChartIcons.svelte';
 	import ChartJsIcons from '$lib/components/ChartJsIcons.svelte';
 	import LightweightChartIcons from '$lib/components/LightweightChartIcons.svelte';
-	import IconifyIcon from '@iconify/svelte';
+	import { Icon } from '$lib/icons';
 
 	// D3 Charts variations
 	const d3Charts = [
@@ -412,7 +412,7 @@
 					>
 						<div class="flex flex-col items-center gap-2">
 							<div class="text-slate-400 group-hover:text-blue-400 transition-colors">
-								<FontAwesomeIcon icon={item.icon} class="w-7 h-7" />
+								<Icon icon={item.icon} size={28} />
 							</div>
 							<span
 								class="text-[9px] text-center text-slate-500 group-hover:text-slate-300 leading-tight"
@@ -435,13 +435,12 @@
 			</div>
 			<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
 				{#each heroicons as item}
-					{@const HeroIcon = item.icon}
 					<div
 						class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-purple-500/30 transition-all hover:-translate-y-1"
 					>
 						<div class="flex flex-col items-center gap-2">
 							<div class="text-slate-400 group-hover:text-purple-400 transition-colors">
-								<HeroIcon class="w-7 h-7" />
+								<Icon icon={item.icon} size={28} />
 							</div>
 							<span
 								class="text-[9px] text-center text-slate-500 group-hover:text-slate-300 leading-tight"
@@ -460,7 +459,7 @@
 			<p class="text-slate-500 text-sm mb-2">
 				Charts • Trends • Money • Markets • Performance • Analytics • Risk • Monitoring
 			</p>
-			<p class="text-slate-600 text-xs">D3.js v7.9 • FontAwesome v7.1 • Heroicons v2.0</p>
+			<p class="text-slate-600 text-xs">D3.js v7.9 • FontAwesome (Iconify) • Heroicons (Iconify)</p>
 		</div>
 	</div>
 </div>

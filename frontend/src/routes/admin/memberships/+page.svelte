@@ -29,8 +29,8 @@ import { logger } from '$lib/utils/logger';
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { Icon, IconCrown, IconPlus, IconSearch, IconFilter, IconEdit, IconEye, IconTrash, IconCheck, IconX, IconChevronDown, IconRefresh, IconUsers, IconCurrencyDollar, IconStar, IconToggleLeft, IconToggleRight, IconCopy, IconChartBar } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { Icon, IconChartBar, IconCheck, IconChevronDown, IconCopy, IconCrown, IconCurrencyDollar, IconEdit, IconEye, IconFilter, IconPlus, IconRefresh, IconSearch, IconStar, IconToggleLeft, IconToggleRight, IconTrash, IconUsers, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

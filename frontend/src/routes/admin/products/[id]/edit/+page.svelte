@@ -9,7 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import { Icon, IconPlus, IconX, IconCheck, IconArrowLeft, IconBook, IconChartLine, IconCrown, IconShoppingCart, IconPhoto, IconTag, IconTrash } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconBook, IconChartLine, IconCheck, IconCrown, IconPhoto, IconPlus, IconShoppingCart, IconTag, IconTrash, IconX } from '$lib/icons';
 
 	// Product type definition
 	type ProductType = 'course' | 'indicator' | 'membership' | 'bundle';
@@ -307,7 +307,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{/if}
 
-		{@const SvelteComponent_1 = previewTypeIcon}
+		{@const iconStr2 = previewTypeIcon}
 		<div class="content-grid">
 			<!-- Main Form -->
 			<div class="form-section">
@@ -325,7 +325,7 @@ import { logger } from '$lib/utils/logger';
 						<label>Product Type *</label>
 						<div class="type-selector">
 							{#each productTypes as type}
-								{@const Icon = type.icon}
+								{@const iconStr = type.icon}
 								<button
 									type="button"
 									class="type-option"
@@ -333,7 +333,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => (formData.type = type.value)}
 									style="--type-color: {type.color}"
 								>
-									<Icon size={24} />
+									<Icon icon={iconStr} size={24} />
 									<span>{type.label}</span>
 								</button>
 							{/each}
@@ -586,16 +586,16 @@ import { logger } from '$lib/utils/logger';
 							<img src={formData.thumbnail} alt={formData.name || 'Product'} />
 						</div>
 					{:else}
-						{@const SvelteComponent = previewTypeIcon}
+						{@const iconStr = previewTypeIcon}
 						<div class="preview-thumbnail placeholder">
 							<!-- svelte-ignore svelte_component_deprecated -->
-							<SvelteComponent size={48} />
+							<Icon icon={iconStr} size={48} />
 						</div>
 					{/if}
 
 					<div class="preview-badge" style="background: {previewTypeColor}">
 						<!-- svelte-ignore svelte_component_deprecated -->
-						<SvelteComponent_1 size={14} />
+						<Icon icon={iconStr2} size={14} />
 						{formData.type}
 					</div>
 

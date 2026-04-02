@@ -8,9 +8,9 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconCheck, IconPlus, IconX } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconCheck, IconPlus, IconX } from '$lib/icons';
 
 	interface Props {
 		block: Block;

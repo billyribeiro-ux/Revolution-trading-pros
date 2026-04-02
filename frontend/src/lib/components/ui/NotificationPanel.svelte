@@ -10,7 +10,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { gsap } from 'gsap';
-	import { Icon, IconBell, IconX, IconAlertCircle, IconInfoCircle, IconCircleCheck, IconAlertTriangle, IconSettings } from '$lib/icons';
 	import {
 		notificationStore,
 		getNotifications,
@@ -18,6 +17,7 @@
 		type Notification,
 		type NotificationType
 	} from '$lib/stores/notifications.svelte';
+	import { Icon, IconAlertCircle, IconAlertTriangle, IconBell, IconCircleCheck, IconInfoCircle, IconSettings, IconX } from '$lib/icons';
 
 	interface Props {
 		position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
@@ -36,7 +36,7 @@
 	const notifications = $derived(getNotifications());
 	const unreadCount = $derived(getUnreadCount());
 
-	const iconMap: Record<NotificationType, typeof IconInfoCircle> = {
+	const iconMap: Record<NotificationType, string> = {
 		info: IconInfoCircle,
 		success: IconCircleCheck,
 		warning: IconAlertTriangle,
@@ -227,7 +227,7 @@
 										notification.type
 									]} flex items-center justify-center"
 								>
-									<NotifIcon size={20} />
+									<Icon icon={NotifIcon} size={20} />
 								</div>
 
 								<!-- Content -->

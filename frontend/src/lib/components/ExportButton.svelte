@@ -11,8 +11,8 @@
 	 */
 
 	import { fade, scale } from 'svelte/transition';
-	import { Icon, IconDownload, IconTable, IconCode, IconFileText, IconChevronDown, IconCheck, IconLoader } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { Icon, IconCheck, IconChevronDown, IconCode, IconDownload, IconFileText, IconLoader, IconTable } from '$lib/icons';
 
 	interface Props {
 		/** Data to export (array of objects) */
@@ -223,7 +223,7 @@
 					{#if exportedFormat === format}
 						<Icon icon={IconCheck} size={18} class="success-icon" />
 					{:else}
-						<FormatIcon size={18} />
+						<Icon icon={FormatIcon} size={18} />
 					{/if}
 					<span>{getFormatLabel(format)}</span>
 				</button>

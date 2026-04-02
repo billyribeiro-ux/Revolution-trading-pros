@@ -20,7 +20,6 @@ import { logger } from '$lib/utils/logger';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { Icon, IconAlertCircle, IconCalendar, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCopy, IconEdit, IconPlus, IconRefresh, IconTrash, IconUser, IconX } from '$lib/icons';
-													
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS
 	// ═══════════════════════════════════════════════════════════════════════════

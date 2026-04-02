@@ -12,9 +12,9 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconColorPicker } from '$lib/icons';
 	import type { Block } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { Icon, IconColorPicker } from '$lib/icons';
 
 	// =========================================================================
 	// Types

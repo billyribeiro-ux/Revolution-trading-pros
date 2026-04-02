@@ -8,7 +8,7 @@
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, ContactStatus } from '$lib/crm/types';
-	import { Icon, IconPlus, IconMail, IconPhone } from '$lib/icons';
+	import { Icon, IconMail, IconPhone, IconPlus } from '$lib/icons';
 
 	let contacts = $state<Contact[]>([]);
 	let loading = $state(true);

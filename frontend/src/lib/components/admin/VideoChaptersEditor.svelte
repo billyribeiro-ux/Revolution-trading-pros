@@ -5,7 +5,15 @@
 	 */
 
 	import { chaptersApi, parseTimeToSeconds, type VideoChapter } from '$lib/api/video-advanced';
-						
+	import {
+		Icon,
+		IconCheck,
+		IconEdit,
+		IconGripVertical,
+		IconPlus,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 	interface Props {
 		videoId: number;
 		videoDuration?: number;
@@ -568,7 +576,6 @@
 
 	.btn-add,
 	.btn-import {
-	import { Icon, IconCheck, IconEdit, IconGripVertical, IconPlus, IconTrash, IconX } from '$lib/icons';
 		display: flex;
 		align-items: center;
 		justify-content: center;

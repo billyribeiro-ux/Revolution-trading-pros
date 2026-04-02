@@ -4,7 +4,7 @@
 	 * @version 2.0.0
 	 */
 	import { forgotPassword } from '$lib/api/auth';
-	import { Icon, IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconCheck, IconMail, IconSend } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let email = $state('');

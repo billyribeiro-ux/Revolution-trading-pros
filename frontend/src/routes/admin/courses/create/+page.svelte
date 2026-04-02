@@ -3,10 +3,10 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import { Icon, IconPhoto, IconX, IconBook, IconCheck, IconPlus, IconGripVertical, IconTrash, IconSparkles, IconBulb, IconChartBar, IconVideo, IconFileText, IconClock, IconUsers, IconCurrencyDollar, IconCalendar, IconLock, IconTarget, IconTrendingUp, IconCertificate, IconDownload, IconEye, IconSettings, IconRefresh, IconGift, IconCopy, IconAlertCircle, IconRocket, IconStar, IconBrandGoogle, IconBrandFacebook, IconChevronDown } from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconBook, IconBrandFacebook, IconBrandGoogle, IconBulb, IconCalendar, IconCertificate, IconChartBar, IconCheck, IconChevronDown, IconClock, IconCopy, IconCurrencyDollar, IconDownload, IconEye, IconFileText, IconGift, IconGripVertical, IconLock, IconPhoto, IconPlus, IconRefresh, IconRocket, IconSettings, IconSparkles, IconStar, IconTarget, IconTrash, IconTrendingUp, IconUsers, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
@@ -414,11 +414,8 @@ import { logger } from '$lib/utils/logger';
 
 				case 'description':
 					course.description = `Master the art of technical analysis with this comprehensive course designed for serious traders. 
-					
 					This professional-grade training program covers everything from basic chart patterns to advanced trading strategies used by Wall Street professionals. You'll learn how to read market sentiment, identify high-probability setups, and manage risk like a pro.
-					
 					Through ${course.modules.length || 5} comprehensive modules and over ${course.duration_hours || 10} hours of content, you'll develop the skills needed to trade with confidence in any market condition. Each lesson includes practical examples, real-world case studies, and actionable strategies you can implement immediately.
-					
 					Whether you're a beginner looking to build a solid foundation or an experienced trader seeking to refine your skills, this course provides the knowledge and tools needed to succeed in today's dynamic markets.`;
 					break;
 

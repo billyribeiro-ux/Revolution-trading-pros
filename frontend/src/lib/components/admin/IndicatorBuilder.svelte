@@ -12,7 +12,6 @@
 
 	import { onMount } from 'svelte';
 	import {
-	import { Icon, IconBook, IconChartLine, IconCheck, IconDownload, IconEdit, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconUpload, IconVideo, IconX } from '$lib/icons';
 		indicatorsApi,
 		platformsApi,
 		indicatorVideosApi,
@@ -24,8 +23,8 @@
 		type CreateIndicatorRequest,
 		validateTradingViewUsername
 	} from '$lib/api/indicators-enhanced';
+	import { Icon, IconBook, IconChartLine, IconCheck, IconDownload, IconEdit, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconUpload, IconVideo, IconX } from '$lib/icons';
 
-												
 	interface Props {
 		indicatorId?: number;
 		onSave?: (indicator: Indicator) => void;

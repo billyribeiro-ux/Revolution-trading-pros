@@ -48,7 +48,6 @@ import { logger } from '$lib/utils/logger';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
 	import { Icon, IconAlertTriangle, IconChevronDown, IconDashboard, IconEye, IconForms, IconLogout, IconMail, IconRefresh, IconSettings, IconTicket, IconUsers } from '$lib/icons';
 	// Individual Tabler icon imports (Svelte 5 compatible)
-											
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -64,7 +63,7 @@ import { logger } from '$lib/utils/logger';
 	interface MenuItem {
 		id: string;
 		label: string;
-		icon: typeof IconDashboard;
+		icon: string;
 		path: string;
 		permission?: string;
 		badge?: number;
@@ -697,7 +696,7 @@ import { logger } from '$lib/utils/logger';
 							aria-labelledby="quick-menu-trigger"
 						>
 							{#each filteredQuickMenuItems as item (item.id)}
-								{@const Icon = item.icon}
+								{@const iconStr = item.icon}
 								<button
 									class="dropdown-item"
 									class:disabled={item.disabled}
@@ -706,7 +705,7 @@ import { logger } from '$lib/utils/logger';
 									disabled={item.disabled}
 									tabindex={showQuickMenu ? 0 : -1}
 								>
-									<Icon size={18} aria-hidden="true" />
+									<Icon icon={iconStr} size={18} aria-hidden="true" />
 									<span>{item.label}</span>
 									{#if item.badge}
 										<span class="badge">{item.badge}</span>

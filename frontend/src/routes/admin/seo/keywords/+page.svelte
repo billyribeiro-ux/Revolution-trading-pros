@@ -1,8 +1,8 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
-	import { Icon, IconPlus, IconSearch, IconTrendingUp, IconTrendingDown, IconMinus, IconTrash, IconRefresh } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconMinus, IconPlus, IconRefresh, IconSearch, IconTrash, IconTrendingDown, IconTrendingUp } from '$lib/icons';
 
 	let keywords: any[] = $state([]);
 	let stats: any = $state(null);
@@ -184,7 +184,7 @@ import { logger } from '$lib/utils/logger';
 								{#if keyword.rank_change !== null && keyword.rank_change !== 0}
 									{@const TrendIcon = getTrendIcon(keyword.rank_change)}
 									<div class="trend {getTrendClass(keyword.rank_change)}">
-										<TrendIcon size={16} />
+										<Icon icon={TrendIcon} size={16} />
 										{Math.abs(keyword.rank_change)}
 									</div>
 								{:else}

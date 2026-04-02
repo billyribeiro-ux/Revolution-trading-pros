@@ -15,7 +15,6 @@
 	import { goto } from '$app/navigation';
 	import { ROOMS, type Room } from '$lib/config/rooms';
 	import { Icon, IconArrowRight, IconBell, IconChartBar, IconChartLine, IconFlame, IconSchool, IconTable, IconTargetArrow, IconTrendingUp, IconVideo } from '$lib/icons';
-										
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -37,7 +36,7 @@
 	/**
 	 * Get the appropriate icon component for a room based on its slug
 	 */
-	function getIconForRoom(slug: string): typeof IconChartBar {
+	function getIconForRoom(slug: string): string {
 		switch (slug) {
 			case 'day-trading-room':
 				return IconChartBar;
@@ -84,7 +83,7 @@
 					style="--room-color: {room.color}"
 				>
 					<div class="room-icon" style="background: {room.color}">
-						<RoomIcon size={32} />
+						<Icon icon={RoomIcon} size={32} />
 					</div>
 					<div class="room-info">
 						<h2>{room.name}</h2>

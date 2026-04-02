@@ -12,7 +12,7 @@
 		type CreateMemberRequest,
 		type UpdateMemberRequest
 	} from '$lib/api/members';
-	import { Icon, IconX, IconUserPlus, IconUserEdit, IconEye, IconEyeOff, IconCopy, IconCheck } from '$lib/icons';
+	import { Icon, IconCheck, IconCopy, IconEye, IconEyeOff, IconUserEdit, IconUserPlus, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

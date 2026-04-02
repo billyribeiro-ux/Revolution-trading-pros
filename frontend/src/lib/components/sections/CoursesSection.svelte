@@ -10,7 +10,6 @@ import { logger } from '$lib/utils/logger';
 	import { Icon, IconActivity, IconArrowRight, IconBrain, IconCertificate, IconChartCandle, IconChartLine, IconClock, IconFlame, IconPlayerPlay, IconSchool, IconShield, IconUsers } from '$lib/icons';
 
 	// Tabler Icons (Preserving sub-path imports for tree-shaking)
-												
 	// ============================================================================
 	// COURSE DATA
 	// ============================================================================
@@ -356,8 +355,8 @@ import { logger } from '$lib/utils/logger';
 									class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ease-out"
 								>
 									{#if course.icon}
-										{@const IconComponent = course.icon}
-										<IconComponent
+										{@const iconStr = course.icon}
+										<Icon icon={iconStr}
 											class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
 										/>
 									{/if}

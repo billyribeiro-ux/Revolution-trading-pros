@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Icon, IconPlus, IconX } from '$lib/icons';
+
 	/**
 	 * SEO Meta Fields Component - Svelte 5
 	 * Form fields for managing blog post SEO metadata
@@ -6,7 +8,6 @@
 	 * @version 2.0.0 - January 2026
 	 * Updated: TypeScript strict mode, modern CSS patterns
 	 */
-	import { Icon, IconX, IconPlus } from '$lib/icons';
 
 	/**
 	 * SEO metadata structure for blog posts

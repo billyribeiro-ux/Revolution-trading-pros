@@ -21,7 +21,6 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import { Icon, IconVideo, IconFileText, IconPhoto, IconTable, IconFile, IconSearch, IconEdit, IconTrash, IconEye, IconRefresh, IconPlus, IconLink, IconCheck, IconX, IconStar, IconStarFilled, IconPin, IconPinFilled, IconAlertCircle } from '$lib/icons';
 	import {
 		roomResourcesApi,
 		type RoomResource,
@@ -36,6 +35,7 @@
 	} from '$lib/api/room-resources';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconCheck, IconEdit, IconEye, IconFile, IconFileText, IconLink, IconPhoto, IconPin, IconPinFilled, IconPlus, IconRefresh, IconSearch, IconStar, IconStarFilled, IconTable, IconTrash, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & CONSTANTS
@@ -925,10 +925,10 @@
 							{#if resource.thumbnail_url}
 								<img src={resource.thumbnail_url} alt={resource.title} />
 							{:else}
-								{@const SvelteComponent = getResourceIcon(resource.resource_type)}
+								{@const iconStr = getResourceIcon(resource.resource_type)}
 								<div class="thumbnail-placeholder">
 									<!-- svelte-ignore svelte_component_deprecated -->
-									<SvelteComponent size={32} />
+									<Icon icon={iconStr} size={32} />
 								</div>
 							{/if}
 
