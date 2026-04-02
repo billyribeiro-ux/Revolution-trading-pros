@@ -66,7 +66,6 @@
 		"@tanstack/svelte-virtual": "^3.13.18",
 		"@threlte/core": "^8.3.1",
 		"@threlte/extras": "^9.7.1",
-		"@vimeo/player": "^2.30.1",
 		"blurhash": "^2.0.5",
 		"canvas-confetti": "^1.9.4",
 		"d3": "^7.9.0",

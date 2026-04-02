@@ -52,7 +52,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -73,7 +73,19 @@ import { logger } from '$lib/utils/logger';
 		}
 	}
 	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
-	import { Icon, IconMaximize, IconMinimize, IconPictureInPictureOn, IconPlayerPause, IconPlayerPlay, IconRefresh, IconSettings, IconTextCaption, IconVolume, IconVolumeOff } from '$lib/icons';
+	import {
+		Icon,
+		IconMaximize,
+		IconMinimize,
+		IconPictureInPictureOn,
+		IconPlayerPause,
+		IconPlayerPlay,
+		IconRefresh,
+		IconSettings,
+		IconTextCaption,
+		IconVolume,
+		IconVolumeOff
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props
@@ -306,8 +318,15 @@ import { logger } from '$lib/utils/logger';
 	let playerAPI: any = $state(null);
 
 	// Platform detection
-	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' =
-		$state('html5');
+	let platform:
+		| 'youtube'
+		| 'vimeo'
+		| 'bunny'
+		| 'cfstream'
+		| 'wistia'
+		| 'dailymotion'
+		| 'twitch'
+		| 'html5' = $state('html5');
 	let embedUrl: string = $state('');
 	let videoId: string = $state('');
 	let thumbnailUrl: string = $state('');
@@ -364,7 +383,15 @@ import { logger } from '$lib/utils/logger';
 	let analyticsBase = $state({
 		id: '',
 		url: '',
-		platform: 'html5' as 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5',
+		platform: 'html5' as
+			| 'youtube'
+			| 'vimeo'
+			| 'bunny'
+			| 'cfstream'
+			| 'wistia'
+			| 'dailymotion'
+			| 'twitch'
+			| 'html5',
 		events: [] as AnalyticsEvent[],
 		watchTime: 0,
 		completionRate: 0,
@@ -466,11 +493,27 @@ import { logger } from '$lib/utils/logger';
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function detectPlatform(url: string): {
-		platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5';
+		platform:
+			| 'youtube'
+			| 'vimeo'
+			| 'bunny'
+			| 'cfstream'
+			| 'wistia'
+			| 'dailymotion'
+			| 'twitch'
+			| 'html5';
 		videoId: string;
 	} {
 		if (url.includes('youtube.com') || url.includes('youtu.be')) {
 			return { platform: 'youtube', videoId: extractYouTubeId(url) };
+		} else if (
+			url.includes('b-cdn.net') ||
+			url.includes('bunnycdn.com') ||
+			url.includes('bunny.net/stream')
+		) {
+			return { platform: 'bunny', videoId: extractBunnyId(url) };
+		} else if (url.includes('cloudflarestream.com') || url.includes('videodelivery.net')) {
+			return { platform: 'cfstream', videoId: extractCFStreamId(url) };
 		} else if (url.includes('vimeo.com')) {
 			return { platform: 'vimeo', videoId: extractVimeoId(url) };
 		} else if (url.includes('wistia.com') || url.includes('wi.st')) {
@@ -517,13 +560,37 @@ import { logger } from '$lib/utils/logger';
 		return match?.[1] ?? '';
 	}
 
+	function extractBunnyId(url: string): string {
+		// Bunny.net stream embed: https://iframe.mediadelivery.net/embed/{library_id}/{video_id}
+		// or CDN direct: https://vz-XXXXX.b-cdn.net/{video_id}/play_720p.mp4
+		const embedMatch = url.match(/mediadelivery\.net\/embed\/(\d+)\/([a-f0-9-]+)/);
+		if (embedMatch) return `${embedMatch[1]}/${embedMatch[2]}`;
+		const cdnMatch = url.match(/b-cdn\.net\/([a-f0-9-]+)/);
+		return cdnMatch?.[1] ?? '';
+	}
+
+	function extractCFStreamId(url: string): string {
+		// Cloudflare Stream: https://customer-XXXXX.cloudflarestream.com/{video_id}/...
+		// or iframe: https://iframe.videodelivery.net/{video_id}
+		const match = url.match(/(?:cloudflarestream\.com|videodelivery\.net)\/([a-f0-9]+)/);
+		return match?.[1] ?? '';
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Embed URL Generation
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function generateEmbedUrl(
 		url: string,
-		platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5',
+		platform:
+			| 'youtube'
+			| 'vimeo'
+			| 'bunny'
+			| 'cfstream'
+			| 'wistia'
+			| 'dailymotion'
+			| 'twitch'
+			| 'html5',
 		videoId: string
 	): string {
 		const params = new URLSearchParams();
@@ -551,6 +618,26 @@ import { logger } from '$lib/utils/logger';
 				params.append('playsinline', playsinline ? '1' : '0');
 				params.append('quality', defaultQuality);
 				return `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
+
+			case 'bunny': {
+				// Bunny.net Stream embed iframe
+				const bunnyParams = new URLSearchParams();
+				if (autoplay) bunnyParams.append('autoplay', 'true');
+				if (muted) bunnyParams.append('muted', 'true');
+				if (preload !== 'metadata') bunnyParams.append('preload', preload);
+				return `https://iframe.mediadelivery.net/embed/${videoId}?${bunnyParams.toString()}`;
+			}
+
+			case 'cfstream': {
+				// Cloudflare Stream embed iframe
+				const cfParams = new URLSearchParams();
+				if (autoplay) cfParams.append('autoplay', 'true');
+				if (muted) cfParams.append('muted', 'true');
+				if (loop) cfParams.append('loop', 'true');
+				if (startTime > 0) cfParams.append('startTime', startTime.toString());
+				if (poster) cfParams.append('poster', poster);
+				return `https://iframe.videodelivery.net/${videoId}?${cfParams.toString()}`;
+			}
 
 			case 'wistia':
 				params.append('autoPlay', autoplay ? 'true' : 'false');
@@ -581,7 +668,15 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	function generateThumbnailUrl(
-		platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5',
+		platform:
+			| 'youtube'
+			| 'vimeo'
+			| 'bunny'
+			| 'cfstream'
+			| 'wistia'
+			| 'dailymotion'
+			| 'twitch'
+			| 'html5',
 		videoId: string
 	): string {
 		switch (platform) {
@@ -598,6 +693,14 @@ import { logger } from '$lib/utils/logger';
 			case 'vimeo':
 				// Vimeo requires API call for thumbnail
 				return `https://vumbnail.com/${videoId}.jpg`;
+
+			case 'bunny':
+				// Bunny.net stream thumbnail
+				return `https://iframe.mediadelivery.net/embed/${videoId}/thumbnail.jpg`;
+
+			case 'cfstream':
+				// Cloudflare Stream thumbnail
+				return `https://videodelivery.net/${videoId}/thumbnails/thumbnail.jpg`;
 
 			case 'wistia':
 				return `https://embed-ssl.wistia.com/deliveries/${videoId}.jpg`;
@@ -620,7 +723,13 @@ import { logger } from '$lib/utils/logger';
 				await loadYouTubeAPI();
 				break;
 			case 'vimeo':
-				await loadVimeoAPI();
+				initializeVimeoPlayer();
+				break;
+			case 'bunny':
+				initializeBunnyPlayer();
+				break;
+			case 'cfstream':
+				initializeCFStreamPlayer();
 				break;
 			case 'html5':
 				initializeHTML5Player();
@@ -662,17 +771,19 @@ import { logger } from '$lib/utils/logger';
 		});
 	}
 
-	async function loadVimeoAPI() {
-		if (!iframeElement) return;
-		const Player = (await import('@vimeo/player')).default;
-		playerAPI = new Player(iframeElement);
+	function initializeVimeoPlayer() {
+		// Vimeo uses iframe-only embed (no SDK dependency)
+		// The iframe postMessage API handles playback
+		handleReady();
+	}
 
-		playerAPI.on('play', () => handlePlay());
-		playerAPI.on('pause', () => handlePause());
-		playerAPI.on('ended', () => handleEnded());
-		playerAPI.on('timeupdate', (data: any) => handleTimeUpdate(data.seconds, data.duration));
-		playerAPI.on('error', (error: any) => handleError(error));
+	function initializeBunnyPlayer() {
+		// Bunny.net Stream uses iframe embed
+		handleReady();
+	}
 
+	function initializeCFStreamPlayer() {
+		// Cloudflare Stream uses iframe embed
 		handleReady();
 	}
 
@@ -1246,13 +1357,8 @@ import { logger } from '$lib/utils/logger';
 		analyticsBase.watchTime = totalWatchTime;
 
 		// Cleanup player API
-		switch (platform) {
-			case 'youtube':
-				playerAPI?.destroy();
-				break;
-			case 'vimeo':
-				playerAPI?.destroy();
-				break;
+		if (platform === 'youtube') {
+			playerAPI?.destroy();
 		}
 	}
 </script>
