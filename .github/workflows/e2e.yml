@@ -63,32 +63,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build application
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           VITE_API_URL: ${{ env.VITE_API_URL }}
           PUBLIC_API_URL: ${{ env.PUBLIC_API_URL }}
 
       - name: Install Playwright browsers
         working-directory: frontend
-        run: npx playwright install chromium --with-deps
+        run: pnpm exec playwright install chromium --with-deps
 
       - name: Start preview server
         working-directory: frontend
         run: |
-          npm run preview &
+          pnpm run preview &
           echo $! > .preview-server.pid
           # Wait for server to be ready
           timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done' || exit 1
@@ -98,7 +102,7 @@ jobs:
         working-directory: frontend
         run: |
           if [ -d "tests/e2e/smoke" ] && [ "$(ls -A tests/e2e/smoke/*.spec.ts 2>/dev/null)" ]; then
-            npx playwright test tests/e2e/smoke --project=chromium --reporter=list
+            pnpm exec playwright test tests/e2e/smoke --project=chromium --reporter=list
           else
             echo "No smoke tests found, skipping..."
             exit 0
@@ -145,32 +149,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build application
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           VITE_API_URL: ${{ env.VITE_API_URL }}
           PUBLIC_API_URL: ${{ env.PUBLIC_API_URL }}
 
       - name: Install Playwright browsers
         working-directory: frontend
-        run: npx playwright install ${{ matrix.browser }} --with-deps
+        run: pnpm exec playwright install ${{ matrix.browser }} --with-deps
 
       - name: Start preview server
         working-directory: frontend
         run: |
-          npm run preview &
+          pnpm run preview &
           echo $! > .preview-server.pid
           timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
@@ -178,7 +186,7 @@ jobs:
       - name: Run E2E tests
         working-directory: frontend
         run: |
-          npx playwright test tests/e2e \
+          pnpm exec playwright test tests/e2e \
             --project=${{ matrix.browser }} \
             --shard=${{ matrix.shard }}/2 \
             --ignore-snapshots \
@@ -240,7 +248,7 @@ jobs:
       - name: Merge HTML reports
         working-directory: frontend
         run: |
-          npm ci
+          pnpm install --frozen-lockfile
           # ICT 7: Playwright merge-reports expects a single blob directory
           # Skip merge if no blob reports exist (shards use different output)
           if [ -d "../all-results" ]; then
@@ -270,24 +278,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: "pnpm"
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
         working-directory: frontend
-        run: npx playwright install chromium --with-deps
+        run: pnpm exec playwright install chromium --with-deps
 
       - name: Run API tests against production
         working-directory: frontend
-        run: npx playwright test tests/e2e/api --project=api --reporter=list
+        run: pnpm exec playwright test tests/e2e/api --project=api --reporter=list
         env:
           VITE_API_URL: https://revolution-trading-pros-api.fly.dev
 
@@ -313,32 +325,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build application
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           VITE_API_URL: ${{ env.VITE_API_URL }}
           PUBLIC_API_URL: ${{ env.PUBLIC_API_URL }}
 
       - name: Install Playwright
         working-directory: frontend
-        run: npx playwright install chromium webkit --with-deps
+        run: pnpm exec playwright install chromium webkit --with-deps
 
       - name: Start preview server
         working-directory: frontend
         run: |
-          npm run preview &
+          pnpm run preview &
           echo $! > .preview-server.pid
           timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
@@ -346,7 +362,7 @@ jobs:
       - name: Run mobile tests
         working-directory: frontend
         run: |
-          npx playwright test tests/e2e/smoke \
+          pnpm exec playwright test tests/e2e/smoke \
             "--project=Mobile Chrome" "--project=Mobile Safari" \
             --reporter=list
 

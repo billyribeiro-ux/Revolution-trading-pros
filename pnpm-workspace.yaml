@@ -1,0 +1,3 @@
+packages:
+  - 'frontend'
+  - 'svelte-click-to-source'
