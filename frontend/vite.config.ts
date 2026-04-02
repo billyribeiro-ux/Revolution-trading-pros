@@ -3,6 +3,7 @@ import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
 	plugins: [
@@ -24,6 +25,11 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		setupFiles: ['./src/test/setup.ts'],
+		alias: {
+			'@iconify/svelte': fileURLToPath(
+				new URL('./src/test/__mocks__/IconifyMock.svelte', import.meta.url)
+			)
+		},
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		coverage: {
 			provider: 'v8',
