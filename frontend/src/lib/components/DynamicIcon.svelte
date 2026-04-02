@@ -21,60 +21,60 @@
 
 	let { name, size = 24, class: className = '' }: Props = $props();
 
-	// Icon registry - maps icon names to Tabler iconify strings
+	// Icon registry - maps icon names to Phosphor iconify strings
 	// This is the single source of truth for available icons
 	const iconRegistry: Record<string, string> = {
 		// Chart/Trading icons
-		'chart-line': 'tabler:chart-line',
-		'trending-up': 'tabler:trending-up',
-		'chart-candle': 'tabler:chart-candle',
-		'chart-pie': 'tabler:chart-pie',
-		'chart-bar': 'tabler:chart-bar',
-		'chart-dots': 'tabler:chart-dots',
-		'report-analytics': 'tabler:report-analytics',
+		'chart-line': 'ph:chart-line-up',
+		'trending-up': 'ph:trend-up',
+		'chart-candle': 'ph:chart-line',
+		'chart-pie': 'ph:chart-pie',
+		'chart-bar': 'ph:chart-bar',
+		'chart-dots': 'ph:chart-scatter',
+		'report-analytics': 'ph:chart-line-up',
 
 		// Action icons
-		bell: 'tabler:bell',
-		rocket: 'tabler:rocket',
-		activity: 'tabler:activity',
-		bolt: 'tabler:bolt',
-		flame: 'tabler:flame',
-		target: 'tabler:target',
+		bell: 'ph:bell',
+		rocket: 'ph:rocket-launch',
+		activity: 'ph:activity',
+		bolt: 'ph:lightning',
+		flame: 'ph:fire',
+		target: 'ph:target',
 
 		// Finance icons
-		wallet: 'tabler:wallet',
+		wallet: 'ph:wallet',
 
 		// Media icons
-		'player-play': 'tabler:player-play',
-		video: 'tabler:video',
-		live: 'tabler:live-photo',
+		'player-play': 'ph:play',
+		video: 'ph:video-camera',
+		live: 'ph:broadcast',
 
 		// Education icons
-		book: 'tabler:book',
-		school: 'tabler:school',
-		certificate: 'tabler:certificate',
+		book: 'ph:book',
+		school: 'ph:graduation-cap',
+		certificate: 'ph:certificate',
 
 		// Status/Badge icons
-		star: 'tabler:star',
-		diamond: 'tabler:diamond',
-		crown: 'tabler:crown',
-		award: 'tabler:award',
+		star: 'ph:star',
+		diamond: 'ph:diamond',
+		crown: 'ph:crown',
+		award: 'ph:trophy',
 
 		// Social icons
-		users: 'tabler:users',
-		'message-circle': 'tabler:message-circle',
+		users: 'ph:users',
+		'message-circle': 'ph:chat-circle',
 
 		// Utility icons
-		calendar: 'tabler:calendar',
-		clock: 'tabler:clock',
-		settings: 'tabler:settings',
-		help: 'tabler:help',
-		home: 'tabler:home',
-		user: 'tabler:user'
+		calendar: 'ph:calendar',
+		clock: 'ph:clock',
+		settings: 'ph:gear',
+		help: 'ph:question',
+		home: 'ph:house',
+		user: 'ph:user'
 	};
 
 	// Get the icon name, fallback to chart-line if not found
-	const iconName = $derived(iconRegistry[name || ''] || 'tabler:chart-line');
+	const iconName = $derived(iconRegistry[name || ''] || 'ph:chart-line-up');
 </script>
 
 <Icon icon={iconName} {size} class={className} />

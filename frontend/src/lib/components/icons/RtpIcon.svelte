@@ -11,128 +11,128 @@
 	import { Icon } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// ICON MAPPING - RTP names to Tabler iconify strings
+	// ICON MAPPING - RTP names to Phosphor iconify strings
 	// Trading platform icons matching Simpler Trading aesthetic
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const iconMap: Record<string, string> = {
 		// Navigation
-		home: 'tabler:dashboard',
-		dashboard: 'tabler:dashboard',
-		menu: 'tabler:menu-2',
-		close: 'tabler:x',
-		'chevron-left': 'tabler:chevron-left',
-		'chevron-right': 'tabler:chevron-right',
-		'chevron-down': 'tabler:chevron-down',
-		external: 'tabler:external-link',
-		'layout-dashboard': 'tabler:layout-dashboard',
-		archive: 'tabler:archive',
-		users: 'tabler:users',
-		'shopping-cart': 'tabler:shopping-cart',
+		home: 'ph:gauge',
+		dashboard: 'ph:gauge',
+		menu: 'ph:list',
+		close: 'ph:x',
+		'chevron-left': 'ph:caret-left',
+		'chevron-right': 'ph:caret-right',
+		'chevron-down': 'ph:caret-down',
+		external: 'ph:arrow-square-out',
+		'layout-dashboard': 'ph:squares-four',
+		archive: 'ph:archive-box',
+		users: 'ph:users',
+		'shopping-cart': 'ph:shopping-cart',
 
 		// Education & Courses
-		courses: 'tabler:video',
-		classes: 'tabler:video',
-		book: 'tabler:book',
-		school: 'tabler:school',
-		video: 'tabler:video',
+		courses: 'ph:video-camera',
+		classes: 'ph:video-camera',
+		book: 'ph:book',
+		school: 'ph:graduation-cap',
+		video: 'ph:video-camera',
 
 		// Charts & Indicators
-		indicators: 'tabler:chart-line',
-		charts: 'tabler:chart-candle',
-		'chart-line': 'tabler:chart-line',
-		'chart-bar': 'tabler:chart-bar',
-		'chart-candle': 'tabler:chart-candle',
-		activity: 'tabler:activity',
+		indicators: 'ph:chart-line-up',
+		charts: 'ph:chart-line',
+		'chart-line': 'ph:chart-line-up',
+		'chart-bar': 'ph:chart-bar',
+		'chart-candle': 'ph:chart-line',
+		activity: 'ph:activity',
 
 		// Memberships (Trading Products)
-		'mastering-the-trade': 'tabler:trending-up',
-		'simpler-showcase': 'tabler:target',
-		'tr3ndy-spx-alerts': 'tabler:bolt',
-		'tr3ndy-spx-alerts-circle': 'tabler:bolt',
-		'consistent-growth': 'tabler:chart-bar',
-		'compounding-growth': 'tabler:chart-bar',
+		'mastering-the-trade': 'ph:trend-up',
+		'simpler-showcase': 'ph:target',
+		'tr3ndy-spx-alerts': 'ph:lightning',
+		'tr3ndy-spx-alerts-circle': 'ph:lightning',
+		'consistent-growth': 'ph:chart-bar',
+		'compounding-growth': 'ph:chart-bar',
 
 		// Trading Icons
-		'trending-up': 'tabler:trending-up',
-		'trending-down': 'tabler:trending-down',
-		target: 'tabler:target',
-		bolt: 'tabler:bolt',
-		lightning: 'tabler:bolt',
-		flame: 'tabler:flame',
-		rocket: 'tabler:rocket',
-		crown: 'tabler:crown',
-		trophy: 'tabler:trophy',
-		award: 'tabler:award',
+		'trending-up': 'ph:trend-up',
+		'trending-down': 'ph:trend-down',
+		target: 'ph:target',
+		bolt: 'ph:lightning',
+		lightning: 'ph:lightning',
+		flame: 'ph:fire',
+		rocket: 'ph:rocket-launch',
+		crown: 'ph:crown',
+		trophy: 'ph:trophy',
+		award: 'ph:trophy',
 
 		// Tools & Lists
-		'weekly-watchlist': 'tabler:list-check',
-		watchlist: 'tabler:list-check',
-		list: 'tabler:clipboard',
-		checklist: 'tabler:list-check',
-		file: 'tabler:file-text',
-		calendar: 'tabler:calendar',
+		'weekly-watchlist': 'ph:list-checks',
+		watchlist: 'ph:list-checks',
+		list: 'ph:clipboard',
+		checklist: 'ph:list-checks',
+		file: 'ph:file-text',
+		calendar: 'ph:calendar',
 
 		// Account & Settings
-		settings: 'tabler:settings',
-		account: 'tabler:user-circle',
-		user: 'tabler:user',
-		profile: 'tabler:user-circle',
-		logout: 'tabler:logout',
-		lock: 'tabler:lock',
-		shield: 'tabler:shield',
+		settings: 'ph:gear',
+		account: 'ph:user-circle',
+		user: 'ph:user',
+		profile: 'ph:user-circle',
+		logout: 'ph:sign-out',
+		lock: 'ph:lock',
+		shield: 'ph:shield',
 
 		// Support & Communication
-		support: 'tabler:headset',
-		help: 'tabler:help',
-		message: 'tabler:message',
-		mail: 'tabler:mail',
-		phone: 'tabler:phone',
-		bell: 'tabler:bell',
-		notifications: 'tabler:bell',
-		location: 'tabler:map-pin',
+		support: 'ph:headset',
+		help: 'ph:question',
+		message: 'ph:chat',
+		mail: 'ph:envelope',
+		phone: 'ph:phone',
+		bell: 'ph:bell',
+		notifications: 'ph:bell',
+		location: 'ph:map-pin',
 
 		// Commerce
-		cart: 'tabler:shopping-cart',
-		payment: 'tabler:credit-card',
-		coin: 'tabler:coin',
-		receipt: 'tabler:receipt',
+		cart: 'ph:shopping-cart',
+		payment: 'ph:credit-card',
+		coin: 'ph:coin',
+		receipt: 'ph:receipt',
 
 		// Status & Feedback
-		check: 'tabler:circle-check',
-		success: 'tabler:circle-check',
-		alert: 'tabler:alert-circle',
-		warning: 'tabler:alert-triangle',
-		info: 'tabler:info-circle',
-		heart: 'tabler:heart',
-		star: 'tabler:star',
+		check: 'ph:check-circle',
+		success: 'ph:check-circle',
+		alert: 'ph:warning-circle',
+		warning: 'ph:warning',
+		info: 'ph:info',
+		heart: 'ph:heart',
+		star: 'ph:star',
 
 		// Actions
-		search: 'tabler:search',
-		filter: 'tabler:filter',
-		refresh: 'tabler:refresh',
-		download: 'tabler:download',
-		upload: 'tabler:upload',
-		plus: 'tabler:plus',
-		minus: 'tabler:minus',
-		edit: 'tabler:edit',
-		delete: 'tabler:trash',
-		copy: 'tabler:copy',
-		eye: 'tabler:eye',
-		'eye-off': 'tabler:eye-off',
+		search: 'ph:magnifying-glass',
+		filter: 'ph:funnel',
+		refresh: 'ph:arrow-counter-clockwise',
+		download: 'ph:download-simple',
+		upload: 'ph:upload-simple',
+		plus: 'ph:plus',
+		minus: 'ph:minus',
+		edit: 'ph:pencil-simple',
+		delete: 'ph:trash',
+		copy: 'ph:copy',
+		eye: 'ph:eye',
+		'eye-off': 'ph:eye-slash',
 
 		// Media
-		play: 'tabler:player-play',
-		pause: 'tabler:player-pause',
-		volume: 'tabler:volume',
-		mute: 'tabler:volume-off',
+		play: 'ph:play',
+		pause: 'ph:pause',
+		volume: 'ph:speaker-high',
+		mute: 'ph:speaker-slash',
 
 		// Business
-		building: 'tabler:building',
-		store: 'tabler:building',
+		building: 'ph:building',
+		store: 'ph:building',
 
 		// Time
-		clock: 'tabler:clock'
+		clock: 'ph:clock'
 	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -167,7 +167,7 @@
 	// DERIVED
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const iconName = $derived(iconMap[name] ?? 'tabler:alert-circle');
+	const iconName = $derived(iconMap[name] ?? 'ph:warning-circle');
 	const isValidIcon = $derived(name in iconMap);
 </script>
 
@@ -179,7 +179,7 @@
 		role="img"
 		aria-label={ariaLabel ?? `Unknown icon: ${name}`}
 	>
-		<Icon icon="tabler:alert-circle" {size} {color} />
+		<Icon icon="ph:warning-circle" {size} {color} />
 	</span>
 {:else}
 	<span
