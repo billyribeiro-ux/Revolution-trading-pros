@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-vercel';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,7 +14,28 @@ const config = {
 		experimental: {
 			remoteFunctions: true
 		},
-		adapter: adapter(),
+		adapter: adapter({
+			routes: {
+				include: ['/*'],
+				exclude: [
+					'/favicon.ico',
+					'/favicon.png',
+					'/apple-touch-icon.png',
+					'/apple-touch-icon-precomposed.png',
+					'/manifest.json',
+					'/robots.txt',
+					'/sitemap.xml',
+					'/sitemap-*.xml',
+					'/_app/*',
+					'/images/*',
+					'/icons/*',
+					'/logos/*',
+					'/fonts/*',
+					'/uploads/*',
+					'/static/*'
+				]
+			}
+		}),
 		alias: {
 			$lib: 'src/lib',
 			$components: 'src/lib/components',
