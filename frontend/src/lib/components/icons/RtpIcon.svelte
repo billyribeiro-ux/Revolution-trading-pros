@@ -158,7 +158,7 @@
 		name,
 		size = 24,
 		color = 'currentColor',
-		stroke = 2,
+		stroke: _stroke = 2,
 		class: className = '',
 		ariaLabel
 	}: Props = $props();

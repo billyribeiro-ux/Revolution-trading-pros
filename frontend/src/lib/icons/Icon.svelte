@@ -16,7 +16,7 @@
 		icon,
 		size = 24,
 		color = 'currentColor',
-		stroke,
+		stroke: _stroke,
 		class: className = '',
 		style,
 		...rest

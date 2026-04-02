@@ -56,10 +56,10 @@
 	let columns = $derived(props.columns ?? []);
 	let data = $derived(props.data ?? []);
 	let loading = $derived(props.loading ?? false);
-	let sortBy = $state(props.sortBy ?? '');
-	let sortDir = $state<'asc' | 'desc'>(props.sortDir ?? 'asc');
+	let sortBy = $state('');
+	let sortDir = $state<'asc' | 'desc'>('asc');
 	let selectable = $derived(props.selectable ?? false);
-	let selectedIds = $state<(string | number)[]>(props.selectedIds ?? []);
+	let selectedIds = $state<(string | number)[]>([]);
 	let idKey = $derived(props.idKey ?? 'id');
 	let exportable = $derived(props.exportable ?? false);
 	let exportFilename = $derived(props.exportFilename ?? 'export');

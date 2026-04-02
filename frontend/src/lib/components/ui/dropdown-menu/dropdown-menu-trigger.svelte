@@ -2,7 +2,7 @@
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
 	let props: DropdownMenuPrimitive.TriggerProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (props.ref !== undefined && props.ref !== ref) {

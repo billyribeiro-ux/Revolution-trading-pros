@@ -10,9 +10,9 @@
 	};
 
 	let props: CheckboxItemProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
-	let checked = $state(props.checked ?? false);
-	let indeterminate = $state(props.indeterminate ?? false);
+	let ref = $state<HTMLElement | null>(null);
+	let checked = $state(false);
+	let indeterminate = $state(false);
 	let className = $derived(props.class);
 	let childrenProp = $derived(props.children);
 

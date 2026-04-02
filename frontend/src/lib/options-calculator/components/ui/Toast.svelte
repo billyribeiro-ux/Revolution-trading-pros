@@ -3,7 +3,6 @@
 	import gsap from 'gsap';
 	import type { ToastType } from '../../engine/types.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
-	import { Icon } from '$lib/icons';
 
 	interface Props {
 		calc: CalculatorState;
@@ -90,14 +89,14 @@
 	>
 		{#each visibleToasts as toast (toast.id)}
 			{@const colors = COLORS[toast.type]}
-			{@const iconStr = ICONS[toast.type]}
+			{@const ToastIcon = ICONS[toast.type]}
 			<div
 				class="pointer-events-auto flex items-center gap-2.5 rounded-xl px-4 py-3 min-w-[280px] max-w-[400px] shadow-lg"
 				style="background: {colors.bg}; border: 1px solid {colors.border}; backdrop-filter: blur(16px);"
 				role="alert"
 				use:animateIn
 			>
-				<Icon icon={iconStr} size={16} style="color: {colors.icon}; flex-shrink: 0;" />
+				<ToastIcon size={16} style="color: {colors.icon}; flex-shrink: 0;" />
 				<span class="flex-1 text-xs font-medium" style="color: var(--calc-text);">
 					{toast.message}
 				</span>

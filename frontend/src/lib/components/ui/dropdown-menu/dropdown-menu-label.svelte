@@ -7,7 +7,7 @@
 	};
 
 	let props: LabelProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
 	let inset = $derived(props.inset);
 

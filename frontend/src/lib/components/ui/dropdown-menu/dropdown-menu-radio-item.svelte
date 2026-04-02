@@ -4,7 +4,7 @@
 	import { cn, type WithoutChild } from '$lib/utils.js';
 
 	let props: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
 	let childrenProp = $derived(props.children);
 

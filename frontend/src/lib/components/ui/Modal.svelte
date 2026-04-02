@@ -30,7 +30,7 @@
 	}
 
 	let props: Props = $props();
-	let open = $state(props.open ?? false);
+	let open = $state(false);
 	let title = $derived(props.title ?? '');
 	let size = $derived(props.size ?? 'md');
 	let onclose = $derived(props.onclose);

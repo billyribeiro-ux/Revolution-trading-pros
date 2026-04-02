@@ -14,7 +14,7 @@
 	};
 
 	let props: ContentProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
 	let portalProps = $derived(props.portalProps);
 	let showCloseButton = $derived(props.showCloseButton ?? true);

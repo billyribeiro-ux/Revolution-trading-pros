@@ -4,8 +4,8 @@ https://svelte.dev/e/bind_invalid_expression -->
 	import { Select as SelectPrimitive } from 'bits-ui';
 
 	let props: SelectPrimitive.RootProps = $props();
-	let open = $state(props.open ?? false);
-	let value = $state(props.value);
+	let open = $state(false);
+	let value = $state<string | string[] | undefined>(undefined);
 
 	$effect(() => {
 		if (props.open !== undefined && props.open !== open) {

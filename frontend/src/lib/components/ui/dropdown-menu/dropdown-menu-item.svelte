@@ -8,7 +8,7 @@
 	};
 
 	let props: ItemProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
 	let inset = $derived(props.inset);
 	let variant = $derived(props.variant ?? 'default');

@@ -10,7 +10,14 @@
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
-	import { Icon, IconChartLine, IconPlus, IconTrendingDown, IconTrendingUp, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconChartLine,
+		IconPlus,
+		IconTrendingDown,
+		IconTrendingUp,
+		IconX
+	} from '$lib/icons';
 
 	interface Props {
 		block: Block;
@@ -31,13 +38,20 @@
 		changePercent: number;
 	}
 
-	let tickers = $state<TickerItem[]>(
-		props.block.content.tickerItems || [
-			{ id: 't1', symbol: 'SPY', price: 478.52, change: 2.34, changePercent: 0.49 },
-			{ id: 't2', symbol: 'QQQ', price: 412.18, change: -1.23, changePercent: -0.3 },
-			{ id: 't3', symbol: 'AAPL', price: 185.92, change: 3.45, changePercent: 1.89 }
-		]
-	);
+	const DEFAULT_TICKERS: TickerItem[] = [
+		{ id: 't1', symbol: 'SPY', price: 478.52, change: 2.34, changePercent: 0.49 },
+		{ id: 't2', symbol: 'QQQ', price: 412.18, change: -1.23, changePercent: -0.3 },
+		{ id: 't3', symbol: 'AAPL', price: 185.92, change: 3.45, changePercent: 1.89 }
+	];
+
+	let tickers = $state<TickerItem[]>(DEFAULT_TICKERS);
+
+	$effect(() => {
+		const items = props.block.content.tickerItems;
+		if (items && items.length > 0) {
+			tickers = items;
+		}
+	});
 
 	let layout = $derived((props.block.settings.tickerLayout as 'grid' | 'list') || 'grid');
 

@@ -3,7 +3,7 @@
 	import { cn } from '$lib/utils.js';
 
 	let props: DialogPrimitive.OverlayProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
 
 	$effect(() => {

@@ -193,6 +193,7 @@
 					>
 					<div class="grid grid-cols-4 gap-1.5">
 						{#each ZONES as z (z.id)}
+							{@const ZoneIcon = z.icon}
 							<button
 								onclick={() => (zone = z.id)}
 								class="flex flex-col items-center gap-1 py-2.5 rounded-lg text-[10px] font-medium cursor-pointer transition-all duration-150"
@@ -200,7 +201,7 @@
 									? 'background: var(--calc-accent-glow); color: var(--calc-accent); border: 1px solid var(--calc-accent);'
 									: 'background: var(--calc-surface-hover); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
 							>
-								<svelte:component this={z.icon} size={14} />
+								<ZoneIcon size={14} />
 								{z.label}
 							</button>
 						{/each}

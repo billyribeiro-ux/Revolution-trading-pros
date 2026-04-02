@@ -42,8 +42,8 @@ import { logger } from '$lib/utils/logger';
 	// ==========================================================================
 
 	const controls = useMediaControls({
-		blockId: props.blockId,
-		onError: props.onError,
+		get blockId() { return props.blockId; },
+		get onError() { return props.onError; },
 		onEnded: () => {
 			logger.info('Audio playback ended');
 		}

@@ -94,13 +94,14 @@
 			role="menu"
 		>
 			{#each ITEMS as item (item.label)}
+				{@const ItemIcon = item.icon}
 				<button
 					onclick={item.action}
 					class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs transition-colors cursor-pointer"
 					style="color: var(--calc-text-secondary);"
 					role="menuitem"
 				>
-					<svelte:component this={item.icon} size={14} style="color: var(--calc-text-muted);" />
+					<ItemIcon size={14} style="color: var(--calc-text-muted);" />
 					<span class="flex-1 text-left">{item.label}</span>
 					{#if item.shortcut}
 						<kbd
