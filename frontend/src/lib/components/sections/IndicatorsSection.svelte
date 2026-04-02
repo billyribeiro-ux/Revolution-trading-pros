@@ -14,13 +14,8 @@ import { logger } from '$lib/utils/logger';
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { cubicOut, backOut } from 'svelte/easing';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconWaveSine from '@tabler/icons-svelte-runes/icons/wave-sine';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
-
+	import { Icon, IconActivity, IconArrowRight, IconBolt, IconChartLine, IconSparkles, IconWaveSine } from '$lib/icons';
+						
 	// ============================================================================
 	// INDICATOR DATA
 	// ============================================================================
@@ -432,7 +427,7 @@ import { logger } from '$lib/utils/logger';
 				<div
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconSparkles class="w-3.5 h-3.5" />
+					<Icon icon={IconSparkles} class="w-3.5 h-3.5" />
 					Technical Edge
 				</div>
 
@@ -564,7 +559,7 @@ import { logger } from '$lib/utils/logger';
 								<div
 									class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:translate-x-1 transition-all duration-300"
 								>
-									<IconArrowRight
+									<Icon icon={IconArrowRight}
 										class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 group-hover:text-blue-400"
 									/>
 								</div>
@@ -579,7 +574,7 @@ import { logger } from '$lib/utils/logger';
 							class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-linear-to-r from-blue-600 to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
 						>
 							<span class="text-sm sm:text-base">Explore All Indicators</span>
-							<IconArrowRight
+							<Icon icon={IconArrowRight}
 								class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform"
 							/>
 						</a>

@@ -24,30 +24,7 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import {
-		IconUsers,
-		IconUserPlus,
-		IconMail,
-		IconBuilding,
-		IconSearch,
-		IconFilter,
-		IconDotsVertical,
-		IconEdit,
-		IconEye,
-		IconTag,
-		IconChartBar,
-		IconTrendingUp,
-		IconCurrencyDollar,
-		IconRefresh,
-		IconListDetails,
-		IconMailForward,
-		IconRepeat,
-		IconBook,
-		IconPlayerPlay,
-		IconLink,
-		IconRobot,
-		IconTarget
-	} from '$lib/icons';
+	import { Icon, IconUsers, IconUserPlus, IconMail, IconBuilding, IconSearch, IconFilter, IconDotsVertical, IconEdit, IconEye, IconTag, IconChartBar, IconTrendingUp, IconCurrencyDollar, IconRefresh, IconListDetails, IconMailForward, IconRepeat, IconBook, IconPlayerPlay, IconLink, IconRobot, IconTarget } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
@@ -307,11 +284,11 @@
 			<p class="subtitle">Manage contacts, track deals, and streamline customer relationships</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={loadData} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 					Refresh
 				</button>
 				<a href="/admin/crm/contacts/new" class="btn-primary">
-					<IconUserPlus size={18} />
+					<Icon icon={IconUserPlus} size={18} />
 					Add Contact
 				</a>
 			</div>
@@ -356,7 +333,7 @@
 			<section class="stats-grid">
 				<div class="stat-card">
 					<div class="stat-icon blue">
-						<IconUsers size={24} />
+						<Icon icon={IconUsers} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.totalContacts.toLocaleString()}</span>
@@ -365,7 +342,7 @@
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon green">
-						<IconTrendingUp size={24} />
+						<Icon icon={IconTrendingUp} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.highScoreContacts}</span>
@@ -374,7 +351,7 @@
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon purple">
-						<IconChartBar size={24} />
+						<Icon icon={IconChartBar} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.activeDeals}</span>
@@ -383,7 +360,7 @@
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon amber">
-						<IconCurrencyDollar size={24} />
+						<Icon icon={IconCurrencyDollar} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{formatCurrency(stats.dealValue)}</span>
@@ -395,7 +372,7 @@
 			<!-- Search & Filters Bar -->
 			<div class="filters-bar">
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						id="search-contacts"
 						name="search-contacts"
@@ -440,11 +417,11 @@
 					</div>
 				{:else if filteredContacts.length === 0}
 					<div class="empty-state">
-						<IconUsers size={48} />
+						<Icon icon={IconUsers} size={48} />
 						<h3>No contacts found</h3>
 						<p>Add your first contact to get started</p>
 						<a href="/admin/crm/contacts/new" class="btn-primary">
-							<IconUserPlus size={18} />
+							<Icon icon={IconUserPlus} size={18} />
 							Add Contact
 						</a>
 					</div>
@@ -526,13 +503,13 @@
 									<td>
 										<div class="action-buttons">
 											<a href="/admin/crm/contacts/{contact.id}" class="btn-icon" title="View">
-												<IconEye size={16} />
+												<Icon icon={IconEye} size={16} />
 											</a>
 											<a href="/admin/crm/contacts/{contact.id}/edit" class="btn-icon" title="Edit">
-												<IconEdit size={16} />
+												<Icon icon={IconEdit} size={16} />
 											</a>
 											<button class="btn-icon" title="More">
-												<IconDotsVertical size={16} />
+												<Icon icon={IconDotsVertical} size={16} />
 											</button>
 										</div>
 									</td>

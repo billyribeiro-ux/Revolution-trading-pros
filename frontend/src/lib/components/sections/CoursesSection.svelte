@@ -7,21 +7,10 @@ import { logger } from '$lib/utils/logger';
 	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
+	import { Icon, IconActivity, IconArrowRight, IconBrain, IconCertificate, IconChartCandle, IconChartLine, IconClock, IconFlame, IconPlayerPlay, IconSchool, IconShield, IconUsers } from '$lib/icons';
 
 	// Tabler Icons (Preserving sub-path imports for tree-shaking)
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
-	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play-filled';
-	import IconCertificate from '@tabler/icons-svelte-runes/icons/certificate';
-	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-
+												
 	// ============================================================================
 	// COURSE DATA
 	// ============================================================================
@@ -275,7 +264,7 @@ import { logger } from '$lib/utils/logger';
 				<div
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconSchool class="w-4 h-4" />
+					<Icon icon={IconSchool} class="w-4 h-4" />
 					Professional Education
 				</div>
 
@@ -378,9 +367,9 @@ import { logger } from '$lib/utils/logger';
 										class="inline-flex items-center gap-1.5 text-xs font-bold text-violet-300 uppercase tracking-wider mb-1"
 									>
 										{#if course.level === 'Advanced'}
-											<IconFlame size={12} class="animate-pulse" />
+											<Icon icon={IconFlame} size={12} class="animate-pulse" />
 										{:else if course.level === 'Intermediate'}
-											<IconActivity size={12} />
+											<Icon icon={IconActivity} size={12} />
 										{/if}
 										{course.level}
 									</span>
@@ -423,11 +412,11 @@ import { logger } from '$lib/utils/logger';
 							<div class="flex flex-col gap-2">
 								<div class="flex items-center gap-4 text-xs sm:text-sm text-zinc-500 font-medium">
 									<div class="flex items-center gap-1.5">
-										<IconClock class="w-4 h-4 text-zinc-600" />
+										<Icon icon={IconClock} class="w-4 h-4 text-zinc-600" />
 										<span>{course.duration}</span>
 									</div>
 									<div class="flex items-center gap-1.5">
-										<IconUsers class="w-4 h-4 text-zinc-600" />
+										<Icon icon={IconUsers} class="w-4 h-4 text-zinc-600" />
 										<span>{course.students}</span>
 									</div>
 								</div>
@@ -446,7 +435,7 @@ import { logger } from '$lib/utils/logger';
 								class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm shadow-xl shadow-white/5 group-hover:shadow-white/20 transform group-hover:-translate-y-1 transition-all duration-300"
 							>
 								<span>Start Learning</span>
-								<IconArrowRight class="w-4 h-4" />
+								<Icon icon={IconArrowRight} class="w-4 h-4" />
 							</div>
 						</div>
 					</div>
@@ -458,7 +447,7 @@ import { logger } from '$lib/utils/logger';
 						<div
 							class="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-2xl scale-50 group-hover:scale-100 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)"
 						>
-							<IconPlayerPlay class="w-8 h-8 text-white ml-1 drop-shadow-lg" />
+							<Icon icon={IconPlayerPlay} class="w-8 h-8 text-white ml-1 drop-shadow-lg" />
 						</div>
 					</div>
 				</a>
@@ -475,7 +464,7 @@ import { logger } from '$lib/utils/logger';
 						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
 					></span>
 					<span class="text-base relative z-10">View Full Curriculum</span>
-					<IconArrowRight
+					<Icon icon={IconArrowRight}
 						class="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10"
 					/>
 				</a>
@@ -483,7 +472,7 @@ import { logger } from '$lib/utils/logger';
 				<p
 					class="mt-6 text-sm text-zinc-500 flex items-center justify-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
 				>
-					<IconCertificate class="w-4 h-4 text-violet-500" />
+					<Icon icon={IconCertificate} class="w-4 h-4 text-violet-500" />
 					Official certification included with all pathways
 				</p>
 			</div>

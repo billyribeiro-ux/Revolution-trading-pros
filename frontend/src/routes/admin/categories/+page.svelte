@@ -16,25 +16,9 @@
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
-	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
-	import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconGitMerge from '@tabler/icons-svelte-runes/icons/git-merge';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import { categoriesApi, AdminApiError, type Category } from '$lib/api/admin';
+																		import { categoriesApi, AdminApiError, type Category } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconChartBar, IconCheck, IconChevronRight, IconCopy, IconDownload, IconEdit, IconEye, IconEyeOff, IconFolder, IconFolderPlus, IconGitMerge, IconGripVertical, IconRefresh, IconSearch, IconTrash, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE - Svelte 5 Runes
@@ -433,13 +417,13 @@ import { logger } from '$lib/utils/logger';
 {#if showToast}
 	<div class="toast toast-{toastType}" transition:fade>
 		{#if toastType === 'success'}
-			<IconCheck size={20} />
+			<Icon icon={IconCheck} size={20} />
 		{:else}
-			<IconAlertCircle size={20} />
+			<Icon icon={IconAlertCircle} size={20} />
 		{/if}
 		<span>{toastMessage}</span>
 		<button onclick={() => (showToast = false)} class="toast-close">
-			<IconX size={16} />
+			<Icon icon={IconX} size={16} />
 		</button>
 	</div>
 {/if}
@@ -456,20 +440,20 @@ import { logger } from '$lib/utils/logger';
 		<!-- Header -->
 		<header class="page-header">
 			<h1>
-				<IconFolder size={28} />
+				<Icon icon={IconFolder} size={28} />
 				Categories
 			</h1>
 			<p class="subtitle">Organize products and content with categories</p>
 			<div class="header-actions">
 				<button class="btn-refresh" onclick={() => loadCategories()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<button class="btn-secondary" onclick={exportCategories}>
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					Export
 				</button>
 				<button class="btn-primary" onclick={() => openCategoryModal()}>
-					<IconFolderPlus size={18} />
+					<Icon icon={IconFolderPlus} size={18} />
 					Add Category
 				</button>
 			</div>
@@ -479,7 +463,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconFolder size={24} />
+					<Icon icon={IconFolder} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.total}</span>
@@ -488,7 +472,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon green">
-					<IconEye size={24} />
+					<Icon icon={IconEye} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.visible}</span>
@@ -497,7 +481,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon amber">
-					<IconEyeOff size={24} />
+					<Icon icon={IconEyeOff} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.hidden}</span>
@@ -506,7 +490,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconChartBar size={24} />
+					<Icon icon={IconChartBar} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.withPosts}</span>
@@ -518,7 +502,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Filters Bar -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					type="text"
 					id="search-categories"
@@ -546,19 +530,19 @@ import { logger } from '$lib/utils/logger';
 				<span class="selected-count">{selectedIds.size} selected</span>
 				<div class="bulk-buttons">
 					<button class="btn-bulk" onclick={() => bulkToggleVisibility(true)}>
-						<IconEye size={16} />
+						<Icon icon={IconEye} size={16} />
 						Show
 					</button>
 					<button class="btn-bulk" onclick={() => bulkToggleVisibility(false)}>
-						<IconEyeOff size={16} />
+						<Icon icon={IconEyeOff} size={16} />
 						Hide
 					</button>
 					<button class="btn-bulk" onclick={() => (showMergeModal = true)}>
-						<IconGitMerge size={16} />
+						<Icon icon={IconGitMerge} size={16} />
 						Merge
 					</button>
 					<button class="btn-bulk danger" onclick={bulkDelete}>
-						<IconTrash size={16} />
+						<Icon icon={IconTrash} size={16} />
 						Delete
 					</button>
 				</div>
@@ -574,17 +558,17 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if error}
 				<div class="error-state">
-					<IconAlertCircle size={48} />
+					<Icon icon={IconAlertCircle} size={48} />
 					<p>{error}</p>
 					<button class="btn-primary" onclick={() => loadCategories()}>Try Again</button>
 				</div>
 			{:else if filteredCategories.length === 0}
 				<div class="empty-state">
-					<IconFolder size={48} />
+					<Icon icon={IconFolder} size={48} />
 					<h3>No categories found</h3>
 					<p>Create your first category to organize your content</p>
 					<button class="btn-primary" onclick={() => openCategoryModal()}>
-						<IconFolderPlus size={18} />
+						<Icon icon={IconFolderPlus} size={18} />
 						Create Category
 					</button>
 				</div>
@@ -627,13 +611,13 @@ import { logger } from '$lib/utils/logger';
 										/>
 									</td>
 									<td class="drag-handle">
-										<IconGripVertical size={16} />
+										<Icon icon={IconGripVertical} size={16} />
 									</td>
 									<td>
 										<div class="category-cell">
 											{#if category.parent_id}
 												<span class="child-indicator">
-													<IconChevronRight size={14} />
+													<Icon icon={IconChevronRight} size={14} />
 												</span>
 											{/if}
 											<div class="category-color" style="background: {category.color}"></div>
@@ -652,7 +636,7 @@ import { logger } from '$lib/utils/logger';
 											title="Click to copy"
 										>
 											/{category.slug}
-											<IconCopy size={12} />
+											<Icon icon={IconCopy} size={12} />
 										</button>
 									</td>
 									<td>
@@ -661,12 +645,12 @@ import { logger } from '$lib/utils/logger';
 									<td>
 										{#if category.is_visible}
 											<span class="visibility-badge visible">
-												<IconEye size={14} />
+												<Icon icon={IconEye} size={14} />
 												Visible
 											</span>
 										{:else}
 											<span class="visibility-badge hidden">
-												<IconEyeOff size={14} />
+												<Icon icon={IconEyeOff} size={14} />
 												Hidden
 											</span>
 										{/if}
@@ -681,14 +665,14 @@ import { logger } from '$lib/utils/logger';
 												onclick={() => openCategoryModal(category)}
 												title="Edit"
 											>
-												<IconEdit size={16} />
+												<Icon icon={IconEdit} size={16} />
 											</button>
 											<button
 												class="btn-icon danger"
 												onclick={() => deleteCategory(category.id)}
 												title="Delete"
 											>
-												<IconTrash size={16} />
+												<Icon icon={IconTrash} size={16} />
 											</button>
 										</div>
 									</td>
@@ -730,14 +714,14 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3>{editingCategory ? 'Edit Category' : 'New Category'}</h3>
 				<button class="modal-close" onclick={closeCategoryModal}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body">
 				{#if formErrors.length > 0}
 					<div class="error-banner">
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 						<div>
 							{#each formErrors as error}
 								<p>{error}</p>
@@ -872,7 +856,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3>Merge Categories</h3>
 				<button class="modal-close" onclick={() => (showMergeModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -896,7 +880,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showMergeModal = false)}> Cancel </button>
 				<button class="btn-primary" onclick={mergeCategories} disabled={!mergeForm.targetId}>
-					<IconGitMerge size={18} />
+					<Icon icon={IconGitMerge} size={18} />
 					Merge Categories
 				</button>
 			</div>

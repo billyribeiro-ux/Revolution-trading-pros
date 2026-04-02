@@ -13,24 +13,14 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import { crmAPI } from '$lib/api/crm';
+												import { crmAPI } from '$lib/api/crm';
 	import type {
 		RecurringCampaign,
 		RecurringCampaignFilters,
 		RecurringCampaignStatus
 	} from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconCalendarEvent, IconChartBar, IconCopy, IconEdit, IconEye, IconMail, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconTrash } from '$lib/icons';
 
 	let campaigns = $state<RecurringCampaign[]>([]);
 	let isLoading = $state(true);
@@ -163,10 +153,10 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadCampaigns()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<a href="/admin/crm/recurring-campaigns/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New Campaign
 			</a>
 		</div>
@@ -176,7 +166,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconCalendarEvent size={24} />
+				<Icon icon={IconCalendarEvent} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -185,7 +175,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconPlayerPlay size={24} />
+				<Icon icon={IconPlayerPlay} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.active)}</span>
@@ -194,7 +184,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconMail size={24} />
+				<Icon icon={IconMail} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalSent)}</span>
@@ -203,7 +193,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconChartBar size={24} />
+				<Icon icon={IconChartBar} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatCurrency(stats.totalRevenue)}</span>
@@ -215,7 +205,7 @@
 	<!-- Search & Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-recurring-campaigns"
@@ -244,11 +234,11 @@
 		</div>
 	{:else if filteredCampaigns.length === 0}
 		<div class="empty-state">
-			<IconCalendarEvent size={48} />
+			<Icon icon={IconCalendarEvent} size={48} />
 			<h3>No recurring campaigns found</h3>
 			<p>Create your first recurring campaign for automated newsletters</p>
 			<a href="/admin/crm/recurring-campaigns/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Campaign
 			</a>
 		</div>
@@ -272,7 +262,7 @@
 							<td>
 								<div class="campaign-cell">
 									<div class="campaign-icon">
-										<IconCalendarEvent size={20} />
+										<Icon icon={IconCalendarEvent} size={20} />
 									</div>
 									<div class="campaign-info">
 										<span class="campaign-title">{campaign.title}</span>
@@ -305,28 +295,28 @@
 										class="btn-icon"
 										title="View"
 									>
-										<IconEye size={16} />
+										<Icon icon={IconEye} size={16} />
 									</a>
 									<a
 										href="/admin/crm/recurring-campaigns/{campaign.id}/edit"
 										class="btn-icon"
 										title="Edit"
 									>
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</a>
 									<button
 										class="btn-icon"
 										title="Duplicate"
 										onclick={() => duplicateCampaign(campaign.id)}
 									>
-										<IconCopy size={16} />
+										<Icon icon={IconCopy} size={16} />
 									</button>
 									<button
 										class="btn-icon danger"
 										title="Delete"
 										onclick={() => deleteCampaign(campaign.id)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>

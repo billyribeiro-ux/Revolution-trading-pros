@@ -10,19 +10,7 @@
 	// GSAP imported dynamically in onMount to avoid SSR issues
 
 	// Icons
-	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
-	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
-	import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
-	import IconScale from '@tabler/icons-svelte-runes/icons/scale';
-	import IconId from '@tabler/icons-svelte-runes/icons/id';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-
+												
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
@@ -53,6 +41,7 @@
 		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		// Dynamically import GSAP to avoid SSR issues
+	import { Icon, IconActivity, IconArrowRight, IconBroadcast, IconBuildingBank, IconCheck, IconChevronDown, IconId, IconMessageCircle, IconScale, IconSchool, IconShieldLock, IconUsersGroup } from '$lib/icons';
 		(async () => {
 			const { gsap } = await import('gsap');
 			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
@@ -404,7 +393,7 @@
 									class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out"
 								></span>
 								<span class="relative z-10">Join The Community</span>
-								<IconArrowRight
+								<Icon icon={IconArrowRight}
 									size={16}
 									class="relative z-10 group-hover:translate-x-1 transition-transform"
 								/>
@@ -499,7 +488,7 @@
 							class="absolute top-10 left-10 bg-[#080808]/90 border-l-4 border-red-500 p-6 shadow-2xl max-w-xs backdrop-blur-xl transform translate-z-10 group-hover:translate-z-20 transition-transform duration-500"
 						>
 							<div class="flex items-center gap-2 mb-3">
-								<IconActivity size={14} class="text-red-500 animate-pulse" />
+								<Icon icon={IconActivity} size={14} class="text-red-500 animate-pulse" />
 								<div class="text-[9px] font-mono text-red-500 uppercase tracking-widest">
 									The Retail Trap
 								</div>
@@ -539,7 +528,7 @@
 									<div
 										class="p-1.5 rounded bg-amber-500/10 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black transition-colors duration-300"
 									>
-										<IconCheck size={14} stroke={3} />
+										<Icon icon={IconCheck} size={14} stroke={3} />
 									</div>
 									<span class="group-hover:translate-x-2 transition-transform duration-300"
 										>{item}</span
@@ -648,7 +637,7 @@
 									<div
 										class="w-20 h-20 rounded-full bg-linear-to-br from-white/10 to-transparent flex items-center justify-center text-slate-400 border border-white/5 group-hover:border-amber-600/50 group-hover:text-amber-500 overflow-hidden shadow-2xl transition-all group-hover:scale-105"
 									>
-										<IconId size={36} stroke={1} />
+										<Icon icon={IconId} size={36} stroke={1} />
 									</div>
 									<div class="md:hidden">
 										<div class="text-xl font-serif text-white">{member.name}</div>
@@ -711,12 +700,12 @@
 						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
-							<IconMessageCircle size={80} />
+							<Icon icon={IconMessageCircle} size={80} />
 						</div>
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
+								{#each Array(5) as _}<Icon icon={IconScale} size={12} class="fill-current" />{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"I spent years jumping from one alert service to another, losing money. Revolution
@@ -743,12 +732,12 @@
 						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
-							<IconMessageCircle size={80} />
+							<Icon icon={IconMessageCircle} size={80} />
 						</div>
 
 						<div class="relative z-10">
 							<div class="flex gap-1 mb-6 text-amber-600">
-								{#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
+								{#each Array(5) as _}<Icon icon={IconScale} size={12} class="fill-current" />{/each}
 							</div>
 							<p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
 								"The morning voice chat is a game changer. Hearing Billy explain his thought process
@@ -796,7 +785,7 @@
 									<span
 										class="text-amber-600 transform group-open:rotate-180 transition-transform duration-300"
 									>
-										<IconChevronDown size={20} />
+										<Icon icon={IconChevronDown} size={20} />
 									</span>
 								</summary>
 								<div
@@ -824,7 +813,7 @@
 			></div>
 
 			<div class="relative z-10 px-4">
-				<IconBuildingBank
+				<Icon icon={IconBuildingBank}
 					size={64}
 					class="mx-auto text-amber-600 mb-8 opacity-80 drop-shadow-[0_0_20px_rgba(217,119,6,0.4)]"
 					stroke={0.8}
@@ -847,7 +836,7 @@
 							class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
 						></span>
 						<span class="relative z-10">Start Your Membership</span>
-						<IconArrowRight
+						<Icon icon={IconArrowRight}
 							size={18}
 							class="relative z-10 group-hover:translate-x-1 transition-transform"
 						/>
@@ -857,7 +846,7 @@
 					class="mt-12 flex flex-wrap justify-center gap-6 text-[10px] text-slate-600 uppercase tracking-widest font-mono"
 				>
 					<span class="flex items-center gap-2 text-slate-500"
-						><IconShieldLock size={12} /> Secure Payment</span
+						><Icon icon={IconShieldLock} size={12} /> Secure Payment</span
 					>
 					<span class="w-px h-3 bg-slate-800"></span>
 					<span class="text-slate-500">Cancel Anytime</span>

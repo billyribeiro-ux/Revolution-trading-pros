@@ -17,25 +17,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconMail,
-		IconMailForward,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconCopy,
-		IconRefresh,
-		IconUsers,
-		IconChartBar,
-		IconClock,
-		IconX,
-		IconSend,
-		IconCheck,
-		IconAlertCircle
-	} from '$lib/icons';
+	import { Icon, IconMail, IconMailForward, IconPlus, IconSearch, IconEdit, IconTrash, IconPlayerPlay, IconPlayerPause, IconCopy, IconRefresh, IconUsers, IconChartBar, IconClock, IconX, IconSend, IconCheck, IconAlertCircle } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -355,10 +337,10 @@
 			<p class="subtitle">Create automated drip campaigns for your contacts</p>
 			<div class="header-actions">
 				<button class="btn-refresh" onclick={() => loadSequences()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/sequences/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Sequence
 				</a>
 			</div>
@@ -368,7 +350,7 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconMail size={24} />
+					<Icon icon={IconMail} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -377,7 +359,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon green">
-					<IconPlayerPlay size={24} />
+					<Icon icon={IconPlayerPlay} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.active)}</span>
@@ -386,7 +368,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconUsers size={24} />
+					<Icon icon={IconUsers} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.totalSubscribers)}</span>
@@ -395,7 +377,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon amber">
-					<IconMailForward size={24} />
+					<Icon icon={IconMailForward} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.totalSent)}</span>
@@ -407,7 +389,7 @@
 		<!-- Search & Filters -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					id="page-searchquery"
 					name="page-searchquery"
@@ -418,7 +400,7 @@
 				/>
 				{#if searchQuery}
 					<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
-						<IconX size={14} />
+						<Icon icon={IconX} size={14} />
 					</button>
 				{/if}
 			</div>
@@ -432,10 +414,10 @@
 		<!-- Error Alert -->
 		{#if error}
 			<div class="error-alert">
-				<IconAlertCircle size={18} />
+				<Icon icon={IconAlertCircle} size={18} />
 				<span>{error}</span>
 				<button onclick={() => (error = '')} aria-label="Dismiss error">
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/if}
@@ -448,11 +430,11 @@
 			</div>
 		{:else if filteredSequences.length === 0}
 			<div class="empty-state">
-				<IconMail size={48} />
+				<Icon icon={IconMail} size={48} />
 				<h3>No sequences found</h3>
 				<p>Create your first email sequence to start automating your campaigns</p>
 				<a href="/admin/crm/sequences/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Create Sequence
 				</a>
 			</div>
@@ -477,12 +459,12 @@
 								<td>
 									<div class="sequence-cell">
 										<div class="sequence-icon">
-											<IconMail size={20} />
+											<Icon icon={IconMail} size={20} />
 										</div>
 										<div class="sequence-info">
 											<span class="sequence-title">{sequence.title}</span>
 											<span class="sequence-meta">
-												<IconClock size={12} />
+												<Icon icon={IconClock} size={12} />
 												{sequence.emails_count} emails
 											</span>
 										</div>
@@ -516,9 +498,9 @@
 												disabled={actionInProgress === sequence.id}
 											>
 												{#if sequence.status === 'active'}
-													<IconPlayerPause size={16} />
+													<Icon icon={IconPlayerPause} size={16} />
 												{:else}
-													<IconPlayerPlay size={16} />
+													<Icon icon={IconPlayerPlay} size={16} />
 												{/if}
 											</button>
 										{/if}
@@ -527,24 +509,24 @@
 											class="btn-icon"
 											title="View Analytics"
 										>
-											<IconChartBar size={16} />
+											<Icon icon={IconChartBar} size={16} />
 										</a>
 										<a
 											href="/admin/crm/sequences/{sequence.id}/subscribers"
 											class="btn-icon"
 											title="View Subscribers"
 										>
-											<IconUsers size={16} />
+											<Icon icon={IconUsers} size={16} />
 										</a>
 										<button
 											class="btn-icon"
 											title="Send Test Email"
 											onclick={() => openSendEmailModal(sequence)}
 										>
-											<IconSend size={16} />
+											<Icon icon={IconSend} size={16} />
 										</button>
 										<a href="/admin/crm/sequences/{sequence.id}/edit" class="btn-icon" title="Edit">
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</a>
 										<button
 											class="btn-icon"
@@ -552,7 +534,7 @@
 											onclick={() => duplicateSequence(sequence.id)}
 											disabled={actionInProgress === sequence.id}
 										>
-											<IconCopy size={16} />
+											<Icon icon={IconCopy} size={16} />
 										</button>
 										<button
 											class="btn-icon danger"
@@ -560,7 +542,7 @@
 											onclick={() => deleteSequence(sequence.id)}
 											disabled={actionInProgress === sequence.id}
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</div>
 								</td>
@@ -588,11 +570,11 @@
 		<div class="modal-container">
 			<div class="modal-header">
 				<h2 id="modal-title">
-					<IconSend size={20} />
+					<Icon icon={IconSend} size={20} />
 					Send Test Email
 				</h2>
 				<button class="modal-close" onclick={closeSendEmailModal} aria-label="Close modal">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -605,7 +587,7 @@
 
 					{#if sendEmailForm.success}
 						<div class="success-message">
-							<IconCheck size={20} />
+							<Icon icon={IconCheck} size={20} />
 							<span>Test email sent successfully!</span>
 						</div>
 					{:else}
@@ -627,7 +609,7 @@
 						</div>
 
 						<div class="modal-info">
-							<IconAlertCircle size={16} />
+							<Icon icon={IconAlertCircle} size={16} />
 							<span>This will send the first email in the sequence as a test.</span>
 						</div>
 					{/if}
@@ -648,7 +630,7 @@
 							<div class="btn-spinner"></div>
 							Sending...
 						{:else}
-							<IconSend size={16} />
+							<Icon icon={IconSend} size={16} />
 							Send Test
 						{/if}
 					</button>

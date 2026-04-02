@@ -4,7 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { popupsApi } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
-	import { IconX } from '$lib/icons';
+	import { Icon, IconX } from '$lib/icons';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	interface Props {
@@ -398,7 +398,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Close popup"
 					title="Close (Esc)"
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			{/if}
 

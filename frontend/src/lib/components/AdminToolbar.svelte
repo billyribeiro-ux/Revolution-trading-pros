@@ -46,19 +46,9 @@ import { logger } from '$lib/utils/logger';
 	import type { User } from '$lib/stores/auth.svelte';
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
+	import { Icon, IconAlertTriangle, IconChevronDown, IconDashboard, IconEye, IconForms, IconLogout, IconMail, IconRefresh, IconSettings, IconTicket, IconUsers } from '$lib/icons';
 	// Individual Tabler icon imports (Svelte 5 compatible)
-	import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
-	import IconForms from '@tabler/icons-svelte-runes/icons/forms';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconLogout from '@tabler/icons-svelte-runes/icons/logout';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-
+											
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -673,7 +663,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Go to admin dashboard"
 					disabled={isLoading}
 				>
-					<IconDashboard size={20} aria-hidden="true" />
+					<Icon icon={IconDashboard} size={20} aria-hidden="true" />
 					<span class="logo-text">Admin</span>
 				</button>
 
@@ -695,7 +685,7 @@ import { logger } from '$lib/utils/logger';
 						disabled={isLoading}
 					>
 						<span>Quick Access</span>
-						<IconChevronDown size={16} class={showQuickMenu ? 'rotate' : ''} aria-hidden="true" />
+						<Icon icon={IconChevronDown} size={16} class={showQuickMenu ? 'rotate' : ''} aria-hidden="true" />
 					</button>
 
 					{#if showQuickMenu}
@@ -738,7 +728,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="View public site"
 					disabled={isLoading}
 				>
-					<IconEye size={18} aria-hidden="true" />
+					<Icon icon={IconEye} size={18} aria-hidden="true" />
 					<span class="button-text">View Site</span>
 				</button>
 
@@ -764,7 +754,7 @@ import { logger } from '$lib/utils/logger';
 							{userInitial}
 						</div>
 						<span class="user-name">{displayName}</span>
-						<IconChevronDown size={16} class={showDropdown ? 'rotate' : ''} aria-hidden="true" />
+						<Icon icon={IconChevronDown} size={16} class={showDropdown ? 'rotate' : ''} aria-hidden="true" />
 					</button>
 
 					{#if showDropdown}
@@ -795,7 +785,7 @@ import { logger } from '$lib/utils/logger';
 								role="menuitem"
 								tabindex={showDropdown ? 0 : -1}
 							>
-								<IconSettings size={18} aria-hidden="true" />
+								<Icon icon={IconSettings} size={18} aria-hidden="true" />
 								<span>Profile Settings</span>
 							</button>
 							<div class="dropdown-divider" role="separator"></div>
@@ -807,10 +797,10 @@ import { logger } from '$lib/utils/logger';
 								disabled={isLoading}
 							>
 								{#if isLoading}
-									<IconRefresh size={18} class="spin" aria-hidden="true" />
+									<Icon icon={IconRefresh} size={18} class="spin" aria-hidden="true" />
 									<span>Logging out...</span>
 								{:else}
-									<IconLogout size={18} aria-hidden="true" />
+									<Icon icon={IconLogout} size={18} aria-hidden="true" />
 									<span>Logout</span>
 								{/if}
 							</button>
@@ -826,7 +816,7 @@ import { logger } from '$lib/utils/logger';
 						title="Error loading user data. Click to retry."
 						aria-label="Error loading user data. Click to retry."
 					>
-						<IconAlertTriangle size={18} />
+						<Icon icon={IconAlertTriangle} size={18} />
 					</button>
 				{/if}
 			</div>

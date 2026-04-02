@@ -5,16 +5,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconActivity,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconCheck,
-		IconAlertTriangle,
-		IconBolt,
-		IconChartLine,
-		IconTarget
-	} from '$lib/icons';
+	import { Icon, IconActivity, IconTrendingUp, IconTrendingDown, IconCheck, IconAlertTriangle, IconBolt, IconChartLine, IconTarget } from '$lib/icons';
 
 	let heroVisible = $state(false);
 	let sectionsVisible = $state<boolean[]>([false, false, false]);
@@ -66,7 +57,7 @@
 
 		<div class="hero-content">
 			<div class="hero-badge">
-				<IconActivity size={20} stroke={2} />
+				<Icon icon={IconActivity} size={20} stroke={2} />
 				<span>Momentum Indicator</span>
 			</div>
 
@@ -83,21 +74,21 @@
 
 			<div class="hero-meta">
 				<div class="meta-item">
-					<IconChartLine size={24} stroke={2} />
+					<Icon icon={IconChartLine} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Type</div>
 						<div class="meta-value">Oscillator</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconTarget size={24} stroke={2} />
+					<Icon icon={IconTarget} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Range</div>
 						<div class="meta-value">0-100</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconBolt size={24} stroke={2} />
+					<Icon icon={IconBolt} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Best For</div>
 						<div class="meta-value">Reversals</div>
@@ -155,7 +146,7 @@
 				<div class="level-bar">
 					<div class="level-zone overbought">
 						<div class="zone-label">
-							<IconTrendingUp size={20} stroke={2} />
+							<Icon icon={IconTrendingUp} size={20} stroke={2} />
 							<span>Overbought (70-100)</span>
 						</div>
 						<p>Potential selling opportunity or trend continuation in strong uptrends</p>
@@ -163,7 +154,7 @@
 
 					<div class="level-zone neutral">
 						<div class="zone-label">
-							<IconActivity size={20} stroke={2} />
+							<Icon icon={IconActivity} size={20} stroke={2} />
 							<span>Neutral (30-70)</span>
 						</div>
 						<p>Normal trading range with no extreme conditions</p>
@@ -171,7 +162,7 @@
 
 					<div class="level-zone oversold">
 						<div class="zone-label">
-							<IconTrendingDown size={20} stroke={2} />
+							<Icon icon={IconTrendingDown} size={20} stroke={2} />
 							<span>Oversold (0-30)</span>
 						</div>
 						<p>Potential buying opportunity or trend continuation in strong downtrends</p>
@@ -193,48 +184,48 @@
 			<div class="strategies-grid">
 				<div class="strategy-card">
 					<div class="strategy-icon">
-						<IconCheck size={32} stroke={1.5} />
+						<Icon icon={IconCheck} size={32} stroke={1.5} />
 					</div>
 					<h3>Overbought/Oversold</h3>
 					<p>Classic strategy: Buy when RSI crosses above 30, sell when it crosses below 70.</p>
 					<div class="strategy-tip">
-						<IconAlertTriangle size={16} stroke={2} />
+						<Icon icon={IconAlertTriangle} size={16} stroke={2} />
 						<span>Works best in ranging markets</span>
 					</div>
 				</div>
 
 				<div class="strategy-card">
 					<div class="strategy-icon">
-						<IconCheck size={32} stroke={1.5} />
+						<Icon icon={IconCheck} size={32} stroke={1.5} />
 					</div>
 					<h3>Divergence Trading</h3>
 					<p>Look for divergence between price action and RSI to identify potential reversals.</p>
 					<div class="strategy-tip">
-						<IconAlertTriangle size={16} stroke={2} />
+						<Icon icon={IconAlertTriangle} size={16} stroke={2} />
 						<span>High probability reversal signal</span>
 					</div>
 				</div>
 
 				<div class="strategy-card">
 					<div class="strategy-icon">
-						<IconCheck size={32} stroke={1.5} />
+						<Icon icon={IconCheck} size={32} stroke={1.5} />
 					</div>
 					<h3>Trend Confirmation</h3>
 					<p>In uptrends, use RSI pullbacks to 40-50 as buying opportunities.</p>
 					<div class="strategy-tip">
-						<IconAlertTriangle size={16} stroke={2} />
+						<Icon icon={IconAlertTriangle} size={16} stroke={2} />
 						<span>Aligns with trend direction</span>
 					</div>
 				</div>
 
 				<div class="strategy-card">
 					<div class="strategy-icon">
-						<IconCheck size={32} stroke={1.5} />
+						<Icon icon={IconCheck} size={32} stroke={1.5} />
 					</div>
 					<h3>Failure Swings</h3>
 					<p>Identify RSI failure swings for high-probability reversal signals.</p>
 					<div class="strategy-tip">
-						<IconAlertTriangle size={16} stroke={2} />
+						<Icon icon={IconAlertTriangle} size={16} stroke={2} />
 						<span>Advanced pattern recognition</span>
 					</div>
 				</div>
@@ -249,7 +240,7 @@
 			<p>Learn advanced RSI strategies in our professional trading courses</p>
 			<a href="/courses" class="cta-button">
 				View Courses
-				<IconBolt size={20} stroke={2} />
+				<Icon icon={IconBolt} size={20} stroke={2} />
 			</a>
 		</div>
 	</section>

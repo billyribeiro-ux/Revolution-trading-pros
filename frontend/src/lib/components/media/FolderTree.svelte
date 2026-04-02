@@ -8,7 +8,7 @@
 <script lang="ts">
 	import { mediaStore as _mediaStore, getCurrentFolders } from '$lib/stores/media.svelte';
 	import type { MediaFolder } from '$lib/api/media';
-	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
+	import { Icon, IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
 
 	interface Props {
 		currentFolderId?: string | null;
@@ -82,7 +82,7 @@
 	<div class="folder-tree-header">
 		<h3 class="folder-tree-title">Folders</h3>
 		<button class="btn-add-folder" onclick={onCreateFolder} aria-label="Create folder">
-			<IconPlus size={18} />
+			<Icon icon={IconPlus} size={18} />
 		</button>
 	</div>
 
@@ -92,7 +92,7 @@
 		class:active={currentFolderId === null}
 		onclick={() => selectFolder(null)}
 	>
-		<IconFolder size={20} class="folder-icon" />
+		<Icon icon={IconFolder} size={20} class="folder-icon" />
 		<span class="folder-name">All Files</span>
 	</button>
 
@@ -109,9 +109,9 @@
 							aria-label={isExpanded ? 'Collapse' : 'Expand'}
 						>
 							{#if isExpanded}
-								<IconChevronDown size={16} />
+								<Icon icon={IconChevronDown} size={16} />
 							{:else}
-								<IconChevronRight size={16} />
+								<Icon icon={IconChevronRight} size={16} />
 							{/if}
 						</button>
 					{:else}
@@ -124,7 +124,7 @@
 						style="padding-left: {level * 1.5 + 0.75}rem"
 						onclick={() => selectFolder(folder.id)}
 					>
-						<IconFolder size={20} class="folder-icon" />
+						<Icon icon={IconFolder} size={20} class="folder-icon" />
 						<span class="folder-name">{folder.name}</span>
 						<span class="folder-count">{folder.file_count}</span>
 					</button>
@@ -141,9 +141,9 @@
 									aria-label={childData.isExpanded ? 'Collapse' : 'Expand'}
 								>
 									{#if childData.isExpanded}
-										<IconChevronDown size={16} />
+										<Icon icon={IconChevronDown} size={16} />
 									{:else}
-										<IconChevronRight size={16} />
+										<Icon icon={IconChevronRight} size={16} />
 									{/if}
 								</button>
 							{:else}
@@ -156,7 +156,7 @@
 								style="padding-left: {childData.level * 1.5 + 0.75}rem"
 								onclick={() => selectFolder(child.id)}
 							>
-								<IconFolder size={20} class="folder-icon" />
+								<Icon icon={IconFolder} size={20} class="folder-icon" />
 								<span class="folder-name">{child.name}</span>
 								<span class="folder-count">{child.file_count}</span>
 							</button>

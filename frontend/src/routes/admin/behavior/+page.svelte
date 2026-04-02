@@ -4,17 +4,7 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import {
-		IconEye,
-		IconCursor,
-		IconPointer,
-		IconClock,
-		IconChartBar,
-		IconRefresh,
-		IconArrowUpRight,
-		IconPlay,
-		IconClick
-	} from '$lib/icons';
+	import { Icon, IconEye, IconCursor, IconPointer, IconClock, IconChartBar, IconRefresh, IconArrowUpRight, IconPlay, IconClick } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsBehaviorConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
@@ -125,7 +115,7 @@
 						>
 					</div>
 					<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
-						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+						<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 					</button>
 				</div>
 			{/if}
@@ -158,84 +148,84 @@
 			<div class="metrics-grid">
 				<div class="metric-card">
 					<div class="metric-icon blue">
-						<IconEye size={24} />
+						<Icon icon={IconEye} size={24} />
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.totalSessions.toLocaleString()}</span>
 						<span class="metric-label">Total Sessions</span>
 					</div>
 					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
+						<Icon icon={IconArrowUpRight} size={14} />
 						<span>12.5%</span>
 					</div>
 				</div>
 
 				<div class="metric-card">
 					<div class="metric-icon purple">
-						<IconClock size={24} />
+						<Icon icon={IconClock} size={24} />
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.avgSessionDuration}</span>
 						<span class="metric-label">Avg. Session Duration</span>
 					</div>
 					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
+						<Icon icon={IconArrowUpRight} size={14} />
 						<span>8.3%</span>
 					</div>
 				</div>
 
 				<div class="metric-card">
 					<div class="metric-icon cyan">
-						<IconChartBar size={24} />
+						<Icon icon={IconChartBar} size={24} />
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.pagesPerSession.toFixed(1)}</span>
 						<span class="metric-label">Pages / Session</span>
 					</div>
 					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
+						<Icon icon={IconArrowUpRight} size={14} />
 						<span>5.2%</span>
 					</div>
 				</div>
 
 				<div class="metric-card">
 					<div class="metric-icon green">
-						<IconPointer size={24} />
+						<Icon icon={IconPointer} size={24} />
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.scrollDepth}%</span>
 						<span class="metric-label">Avg. Scroll Depth</span>
 					</div>
 					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
+						<Icon icon={IconArrowUpRight} size={14} />
 						<span>3.1%</span>
 					</div>
 				</div>
 
 				<div class="metric-card">
 					<div class="metric-icon orange">
-						<IconClick size={24} />
+						<Icon icon={IconClick} size={24} />
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.clickRate}%</span>
 						<span class="metric-label">Click Rate</span>
 					</div>
 					<div class="metric-trend negative">
-						<IconArrowUpRight size={14} />
+						<Icon icon={IconArrowUpRight} size={14} />
 						<span>1.2%</span>
 					</div>
 				</div>
 
 				<div class="metric-card">
 					<div class="metric-icon pink">
-						<IconCursor size={24} />
+						<Icon icon={IconCursor} size={24} />
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.heatmapViews.toLocaleString()}</span>
 						<span class="metric-label">Heatmap Views</span>
 					</div>
 					<div class="metric-trend positive">
-						<IconArrowUpRight size={14} />
+						<Icon icon={IconArrowUpRight} size={14} />
 						<span>15.7%</span>
 					</div>
 				</div>
@@ -247,7 +237,7 @@
 				<div class="panel">
 					<div class="panel-header">
 						<h3>
-							<IconClick size={20} />
+							<Icon icon={IconClick} size={20} />
 							Top Click Elements
 						</h3>
 						<a href="/admin/analytics/heatmaps" class="panel-link">View Heatmaps</a>
@@ -255,7 +245,7 @@
 					<div class="panel-content">
 						{#if topClicks.length === 0}
 							<div class="empty-state">
-								<IconClick size={32} />
+								<Icon icon={IconClick} size={32} />
 								<p>No click data available yet</p>
 							</div>
 						{:else}
@@ -279,14 +269,14 @@
 				<div class="panel">
 					<div class="panel-header">
 						<h3>
-							<IconPointer size={20} />
+							<Icon icon={IconPointer} size={20} />
 							Scroll Depth by Page
 						</h3>
 					</div>
 					<div class="panel-content">
 						{#if topScrolls.length === 0}
 							<div class="empty-state">
-								<IconPointer size={32} />
+								<Icon icon={IconPointer} size={32} />
 								<p>No scroll data available yet</p>
 							</div>
 						{:else}
@@ -312,7 +302,7 @@
 				<div class="panel full-width">
 					<div class="panel-header">
 						<h3>
-							<IconPlay size={20} />
+							<Icon icon={IconPlay} size={20} />
 							Recent Session Recordings
 						</h3>
 						<a href="/admin/analytics/recordings" class="panel-link">View All</a>
@@ -320,7 +310,7 @@
 					<div class="panel-content">
 						{#if recordings.length === 0}
 							<div class="empty-state">
-								<IconPlay size={32} />
+								<Icon icon={IconPlay} size={32} />
 								<p>No session recordings available</p>
 								<span class="empty-hint">Session recordings help you understand user behavior</span>
 							</div>
@@ -329,7 +319,7 @@
 								{#each recordings as recording}
 									<div class="recording-card">
 										<div class="recording-preview">
-											<IconPlay size={24} />
+											<Icon icon={IconPlay} size={24} />
 										</div>
 										<div class="recording-info">
 											<span class="recording-duration">{recording.duration}</span>
@@ -337,7 +327,7 @@
 											<span class="recording-date">{recording.date}</span>
 										</div>
 										<button class="btn-play">
-											<IconPlay size={16} />
+											<Icon icon={IconPlay} size={16} />
 											Watch
 										</button>
 									</div>

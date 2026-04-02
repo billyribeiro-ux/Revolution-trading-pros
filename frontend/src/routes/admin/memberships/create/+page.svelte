@@ -27,7 +27,7 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { goto } from '$app/navigation';
-	import { IconCrown, IconPlus, IconX, IconCheck, IconArrowLeft, IconTarget } from '$lib/icons';
+	import { Icon, IconCrown, IconPlus, IconX, IconCheck, IconArrowLeft, IconTarget } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -170,16 +170,16 @@ import { logger } from '$lib/utils/logger';
 	<header class="grade-header">
 		<div class="grade-header-content">
 			<div class="grade-badge">
-				<IconTarget size={16} />
+				<Icon icon={IconTarget} size={16} />
 				<span>ICT 7</span>
 			</div>
 			<div class="header-row">
 				<button class="btn-back" onclick={() => goto('/admin/memberships')}>
-					<IconArrowLeft size={20} />
+					<Icon icon={IconArrowLeft} size={20} />
 				</button>
 				<div>
 					<h1>
-						<IconCrown size={28} />
+						<Icon icon={IconCrown} size={28} />
 						Create Membership Plan
 					</h1>
 					<p class="header-subtitle">Design a premium membership tier for your subscribers</p>
@@ -190,10 +190,10 @@ import { logger } from '$lib/utils/logger';
 
 	{#if error}
 		<div class="error-banner">
-			<IconX size={18} />
+			<Icon icon={IconX} size={18} />
 			<span>{error}</span>
 			<button class="error-dismiss" onclick={() => (error = '')}>
-				<IconX size={16} />
+				<Icon icon={IconX} size={16} />
 			</button>
 		</div>
 	{/if}
@@ -204,7 +204,7 @@ import { logger } from '$lib/utils/logger';
 			<h3 class="section-title">Live Preview</h3>
 			<div class="membership-card">
 				<div class="card-crown">
-					<IconCrown size={32} />
+					<Icon icon={IconCrown} size={32} />
 				</div>
 				<div class="card-header">
 					<h4>{membership.name || 'Plan Name'}</h4>
@@ -219,7 +219,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="features-list">
 					{#each validFeatures as feature}
 						<div class="feature-item">
-							<IconCheck size={18} />
+							<Icon icon={IconCheck} size={18} />
 							<span>{feature.feature_name}</span>
 						</div>
 					{/each}
@@ -301,7 +301,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="features-header">
 						<h4>Features</h4>
 						<button type="button" class="add-feature-btn" onclick={addFeature}>
-							<IconPlus size={16} />
+							<Icon icon={IconPlus} size={16} />
 							Add Feature
 						</button>
 					</div>
@@ -332,7 +332,7 @@ import { logger } from '$lib/utils/logger';
 									class="remove-feature-btn"
 									onclick={() => removeFeature(index)}
 								>
-									<IconX size={16} />
+									<Icon icon={IconX} size={16} />
 								</button>
 							{/if}
 						</div>
@@ -357,7 +357,7 @@ import { logger } from '$lib/utils/logger';
 						{#if saving}
 							Creating...
 						{:else}
-							<IconCheck size={18} />
+							<Icon icon={IconCheck} size={18} />
 							Create Membership Plan
 						{/if}
 					</button>

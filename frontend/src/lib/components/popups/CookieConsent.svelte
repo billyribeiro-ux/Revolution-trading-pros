@@ -23,7 +23,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { IconSettings, IconCheck } from '$lib/icons';
+	import { Icon, IconSettings, IconCheck } from '$lib/icons';
 
 	// Props
 	interface Props {
@@ -281,7 +281,7 @@
 			<!-- Header -->
 			<div class="cookie-header">
 				<div class="cookie-icon">
-					<IconSettings size={24} />
+					<Icon icon={IconSettings} size={24} />
 				</div>
 				<h2 class="cookie-title">Cookie Preferences</h2>
 			</div>
@@ -384,7 +384,7 @@
 						class="cookie-btn cookie-btn-primary"
 						onclick={handleSavePreferences}
 					>
-						<IconCheck size={16} />
+						<Icon icon={IconCheck} size={16} />
 						Save Preferences
 					</button>
 				{:else}
@@ -396,11 +396,11 @@
 						Necessary Only
 					</button>
 					<button type="button" class="cookie-btn cookie-btn-secondary" onclick={togglePreferences}>
-						<IconSettings size={16} />
+						<Icon icon={IconSettings} size={16} />
 						Customize
 					</button>
 					<button type="button" class="cookie-btn cookie-btn-primary" onclick={handleAcceptAll}>
-						<IconCheck size={16} />
+						<Icon icon={IconCheck} size={16} />
 						Accept All
 					</button>
 				{/if}

@@ -28,27 +28,7 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { browser } from '$app/environment';
-	import {
-		IconUsers,
-		IconUserPlus,
-		IconSearch,
-		IconFilter,
-		IconEdit,
-		IconEye,
-		IconTrash,
-		IconChartBar,
-		IconTrendingUp,
-		IconRefresh,
-		IconBuilding,
-		IconCheck,
-		IconX,
-		IconChevronDown,
-		IconTarget,
-		IconFlame,
-		IconStar,
-		IconStarFilled,
-		IconArrowRight
-	} from '$lib/icons';
+	import { Icon, IconUsers, IconUserPlus, IconSearch, IconFilter, IconEdit, IconEye, IconTrash, IconChartBar, IconTrendingUp, IconRefresh, IconBuilding, IconCheck, IconX, IconChevronDown, IconTarget, IconFlame, IconStar, IconStarFilled, IconArrowRight } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
@@ -590,7 +570,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Header - CENTERED -->
 		<header class="page-header">
 			<h1>
-				<IconUsers size={28} />
+				<Icon icon={IconUsers} size={28} />
 				Lead Management
 			</h1>
 			<p class="subtitle">Track, qualify, and convert leads through your sales pipeline</p>
@@ -618,7 +598,7 @@ import { logger } from '$lib/utils/logger';
 			<section class="stats-grid">
 				<div class="stat-card highlight">
 					<div class="stat-icon blue">
-						<IconUsers size={24} />
+						<Icon icon={IconUsers} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.total.toLocaleString()}</span>
@@ -627,7 +607,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon cyan">
-						<IconFlame size={24} />
+						<Icon icon={IconFlame} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.hot_leads}</span>
@@ -636,7 +616,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon purple">
-						<IconTarget size={24} />
+						<Icon icon={IconTarget} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.qualified}</span>
@@ -645,7 +625,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon emerald">
-						<IconCheck size={24} />
+						<Icon icon={IconCheck} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.won}</span>
@@ -654,7 +634,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon amber">
-						<IconChartBar size={24} />
+						<Icon icon={IconChartBar} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{formatCurrency(stats.total_value)}</span>
@@ -663,7 +643,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon green">
-						<IconTrendingUp size={24} />
+						<Icon icon={IconTrendingUp} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{stats.conversion_rate.toFixed(1)}%</span>
@@ -676,7 +656,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="actions-bar">
 				<div class="search-section">
 					<div class="search-box">
-						<IconSearch size={18} />
+						<Icon icon={IconSearch} size={18} />
 						<input
 							id="search-leads"
 							name="search-leads"
@@ -686,9 +666,9 @@ import { logger } from '$lib/utils/logger';
 						/>
 					</div>
 					<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
-						<IconFilter size={18} />
+						<Icon icon={IconFilter} size={18} />
 						Filters
-						<IconChevronDown size={16} class={showFilters ? 'rotate' : ''} />
+						<Icon icon={IconChevronDown} size={16} class={showFilters ? 'rotate' : ''} />
 					</button>
 				</div>
 
@@ -711,7 +691,7 @@ import { logger } from '$lib/utils/logger';
 						{#if _viewMode === 'list'}List{:else}Kanban{/if}
 					</button>
 					<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
-						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+						<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 					</button>
 					<button
 						class="btn-primary"
@@ -720,7 +700,7 @@ import { logger } from '$lib/utils/logger';
 							showAddModal = true;
 						}}
 					>
-						<IconUserPlus size={18} />
+						<Icon icon={IconUserPlus} size={18} />
 						Add Lead
 					</button>
 				</div>
@@ -789,7 +769,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				{:else if filteredLeads.length === 0}
 					<div class="empty-state">
-						<IconUsers size={48} />
+						<Icon icon={IconUsers} size={48} />
 						<h3>No leads found</h3>
 						<p>Create your first lead to start building your pipeline</p>
 						<button
@@ -799,7 +779,7 @@ import { logger } from '$lib/utils/logger';
 								showAddModal = true;
 							}}
 						>
-							<IconUserPlus size={18} />
+							<Icon icon={IconUserPlus} size={18} />
 							Add Lead
 						</button>
 					</div>
@@ -846,9 +826,9 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => toggleStarred(lead)}
 										>
 											{#if lead.is_starred}
-												<IconStarFilled size={16} />
+												<Icon icon={IconStarFilled} size={16} />
 											{:else}
-												<IconStar size={16} />
+												<Icon icon={IconStar} size={16} />
 											{/if}
 										</button>
 									</td>
@@ -857,7 +837,7 @@ import { logger } from '$lib/utils/logger';
 											<div class="lead-avatar" class:hot={lead.is_hot}>
 												{lead.full_name?.charAt(0).toUpperCase() || '?'}
 												{#if lead.is_hot}
-													<span class="hot-indicator"><IconFlame size={10} /></span>
+													<span class="hot-indicator"><Icon icon={IconFlame} size={10} /></span>
 												{/if}
 											</div>
 											<div class="lead-info">
@@ -865,7 +845,7 @@ import { logger } from '$lib/utils/logger';
 												<span class="lead-email">{lead.email || 'No email'}</span>
 												{#if lead.company_name}
 													<span class="lead-company">
-														<IconBuilding size={12} />
+														<Icon icon={IconBuilding} size={12} />
 														{lead.company_name}
 													</span>
 												{/if}
@@ -909,24 +889,24 @@ import { logger } from '$lib/utils/logger';
 									<td>
 										<div class="action-buttons-cell">
 											<a href="/admin/crm/leads/{lead.id}" class="btn-icon" title="View">
-												<IconEye size={16} />
+												<Icon icon={IconEye} size={16} />
 											</a>
 											<button class="btn-icon" title="Edit" onclick={() => openEditModal(lead)}>
-												<IconEdit size={16} />
+												<Icon icon={IconEdit} size={16} />
 											</button>
 											<button
 												class="btn-icon convert"
 												title="Convert to Contact"
 												onclick={() => openConvertModal(lead)}
 											>
-												<IconArrowRight size={16} />
+												<Icon icon={IconArrowRight} size={16} />
 											</button>
 											<button
 												class="btn-icon danger"
 												title="Delete"
 												onclick={() => openDeleteModal(lead)}
 											>
-												<IconTrash size={16} />
+												<Icon icon={IconTrash} size={16} />
 											</button>
 										</div>
 									</td>
@@ -989,11 +969,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconUserPlus size={20} />
+					<Icon icon={IconUserPlus} size={20} />
 					Add New Lead
 				</h3>
 				<button class="modal-close" onclick={() => (showAddModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1084,7 +1064,7 @@ import { logger } from '$lib/utils/logger';
 					{#if formLoading}
 						Creating...
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 						Create Lead
 					{/if}
 				</button>
@@ -1112,11 +1092,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconEdit size={20} />
+					<Icon icon={IconEdit} size={20} />
 					Edit Lead
 				</h3>
 				<button class="modal-close" onclick={() => (showEditModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1213,7 +1193,7 @@ import { logger } from '$lib/utils/logger';
 					{#if formLoading}
 						Saving...
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 						Save Changes
 					{/if}
 				</button>
@@ -1241,11 +1221,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconTrash size={20} />
+					<Icon icon={IconTrash} size={20} />
 					Delete Lead
 				</h3>
 				<button class="modal-close" onclick={() => (showDeleteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1257,7 +1237,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
 				<button class="btn-danger" onclick={deleteLead}>
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 					Delete Lead
 				</button>
 			</div>
@@ -1284,11 +1264,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconArrowRight size={20} />
+					<Icon icon={IconArrowRight} size={20} />
 					Convert to Contact
 				</h3>
 				<button class="modal-close" onclick={() => (showConvertModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1300,7 +1280,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showConvertModal = false)}> Cancel </button>
 				<button class="btn-primary" onclick={convertToContact}>
-					<IconArrowRight size={18} />
+					<Icon icon={IconArrowRight} size={18} />
 					Convert Lead
 				</button>
 			</div>

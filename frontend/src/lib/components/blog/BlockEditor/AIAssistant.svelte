@@ -17,26 +17,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { fade, slide } from 'svelte/transition';
-	import {
-		IconRobot,
-		IconWand,
-		IconSparkles,
-		IconArrowRight,
-		IconRefresh,
-		IconCopy,
-		IconCheck,
-		IconAlertCircle,
-		IconLanguage,
-		IconFileDescription,
-		IconPencil,
-		IconBulb,
-		IconMoodSmile,
-		IconBriefcase,
-		IconSend,
-		IconLoader,
-		IconX,
-		IconClock
-	} from '$lib/icons';
+	import { Icon, IconRobot, IconWand, IconSparkles, IconArrowRight, IconRefresh, IconCopy, IconCheck, IconAlertCircle, IconLanguage, IconFileDescription, IconPencil, IconBulb, IconMoodSmile, IconBriefcase, IconSend, IconLoader, IconX, IconClock } from '$lib/icons';
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
@@ -618,7 +599,7 @@ import { logger } from '$lib/utils/logger';
 <div class="ai-assistant">
 	<div class="ai-header">
 		<div class="ai-icon">
-			<IconRobot size={24} />
+			<Icon icon={IconRobot} size={24} />
 		</div>
 		<div class="ai-title">
 			<h3>AI Assistant</h3>
@@ -626,7 +607,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		{#if rateLimit.remaining < 10}
 			<div class="rate-limit-badge" class:warning={rateLimit.remaining <= 3}>
-				<IconClock size={14} />
+				<Icon icon={IconClock} size={14} />
 				{rateLimit.remaining} left
 			</div>
 		{/if}
@@ -635,7 +616,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Rate Limit Warning -->
 	{#if rateLimit.isLimited}
 		<div class="rate-limit-warning" transition:slide>
-			<IconClock size={16} />
+			<Icon icon={IconClock} size={16} />
 			<span>{rateLimitMessage}</span>
 		</div>
 	{/if}
@@ -669,7 +650,7 @@ import { logger } from '$lib/utils/logger';
 			onclick={() => (activeTab = 'generate')}
 			disabled={isGenerating}
 		>
-			<IconWand size={16} />
+			<Icon icon={IconWand} size={16} />
 			Generate
 		</button>
 		<button
@@ -679,7 +660,7 @@ import { logger } from '$lib/utils/logger';
 			onclick={() => (activeTab = 'improve')}
 			disabled={isGenerating}
 		>
-			<IconSparkles size={16} />
+			<Icon icon={IconSparkles} size={16} />
 			Improve
 		</button>
 		<button
@@ -689,7 +670,7 @@ import { logger } from '$lib/utils/logger';
 			onclick={() => (activeTab = 'translate')}
 			disabled={isGenerating}
 		>
-			<IconLanguage size={16} />
+			<Icon icon={IconLanguage} size={16} />
 			Translate
 		</button>
 		<button
@@ -699,7 +680,7 @@ import { logger } from '$lib/utils/logger';
 			onclick={() => (activeTab = 'summarize')}
 			disabled={isGenerating}
 		>
-			<IconFileDescription size={16} />
+			<Icon icon={IconFileDescription} size={16} />
 			Summarize
 		</button>
 	</div>
@@ -800,17 +781,17 @@ import { logger } from '$lib/utils/logger';
 		<div class="button-row">
 			<button type="button" class="generate-btn" onclick={handleGenerate} disabled={!canGenerate}>
 				{#if isGenerating}
-					<IconLoader size={18} class="spin" />
+					<Icon icon={IconLoader} size={18} class="spin" />
 					{isStreaming ? 'Streaming...' : 'Generating...'}
 				{:else}
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					Generate
 				{/if}
 			</button>
 
 			{#if isGenerating}
 				<button type="button" class="cancel-btn" onclick={handleCancel} title="Cancel generation">
-					<IconX size={18} />
+					<Icon icon={IconX} size={18} />
 					Cancel
 				</button>
 			{/if}
@@ -819,10 +800,10 @@ import { logger } from '$lib/utils/logger';
 		<!-- Error -->
 		{#if error}
 			<div class="error-message" transition:slide>
-				<IconAlertCircle size={16} />
+				<Icon icon={IconAlertCircle} size={16} />
 				<span>{error}</span>
 				<button type="button" class="error-dismiss" onclick={handleClearError} title="Dismiss">
-					<IconX size={14} />
+					<Icon icon={IconX} size={14} />
 				</button>
 			</div>
 		{/if}
@@ -834,7 +815,7 @@ import { logger } from '$lib/utils/logger';
 					<span>Generated Content</span>
 					{#if isStreaming}
 						<span class="streaming-indicator">
-							<IconLoader size={14} class="spin" />
+							<Icon icon={IconLoader} size={14} class="spin" />
 							Streaming...
 						</span>
 					{/if}
@@ -846,13 +827,13 @@ import { logger } from '$lib/utils/logger';
 							title="Regenerate"
 							disabled={isGenerating}
 						>
-							<IconRefresh size={16} />
+							<Icon icon={IconRefresh} size={16} />
 						</button>
 						<button type="button" class="action-btn" onclick={handleCopy} title="Copy">
 							{#if copied}
-								<IconCheck size={16} />
+								<Icon icon={IconCheck} size={16} />
 							{:else}
-								<IconCopy size={16} />
+								<Icon icon={IconCopy} size={16} />
 							{/if}
 						</button>
 					</div>
@@ -864,7 +845,7 @@ import { logger } from '$lib/utils/logger';
 					{/if}
 				</div>
 				<button type="button" class="apply-btn" onclick={handleApply} disabled={isStreaming}>
-					<IconArrowRight size={18} />
+					<Icon icon={IconArrowRight} size={18} />
 					Insert into Editor
 				</button>
 			</div>

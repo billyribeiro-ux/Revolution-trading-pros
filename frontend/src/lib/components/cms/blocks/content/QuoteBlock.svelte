@@ -14,7 +14,7 @@
 -->
 
 <script lang="ts">
-	import { IconQuote } from '$lib/icons';
+	import { Icon, IconQuote } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -98,7 +98,7 @@
 	<figure class="quote-block quote-block--pullquote" class:quote-block--selected={props.isSelected}>
 		<!-- Decorative Quote Icon -->
 		<div class="quote-block__icon" aria-hidden="true">
-			<IconQuote size={32} />
+			<Icon icon={IconQuote} size={32} />
 		</div>
 
 		<!-- Quote Text -->

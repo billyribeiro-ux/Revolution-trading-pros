@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { IconArrowRight, IconX, IconCheck } from '$lib/icons';
+	import { Icon, IconArrowRight, IconX, IconCheck } from '$lib/icons';
 
 	interface JourneyStep {
 		step: string;
@@ -95,21 +95,21 @@
 					<div class="step-connector">
 						<div class="connector-line"></div>
 						<div class="connector-stats">
-							<IconArrowRight size={20} class="text-gray-400" />
+							<Icon icon={IconArrowRight} size={20} class="text-gray-400" />
 							<span class="conversion-rate">
 								{journeyData[index + 1]?.conversion_rate?.toFixed(1) ?? '0.0'}%
 							</span>
 						</div>
 						{#if step.drop_off > 0}
 							<div class="drop-off-indicator">
-								<IconX size={16} />
+								<Icon icon={IconX} size={16} />
 								{formatNumber(step.drop_off)} dropped
 							</div>
 						{/if}
 					</div>
 				{:else}
 					<div class="completion-badge">
-						<IconCheck size={24} class="text-green-400" />
+						<Icon icon={IconCheck} size={24} class="text-green-400" />
 						<span>Journey Complete</span>
 					</div>
 				{/if}

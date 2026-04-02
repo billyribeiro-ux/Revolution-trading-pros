@@ -12,20 +12,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconBuilding,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconRefresh,
-		IconUsers,
-		IconCurrencyDollar,
-		IconBriefcase,
-		IconWorld,
-		IconCopy
-	} from '$lib/icons';
+	import { Icon, IconBuilding, IconPlus, IconSearch, IconEdit, IconTrash, IconEye, IconRefresh, IconUsers, IconCurrencyDollar, IconBriefcase, IconWorld, IconCopy } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
@@ -179,11 +166,11 @@
 			<p class="subtitle">Manage B2B company accounts and their contacts</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={() => loadCompanies()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 					Refresh
 				</button>
 				<a href="/admin/crm/companies/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Company
 				</a>
 			</div>
@@ -193,7 +180,7 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconBuilding size={24} />
+					<Icon icon={IconBuilding} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -202,7 +189,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon green">
-					<IconUsers size={24} />
+					<Icon icon={IconUsers} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
@@ -211,7 +198,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconBriefcase size={24} />
+					<Icon icon={IconBriefcase} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.totalDeals)}</span>
@@ -220,7 +207,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon amber">
-					<IconCurrencyDollar size={24} />
+					<Icon icon={IconCurrencyDollar} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatCurrency(stats.totalDealValue)}</span>
@@ -232,7 +219,7 @@
 		<!-- Search & Filters -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					type="text"
 					id="search-companies"
@@ -266,11 +253,11 @@
 			</div>
 		{:else if filteredCompanies.length === 0}
 			<div class="empty-state">
-				<IconBuilding size={48} />
+				<Icon icon={IconBuilding} size={48} />
 				<h3>No companies found</h3>
 				<p>Add your first company to start managing B2B accounts</p>
 				<a href="/admin/crm/companies/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Company
 				</a>
 			</div>
@@ -297,14 +284,14 @@
 											{#if company.logo_url}
 												<img src={company.logo_url} alt={company.name} />
 											{:else}
-												<IconBuilding size={20} />
+												<Icon icon={IconBuilding} size={20} />
 											{/if}
 										</div>
 										<div class="company-info">
 											<span class="company-name">{company.name}</span>
 											{#if company.website}
 												<a href={company.website} target="_blank" class="company-website">
-													<IconWorld size={12} />
+													<Icon icon={IconWorld} size={12} />
 													{company.website.replace(/^https?:\/\//, '')}
 												</a>
 											{/if}
@@ -323,24 +310,24 @@
 								<td>
 									<div class="action-buttons">
 										<a href="/admin/crm/companies/{company.id}" class="btn-icon" title="View">
-											<IconEye size={16} />
+											<Icon icon={IconEye} size={16} />
 										</a>
 										<a href="/admin/crm/companies/{company.id}/edit" class="btn-icon" title="Edit">
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</a>
 										<button
 											class="btn-icon"
 											title="Duplicate"
 											onclick={() => duplicateCompany(company)}
 										>
-											<IconCopy size={16} />
+											<Icon icon={IconCopy} size={16} />
 										</button>
 										<button
 											class="btn-icon danger"
 											title="Delete"
 											onclick={() => deleteCompany(company.id)}
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</div>
 								</td>

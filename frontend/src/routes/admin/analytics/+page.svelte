@@ -29,7 +29,7 @@
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
-	import { IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
+	import { Icon, IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
 
 	// State
 	let dashboardData: DashboardData | null = $state(null);
@@ -200,14 +200,14 @@
 					/>
 					<a href="/admin/analytics/events" class="btn-primary">
 						Event Explorer
-						<IconArrowRight size={18} />
+						<Icon icon={IconArrowRight} size={18} />
 					</a>
 				</div>
 			{/if}
 
 			<!-- Connection Status Badge -->
 			<div class="connection-status" class:connected={isConnected}>
-				<IconPlugConnected size={16} />
+				<Icon icon={IconPlugConnected} size={16} />
 				<span>{isConnected ? 'Analytics Connected' : 'Not Connected'}</span>
 			</div>
 
@@ -265,7 +265,7 @@
 								>
 									<span class="service-icon">{service.icon}</span>
 									<span class="service-name">{service.name}</span>
-									<IconArrowRight size={16} class="service-arrow" />
+									<Icon icon={IconArrowRight} size={16} class="service-arrow" />
 								</a>
 							{/each}
 						</div>
@@ -284,7 +284,7 @@
 					<h3>Unable to Load Analytics</h3>
 					<p>{error}</p>
 					<button class="btn-retry" onclick={loadDashboard}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 						Try Again
 					</button>
 				</div>

@@ -13,7 +13,7 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import type { Snippet } from 'svelte';
-	import { IconX } from '$lib/icons';
+	import { Icon, IconX } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -191,7 +191,7 @@
 						{title}
 					</h2>
 					<button type="button" onclick={close} class="modal-close-2026" aria-label="Close dialog">
-						<IconX size={20} aria-hidden="true" />
+						<Icon icon={IconX} size={20} aria-hidden="true" />
 					</button>
 				</div>
 			{:else}
@@ -202,7 +202,7 @@
 					class="modal-close-absolute-2026"
 					aria-label="Close dialog"
 				>
-					<IconX size={20} aria-hidden="true" />
+					<Icon icon={IconX} size={20} aria-hidden="true" />
 				</button>
 			{/if}
 

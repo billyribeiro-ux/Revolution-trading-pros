@@ -21,16 +21,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconPhoto,
-		IconPlus,
-		IconTrash,
-		IconX,
-		IconChevronLeft,
-		IconChevronRight,
-		IconLayoutGrid,
-		IconColumns
-	} from '$lib/icons';
+	import { Icon, IconPhoto, IconPlus, IconTrash, IconX, IconChevronLeft, IconChevronRight, IconLayoutGrid, IconColumns } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import {
 		getBlockStateManager,
@@ -433,7 +424,7 @@
 								/>
 								<div class="gallery-item-overlay">
 									<div class="drag-handle" aria-label="Drag to reorder">
-										<IconColumns size={16} />
+										<Icon icon={IconColumns} size={16} />
 									</div>
 									<button
 										type="button"
@@ -441,7 +432,7 @@
 										onclick={() => removeImage(index)}
 										aria-label="Remove image"
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 								<div class="gallery-item-meta">
@@ -483,7 +474,7 @@
 									loading="lazy"
 								/>
 								<div class="gallery-item-hover">
-									<IconPhoto size={24} />
+									<Icon icon={IconPhoto} size={24} />
 								</div>
 								{#if image.caption}
 									<div class="gallery-item-caption">
@@ -527,7 +518,7 @@
 						onclick={carouselPrev}
 						aria-label="Previous image"
 					>
-						<IconChevronLeft size={24} />
+						<Icon icon={IconChevronLeft} size={24} />
 					</button>
 					<button
 						type="button"
@@ -535,7 +526,7 @@
 						onclick={carouselNext}
 						aria-label="Next image"
 					>
-						<IconChevronRight size={24} />
+						<Icon icon={IconChevronRight} size={24} />
 					</button>
 					<div class="carousel-dots">
 						{#each images as _, dotIndex}
@@ -556,11 +547,11 @@
 		{/if}
 	{:else}
 		<div class="gallery-empty">
-			<IconLayoutGrid size={48} aria-hidden="true" />
+			<Icon icon={IconLayoutGrid} size={48} aria-hidden="true" />
 			<p>No images in gallery</p>
 			{#if props.isEditing}
 				<button type="button" class="gallery-add-btn-empty" onclick={() => (showAddForm = true)}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 					Add Images
 				</button>
 			{/if}
@@ -594,7 +585,7 @@
 							}}
 							aria-label="Close add form"
 						>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 					</div>
 					<input
@@ -621,13 +612,13 @@
 						onclick={addImage}
 						disabled={!newImageUrl.trim()}
 					>
-						<IconPlus size={16} />
+						<Icon icon={IconPlus} size={16} />
 						Add Image
 					</button>
 				</form>
 			{:else if images.length > 0}
 				<button type="button" class="gallery-add-btn" onclick={() => (showAddForm = true)}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 					Add Image
 				</button>
 			{/if}
@@ -701,7 +692,7 @@
 				onclick={closeLightbox}
 				aria-label="Close lightbox"
 			>
-				<IconX size={24} />
+				<Icon icon={IconX} size={24} />
 			</button>
 
 			<!-- Navigation: Previous -->
@@ -712,7 +703,7 @@
 					onclick={navigatePrev}
 					aria-label="Previous image"
 				>
-					<IconChevronLeft size={32} />
+					<Icon icon={IconChevronLeft} size={32} />
 				</button>
 			{/if}
 
@@ -729,7 +720,7 @@
 					onclick={navigateNext}
 					aria-label="Next image"
 				>
-					<IconChevronRight size={32} />
+					<Icon icon={IconChevronRight} size={32} />
 				</button>
 			{/if}
 

@@ -2,19 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import {
-		IconArrowLeft,
-		IconChartBar,
-		IconChartLine,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconUsers,
-		IconCurrencyDollar,
-		IconRefresh,
-		IconDownload,
-		IconCalendar,
-		IconSettings
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconChartBar, IconChartLine, IconTrendingUp, IconTrendingDown, IconUsers, IconCurrencyDollar, IconRefresh, IconDownload, IconCalendar, IconSettings } from '$lib/icons';
 
 	// Analytics data
 	let loading = $state(true);
@@ -189,14 +177,14 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Members
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconChartBar size={28} />
+					<Icon icon={IconChartBar} size={28} />
 				</div>
 				<div>
 					<h1>Member Analytics</h1>
@@ -206,7 +194,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<div class="date-filter">
-					<IconCalendar size={18} />
+					<Icon icon={IconCalendar} size={18} />
 					<select bind:value={dateRange} onchange={loadAnalytics}>
 						<option value="7d">Last 7 days</option>
 						<option value="30d">Last 30 days</option>
@@ -215,11 +203,11 @@ import { logger } from '$lib/utils/logger';
 					</select>
 				</div>
 				<button class="btn-secondary" onclick={loadAnalytics}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 				<button class="btn-primary">
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					Export Report
 				</button>
 			</div>
@@ -238,7 +226,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="not-connected-state">
 			<div class="not-connected-card">
 				<div class="not-connected-icon">
-					<IconChartBar size={40} />
+					<Icon icon={IconChartBar} size={40} />
 				</div>
 				<h2>Member Analytics Not Available</h2>
 				<p>
@@ -247,11 +235,11 @@ import { logger } from '$lib/utils/logger';
 				</p>
 				<div class="not-connected-actions">
 					<a href="/admin/connections" class="btn-connect">
-						<IconSettings size={18} />
+						<Icon icon={IconSettings} size={18} />
 						Connect Analytics
 					</a>
 					<button class="btn-retry" onclick={loadAnalytics}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 						Retry
 					</button>
 				</div>
@@ -273,13 +261,13 @@ import { logger } from '$lib/utils/logger';
 			<div class="metric-card">
 				<div class="metric-header">
 					<div class="metric-icon purple">
-						<IconUsers size={24} />
+						<Icon icon={IconUsers} size={24} />
 					</div>
 					<div class="metric-trend {(metrics.memberGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
 						{#if (metrics.memberGrowth ?? 0) >= 0}
-							<IconTrendingUp size={16} />
+							<Icon icon={IconTrendingUp} size={16} />
 						{:else}
-							<IconTrendingDown size={16} />
+							<Icon icon={IconTrendingDown} size={16} />
 						{/if}
 						{Math.abs(metrics.memberGrowth ?? 0)}%
 					</div>
@@ -291,13 +279,13 @@ import { logger } from '$lib/utils/logger';
 			<div class="metric-card">
 				<div class="metric-header">
 					<div class="metric-icon emerald">
-						<IconCurrencyDollar size={24} />
+						<Icon icon={IconCurrencyDollar} size={24} />
 					</div>
 					<div class="metric-trend {(metrics.mrrGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
 						{#if (metrics.mrrGrowth ?? 0) >= 0}
-							<IconTrendingUp size={16} />
+							<Icon icon={IconTrendingUp} size={16} />
 						{:else}
-							<IconTrendingDown size={16} />
+							<Icon icon={IconTrendingDown} size={16} />
 						{/if}
 						{Math.abs(metrics.mrrGrowth ?? 0)}%
 					</div>
@@ -309,13 +297,13 @@ import { logger } from '$lib/utils/logger';
 			<div class="metric-card">
 				<div class="metric-header">
 					<div class="metric-icon {(metrics.churnChange ?? 0) <= 0 ? 'emerald' : 'red'}">
-						<IconChartLine size={24} />
+						<Icon icon={IconChartLine} size={24} />
 					</div>
 					<div class="metric-trend {(metrics.churnChange ?? 0) <= 0 ? 'positive' : 'negative'}">
 						{#if (metrics.churnChange ?? 0) <= 0}
-							<IconTrendingDown size={16} />
+							<Icon icon={IconTrendingDown} size={16} />
 						{:else}
-							<IconTrendingUp size={16} />
+							<Icon icon={IconTrendingUp} size={16} />
 						{/if}
 						{Math.abs(metrics.churnChange ?? 0)}%
 					</div>
@@ -327,13 +315,13 @@ import { logger } from '$lib/utils/logger';
 			<div class="metric-card">
 				<div class="metric-header">
 					<div class="metric-icon blue">
-						<IconChartLine size={24} />
+						<Icon icon={IconChartLine} size={24} />
 					</div>
 					<div class="metric-trend {(metrics.ltvGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
 						{#if (metrics.ltvGrowth ?? 0) >= 0}
-							<IconTrendingUp size={16} />
+							<Icon icon={IconTrendingUp} size={16} />
 						{:else}
-							<IconTrendingDown size={16} />
+							<Icon icon={IconTrendingDown} size={16} />
 						{/if}
 						{Math.abs(metrics.ltvGrowth ?? 0)}%
 					</div>

@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconSparkles, IconChevronDown, IconRefresh, IconLoader2 } from '$lib/icons';
+	import { Icon, IconSparkles, IconChevronDown, IconRefresh, IconLoader2 } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -79,11 +79,11 @@
 		aria-expanded={isExpanded}
 	>
 		<div class="header-left">
-			<IconSparkles size={18} aria-hidden="true" />
+			<Icon icon={IconSparkles} size={18} aria-hidden="true" />
 			<span class="header-title">TL;DR</span>
 		</div>
 		<span class="chevron" class:rotated={isExpanded}
-			><IconChevronDown size={18} aria-hidden="true" /></span
+			><Icon icon={IconChevronDown} size={18} aria-hidden="true" /></span
 		>
 	</button>
 
@@ -128,10 +128,10 @@
 							disabled={aiState.loading || !sourceContent.trim()}
 						>
 							{#if aiState.loading}
-								<IconLoader2 size={16} class="spinning" aria-hidden="true" />
+								<Icon icon={IconLoader2} size={16} class="spinning" aria-hidden="true" />
 								<span>Summarizing...</span>
 							{:else}
-								<IconSparkles size={16} aria-hidden="true" />
+								<Icon icon={IconSparkles} size={16} aria-hidden="true" />
 								<span>Summarize</span>
 							{/if}
 						</button>
@@ -154,7 +154,7 @@
 								onclick={generateSummary}
 								disabled={aiState.loading}
 							>
-								<IconRefresh size={14} aria-hidden="true" />
+								<Icon icon={IconRefresh} size={14} aria-hidden="true" />
 							</button>
 						</div>
 					{/if}

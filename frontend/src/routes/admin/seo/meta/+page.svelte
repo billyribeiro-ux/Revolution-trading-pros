@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconSearch, IconFileText, IconEye } from '$lib/icons';
+	import { Icon, IconSearch, IconFileText, IconEye } from '$lib/icons';
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
 
 	let entities: any[] = $state([]);
@@ -38,7 +38,7 @@
 	<div class="page-content">
 		<div class="entities-sidebar">
 			<div class="search-box">
-				<IconSearch size={20} />
+				<Icon icon={IconSearch} size={20} />
 				<label for="search-entities" class="sr-only">Search entities</label>
 				<input
 					type="text"
@@ -54,7 +54,7 @@
 					<div class="loading">Loading...</div>
 				{:else if filteredEntities.length === 0}
 					<div class="empty-state">
-						<IconFileText size={48} />
+						<Icon icon={IconFileText} size={48} />
 						<p>No content found</p>
 						<p class="hint">Create pages, posts, or products to optimize their SEO</p>
 					</div>
@@ -90,7 +90,7 @@
 				<SeoMetaEditor entity={selectedEntity} />
 			{:else}
 				<div class="no-selection">
-					<IconEye size={64} />
+					<Icon icon={IconEye} size={64} />
 					<h3>Select Content to Optimize</h3>
 					<p>Choose a page, post, or product from the left sidebar to manage its SEO settings</p>
 				</div>

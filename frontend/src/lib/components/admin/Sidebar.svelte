@@ -1,15 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import {
-		IconDashboard,
-		IconForms,
-		IconUsers,
-		IconSeo,
-		IconLink,
-		IconError404,
-		IconSettings,
-		IconLogout
-	} from '$lib/icons';
+	import { Icon, IconDashboard, IconForms, IconUsers, IconSeo, IconLink, IconError404, IconSettings, IconLogout } from '$lib/icons';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 
@@ -140,7 +131,7 @@
 			</div>
 		</div>
 		<button onclick={handleLogout} class="logout-btn">
-			<IconLogout size={18} />
+			<Icon icon={IconLogout} size={18} />
 			<span>Logout</span>
 		</button>
 	</div>

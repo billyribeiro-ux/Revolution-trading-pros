@@ -19,20 +19,7 @@
 		getAllConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections.svelte';
-	import {
-		IconX,
-		IconPlugConnected,
-		IconPlugConnectedX,
-		IconRefresh,
-		IconLoader,
-		IconCheck,
-		IconAlertTriangle,
-		IconAlertCircle,
-		IconClock,
-		IconActivity,
-		IconChartLine,
-		IconExternalLink
-	} from '$lib/icons';
+	import { Icon, IconX, IconPlugConnected, IconPlugConnectedX, IconRefresh, IconLoader, IconCheck, IconAlertTriangle, IconAlertCircle, IconClock, IconActivity, IconChartLine, IconExternalLink } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -180,7 +167,7 @@
 						class:partial={overallHealth === 'partial'}
 						class:unhealthy={overallHealth === 'unhealthy'}
 					>
-						<IconPlugConnected size={20} />
+						<Icon icon={IconPlugConnected} size={20} />
 					</div>
 					<div class="header-info">
 						<h2>Connection Health</h2>
@@ -195,11 +182,11 @@
 						onclick={refreshAll}
 						disabled={refreshingService !== null}
 					>
-						<IconRefresh size={16} class={refreshingService ? 'spinning' : ''} />
+						<Icon icon={IconRefresh} size={16} class={refreshingService ? 'spinning' : ''} />
 						Refresh All
 					</button>
 					<button class="close-btn" onclick={close}>
-						<IconX size={20} />
+						<Icon icon={IconX} size={20} />
 					</button>
 				</div>
 			</div>
@@ -213,13 +200,13 @@
 			>
 				<div class="status-indicator">
 					{#if overallHealth === 'healthy'}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 						<span>All Systems Operational</span>
 					{:else if overallHealth === 'partial'}
-						<IconAlertTriangle size={18} />
+						<Icon icon={IconAlertTriangle} size={18} />
 						<span>Some Services Degraded</span>
 					{:else}
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 						<span>Services Unavailable</span>
 					{/if}
 				</div>
@@ -233,7 +220,7 @@
 					class:active={activeTab === 'overview'}
 					onclick={() => (activeTab = 'overview')}
 				>
-					<IconPlugConnected size={16} />
+					<Icon icon={IconPlugConnected} size={16} />
 					Overview
 				</button>
 				<button
@@ -241,7 +228,7 @@
 					class:active={activeTab === 'details'}
 					onclick={() => (activeTab = 'details')}
 				>
-					<IconChartLine size={16} />
+					<Icon icon={IconChartLine} size={16} />
 					Metrics
 				</button>
 			</div>
@@ -281,11 +268,11 @@
 									{#if status === 'connected'}
 										<div class="quick-metrics">
 											<span class="metric">
-												<IconClock size={12} />
+												<Icon icon={IconClock} size={12} />
 												{metrics.responseTime}ms
 											</span>
 											<span class="metric">
-												<IconActivity size={12} />
+												<Icon icon={IconActivity} size={12} />
 												{metrics.uptime}% uptime
 											</span>
 										</div>
@@ -298,13 +285,13 @@
 										disabled={refreshingService === service}
 										title="Refresh connection"
 									>
-										<IconRefresh
+										<Icon icon={IconRefresh}
 											size={16}
 											class={refreshingService === service ? 'spinning' : ''}
 										/>
 									</button>
 									<a href="/admin/connections" class="action-btn" title="Configure">
-										<IconExternalLink size={16} />
+										<Icon icon={IconExternalLink} size={16} />
 									</a>
 								</div>
 							</div>
@@ -385,9 +372,9 @@
 			<!-- Footer -->
 			<div class="panel-footer">
 				<a href="/admin/site-health" class="view-all-link">
-					<IconActivity size={16} />
+					<Icon icon={IconActivity} size={16} />
 					View Full Site Health Dashboard
-					<IconExternalLink size={14} />
+					<Icon icon={IconExternalLink} size={14} />
 				</a>
 			</div>
 		</div>

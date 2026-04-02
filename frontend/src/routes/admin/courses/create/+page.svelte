@@ -3,40 +3,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import {
-		IconPhoto,
-		IconX,
-		IconBook,
-		IconCheck,
-		IconPlus,
-		IconGripVertical,
-		IconTrash,
-		IconSparkles,
-		IconBulb,
-		IconChartBar,
-		IconVideo,
-		IconFileText,
-		IconClock,
-		IconUsers,
-		IconCurrencyDollar,
-		IconCalendar,
-		IconLock,
-		IconTarget,
-		IconTrendingUp,
-		IconCertificate,
-		IconDownload,
-		IconEye,
-		IconSettings,
-		IconRefresh,
-		IconGift,
-		IconCopy,
-		IconAlertCircle,
-		IconRocket,
-		IconStar,
-		IconBrandGoogle,
-		IconBrandFacebook,
-		IconChevronDown
-	} from '$lib/icons';
+	import { Icon, IconPhoto, IconX, IconBook, IconCheck, IconPlus, IconGripVertical, IconTrash, IconSparkles, IconBulb, IconChartBar, IconVideo, IconFileText, IconClock, IconUsers, IconCurrencyDollar, IconCalendar, IconLock, IconTarget, IconTrendingUp, IconCertificate, IconDownload, IconEye, IconSettings, IconRefresh, IconGift, IconCopy, IconAlertCircle, IconRocket, IconStar, IconBrandGoogle, IconBrandFacebook, IconChevronDown } from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -1631,15 +1598,15 @@ import { logger } from '$lib/utils/logger';
 	<!-- Form Messages -->
 	{#if formError}
 		<div class="form-error-banner">
-			<IconAlertCircle size={20} />
+			<Icon icon={IconAlertCircle} size={20} />
 			<span>{formError}</span>
-			<button onclick={() => (formError = '')}><IconX size={16} /></button>
+			<button onclick={() => (formError = '')}><Icon icon={IconX} size={16} /></button>
 		</div>
 	{/if}
 
 	{#if successMessage}
 		<div class="form-success-banner">
-			<IconCheck size={20} />
+			<Icon icon={IconCheck} size={20} />
 			<span>{successMessage}</span>
 		</div>
 	{/if}
@@ -1653,20 +1620,20 @@ import { logger } from '$lib/utils/logger';
 	<div class="header-actions">
 		{#if hasUnsavedChanges}
 			<span class="unsaved-indicator">
-				<IconAlertCircle size={16} />
+				<Icon icon={IconAlertCircle} size={16} />
 				Unsaved
 			</span>
 		{/if}
 
 		{#if lastSaved}
 			<span class="save-status">
-				<IconCheck size={16} />
+				<Icon icon={IconCheck} size={16} />
 				Saved {lastSaved.toLocaleTimeString()}
 			</span>
 		{/if}
 
 		<button class="btn-secondary" onclick={saveDraft} disabled={!hasUnsavedChanges}>
-			<IconDownload size={18} />
+			<Icon icon={IconDownload} size={18} />
 			Save Draft
 		</button>
 
@@ -1674,7 +1641,7 @@ import { logger } from '$lib/utils/logger';
 			class="btn-secondary"
 			onclick={() => window.open(`/preview/course/${course.slug || 'preview'}`, '_blank')}
 		>
-			<IconEye size={18} />
+			<Icon icon={IconEye} size={18} />
 			Preview
 		</button>
 
@@ -1687,10 +1654,10 @@ import { logger } from '$lib/utils/logger';
 				: 'Publish course'}
 		>
 			{#if saving}
-				<IconRefresh size={18} class="spinning" />
+				<Icon icon={IconRefresh} size={18} class="spinning" />
 				Publishing...
 			{:else}
-				<IconRocket size={18} />
+				<Icon icon={IconRocket} size={18} />
 				Publish Course
 			{/if}
 		</button>
@@ -1720,10 +1687,10 @@ import { logger } from '$lib/utils/logger';
 					class:active={activeTab === 'basic'}
 					onclick={() => (activeTab = 'basic')}
 				>
-					<IconBook size={20} />
+					<Icon icon={IconBook} size={20} />
 					<span>Basic Info</span>
 					{#if completionStatus.checks['Title & Description']}
-						<IconCheck size={16} class="check" />
+						<Icon icon={IconCheck} size={16} class="check" />
 					{/if}
 				</button>
 
@@ -1732,10 +1699,10 @@ import { logger } from '$lib/utils/logger';
 					class:active={activeTab === 'curriculum'}
 					onclick={() => (activeTab = 'curriculum')}
 				>
-					<IconFileText size={20} />
+					<Icon icon={IconFileText} size={20} />
 					<span>Curriculum</span>
 					{#if completionStatus.checks['Curriculum'] && completionStatus.checks['Lessons']}
-						<IconCheck size={16} class="check" />
+						<Icon icon={IconCheck} size={16} class="check" />
 					{/if}
 				</button>
 
@@ -1744,10 +1711,10 @@ import { logger } from '$lib/utils/logger';
 					class:active={activeTab === 'pricing'}
 					onclick={() => (activeTab = 'pricing')}
 				>
-					<IconCurrencyDollar size={20} />
+					<Icon icon={IconCurrencyDollar} size={20} />
 					<span>Pricing</span>
 					{#if completionStatus.checks['Pricing']}
-						<IconCheck size={16} class="check" />
+						<Icon icon={IconCheck} size={16} class="check" />
 					{/if}
 				</button>
 
@@ -1756,10 +1723,10 @@ import { logger } from '$lib/utils/logger';
 					class:active={activeTab === 'media'}
 					onclick={() => (activeTab = 'media')}
 				>
-					<IconPhoto size={20} />
+					<Icon icon={IconPhoto} size={20} />
 					<span>Media</span>
 					{#if completionStatus.checks['Thumbnail']}
-						<IconCheck size={16} class="check" />
+						<Icon icon={IconCheck} size={16} class="check" />
 					{/if}
 				</button>
 
@@ -1768,10 +1735,10 @@ import { logger } from '$lib/utils/logger';
 					class:active={activeTab === 'seo'}
 					onclick={() => (activeTab = 'seo')}
 				>
-					<IconTarget size={20} />
+					<Icon icon={IconTarget} size={20} />
 					<span>SEO & Marketing</span>
 					{#if completionStatus.checks['SEO']}
-						<IconCheck size={16} class="check" />
+						<Icon icon={IconCheck} size={16} class="check" />
 					{/if}
 				</button>
 
@@ -1780,7 +1747,7 @@ import { logger } from '$lib/utils/logger';
 					class:active={activeTab === 'advanced'}
 					onclick={() => (activeTab = 'advanced')}
 				>
-					<IconSettings size={20} />
+					<Icon icon={IconSettings} size={20} />
 					<span>Advanced</span>
 				</button>
 			</nav>
@@ -1788,28 +1755,28 @@ import { logger } from '$lib/utils/logger';
 			<!-- AI Assistant Panel -->
 			<div class="ai-assistant">
 				<h3>
-					<IconSparkles size={20} />
+					<Icon icon={IconSparkles} size={20} />
 					AI Assistant
 				</h3>
 				<div class="ai-actions">
 					<button onclick={() => generateWithAI('description')} disabled={generating}>
-						<IconBulb size={16} />
+						<Icon icon={IconBulb} size={16} />
 						Generate Description
 					</button>
 					<button onclick={() => generateWithAI('curriculum')} disabled={generating}>
-						<IconBook size={16} />
+						<Icon icon={IconBook} size={16} />
 						Build Curriculum
 					</button>
 					<button onclick={() => generateWithAI('outcomes')} disabled={generating}>
-						<IconTarget size={16} />
+						<Icon icon={IconTarget} size={16} />
 						Create Outcomes
 					</button>
 					<button onclick={suggestPricing} disabled={analyzing}>
-						<IconChartBar size={16} />
+						<Icon icon={IconChartBar} size={16} />
 						Analyze Pricing
 					</button>
 					<button onclick={() => generateWithAI('seo')} disabled={generating}>
-						<IconTarget size={16} />
+						<Icon icon={IconTarget} size={16} />
 						Optimize SEO
 					</button>
 				</div>
@@ -1869,7 +1836,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => generateWithAI('title')}
 									disabled={generating}
 								>
-									<IconSparkles size={14} />
+									<Icon icon={IconSparkles} size={14} />
 								</button>
 							</label>
 							<input
@@ -1933,7 +1900,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => generateWithAI('description')}
 									disabled={generating}
 								>
-									<IconSparkles size={14} />
+									<Icon icon={IconSparkles} size={14} />
 								</button>
 							</label>
 							<textarea
@@ -1997,7 +1964,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => generateWithAI('outcomes')}
 								disabled={generating}
 							>
-								<IconSparkles size={14} />
+								<Icon icon={IconSparkles} size={14} />
 								AI Generate
 							</button>
 						</h2>
@@ -2005,7 +1972,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="list-editor">
 							{#each course.outcomes as _, i}
 								<div class="list-item">
-									<IconCheck size={16} />
+									<Icon icon={IconCheck} size={16} />
 									<input
 										id="page-course-outcomes-i"
 										name="page-course-outcomes-i"
@@ -2014,12 +1981,12 @@ import { logger } from '$lib/utils/logger';
 										placeholder="Students will be able to..."
 									/>
 									<button onclick={() => removeOutcome(i)}>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/each}
 							<button class="add-item" onclick={addOutcome}>
-								<IconPlus size={16} />
+								<Icon icon={IconPlus} size={16} />
 								Add Outcome
 							</button>
 						</div>
@@ -2034,14 +2001,14 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => generateWithAI('prerequisites')}
 								disabled={generating}
 							>
-								<IconSparkles size={14} />
+								<Icon icon={IconSparkles} size={14} />
 							</button>
 						</h2>
 
 						<div class="list-editor">
 							{#each course.prerequisites as _, i}
 								<div class="list-item">
-									<IconAlertCircle size={16} />
+									<Icon icon={IconAlertCircle} size={16} />
 									<input
 										id="page-course-prerequisites-i"
 										name="page-course-prerequisites-i"
@@ -2050,12 +2017,12 @@ import { logger } from '$lib/utils/logger';
 										placeholder="Required knowledge or skills..."
 									/>
 									<button onclick={() => removePrerequisite(i)}>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/each}
 							<button class="add-item" onclick={addPrerequisite}>
-								<IconPlus size={16} />
+								<Icon icon={IconPlus} size={16} />
 								Add Prerequisite
 							</button>
 						</div>
@@ -2066,14 +2033,14 @@ import { logger } from '$lib/utils/logger';
 						<h2>
 							Target Audience
 							<button class="ai-btn" onclick={() => generateWithAI('target')} disabled={generating}>
-								<IconSparkles size={14} />
+								<Icon icon={IconSparkles} size={14} />
 							</button>
 						</h2>
 
 						<div class="list-editor">
 							{#each course.target_audience as _, i}
 								<div class="list-item">
-									<IconUsers size={16} />
+									<Icon icon={IconUsers} size={16} />
 									<input
 										id="page-course-target-audience-i"
 										name="page-course-target-audience-i"
@@ -2087,7 +2054,7 @@ import { logger } from '$lib/utils/logger';
 												(_, idx) => idx !== i
 											))}
 									>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/each}
@@ -2095,7 +2062,7 @@ import { logger } from '$lib/utils/logger';
 								class="add-item"
 								onclick={() => (course.target_audience = [...course.target_audience, ''])}
 							>
-								<IconPlus size={16} />
+								<Icon icon={IconPlus} size={16} />
 								Add Audience
 							</button>
 						</div>
@@ -2114,15 +2081,15 @@ import { logger } from '$lib/utils/logger';
 						<h2>Course Curriculum</h2>
 						<div class="curriculum-stats">
 							<span>
-								<IconBook size={16} />
+								<Icon icon={IconBook} size={16} />
 								{course.modules.length} Modules
 							</span>
 							<span>
-								<IconFileText size={16} />
+								<Icon icon={IconFileText} size={16} />
 								{course.modules.reduce((sum, m) => sum + m.lessons.length, 0)} Lessons
 							</span>
 							<span>
-								<IconClock size={16} />
+								<Icon icon={IconClock} size={16} />
 								{course.duration_hours} Hours
 							</span>
 						</div>
@@ -2131,7 +2098,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => generateWithAI('curriculum')}
 							disabled={generating}
 						>
-							<IconSparkles size={16} />
+							<Icon icon={IconSparkles} size={16} />
 							Generate Sample Curriculum
 						</button>
 					</div>
@@ -2151,7 +2118,7 @@ import { logger } from '$lib/utils/logger';
 								class:dragging={isDragging && draggedModule?.id === module.id}
 							>
 								<div class="module-header">
-									<IconGripVertical size={20} class="drag-handle" />
+									<Icon icon={IconGripVertical} size={20} class="drag-handle" />
 									<span class="module-number">Module {moduleIndex + 1}</span>
 									<input
 										id="page-module-title"
@@ -2166,7 +2133,7 @@ import { logger } from '$lib/utils/logger';
 									</span>
 									<div class="module-actions">
 										<button class="expand-btn" onclick={() => toggleModuleExpansion(module.id)}>
-											<IconChevronDown
+											<Icon icon={IconChevronDown}
 												size={18}
 												style="transform: rotate({expandedModules.has(module.id)
 													? 0
@@ -2174,10 +2141,10 @@ import { logger } from '$lib/utils/logger';
 											/>
 										</button>
 										<button onclick={() => duplicateModule(module.id)} title="Duplicate">
-											<IconCopy size={16} />
+											<Icon icon={IconCopy} size={16} />
 										</button>
 										<button onclick={() => removeModule(module.id)} title="Delete">
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</div>
 								</div>
@@ -2203,7 +2170,7 @@ import { logger } from '$lib/utils/logger';
 													ondrop={(e: DragEvent) => handleLessonDrop(e, module.id, lessonIndex)}
 													ondragend={handleDragEnd}
 												>
-													<IconGripVertical size={16} class="lesson-drag" />
+													<Icon icon={IconGripVertical} size={16} class="lesson-drag" />
 													<span class="lesson-number">{lessonIndex + 1}</span>
 													<select bind:value={lesson.type} class="lesson-type">
 														<option value="video">{getLessonIcon('video')} Video</option>
@@ -2240,23 +2207,23 @@ import { logger } from '$lib/utils/logger';
 															type="checkbox"
 															bind:checked={lesson.is_preview}
 														/>
-														<IconEye size={14} />
+														<Icon icon={IconEye} size={14} />
 													</label>
 													<button
 														onclick={() => duplicateLesson(module.id, lesson.id)}
 														title="Duplicate"
 													>
-														<IconCopy size={14} />
+														<Icon icon={IconCopy} size={14} />
 													</button>
 													<button onclick={() => removeLesson(module.id, lesson.id)} title="Delete">
-														<IconX size={16} />
+														<Icon icon={IconX} size={16} />
 													</button>
 												</div>
 											{/each}
 										</div>
 
 										<button class="add-lesson" onclick={() => addLesson(module.id)}>
-											<IconPlus size={16} />
+											<Icon icon={IconPlus} size={16} />
 											Add Lesson
 										</button>
 
@@ -2268,11 +2235,11 @@ import { logger } from '$lib/utils/logger';
 													type="checkbox"
 													bind:checked={module.is_preview}
 												/>
-												<IconEye size={14} />
+												<Icon icon={IconEye} size={14} />
 												Allow module preview
 											</label>
 											<span class="module-duration">
-												<IconClock size={14} />
+												<Icon icon={IconClock} size={14} />
 												Total: {module.duration_minutes} minutes ({Math.round(
 													(module.duration_minutes / 60) * 10
 												) / 10} hours)
@@ -2284,7 +2251,7 @@ import { logger } from '$lib/utils/logger';
 						{/each}
 
 						<button class="add-module" onclick={addModule}>
-							<IconPlus size={20} />
+							<Icon icon={IconPlus} size={20} />
 							Add Module
 						</button>
 					</div>
@@ -2323,7 +2290,7 @@ import { logger } from '$lib/utils/logger';
 						<h2>
 							Pricing Strategy
 							<button class="analyze-btn" onclick={suggestPricing} disabled={analyzing}>
-								<IconChartBar size={16} />
+								<Icon icon={IconChartBar} size={16} />
 								AI Market Analysis
 							</button>
 						</h2>
@@ -2338,7 +2305,7 @@ import { logger } from '$lib/utils/logger';
 									value="one-time"
 								/>
 								<div class="model-content">
-									<IconCurrencyDollar size={24} />
+									<Icon icon={IconCurrencyDollar} size={24} />
 									<span class="model-title">One-Time Payment</span>
 									<span class="model-desc">Single payment for lifetime access</span>
 								</div>
@@ -2353,7 +2320,7 @@ import { logger } from '$lib/utils/logger';
 									value="subscription"
 								/>
 								<div class="model-content">
-									<IconRefresh size={24} />
+									<Icon icon={IconRefresh} size={24} />
 									<span class="model-title">Subscription</span>
 									<span class="model-desc">Recurring monthly payments</span>
 								</div>
@@ -2368,7 +2335,7 @@ import { logger } from '$lib/utils/logger';
 									value="payment-plan"
 								/>
 								<div class="model-content">
-									<IconCalendar size={24} />
+									<Icon icon={IconCalendar} size={24} />
 									<span class="model-title">Payment Plan</span>
 									<span class="model-desc">Split into installments</span>
 								</div>
@@ -2383,7 +2350,7 @@ import { logger } from '$lib/utils/logger';
 									value="free"
 								/>
 								<div class="model-content">
-									<IconGift size={24} />
+									<Icon icon={IconGift} size={24} />
 									<span class="model-title">Free</span>
 									<span class="model-desc">No payment required</span>
 								</div>
@@ -2530,13 +2497,13 @@ import { logger } from '$lib/utils/logger';
 										class="bonus-value"
 									/>
 									<button onclick={() => removeBonus(bonus.id)}>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/each}
 
 							<button class="add-item" onclick={addBonus}>
-								<IconPlus size={16} />
+								<Icon icon={IconPlus} size={16} />
 								Add Bonus
 							</button>
 						</div>
@@ -2621,14 +2588,14 @@ import { logger } from '$lib/utils/logger';
 											hasUnsavedChanges = true;
 										}}
 									>
-										<IconX size={20} />
+										<Icon icon={IconX} size={20} />
 										Remove
 									</button>
 								</div>
 							{/if}
 
 							<label class="upload-zone" class:uploading>
-								<IconPhoto size={32} />
+								<Icon icon={IconPhoto} size={32} />
 								<span>{uploading ? 'Uploading...' : 'Click to upload thumbnail'}</span>
 								<small>JPG, PNG • Max 5MB • 16:9 aspect ratio</small>
 								<input
@@ -2664,14 +2631,14 @@ import { logger } from '$lib/utils/logger';
 											hasUnsavedChanges = true;
 										}}
 									>
-										<IconX size={20} />
+										<Icon icon={IconX} size={20} />
 										Remove
 									</button>
 								</div>
 							{:else}
 								<div class="video-options">
 									<label class="upload-zone" class:uploading>
-										<IconVideo size={32} />
+										<Icon icon={IconVideo} size={32} />
 										<span>Upload Video File</span>
 										<small>MP4, WebM • Max 100MB</small>
 										<input
@@ -2712,13 +2679,13 @@ import { logger } from '$lib/utils/logger';
 								<div class="gallery-item">
 									<img src={image} alt="Gallery {i + 1}" />
 									<button class="remove-btn" onclick={() => removeFromGallery(i)}>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/each}
 
 							<label class="gallery-upload">
-								<IconPlus size={24} />
+								<Icon icon={IconPlus} size={24} />
 								<span>Add Image</span>
 								<input
 									id="page-file"
@@ -2748,7 +2715,7 @@ import { logger } from '$lib/utils/logger';
 						<h2>
 							SEO Optimization
 							<button class="ai-btn" onclick={() => generateWithAI('seo')} disabled={generating}>
-								<IconSparkles size={14} />
+								<Icon icon={IconSparkles} size={14} />
 								AI Optimize
 							</button>
 						</h2>
@@ -2785,7 +2752,7 @@ import { logger } from '$lib/utils/logger';
 									<span class="tag">
 										{keyword}
 										<button onclick={() => removeKeyword(i)}>
-											<IconX size={14} />
+											<Icon icon={IconX} size={14} />
 										</button>
 									</span>
 								{/each}
@@ -2812,12 +2779,12 @@ import { logger } from '$lib/utils/logger';
 											hasUnsavedChanges = true;
 										}}
 									>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/if}
 							<label class="upload-btn">
-								<IconPhoto size={16} />
+								<Icon icon={IconPhoto} size={16} />
 								Upload OG Image (1200x630px)
 								<input
 									id="page-file"
@@ -2842,7 +2809,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.ga4_enabled}
 								/>
-								<IconBrandGoogle size={20} />
+								<Icon icon={IconBrandGoogle} size={20} />
 								<span>Google Analytics 4</span>
 							</label>
 
@@ -2853,7 +2820,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.fb_pixel_enabled}
 								/>
-								<IconBrandFacebook size={20} />
+								<Icon icon={IconBrandFacebook} size={20} />
 								<span>Facebook Pixel</span>
 							</label>
 
@@ -2864,7 +2831,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.conversion_tracking}
 								/>
-								<IconChartBar size={20} />
+								<Icon icon={IconChartBar} size={20} />
 								<span>Conversion Tracking</span>
 							</label>
 						</div>
@@ -2947,7 +2914,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.lifetime_access}
 								/>
-								<IconLock size={20} />
+								<Icon icon={IconLock} size={20} />
 								<div>
 									<span>Lifetime Access</span>
 									<small>Students keep access forever</small>
@@ -2961,7 +2928,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.certificate_enabled}
 								/>
-								<IconCertificate size={20} />
+								<Icon icon={IconCertificate} size={20} />
 								<div>
 									<span>Completion Certificate</span>
 									<small>Award certificate on completion</small>
@@ -2975,7 +2942,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.allow_comments}
 								/>
-								<IconUsers size={20} />
+								<Icon icon={IconUsers} size={20} />
 								<div>
 									<span>Allow Comments</span>
 									<small>Students can comment on lessons</small>
@@ -2989,7 +2956,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.allow_reviews}
 								/>
-								<IconStar size={20} />
+								<Icon icon={IconStar} size={20} />
 								<div>
 									<span>Allow Reviews</span>
 									<small>Students can rate the course</small>
@@ -3003,7 +2970,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.show_progress}
 								/>
-								<IconTrendingUp size={20} />
+								<Icon icon={IconTrendingUp} size={20} />
 								<div>
 									<span>Show Progress Bar</span>
 									<small>Display completion progress</small>
@@ -3017,7 +2984,7 @@ import { logger } from '$lib/utils/logger';
 									type="checkbox"
 									bind:checked={course.is_featured}
 								/>
-								<IconRocket size={20} />
+								<Icon icon={IconRocket} size={20} />
 								<div>
 									<span>Featured Course</span>
 									<small>Highlight on homepage</small>
@@ -3088,7 +3055,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="list-editor">
 							{#each course.tools_required as _, i}
 								<div class="list-item">
-									<IconSettings size={16} />
+									<Icon icon={IconSettings} size={16} />
 									<input
 										id="page-course-tools-required-i"
 										name="page-course-tools-required-i"
@@ -3100,7 +3067,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={() =>
 											(course.tools_required = course.tools_required.filter((_, idx) => idx !== i))}
 									>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								</div>
 							{/each}
@@ -3108,7 +3075,7 @@ import { logger } from '$lib/utils/logger';
 								class="add-item"
 								onclick={() => (course.tools_required = [...course.tools_required, ''])}
 							>
-								<IconPlus size={16} />
+								<Icon icon={IconPlus} size={16} />
 								Add Tool
 							</button>
 						</div>

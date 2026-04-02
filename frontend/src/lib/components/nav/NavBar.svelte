@@ -98,7 +98,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount, tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
-	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
+	import { Icon, IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import { getCartItemCount } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
@@ -688,7 +688,7 @@ import { logger } from '$lib/utils/logger';
 							type="button"
 						>
 							<span>{item.label}</span>
-							<IconChevronDown size={14} class="chevron" aria-hidden="true" />
+							<Icon icon={IconChevronDown} size={14} class="chevron" aria-hidden="true" />
 						</button>
 
 						{#if activeDropdown === item.id}
@@ -749,7 +749,7 @@ import { logger } from '$lib/utils/logger';
 						type="button"
 					>
 						<span>Dashboard</span>
-						<IconChevronDown size={14} class="chevron" aria-hidden="true" />
+						<Icon icon={IconChevronDown} size={14} class="chevron" aria-hidden="true" />
 					</button>
 
 					{#if activeDropdown === 'dashboard'}
@@ -802,7 +802,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Cart - Only show if items in cart -->
 				{#if cartItemCount > 0}
 					<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
-						<IconShoppingCart size={22} aria-hidden="true" />
+						<Icon icon={IconShoppingCart} size={22} aria-hidden="true" />
 						{#if cartItemCount > 0}
 							<span class="cart-badge" aria-hidden="true">{cartItemCount}</span>
 						{/if}
@@ -828,10 +828,10 @@ import { logger } from '$lib/utils/logger';
 		>
 			<!-- ICT11+ Fix: Use CSS transform instead of DOM swap to prevent layout shift -->
 			<span class="hamburger-icon" class:open={isMobileMenuOpen}>
-				<IconMenu2 size={24} aria-hidden="true" />
+				<Icon icon={IconMenu2} size={24} aria-hidden="true" />
 			</span>
 			<span class="hamburger-icon hamburger-close" class:open={isMobileMenuOpen}>
-				<IconX size={24} aria-hidden="true" />
+				<Icon icon={IconX} size={24} aria-hidden="true" />
 			</span>
 		</button>
 	</div>
@@ -875,7 +875,7 @@ import { logger } from '$lib/utils/logger';
 				aria-label="Close menu"
 				type="button"
 			>
-				<IconX size={24} aria-hidden="true" />
+				<Icon icon={IconX} size={24} aria-hidden="true" />
 			</button>
 		</div>
 
@@ -904,7 +904,7 @@ import { logger } from '$lib/utils/logger';
 							type="button"
 						>
 							<span>{item.label}</span>
-							<IconChevronDown size={18} class="chevron" aria-hidden="true" />
+							<Icon icon={IconChevronDown} size={18} class="chevron" aria-hidden="true" />
 						</button>
 
 						{#if mobileExpandedSection === item.id}
@@ -952,7 +952,7 @@ import { logger } from '$lib/utils/logger';
 						type="button"
 					>
 						<span>Dashboard</span>
-						<IconChevronDown size={18} class="chevron" aria-hidden="true" />
+						<Icon icon={IconChevronDown} size={18} class="chevron" aria-hidden="true" />
 					</button>
 
 					{#if mobileExpandedSection === 'dashboard'}
@@ -985,7 +985,7 @@ import { logger } from '$lib/utils/logger';
 					onclick={() => handleNavClick('/cart', 'Cart')}
 					aria-label={cartAriaLabel}
 				>
-					<IconShoppingCart size={20} aria-hidden="true" />
+					<Icon icon={IconShoppingCart} size={20} aria-hidden="true" />
 					<span>Cart</span>
 					{#if cartItemCount > 0}
 						<span class="mobile-badge" aria-hidden="true">{cartItemCount}</span>

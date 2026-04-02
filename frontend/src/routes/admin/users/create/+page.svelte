@@ -53,17 +53,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import {
-		IconCheck,
-		IconUser,
-		IconShield,
-		IconBuilding,
-		IconUserCheck,
-		IconChartBar,
-		IconShieldCheck,
-		IconSettings,
-		IconCheckupList
-	} from '$lib/icons';
+	import { Icon, IconCheck, IconUser, IconShield, IconBuilding, IconUserCheck, IconChartBar, IconShieldCheck, IconSettings, IconCheckupList } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions

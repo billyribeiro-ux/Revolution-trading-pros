@@ -3,17 +3,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import {
-		IconUsers,
-		IconSearch,
-		IconRefresh,
-		IconDownload,
-		IconTrash,
-		IconMail,
-		IconCheck,
-		IconX,
-		IconUserPlus
-	} from '$lib/icons';
+	import { Icon, IconUsers, IconSearch, IconRefresh, IconDownload, IconTrash, IconMail, IconCheck, IconX, IconUserPlus } from '$lib/icons';
 	import { emailApi, type EmailSubscriber } from '$lib/api/email';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -254,7 +244,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconUsers size={28} />
+					<Icon icon={IconUsers} size={28} />
 				</div>
 				<div>
 					<h1>Email Subscribers</h1>
@@ -264,11 +254,11 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={handleExport}>
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					Export
 				</button>
 				<button class="btn-primary" onclick={() => (showAddModal = true)}>
-					<IconUserPlus size={18} />
+					<Icon icon={IconUserPlus} size={18} />
 					Add Subscriber
 				</button>
 			</div>
@@ -279,7 +269,7 @@ import { logger } from '$lib/utils/logger';
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconUsers size={24} />
+				<Icon icon={IconUsers} size={24} />
 			</div>
 			<div class="stat-content">
 				<div class="stat-value">{stats.total.toLocaleString()}</div>
@@ -288,7 +278,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon emerald">
-				<IconCheck size={24} />
+				<Icon icon={IconCheck} size={24} />
 			</div>
 			<div class="stat-content">
 				<div class="stat-value">{stats.subscribed.toLocaleString()}</div>
@@ -297,7 +287,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon slate">
-				<IconX size={24} />
+				<Icon icon={IconX} size={24} />
 			</div>
 			<div class="stat-content">
 				<div class="stat-value">{stats.unsubscribed.toLocaleString()}</div>
@@ -306,7 +296,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon red">
-				<IconMail size={24} />
+				<Icon icon={IconMail} size={24} />
 			</div>
 			<div class="stat-content">
 				<div class="stat-value">{stats.bounced.toLocaleString()}</div>
@@ -318,7 +308,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-searchquery"
 				name="page-searchquery"
@@ -340,14 +330,14 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		<button class="btn-icon" onclick={loadSubscribers}>
-			<IconRefresh size={18} />
+			<Icon icon={IconRefresh} size={18} />
 		</button>
 
 		{#if selectedSubscribers.size > 0}
 			<div class="bulk-actions">
 				<span>{selectedSubscribers.size} selected</span>
 				<button class="btn-danger small" onclick={handleBulkDelete}>
-					<IconTrash size={16} />
+					<Icon icon={IconTrash} size={16} />
 					Delete
 				</button>
 			</div>
@@ -363,11 +353,11 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if subscribers.length === 0}
 			<div class="empty-state">
-				<IconUsers size={48} stroke={1} />
+				<Icon icon={IconUsers} size={48} stroke={1} />
 				<h3>No subscribers found</h3>
 				<p>Add your first subscriber or import from a CSV file</p>
 				<button class="btn-primary" onclick={() => (showAddModal = true)}>
-					<IconUserPlus size={18} />
+					<Icon icon={IconUserPlus} size={18} />
 					Add Subscriber
 				</button>
 			</div>
@@ -452,7 +442,7 @@ import { logger } from '$lib/utils/logger';
 											title="Unsubscribe"
 											onclick={() => handleUnsubscribe(subscriber.id)}
 										>
-											<IconX size={16} />
+											<Icon icon={IconX} size={16} />
 										</button>
 									{:else if subscriber.status === 'unsubscribed'}
 										<button
@@ -460,7 +450,7 @@ import { logger } from '$lib/utils/logger';
 											title="Resubscribe"
 											onclick={() => handleResubscribe(subscriber.id)}
 										>
-											<IconCheck size={16} />
+											<Icon icon={IconCheck} size={16} />
 										</button>
 									{/if}
 									<button
@@ -468,7 +458,7 @@ import { logger } from '$lib/utils/logger';
 										title="Delete"
 										onclick={() => handleDeleteSubscriber(subscriber.id)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>
@@ -526,7 +516,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Add Subscriber</h2>
 				<button class="close-btn" onclick={() => (showAddModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -579,7 +569,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showAddModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleAddSubscriber}>
-					<IconUserPlus size={18} />
+					<Icon icon={IconUserPlus} size={18} />
 					Add Subscriber
 				</button>
 			</div>

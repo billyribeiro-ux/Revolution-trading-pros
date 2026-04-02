@@ -5,14 +5,7 @@
 	 */
 	import { goto } from '$app/navigation';
 	import { resetPassword } from '$lib/api/auth';
-	import {
-		IconLock,
-		IconAlertCircle,
-		IconCheck,
-		IconShieldCheck,
-		IconEye,
-		IconEyeOff
-	} from '$lib/icons';
+	import { Icon, IconLock, IconAlertCircle, IconCheck, IconShieldCheck, IconEye, IconEyeOff } from '$lib/icons';
 	import { browser } from '$app/environment';
 
 	// Svelte 5 state runes
@@ -103,7 +96,7 @@
 					class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-purple-500 to-pink-500 p-0.5 mb-6"
 				>
 					<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
-						<IconShieldCheck size={40} class="text-purple-400" />
+						<Icon icon={IconShieldCheck} size={40} class="text-purple-400" />
 					</div>
 				</div>
 				<h1
@@ -119,7 +112,7 @@
 				<div
 					class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconCheck size={20} class="text-emerald-400 shrink-0 mt-0.5" />
+					<Icon icon={IconCheck} size={20} class="text-emerald-400 shrink-0 mt-0.5" />
 					<div class="text-sm text-emerald-300">
 						<p>{successMessage}</p>
 						<p class="mt-1 text-emerald-400/70">Redirecting to login...</p>
@@ -132,7 +125,7 @@
 				<div
 					class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconAlertCircle size={20} class="text-red-400 shrink-0 mt-0.5" />
+					<Icon icon={IconAlertCircle} size={20} class="text-red-400 shrink-0 mt-0.5" />
 					<p class="text-sm text-red-300">{generalError}</p>
 				</div>
 			{/if}
@@ -160,7 +153,7 @@
 					</label>
 					<div class="relative">
 						<div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
-							<IconLock size={20} />
+							<Icon icon={IconLock} size={20} />
 						</div>
 						<input
 							id="password"
@@ -182,9 +175,9 @@
 							tabindex={-1}
 						>
 							{#if showPassword}
-								<IconEyeOff size={20} />
+								<Icon icon={IconEyeOff} size={20} />
 							{:else}
-								<IconEye size={20} />
+								<Icon icon={IconEye} size={20} />
 							{/if}
 						</button>
 					</div>
@@ -207,7 +200,7 @@
 					</label>
 					<div class="relative">
 						<div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
-							<IconLock size={20} />
+							<Icon icon={IconLock} size={20} />
 						</div>
 						<input
 							id="password_confirmation"
@@ -227,9 +220,9 @@
 							tabindex={-1}
 						>
 							{#if showConfirmPassword}
-								<IconEyeOff size={20} />
+								<Icon icon={IconEyeOff} size={20} />
 							{:else}
-								<IconEye size={20} />
+								<Icon icon={IconEye} size={20} />
 							{/if}
 						</button>
 					</div>
@@ -248,10 +241,10 @@
 							></div>
 							<span>Resetting Password...</span>
 						{:else if successMessage}
-							<IconCheck size={20} />
+							<Icon icon={IconCheck} size={20} />
 							<span>Password Reset!</span>
 						{:else}
-							<IconShieldCheck size={20} />
+							<Icon icon={IconShieldCheck} size={20} />
 							<span>Reset Password</span>
 						{/if}
 					</span>

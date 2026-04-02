@@ -11,17 +11,10 @@
 -->
 
 <script lang="ts">
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import { crmAPI } from '$lib/api/crm';
+									import { crmAPI } from '$lib/api/crm';
 	import type { ManagerRole, ManagerUser } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconEdit, IconPlus, IconRefresh, IconSettings, IconShieldLock, IconTrash, IconUser, IconUsers } from '$lib/icons';
 
 	let roles = $state<ManagerRole[]>([]);
 	let managers = $state<ManagerUser[]>([]);
@@ -123,16 +116,16 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadData()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			{#if activeTab === 'managers'}
 				<a href="/admin/crm/managers/add" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Manager
 				</a>
 			{:else}
 				<a href="/admin/crm/managers/roles/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Role
 				</a>
 			{/if}
@@ -143,7 +136,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconUsers size={24} />
+				<Icon icon={IconUsers} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{stats.totalManagers}</span>
@@ -152,7 +145,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconShieldLock size={24} />
+				<Icon icon={IconShieldLock} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{stats.totalRoles}</span>
@@ -168,11 +161,11 @@
 			class:active={activeTab === 'managers'}
 			onclick={() => (activeTab = 'managers')}
 		>
-			<IconUsers size={18} />
+			<Icon icon={IconUsers} size={18} />
 			Managers
 		</button>
 		<button class="tab" class:active={activeTab === 'roles'} onclick={() => (activeTab = 'roles')}>
-			<IconShieldLock size={18} />
+			<Icon icon={IconShieldLock} size={18} />
 			Roles
 		</button>
 	</div>
@@ -192,11 +185,11 @@
 		<!-- Managers List -->
 		{#if managers.length === 0}
 			<div class="empty-state">
-				<IconUsers size={48} />
+				<Icon icon={IconUsers} size={48} />
 				<h3>No managers added</h3>
 				<p>Add users as CRM managers to give them access to specific features</p>
 				<a href="/admin/crm/managers/add" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Manager
 				</a>
 			</div>
@@ -208,7 +201,7 @@
 							{#if manager.avatar}
 								<img src={manager.avatar} alt={manager.name} />
 							{:else}
-								<IconUser size={24} />
+								<Icon icon={IconUser} size={24} />
 							{/if}
 						</div>
 						<div class="manager-info">
@@ -217,7 +210,7 @@
 						</div>
 						<div class="manager-role">
 							<span class="role-badge">
-								<IconShieldLock size={14} />
+								<Icon icon={IconShieldLock} size={14} />
 								{manager.role?.name || 'No Role'}
 							</span>
 						</div>
@@ -226,14 +219,14 @@
 						</div>
 						<div class="manager-actions">
 							<a href="/admin/crm/managers/{manager.id}/edit" class="btn-icon" title="Edit">
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 							</a>
 							<button
 								class="btn-icon danger"
 								title="Remove"
 								onclick={() => removeManager(manager.id)}
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						</div>
 					</div>
@@ -244,11 +237,11 @@
 		<!-- Roles List -->
 		{#if roles.length === 0}
 			<div class="empty-state">
-				<IconShieldLock size={48} />
+				<Icon icon={IconShieldLock} size={48} />
 				<h3>No roles defined</h3>
 				<p>Create roles to define different permission levels for managers</p>
 				<a href="/admin/crm/managers/roles/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Create Role
 				</a>
 			</div>
@@ -258,7 +251,7 @@
 					<div class="role-card">
 						<div class="role-header">
 							<div class="role-icon">
-								<IconShieldLock size={24} />
+								<Icon icon={IconShieldLock} size={24} />
 							</div>
 							<div class="role-info">
 								<h3>{role.name}</h3>
@@ -272,11 +265,11 @@
 						</div>
 						<div class="role-stats">
 							<div class="stat">
-								<IconUsers size={16} />
+								<Icon icon={IconUsers} size={16} />
 								<span>{role.users_count} users</span>
 							</div>
 							<div class="stat">
-								<IconSettings size={16} />
+								<Icon icon={IconSettings} size={16} />
 								<span>{role.permissions.filter((p) => p.allowed).length} permissions</span>
 							</div>
 						</div>
@@ -295,12 +288,12 @@
 						</div>
 						<div class="role-actions">
 							<a href="/admin/crm/managers/roles/{role.id}/edit" class="btn-secondary">
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 								Edit
 							</a>
 							{#if !role.is_default}
 								<button class="btn-icon danger" onclick={() => deleteRole(role.id)}>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							{/if}
 						</div>

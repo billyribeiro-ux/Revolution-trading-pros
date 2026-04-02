@@ -2,12 +2,8 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconLockSquare from '@tabler/icons-svelte-runes/icons/lock-square';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconServer from '@tabler/icons-svelte-runes/icons/server';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-
+	import { Icon, IconActivity, IconArrowRight, IconCheck, IconLockSquare, IconServer } from '$lib/icons';
+					
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
@@ -153,7 +149,7 @@
 							class="flex items-center justify-between px-4 py-2 bg-[#0a0a0a] border-b border-white/5"
 						>
 							<div class="flex items-center gap-2">
-								<IconLockSquare size={14} class="text-amber-600" />
+								<Icon icon={IconLockSquare} size={14} class="text-amber-600" />
 								<span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest"
 									>Secure_Enclave_v4.2</span
 								>
@@ -194,7 +190,7 @@
 									>
 									<span class="text-lg font-bold tracking-wide">EXECUTE ORDER</span>
 								</div>
-								<IconArrowRight
+								<Icon icon={IconArrowRight}
 									size={24}
 									class="transform group-hover/btn:translate-x-1 transition-transform"
 								/>
@@ -221,7 +217,7 @@
 						<div
 							class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1"
 						>
-							<IconServer size={16} />
+							<Icon icon={IconServer} size={16} />
 							<span class="text-[10px] font-mono uppercase tracking-widest">Network</span>
 						</div>
 						<div class="text-white font-serif text-lg">Global Edge</div>
@@ -231,7 +227,7 @@
 						<div
 							class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1"
 						>
-							<IconActivity size={16} />
+							<Icon icon={IconActivity} size={16} />
 							<span class="text-[10px] font-mono uppercase tracking-widest">Latency</span>
 						</div>
 						<div class="text-white font-serif text-lg">&lt; 20ms</div>
@@ -241,7 +237,7 @@
 						<div
 							class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1"
 						>
-							<IconLockSquare size={16} />
+							<Icon icon={IconLockSquare} size={16} />
 							<span class="text-[10px] font-mono uppercase tracking-widest">Security</span>
 						</div>
 						<div class="text-white font-serif text-lg">AES-256</div>
@@ -251,7 +247,7 @@
 						<div
 							class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1"
 						>
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 							<span class="text-[10px] font-mono uppercase tracking-widest">Commitment</span>
 						</div>
 						<div class="text-white font-serif text-lg">Cancel Anytime</div>

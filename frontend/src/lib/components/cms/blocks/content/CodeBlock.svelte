@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconCode, IconCopy, IconCheck } from '$lib/icons';
+	import { Icon, IconCode, IconCopy, IconCheck } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -99,7 +99,7 @@
 	<header class="code-block__header">
 		<div class="code-block__header-left">
 			<span class="code-block__icon" aria-hidden="true">
-				<IconCode size={16} />
+				<Icon icon={IconCode} size={16} />
 			</span>
 			<select
 				value={props.block.content.language || 'javascript'}
@@ -127,10 +127,10 @@
 				disabled={!props.block.content.code}
 			>
 				{#if copied}
-					<IconCheck size={16} aria-hidden="true" />
+					<Icon icon={IconCheck} size={16} aria-hidden="true" />
 					<span class="code-block__copy-text">Copied!</span>
 				{:else}
-					<IconCopy size={16} aria-hidden="true" />
+					<Icon icon={IconCopy} size={16} aria-hidden="true" />
 					<span class="code-block__copy-text">Copy</span>
 				{/if}
 			</button>

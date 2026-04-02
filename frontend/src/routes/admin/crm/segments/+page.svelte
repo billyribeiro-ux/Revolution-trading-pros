@@ -22,20 +22,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import {
-		IconFilter,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconRefresh,
-		IconUsers,
-		IconChartBar,
-		IconCopy,
-		IconPlayerPlay,
-		IconReload
-	} from '$lib/icons';
+	import { Icon, IconFilter, IconPlus, IconSearch, IconEdit, IconTrash, IconEye, IconRefresh, IconUsers, IconChartBar, IconCopy, IconPlayerPlay, IconReload } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -210,7 +197,7 @@
 	<div class="page-header">
 		<div>
 			<h1>
-				<IconFilter size={28} class="header-icon" />
+				<Icon icon={IconFilter} size={28} class="header-icon" />
 				Dynamic Segments
 			</h1>
 			<p class="page-description">
@@ -219,10 +206,10 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadSegments()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<a href="/admin/crm/segments/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New Segment
 			</a>
 		</div>
@@ -232,7 +219,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconFilter size={24} />
+				<Icon icon={IconFilter} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -241,7 +228,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconPlayerPlay size={24} />
+				<Icon icon={IconPlayerPlay} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.active)}</span>
@@ -250,7 +237,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconUsers size={24} />
+				<Icon icon={IconUsers} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
@@ -259,7 +246,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconChartBar size={24} />
+				<Icon icon={IconChartBar} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">
@@ -273,7 +260,7 @@
 	<!-- Search & Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-segments"
@@ -302,11 +289,11 @@
 		</div>
 	{:else if filteredSegments.length === 0}
 		<div class="empty-state">
-			<IconFilter size={48} />
+			<Icon icon={IconFilter} size={48} />
 			<h3>No segments found</h3>
 			<p>Create dynamic segments to automatically group contacts based on conditions</p>
 			<a href="/admin/crm/segments/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Segment
 			</a>
 		</div>
@@ -316,7 +303,7 @@
 				<div class="segment-card">
 					<div class="segment-header">
 						<div class="segment-icon">
-							<IconFilter size={24} />
+							<Icon icon={IconFilter} size={24} />
 						</div>
 						<div class="segment-title-section">
 							<h3>{segment.title}</h3>
@@ -332,11 +319,11 @@
 
 					<div class="segment-stats">
 						<div class="stat">
-							<IconUsers size={16} />
+							<Icon icon={IconUsers} size={16} />
 							<span>{formatNumber(segment.contacts_count)} contacts</span>
 						</div>
 						<div class="stat">
-							<IconFilter size={16} />
+							<Icon icon={IconFilter} size={16} />
 							<span>{getConditionSummary(segment.conditions, segment.match_type)}</span>
 						</div>
 					</div>
@@ -347,27 +334,27 @@
 
 					<div class="segment-actions">
 						<a href="/admin/crm/segments/{segment.id}" class="btn-action" title="View Contacts">
-							<IconEye size={16} />
+							<Icon icon={IconEye} size={16} />
 						</a>
 						<a href="/admin/crm/segments/{segment.id}/edit" class="btn-action" title="Edit">
-							<IconEdit size={16} />
+							<Icon icon={IconEdit} size={16} />
 						</a>
 						<button class="btn-action" title="Sync Now" onclick={() => syncSegment(segment.id)}>
-							<IconReload size={16} />
+							<Icon icon={IconReload} size={16} />
 						</button>
 						<button
 							class="btn-action"
 							title="Duplicate"
 							onclick={() => duplicateSegment(segment.id)}
 						>
-							<IconCopy size={16} />
+							<Icon icon={IconCopy} size={16} />
 						</button>
 						<button
 							class="btn-action danger"
 							title="Delete"
 							onclick={() => deleteSegment(segment.id)}
 						>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 						</button>
 					</div>
 				</div>

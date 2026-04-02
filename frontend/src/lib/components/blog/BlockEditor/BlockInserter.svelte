@@ -8,57 +8,11 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-	import IconAlignLeft from '@tabler/icons-svelte-runes/icons/align-left';
-	import IconH1 from '@tabler/icons-svelte-runes/icons/h-1';
-	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
-	import IconBlockquote from '@tabler/icons-svelte-runes/icons/blockquote';
-	import IconCode from '@tabler/icons-svelte-runes/icons/code';
-	import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconChecklist from '@tabler/icons-svelte-runes/icons/checklist';
-	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
-	import IconPhotoFilled from '@tabler/icons-svelte-runes/icons/photo-filled';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconVolume from '@tabler/icons-svelte-runes/icons/volume';
-	import IconFileDownload from '@tabler/icons-svelte-runes/icons/file-download';
-	import IconBrandYoutube from '@tabler/icons-svelte-runes/icons/brand-youtube';
-	import IconGif from '@tabler/icons-svelte-runes/icons/gif';
-	import IconColumns from '@tabler/icons-svelte-runes/icons/columns';
-	import IconBox from '@tabler/icons-svelte-runes/icons/box';
-	import IconMinus from '@tabler/icons-svelte-runes/icons/minus';
-	import IconSpacingVertical from '@tabler/icons-svelte-runes/icons/spacing-vertical';
-	import IconLayoutRows from '@tabler/icons-svelte-runes/icons/layout-rows';
-	import IconClick from '@tabler/icons-svelte-runes/icons/click';
-	import IconApps from '@tabler/icons-svelte-runes/icons/apps';
-	import IconLayoutNavbarCollapse from '@tabler/icons-svelte-runes/icons/layout-navbar-collapse';
-	import IconLayoutDistributeHorizontal from '@tabler/icons-svelte-runes/icons/layout-distribute-horizontal';
-	import IconToggleLeft from '@tabler/icons-svelte-runes/icons/toggle-left';
-	import IconListTree from '@tabler/icons-svelte-runes/icons/list-tree';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-	import IconId from '@tabler/icons-svelte-runes/icons/id';
-	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
-	import IconSpeakerphone from '@tabler/icons-svelte-runes/icons/speakerphone';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconShare from '@tabler/icons-svelte-runes/icons/share';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconArticle from '@tabler/icons-svelte-runes/icons/article';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconRobot from '@tabler/icons-svelte-runes/icons/robot';
-	import IconFileDescription from '@tabler/icons-svelte-runes/icons/file-description';
-	import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
-	import IconBrackets from '@tabler/icons-svelte-runes/icons/brackets';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-
+																																															
 	import type { BlockType, BlockContent, BlockSettings } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
 	import PresetPicker from './PresetPicker.svelte';
+	import { Icon, IconAlertCircle, IconAlertTriangle, IconAlignLeft, IconApps, IconArticle, IconBlockquote, IconBox, IconBrackets, IconBrandYoutube, IconBulb, IconChartCandle, IconChecklist, IconClock, IconCode, IconColumns, IconCursor, IconFileCode, IconFileDescription, IconFileDownload, IconGif, IconH1, IconId, IconInfoCircle, IconLanguage, IconLayoutDistributeHorizontal, IconLayoutNavbarCollapse, IconLayoutRows, IconList, IconListTree, IconMail, IconMessageCircle, IconMinus, IconPhoto, IconPhotoFilled, IconQuote, IconRobot, IconSearch, IconShare, IconSpacingVertical, IconSpeakerphone, IconTemplate, IconToggleLeft, IconTrendingUp, IconUser, IconVideo, IconVolume, IconX } from '$lib/icons';
 
 	// ==========================================================================
 	// Props
@@ -127,7 +81,7 @@
 		separator: IconMinus,
 		spacer: IconSpacingVertical,
 		row: IconLayoutRows,
-		button: IconClick,
+		button: IconCursor,
 		buttons: IconApps,
 		accordion: IconLayoutNavbarCollapse,
 		tabs: IconLayoutDistributeHorizontal,
@@ -264,7 +218,7 @@
 			>
 				<div class="inserter-header">
 					<div class="search-box">
-						<IconSearch size={18} />
+						<Icon icon={IconSearch} size={18} />
 						<input
 							type="text"
 							placeholder="Search blocks..."
@@ -273,12 +227,12 @@
 						/>
 						{#if localSearch}
 							<button type="button" class="clear-search" onclick={() => (localSearch = '')}>
-								<IconX size={16} />
+								<Icon icon={IconX} size={16} />
 							</button>
 						{/if}
 					</div>
 					<button type="button" class="close-btn" onclick={onclose}>
-						<IconX size={20} />
+						<Icon icon={IconX} size={20} />
 					</button>
 				</div>
 
@@ -313,7 +267,7 @@
 											<span class="block-name">{def.name}</span>
 											{#if hasPresets(type)}
 												<span class="presets-badge" title="Has presets available">
-													<IconTemplate size={12} />
+													<Icon icon={IconTemplate} size={12} />
 												</span>
 											{/if}
 										</button>
@@ -366,7 +320,7 @@
 													</div>
 													{#if hasPresets(type)}
 														<span class="presets-badge inline" title="Has presets available">
-															<IconTemplate size={14} />
+															<Icon icon={IconTemplate} size={14} />
 															Presets
 														</span>
 													{/if}
@@ -421,7 +375,7 @@
 							<Icon size={18} />
 							<span>{def.name}</span>
 							{#if hasPresets(type)}
-								<IconTemplate size={14} class="preset-icon" />
+								<Icon icon={IconTemplate} size={14} class="preset-icon" />
 							{/if}
 						</button>
 					{/each}

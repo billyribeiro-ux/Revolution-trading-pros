@@ -72,18 +72,7 @@ import { logger } from '$lib/utils/logger';
 			onYouTubeIframeAPIReady?: () => void;
 		}
 	}
-	import {
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconVolume,
-		IconVolumeOff,
-		IconRefresh,
-		IconSettings,
-		IconMaximize,
-		IconMinimize,
-		IconTextCaption,
-		IconPictureInPictureOn
-	} from '$lib/icons';
+	import { Icon, IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff, IconRefresh, IconSettings, IconMaximize, IconMinimize, IconTextCaption, IconPictureInPictureOn } from '$lib/icons';
 	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1303,7 +1292,7 @@ import { logger } from '$lib/utils/logger';
 					}}
 					aria-label="Play video"
 				>
-					<IconPlayerPlay size={64} />
+					<Icon icon={IconPlayerPlay} size={64} />
 				</button>
 			</div>
 		{/if}
@@ -1311,7 +1300,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Error State -->
 		{#if hasError}
 			<div class="error-container">
-				<IconRefresh size={48} />
+				<Icon icon={IconRefresh} size={48} />
 				<p>{errorMessage}</p>
 				<button onclick={() => location.reload()}>Retry</button>
 			</div>
@@ -1408,9 +1397,9 @@ import { logger } from '$lib/utils/logger';
 								aria-label={isPlaying ? 'Pause' : 'Play'}
 							>
 								{#if isPlaying}
-									<IconPlayerPause size={24} />
+									<Icon icon={IconPlayerPause} size={24} />
 								{:else}
-									<IconPlayerPlay size={24} />
+									<Icon icon={IconPlayerPlay} size={24} />
 								{/if}
 							</button>
 						{/if}
@@ -1424,9 +1413,9 @@ import { logger } from '$lib/utils/logger';
 									aria-label={isMuted ? 'Unmute' : 'Mute'}
 								>
 									{#if isMuted}
-										<IconVolumeOff size={24} />
+										<Icon icon={IconVolumeOff} size={24} />
 									{:else}
-										<IconVolume size={24} />
+										<Icon icon={IconVolume} size={24} />
 									{/if}
 								</button>
 								<input
@@ -1452,7 +1441,7 @@ import { logger } from '$lib/utils/logger';
 						<!-- Subtitles -->
 						{#if showSubtitles && subtitles.length > 0}
 							<button class="control-btn" aria-label="Subtitles">
-								<IconTextCaption size={24} />
+								<Icon icon={IconTextCaption} size={24} />
 							</button>
 						{/if}
 
@@ -1463,7 +1452,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => (showSettings = !showSettings)}
 								aria-label="Settings"
 							>
-								<IconSettings size={24} />
+								<Icon icon={IconSettings} size={24} />
 							</button>
 						{/if}
 
@@ -1474,7 +1463,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={togglePictureInPicture}
 								aria-label="Picture in Picture"
 							>
-								<IconPictureInPictureOn size={24} />
+								<Icon icon={IconPictureInPictureOn} size={24} />
 							</button>
 						{/if}
 
@@ -1486,9 +1475,9 @@ import { logger } from '$lib/utils/logger';
 								aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
 							>
 								{#if isFullscreen}
-									<IconMinimize size={24} />
+									<Icon icon={IconMinimize} size={24} />
 								{:else}
-									<IconMaximize size={24} />
+									<Icon icon={IconMaximize} size={24} />
 								{/if}
 							</button>
 						{/if}

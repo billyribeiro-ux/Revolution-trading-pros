@@ -14,24 +14,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
-	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
-	import { API_BASE_URL } from '$lib/api/config';
+																		import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -477,6 +460,7 @@
 			await fetchEntries();
 		} catch (_err) {
 			showToastMessage('Failed to import CSV', 'error');
+	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconChevronRight, IconCopy, IconDatabase, IconDownload, IconEdit, IconGripVertical, IconLock, IconPlus, IconRefresh, IconSearch, IconTrash, IconUpload, IconWorld, IconX } from '$lib/icons';
 		} finally {
 			isSaving = false;
 		}
@@ -643,13 +627,13 @@
 {#if showToast}
 	<div class="toast toast-{toastType}" transition:fade>
 		{#if toastType === 'success'}
-			<IconCheck size={20} />
+			<Icon icon={IconCheck} size={20} />
 		{:else}
-			<IconAlertCircle size={20} />
+			<Icon icon={IconAlertCircle} size={20} />
 		{/if}
 		<span>{toastMessage}</span>
 		<button onclick={() => (showToast = false)} class="toast-close">
-			<IconX size={16} />
+			<Icon icon={IconX} size={16} />
 		</button>
 	</div>
 {/if}
@@ -667,16 +651,16 @@
 			<!-- Datasources List View -->
 			<header class="page-header">
 				<h1>
-					<IconDatabase size={28} />
+					<Icon icon={IconDatabase} size={28} />
 					Datasources
 				</h1>
 				<p class="subtitle">Reusable option lists for dropdowns and form fields</p>
 				<div class="header-actions">
 					<button class="btn-refresh" onclick={() => fetchDatasources()} disabled={isLoading}>
-						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+						<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 					</button>
 					<button class="btn-primary" onclick={() => openDatasourceModal()}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						New Datasource
 					</button>
 				</div>
@@ -685,7 +669,7 @@
 			<!-- Search -->
 			<div class="filters-bar">
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						type="text"
 						id="search-datasources"
@@ -705,17 +689,17 @@
 					</div>
 				{:else if error}
 					<div class="error-state">
-						<IconAlertCircle size={48} />
+						<Icon icon={IconAlertCircle} size={48} />
 						<p>{error}</p>
 						<button class="btn-primary" onclick={() => fetchDatasources()}>Try Again</button>
 					</div>
 				{:else if filteredDatasources.length === 0}
 					<div class="empty-state">
-						<IconDatabase size={48} />
+						<Icon icon={IconDatabase} size={48} />
 						<h3>No datasources found</h3>
 						<p>Create your first datasource to start managing option lists</p>
 						<button class="btn-primary" onclick={() => openDatasourceModal()}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Datasource
 						</button>
 					</div>
@@ -725,9 +709,9 @@
 							<div class="card-header">
 								<div class="card-icon" style="background-color: {datasource.color || '#6366f1'}20">
 									{#if datasource.is_system}
-										<IconWorld size={24} style="color: {datasource.color || '#6366f1'}" />
+										<Icon icon={IconWorld} size={24} style="color: {datasource.color || '#6366f1'}" />
 									{:else}
-										<IconDatabase size={24} style="color: {datasource.color || '#6366f1'}" />
+										<Icon icon={IconDatabase} size={24} style="color: {datasource.color || '#6366f1'}" />
 									{/if}
 								</div>
 								<div class="card-badges">
@@ -735,7 +719,7 @@
 										<span class="badge badge-system">System</span>
 									{/if}
 									{#if datasource.is_locked}
-										<span class="badge badge-locked"><IconLock size={12} /> Locked</span>
+										<span class="badge badge-locked"><Icon icon={IconLock} size={12} /> Locked</span>
 									{/if}
 								</div>
 							</div>
@@ -760,7 +744,7 @@
 									class="btn-card-action primary"
 									onclick={() => selectDatasource(datasource)}
 								>
-									<IconChevronRight size={16} />
+									<Icon icon={IconChevronRight} size={16} />
 									Manage Entries
 								</button>
 								<div class="action-buttons">
@@ -770,14 +754,14 @@
 										title="Edit"
 										disabled={datasource.is_system}
 									>
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</button>
 									<button
 										class="btn-icon"
 										onclick={() => duplicateDatasource(datasource.id)}
 										title="Duplicate"
 									>
-										<IconCopy size={16} />
+										<Icon icon={IconCopy} size={16} />
 									</button>
 									<button
 										class="btn-icon danger"
@@ -785,7 +769,7 @@
 										title="Delete"
 										disabled={datasource.is_system}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</div>
@@ -831,7 +815,7 @@
 			<!-- Entries View -->
 			<header class="page-header">
 				<button class="btn-back" onclick={backToList}>
-					<IconArrowLeft size={18} />
+					<Icon icon={IconArrowLeft} size={18} />
 					Back to Datasources
 				</button>
 				<h1>
@@ -839,7 +823,7 @@
 						class="header-icon"
 						style="background-color: {selectedDatasource.color || '#6366f1'}20"
 					>
-						<IconDatabase size={24} style="color: {selectedDatasource.color || '#6366f1'}" />
+						<Icon icon={IconDatabase} size={24} style="color: {selectedDatasource.color || '#6366f1'}" />
 					</div>
 					{selectedDatasource.name}
 				</h1>
@@ -848,15 +832,15 @@
 				</p>
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={exportCsv}>
-						<IconDownload size={18} />
+						<Icon icon={IconDownload} size={18} />
 						Export CSV
 					</button>
 					<button class="btn-secondary" onclick={() => (showImportModal = true)}>
-						<IconUpload size={18} />
+						<Icon icon={IconUpload} size={18} />
 						Import CSV
 					</button>
 					<button class="btn-primary" onclick={() => openEntryModal()}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add Entry
 					</button>
 				</div>
@@ -865,7 +849,7 @@
 			<!-- Filters -->
 			<div class="filters-bar">
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						type="text"
 						id="search-entries"
@@ -892,11 +876,11 @@
 					</div>
 				{:else if filteredEntries.length === 0}
 					<div class="empty-state">
-						<IconDatabase size={48} />
+						<Icon icon={IconDatabase} size={48} />
 						<h3>No entries yet</h3>
 						<p>Add your first entry to this datasource</p>
 						<button class="btn-primary" onclick={() => openEntryModal()}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Add Entry
 						</button>
 					</div>
@@ -922,7 +906,7 @@
 										class:dragging={draggedEntryId === entry.id}
 									>
 										<td class="drag-handle">
-											<IconGripVertical size={16} />
+											<Icon icon={IconGripVertical} size={16} />
 										</td>
 										<td>
 											<span class="entry-name">{entry.name}</span>
@@ -936,14 +920,14 @@
 										<td>
 											<div class="action-buttons">
 												<button class="btn-icon" onclick={() => openEntryModal(entry)} title="Edit">
-													<IconEdit size={16} />
+													<Icon icon={IconEdit} size={16} />
 												</button>
 												<button
 													class="btn-icon danger"
 													onclick={() => deleteEntry(entry.id)}
 													title="Delete"
 												>
-													<IconTrash size={16} />
+													<Icon icon={IconTrash} size={16} />
 												</button>
 											</div>
 										</td>
@@ -984,7 +968,7 @@
 			<div class="modal-header">
 				<h3>{editingDatasource ? 'Edit Datasource' : 'New Datasource'}</h3>
 				<button class="modal-close" onclick={closeDatasourceModal}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -1071,7 +1055,7 @@
 			<div class="modal-header">
 				<h3>{editingEntry ? 'Edit Entry' : 'Add Entry'}</h3>
 				<button class="modal-close" onclick={closeEntryModal}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -1150,7 +1134,7 @@
 			<div class="modal-header">
 				<h3>Import CSV</h3>
 				<button class="modal-close" onclick={() => (showImportModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -1184,7 +1168,7 @@
 					{#if isSaving}
 						Importing...
 					{:else}
-						<IconUpload size={18} />
+						<Icon icon={IconUpload} size={18} />
 						Import
 					{/if}
 				</button>

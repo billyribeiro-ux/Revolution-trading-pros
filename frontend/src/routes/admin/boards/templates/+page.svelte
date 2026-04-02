@@ -4,19 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardTemplate } from '$lib/boards/types';
-	import {
-		IconTemplate,
-		IconArrowLeft,
-		IconSearch,
-		IconPlus,
-		IconLayoutKanban,
-		IconCode,
-		IconBriefcase,
-		IconUsers,
-		IconRocket,
-		IconBook,
-		IconChartBar
-	} from '$lib/icons';
+	import { Icon, IconTemplate, IconArrowLeft, IconSearch, IconPlus, IconLayoutKanban, IconCode, IconBriefcase, IconUsers, IconRocket, IconBook, IconChartBar } from '$lib/icons';
 
 	// State
 	let templates = $state<BoardTemplate[]>([]);
@@ -265,11 +253,11 @@ import { logger } from '$lib/utils/logger';
 						href="/admin/boards"
 						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconArrowLeft class="w-5 h-5" />
+						<Icon icon={IconArrowLeft} class="w-5 h-5" />
 					</a>
 					<div class="flex items-center gap-3">
 						<div class="p-2 bg-[#E6B800]/10 dark:bg-[#B38F00]/30 rounded-lg">
-							<IconTemplate class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
+							<Icon icon={IconTemplate} class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Templates</h1>
@@ -287,7 +275,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Search and Filters -->
 		<div class="flex flex-col md:flex-row gap-4 mb-8">
 			<div class="flex-1 relative">
-				<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+				<Icon icon={IconSearch} class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 				<input
 					id="page-searchquery"
 					name="page-searchquery"
@@ -331,7 +319,7 @@ import { logger } from '$lib/utils/logger';
 			<div
 				class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
 			>
-				<IconTemplate class="w-12 h-12 text-gray-400 mx-auto mb-4" />
+				<Icon icon={IconTemplate} class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No templates found</h3>
 				<p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filters</p>
 			</div>
@@ -424,7 +412,7 @@ import { logger } from '$lib/utils/logger';
 									<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
 									Creating...
 								{:else}
-									<IconPlus class="w-4 h-4" />
+									<Icon icon={IconPlus} class="w-4 h-4" />
 									Use Template
 								{/if}
 							</button>

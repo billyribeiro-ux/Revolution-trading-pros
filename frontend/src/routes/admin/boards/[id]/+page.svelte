@@ -14,28 +14,7 @@ import { logger } from '$lib/utils/logger';
 		Subtask,
 		CustomFieldDefinition
 	} from '$lib/boards/types';
-	import {
-		IconArrowLeft,
-		IconPlus,
-		IconDots,
-		IconStar,
-		IconStarFilled,
-		IconUsers,
-		IconSettings,
-		IconFilter,
-		IconSearch,
-		IconCalendar,
-		IconPaperclip,
-		IconMessage,
-		IconChecklist,
-		IconX,
-		IconTrash,
-		IconCheck,
-		IconUser,
-		IconPlayerPlay,
-		IconPlayerStop,
-		IconSubtask
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconPlus, IconDots, IconStar, IconStarFilled, IconUsers, IconSettings, IconFilter, IconSearch, IconCalendar, IconPaperclip, IconMessage, IconChecklist, IconX, IconTrash, IconCheck, IconUser, IconPlayerPlay, IconPlayerStop, IconSubtask } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// Get board ID from URL
@@ -423,7 +402,7 @@ import { logger } from '$lib/utils/logger';
 						href="/admin/boards"
 						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconArrowLeft class="w-5 h-5" />
+						<Icon icon={IconArrowLeft} class="w-5 h-5" />
 					</a>
 					{#if board}
 						<div class="flex items-center gap-3">
@@ -446,9 +425,9 @@ import { logger } from '$lib/utils/logger';
 											: 'text-gray-400 hover:text-yellow-500'}
 									>
 										{#if board.is_favorite}
-											<IconStarFilled class="w-5 h-5" />
+											<Icon icon={IconStarFilled} class="w-5 h-5" />
 										{:else}
-											<IconStar class="w-5 h-5" />
+											<Icon icon={IconStar} class="w-5 h-5" />
 										{/if}
 									</button>
 								</h1>
@@ -463,7 +442,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="flex items-center gap-3">
 					<!-- Search -->
 					<div class="relative">
-						<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+						<Icon icon={IconSearch} class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 						<input
 							id="page-searchquery"
 							name="page-searchquery"
@@ -481,7 +460,7 @@ import { logger } from '$lib/utils/logger';
 							? 'bg-gray-100 dark:bg-gray-700'
 							: ''}"
 					>
-						<IconFilter class="w-4 h-4" />
+						<Icon icon={IconFilter} class="w-4 h-4" />
 						Filters
 					</button>
 
@@ -505,7 +484,7 @@ import { logger } from '$lib/utils/logger';
 						<button
 							class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-2 border-white dark:border-gray-800 ml-1"
 						>
-							<IconUsers class="w-4 h-4" />
+							<Icon icon={IconUsers} class="w-4 h-4" />
 						</button>
 					</div>
 
@@ -514,7 +493,7 @@ import { logger } from '$lib/utils/logger';
 						href="/admin/boards/{boardId}/settings"
 						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconSettings class="w-5 h-5" />
+						<Icon icon={IconSettings} class="w-5 h-5" />
 					</a>
 				</div>
 			</div>
@@ -596,7 +575,7 @@ import { logger } from '$lib/utils/logger';
 							<button
 								class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded"
 							>
-								<IconDots class="w-4 h-4" />
+								<Icon icon={IconDots} class="w-4 h-4" />
 							</button>
 						</div>
 
@@ -664,25 +643,25 @@ import { logger } from '$lib/utils/logger';
 														? 'text-red-500'
 														: ''}"
 												>
-													<IconCalendar class="w-3.5 h-3.5" />
+													<Icon icon={IconCalendar} class="w-3.5 h-3.5" />
 													{formatDate(task.due_date)}
 												</span>
 											{/if}
 											{#if task.subtask_count}
 												<span class="flex items-center gap-1">
-													<IconChecklist class="w-3.5 h-3.5" />
+													<Icon icon={IconChecklist} class="w-3.5 h-3.5" />
 													{task.completed_subtask_count || 0}/{task.subtask_count}
 												</span>
 											{/if}
 											{#if task.comment_count}
 												<span class="flex items-center gap-1">
-													<IconMessage class="w-3.5 h-3.5" />
+													<Icon icon={IconMessage} class="w-3.5 h-3.5" />
 													{task.comment_count}
 												</span>
 											{/if}
 											{#if task.attachment_count}
 												<span class="flex items-center gap-1">
-													<IconPaperclip class="w-3.5 h-3.5" />
+													<Icon icon={IconPaperclip} class="w-3.5 h-3.5" />
 													{task.attachment_count}
 												</span>
 											{/if}
@@ -768,7 +747,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => (showNewTaskInput = stage.id)}
 									class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-300/50 dark:hover:bg-gray-700/50 rounded-lg flex items-center gap-2"
 								>
-									<IconPlus class="w-4 h-4" />
+									<Icon icon={IconPlus} class="w-4 h-4" />
 									Add task
 								</button>
 							</div>
@@ -819,7 +798,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => (showNewStageInput = true)}
 							class="w-full px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center gap-2"
 						>
-							<IconPlus class="w-4 h-4" />
+							<Icon icon={IconPlus} class="w-4 h-4" />
 							Add Stage
 						</button>
 					{/if}
@@ -875,7 +854,7 @@ import { logger } from '$lib/utils/logger';
 							<span
 								class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded flex items-center gap-1"
 							>
-								<IconCheck class="w-3.5 h-3.5" />
+								<Icon icon={IconCheck} class="w-3.5 h-3.5" />
 								Completed
 							</span>
 						{:else}
@@ -883,7 +862,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={completeTask}
 								class="px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-1"
 							>
-								<IconCheck class="w-4 h-4" />
+								<Icon icon={IconCheck} class="w-4 h-4" />
 								Complete
 							</button>
 						{/if}
@@ -891,7 +870,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={closeTaskModal}
 							class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 						>
-							<IconX class="w-5 h-5" />
+							<Icon icon={IconX} class="w-5 h-5" />
 						</button>
 					</div>
 				</div>
@@ -936,7 +915,7 @@ import { logger } from '$lib/utils/logger';
 							<h3
 								class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
 							>
-								<IconSubtask class="w-4 h-4" />
+								<Icon icon={IconSubtask} class="w-4 h-4" />
 								Subtasks
 								{#if taskSubtasks.length > 0}
 									<span class="text-xs text-gray-500">
@@ -954,7 +933,7 @@ import { logger } from '$lib/utils/logger';
 												: 'border-gray-300 dark:border-gray-600'} flex items-center justify-center"
 										>
 											{#if subtask.is_completed}
-												<IconCheck class="w-3 h-3" />
+												<Icon icon={IconCheck} class="w-3 h-3" />
 											{/if}
 										</button>
 										<span
@@ -994,7 +973,7 @@ import { logger } from '$lib/utils/logger';
 							<h3
 								class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
 							>
-								<IconMessage class="w-4 h-4" />
+								<Icon icon={IconMessage} class="w-4 h-4" />
 								Comments ({taskComments.length})
 							</h3>
 							<div class="space-y-3">
@@ -1022,7 +1001,7 @@ import { logger } from '$lib/utils/logger';
 									<div
 										class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm shrink-0"
 									>
-										<IconUser class="w-4 h-4" />
+										<Icon icon={IconUser} class="w-4 h-4" />
 									</div>
 									<div class="flex-1">
 										<textarea
@@ -1058,7 +1037,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={stopTimer}
 										class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
 									>
-										<IconPlayerStop class="w-5 h-5" />
+										<Icon icon={IconPlayerStop} class="w-5 h-5" />
 									</button>
 								{:else}
 									<span class="text-sm text-gray-600 dark:text-gray-400"
@@ -1068,7 +1047,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={startTimer}
 										class="p-1.5 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
 									>
-										<IconPlayerPlay class="w-5 h-5" />
+										<Icon icon={IconPlayerPlay} class="w-5 h-5" />
 									</button>
 								{/if}
 							</div>
@@ -1172,14 +1151,14 @@ import { logger } from '$lib/utils/logger';
 										target="_blank"
 										class="flex items-center gap-2 px-2 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
 									>
-										<IconPaperclip class="w-3.5 h-3.5" />
+										<Icon icon={IconPaperclip} class="w-3.5 h-3.5" />
 										<span class="truncate">{attachment.original_filename}</span>
 									</a>
 								{/each}
 								<button
 									class="w-full px-2 py-1.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded flex items-center gap-2"
 								>
-									<IconPlus class="w-3.5 h-3.5" />
+									<Icon icon={IconPlus} class="w-3.5 h-3.5" />
 									Add attachment
 								</button>
 							</div>
@@ -1191,7 +1170,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={deleteTask}
 								class="w-full px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-2"
 							>
-								<IconTrash class="w-4 h-4" />
+								<Icon icon={IconTrash} class="w-4 h-4" />
 								Delete task
 							</button>
 						</div>

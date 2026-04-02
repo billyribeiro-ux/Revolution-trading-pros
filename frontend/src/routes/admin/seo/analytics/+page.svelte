@@ -1,13 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import {
-		IconTrendingUp,
-		IconTrendingDown,
-		IconMinus,
-		IconRefresh,
-		IconCalendar
-	} from '$lib/icons';
+	import { Icon, IconTrendingUp, IconTrendingDown, IconMinus, IconRefresh, IconCalendar } from '$lib/icons';
 	import { connections, getIsSeoConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
@@ -110,7 +104,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		{#if getIsSeoConnected()}
 			<button class="btn-secondary" onclick={loadData} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 				Refresh
 			</button>
 		{/if}
@@ -126,7 +120,7 @@ import { logger } from '$lib/utils/logger';
 		<ServiceConnectionStatus feature="seo" variant="card" showFeatures={true} />
 	{:else}
 		<div class="date-range-picker">
-			<IconCalendar size={20} />
+			<Icon icon={IconCalendar} size={20} />
 			<input
 				id="date-start"
 				name="date-start"

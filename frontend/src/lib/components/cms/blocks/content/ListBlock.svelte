@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconCheck, IconPlus, IconX } from '$lib/icons';
+	import { Icon, IconCheck, IconPlus, IconX } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -233,7 +233,7 @@
 					/>
 					<span class="list-block__checkbox" aria-hidden="true">
 						{#if item.checked}
-							<IconCheck size={14} />
+							<Icon icon={IconCheck} size={14} />
 						{/if}
 					</span>
 					<span
@@ -259,7 +259,7 @@
 							onclick={() => removeCheckItem(item.id, index)}
 							aria-label="Remove checklist item"
 						>
-							<IconX size={14} aria-hidden="true" />
+							<Icon icon={IconX} size={14} aria-hidden="true" />
 						</button>
 					{/if}
 				</label>
@@ -274,7 +274,7 @@
 				onclick={() => addCheckItem()}
 				aria-label="Add new checklist item"
 			>
-				<IconPlus size={14} aria-hidden="true" />
+				<Icon icon={IconPlus} size={14} aria-hidden="true" />
 				<span>Add item</span>
 			</button>
 		{/if}
@@ -372,7 +372,7 @@
 							onclick={() => removeListItem(index)}
 							aria-label="Remove list item"
 						>
-							<IconX size={14} aria-hidden="true" />
+							<Icon icon={IconX} size={14} aria-hidden="true" />
 						</button>
 					{/if}
 				</li>
@@ -387,7 +387,7 @@
 				onclick={() => addListItem((props.block.content.listItems?.length || 1) - 1)}
 				aria-label="Add new list item"
 			>
-				<IconPlus size={14} aria-hidden="true" />
+				<Icon icon={IconPlus} size={14} aria-hidden="true" />
 				<span>Add item</span>
 			</button>
 			<p class="list-block__hint">Press Enter to add a new item. Backspace on empty to remove.</p>

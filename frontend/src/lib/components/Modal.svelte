@@ -4,7 +4,7 @@
 	 * Displays content in an overlay with backdrop
 	 */
 	import type { Snippet } from 'svelte';
-	import { IconX } from '$lib/icons';
+	import { Icon, IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -64,7 +64,7 @@
 			<div class="modal-header">
 				<h2 id="modal-title" class="modal-title">{title}</h2>
 				<button type="button" class="modal-close" onclick={onClose} aria-label="Close modal">
-					<IconX size={24} stroke={2} />
+					<Icon icon={IconX} size={24} stroke={2} />
 				</button>
 			</div>
 

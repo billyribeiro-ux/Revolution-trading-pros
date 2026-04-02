@@ -2,12 +2,8 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-	import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right';
-	import IconTerminal from '@tabler/icons-svelte-runes/icons/terminal';
-
+	import { Icon, IconActivity, IconArrowUpRight, IconBuilding, IconTerminal, IconTrendingUp } from '$lib/icons';
+					
 	// --- Data Configuration ---
 	const products = [
 		{
@@ -315,7 +311,7 @@
 										? 'text-emerald-400/80'
 										: 'text-indigo-400/80'}"
 							>
-								<IconTerminal size={12} />
+								<Icon icon={IconTerminal} size={12} />
 								<span>{item.metric}</span>
 							</div>
 
@@ -358,7 +354,7 @@
 											? 'group-hover:bg-emerald-500'
 											: 'group-hover:bg-indigo-500'}"
 								>
-									<IconArrowUpRight size={16} />
+									<Icon icon={IconArrowUpRight} size={16} />
 								</div>
 							</a>
 						</div>

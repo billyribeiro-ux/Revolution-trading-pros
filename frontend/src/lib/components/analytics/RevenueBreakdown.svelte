@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
+	import { Icon, IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
 
 	interface RevenueData {
 		mrr: number;

@@ -9,19 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import {
-		IconPlus,
-		IconX,
-		IconCheck,
-		IconArrowLeft,
-		IconBook,
-		IconChartLine,
-		IconCrown,
-		IconShoppingCart,
-		IconPhoto,
-		IconTag,
-		IconTrash
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconX, IconCheck, IconArrowLeft, IconBook, IconChartLine, IconCrown, IconShoppingCart, IconPhoto, IconTag, IconTrash } from '$lib/icons';
 
 	// Product type definition
 	type ProductType = 'course' | 'indicator' | 'membership' | 'bundle';
@@ -277,7 +265,7 @@ import { logger } from '$lib/utils/logger';
 <div class="edit-page">
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/products')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Products
 		</button>
 		<div class="header-content">
@@ -289,7 +277,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			{#if originalProduct}
 				<button class="btn-danger" onclick={() => (showDeleteConfirm = true)} disabled={deleting}>
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 					Delete Product
 				</button>
 			{/if}
@@ -314,7 +302,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="alert error">
 				<span>{error}</span>
 				<button class="alert-dismiss" onclick={() => (error = '')}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/if}
@@ -448,7 +436,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Thumbnail -->
 					<div class="form-group">
 						<label for="thumbnail">
-							<IconPhoto size={16} />
+							<Icon icon={IconPhoto} size={16} />
 							Thumbnail URL
 						</label>
 						<input
@@ -464,11 +452,11 @@ import { logger } from '$lib/utils/logger';
 					<div class="features-section">
 						<div class="section-header">
 							<h4>
-								<IconTag size={18} />
+								<Icon icon={IconTag} size={18} />
 								Features
 							</h4>
 							<button type="button" class="add-feature-btn" onclick={addFeature}>
-								<IconPlus size={16} />
+								<Icon icon={IconPlus} size={16} />
 								Add Feature
 							</button>
 						</div>
@@ -489,7 +477,7 @@ import { logger } from '$lib/utils/logger';
 										class="remove-feature-btn"
 										onclick={() => removeFeature(index)}
 									>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								{/if}
 							</div>
@@ -581,7 +569,7 @@ import { logger } from '$lib/utils/logger';
 								<div class="btn-spinner"></div>
 								Saving...
 							{:else}
-								<IconCheck size={18} />
+								<Icon icon={IconCheck} size={18} />
 								Save Changes
 							{/if}
 						</button>
@@ -630,7 +618,7 @@ import { logger } from '$lib/utils/logger';
 							<div class="preview-features">
 								{#each validFeatures.slice(0, 4) as feature}
 									<div class="preview-feature">
-										<IconCheck size={14} />
+										<Icon icon={IconCheck} size={14} />
 										<span>{feature}</span>
 									</div>
 								{/each}
@@ -704,7 +692,7 @@ import { logger } from '$lib/utils/logger';
 							<div class="btn-spinner danger"></div>
 							Deleting...
 						{:else}
-							<IconTrash size={18} />
+							<Icon icon={IconTrash} size={18} />
 							Delete Product
 						{/if}
 					</button>

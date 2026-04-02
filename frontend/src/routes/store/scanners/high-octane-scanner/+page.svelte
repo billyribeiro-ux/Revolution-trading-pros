@@ -15,14 +15,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart.svelte';
-	import {
-		IconCheck,
-		IconShoppingCart,
-		IconChartLine,
-		IconBell,
-		IconFilter,
-		IconClock
-	} from '$lib/icons';
+	import { Icon, IconCheck, IconShoppingCart, IconChartLine, IconBell, IconFilter, IconClock } from '$lib/icons';
 
 	// Product configuration
 	const product = {
@@ -182,14 +175,14 @@ import { logger } from '$lib/utils/logger';
 							onclick={handleAddToCart}
 							disabled={isAddingToCart}
 						>
-							<IconShoppingCart size={20} />
+							<Icon icon={IconShoppingCart} size={20} />
 							Add to Cart
 						</button>
 					</div>
 
 					{#if showSuccessMessage}
 						<div class="success-message">
-							<IconCheck size={20} />
+							<Icon icon={IconCheck} size={20} />
 							Added to cart successfully!
 						</div>
 					{/if}
@@ -197,7 +190,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="hero-image">
 					<div class="image-placeholder">
-						<IconChartLine size={120} />
+						<Icon icon={IconChartLine} size={120} />
 						<p>Scanner Interface Preview</p>
 					</div>
 				</div>
@@ -232,7 +225,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="benefits-grid">
 				{#each product.benefits as benefit}
 					<div class="benefit-item">
-						<IconCheck size={24} class="check-icon" />
+						<Icon icon={IconCheck} size={24} class="check-icon" />
 						<span>{benefit}</span>
 					</div>
 				{/each}

@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { IconSparkles, IconTrophy } from '$lib/icons';
+	import { Icon, IconSparkles, IconTrophy } from '$lib/icons';
 	import {
 		getBlockStateManager,
 		type BlockId,
@@ -180,9 +180,9 @@
 	{#if isExpired && !props.isEditing}
 		<div class="countdown-expired" role="status" aria-label="Countdown complete">
 			<div class="celebration-icons">
-				<IconSparkles size={32} aria-hidden="true" />
-				<IconTrophy size={36} aria-hidden="true" />
-				<IconSparkles size={32} aria-hidden="true" />
+				<Icon icon={IconSparkles} size={32} aria-hidden="true" />
+				<Icon icon={IconTrophy} size={36} aria-hidden="true" />
+				<Icon icon={IconSparkles} size={32} aria-hidden="true" />
 			</div>
 			<p class="expired-message">{expiredMessage}</p>
 		</div>

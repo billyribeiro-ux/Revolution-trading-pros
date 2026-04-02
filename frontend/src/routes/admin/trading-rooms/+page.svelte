@@ -14,17 +14,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { ROOMS, type Room } from '$lib/config/rooms';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconTable from '@tabler/icons-svelte-runes/icons/table';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconTargetArrow from '@tabler/icons-svelte-runes/icons/target-arrow';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-
+	import { Icon, IconArrowRight, IconBell, IconChartBar, IconChartLine, IconFlame, IconSchool, IconTable, IconTargetArrow, IconTrendingUp, IconVideo } from '$lib/icons';
+										
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -103,20 +94,20 @@
 					</div>
 					<div class="room-features">
 						<div class="feature">
-							<IconTable size={16} />
+							<Icon icon={IconTable} size={16} />
 							<span>Trade Plan</span>
 						</div>
 						<div class="feature">
-							<IconBell size={16} />
+							<Icon icon={IconBell} size={16} />
 							<span>Alerts</span>
 						</div>
 						<div class="feature">
-							<IconVideo size={16} />
+							<Icon icon={IconVideo} size={16} />
 							<span>Weekly Video</span>
 						</div>
 					</div>
 					<div class="room-arrow">
-						<IconArrowRight size={24} />
+						<Icon icon={IconArrowRight} size={24} />
 					</div>
 				</button>
 			{/each}
@@ -127,17 +118,17 @@
 			<h2>Quick Actions</h2>
 			<div class="action-cards">
 				<a href="/admin/videos" class="action-card">
-					<IconVideo size={24} />
+					<Icon icon={IconVideo} size={24} />
 					<span>Video Library</span>
 					<p>Manage all room videos</p>
 				</a>
 				<a href="/admin/watchlist" class="action-card">
-					<IconTable size={24} />
+					<Icon icon={IconTable} size={24} />
 					<span>Weekly Watchlist</span>
 					<p>Manage watchlist entries</p>
 				</a>
 				<a href="/admin/schedules" class="action-card">
-					<IconChartBar size={24} />
+					<Icon icon={IconChartBar} size={24} />
 					<span>Schedules</span>
 					<p>Room schedules & calendar</p>
 				</a>

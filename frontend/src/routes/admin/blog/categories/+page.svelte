@@ -10,21 +10,7 @@
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
-	import {
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconTag,
-		IconFolder,
-		IconSearch,
-		IconRefresh,
-		IconCheck,
-		IconX,
-		IconAlertCircle,
-		IconChartBar,
-		IconEyeOff,
-		IconCopy
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconEdit, IconTrash, IconTag, IconFolder, IconSearch, IconRefresh, IconCheck, IconX, IconAlertCircle, IconChartBar, IconEyeOff, IconCopy } from '$lib/icons';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -400,13 +386,13 @@ import { logger } from '$lib/utils/logger';
 	{#if showToast}
 		<div class="toast toast-{toastType}" transition:fade>
 			{#if toastType === 'success'}
-				<IconCheck size={20} />
+				<Icon icon={IconCheck} size={20} />
 			{:else}
-				<IconAlertCircle size={20} />
+				<Icon icon={IconAlertCircle} size={20} />
 			{/if}
 			<span>{toastMessage}</span>
 			<button onclick={() => (showToast = false)}>
-				<IconX size={16} />
+				<Icon icon={IconX} size={16} />
 			</button>
 		</div>
 	{/if}
@@ -416,7 +402,7 @@ import { logger } from '$lib/utils/logger';
 		<p class="subtitle">Organize your blog posts with categories and tags</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={loadData} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 				Refresh
 			</button>
 		</div>
@@ -425,7 +411,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Search & Filter Toolbar -->
 	<div class="toolbar">
 		<div class="search-group">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-categorysearch"
 				name="page-categorysearch"
@@ -451,19 +437,19 @@ import { logger } from '$lib/utils/logger';
 		<div class="section">
 			<div class="section-header">
 				<div class="section-title">
-					<IconFolder size={24} />
+					<Icon icon={IconFolder} size={24} />
 					<h2>Categories</h2>
 					<span class="count-badge">{filteredCategories.length}</span>
 				</div>
 				<div class="section-actions">
 					{#if selectedCategories.size > 0}
 						<button class="btn-danger-ghost" onclick={bulkDeleteCategories}>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 							Delete ({selectedCategories.size})
 						</button>
 					{/if}
 					<button class="btn-primary" onclick={() => openCategoryModal()}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add Category
 					</button>
 				</div>
@@ -476,7 +462,7 @@ import { logger } from '$lib/utils/logger';
 					{/each}
 				{:else if filteredCategories.length === 0}
 					<div class="empty-state">
-						<IconFolder size={48} />
+						<Icon icon={IconFolder} size={48} />
 						<p>No categories found</p>
 						<button class="btn-primary" onclick={() => openCategoryModal()}>
 							Create your first category
@@ -507,7 +493,7 @@ import { logger } from '$lib/utils/logger';
 									<h3>{category.name}</h3>
 									{#if !category.is_visible}
 										<span class="badge badge-gray">
-											<IconEyeOff size={12} />
+											<Icon icon={IconEyeOff} size={12} />
 											Hidden
 										</span>
 									{/if}
@@ -517,7 +503,7 @@ import { logger } from '$lib/utils/logger';
 								{/if}
 								<div class="item-meta">
 									<span class="item-count">
-										<IconChartBar size={14} />
+										<Icon icon={IconChartBar} size={14} />
 										{category.post_count} posts
 									</span>
 									<span class="item-slug">/{category.slug}</span>
@@ -525,21 +511,21 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="item-actions">
 								<button class="action-btn" onclick={() => openCategoryModal(category)} title="Edit">
-									<IconEdit size={18} />
+									<Icon icon={IconEdit} size={18} />
 								</button>
 								<button
 									class="action-btn"
 									onclick={() => navigator.clipboard.writeText(category.slug)}
 									title="Copy slug"
 								>
-									<IconCopy size={18} />
+									<Icon icon={IconCopy} size={18} />
 								</button>
 								<button
 									class="action-btn danger"
 									onclick={() => deleteCategory(category.id)}
 									title="Delete"
 								>
-									<IconTrash size={18} />
+									<Icon icon={IconTrash} size={18} />
 								</button>
 							</div>
 						</div>
@@ -552,19 +538,19 @@ import { logger } from '$lib/utils/logger';
 		<div class="section">
 			<div class="section-header">
 				<div class="section-title">
-					<IconTag size={24} />
+					<Icon icon={IconTag} size={24} />
 					<h2>Tags</h2>
 					<span class="count-badge">{filteredTags.length}</span>
 				</div>
 				<div class="section-actions">
 					{#if selectedTags.size > 0}
 						<button class="btn-danger-ghost" onclick={bulkDeleteTags}>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 							Delete ({selectedTags.size})
 						</button>
 					{/if}
 					<button class="btn-primary" onclick={() => openTagModal()}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add Tag
 					</button>
 				</div>
@@ -577,7 +563,7 @@ import { logger } from '$lib/utils/logger';
 					{/each}
 				{:else if filteredTags.length === 0}
 					<div class="empty-state">
-						<IconTag size={48} />
+						<Icon icon={IconTag} size={48} />
 						<p>No tags found</p>
 						<button class="btn-primary" onclick={() => openTagModal()}>
 							Create your first tag
@@ -608,14 +594,14 @@ import { logger } from '$lib/utils/logger';
 									<h3>{tag.name}</h3>
 									{#if !tag.is_visible}
 										<span class="badge badge-gray">
-											<IconEyeOff size={12} />
+											<Icon icon={IconEyeOff} size={12} />
 											Hidden
 										</span>
 									{/if}
 								</div>
 								<div class="item-meta">
 									<span class="item-count">
-										<IconChartBar size={14} />
+										<Icon icon={IconChartBar} size={14} />
 										{tag.post_count} posts
 									</span>
 									<span class="item-slug">/{tag.slug}</span>
@@ -623,17 +609,17 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="item-actions">
 								<button class="action-btn" onclick={() => openTagModal(tag)} title="Edit">
-									<IconEdit size={18} />
+									<Icon icon={IconEdit} size={18} />
 								</button>
 								<button
 									class="action-btn"
 									onclick={() => navigator.clipboard.writeText(tag.slug)}
 									title="Copy slug"
 								>
-									<IconCopy size={18} />
+									<Icon icon={IconCopy} size={18} />
 								</button>
 								<button class="action-btn danger" onclick={() => deleteTag(tag.id)} title="Delete">
-									<IconTrash size={18} />
+									<Icon icon={IconTrash} size={18} />
 								</button>
 							</div>
 						</div>
@@ -669,7 +655,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-body">
 				{#if categoryErrors.length > 0}
 					<div class="error-banner">
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 						<div>
 							{#each categoryErrors as error}
 								<p>{error}</p>
@@ -775,7 +761,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-body">
 				{#if tagErrors.length > 0}
 					<div class="error-banner">
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 						<div>
 							{#each tagErrors as error}
 								<p>{error}</p>

@@ -2,14 +2,8 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right';
-	import IconAntenna from '@tabler/icons-svelte-runes/icons/antenna';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-
+	import { Icon, IconActivity, IconAntenna, IconArrowUpRight, IconBolt, IconClock, IconTarget, IconTrendingUp } from '$lib/icons';
+							
 	// --- Data Configuration ---
 	const signals = [
 		{
@@ -126,7 +120,7 @@
 					in:heavySlide={{ delay: 0, duration: 1000 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconBolt size={14} />
+					<Icon icon={IconBolt} size={14} />
 					Signal Intelligence
 				</div>
 
@@ -322,13 +316,13 @@
 									: 'hover:border-orange-500/50 hover:bg-orange-500/10'}"
 							>
 								<span class="flex items-center gap-2">
-									<IconAntenna
+									<Icon icon={IconAntenna}
 										size={16}
 										class={item.accent === 'amber' ? 'text-amber-500' : 'text-orange-500'}
 									/>
 									<span>Subscribe to Feed</span>
 								</span>
-								<IconArrowUpRight
+								<Icon icon={IconArrowUpRight}
 									size={16}
 									class="text-zinc-500 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:text-white"
 								/>
@@ -343,17 +337,17 @@
 			<div in:heavySlide={{ delay: 600 }} class="mt-12 text-center border-t border-zinc-900 pt-8">
 				<div class="inline-flex items-center gap-6 text-xs text-zinc-500 font-mono">
 					<span class="flex items-center gap-2">
-						<IconTarget size={14} />
+						<Icon icon={IconTarget} size={14} />
 						<span>STRICT INVALIDATION LEVELS</span>
 					</span>
 					<span class="hidden sm:inline w-px h-3 bg-zinc-800"></span>
 					<span class="flex items-center gap-2">
-						<IconClock size={14} />
+						<Icon icon={IconClock} size={14} />
 						<span>REAL-TIME PUSH NOTIFICATIONS</span>
 					</span>
 					<span class="hidden sm:inline w-px h-3 bg-zinc-800"></span>
 					<span class="flex items-center gap-2">
-						<IconActivity size={14} />
+						<Icon icon={IconActivity} size={14} />
 						<span>FULL TRADE MANAGEMENT</span>
 					</span>
 				</div>

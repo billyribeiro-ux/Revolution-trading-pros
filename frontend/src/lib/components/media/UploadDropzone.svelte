@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { uploadStore } from '$lib/stores/media.svelte';
-	import { IconUpload, IconX, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconUpload, IconX, IconCheck, IconAlertCircle } from '$lib/icons';
 
 	interface Props {
 		folderId?: string | null;
@@ -93,7 +93,7 @@
 		onclick={() => fileInput.click()}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && fileInput.click()}
 	>
-		<IconUpload size={48} class="upload-icon" />
+		<Icon icon={IconUpload} size={48} class="upload-icon" />
 		<h3 class="upload-title">Drop files here or click to browse</h3>
 		<p class="upload-subtitle">
 			Supports images, videos, and documents up to {maxSize / 1024 / 1024}MB
@@ -117,9 +117,9 @@
 					<div class="upload-item-info">
 						<div class="upload-item-icon">
 							{#if upload.status === 'complete'}
-								<IconCheck size={20} class="text-green-400" />
+								<Icon icon={IconCheck} size={20} class="text-green-400" />
 							{:else if upload.status === 'error'}
-								<IconAlertCircle size={20} class="text-red-400" />
+								<Icon icon={IconAlertCircle} size={20} class="text-red-400" />
 							{:else}
 								<div class="spinner-small"></div>
 							{/if}
@@ -149,7 +149,7 @@
 							onclick={() => uploadStore.removeUpload(id)}
 							aria-label="Remove"
 						>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 					{/if}
 				</div>

@@ -17,27 +17,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconCopy,
-		IconRefresh,
-		IconUsers,
-		IconChartBar,
-		IconDownload,
-		IconUpload,
-		IconBolt,
-		IconShare,
-		IconX,
-		IconCheck,
-		IconAlertCircle,
-		IconUserPlus
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconSearch, IconEdit, IconTrash, IconEye, IconPlayerPlay, IconPlayerPause, IconCopy, IconRefresh, IconUsers, IconChartBar, IconDownload, IconUpload, IconBolt, IconShare, IconX, IconCheck, IconAlertCircle, IconUserPlus } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 
@@ -519,14 +499,14 @@
 			<p class="subtitle">Create powerful marketing automations triggered by events</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={openImportModal} title="Import Automation">
-					<IconUpload size={18} />
+					<Icon icon={IconUpload} size={18} />
 					Import
 				</button>
 				<button class="btn-refresh" onclick={() => loadFunnels()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/automations/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Automation
 				</a>
 			</div>
@@ -536,10 +516,10 @@
 	<!-- Success Alert -->
 	{#if successMessage}
 		<div class="success-alert">
-			<IconCheck size={18} />
+			<Icon icon={IconCheck} size={18} />
 			<span>{successMessage}</span>
 			<button onclick={() => (successMessage = '')} aria-label="Dismiss">
-				<IconX size={16} />
+				<Icon icon={IconX} size={16} />
 			</button>
 		</div>
 	{/if}
@@ -547,10 +527,10 @@
 	<!-- Error Alert -->
 	{#if error}
 		<div class="error-alert">
-			<IconAlertCircle size={18} />
+			<Icon icon={IconAlertCircle} size={18} />
 			<span>{error}</span>
 			<button onclick={() => (error = '')} aria-label="Dismiss error">
-				<IconX size={16} />
+				<Icon icon={IconX} size={16} />
 			</button>
 		</div>
 	{/if}
@@ -559,7 +539,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconShare size={24} />
+				<Icon icon={IconShare} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -568,7 +548,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconBolt size={24} />
+				<Icon icon={IconBolt} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.active)}</span>
@@ -577,7 +557,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconUsers size={24} />
+				<Icon icon={IconUsers} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalSubscribers)}</span>
@@ -586,7 +566,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconChartBar size={24} />
+				<Icon icon={IconChartBar} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.completed)}</span>
@@ -598,7 +578,7 @@
 	<!-- Search & Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-searchquery"
 				name="page-searchquery"
@@ -609,7 +589,7 @@
 			/>
 			{#if searchQuery}
 				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
-					<IconX size={14} />
+					<Icon icon={IconX} size={14} />
 				</button>
 			{/if}
 		</div>
@@ -633,11 +613,11 @@
 		</div>
 	{:else if filteredFunnels.length === 0}
 		<div class="empty-state">
-			<IconShare size={48} />
+			<Icon icon={IconShare} size={48} />
 			<h3>No automations found</h3>
 			<p>Create your first automation to engage contacts automatically</p>
 			<a href="/admin/crm/automations/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Automation
 			</a>
 		</div>
@@ -662,7 +642,7 @@
 							<td>
 								<div class="funnel-cell">
 									<div class="funnel-icon">
-										<IconShare size={20} />
+										<Icon icon={IconShare} size={20} />
 									</div>
 									<div class="funnel-info">
 										<span class="funnel-title">{funnel.title}</span>
@@ -698,9 +678,9 @@
 											disabled={actionInProgress === funnel.id}
 										>
 											{#if funnel.status === 'active'}
-												<IconPlayerPause size={16} />
+												<Icon icon={IconPlayerPause} size={16} />
 											{:else}
-												<IconPlayerPlay size={16} />
+												<Icon icon={IconPlayerPlay} size={16} />
 											{/if}
 										</button>
 									{/if}
@@ -709,7 +689,7 @@
 										class="btn-icon"
 										title="View Analytics"
 									>
-										<IconEye size={16} />
+										<Icon icon={IconEye} size={16} />
 									</a>
 									<button
 										class="btn-icon"
@@ -717,10 +697,10 @@
 										onclick={() => openAddContactsModal(funnel)}
 										disabled={actionInProgress === funnel.id}
 									>
-										<IconUserPlus size={16} />
+										<Icon icon={IconUserPlus} size={16} />
 									</button>
 									<a href="/admin/crm/automations/{funnel.id}/edit" class="btn-icon" title="Edit">
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</a>
 									<button
 										class="btn-icon"
@@ -728,7 +708,7 @@
 										onclick={() => duplicateFunnel(funnel.id)}
 										disabled={actionInProgress === funnel.id}
 									>
-										<IconCopy size={16} />
+										<Icon icon={IconCopy} size={16} />
 									</button>
 									<button
 										class="btn-icon"
@@ -736,7 +716,7 @@
 										onclick={() => exportFunnel(funnel.id)}
 										disabled={actionInProgress === funnel.id}
 									>
-										<IconDownload size={16} />
+										<Icon icon={IconDownload} size={16} />
 									</button>
 									<button
 										class="btn-icon danger"
@@ -744,7 +724,7 @@
 										onclick={() => deleteFunnel(funnel.id)}
 										disabled={actionInProgress === funnel.id}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>
@@ -770,18 +750,18 @@
 		<div class="modal-container">
 			<div class="modal-header">
 				<h2 id="import-modal-title">
-					<IconUpload size={20} />
+					<Icon icon={IconUpload} size={20} />
 					Import Automation
 				</h2>
 				<button class="modal-close" onclick={closeImportModal} aria-label="Close modal">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body">
 				{#if importForm.success}
 					<div class="success-message">
-						<IconCheck size={20} />
+						<Icon icon={IconCheck} size={20} />
 						<span>Automation imported successfully!</span>
 					</div>
 				{:else}
@@ -801,7 +781,7 @@
 								disabled={importForm.isLoading}
 							/>
 							<div class="file-upload-label">
-								<IconUpload size={18} />
+								<Icon icon={IconUpload} size={18} />
 								<span>{importForm.file ? importForm.file.name : 'Choose file or drag here'}</span>
 							</div>
 						</div>
@@ -827,7 +807,7 @@
 					</div>
 
 					<div class="modal-info">
-						<IconAlertCircle size={16} />
+						<Icon icon={IconAlertCircle} size={16} />
 						<span
 							>The JSON should contain automation configuration including trigger type, conditions,
 							and actions.</span
@@ -846,7 +826,7 @@
 							<div class="btn-spinner"></div>
 							Importing...
 						{:else}
-							<IconUpload size={16} />
+							<Icon icon={IconUpload} size={16} />
 							Import Automation
 						{/if}
 					</button>
@@ -870,18 +850,18 @@
 		<div class="modal-container">
 			<div class="modal-header">
 				<h2 id="add-contacts-modal-title">
-					<IconUserPlus size={20} />
+					<Icon icon={IconUserPlus} size={20} />
 					Add Contacts to Automation
 				</h2>
 				<button class="modal-close" onclick={closeAddContactsModal} aria-label="Close modal">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body">
 				{#if addContactsForm.success}
 					<div class="success-message">
-						<IconCheck size={20} />
+						<Icon icon={IconCheck} size={20} />
 						<span>{addContactsForm.addedCount} contact(s) added to "{selectedFunnel.title}"</span>
 					</div>
 				{:else}
@@ -910,7 +890,7 @@ contact_789"
 					</div>
 
 					<div class="modal-info">
-						<IconAlertCircle size={16} />
+						<Icon icon={IconAlertCircle} size={16} />
 						<span
 							>Contacts will enter the automation and begin processing from the first action.</span
 						>
@@ -932,7 +912,7 @@ contact_789"
 							<div class="btn-spinner"></div>
 							Adding...
 						{:else}
-							<IconUserPlus size={16} />
+							<Icon icon={IconUserPlus} size={16} />
 							Add Contacts
 						{/if}
 					</button>

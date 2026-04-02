@@ -30,33 +30,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import {
-		IconArrowLeft,
-		IconMail,
-		IconPhone,
-		IconActivity,
-		IconUserCircle,
-		IconEdit,
-		IconTrash,
-		IconTag,
-		IconPlus,
-		IconX,
-		IconCheck,
-		IconClock,
-		IconChartBar,
-		IconTrendingUp,
-		IconBuilding,
-		IconBriefcase,
-		IconCalendar,
-		IconRefresh,
-		IconFlame,
-		IconStar,
-		IconStarFilled,
-		IconArrowRight,
-		IconNote,
-		IconTarget,
-		IconWorld
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle, IconEdit, IconTrash, IconTag, IconPlus, IconX, IconCheck, IconClock, IconChartBar, IconTrendingUp, IconBuilding, IconBriefcase, IconCalendar, IconRefresh, IconFlame, IconStar, IconStarFilled, IconArrowRight, IconNote, IconTarget, IconWorld } from '$lib/icons';
 	import { api } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -345,7 +319,7 @@ import { logger } from '$lib/utils/logger';
 <div class="lead-detail-page">
 	<!-- Back Button -->
 	<button class="back-btn" onclick={goBack}>
-		<IconArrowLeft size={18} />
+		<Icon icon={IconArrowLeft} size={18} />
 		Back to Leads
 	</button>
 
@@ -366,7 +340,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="avatar-large" class:hot={lead.is_hot}>
 					{lead.full_name?.charAt(0).toUpperCase() || '?'}
 					{#if lead.is_hot}
-						<span class="hot-badge"><IconFlame size={14} /></span>
+						<span class="hot-badge"><Icon icon={IconFlame} size={14} /></span>
 					{/if}
 				</div>
 				<div class="lead-identity">
@@ -374,9 +348,9 @@ import { logger } from '$lib/utils/logger';
 						<h1>{lead.full_name}</h1>
 						<button class="btn-star" class:starred={lead.is_starred} onclick={toggleStarred}>
 							{#if lead.is_starred}
-								<IconStarFilled size={20} />
+								<Icon icon={IconStarFilled} size={20} />
 							{:else}
-								<IconStar size={20} />
+								<Icon icon={IconStar} size={20} />
 							{/if}
 						</button>
 					</div>
@@ -410,18 +384,18 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<button class="btn-icon" onclick={loadLead} title="Refresh">
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 				</button>
 				<button class="btn-secondary" onclick={() => (showConvertModal = true)}>
-					<IconArrowRight size={18} />
+					<Icon icon={IconArrowRight} size={18} />
 					Convert to Contact
 				</button>
 				<a href="/admin/crm/leads/{leadId}/edit" class="btn-primary">
-					<IconEdit size={18} />
+					<Icon icon={IconEdit} size={18} />
 					Edit Lead
 				</a>
 				<button class="btn-icon danger" onclick={() => (showDeleteModal = true)} title="Delete">
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 				</button>
 			</div>
 		</header>
@@ -430,7 +404,7 @@ import { logger } from '$lib/utils/logger';
 		<section class="score-section">
 			<div class="score-card main">
 				<div class="score-header">
-					<IconTarget size={24} />
+					<Icon icon={IconTarget} size={24} />
 					<span>Lead Score</span>
 				</div>
 				<div class="score-value {getScoreColor(lead.lead_score)}">
@@ -442,7 +416,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="score-card">
 				<div class="score-header">
-					<IconChartBar size={20} />
+					<Icon icon={IconChartBar} size={20} />
 					<span>Fit Score</span>
 				</div>
 				<div class="score-value {getScoreColor(lead.fit_score || 0)}">
@@ -451,7 +425,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="score-card">
 				<div class="score-header">
-					<IconActivity size={20} />
+					<Icon icon={IconActivity} size={20} />
 					<span>Engagement</span>
 				</div>
 				<div class="score-value {getScoreColor(lead.engagement_score || 0)}">
@@ -460,7 +434,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="score-card">
 				<div class="score-header">
-					<IconTrendingUp size={20} />
+					<Icon icon={IconTrendingUp} size={20} />
 					<span>Behavior</span>
 				</div>
 				<div class="score-value {getScoreColor(lead.behavior_score || 0)}">
@@ -484,7 +458,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'overview'}
 				onclick={() => (activeTab = 'overview')}
 			>
-				<IconUserCircle size={18} />
+				<Icon icon={IconUserCircle} size={18} />
 				Overview
 			</button>
 			<button
@@ -492,7 +466,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'activity'}
 				onclick={() => (activeTab = 'activity')}
 			>
-				<IconActivity size={18} />
+				<Icon icon={IconActivity} size={18} />
 				Activity ({timeline.length})
 			</button>
 			<button
@@ -500,7 +474,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'notes'}
 				onclick={() => (activeTab = 'notes')}
 			>
-				<IconNote size={18} />
+				<Icon icon={IconNote} size={18} />
 				Notes ({notes.length})
 			</button>
 		</nav>
@@ -519,7 +493,7 @@ import { logger } from '$lib/utils/logger';
 						<h3>Contact Information</h3>
 						<div class="info-grid">
 							<div class="info-item">
-								<IconMail size={16} />
+								<Icon icon={IconMail} size={16} />
 								<div>
 									<span class="info-label">Email</span>
 									<a href="mailto:{lead.email}" class="info-value link">
@@ -529,7 +503,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if lead.phone}
 								<div class="info-item">
-									<IconPhone size={16} />
+									<Icon icon={IconPhone} size={16} />
 									<div>
 										<span class="info-label">Phone</span>
 										<a href="tel:{lead.phone}" class="info-value link">
@@ -540,7 +514,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if lead.company_name}
 								<div class="info-item">
-									<IconBuilding size={16} />
+									<Icon icon={IconBuilding} size={16} />
 									<div>
 										<span class="info-label">Company</span>
 										<span class="info-value">{lead.company_name}</span>
@@ -549,7 +523,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if lead.job_title}
 								<div class="info-item">
-									<IconBriefcase size={16} />
+									<Icon icon={IconBriefcase} size={16} />
 									<div>
 										<span class="info-label">Job Title</span>
 										<span class="info-value">{lead.job_title}</span>
@@ -558,7 +532,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if lead.website}
 								<div class="info-item">
-									<IconWorld size={16} />
+									<Icon icon={IconWorld} size={16} />
 									<div>
 										<span class="info-label">Website</span>
 										<a href={lead.website} target="_blank" class="info-value link">
@@ -569,7 +543,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if lead.city || lead.country}
 								<div class="info-item">
-									<IconWorld size={16} />
+									<Icon icon={IconWorld} size={16} />
 									<div>
 										<span class="info-label">Location</span>
 										<span class="info-value">
@@ -586,21 +560,21 @@ import { logger } from '$lib/utils/logger';
 						<h3>Key Dates</h3>
 						<div class="info-grid">
 							<div class="info-item">
-								<IconCalendar size={16} />
+								<Icon icon={IconCalendar} size={16} />
 								<div>
 									<span class="info-label">Created</span>
 									<span class="info-value">{formatDate(lead.created_at)}</span>
 								</div>
 							</div>
 							<div class="info-item">
-								<IconClock size={16} />
+								<Icon icon={IconClock} size={16} />
 								<div>
 									<span class="info-label">Last Updated</span>
 									<span class="info-value">{formatDate(lead.updated_at)}</span>
 								</div>
 							</div>
 							<div class="info-item">
-								<IconMail size={16} />
+								<Icon icon={IconMail} size={16} />
 								<div>
 									<span class="info-label">Last Contacted</span>
 									<span class="info-value">
@@ -610,7 +584,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if lead.next_followup_at}
 								<div class="info-item">
-									<IconCalendar size={16} />
+									<Icon icon={IconCalendar} size={16} />
 									<div>
 										<span class="info-label">Next Follow-up</span>
 										<span class="info-value">
@@ -626,11 +600,11 @@ import { logger } from '$lib/utils/logger';
 					<div class="info-card">
 						<div class="card-header">
 							<h3>
-								<IconTag size={18} />
+								<Icon icon={IconTag} size={18} />
 								Tags
 							</h3>
 							<button class="btn-add">
-								<IconPlus size={14} />
+								<Icon icon={IconPlus} size={14} />
 								Add
 							</button>
 						</div>
@@ -678,7 +652,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="activity-section">
 					{#if timeline.length === 0}
 						<div class="empty-state">
-							<IconActivity size={48} />
+							<Icon icon={IconActivity} size={48} />
 							<h3>No activity yet</h3>
 							<p>Activity timeline will appear here as events occur</p>
 						</div>
@@ -719,13 +693,13 @@ import { logger } from '$lib/utils/logger';
 				<div class="notes-section">
 					<div class="notes-header">
 						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Add Note
 						</button>
 					</div>
 					{#if notes.length === 0}
 						<div class="empty-state">
-							<IconNote size={48} />
+							<Icon icon={IconNote} size={48} />
 							<h3>No notes yet</h3>
 							<p>Add notes to track important information about this lead</p>
 						</div>
@@ -751,7 +725,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="empty-state">
-			<IconUserCircle size={48} />
+			<Icon icon={IconUserCircle} size={48} />
 			<h3>Lead not found</h3>
 			<p>The lead you're looking for doesn't exist or has been deleted</p>
 			<button class="btn-primary" onclick={goBack}>Go Back</button>
@@ -778,11 +752,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconNote size={20} />
+					<Icon icon={IconNote} size={20} />
 					Add Note
 				</h3>
 				<button class="modal-close" onclick={() => (showAddNoteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -803,7 +777,7 @@ import { logger } from '$lib/utils/logger';
 					{#if actionLoading}
 						Saving...
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 						Save Note
 					{/if}
 				</button>
@@ -831,11 +805,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconArrowRight size={20} />
+					<Icon icon={IconArrowRight} size={20} />
 					Convert to Contact
 				</h3>
 				<button class="modal-close" onclick={() => (showConvertModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -850,7 +824,7 @@ import { logger } from '$lib/utils/logger';
 					{#if actionLoading}
 						Converting...
 					{:else}
-						<IconArrowRight size={18} />
+						<Icon icon={IconArrowRight} size={18} />
 						Convert Lead
 					{/if}
 				</button>
@@ -878,11 +852,11 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h3>
-					<IconTrash size={20} />
+					<Icon icon={IconTrash} size={20} />
 					Delete Lead
 				</h3>
 				<button class="modal-close" onclick={() => (showDeleteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -897,7 +871,7 @@ import { logger } from '$lib/utils/logger';
 					{#if actionLoading}
 						Deleting...
 					{:else}
-						<IconTrash size={18} />
+						<Icon icon={IconTrash} size={18} />
 						Delete Lead
 					{/if}
 				</button>
@@ -910,13 +884,13 @@ import { logger } from '$lib/utils/logger';
 {#if toastMessage}
 	<div class="toast toast-{toastMessage.type}" role="alert">
 		{#if toastMessage.type === 'success'}
-			<IconCheck size={18} />
+			<Icon icon={IconCheck} size={18} />
 		{:else}
-			<IconX size={18} />
+			<Icon icon={IconX} size={18} />
 		{/if}
 		<span>{toastMessage.text}</span>
 		<button class="toast-close" onclick={() => (toastMessage = null)}>
-			<IconX size={14} />
+			<Icon icon={IconX} size={14} />
 		</button>
 	</div>
 {/if}

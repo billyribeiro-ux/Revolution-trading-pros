@@ -1,16 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
-	import {
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconCopy,
-		IconEye,
-		IconEyeOff,
-		IconChartBar,
-		IconSettings
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconEdit, IconTrash, IconCopy, IconEye, IconEyeOff, IconChartBar, IconSettings } from '$lib/icons';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
 
@@ -115,7 +106,7 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Create and manage custom popups for your site</p>
 			<div class="header-actions">
 				<a href="/admin/popups/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					<span>Create Popup</span>
 				</a>
 			</div>
@@ -160,11 +151,11 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if filteredPopups.length === 0}
 			<div class="empty-state">
-				<IconSettings size={48} />
+				<Icon icon={IconSettings} size={48} />
 				<h3>No popups found</h3>
 				<p>Create your first popup to get started</p>
 				<a href="/admin/popups/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					<span>Create Popup</span>
 				</a>
 			</div>
@@ -183,9 +174,9 @@ import { logger } from '$lib/utils/logger';
 								title={popup.isActive ? 'Deactivate' : 'Activate'}
 							>
 								{#if popup.isActive}
-									<IconEye size={18} />
+									<Icon icon={IconEye} size={18} />
 								{:else}
-									<IconEyeOff size={18} />
+									<Icon icon={IconEyeOff} size={18} />
 								{/if}
 							</button>
 						</div>
@@ -232,19 +223,19 @@ import { logger } from '$lib/utils/logger';
 						<!-- Actions -->
 						<div class="card-actions">
 							<a href="/admin/popups/{popup.id}/edit" class="action-btn">
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 								<span>Edit</span>
 							</a>
 							<button class="action-btn" onclick={() => handleDuplicate(popup.id)}>
-								<IconCopy size={16} />
+								<Icon icon={IconCopy} size={16} />
 								<span>Duplicate</span>
 							</button>
 							<a href="/admin/popups/{popup.id}/analytics" class="action-btn">
-								<IconChartBar size={16} />
+								<Icon icon={IconChartBar} size={16} />
 								<span>Analytics</span>
 							</a>
 							<button class="action-btn danger" onclick={() => handleDelete(popup.id)}>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 								<span>Delete</span>
 							</button>
 						</div>

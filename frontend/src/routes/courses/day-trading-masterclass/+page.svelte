@@ -1,23 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconChartCandle,
-		IconClock,
-		IconUsers,
-		IconStar,
-		IconCertificate,
-		IconTrendingUp,
-		IconCheck,
-		IconVideo,
-		IconFileText,
-		IconHeadset,
-		IconBolt,
-		IconTarget,
-		IconChartLine,
-		IconShield,
-		IconTrophy
-	} from '$lib/icons';
+	import { Icon, IconChartCandle, IconClock, IconUsers, IconStar, IconCertificate, IconTrendingUp, IconCheck, IconVideo, IconFileText, IconHeadset, IconBolt, IconTarget, IconChartLine, IconShield, IconTrophy } from '$lib/icons';
 
 	interface Module {
 		week: number;
@@ -226,7 +210,7 @@
 
 		<div class="hero-content">
 			<div class="hero-badge">
-				<IconChartCandle size={20} stroke={2} />
+				<Icon icon={IconChartCandle} size={20} stroke={2} />
 				<span>Professional Day Trading Course</span>
 			</div>
 
@@ -242,28 +226,28 @@
 
 			<div class="hero-meta">
 				<div class="meta-item">
-					<IconClock size={24} stroke={2} />
+					<Icon icon={IconClock} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Duration</div>
 						<div class="meta-value">8 Weeks</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconUsers size={24} stroke={2} />
+					<Icon icon={IconUsers} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Students</div>
 						<div class="meta-value">2,847</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconStar size={24} stroke={2} />
+					<Icon icon={IconStar} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Rating</div>
 						<div class="meta-value">4.9/5.0</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconTrendingUp size={24} stroke={2} />
+					<Icon icon={IconTrendingUp} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Level</div>
 						<div class="meta-value">Intermediate</div>
@@ -274,7 +258,7 @@
 			<div class="hero-cta">
 				<a href="/register" class="cta-button primary">
 					Enroll Now - $497
-					<IconBolt size={20} stroke={2} />
+					<Icon icon={IconBolt} size={20} stroke={2} />
 				</a>
 				<a href="#curriculum" class="cta-button secondary"> View Curriculum </a>
 			</div>
@@ -292,7 +276,7 @@
 			<div class="learning-grid">
 				<div class="learning-card">
 					<div class="learning-icon">
-						<IconTarget size={32} stroke={1.5} />
+						<Icon icon={IconTarget} size={32} stroke={1.5} />
 					</div>
 					<h3>High-Probability Setups</h3>
 					<p>
@@ -303,7 +287,7 @@
 
 				<div class="learning-card">
 					<div class="learning-icon">
-						<IconChartLine size={32} stroke={1.5} />
+						<Icon icon={IconChartLine} size={32} stroke={1.5} />
 					</div>
 					<h3>Real-Time Execution</h3>
 					<p>
@@ -314,7 +298,7 @@
 
 				<div class="learning-card">
 					<div class="learning-icon">
-						<IconShield size={32} stroke={1.5} />
+						<Icon icon={IconShield} size={32} stroke={1.5} />
 					</div>
 					<h3>Professional Risk Management</h3>
 					<p>
@@ -325,7 +309,7 @@
 
 				<div class="learning-card">
 					<div class="learning-icon">
-						<IconTrophy size={32} stroke={1.5} />
+						<Icon icon={IconTrophy} size={32} stroke={1.5} />
 					</div>
 					<h3>Consistent Profitability</h3>
 					<p>
@@ -356,7 +340,7 @@
 						<div class="module-header">
 							<div class="module-number">Week {module.week}</div>
 							<div class="module-duration">
-								<IconClock size={16} stroke={2} />
+								<Icon icon={IconClock} size={16} stroke={2} />
 								<span>{module.duration}</span>
 							</div>
 						</div>
@@ -366,7 +350,7 @@
 						<ul class="module-topics">
 							{#each module.topics as topic}
 								<li>
-									<IconCheck size={18} stroke={2} />
+									<Icon icon={IconCheck} size={18} stroke={2} />
 									<span>{topic}</span>
 								</li>
 							{/each}
@@ -406,7 +390,7 @@
 
 			<div class="instructor-card">
 				<div class="instructor-avatar">
-					<IconChartCandle size={64} stroke={1.5} />
+					<Icon icon={IconChartCandle} size={64} stroke={1.5} />
 				</div>
 
 				<div class="instructor-content">
@@ -417,7 +401,7 @@
 					<ul class="instructor-achievements">
 						{#each instructor.achievements as achievement}
 							<li>
-								<IconTrophy size={18} stroke={2} />
+								<Icon icon={IconTrophy} size={18} stroke={2} />
 								<span>{achievement}</span>
 							</li>
 						{/each}
@@ -436,19 +420,19 @@
 
 				<div class="enrollment-features">
 					<div class="enrollment-feature">
-						<IconCheck size={20} stroke={2} />
+						<Icon icon={IconCheck} size={20} stroke={2} />
 						<span>56 hours of premium content</span>
 					</div>
 					<div class="enrollment-feature">
-						<IconCheck size={20} stroke={2} />
+						<Icon icon={IconCheck} size={20} stroke={2} />
 						<span>Lifetime access & updates</span>
 					</div>
 					<div class="enrollment-feature">
-						<IconCheck size={20} stroke={2} />
+						<Icon icon={IconCheck} size={20} stroke={2} />
 						<span>Private community access</span>
 					</div>
 					<div class="enrollment-feature">
-						<IconCheck size={20} stroke={2} />
+						<Icon icon={IconCheck} size={20} stroke={2} />
 						<span>Certificate of completion</span>
 					</div>
 				</div>
@@ -461,7 +445,7 @@
 
 					<a href="/register" class="enrollment-button">
 						Enroll Now
-						<IconBolt size={20} stroke={2} />
+						<Icon icon={IconBolt} size={20} stroke={2} />
 					</a>
 				</div>
 

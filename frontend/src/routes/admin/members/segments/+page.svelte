@@ -16,26 +16,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import {
-		IconFilter,
-		IconPlus,
-		IconUsers,
-		IconTag,
-		IconEdit,
-		IconTrash,
-		IconCopy,
-		IconX,
-		IconCheck,
-		IconSearch,
-		IconRefresh,
-		IconDownload,
-		IconArrowLeft,
-		IconChartBar,
-		IconMail,
-		IconCurrencyDollar,
-		IconCalendar,
-		IconTrendingUp
-	} from '$lib/icons';
+	import { Icon, IconFilter, IconPlus, IconUsers, IconTag, IconEdit, IconTrash, IconCopy, IconX, IconCheck, IconSearch, IconRefresh, IconDownload, IconArrowLeft, IconChartBar, IconMail, IconCurrencyDollar, IconCalendar, IconTrendingUp } from '$lib/icons';
 	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -558,7 +539,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Header -->
 		<header class="page-header">
 			<button class="back-btn" onclick={() => goto('/admin/members')}>
-				<IconArrowLeft size={20} />
+				<Icon icon={IconArrowLeft} size={20} />
 				Back to Members
 			</button>
 
@@ -567,11 +548,11 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={loadData}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 				<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					Save Filter
 				</button>
 			</div>
@@ -581,15 +562,15 @@ import { logger } from '$lib/utils/logger';
 		<div class="tabs-container">
 			<div class="tabs">
 				<button class:active={activeTab === 'segments'} onclick={() => (activeTab = 'segments')}>
-					<IconFilter size={18} />
+					<Icon icon={IconFilter} size={18} />
 					Smart Segments ({segments.length})
 				</button>
 				<button class:active={activeTab === 'tags'} onclick={() => (activeTab = 'tags')}>
-					<IconTag size={18} />
+					<Icon icon={IconTag} size={18} />
 					Tags ({tags.length})
 				</button>
 				<button class:active={activeTab === 'saved'} onclick={() => (activeTab = 'saved')}>
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					Saved Filters ({savedFilters.length})
 				</button>
 			</div>
@@ -597,12 +578,12 @@ import { logger } from '$lib/utils/logger';
 			<div class="tab-actions">
 				{#if activeTab === 'segments'}
 					<button class="btn-primary" onclick={() => (showCreateSegmentModal = true)}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						New Segment
 					</button>
 				{:else if activeTab === 'tags'}
 					<button class="btn-primary" onclick={() => (showCreateTagModal = true)}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						New Tag
 					</button>
 				{/if}
@@ -636,7 +617,7 @@ import { logger } from '$lib/utils/logger';
 									{/if}
 								</div>
 								<div class="segment-count">
-									<IconUsers size={16} />
+									<Icon icon={IconUsers} size={16} />
 									{formatNumber(segment.memberCount)}
 								</div>
 							</div>
@@ -659,12 +640,12 @@ import { logger } from '$lib/utils/logger';
 							<div class="segment-footer">
 								<div class="footer-left">
 									<span class="updated">
-										<IconCalendar size={12} />
+										<Icon icon={IconCalendar} size={12} />
 										Updated {formatDate(segment.lastUpdated)}
 									</span>
 									{#if segment.memberCount > 1000}
 										<span class="growth-badge">
-											<IconTrendingUp size={12} />
+											<Icon icon={IconTrendingUp} size={12} />
 											High Volume
 										</span>
 									{/if}
@@ -676,7 +657,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => viewSegmentMembers(segment)}
 										title="View members"
 									>
-										<IconUsers size={16} />
+										<Icon icon={IconUsers} size={16} />
 									</button>
 									<button
 										class="btn-icon"
@@ -684,7 +665,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => openSegmentDrawer(segment)}
 										title="View analytics"
 									>
-										<IconChartBar size={16} />
+										<Icon icon={IconChartBar} size={16} />
 									</button>
 									<button
 										class="btn-icon"
@@ -692,14 +673,14 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => exportSegmentData(segment)}
 										title="Export data"
 									>
-										<IconDownload size={16} />
+										<Icon icon={IconDownload} size={16} />
 									</button>
 									<button class="btn-icon" type="button" title="Send campaign">
-										<IconMail size={16} />
+										<Icon icon={IconMail} size={16} />
 									</button>
 									{#if !segment.isSystem}
 										<button class="btn-icon" type="button" title="Edit">
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</button>
 										<button
 											class="btn-icon danger"
@@ -707,7 +688,7 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => confirmDeleteSegment(segment)}
 											title="Delete"
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									{/if}
 								</div>
@@ -738,11 +719,11 @@ import { logger } from '$lib/utils/logger';
 									type="button"
 									onclick={() => goto(`/admin/members?tag=${tag.id}`)}
 								>
-									<IconUsers size={14} />
+									<Icon icon={IconUsers} size={14} />
 									View Members
 								</button>
 								<button class="btn-icon" type="button" title="Edit">
-									<IconEdit size={16} />
+									<Icon icon={IconEdit} size={16} />
 								</button>
 								<button
 									class="btn-icon danger"
@@ -750,7 +731,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => confirmDeleteTag(tag)}
 									title="Delete"
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>
@@ -788,7 +769,7 @@ import { logger } from '$lib/utils/logger';
 									Apply Filter
 								</button>
 								<button class="btn-icon" type="button" title="Duplicate">
-									<IconCopy size={16} />
+									<Icon icon={IconCopy} size={16} />
 								</button>
 								<button
 									class="btn-icon danger"
@@ -796,7 +777,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => confirmDeleteFilter(filter)}
 									title="Delete"
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>
@@ -804,7 +785,7 @@ import { logger } from '$lib/utils/logger';
 
 					{#if savedFilters.length === 0}
 						<div class="empty-state">
-							<IconSearch size={48} stroke={1} />
+							<Icon icon={IconSearch} size={48} stroke={1} />
 							<h3>No saved filters</h3>
 							<p>Save filters from the Members page to quickly apply them later</p>
 						</div>
@@ -835,7 +816,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Create Smart Segment</h2>
 				<button class="close-btn" onclick={() => (showCreateSegmentModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -874,7 +855,7 @@ import { logger } from '$lib/utils/logger';
 								{#each conditionFields as field}
 									<option value={field.value}>
 										{#if field.value === 'total_spent'}
-											<IconCurrencyDollar size={14} />
+											<Icon icon={IconCurrencyDollar} size={14} />
 										{/if}
 										{field.label}
 									</option>
@@ -896,13 +877,13 @@ import { logger } from '$lib/utils/logger';
 							/>
 
 							<button class="btn-icon danger" onclick={() => removeCondition(index)}>
-								<IconX size={16} />
+								<Icon icon={IconX} size={16} />
 							</button>
 						</div>
 					{/each}
 
 					<button class="btn-secondary" onclick={addCondition}>
-						<IconPlus size={16} />
+						<Icon icon={IconPlus} size={16} />
 						Add Condition
 					</button>
 				</div>
@@ -913,7 +894,7 @@ import { logger } from '$lib/utils/logger';
 					Cancel
 				</button>
 				<button class="btn-primary" onclick={handleCreateSegment}>
-					<IconCheck size={18} />
+					<Icon icon={IconCheck} size={18} />
 					Create Segment
 				</button>
 			</div>
@@ -941,7 +922,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Create New Tag</h2>
 				<button class="close-btn" onclick={() => (showCreateTagModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -986,7 +967,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showCreateTagModal = false)}> Cancel </button>
 				<button class="btn-primary" onclick={handleCreateTag}>
-					<IconCheck size={18} />
+					<Icon icon={IconCheck} size={18} />
 					Create Tag
 				</button>
 			</div>
@@ -1014,7 +995,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Save Current Filter</h2>
 				<button class="close-btn" onclick={() => (showSaveFilterModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -1030,7 +1011,7 @@ import { logger } from '$lib/utils/logger';
 					/>
 				</div>
 				<p class="help-text">
-					<IconCalendar size={14} />
+					<Icon icon={IconCalendar} size={14} />
 					This will save your current filter settings for quick access later.
 				</p>
 			</div>
@@ -1040,7 +1021,7 @@ import { logger } from '$lib/utils/logger';
 					Cancel
 				</button>
 				<button class="btn-primary" onclick={handleSaveFilter}>
-					<IconCheck size={18} />
+					<Icon icon={IconCheck} size={18} />
 					Save Filter
 				</button>
 			</div>

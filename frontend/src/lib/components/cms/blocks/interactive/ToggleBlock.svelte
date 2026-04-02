@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconChevronDown, IconPlus, IconMinus } from '$lib/icons';
+	import { Icon, IconChevronDown, IconPlus, IconMinus } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -84,12 +84,12 @@
 		<span class="toggle-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
 			{#if iconStyle === 'plusminus'}
 				{#if isOpen}
-					<IconMinus size={20} />
+					<Icon icon={IconMinus} size={20} />
 				{:else}
-					<IconPlus size={20} />
+					<Icon icon={IconPlus} size={20} />
 				{/if}
 			{:else}
-				<IconChevronDown size={20} />
+				<Icon icon={IconChevronDown} size={20} />
 			{/if}
 		</span>
 	</button>

@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconUser, IconLink, IconX, IconPlus } from '$lib/icons';
+	import { Icon, IconUser, IconLink, IconX, IconPlus } from '$lib/icons';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -218,7 +218,7 @@
 						onclick={removePhoto}
 						aria-label="Remove photo"
 					>
-						<IconX size={14} />
+						<Icon icon={IconX} size={14} />
 					</button>
 				{/if}
 			</div>
@@ -238,7 +238,7 @@
 				{#if isUploading}
 					<div class="author-block__spinner" aria-label="Uploading"></div>
 				{:else}
-					<IconUser size={32} />
+					<Icon icon={IconUser} size={32} />
 					<span class="author-block__upload-hint">Upload photo</span>
 				{/if}
 			</div>
@@ -253,7 +253,7 @@
 			/>
 		{:else}
 			<div class="author-block__photo-placeholder author-block__photo-placeholder--empty">
-				<IconUser size={32} />
+				<Icon icon={IconUser} size={32} />
 			</div>
 		{/if}
 
@@ -393,7 +393,7 @@
 								onclick={() => removeSocial(index)}
 								aria-label="Remove social link"
 							>
-								<IconX size={14} />
+								<Icon icon={IconX} size={14} />
 							</button>
 						</div>
 					{:else if social.url}
@@ -404,7 +404,7 @@
 							rel="noopener noreferrer"
 							aria-label={social.platform}
 						>
-							<IconLink size={16} />
+							<Icon icon={IconLink} size={16} />
 							<span class="author-block__social-platform">{social.platform}</span>
 						</a>
 					{/if}
@@ -417,7 +417,7 @@
 						onclick={addSocial}
 						aria-label="Add social link"
 					>
-						<IconPlus size={14} />
+						<Icon icon={IconPlus} size={14} />
 						<span>Add Social</span>
 					</button>
 				{/if}

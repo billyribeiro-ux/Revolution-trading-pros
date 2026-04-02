@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { IconLink, IconCheck } from '$lib/icons';
+	import { Icon, IconLink, IconCheck } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { browser } from '$app/environment';
 	import type { Block, BlockContent } from '../types';
@@ -192,9 +192,9 @@
 			aria-label={linkCopied ? 'Copied!' : 'Copy link'}
 		>
 			{#if linkCopied}
-				<IconCheck size={20} />
+				<Icon icon={IconCheck} size={20} />
 			{:else}
-				<IconLink size={20} />
+				<Icon icon={IconLink} size={20} />
 			{/if}
 		</button>
 	</div>

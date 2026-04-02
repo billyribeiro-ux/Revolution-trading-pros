@@ -16,7 +16,7 @@ import { logger } from '$lib/utils/logger';
 	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
+	import { Icon, IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
@@ -133,11 +133,11 @@ import { logger } from '$lib/utils/logger';
 				/>
 			</div>
 			<button class="btn-secondary" onclick={loadTemplates} disabled={loading}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Refresh
 			</button>
 			<button class="btn-primary" onclick={() => goto('/admin/email/templates/new')}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New Template
 			</button>
 		</div>
@@ -200,21 +200,21 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => goto(`/admin/email/templates/preview/${tmpl.id}`)}
 								title="Preview"
 							>
-								<IconEye size={18} />
+								<Icon icon={IconEye} size={18} />
 							</button>
 							<button
 								class="btn-icon"
 								onclick={() => goto(`/admin/email/templates/edit/${tmpl.id}`)}
 								title="Edit"
 							>
-								<IconEdit size={18} />
+								<Icon icon={IconEdit} size={18} />
 							</button>
 							<button
 								class="btn-icon danger"
 								onclick={() => deleteTemplate(tmpl.id)}
 								title="Delete"
 							>
-								<IconTrash size={18} />
+								<Icon icon={IconTrash} size={18} />
 							</button>
 						</td>
 					</tr>

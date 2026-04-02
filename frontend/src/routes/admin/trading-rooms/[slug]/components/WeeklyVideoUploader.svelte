@@ -16,18 +16,10 @@
 import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
+	import { Icon, IconArchive, IconCalendar, IconCheck, IconCloudUpload, IconLink, IconPlayerPlay, IconUpload, IconVideo, IconX } from '$lib/icons';
 
 	// Icons
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconLink from '@tabler/icons-svelte-runes/icons/link';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
-
+									
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -293,13 +285,13 @@ import { logger } from '$lib/utils/logger';
 			<h3 class="uploader-title">Weekly Breakdown Video</h3>
 			{#if currentVideo}
 				<span class="current-badge">
-					<IconPlayerPlay size={14} />
+					<Icon icon={IconPlayerPlay} size={14} />
 					Live
 				</span>
 			{/if}
 		</div>
 		<button class="btn-upload" onclick={openUploadModal}>
-			<IconUpload size={18} />
+			<Icon icon={IconUpload} size={18} />
 			<span>Upload New Video</span>
 		</button>
 	</div>
@@ -317,7 +309,7 @@ import { logger } from '$lib/utils/logger';
 					<img src={currentVideo.thumbnail_url} alt={currentVideo.video_title} />
 				{:else}
 					<div class="video-placeholder">
-						<IconVideo size={48} />
+						<Icon icon={IconVideo} size={48} />
 					</div>
 				{/if}
 				<a
@@ -326,7 +318,7 @@ import { logger } from '$lib/utils/logger';
 					rel="noopener noreferrer"
 					class="play-overlay"
 				>
-					<IconPlayerPlay size={32} />
+					<Icon icon={IconPlayerPlay} size={32} />
 				</a>
 			</div>
 			<div class="video-info">
@@ -334,12 +326,12 @@ import { logger } from '$lib/utils/logger';
 				<p class="video-week">{currentVideo.week_title}</p>
 				<div class="video-meta">
 					<span class="meta-item">
-						<IconCalendar size={14} />
+						<Icon icon={IconCalendar} size={14} />
 						Week of {formatDate(currentVideo.week_of)}
 					</span>
 					{#if currentVideo.duration}
 						<span class="meta-item">
-							<IconPlayerPlay size={14} />
+							<Icon icon={IconPlayerPlay} size={14} />
 							{currentVideo.duration}
 						</span>
 					{/if}
@@ -352,12 +344,12 @@ import { logger } from '$lib/utils/logger';
 	{:else}
 		<div class="empty-state">
 			<div class="empty-icon">
-				<IconVideo size={48} />
+				<Icon icon={IconVideo} size={48} />
 			</div>
 			<h4>No Weekly Video</h4>
 			<p>Upload this week's breakdown video</p>
 			<button class="btn-upload-first" onclick={openUploadModal}>
-				<IconUpload size={18} />
+				<Icon icon={IconUpload} size={18} />
 				Upload Video
 			</button>
 		</div>
@@ -367,7 +359,7 @@ import { logger } from '$lib/utils/logger';
 	{#if archivedVideos.length > 0}
 		<div class="archived-section">
 			<div class="archived-header">
-				<IconArchive size={18} />
+				<Icon icon={IconArchive} size={18} />
 				<span>Archived Videos ({archivedVideos.length})</span>
 			</div>
 			<div class="archived-list">
@@ -396,7 +388,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3>Upload Weekly Breakdown Video</h3>
 				<button class="modal-close" onclick={closeModal}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -408,7 +400,7 @@ import { logger } from '$lib/utils/logger';
 						class:active={uploadMode === 'url'}
 						onclick={() => (uploadMode = 'url')}
 					>
-						<IconLink size={18} />
+						<Icon icon={IconLink} size={18} />
 						Paste URL
 					</button>
 					<button
@@ -416,7 +408,7 @@ import { logger } from '$lib/utils/logger';
 						class:active={uploadMode === 'file'}
 						onclick={() => (uploadMode = 'file')}
 					>
-						<IconCloudUpload size={18} />
+						<Icon icon={IconCloudUpload} size={18} />
 						Upload File
 					</button>
 				</div>
@@ -436,15 +428,15 @@ import { logger } from '$lib/utils/logger';
 					>
 						{#if uploadFile}
 							<div class="file-info">
-								<IconVideo size={32} />
+								<Icon icon={IconVideo} size={32} />
 								<span class="file-name">{uploadFile.name}</span>
 								<span class="file-size">{(uploadFile.size / 1024 / 1024).toFixed(2)} MB</span>
 								<button class="btn-remove-file" onclick={() => (uploadFile = null)}>
-									<IconX size={16} />
+									<Icon icon={IconX} size={16} />
 								</button>
 							</div>
 						{:else}
-							<IconCloudUpload size={48} />
+							<Icon icon={IconCloudUpload} size={48} />
 							<p class="drop-text">Drag & drop video here</p>
 							<p class="drop-subtext">or</p>
 							<label class="btn-browse">
@@ -571,7 +563,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="modal-footer">
 				<div class="archive-notice">
-					<IconArchive size={16} />
+					<Icon icon={IconArchive} size={16} />
 					<span>Publishing will archive the current video</span>
 				</div>
 				<div class="footer-actions">
@@ -587,7 +579,7 @@ import { logger } from '$lib/utils/logger';
 							<span class="spinner-small"></span>
 							{uploadMode === 'file' ? 'Uploading...' : 'Publishing...'}
 						{:else}
-							<IconCheck size={18} />
+							<Icon icon={IconCheck} size={18} />
 							Publish Video
 						{/if}
 					</button>

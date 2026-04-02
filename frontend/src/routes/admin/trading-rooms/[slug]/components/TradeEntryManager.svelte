@@ -17,14 +17,8 @@ import { logger } from '$lib/utils/logger';
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
 
 	// Icons
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+								import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconCheck, IconCopy, IconEdit, IconGripVertical, IconPlus, IconTrash, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -289,7 +283,7 @@ import { logger } from '$lib/utils/logger';
 				Quick Add
 			</button>
 			<button class="btn-add-entry" onclick={openAddModal}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				<span>Add Entry</span>
 			</button>
 		</div>
@@ -333,7 +327,7 @@ import { logger } from '$lib/utils/logger';
 				onclick={quickAddEntry}
 				disabled={!isQuickFormValid || isSaving}
 			>
-				<IconPlus size={16} />
+				<Icon icon={IconPlus} size={16} />
 				Add
 			</button>
 		</div>
@@ -351,7 +345,7 @@ import { logger } from '$lib/utils/logger';
 			<h4>No Trade Plan Entries</h4>
 			<p>Add your first entry to get started</p>
 			<button class="btn-add-first" onclick={openAddModal}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Add First Entry
 			</button>
 		</div>
@@ -376,7 +370,7 @@ import { logger } from '$lib/utils/logger';
 					{#each sortedEntries as entry (entry.id)}
 						<tr class="entry-row">
 							<td class="col-drag">
-								<IconGripVertical size={16} class="drag-handle" />
+								<Icon icon={IconGripVertical} size={16} class="drag-handle" />
 							</td>
 							<td class="col-ticker">
 								<span class="ticker-badge">{entry.ticker}</span>
@@ -398,17 +392,17 @@ import { logger } from '$lib/utils/logger';
 							</td>
 							<td class="col-actions">
 								<button class="action-btn" title="Edit" onclick={() => openEditModal(entry)}>
-									<IconEdit size={16} />
+									<Icon icon={IconEdit} size={16} />
 								</button>
 								<button class="action-btn" title="Duplicate" onclick={() => duplicateEntry(entry)}>
-									<IconCopy size={16} />
+									<Icon icon={IconCopy} size={16} />
 								</button>
 								<button
 									class="action-btn delete"
 									title="Delete"
 									onclick={() => deleteEntry(entry.id)}
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</td>
 						</tr>
@@ -433,7 +427,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3>{editingEntry ? 'Edit Entry' : 'Add New Entry'}</h3>
 				<button class="modal-close" onclick={closeModal}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -582,7 +576,7 @@ import { logger } from '$lib/utils/logger';
 							<span class="spinner-small"></span>
 							Saving...
 						{:else}
-							<IconCheck size={18} />
+							<Icon icon={IconCheck} size={18} />
 							{editingEntry ? 'Update Entry' : 'Add Entry'}
 						{/if}
 					</button>

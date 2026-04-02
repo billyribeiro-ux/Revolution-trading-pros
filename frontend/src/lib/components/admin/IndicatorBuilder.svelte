@@ -12,6 +12,7 @@
 
 	import { onMount } from 'svelte';
 	import {
+	import { Icon, IconBook, IconChartLine, IconCheck, IconDownload, IconEdit, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconUpload, IconVideo, IconX } from '$lib/icons';
 		indicatorsApi,
 		platformsApi,
 		indicatorVideosApi,
@@ -24,19 +25,7 @@
 		validateTradingViewUsername
 	} from '$lib/api/indicators-enhanced';
 
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconBook from '@tabler/icons-svelte-runes/icons/book';
-	import IconBrandTradingview from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-
+												
 	interface Props {
 		indicatorId?: number;
 		onSave?: (indicator: Indicator) => void;
@@ -369,7 +358,7 @@
 		<div class="header-actions">
 			{#if onClose}
 				<button type="button" class="btn-close" onclick={onClose}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			{/if}
 		</div>
@@ -399,7 +388,7 @@
 				onclick={() => (activeTab = 'files')}
 				disabled={!indicatorId}
 			>
-				<IconDownload size={16} /> Platform Files
+				<Icon icon={IconDownload} size={16} /> Platform Files
 			</button>
 			<button
 				type="button"
@@ -408,7 +397,7 @@
 				onclick={() => (activeTab = 'videos')}
 				disabled={!indicatorId}
 			>
-				<IconVideo size={16} /> Videos
+				<Icon icon={IconVideo} size={16} /> Videos
 			</button>
 			<button
 				type="button"
@@ -417,7 +406,7 @@
 				onclick={() => (activeTab = 'docs')}
 				disabled={!indicatorId}
 			>
-				<IconBook size={16} /> Documentation
+				<Icon icon={IconBook} size={16} /> Documentation
 			</button>
 			{#if indicator?.has_tradingview_access}
 				<button
@@ -426,7 +415,7 @@
 					class:active={activeTab === 'tradingview'}
 					onclick={() => (activeTab = 'tradingview')}
 				>
-					<IconBrandTradingview size={16} /> TradingView
+					<Icon icon={IconChartLine} size={16} /> TradingView
 				</button>
 			{/if}
 		</div>
@@ -577,11 +566,11 @@
 				<div class="form-actions">
 					{#if indicatorId && !editMode}
 						<button type="button" class="btn-primary" onclick={() => (editMode = true)}>
-							<IconEdit size={16} /> Edit
+							<Icon icon={IconEdit} size={16} /> Edit
 						</button>
 					{:else}
 						<button type="button" class="btn-primary" onclick={saveIndicator} disabled={isSaving}>
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 							{isSaving ? 'Saving...' : 'Save'}
 						</button>
 						{#if indicatorId}
@@ -633,7 +622,7 @@
 										</div>
 										<div class="file-actions">
 											<a href={file.file_url} target="_blank" class="btn-icon" title="Download">
-												<IconDownload size={16} />
+												<Icon icon={IconDownload} size={16} />
 											</a>
 											<button
 												type="button"
@@ -641,7 +630,7 @@
 												onclick={() => deleteFile(file.id)}
 												title="Delete"
 											>
-												<IconTrash size={16} />
+												<Icon icon={IconTrash} size={16} />
 											</button>
 										</div>
 									</div>
@@ -653,7 +642,7 @@
 							</div>
 
 							<button type="button" class="btn-upload" onclick={() => openFileUpload(platform.id)}>
-								<IconUpload size={14} /> Upload for {platform.display_name}
+								<Icon icon={IconUpload} size={14} /> Upload for {platform.display_name}
 							</button>
 						</div>
 					{/each}
@@ -771,7 +760,7 @@
 				<div class="content-header">
 					<h3>Tutorial Videos</h3>
 					<button type="button" class="btn-add" onclick={() => (showVideoForm = true)}>
-						<IconPlus size={16} /> Add Video
+						<Icon icon={IconPlus} size={16} /> Add Video
 					</button>
 				</div>
 
@@ -779,13 +768,13 @@
 					{#each indicator.videos || [] as video (video.id)}
 						<div class="video-item">
 							<div class="video-grip">
-								<IconGripVertical size={16} />
+								<Icon icon={IconGripVertical} size={16} />
 							</div>
 							{#if video.thumbnail_url}
 								<img src={video.thumbnail_url} alt={video.title} class="video-thumbnail" />
 							{:else}
 								<div class="video-thumbnail placeholder">
-									<IconVideo size={24} />
+									<Icon icon={IconVideo} size={24} />
 								</div>
 							{/if}
 							<div class="video-info">
@@ -808,7 +797,7 @@
 							<div class="video-actions">
 								{#if video.embed_url}
 									<a href={video.embed_url} target="_blank" class="btn-icon" title="Watch">
-										<IconPlayerPlay size={16} />
+										<Icon icon={IconPlayerPlay} size={16} />
 									</a>
 								{/if}
 								<button
@@ -817,7 +806,7 @@
 									onclick={() => deleteVideo(video.id)}
 									title="Delete"
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>
@@ -926,7 +915,7 @@
 				<div class="content-header">
 					<h3>Documentation</h3>
 					<button type="button" class="btn-add">
-						<IconPlus size={16} /> Add Documentation
+						<Icon icon={IconPlus} size={16} /> Add Documentation
 					</button>
 				</div>
 
@@ -934,7 +923,7 @@
 					{#each indicator.documentation || [] as doc (doc.id)}
 						<div class="doc-item">
 							<div class="doc-icon">
-								<IconBook size={20} />
+								<Icon icon={IconBook} size={20} />
 							</div>
 							<div class="doc-info">
 								<span class="doc-title">{doc.title}</span>
@@ -942,10 +931,10 @@
 							</div>
 							<div class="doc-actions">
 								<button type="button" class="btn-icon" title="Edit">
-									<IconEdit size={16} />
+									<Icon icon={IconEdit} size={16} />
 								</button>
 								<button type="button" class="btn-icon danger" title="Delete">
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>
@@ -966,7 +955,7 @@
 				<div class="content-header">
 					<h3>TradingView Access</h3>
 					<button type="button" class="btn-add" onclick={() => (showTvAccessForm = true)}>
-						<IconPlus size={16} /> Grant Access
+						<Icon icon={IconPlus} size={16} /> Grant Access
 					</button>
 				</div>
 
@@ -1012,7 +1001,7 @@
 										onclick={() => revokeTvAccess(access.id)}
 										title="Revoke access"
 									>
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									</button>
 								{/if}
 							</div>

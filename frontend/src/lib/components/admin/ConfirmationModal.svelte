@@ -6,7 +6,7 @@
 	 * Custom modal to replace browser confirm() dialogs.
 	 * Supports different variants: danger, warning, info, success
 	 */
-	import { IconX, IconAlertTriangle, IconTrash, IconInfoCircle, IconCheck } from '$lib/icons';
+	import { Icon, IconX, IconAlertTriangle, IconTrash, IconInfoCircle, IconCheck } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -178,7 +178,7 @@
 				disabled={isLoading}
 				aria-label="Close"
 			>
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		</div>
 	</div>

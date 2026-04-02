@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
-	import { IconRocket } from '$lib/icons';
+	import { Icon, IconRocket } from '$lib/icons';
 
 	// Demo popup templates
 	const demoPopups: Partial<Popup>[] = [
@@ -395,7 +395,7 @@
 		<!-- Header -->
 		<div class="demo-header">
 			<h1 class="demo-title">
-				<IconRocket size={48} class="title-icon" />
+				<Icon icon={IconRocket} size={48} class="title-icon" />
 				Popup System Demo
 			</h1>
 			<p class="demo-subtitle">Test the most advanced, fully customizable popup system</p>

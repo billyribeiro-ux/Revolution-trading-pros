@@ -7,21 +7,7 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { browser } from '$app/environment';
-	import {
-		IconShoppingCart,
-		IconCurrencyDollar,
-		IconCheck,
-		IconClock,
-		IconRefresh,
-		IconSearch,
-		IconFilter,
-		IconDownload,
-		IconChevronLeft,
-		IconChevronRight,
-		IconExternalLink,
-		IconX,
-		IconAlertTriangle
-	} from '$lib/icons';
+	import { Icon, IconShoppingCart, IconCurrencyDollar, IconCheck, IconClock, IconRefresh, IconSearch, IconFilter, IconDownload, IconChevronLeft, IconChevronRight, IconExternalLink, IconX, IconAlertTriangle } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Types
@@ -214,7 +200,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Error Banner -->
 		{#if error}
 			<div class="error-banner">
-				<IconAlertTriangle size={20} />
+				<Icon icon={IconAlertTriangle} size={20} />
 				<span>{error}</span>
 				<button onclick={() => loadOrders()}>Retry</button>
 			</div>
@@ -226,11 +212,11 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">View and manage all customer transactions</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={() => loadOrders()}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 				<button class="btn-secondary" onclick={handleExport}>
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					Export
 				</button>
 			</div>
@@ -241,7 +227,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="stats-grid">
 				<div class="stat-card gradient-purple">
 					<div class="stat-icon">
-						<IconShoppingCart size={28} />
+						<Icon icon={IconShoppingCart} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Total Orders</div>
@@ -251,7 +237,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="stat-card gradient-emerald">
 					<div class="stat-icon">
-						<IconCheck size={28} />
+						<Icon icon={IconCheck} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Completed</div>
@@ -261,7 +247,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="stat-card gradient-gold">
 					<div class="stat-icon">
-						<IconCurrencyDollar size={28} />
+						<Icon icon={IconCurrencyDollar} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Total Revenue</div>
@@ -274,7 +260,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="stat-card gradient-blue">
 					<div class="stat-icon">
-						<IconClock size={28} />
+						<Icon icon={IconClock} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Avg Order Value</div>
@@ -287,7 +273,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Toolbar -->
 		<div class="toolbar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					type="text"
 					placeholder="Search by order #, email, or name..."
@@ -302,7 +288,7 @@ import { logger } from '$lib/utils/logger';
 					class:active={showFilters}
 					onclick={() => (showFilters = !showFilters)}
 				>
-					<IconFilter size={18} />
+					<Icon icon={IconFilter} size={18} />
 					Filters
 				</button>
 			</div>
@@ -349,7 +335,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if orders.length === 0}
 				<div class="empty-state">
-					<IconShoppingCart size={64} stroke={1} />
+					<Icon icon={IconShoppingCart} size={64} stroke={1} />
 					<h3>No orders found</h3>
 					<p>Try adjusting your filters or search query</p>
 				</div>
@@ -402,7 +388,7 @@ import { logger } from '$lib/utils/logger';
 								</td>
 								<td>
 									<button class="action-btn" onclick={() => openOrderDetail(order)}>
-										<IconExternalLink size={16} />
+										<Icon icon={IconExternalLink} size={16} />
 									</button>
 								</td>
 							</tr>
@@ -425,7 +411,7 @@ import { logger } from '$lib/utils/logger';
 								disabled={pagination.page === 1}
 								onclick={() => loadOrders(pagination!.page - 1)}
 							>
-								<IconChevronLeft size={18} />
+								<Icon icon={IconChevronLeft} size={18} />
 							</button>
 							<span class="page-indicator">
 								Page {pagination.page} of {pagination.total_pages}
@@ -435,7 +421,7 @@ import { logger } from '$lib/utils/logger';
 								disabled={pagination.page === pagination.total_pages}
 								onclick={() => loadOrders(pagination!.page + 1)}
 							>
-								<IconChevronRight size={18} />
+								<Icon icon={IconChevronRight} size={18} />
 							</button>
 						</div>
 					</div>
@@ -465,7 +451,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Order #{selectedOrder.order_number}</h2>
 				<button class="close-btn" onclick={() => (showDetailModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 

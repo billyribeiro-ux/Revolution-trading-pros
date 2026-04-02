@@ -6,7 +6,7 @@
 	 * Reusable dropdown menu for table row actions.
 	 * Supports icons, dividers, and danger actions.
 	 */
-	import { IconDotsVertical } from '$lib/icons';
+	import { Icon, IconDotsVertical } from '$lib/icons';
 
 	interface Action {
 		id: string;
@@ -86,7 +86,7 @@
 		aria-haspopup="true"
 		aria-expanded={isOpen}
 	>
-		<IconDotsVertical size={size === 'sm' ? 16 : 20} />
+		<Icon icon={IconDotsVertical} size={size === 'sm' ? 16 : 20} />
 	</button>
 
 	{#if isOpen}

@@ -8,7 +8,7 @@
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, ContactStatus } from '$lib/crm/types';
-	import { IconPlus, IconMail, IconPhone } from '$lib/icons';
+	import { Icon, IconPlus, IconMail, IconPhone } from '$lib/icons';
 
 	let contacts = $state<Contact[]>([]);
 	let loading = $state(true);
@@ -108,7 +108,7 @@
 			<p class="subtitle">Manage your contact list and leads</p>
 			<div class="header-actions">
 				<a href="/admin/contacts/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Contact
 				</a>
 			</div>
@@ -175,14 +175,14 @@
 							</td>
 							<td>
 								<a href="mailto:{contact.email || ''}" class="contact-link">
-									<IconMail size={16} />
+									<Icon icon={IconMail} size={16} />
 									{contact.email || ''}
 								</a>
 							</td>
 							<td>
 								{#if contact.phone}
 									<a href="tel:{contact.phone}" class="contact-link">
-										<IconPhone size={16} />
+										<Icon icon={IconPhone} size={16} />
 										{contact.phone}
 									</a>
 								{:else}

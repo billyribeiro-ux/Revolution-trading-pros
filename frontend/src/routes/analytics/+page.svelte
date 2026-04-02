@@ -23,16 +23,7 @@
 		CohortMatrix,
 		AttributionChart
 	} from '$lib/components/analytics';
-	import {
-		IconTrendingUp,
-		IconUsers,
-		IconCurrencyDollar,
-		IconChartBar,
-		IconBolt,
-		IconTarget,
-		IconBrain,
-		IconAlertTriangle
-	} from '$lib/icons';
+	import { Icon, IconTrendingUp, IconUsers, IconCurrencyDollar, IconChartBar, IconBolt, IconTarget, IconBrain, IconAlertTriangle } from '$lib/icons';
 
 	let selectedTab = $state<
 		'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue'
@@ -70,7 +61,7 @@
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="header-title">
-				<IconChartBar size={32} class="text-yellow-400" />
+				<Icon icon={IconChartBar} size={32} class="text-yellow-400" />
 				<div>
 					<h1 class="text-3xl font-bold text-white">Analytics Dashboard</h1>
 					<p class="text-gray-400 mt-1">Enterprise-grade analytics and insights</p>
@@ -95,7 +86,7 @@
 			class:active={selectedTab === 'overview'}
 			onclick={() => (selectedTab = 'overview')}
 		>
-			<IconChartBar size={20} />
+			<Icon icon={IconChartBar} size={20} />
 			Overview
 		</button>
 		<button
@@ -103,7 +94,7 @@
 			class:active={selectedTab === 'funnels'}
 			onclick={() => (selectedTab = 'funnels')}
 		>
-			<IconTarget size={20} />
+			<Icon icon={IconTarget} size={20} />
 			Funnels
 		</button>
 		<button
@@ -111,7 +102,7 @@
 			class:active={selectedTab === 'cohorts'}
 			onclick={() => (selectedTab = 'cohorts')}
 		>
-			<IconUsers size={20} />
+			<Icon icon={IconUsers} size={20} />
 			Cohorts
 		</button>
 		<button
@@ -119,7 +110,7 @@
 			class:active={selectedTab === 'attribution'}
 			onclick={() => (selectedTab = 'attribution')}
 		>
-			<IconTrendingUp size={20} />
+			<Icon icon={IconTrendingUp} size={20} />
 			Attribution
 		</button>
 		<button
@@ -127,7 +118,7 @@
 			class:active={selectedTab === 'behavior'}
 			onclick={() => (selectedTab = 'behavior')}
 		>
-			<IconBolt size={20} />
+			<Icon icon={IconBolt} size={20} />
 			Behavior
 		</button>
 		<button
@@ -135,7 +126,7 @@
 			class:active={selectedTab === 'revenue'}
 			onclick={() => selectedTab === 'revenue'}
 		>
-			<IconCurrencyDollar size={20} />
+			<Icon icon={IconCurrencyDollar} size={20} />
 			Revenue
 		</button>
 	</div>
@@ -165,7 +156,7 @@
 						<div class="section anomaly-section">
 							<div class="section-header">
 								<div class="flex items-center gap-2">
-									<IconAlertTriangle size={24} class="text-orange-400" />
+									<Icon icon={IconAlertTriangle} size={24} class="text-orange-400" />
 									<h2 class="section-title">Anomalies & Alerts</h2>
 								</div>
 							</div>
@@ -236,7 +227,7 @@
 					<div class="section-header">
 						<h2 class="section-title">Conversion Funnels</h2>
 						<button class="btn-primary">
-							<IconTarget size={18} />
+							<Icon icon={IconTarget} size={18} />
 							Create Funnel
 						</button>
 					</div>
@@ -249,7 +240,7 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<IconTarget size={64} class="text-gray-600" />
+							<Icon icon={IconTarget} size={64} class="text-gray-600" />
 							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Funnels Yet</h3>
 							<p class="text-gray-500 mt-2">Create your first funnel to track conversion paths</p>
 							<button class="btn-primary mt-4">Create Funnel</button>
@@ -264,7 +255,7 @@
 					<div class="section-header">
 						<h2 class="section-title">Cohort Analysis</h2>
 						<button class="btn-primary">
-							<IconUsers size={18} />
+							<Icon icon={IconUsers} size={18} />
 							Create Cohort
 						</button>
 					</div>
@@ -292,7 +283,7 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<IconUsers size={64} class="text-gray-600" />
+							<Icon icon={IconUsers} size={64} class="text-gray-600" />
 							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Cohorts Yet</h3>
 							<p class="text-gray-500 mt-2">
 								Create cohorts to analyze user retention and behavior
@@ -321,7 +312,7 @@
 						<AttributionChart channels={dashboard.attribution.channels} />
 					{:else}
 						<div class="empty-state">
-							<IconTrendingUp size={64} class="text-gray-600" />
+							<Icon icon={IconTrendingUp} size={64} class="text-gray-600" />
 							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Attribution Data</h3>
 							<p class="text-gray-500 mt-2">
 								Attribution data will appear once conversions are tracked
@@ -413,7 +404,7 @@
 			{/if}
 		{:else}
 			<div class="empty-state">
-				<IconBrain size={64} class="text-gray-600" />
+				<Icon icon={IconBrain} size={64} class="text-gray-600" />
 				<h3 class="text-xl font-semibold text-gray-400 mt-4">No Data Available</h3>
 				<p class="text-gray-500 mt-2">Analytics data will appear once events are tracked</p>
 			</div>

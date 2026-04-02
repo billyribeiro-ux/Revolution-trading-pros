@@ -10,7 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { IconPlus, IconMinus } from '$lib/icons';
+	import { Icon, IconPlus, IconMinus } from '$lib/icons';
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = $state<Set<number>>(new Set());
@@ -157,9 +157,9 @@
 						</span>
 						<span class="accordion__icon">
 							{#if isOpen(0)}
-								<IconMinus size={20} />
+								<Icon icon={IconMinus} size={20} />
 							{:else}
-								<IconPlus size={20} />
+								<Icon icon={IconPlus} size={20} />
 							{/if}
 						</span>
 					</button>
@@ -205,9 +205,9 @@
 						</span>
 						<span class="accordion__icon">
 							{#if isOpen(1)}
-								<IconMinus size={20} />
+								<Icon icon={IconMinus} size={20} />
 							{:else}
-								<IconPlus size={20} />
+								<Icon icon={IconPlus} size={20} />
 							{/if}
 						</span>
 					</button>
@@ -258,9 +258,9 @@
 						</span>
 						<span class="accordion__icon">
 							{#if isOpen(2)}
-								<IconMinus size={20} />
+								<Icon icon={IconMinus} size={20} />
 							{:else}
-								<IconPlus size={20} />
+								<Icon icon={IconPlus} size={20} />
 							{/if}
 						</span>
 					</button>
@@ -321,9 +321,9 @@
 						</span>
 						<span class="accordion__icon">
 							{#if isOpen(3)}
-								<IconMinus size={20} />
+								<Icon icon={IconMinus} size={20} />
 							{:else}
-								<IconPlus size={20} />
+								<Icon icon={IconPlus} size={20} />
 							{/if}
 						</span>
 					</button>
@@ -396,9 +396,9 @@
 						</span>
 						<span class="accordion__icon">
 							{#if isOpen(4)}
-								<IconMinus size={20} />
+								<Icon icon={IconMinus} size={20} />
 							{:else}
-								<IconPlus size={20} />
+								<Icon icon={IconPlus} size={20} />
 							{/if}
 						</span>
 					</button>

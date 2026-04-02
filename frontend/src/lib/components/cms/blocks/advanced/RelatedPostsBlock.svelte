@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { IconPhoto, IconExternalLink, IconLayoutGrid, IconList } from '$lib/icons';
+	import { Icon, IconPhoto, IconExternalLink, IconLayoutGrid, IconList } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -160,7 +160,7 @@
 					aria-label="Grid layout"
 					onclick={() => updateContent({ relatedPostsLayout: 'grid' })}
 				>
-					<IconLayoutGrid size={18} aria-hidden="true" />
+					<Icon icon={IconLayoutGrid} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -169,7 +169,7 @@
 					aria-label="List layout"
 					onclick={() => updateContent({ relatedPostsLayout: 'list' })}
 				>
-					<IconList size={18} aria-hidden="true" />
+					<Icon icon={IconList} size={18} aria-hidden="true" />
 				</button>
 			</div>
 		{/if}
@@ -191,7 +191,7 @@
 					<div class="post-card-inner">
 						<div class="post-image">
 							<div class="image-placeholder">
-								<IconPhoto size={32} aria-hidden="true" />
+								<Icon icon={IconPhoto} size={32} aria-hidden="true" />
 								<span>Post Image</span>
 							</div>
 						</div>
@@ -205,7 +205,7 @@
 							{/if}
 							<span class="post-link">
 								Read more
-								<IconExternalLink size={14} aria-hidden="true" />
+								<Icon icon={IconExternalLink} size={14} aria-hidden="true" />
 							</span>
 						</div>
 					</div>
@@ -222,7 +222,7 @@
 								<img src={sanitizeURL(post.image)} alt={post.title} loading="lazy" />
 							{:else}
 								<div class="image-placeholder">
-									<IconPhoto size={32} aria-hidden="true" />
+									<Icon icon={IconPhoto} size={32} aria-hidden="true" />
 								</div>
 							{/if}
 						</div>
@@ -236,7 +236,7 @@
 							{/if}
 							<span class="post-link">
 								Read more
-								<IconExternalLink size={14} aria-hidden="true" />
+								<Icon icon={IconExternalLink} size={14} aria-hidden="true" />
 							</span>
 						</div>
 					</a>

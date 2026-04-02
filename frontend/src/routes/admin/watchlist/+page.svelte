@@ -27,17 +27,8 @@ import { logger } from '$lib/utils/logger';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconDots from '@tabler/icons-svelte-runes/icons/dots';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-
+	import { Icon, IconCalendar, IconCheck, IconDots, IconEdit, IconEye, IconPlus, IconSearch, IconTrash, IconVideo, IconX } from '$lib/icons';
+										
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -263,7 +254,7 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Manage weekly watchlist videos and content</p>
 			<div class="header-actions">
 				<button type="button" class="btn-primary" onclick={() => (showCreateModal = true)}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Watchlist
 				</button>
 			</div>
@@ -292,7 +283,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Filters -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					type="text"
 					id="search-watchlist"
@@ -351,7 +342,7 @@ import { logger } from '$lib/utils/logger';
 												<img src={item.video.poster} alt="" />
 											{:else}
 												<div class="thumb-placeholder">
-													<IconVideo size={20} />
+													<Icon icon={IconVideo} size={20} />
 												</div>
 											{/if}
 										</div>
@@ -371,7 +362,7 @@ import { logger } from '$lib/utils/logger';
 								</td>
 								<td class="col-week">
 									<div class="week-cell">
-										<IconCalendar size={14} />
+										<Icon icon={IconCalendar} size={14} />
 										{formatDate(item.weekOf)}
 									</div>
 								</td>
@@ -405,7 +396,7 @@ import { logger } from '$lib/utils/logger';
 								<td class="col-actions">
 									<div class="actions-cell">
 										<a href="/admin/watchlist/{item.slug}/edit" class="action-btn" title="Edit">
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</a>
 										<a
 											href="/watchlist/{item.slug}"
@@ -413,7 +404,7 @@ import { logger } from '$lib/utils/logger';
 											title="View"
 											target="_blank"
 										>
-											<IconEye size={16} />
+											<Icon icon={IconEye} size={16} />
 										</a>
 										<div class="dropdown">
 											<button
@@ -421,24 +412,24 @@ import { logger } from '$lib/utils/logger';
 												class="action-btn"
 												onclick={() => toggleDropdown(item.slug)}
 											>
-												<IconDots size={16} />
+												<Icon icon={IconDots} size={16} />
 											</button>
 											{#if activeDropdown === item.slug}
 												<div class="dropdown-menu">
 													{#if item.status === 'draft'}
 														<button onclick={() => handlePublish(item)}>
-															<IconCheck size={14} />
+															<Icon icon={IconCheck} size={14} />
 															Publish
 														</button>
 													{/if}
 													{#if item.status === 'published'}
 														<button onclick={() => handleArchive(item)}>
-															<IconX size={14} />
+															<Icon icon={IconX} size={14} />
 															Archive
 														</button>
 													{/if}
 													<button class="danger" onclick={() => handleDeleteClick(item)}>
-														<IconTrash size={14} />
+														<Icon icon={IconTrash} size={14} />
 														Delete
 													</button>
 												</div>

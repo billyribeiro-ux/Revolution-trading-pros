@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconPhoto, IconMaximize, IconX } from '$lib/icons';
+	import { Icon, IconPhoto, IconMaximize, IconX } from '$lib/icons';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import { generateSrcSet } from '$lib/utils/performance';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
@@ -324,7 +324,7 @@
 			<!-- Error State -->
 			{#if imageError}
 				<div class="image-block__error-overlay">
-					<IconPhoto size={48} aria-hidden="true" />
+					<Icon icon={IconPhoto} size={48} aria-hidden="true" />
 					<span class="image-block__error-text">Failed to load image</span>
 					<button
 						type="button"
@@ -346,7 +346,7 @@
 						onclick={removeImage}
 						aria-label="Remove image"
 					>
-						<IconX size={18} aria-hidden="true" />
+						<Icon icon={IconX} size={18} aria-hidden="true" />
 					</button>
 					<button
 						type="button"
@@ -363,7 +363,7 @@
 						onclick={openLightbox}
 						aria-label="Preview in lightbox"
 					>
-						<IconMaximize size={18} aria-hidden="true" />
+						<Icon icon={IconMaximize} size={18} aria-hidden="true" />
 					</button>
 				</div>
 
@@ -389,7 +389,7 @@
 			<!-- View Mode Hover Overlay -->
 			{#if !props.isEditing && imageLoaded && !imageError}
 				<div class="image-block__hover-overlay" aria-hidden="true">
-					<IconMaximize size={32} />
+					<Icon icon={IconMaximize} size={32} />
 				</div>
 			{/if}
 
@@ -491,7 +491,7 @@
 			{:else if uploadError}
 				<!-- Error State -->
 				<div class="image-block__upload-error">
-					<IconPhoto size={48} aria-hidden="true" />
+					<Icon icon={IconPhoto} size={48} aria-hidden="true" />
 					<span class="image-block__error-text">{uploadError}</span>
 					<button
 						type="button"
@@ -505,7 +505,7 @@
 			{:else}
 				<!-- Default Upload UI -->
 				<div class="image-block__upload-content">
-					<IconPhoto size={56} aria-hidden="true" />
+					<Icon icon={IconPhoto} size={56} aria-hidden="true" />
 					<span class="image-block__upload-title">Add an image</span>
 					<span class="image-block__upload-hint">Drag and drop or click to upload</span>
 
@@ -557,7 +557,7 @@
 	{:else}
 		<!-- Empty State (View Mode) -->
 		<div class="image-block__empty" role="status">
-			<IconPhoto size={48} aria-hidden="true" />
+			<Icon icon={IconPhoto} size={48} aria-hidden="true" />
 			<span>No image available</span>
 		</div>
 	{/if}
@@ -581,7 +581,7 @@
 			onclick={closeLightbox}
 			aria-label="Close lightbox"
 		>
-			<IconX size={24} aria-hidden="true" />
+			<Icon icon={IconX} size={24} aria-hidden="true" />
 		</button>
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 		<img

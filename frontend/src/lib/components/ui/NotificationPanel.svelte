@@ -10,15 +10,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { gsap } from 'gsap';
-	import {
-		IconBell,
-		IconX,
-		IconAlertCircle,
-		IconInfoCircle,
-		IconCircleCheck,
-		IconAlertTriangle,
-		IconSettings
-	} from '$lib/icons';
+	import { Icon, IconBell, IconX, IconAlertCircle, IconInfoCircle, IconCircleCheck, IconAlertTriangle, IconSettings } from '$lib/icons';
 	import {
 		notificationStore,
 		getNotifications,
@@ -155,7 +147,7 @@
 		aria-label="Notifications"
 		aria-expanded={isOpen}
 	>
-		<IconBell size={24} class="text-slate-400 hover:text-white transition-colors" />
+		<Icon icon={IconBell} size={24} class="text-slate-400 hover:text-white transition-colors" />
 
 		<!-- Unread Badge -->
 		{#if unreadCount > 0}
@@ -195,7 +187,7 @@
 						class="p-1 rounded hover:bg-slate-700/50 transition-colors"
 						aria-label="Close"
 					>
-						<IconX size={18} class="text-slate-400" />
+						<Icon icon={IconX} size={18} class="text-slate-400" />
 					</button>
 				</div>
 			</div>
@@ -204,7 +196,7 @@
 			<div class="overflow-y-auto max-h-[calc(70vh-60px)]">
 				{#if notifications.length === 0}
 					<div class="flex flex-col items-center justify-center py-12 text-slate-500">
-						<IconBell size={48} class="opacity-50 mb-3" />
+						<Icon icon={IconBell} size={48} class="opacity-50 mb-3" />
 						<p class="text-sm">No notifications yet</p>
 					</div>
 				{:else}
@@ -271,7 +263,7 @@
 										hover:bg-slate-700/50 transition-all"
 									aria-label="Dismiss"
 								>
-									<IconX size={16} class="text-slate-500" />
+									<Icon icon={IconX} size={16} class="text-slate-500" />
 								</button>
 							</div>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
+	import { Icon, IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - ICT 7+ Strict Type Safety
@@ -101,7 +101,7 @@ import { logger } from '$lib/utils/logger';
 			<p>Generate JSON-LD structured data for better search visibility</p>
 		</div>
 		<a href="/admin/seo/schema/create" class="btn-primary">
-			<IconPlus size={18} />
+			<Icon icon={IconPlus} size={18} />
 			Add Schema
 		</a>
 	</header>
@@ -111,11 +111,11 @@ import { logger } from '$lib/utils/logger';
 			<div class="loading">Loading schemas...</div>
 		{:else if schemas.length === 0}
 			<div class="empty-state">
-				<IconCode size={64} />
+				<Icon icon={IconCode} size={64} />
 				<h3>No schema markup created yet</h3>
 				<p>Create structured data to help search engines understand your content</p>
 				<a href="/admin/seo/schema/create" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Create Your First Schema
 				</a>
 			</div>
@@ -126,14 +126,14 @@ import { logger } from '$lib/utils/logger';
 						<div class="schema-type">{schema.schema_type}</div>
 						<div class="actions">
 							<button class="action-btn" onclick={() => viewJsonLd(schema.id)} title="View JSON-LD">
-								<IconEye size={18} />
+								<Icon icon={IconEye} size={18} />
 							</button>
 							<button
 								class="action-btn danger"
 								onclick={() => deleteSchema(schema.id)}
 								title="Delete"
 							>
-								<IconTrash size={18} />
+								<Icon icon={IconTrash} size={18} />
 							</button>
 						</div>
 					</div>
@@ -188,10 +188,10 @@ import { logger } from '$lib/utils/logger';
 			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
-				<h3><IconCode size={20} /> JSON-LD Preview</h3>
+				<h3><Icon icon={IconCode} size={20} /> JSON-LD Preview</h3>
 				<div class="modal-actions">
 					<button class="btn-copy" onclick={copyJsonLd}>
-						<IconCopy size={18} />
+						<Icon icon={IconCopy} size={18} />
 						Copy
 					</button>
 					<button class="close-btn" onclick={() => (showPreview = null)}>×</button>

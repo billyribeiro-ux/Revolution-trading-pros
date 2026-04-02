@@ -6,21 +6,12 @@
 
 	import { onMount } from 'svelte';
 	import {
+	import { Icon, IconChartBar, IconClock, IconDeviceDesktop, IconDeviceMobile, IconDeviceTablet, IconEye, IconRefresh, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
 		analyticsApi,
 		type AnalyticsDashboard,
 		type VideoAnalytics
 	} from '$lib/api/video-advanced';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconDeviceDesktop from '@tabler/icons-svelte-runes/icons/device-desktop';
-	import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
-	import IconDeviceTablet from '@tabler/icons-svelte-runes/icons/device-tablet';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-
+										
 	interface Props {
 		videoId?: number;
 		onClose?: () => void;
@@ -107,7 +98,7 @@
 <div class="analytics-dashboard">
 	<div class="dashboard-header">
 		<div class="header-left">
-			<IconChartBar size={24} />
+			<Icon icon={IconChartBar} size={24} />
 			<h3>{videoId ? 'Video Analytics' : 'Analytics Dashboard'}</h3>
 		</div>
 		<div class="header-right">
@@ -138,11 +129,11 @@
 				</button>
 			</div>
 			<button type="button" class="btn-refresh" onclick={loadData} title="Refresh">
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 			</button>
 			{#if onClose}
 				<button type="button" class="btn-close" onclick={onClose}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			{/if}
 		</div>
@@ -165,22 +156,22 @@
 
 		<div class="stats-grid">
 			<div class="stat-card">
-				<div class="stat-icon"><IconEye size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconEye} size={24} /></div>
 				<div class="stat-value">{formatNumber(videoStats.total_views)}</div>
 				<div class="stat-label">Total Views</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon"><IconUsers size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconUsers} size={24} /></div>
 				<div class="stat-value">{formatNumber(videoStats.unique_viewers)}</div>
 				<div class="stat-label">Unique Viewers</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon"><IconClock size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconClock} size={24} /></div>
 				<div class="stat-value">{formatHours(videoStats.total_watch_time_hours)}</div>
 				<div class="stat-label">Watch Time</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon"><IconTrendingUp size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconTrendingUp} size={24} /></div>
 				<div class="stat-value">{Math.round(videoStats.avg_completion_percent)}%</div>
 				<div class="stat-label">Avg Completion</div>
 			</div>
@@ -204,22 +195,22 @@
 		<!-- Dashboard Overview -->
 		<div class="stats-grid">
 			<div class="stat-card">
-				<div class="stat-icon"><IconEye size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconEye} size={24} /></div>
 				<div class="stat-value">{formatNumber(dashboard.total_views)}</div>
 				<div class="stat-label">Total Views</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon"><IconUsers size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconUsers} size={24} /></div>
 				<div class="stat-value">{formatNumber(dashboard.unique_viewers)}</div>
 				<div class="stat-label">Unique Viewers</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon"><IconClock size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconClock} size={24} /></div>
 				<div class="stat-value">{formatHours(dashboard.total_watch_time_hours)}</div>
 				<div class="stat-label">Total Watch Time</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon"><IconTrendingUp size={24} /></div>
+				<div class="stat-icon"><Icon icon={IconTrendingUp} size={24} /></div>
 				<div class="stat-value">{Math.round(dashboard.avg_completion_rate)}%</div>
 				<div class="stat-label">Avg Completion</div>
 			</div>

@@ -7,14 +7,7 @@
 	 */
 	import type { Subscription, SubscriptionInterval } from '$lib/stores/subscriptions.svelte';
 	import { createSubscription, updateSubscription } from '$lib/api/subscriptions';
-	import {
-		IconX,
-		IconCreditCard,
-		IconPlus,
-		IconEdit,
-		IconCalendar,
-		IconCurrencyDollar
-	} from '$lib/icons';
+	import { Icon, IconX, IconCreditCard, IconPlus, IconEdit, IconCalendar, IconCurrencyDollar } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -233,9 +226,9 @@
 			<div class="modal-header">
 				<div class="header-icon">
 					{#if mode === 'create'}
-						<IconPlus size={24} />
+						<Icon icon={IconPlus} size={24} />
 					{:else}
-						<IconEdit size={24} />
+						<Icon icon={IconEdit} size={24} />
 					{/if}
 				</div>
 				<h2 id="modal-title" class="modal-title">
@@ -248,7 +241,7 @@
 					disabled={isLoading}
 					aria-label="Close"
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -260,7 +253,7 @@
 					class:active={activeSection === 'details'}
 					onclick={() => (activeSection = 'details')}
 				>
-					<IconCreditCard size={16} />
+					<Icon icon={IconCreditCard} size={16} />
 					Details
 				</button>
 				<button
@@ -269,7 +262,7 @@
 					class:active={activeSection === 'billing'}
 					onclick={() => (activeSection = 'billing')}
 				>
-					<IconCurrencyDollar size={16} />
+					<Icon icon={IconCurrencyDollar} size={16} />
 					Billing
 				</button>
 				<button
@@ -278,7 +271,7 @@
 					class:active={activeSection === 'options'}
 					onclick={() => (activeSection = 'options')}
 				>
-					<IconCalendar size={16} />
+					<Icon icon={IconCalendar} size={16} />
 					Options
 				</button>
 			</nav>
@@ -418,7 +411,7 @@
 											bind:group={paymentMethodType}
 											disabled={isLoading}
 										/>
-										<IconCreditCard size={20} />
+										<Icon icon={IconCreditCard} size={20} />
 										<span>Card</span>
 									</label>
 									<label
@@ -481,7 +474,7 @@
 
 							{#if trialDays > 0}
 								<div class="trial-info">
-									<IconCalendar size={16} />
+									<Icon icon={IconCalendar} size={16} />
 									<span>
 										Trial will end on <strong
 											>{new Date(Date.now() + trialDays * 86400000).toLocaleDateString()}</strong

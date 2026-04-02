@@ -5,7 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
 	import { getForms, type Form } from '$lib/api/forms';
-	import { IconSearch, IconChartBar } from '$lib/icons';
+	import { Icon, IconSearch, IconChartBar } from '$lib/icons';
 
 	let contentType = $state('posts');
 	let contentId = $state('');
@@ -125,7 +125,7 @@ import { logger } from '$lib/utils/logger';
 
 		<div class="mt-4">
 			<Button onclick={handleAnalyze} loading={analyzing} disabled={!contentId}>
-				<IconSearch size={20} />
+				<Icon icon={IconSearch} size={20} />
 				Analyze SEO
 			</Button>
 		</div>
@@ -241,7 +241,7 @@ import { logger } from '$lib/utils/logger';
 	{:else}
 		<Card>
 			<div class="text-center py-12">
-				<IconChartBar size={48} class="mx-auto text-gray-400 mb-4" />
+				<Icon icon={IconChartBar} size={48} class="mx-auto text-gray-400 mb-4" />
 				<p class="text-gray-500">
 					No analysis available. Select content and click "Analyze SEO" to get started.
 				</p>

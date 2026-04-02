@@ -28,16 +28,8 @@ import { logger } from '$lib/utils/logger';
 	import { watchlistApi, type WatchlistDate } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconTable from '@tabler/icons-svelte-runes/icons/table';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-
+	import { Icon, IconAlertCircle, IconArrowLeft, IconCalendar, IconCheck, IconDeviceFloppy, IconPlus, IconTable, IconTrash, IconVideo } from '$lib/icons';
+									
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -185,7 +177,7 @@ import { logger } from '$lib/utils/logger';
 	<header class="page-header">
 		<div class="header-left">
 			<a href="/admin/watchlist" class="back-btn">
-				<IconArrowLeft size={20} />
+				<Icon icon={IconArrowLeft} size={20} />
 				Back
 			</a>
 			<div class="header-titles">
@@ -200,7 +192,7 @@ import { logger } from '$lib/utils/logger';
 				onclick={handleSubmit}
 				disabled={isSubmitting || !isFormValid}
 			>
-				<IconDeviceFloppy size={18} />
+				<Icon icon={IconDeviceFloppy} size={18} />
 				{isSubmitting ? 'Creating...' : 'Create Watchlist'}
 			</button>
 		</div>
@@ -209,7 +201,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Success Message -->
 	{#if success}
 		<div class="alert alert-success">
-			<IconCheck size={20} />
+			<Icon icon={IconCheck} size={20} />
 			<span>Watchlist entry created successfully! Redirecting...</span>
 		</div>
 	{/if}
@@ -217,7 +209,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Error Message -->
 	{#if error}
 		<div class="alert alert-error">
-			<IconAlertCircle size={20} />
+			<Icon icon={IconAlertCircle} size={20} />
 			<span>{error}</span>
 		</div>
 	{/if}
@@ -290,7 +282,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Video Section -->
 			<section class="form-section">
 				<div class="section-header">
-					<IconVideo size={20} />
+					<Icon icon={IconVideo} size={20} />
 					<h2 class="section-title">Video</h2>
 				</div>
 				<div class="form-grid">
@@ -332,7 +324,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Spreadsheet Section -->
 			<section class="form-section">
 				<div class="section-header">
-					<IconTable size={20} />
+					<Icon icon={IconTable} size={20} />
 					<h2 class="section-title">Spreadsheet</h2>
 				</div>
 				<div class="form-grid">
@@ -356,7 +348,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Date Switcher Section -->
 			<section class="form-section">
 				<div class="section-header">
-					<IconCalendar size={20} />
+					<Icon icon={IconCalendar} size={20} />
 					<h2 class="section-title">Date Switcher (Optional)</h2>
 				</div>
 				<p class="section-description">
@@ -378,7 +370,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => removeDateVersion(index)}
 									title="Remove date version"
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						{/each}
@@ -410,7 +402,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 
 						<button type="button" class="btn-add" onclick={addDateVersion}>
-							<IconPlus size={16} />
+							<Icon icon={IconPlus} size={16} />
 							Add Date
 						</button>
 					</div>

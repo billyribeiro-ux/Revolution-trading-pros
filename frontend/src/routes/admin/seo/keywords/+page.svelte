@@ -1,15 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
-	import {
-		IconPlus,
-		IconSearch,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconMinus,
-		IconTrash,
-		IconRefresh
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconSearch, IconTrendingUp, IconTrendingDown, IconMinus, IconTrash, IconRefresh } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let keywords: any[] = $state([]);
@@ -103,7 +95,7 @@ import { logger } from '$lib/utils/logger';
 			<p>Monitor keyword rankings and performance</p>
 		</div>
 		<button class="btn-primary">
-			<IconPlus size={18} />
+			<Icon icon={IconPlus} size={18} />
 			Add Keyword
 		</button>
 	</header>
@@ -131,7 +123,7 @@ import { logger } from '$lib/utils/logger';
 
 	<div class="controls-bar">
 		<div class="search-box">
-			<IconSearch size={20} />
+			<Icon icon={IconSearch} size={20} />
 			<label for="search-keywords" class="sr-only">Search keywords</label>
 			<input
 				type="text"
@@ -143,7 +135,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		<button class="btn-secondary" onclick={loadKeywords}>
-			<IconRefresh size={18} />
+			<Icon icon={IconRefresh} size={18} />
 			Refresh
 		</button>
 	</div>
@@ -156,7 +148,7 @@ import { logger } from '$lib/utils/logger';
 				<h3>No keywords tracked yet</h3>
 				<p>Add keywords to start tracking their rankings</p>
 				<button class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Your First Keyword
 				</button>
 			</div>
@@ -218,7 +210,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => deleteKeyword(keyword.id)}
 										title="Delete"
 									>
-										<IconTrash size={18} />
+										<Icon icon={IconTrash} size={18} />
 									</button>
 								</div>
 							</td>

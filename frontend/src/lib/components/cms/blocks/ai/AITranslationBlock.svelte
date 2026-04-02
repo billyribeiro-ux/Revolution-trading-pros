@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconLanguage, IconArrowsLeftRight, IconCopy, IconCheck, IconLoader2 } from '$lib/icons';
+	import { Icon, IconLanguage, IconArrowsLeftRight, IconCopy, IconCheck, IconLoader2 } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -105,7 +105,7 @@
 	aria-label="Translation"
 >
 	<div class="translation-header">
-		<IconLanguage size={20} aria-hidden="true" />
+		<Icon icon={IconLanguage} size={20} aria-hidden="true" />
 		<span>Translation</span>
 	</div>
 
@@ -122,7 +122,7 @@
 		</select>
 
 		<button type="button" class="swap-btn" onclick={swapLanguages} aria-label="Swap languages">
-			<IconArrowsLeftRight size={18} />
+			<Icon icon={IconArrowsLeftRight} size={18} />
 		</button>
 
 		<select
@@ -165,13 +165,13 @@
 						onclick={copyTranslation}
 						aria-label="Copy translation"
 					>
-						{#if copied}<IconCheck size={14} />{:else}<IconCopy size={14} />{/if}
+						{#if copied}<Icon icon={IconCheck} size={14} />{:else}<Icon icon={IconCopy} size={14} />{/if}
 					</button>
 				{/if}
 			</div>
 			<div class="panel-content readonly">
 				{#if aiState.loading}
-					<div class="loading"><IconLoader2 size={20} class="spinning" /> Translating...</div>
+					<div class="loading"><Icon icon={IconLoader2} size={20} class="spinning" /> Translating...</div>
 				{:else if translatedText}
 					{translatedText}
 				{:else}
@@ -194,9 +194,9 @@
 				disabled={aiState.loading || !sourceText.trim()}
 			>
 				{#if aiState.loading}
-					<IconLoader2 size={16} class="spinning" /> Translating...
+					<Icon icon={IconLoader2} size={16} class="spinning" /> Translating...
 				{:else}
-					<IconLanguage size={16} /> Translate
+					<Icon icon={IconLanguage} size={16} /> Translate
 				{/if}
 			</button>
 

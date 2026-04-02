@@ -9,7 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, TimelineEvent } from '$lib/crm/types';
-	import { IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle } from '$lib/icons';
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);
@@ -51,7 +51,7 @@ import { logger } from '$lib/utils/logger';
 			class="mb-4 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200"
 			onclick={goBack}
 		>
-			<IconArrowLeft size={16} />
+			<Icon icon={IconArrowLeft} size={16} />
 			Back to contacts
 		</button>
 
@@ -71,7 +71,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5">
 						<div class="flex items-start gap-4">
 							<div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-800/80">
-								<IconUserCircle size={32} class="text-indigo-300" />
+								<Icon icon={IconUserCircle} size={32} class="text-indigo-300" />
 							</div>
 							<div class="flex-1">
 								<h1 class="text-xl font-semibold leading-tight">{contact.full_name}</h1>
@@ -92,14 +92,14 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="mt-4 grid gap-3 text-xs text-slate-300 md:grid-cols-2">
 							<div class="flex items-center gap-2">
-								<IconMail size={14} class="text-slate-400" />
+								<Icon icon={IconMail} size={14} class="text-slate-400" />
 								<a href={`mailto:${contact.email || ''}`} class="hover:underline"
 									>{contact.email || ''}</a
 								>
 							</div>
 							{#if contact.phone}
 								<div class="flex items-center gap-2">
-									<IconPhone size={14} class="text-slate-400" />
+									<Icon icon={IconPhone} size={14} class="text-slate-400" />
 									<a href={`tel:${contact.phone}`} class="hover:underline">{contact.phone}</a>
 								</div>
 							{/if}
@@ -124,7 +124,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Timeline -->
 					<div class="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5">
 						<div class="mb-3 flex items-center gap-2 text-sm font-medium text-slate-100">
-							<IconActivity size={18} class="text-sky-400" />
+							<Icon icon={IconActivity} size={18} class="text-sky-400" />
 							Activity Timeline
 						</div>
 

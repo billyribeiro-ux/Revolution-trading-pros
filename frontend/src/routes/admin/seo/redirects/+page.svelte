@@ -1,14 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import {
-		IconPlus,
-		IconSearch,
-		IconTrash,
-		IconEdit,
-		IconToggleLeft,
-		IconToggleRight
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconSearch, IconTrash, IconEdit, IconToggleLeft, IconToggleRight } from '$lib/icons';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
 
 	let redirects: any[] = $state([]);
@@ -136,7 +129,7 @@ import { logger } from '$lib/utils/logger';
 			<p>Manage 301/302 redirects with regex support</p>
 		</div>
 		<button class="btn-primary" onclick={createRedirect}>
-			<IconPlus size={18} />
+			<Icon icon={IconPlus} size={18} />
 			Add Redirect
 		</button>
 	</header>
@@ -164,7 +157,7 @@ import { logger } from '$lib/utils/logger';
 
 	<div class="controls-bar">
 		<div class="search-box">
-			<IconSearch size={20} />
+			<Icon icon={IconSearch} size={20} />
 			<label for="search-redirects" class="sr-only">Search redirects</label>
 			<input
 				type="text"
@@ -189,7 +182,7 @@ import { logger } from '$lib/utils/logger';
 
 		{#if selectedIds.length > 0}
 			<button class="btn-danger" onclick={bulkDelete}>
-				<IconTrash size={18} />
+				<Icon icon={IconTrash} size={18} />
 				Delete ({selectedIds.length})
 			</button>
 		{/if}
@@ -203,7 +196,7 @@ import { logger } from '$lib/utils/logger';
 				<h3>No redirects found</h3>
 				<p>Create your first redirect to get started</p>
 				<button class="btn-primary" onclick={createRedirect}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Redirect
 				</button>
 			</div>
@@ -256,10 +249,10 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => toggleRedirect(redirect)}
 								>
 									{#if redirect.is_active}
-										<IconToggleRight size={24} />
+										<Icon icon={IconToggleRight} size={24} />
 										Active
 									{:else}
-										<IconToggleLeft size={24} />
+										<Icon icon={IconToggleLeft} size={24} />
 										Inactive
 									{/if}
 								</button>
@@ -267,14 +260,14 @@ import { logger } from '$lib/utils/logger';
 							<td>
 								<div class="actions">
 									<button class="action-btn" onclick={() => editRedirect(redirect)} title="Edit">
-										<IconEdit size={18} />
+										<Icon icon={IconEdit} size={18} />
 									</button>
 									<button
 										class="action-btn danger"
 										onclick={() => deleteRedirect(redirect.id)}
 										title="Delete"
 									>
-										<IconTrash size={18} />
+										<Icon icon={IconTrash} size={18} />
 									</button>
 								</div>
 							</td>

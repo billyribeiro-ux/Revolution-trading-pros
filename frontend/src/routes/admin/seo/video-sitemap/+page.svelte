@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconVideo,
-		IconRefresh,
-		IconExternalLink,
-		IconPlus,
-		IconTrash,
-		IconEdit
-	} from '$lib/icons';
+	import { Icon, IconVideo, IconRefresh, IconExternalLink, IconPlus, IconTrash, IconEdit } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
@@ -159,18 +152,18 @@
 	<header class="page-header">
 		<div>
 			<h1>
-				<IconVideo size={28} />
+				<Icon icon={IconVideo} size={28} />
 				Google Video Sitemap
 			</h1>
 			<p>Manage your video sitemap for enhanced video search visibility</p>
 		</div>
 		<div class="header-actions">
 			<a href={sitemapUrl} target="_blank" rel="noopener" class="btn-secondary">
-				<IconExternalLink size={18} />
+				<Icon icon={IconExternalLink} size={18} />
 				View Sitemap
 			</a>
 			<button class="btn-primary" onclick={regenerateSitemap} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 				{loading ? 'Regenerating...' : 'Regenerate'}
 			</button>
 		</div>
@@ -257,7 +250,7 @@
 		<div class="section-header">
 			<h2>Videos in Sitemap ({videos.length})</h2>
 			<button class="btn-add" onclick={() => (showAddModal = true)}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Add Video
 			</button>
 		</div>
@@ -266,7 +259,7 @@
 			<div class="loading">Loading videos...</div>
 		{:else if videos.length === 0}
 			<div class="empty-state">
-				<IconVideo size={48} />
+				<Icon icon={IconVideo} size={48} />
 				<p>No videos found. Add videos manually or enable auto-detection.</p>
 			</div>
 		{:else}
@@ -302,10 +295,10 @@
 						</div>
 						<div class="video-actions">
 							<button class="icon-btn" title="Edit">
-								<IconEdit size={18} />
+								<Icon icon={IconEdit} size={18} />
 							</button>
 							<button class="icon-btn danger" onclick={() => removeVideo(video.id)} title="Remove">
-								<IconTrash size={18} />
+								<Icon icon={IconTrash} size={18} />
 							</button>
 						</div>
 					</div>

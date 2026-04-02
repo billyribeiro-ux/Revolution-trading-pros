@@ -19,23 +19,7 @@
 		retryPayment,
 		getPaymentHistory
 	} from '$lib/api/subscriptions';
-	import {
-		IconX,
-		IconCreditCard,
-		IconCalendar,
-		IconEdit,
-		IconPlayerPause,
-		IconPlayerPlay,
-		IconBan,
-		IconRefresh,
-		IconReceipt,
-		IconChartBar,
-		IconClock,
-		IconCheck,
-		IconAlertTriangle,
-		IconMail,
-		IconCurrencyDollar
-	} from '$lib/icons';
+	import { Icon, IconX, IconCreditCard, IconCalendar, IconEdit, IconPlayerPause, IconPlayerPlay, IconBan, IconRefresh, IconReceipt, IconChartBar, IconClock, IconCheck, IconAlertTriangle, IconMail, IconCurrencyDollar } from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
 	interface Props {
@@ -281,7 +265,7 @@
 			<!-- Header -->
 			<header class="drawer-header">
 				<div class="subscription-icon">
-					<IconCreditCard size={24} />
+					<Icon icon={IconCreditCard} size={24} />
 				</div>
 				<div class="subscription-info">
 					<h2 class="subscription-name">{subscription.productName}</h2>
@@ -294,13 +278,13 @@
 					</div>
 				</div>
 				<button type="button" class="btn-close" onclick={onClose} aria-label="Close">
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			</header>
 
 			{#if error}
 				<div class="error-banner">
-					<IconAlertTriangle size={16} />
+					<Icon icon={IconAlertTriangle} size={16} />
 					{error}
 				</div>
 			{/if}
@@ -328,16 +312,16 @@
 			<!-- Action Buttons -->
 			<div class="action-buttons">
 				<button type="button" class="btn-action" onclick={() => onEdit?.(subscription!)}>
-					<IconEdit size={16} />
+					<Icon icon={IconEdit} size={16} />
 					Edit
 				</button>
 				{#if subscription.status === 'active'}
 					<button type="button" class="btn-action warning" onclick={() => (showPauseModal = true)}>
-						<IconPlayerPause size={16} />
+						<Icon icon={IconPlayerPause} size={16} />
 						Pause
 					</button>
 					<button type="button" class="btn-action danger" onclick={() => (showCancelModal = true)}>
-						<IconBan size={16} />
+						<Icon icon={IconBan} size={16} />
 						Cancel
 					</button>
 				{:else if subscription.status === 'on-hold'}
@@ -347,11 +331,11 @@
 						onclick={handleResume}
 						disabled={isProcessingAction}
 					>
-						<IconPlayerPlay size={16} />
+						<Icon icon={IconPlayerPlay} size={16} />
 						Resume
 					</button>
 					<button type="button" class="btn-action danger" onclick={() => (showCancelModal = true)}>
-						<IconBan size={16} />
+						<Icon icon={IconBan} size={16} />
 						Cancel
 					</button>
 				{:else if subscription.status === 'cancelled' || subscription.status === 'expired'}
@@ -360,7 +344,7 @@
 						class="btn-action success"
 						onclick={() => (showReactivateModal = true)}
 					>
-						<IconRefresh size={16} />
+						<Icon icon={IconRefresh} size={16} />
 						Reactivate
 					</button>
 				{:else if subscription.status === 'pending-cancel'}
@@ -369,7 +353,7 @@
 						class="btn-action success"
 						onclick={() => (showReactivateModal = true)}
 					>
-						<IconRefresh size={16} />
+						<Icon icon={IconRefresh} size={16} />
 						Keep Active
 					</button>
 				{/if}
@@ -383,7 +367,7 @@
 					class:active={activeTab === 'billing'}
 					onclick={() => (activeTab = 'billing')}
 				>
-					<IconCurrencyDollar size={16} />
+					<Icon icon={IconCurrencyDollar} size={16} />
 					Billing
 				</button>
 				<button
@@ -392,7 +376,7 @@
 					class:active={activeTab === 'usage'}
 					onclick={() => (activeTab = 'usage')}
 				>
-					<IconChartBar size={16} />
+					<Icon icon={IconChartBar} size={16} />
 					Usage
 				</button>
 				<button
@@ -401,7 +385,7 @@
 					class:active={activeTab === 'history'}
 					onclick={() => (activeTab = 'history')}
 				>
-					<IconReceipt size={16} />
+					<Icon icon={IconReceipt} size={16} />
 					History
 				</button>
 			</nav>
@@ -414,28 +398,28 @@
 							<h3 class="section-title">Billing Details</h3>
 							<div class="info-grid">
 								<div class="info-item">
-									<IconCurrencyDollar size={16} />
+									<Icon icon={IconCurrencyDollar} size={16} />
 									<div>
 										<span class="info-label">Amount</span>
 										<span class="info-value">{formatCurrency(subscription.price)}</span>
 									</div>
 								</div>
 								<div class="info-item">
-									<IconCalendar size={16} />
+									<Icon icon={IconCalendar} size={16} />
 									<div>
 										<span class="info-label">Billing Cycle</span>
 										<span class="info-value">{getIntervalLabel(subscription.interval)}</span>
 									</div>
 								</div>
 								<div class="info-item">
-									<IconCalendar size={16} />
+									<Icon icon={IconCalendar} size={16} />
 									<div>
 										<span class="info-label">Start Date</span>
 										<span class="info-value">{formatDate(subscription.startDate)}</span>
 									</div>
 								</div>
 								<div class="info-item">
-									<IconClock size={16} />
+									<Icon icon={IconClock} size={16} />
 									<div>
 										<span class="info-label">Next Payment</span>
 										<span class="info-value">{formatDate(subscription.nextPaymentDate)}</span>
@@ -449,7 +433,7 @@
 							<div class="payment-method-card">
 								{#if subscription.paymentMethod}
 									<div class="payment-method-icon">
-										<IconCreditCard size={24} />
+										<Icon icon={IconCreditCard} size={24} />
 									</div>
 									<div class="payment-method-details">
 										<span class="payment-method-type">
@@ -478,7 +462,7 @@
 						{#if subscription.isTrialing && subscription.trialEndDate}
 							<section class="info-section trial-section">
 								<h3 class="section-title">
-									<IconClock size={16} />
+									<Icon icon={IconClock} size={16} />
 									Trial Period
 								</h3>
 								<div class="trial-info">
@@ -490,7 +474,7 @@
 						{#if subscription.status === 'cancelled' || subscription.status === 'pending-cancel'}
 							<section class="info-section warning-section">
 								<h3 class="section-title">
-									<IconAlertTriangle size={16} />
+									<Icon icon={IconAlertTriangle} size={16} />
 									Cancellation Details
 								</h3>
 								<div class="info-grid">
@@ -523,7 +507,7 @@
 							<div class="metrics-grid">
 								<div class="metric-card">
 									<div class="metric-icon success">
-										<IconCheck size={20} />
+										<Icon icon={IconCheck} size={20} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-value">{subscription.successfulPayments || 0}</span>
@@ -532,7 +516,7 @@
 								</div>
 								<div class="metric-card">
 									<div class="metric-icon error">
-										<IconAlertTriangle size={20} />
+										<Icon icon={IconAlertTriangle} size={20} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-value">{subscription.failedPayments || 0}</span>
@@ -541,7 +525,7 @@
 								</div>
 								<div class="metric-card">
 									<div class="metric-icon primary">
-										<IconRefresh size={20} />
+										<Icon icon={IconRefresh} size={20} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-value">{subscription.renewalCount || 0}</span>
@@ -550,7 +534,7 @@
 								</div>
 								<div class="metric-card">
 									<div class="metric-icon accent">
-										<IconCurrencyDollar size={20} />
+										<Icon icon={IconCurrencyDollar} size={20} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-value">{formatCurrency(subscription.totalPaid)}</span>
@@ -587,7 +571,7 @@
 						{#if subscription.emailsSent && subscription.emailsSent.length > 0}
 							<section class="info-section">
 								<h3 class="section-title">
-									<IconMail size={16} />
+									<Icon icon={IconMail} size={16} />
 									Notifications Sent
 								</h3>
 								<div class="emails-list">
@@ -611,7 +595,7 @@
 							</div>
 						{:else if paymentHistory.length === 0 && (!subscription.paymentHistory || subscription.paymentHistory.length === 0)}
 							<div class="empty-state">
-								<IconReceipt size={48} />
+								<Icon icon={IconReceipt} size={48} />
 								<p>No payment history found</p>
 							</div>
 						{:else}
@@ -650,7 +634,7 @@
 												onclick={() => handleRetryPayment(payment.id)}
 												disabled={isLoading}
 											>
-												<IconRefresh size={14} />
+												<Icon icon={IconRefresh} size={14} />
 												Retry Payment
 											</button>
 										{/if}

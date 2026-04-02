@@ -58,7 +58,7 @@ import { logger } from '$lib/utils/logger';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
@@ -1057,14 +1057,14 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Close popup"
 					transition:scale={{ delay: 300, duration: 200 }}
 				>
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			{/if}
 
 			<!-- Success State -->
 			{#if submitSuccess}
 				<div class="success-state" transition:scale={{ duration: 300 }}>
-					<IconCheck size={64} class="success-icon" />
+					<Icon icon={IconCheck} size={64} class="success-icon" />
 					<h2>Success!</h2>
 					<p>{currentPopup.successMessage || 'Thank you for your submission.'}</p>
 				</div>
@@ -1200,7 +1200,7 @@ import { logger } from '$lib/utils/logger';
 
 						{#if submitError}
 							<div class="form-error-message" role="alert">
-								<IconAlertCircle size={16} />
+								<Icon icon={IconAlertCircle} size={16} />
 								{submitError}
 							</div>
 						{/if}
@@ -1218,7 +1218,7 @@ import { logger } from '$lib/utils/logger';
 								aria-busy={button.action === 'submit' && isSubmitting}
 							>
 								{#if button.action === 'submit' && isSubmitting}
-									<IconLoader size={20} class="animate-spin"></IconLoader>
+									<Icon icon={IconLoader} size={20} class="animate-spin"></Icon>
 								{/if}
 								{button.text}
 							</button>

@@ -5,7 +5,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
+	import { Icon, IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
 	import type { ComponentType } from 'svelte';
 
 	interface Props {
@@ -58,11 +58,11 @@
 					{#if trend !== null}
 						<span class="trend trend-{trendDirection}">
 							{#if trendDirection === 'up'}
-								<IconTrendingUp size={14} />
+								<Icon icon={IconTrendingUp} size={14} />
 							{:else if trendDirection === 'down'}
-								<IconTrendingDown size={14} />
+								<Icon icon={IconTrendingDown} size={14} />
 							{:else}
-								<IconMinus size={14} />
+								<Icon icon={IconMinus} size={14} />
 							{/if}
 							{formattedTrend}
 						</span>

@@ -2,12 +2,9 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
+	import { Icon, IconArrowRight, IconDatabase, IconShieldLock, IconSitemap } from '$lib/icons';
 	// Using the direct path imports as requested in your snippet
-	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
-	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
-	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-
+				
 	const features = [
 		{
 			id: 'SYS-01',
@@ -219,7 +216,7 @@
 								<div
 									class="opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 -translate-x-2 group-hover/card:translate-x-0"
 								>
-									<IconArrowRight size={16} class="text-white" />
+									<Icon icon={IconArrowRight} size={16} class="text-white" />
 								</div>
 							</div>
 						</div>

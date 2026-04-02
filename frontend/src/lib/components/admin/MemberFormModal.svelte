@@ -12,15 +12,7 @@
 		type CreateMemberRequest,
 		type UpdateMemberRequest
 	} from '$lib/api/members';
-	import {
-		IconX,
-		IconUserPlus,
-		IconUserEdit,
-		IconEye,
-		IconEyeOff,
-		IconCopy,
-		IconCheck
-	} from '$lib/icons';
+	import { Icon, IconX, IconUserPlus, IconUserEdit, IconEye, IconEyeOff, IconCopy, IconCheck } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -346,9 +338,9 @@
 					<div class="header-content">
 						<div class="header-icon">
 							{#if mode === 'create'}
-								<IconUserPlus size={24} />
+								<Icon icon={IconUserPlus} size={24} />
 							{:else}
-								<IconUserEdit size={24} />
+								<Icon icon={IconUserEdit} size={24} />
 							{/if}
 						</div>
 						<div class="header-text">
@@ -369,7 +361,7 @@
 						disabled={isLoading}
 						aria-label="Close"
 					>
-						<IconX size={20} />
+						<Icon icon={IconX} size={20} />
 					</button>
 				</div>
 
@@ -379,7 +371,7 @@
 						<div class="success-animation">
 							<div class="success-ring"></div>
 							<div class="success-icon">
-								<IconCheck size={40} />
+								<Icon icon={IconCheck} size={40} />
 							</div>
 						</div>
 						<h3>Member Created Successfully</h3>
@@ -395,9 +387,9 @@
 								title="Copy password"
 							>
 								{#if copiedPassword}
-									<IconCheck size={18} />
+									<Icon icon={IconCheck} size={18} />
 								{:else}
-									<IconCopy size={18} />
+									<Icon icon={IconCopy} size={18} />
 								{/if}
 							</button>
 						</div>
@@ -540,9 +532,9 @@
 												title={showPassword ? 'Hide password' : 'Show password'}
 											>
 												{#if showPassword}
-													<IconEyeOff size={18} />
+													<Icon icon={IconEyeOff} size={18} />
 												{:else}
-													<IconEye size={18} />
+													<Icon icon={IconEye} size={18} />
 												{/if}
 											</button>
 										</div>
@@ -565,7 +557,7 @@
 													disabled={isLoading}
 												/>
 												<span class="checkbox-box">
-													{#if sendWelcomeEmail}<IconCheck size={14} />{/if}
+													{#if sendWelcomeEmail}<Icon icon={IconCheck} size={14} />{/if}
 												</span>
 												<span class="checkbox-text">Send welcome email with login details</span>
 											</label>

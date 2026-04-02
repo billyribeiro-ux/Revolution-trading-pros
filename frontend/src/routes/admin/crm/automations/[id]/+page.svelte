@@ -14,27 +14,9 @@
 import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import IconShare from '@tabler/icons-svelte-runes/icons/share';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { crmAPI } from '$lib/api/crm';
+																				import { crmAPI } from '$lib/api/crm';
 	import type {
+	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconBolt, IconChartBar, IconCheck, IconClock, IconDownload, IconEdit, IconList, IconLoader2, IconMail, IconPlayerPause, IconPlayerPlay, IconRefresh, IconShare, IconTag, IconUsers, IconX } from '$lib/icons';
 		AutomationFunnel,
 		FunnelAction,
 		FunnelSubscriber,
@@ -250,7 +232,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else if error && !funnel}
 		<div class="error-state">
-			<IconAlertCircle size={48} />
+			<Icon icon={IconAlertCircle} size={48} />
 			<h3>Failed to load automation</h3>
 			<p>{error}</p>
 			<button class="btn-primary" onclick={loadFunnel}>Try Again</button>
@@ -260,12 +242,12 @@ import { logger } from '$lib/utils/logger';
 		<div class="page-header">
 			<div class="header-content">
 				<a href="/admin/crm/automations" class="back-link">
-					<IconArrowLeft size={18} />
+					<Icon icon={IconArrowLeft} size={18} />
 					Back to Automations
 				</a>
 				<div class="title-row">
 					<div class="funnel-icon">
-						<IconShare size={24} />
+						<Icon icon={IconShare} size={24} />
 					</div>
 					<div>
 						<h1>{funnel.title}</h1>
@@ -280,24 +262,24 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="header-actions">
 				<button class="btn-icon" onclick={() => loadFunnel()} disabled={isLoading} title="Refresh">
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<button class="btn-icon" onclick={exportFunnel} disabled={actionInProgress} title="Export">
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 				</button>
 				{#if funnel.status !== 'draft'}
 					<button class="btn-secondary" onclick={toggleStatus} disabled={actionInProgress}>
 						{#if funnel.status === 'active'}
-							<IconPlayerPause size={18} />
+							<Icon icon={IconPlayerPause} size={18} />
 							Pause
 						{:else}
-							<IconPlayerPlay size={18} />
+							<Icon icon={IconPlayerPlay} size={18} />
 							Activate
 						{/if}
 					</button>
 				{/if}
 				<a href="/admin/crm/automations/{funnelId}/edit" class="btn-primary">
-					<IconEdit size={18} />
+					<Icon icon={IconEdit} size={18} />
 					Edit Workflow
 				</a>
 			</div>
@@ -306,17 +288,17 @@ import { logger } from '$lib/utils/logger';
 		<!-- Alerts -->
 		{#if error}
 			<div class="error-alert">
-				<IconAlertCircle size={18} />
+				<Icon icon={IconAlertCircle} size={18} />
 				<span>{error}</span>
 				<button onclick={() => (error = '')}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/if}
 
 		{#if successMessage}
 			<div class="success-alert">
-				<IconCheck size={18} />
+				<Icon icon={IconCheck} size={18} />
 				<span>{successMessage}</span>
 			</div>
 		{/if}
@@ -326,7 +308,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="stats-grid">
 				<div class="stat-card">
 					<div class="stat-icon blue">
-						<IconUsers size={24} />
+						<Icon icon={IconUsers} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{formatNumber(stats.total_subscribers)}</span>
@@ -335,7 +317,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon green">
-						<IconBolt size={24} />
+						<Icon icon={IconBolt} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{formatNumber(stats.active_subscribers)}</span>
@@ -344,7 +326,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon purple">
-						<IconCheck size={24} />
+						<Icon icon={IconCheck} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{formatNumber(stats.completed)}</span>
@@ -353,7 +335,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="stat-card">
 					<div class="stat-icon amber">
-						<IconChartBar size={24} />
+						<Icon icon={IconChartBar} size={24} />
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{completionRate}%</span>
@@ -448,11 +430,11 @@ import { logger } from '$lib/utils/logger';
 			>
 				{#if actions.length === 0}
 					<div class="empty-state">
-						<IconBolt size={48} />
+						<Icon icon={IconBolt} size={48} />
 						<h3>No actions yet</h3>
 						<p>Add actions to build your automation workflow</p>
 						<a href="/admin/crm/automations/{funnelId}/edit" class="btn-primary">
-							<IconEdit size={18} />
+							<Icon icon={IconEdit} size={18} />
 							Edit Workflow
 						</a>
 					</div>
@@ -461,7 +443,7 @@ import { logger } from '$lib/utils/logger';
 						<!-- Trigger Node -->
 						<div class="workflow-node trigger-node">
 							<div class="node-icon bg-emerald-500/20 text-emerald-400">
-								<IconBolt size={20} />
+								<Icon icon={IconBolt} size={20} />
 							</div>
 							<div class="node-content">
 								<span class="node-type">Trigger</span>
@@ -475,7 +457,7 @@ import { logger } from '$lib/utils/logger';
 						{#each actions as action, index}
 							{@const ActionIcon = getActionIcon(action.action_type)}
 							<div class="workflow-connector">
-								<IconArrowRight size={16} />
+								<Icon icon={IconArrowRight} size={16} />
 							</div>
 							<div class="workflow-node action-node {getActionColor(action.action_type)}">
 								<div class="node-icon">
@@ -488,7 +470,7 @@ import { logger } from '$lib/utils/logger';
 									<span class="node-title">{action.title || `Step ${index + 1}`}</span>
 									{#if action.delay_seconds > 0}
 										<span class="node-delay">
-											<IconClock size={12} />
+											<Icon icon={IconClock} size={12} />
 											{action.delay_seconds >= 86400
 												? `${Math.floor(action.delay_seconds / 86400)} day(s)`
 												: action.delay_seconds >= 3600
@@ -514,12 +496,12 @@ import { logger } from '$lib/utils/logger';
 			>
 				{#if isLoadingSubscribers}
 					<div class="loading-state mini">
-						<IconLoader2 size={24} class="spinning" />
+						<Icon icon={IconLoader2} size={24} class="spinning" />
 						<p>Loading subscribers...</p>
 					</div>
 				{:else if subscribers.length === 0}
 					<div class="empty-state">
-						<IconUsers size={48} />
+						<Icon icon={IconUsers} size={48} />
 						<h3>No subscribers yet</h3>
 						<p>Contacts will appear here when they enter the automation</p>
 					</div>

@@ -8,27 +8,7 @@ import { logger } from '$lib/utils/logger';
 		type CartStatus,
 		STATUS_LABELS
 	} from '$lib/api/abandoned-carts';
-	import {
-		IconArrowLeft,
-		IconShoppingCart,
-		IconMail,
-		IconSend,
-		IconSearch,
-		IconFilter,
-		IconRefresh,
-		IconChevronLeft,
-		IconChevronRight,
-		IconX,
-		IconCurrencyDollar,
-		IconCheck,
-		IconClock,
-		IconAlertCircle,
-		IconGift,
-		IconPercentage,
-		IconChartBar,
-		IconUsers,
-		IconExternalLink
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconShoppingCart, IconMail, IconSend, IconSearch, IconFilter, IconRefresh, IconChevronLeft, IconChevronRight, IconX, IconCurrencyDollar, IconCheck, IconClock, IconAlertCircle, IconGift, IconPercentage, IconChartBar, IconUsers, IconExternalLink } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// State
@@ -249,14 +229,14 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Admin
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconShoppingCart size={32} />
+					<Icon icon={IconShoppingCart} size={32} />
 				</div>
 				<div>
 					<h1>Cart Recovery Center</h1>
@@ -264,7 +244,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			</div>
 			<button class="btn-refresh" onclick={loadDashboard}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Refresh
 			</button>
 		</div>
@@ -280,7 +260,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="metrics-grid">
 			<div class="metric-card total">
 				<div class="metric-icon">
-					<IconShoppingCart size={28} />
+					<Icon icon={IconShoppingCart} size={28} />
 				</div>
 				<div class="metric-content">
 					<div class="metric-label">Total Abandoned</div>
@@ -291,7 +271,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="metric-card recovered">
 				<div class="metric-icon">
-					<IconCheck size={28} />
+					<Icon icon={IconCheck} size={28} />
 				</div>
 				<div class="metric-content">
 					<div class="metric-label">Recovered</div>
@@ -303,7 +283,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="metric-card pending">
 				<div class="metric-icon">
-					<IconClock size={28} />
+					<Icon icon={IconClock} size={28} />
 				</div>
 				<div class="metric-content">
 					<div class="metric-label">Pending Recovery</div>
@@ -314,7 +294,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="metric-card average">
 				<div class="metric-icon">
-					<IconCurrencyDollar size={28} />
+					<Icon icon={IconCurrencyDollar} size={28} />
 				</div>
 				<div class="metric-content">
 					<div class="metric-label">Avg Cart Value</div>
@@ -327,13 +307,13 @@ import { logger } from '$lib/utils/logger';
 		<!-- Recovery Pipeline -->
 		<div class="pipeline-section">
 			<div class="section-header">
-				<IconChartBar size={20} />
+				<Icon icon={IconChartBar} size={20} />
 				<h3>Recovery Pipeline</h3>
 			</div>
 			<div class="pipeline-stages">
 				<div class="pipeline-stage">
 					<div class="stage-icon pending">
-						<IconAlertCircle size={24} />
+						<Icon icon={IconAlertCircle} size={24} />
 					</div>
 					<div class="stage-info">
 						<div class="stage-count">{pendingCount}</div>
@@ -348,12 +328,12 @@ import { logger } from '$lib/utils/logger';
 				</div>
 
 				<div class="pipeline-connector">
-					<IconChevronRight size={20} />
+					<Icon icon={IconChevronRight} size={20} />
 				</div>
 
 				<div class="pipeline-stage">
 					<div class="stage-icon sent">
-						<IconMail size={24} />
+						<Icon icon={IconMail} size={24} />
 					</div>
 					<div class="stage-info">
 						<div class="stage-count">{emailSentCount}</div>
@@ -368,12 +348,12 @@ import { logger } from '$lib/utils/logger';
 				</div>
 
 				<div class="pipeline-connector">
-					<IconChevronRight size={20} />
+					<Icon icon={IconChevronRight} size={20} />
 				</div>
 
 				<div class="pipeline-stage">
 					<div class="stage-icon clicked">
-						<IconExternalLink size={24} />
+						<Icon icon={IconExternalLink} size={24} />
 					</div>
 					<div class="stage-info">
 						<div class="stage-count">{clickedCount}</div>
@@ -388,12 +368,12 @@ import { logger } from '$lib/utils/logger';
 				</div>
 
 				<div class="pipeline-connector">
-					<IconChevronRight size={20} />
+					<Icon icon={IconChevronRight} size={20} />
 				</div>
 
 				<div class="pipeline-stage">
 					<div class="stage-icon recovered">
-						<IconCheck size={24} />
+						<Icon icon={IconCheck} size={24} />
 					</div>
 					<div class="stage-info">
 						<div class="stage-count">{stats.recovered_count}</div>
@@ -420,7 +400,7 @@ import { logger } from '$lib/utils/logger';
 				}}
 			>
 				<div class="action-icon">
-					<IconMail size={24} />
+					<Icon icon={IconMail} size={24} />
 				</div>
 				<div class="action-content">
 					<h4>Send First Reminder</h4>
@@ -438,7 +418,7 @@ import { logger } from '$lib/utils/logger';
 				}}
 			>
 				<div class="action-icon">
-					<IconClock size={24} />
+					<Icon icon={IconClock} size={24} />
 				</div>
 				<div class="action-content">
 					<h4>Send Urgency Email</h4>
@@ -460,7 +440,7 @@ import { logger } from '$lib/utils/logger';
 				}}
 			>
 				<div class="action-icon">
-					<IconPercentage size={24} />
+					<Icon icon={IconPercentage} size={24} />
 				</div>
 				<div class="action-content">
 					<h4>Final Discount Offer</h4>
@@ -473,7 +453,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Toolbar -->
 		<div class="toolbar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					id="page-searchquery"
 					name="page-searchquery"
@@ -485,7 +465,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 
 			<div class="filter-group">
-				<IconFilter size={16} />
+				<Icon icon={IconFilter} size={16} />
 				<select bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
 					<option value="">All Status</option>
 					<option value="pending">Pending</option>
@@ -498,7 +478,7 @@ import { logger } from '$lib/utils/logger';
 
 			{#if selectedCarts.size > 0}
 				<button class="btn-selected" onclick={() => (showRecoveryModal = true)}>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					Send Recovery ({selectedCarts.size})
 				</button>
 			{/if}
@@ -508,7 +488,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="carts-table-container">
 			{#if carts.length === 0}
 				<div class="empty-state">
-					<IconShoppingCart size={64} stroke={1} />
+					<Icon icon={IconShoppingCart} size={64} stroke={1} />
 					<h3>No abandoned carts</h3>
 					<p>Great! No abandoned carts matching your filters.</p>
 				</div>
@@ -590,14 +570,14 @@ import { logger } from '$lib/utils/logger';
 													showRecoveryModal = true;
 												}}
 											>
-												<IconMail size={16} />
+												<Icon icon={IconMail} size={16} />
 											</button>
 											<button
 												class="action-btn recover"
 												title="Mark as Recovered"
 												onclick={() => handleMarkRecovered(cart.id)}
 											>
-												<IconCheck size={16} />
+												<Icon icon={IconCheck} size={16} />
 											</button>
 										{/if}
 									</div>
@@ -621,7 +601,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={pagination.current_page === 1}
 							onclick={() => loadCarts(pagination.current_page - 1)}
 						>
-							<IconChevronLeft size={18} />
+							<Icon icon={IconChevronLeft} size={18} />
 						</button>
 						<span class="page-indicator"
 							>Page {pagination.current_page} of {pagination.last_page}</span
@@ -631,7 +611,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={pagination.current_page === pagination.last_page}
 							onclick={() => loadCarts(pagination.current_page + 1)}
 						>
-							<IconChevronRight size={18} />
+							<Icon icon={IconChevronRight} size={18} />
 						</button>
 					</div>
 				</div>
@@ -666,7 +646,7 @@ import { logger } from '$lib/utils/logger';
 					<p>Sending to {selectedCarts.size} abandoned cart{selectedCarts.size > 1 ? 's' : ''}</p>
 				</div>
 				<button class="close-btn" onclick={() => (showRecoveryModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -680,7 +660,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={recoveryTemplate === 'reminder_1'}
 							onclick={() => (recoveryTemplate = 'reminder_1')}
 						>
-							<IconMail size={24} />
+							<Icon icon={IconMail} size={24} />
 							<span class="template-name">First Reminder</span>
 							<span class="template-timing">1 hour</span>
 						</button>
@@ -689,7 +669,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={recoveryTemplate === 'reminder_2'}
 							onclick={() => (recoveryTemplate = 'reminder_2')}
 						>
-							<IconClock size={24} />
+							<Icon icon={IconClock} size={24} />
 							<span class="template-name">Urgency</span>
 							<span class="template-timing">24 hours</span>
 						</button>
@@ -698,7 +678,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={recoveryTemplate === 'final_discount'}
 							onclick={() => (recoveryTemplate = 'final_discount')}
 						>
-							<IconGift size={24} />
+							<Icon icon={IconGift} size={24} />
 							<span class="template-name">Final Discount</span>
 							<span class="template-timing">72 hours</span>
 						</button>
@@ -707,7 +687,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={recoveryTemplate === 'custom'}
 							onclick={() => (recoveryTemplate = 'custom')}
 						>
-							<IconUsers size={24} />
+							<Icon icon={IconUsers} size={24} />
 							<span class="template-name">Custom</span>
 							<span class="template-timing">Anytime</span>
 						</button>
@@ -784,7 +764,7 @@ import { logger } from '$lib/utils/logger';
 					onclick={handleSendRecovery}
 					disabled={sending || (recoveryTemplate === 'custom' && (!customSubject || !customBody))}
 				>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					{sending
 						? 'Sending...'
 						: `Send to ${selectedCarts.size} Cart${selectedCarts.size > 1 ? 's' : ''}`}

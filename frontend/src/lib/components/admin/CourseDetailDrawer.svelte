@@ -12,26 +12,7 @@
 		type CourseWithContent,
 		type CourseModule
 	} from '$lib/api/courses';
-	import {
-		IconX,
-		IconBook,
-		IconUsers,
-		IconChartBar,
-		IconEdit,
-		IconEye,
-		IconEyeOff,
-		IconPlus,
-		IconTrash,
-		IconGripVertical,
-		IconClock,
-		IconCalendar,
-		IconCurrencyDollar,
-		IconCheck,
-		IconAlertTriangle,
-		IconPlayerPlay,
-		IconVideo,
-		IconFile
-	} from '$lib/icons';
+	import { Icon, IconX, IconBook, IconUsers, IconChartBar, IconEdit, IconEye, IconEyeOff, IconPlus, IconTrash, IconGripVertical, IconClock, IconCalendar, IconCurrencyDollar, IconCheck, IconAlertTriangle, IconPlayerPlay, IconVideo, IconFile } from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
 	interface Props {
@@ -225,7 +206,7 @@
 				</div>
 			{:else if error && !courseData}
 				<div class="error-state">
-					<IconAlertTriangle size={48} />
+					<Icon icon={IconAlertTriangle} size={48} />
 					<p>{error}</p>
 					<button type="button" class="btn-retry" onclick={loadCourseData}>Try Again</button>
 				</div>
@@ -236,7 +217,7 @@
 						{#if courseData.card_image_url}
 							<img src={courseData.card_image_url} alt={courseData.title} />
 						{:else}
-							<IconBook size={32} />
+							<Icon icon={IconBook} size={32} />
 						{/if}
 					</div>
 					<div class="course-info">
@@ -260,13 +241,13 @@
 						</div>
 					</div>
 					<button type="button" class="btn-close" onclick={onClose} aria-label="Close">
-						<IconX size={24} />
+						<Icon icon={IconX} size={24} />
 					</button>
 				</header>
 
 				{#if error}
 					<div class="error-banner">
-						<IconAlertTriangle size={16} />
+						<Icon icon={IconAlertTriangle} size={16} />
 						{error}
 					</div>
 				{/if}
@@ -297,11 +278,11 @@
 				<!-- Action Buttons -->
 				<div class="action-buttons">
 					<button type="button" class="btn-action" onclick={() => onEdit?.(courseData!)}>
-						<IconEdit size={16} />
+						<Icon icon={IconEdit} size={16} />
 						Edit
 					</button>
 					<a href="/admin/page-builder?course={courseData.id}" class="btn-action builder">
-						<IconPlayerPlay size={16} />
+						<Icon icon={IconPlayerPlay} size={16} />
 						Builder
 					</a>
 					<button
@@ -312,10 +293,10 @@
 						onclick={() => (showPublishModal = true)}
 					>
 						{#if courseData.is_published}
-							<IconEyeOff size={16} />
+							<Icon icon={IconEyeOff} size={16} />
 							Unpublish
 						{:else}
-							<IconEye size={16} />
+							<Icon icon={IconEye} size={16} />
 							Publish
 						{/if}
 					</button>
@@ -329,7 +310,7 @@
 						class:active={activeTab === 'modules'}
 						onclick={() => (activeTab = 'modules')}
 					>
-						<IconBook size={16} />
+						<Icon icon={IconBook} size={16} />
 						Modules
 					</button>
 					<button
@@ -338,7 +319,7 @@
 						class:active={activeTab === 'enrollments'}
 						onclick={() => (activeTab = 'enrollments')}
 					>
-						<IconUsers size={16} />
+						<Icon icon={IconUsers} size={16} />
 						Enrollments
 					</button>
 					<button
@@ -347,7 +328,7 @@
 						class:active={activeTab === 'analytics'}
 						onclick={() => (activeTab = 'analytics')}
 					>
-						<IconChartBar size={16} />
+						<Icon icon={IconChartBar} size={16} />
 						Analytics
 					</button>
 				</nav>
@@ -362,13 +343,13 @@
 								class="btn-add-module"
 								onclick={() => onAddModule?.(courseData!.id)}
 							>
-								<IconPlus size={18} />
+								<Icon icon={IconPlus} size={18} />
 								Add Module
 							</button>
 
 							{#if courseData.modules.length === 0}
 								<div class="empty-state">
-									<IconBook size={48} />
+									<Icon icon={IconBook} size={48} />
 									<p>No modules yet</p>
 									<span class="empty-hint">Click "Add Module" to create your first module</span>
 								</div>
@@ -389,7 +370,7 @@
 												}}
 											>
 												<div class="module-drag">
-													<IconGripVertical size={16} />
+													<Icon icon={IconGripVertical} size={16} />
 												</div>
 												<div class="module-number">{idx + 1}</div>
 												<div class="module-info">
@@ -404,7 +385,7 @@
 												<div class="module-status">
 													{#if module.is_published}
 														<span class="published-indicator">
-															<IconCheck size={14} />
+															<Icon icon={IconCheck} size={14} />
 														</span>
 													{/if}
 												</div>
@@ -415,7 +396,7 @@
 														onclick={() => onEditModule?.(module)}
 														title="Edit module"
 													>
-														<IconEdit size={14} />
+														<Icon icon={IconEdit} size={14} />
 													</button>
 													<button
 														type="button"
@@ -426,7 +407,7 @@
 														}}
 														title="Delete module"
 													>
-														<IconTrash size={14} />
+														<Icon icon={IconTrash} size={14} />
 													</button>
 												</div>
 											</div>
@@ -440,9 +421,9 @@
 															<div class="lesson-item">
 																<div class="lesson-icon">
 																	{#if lesson.bunny_video_guid}
-																		<IconVideo size={14} />
+																		<Icon icon={IconVideo} size={14} />
 																	{:else}
-																		<IconFile size={14} />
+																		<Icon icon={IconFile} size={14} />
 																	{/if}
 																</div>
 																<div class="lesson-info">
@@ -476,7 +457,7 @@
 							<div class="enrollment-stats">
 								<div class="enroll-stat-card">
 									<div class="enroll-stat-icon">
-										<IconUsers size={20} />
+										<Icon icon={IconUsers} size={20} />
 									</div>
 									<div class="enroll-stat-content">
 										<span class="enroll-stat-value">{courseData.enrollment_count || 0}</span>
@@ -485,7 +466,7 @@
 								</div>
 								<div class="enroll-stat-card">
 									<div class="enroll-stat-icon success">
-										<IconCheck size={20} />
+										<Icon icon={IconCheck} size={20} />
 									</div>
 									<div class="enroll-stat-content">
 										<span class="enroll-stat-value">{courseData.completion_rate || 0}%</span>
@@ -494,7 +475,7 @@
 								</div>
 								<div class="enroll-stat-card">
 									<div class="enroll-stat-icon accent">
-										<IconChartBar size={20} />
+										<Icon icon={IconChartBar} size={20} />
 									</div>
 									<div class="enroll-stat-content">
 										<span class="enroll-stat-value"
@@ -508,7 +489,7 @@
 							<div class="info-section">
 								<h3 class="section-title">Recent Enrollments</h3>
 								<div class="empty-state small">
-									<IconUsers size={32} />
+									<Icon icon={IconUsers} size={32} />
 									<p>Enrollment data coming soon</p>
 								</div>
 							</div>
@@ -557,21 +538,21 @@
 								<h3 class="section-title">Course Details</h3>
 								<div class="info-grid">
 									<div class="info-item">
-										<IconCalendar size={16} />
+										<Icon icon={IconCalendar} size={16} />
 										<div>
 											<span class="info-label">Created</span>
 											<span class="info-value">{formatDate(courseData.created_at)}</span>
 										</div>
 									</div>
 									<div class="info-item">
-										<IconCalendar size={16} />
+										<Icon icon={IconCalendar} size={16} />
 										<div>
 											<span class="info-label">Updated</span>
 											<span class="info-value">{formatDate(courseData.updated_at)}</span>
 										</div>
 									</div>
 									<div class="info-item">
-										<IconClock size={16} />
+										<Icon icon={IconClock} size={16} />
 										<div>
 											<span class="info-label">Total Duration</span>
 											<span class="info-value"
@@ -582,7 +563,7 @@
 										</div>
 									</div>
 									<div class="info-item">
-										<IconCurrencyDollar size={16} />
+										<Icon icon={IconCurrencyDollar} size={16} />
 										<div>
 											<span class="info-label">Revenue</span>
 											<span class="info-value">Coming soon</span>

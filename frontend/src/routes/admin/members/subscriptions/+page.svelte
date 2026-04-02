@@ -16,16 +16,7 @@ import { logger } from '$lib/utils/logger';
 
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import {
-		IconRefresh,
-		IconSearch,
-		IconFilter,
-		IconDownload,
-		IconEye,
-		IconEdit,
-		IconX,
-		IconCreditCard
-	} from '$lib/icons';
+	import { Icon, IconRefresh, IconSearch, IconFilter, IconDownload, IconEye, IconEdit, IconX, IconCreditCard } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getSubscriptions,
@@ -297,7 +288,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Actions Row - CENTERED -->
 	<div class="actions-row">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-searchquery"
 				name="page-searchquery"
@@ -308,15 +299,15 @@ import { logger } from '$lib/utils/logger';
 			/>
 		</div>
 		<button class="btn-secondary" onclick={() => (showFilters = !showFilters)}>
-			<IconFilter size={18} />
+			<Icon icon={IconFilter} size={18} />
 			Filters
 		</button>
 		<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
-			<IconDownload size={18} />
+			<Icon icon={IconDownload} size={18} />
 			{exporting ? 'Exporting...' : 'Export'}
 		</button>
 		<button class="btn-secondary" onclick={loadSubscriptions} disabled={loading}>
-			<IconRefresh size={18} />
+			<Icon icon={IconRefresh} size={18} />
 			Refresh
 		</button>
 	</div>
@@ -345,7 +336,7 @@ import { logger } from '$lib/utils/logger';
 				</select>
 			</div>
 			<button class="btn-clear" onclick={clearFilters}>
-				<IconX size={16} />
+				<Icon icon={IconX} size={16} />
 				Clear All
 			</button>
 		</div>
@@ -391,11 +382,11 @@ import { logger } from '$lib/utils/logger';
 	{:else if filteredSubscriptions.length === 0}
 		<div class="empty-state">
 			{#if searchQuery || statusFilter || intervalFilter}
-				<IconCreditCard size={48} />
+				<Icon icon={IconCreditCard} size={48} />
 				<p>No subscriptions match your filters</p>
 				<button class="btn-secondary" onclick={clearFilters}>Clear Filters</button>
 			{:else}
-				<IconCreditCard size={48} />
+				<Icon icon={IconCreditCard} size={48} />
 				<p>No subscriptions found</p>
 				<p class="empty-hint">Subscriptions will appear here when members subscribe to plans.</p>
 			{/if}
@@ -446,7 +437,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => goto(`/admin/members/${sub.customer?.id}`)}
 								title="View Member"
 							>
-								<IconEye size={18} />
+								<Icon icon={IconEye} size={18} />
 							</button>
 							{#if sub.status === 'active'}
 								<button
@@ -454,7 +445,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => handlePause(sub)}
 									title="Pause Subscription"
 								>
-									<IconEdit size={18} />
+									<Icon icon={IconEdit} size={18} />
 								</button>
 							{:else if sub.status === 'on-hold'}
 								<button
@@ -462,7 +453,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => handleResume(sub)}
 									title="Resume Subscription"
 								>
-									<IconRefresh size={18} />
+									<Icon icon={IconRefresh} size={18} />
 								</button>
 							{/if}
 							{#if sub.status !== 'cancelled'}
@@ -471,7 +462,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={() => handleCancel(sub)}
 									title="Cancel Subscription"
 								>
-									<IconX size={18} />
+									<Icon icon={IconX} size={18} />
 								</button>
 							{/if}
 						</td>

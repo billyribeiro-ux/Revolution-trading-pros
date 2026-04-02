@@ -11,15 +11,7 @@
 		type CreateCourseRequest,
 		type UpdateCourseRequest
 	} from '$lib/api/courses';
-	import {
-		IconX,
-		IconBook,
-		IconPlus,
-		IconEdit,
-		IconCurrencyDollar,
-		IconUser,
-		IconTag
-	} from '$lib/icons';
+	import { Icon, IconX, IconBook, IconPlus, IconEdit, IconCurrencyDollar, IconUser, IconTag } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -274,9 +266,9 @@
 			<div class="modal-header">
 				<div class="header-icon">
 					{#if mode === 'create'}
-						<IconPlus size={24} />
+						<Icon icon={IconPlus} size={24} />
 					{:else}
-						<IconEdit size={24} />
+						<Icon icon={IconEdit} size={24} />
 					{/if}
 				</div>
 				<h2 id="modal-title" class="modal-title">
@@ -289,7 +281,7 @@
 					disabled={isLoading}
 					aria-label="Close"
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -301,7 +293,7 @@
 					class:active={activeSection === 'basic'}
 					onclick={() => (activeSection = 'basic')}
 				>
-					<IconBook size={16} />
+					<Icon icon={IconBook} size={16} />
 					Basic
 				</button>
 				<button
@@ -310,7 +302,7 @@
 					class:active={activeSection === 'pricing'}
 					onclick={() => (activeSection = 'pricing')}
 				>
-					<IconCurrencyDollar size={16} />
+					<Icon icon={IconCurrencyDollar} size={16} />
 					Pricing
 				</button>
 				<button
@@ -319,7 +311,7 @@
 					class:active={activeSection === 'instructor'}
 					onclick={() => (activeSection = 'instructor')}
 				>
-					<IconUser size={16} />
+					<Icon icon={IconUser} size={16} />
 					Instructor
 				</button>
 				<button
@@ -328,7 +320,7 @@
 					class:active={activeSection === 'seo'}
 					onclick={() => (activeSection = 'seo')}
 				>
-					<IconTag size={16} />
+					<Icon icon={IconTag} size={16} />
 					SEO
 				</button>
 			</nav>

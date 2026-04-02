@@ -8,16 +8,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { emailStore, getIsEmailLoading } from '$lib/stores/email.svelte';
-	import {
-		IconMail,
-		IconSend,
-		IconUsers,
-		IconChartBar,
-		IconPlus,
-		IconFileText,
-		IconRocket,
-		IconBolt
-	} from '$lib/icons';
+	import { Icon, IconMail, IconSend, IconUsers, IconChartBar, IconPlus, IconFileText, IconRocket, IconBolt } from '$lib/icons';
 
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		$state('campaigns');
@@ -53,7 +44,7 @@
 	<!-- Header -->
 	<div class="dashboard-header">
 		<div class="header-title">
-			<IconMail size={32} class="text-yellow-400" />
+			<Icon icon={IconMail} size={32} class="text-yellow-400" />
 			<div>
 				<h1 class="text-3xl font-bold text-white">Email Marketing</h1>
 				<p class="text-gray-400 mt-1">Campaigns, sequences, and automation</p>
@@ -62,11 +53,11 @@
 
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={() => (selectedTab = 'templates')}>
-				<IconFileText size={18} />
+				<Icon icon={IconFileText} size={18} />
 				Templates
 			</button>
 			<button class="btn-primary" onclick={() => (selectedTab = 'campaigns')}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New Campaign
 			</button>
 		</div>
@@ -77,7 +68,7 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon bg-blue-500/20">
-					<IconSend size={24} class="text-blue-400" />
+					<Icon icon={IconSend} size={24} class="text-blue-400" />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Emails Sent</div>
@@ -88,7 +79,7 @@
 
 			<div class="stat-card">
 				<div class="stat-icon bg-green-500/20">
-					<IconChartBar size={24} class="text-green-400" />
+					<Icon icon={IconChartBar} size={24} class="text-green-400" />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Open Rate</div>
@@ -99,7 +90,7 @@
 
 			<div class="stat-card">
 				<div class="stat-icon bg-purple-500/20">
-					<IconUsers size={24} class="text-purple-400" />
+					<Icon icon={IconUsers} size={24} class="text-purple-400" />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Click Rate</div>
@@ -110,7 +101,7 @@
 
 			<div class="stat-card">
 				<div class="stat-icon bg-yellow-500/20">
-					<IconRocket size={24} class="text-yellow-400" />
+					<Icon icon={IconRocket} size={24} class="text-yellow-400" />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Active Campaigns</div>
@@ -128,7 +119,7 @@
 			class:active={selectedTab === 'campaigns'}
 			onclick={() => (selectedTab = 'campaigns')}
 		>
-			<IconMail size={20} />
+			<Icon icon={IconMail} size={20} />
 			Campaigns
 		</button>
 		<button
@@ -136,7 +127,7 @@
 			class:active={selectedTab === 'sequences'}
 			onclick={() => (selectedTab = 'sequences')}
 		>
-			<IconBolt size={20} />
+			<Icon icon={IconBolt} size={20} />
 			Sequences
 		</button>
 		<button
@@ -144,7 +135,7 @@
 			class:active={selectedTab === 'automations'}
 			onclick={() => (selectedTab = 'automations')}
 		>
-			<IconRocket size={20} />
+			<Icon icon={IconRocket} size={20} />
 			Automations
 		</button>
 		<button
@@ -152,7 +143,7 @@
 			class:active={selectedTab === 'templates'}
 			onclick={() => (selectedTab = 'templates')}
 		>
-			<IconFileText size={20} />
+			<Icon icon={IconFileText} size={20} />
 			Templates
 		</button>
 		<button
@@ -160,7 +151,7 @@
 			class:active={selectedTab === 'analytics'}
 			onclick={() => (selectedTab = 'analytics')}
 		>
-			<IconChartBar size={20} />
+			<Icon icon={IconChartBar} size={20} />
 			Analytics
 		</button>
 	</div>
@@ -177,7 +168,7 @@
 				<div class="list-header">
 					<h2 class="text-xl font-bold text-white">Email Campaigns</h2>
 					<button class="btn-primary">
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Create Campaign
 					</button>
 				</div>
@@ -223,11 +214,11 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconMail size={64} class="text-gray-600" />
+						<Icon icon={IconMail} size={64} class="text-gray-600" />
 						<h3 class="text-xl font-semibold text-gray-400 mt-4">No campaigns yet</h3>
 						<p class="text-gray-500 mt-2">Create your first email campaign to get started</p>
 						<button class="btn-primary mt-4">
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Campaign
 						</button>
 					</div>
@@ -238,7 +229,7 @@
 				<div class="list-header">
 					<h2 class="text-xl font-bold text-white">Email Sequences</h2>
 					<button class="btn-primary">
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Create Sequence
 					</button>
 				</div>
@@ -276,11 +267,11 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconBolt size={64} class="text-gray-600" />
+						<Icon icon={IconBolt} size={64} class="text-gray-600" />
 						<h3 class="text-xl font-semibold text-gray-400 mt-4">No sequences yet</h3>
 						<p class="text-gray-500 mt-2">Create automated email sequences</p>
 						<button class="btn-primary mt-4">
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Sequence
 						</button>
 					</div>
@@ -291,7 +282,7 @@
 				<div class="list-header">
 					<h2 class="text-xl font-bold text-white">Email Templates</h2>
 					<button class="btn-primary">
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Create Template
 					</button>
 				</div>
@@ -304,7 +295,7 @@
 									<img src={template.thumbnail} alt={template.name} class="template-thumbnail" />
 								{:else}
 									<div class="template-placeholder">
-										<IconFileText size={48} class="text-gray-600" />
+										<Icon icon={IconFileText} size={48} class="text-gray-600" />
 									</div>
 								{/if}
 
@@ -323,11 +314,11 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconFileText size={64} class="text-gray-600" />
+						<Icon icon={IconFileText} size={64} class="text-gray-600" />
 						<h3 class="text-xl font-semibold text-gray-400 mt-4">No templates yet</h3>
 						<p class="text-gray-500 mt-2">Create reusable email templates</p>
 						<button class="btn-primary mt-4">
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Template
 						</button>
 					</div>

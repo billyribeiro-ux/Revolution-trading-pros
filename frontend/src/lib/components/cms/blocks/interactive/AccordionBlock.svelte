@@ -17,7 +17,7 @@
 	import { untrack } from 'svelte';
 	import type { Action } from 'svelte/action';
 	import { browser } from '$app/environment';
-	import { IconChevronDown, IconPlus, IconMinus, IconX } from '$lib/icons';
+	import { Icon, IconChevronDown, IconPlus, IconMinus, IconX } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -198,12 +198,12 @@
 					>
 						{#if iconStyle === 'plusminus'}
 							{#if isOpen}
-								<IconMinus size={18} />
+								<Icon icon={IconMinus} size={18} />
 							{:else}
-								<IconPlus size={18} />
+								<Icon icon={IconPlus} size={18} />
 							{/if}
 						{:else}
-							<IconChevronDown size={18} />
+							<Icon icon={IconChevronDown} size={18} />
 						{/if}
 					</span>
 				</button>
@@ -215,7 +215,7 @@
 						onclick={() => removeItem(index)}
 						aria-label="Remove section: {item.title}"
 					>
-						<IconX size={14} />
+						<Icon icon={IconX} size={14} />
 					</button>
 				{/if}
 			</div>
@@ -248,7 +248,7 @@
 
 	{#if isEditing}
 		<button type="button" class="add-item-btn" onclick={addItem}>
-			<IconPlus size={14} aria-hidden="true" />
+			<Icon icon={IconPlus} size={14} aria-hidden="true" />
 			Add Section
 		</button>
 

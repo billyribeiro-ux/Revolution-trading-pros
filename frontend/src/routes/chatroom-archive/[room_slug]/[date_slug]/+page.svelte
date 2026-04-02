@@ -12,7 +12,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { IconChevronLeft, IconChevronRight, IconFileText, IconArrowLeft } from '$lib/icons';
+	import { Icon, IconChevronLeft, IconChevronRight, IconFileText, IconArrowLeft } from '$lib/icons';
 	import type { ArchiveDetailPageData } from './+page.server';
 
 	// Server data
@@ -49,7 +49,7 @@
 		<div class="nav-prev">
 			{#if data.previousDate}
 				<a href="/chatroom-archive/{data.roomSlug}/{data.previousDate}" class="nav-link">
-					<IconChevronLeft size={20} />
+					<Icon icon={IconChevronLeft} size={20} />
 					<span>Previous</span>
 				</a>
 			{/if}
@@ -63,7 +63,7 @@
 			{#if data.nextDate}
 				<a href="/chatroom-archive/{data.roomSlug}/{data.nextDate}" class="nav-link">
 					<span>Next</span>
-					<IconChevronRight size={20} />
+					<Icon icon={IconChevronRight} size={20} />
 				</a>
 			{/if}
 		</div>
@@ -73,7 +73,7 @@
 	{#if data.chatLogUrl}
 		<div class="chat-log-link">
 			<a href={data.chatLogUrl} target="_blank" rel="noopener noreferrer">
-				<IconFileText size={16} />
+				<Icon icon={IconFileText} size={16} />
 				<span>View Chat Log</span>
 			</a>
 		</div>
@@ -87,7 +87,7 @@
 			<div class="error-message">
 				<p>{data.error}</p>
 				<a href={data.archiveUrl} class="btn btn-default">
-					<IconArrowLeft size={16} />
+					<Icon icon={IconArrowLeft} size={16} />
 					Back to Archives
 				</a>
 			</div>
@@ -96,7 +96,7 @@
 				<h3>No recordings available</h3>
 				<p>There are no recorded sessions for this date.</p>
 				<a href={data.archiveUrl} class="btn btn-default">
-					<IconArrowLeft size={16} />
+					<Icon icon={IconArrowLeft} size={16} />
 					Back to Archives
 				</a>
 			</div>
@@ -140,7 +140,7 @@
 <section class="back-section">
 	<div class="section-inner">
 		<a href={data.archiveUrl} class="back-link">
-			<IconArrowLeft size={18} />
+			<Icon icon={IconArrowLeft} size={18} />
 			<span>Back to {data.roomName} Archives</span>
 		</a>
 	</div>

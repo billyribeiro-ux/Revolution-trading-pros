@@ -13,19 +13,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import { crmAPI } from '$lib/api/crm';
+											import { crmAPI } from '$lib/api/crm';
 	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconExternalLink, IconReceipt, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconTrash, IconTrendingDown, IconTrendingUp, IconUser } from '$lib/icons';
 
 	let carts = $state<AbandonedCart[]>([]);
 	let isLoading = $state(true);
@@ -189,10 +180,10 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadCarts()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<a href="/admin/crm/abandoned-carts/settings" class="btn-secondary">
-				<IconSettings size={18} />
+				<Icon icon={IconSettings} size={18} />
 				Settings
 			</a>
 		</div>
@@ -203,7 +194,7 @@
 		<div class="stats-grid">
 			<div class="stat-card recovered">
 				<div class="stat-icon green">
-					<IconTrendingUp size={24} />
+					<Icon icon={IconTrendingUp} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{@html sanitizeHtml(stats.recovered_revenue.value, 'minimal')}</span>
@@ -213,7 +204,7 @@
 			</div>
 			<div class="stat-card processing">
 				<div class="stat-icon blue">
-					<IconShoppingCart size={24} />
+					<Icon icon={IconShoppingCart} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{@html sanitizeHtml(stats.processing_revenue.value, 'minimal')}</span>
@@ -223,7 +214,7 @@
 			</div>
 			<div class="stat-card lost">
 				<div class="stat-icon red">
-					<IconTrendingDown size={24} />
+					<Icon icon={IconTrendingDown} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{@html sanitizeHtml(stats.lost_revenue.value, 'minimal')}</span>
@@ -233,7 +224,7 @@
 			</div>
 			<div class="stat-card rate">
 				<div class="stat-icon purple">
-					<IconReceipt size={24} />
+					<Icon icon={IconReceipt} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.recovery_rate.value}</span>
@@ -245,7 +236,7 @@
 
 	{#if !haveAutomation}
 		<div class="warning-banner">
-			<IconShoppingCart size={20} />
+			<Icon icon={IconShoppingCart} size={20} />
 			<span
 				>No active abandoned cart automation found. Create an automation to start recovering lost
 				revenue.</span
@@ -259,7 +250,7 @@
 	<!-- Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-abandoned-carts"
@@ -278,7 +269,7 @@
 		</select>
 		{#if selectedCarts.length > 0}
 			<button class="btn-danger" onclick={bulkDelete}>
-				<IconTrash size={16} />
+				<Icon icon={IconTrash} size={16} />
 				Delete ({selectedCarts.length})
 			</button>
 		{/if}
@@ -297,7 +288,7 @@
 		</div>
 	{:else if filteredCarts.length === 0}
 		<div class="empty-state">
-			<IconShoppingCart size={48} />
+			<Icon icon={IconShoppingCart} size={48} />
 			<h3>No abandoned carts found</h3>
 			<p>Abandoned carts will appear here when customers leave items in their cart</p>
 		</div>
@@ -341,7 +332,7 @@
 										<img src={cart.customer_avatar} alt="" class="customer-avatar" />
 									{:else}
 										<div class="customer-avatar-placeholder">
-											<IconUser size={16} />
+											<Icon icon={IconUser} size={16} />
 										</div>
 									{/if}
 									<div class="customer-info">
@@ -375,12 +366,12 @@
 											class="btn-icon"
 											title="Recovery URL"
 										>
-											<IconExternalLink size={16} />
+											<Icon icon={IconExternalLink} size={16} />
 										</a>
 									{/if}
 									{#if cart.order_url}
 										<a href={cart.order_url} target="_blank" class="btn-icon" title="View Order">
-											<IconReceipt size={16} />
+											<Icon icon={IconReceipt} size={16} />
 										</a>
 									{/if}
 									<button
@@ -388,7 +379,7 @@
 										title="Delete"
 										onclick={() => deleteCart(cart.id)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>

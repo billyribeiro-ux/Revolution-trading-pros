@@ -13,26 +13,10 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconWorldWww from '@tabler/icons-svelte-runes/icons/world-www';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import { crmAPI } from '$lib/api/crm';
+																		import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconBolt, IconCheck, IconClock, IconEdit, IconGripVertical, IconList, IconLoader2, IconMail, IconPlayerPlay, IconPlus, IconTag, IconTrash, IconUser, IconWorldWww, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -416,7 +400,7 @@
 		</div>
 	{:else if error && !funnel}
 		<div class="error-state">
-			<IconAlertCircle size={48} />
+			<Icon icon={IconAlertCircle} size={48} />
 			<h3>Failed to load automation</h3>
 			<p>{error}</p>
 			<button class="btn-primary" onclick={loadFunnel}>Try Again</button>
@@ -426,7 +410,7 @@
 		<div class="page-header">
 			<div class="header-content">
 				<a href="/admin/crm/automations/{funnelId}" class="back-link">
-					<IconArrowLeft size={18} />
+					<Icon icon={IconArrowLeft} size={18} />
 					Back to Automation
 				</a>
 				<div class="title-row">
@@ -444,7 +428,7 @@
 						onclick={() => updateFunnelStatus('active')}
 						disabled={isSaving || actions.length === 0}
 					>
-						<IconPlayerPlay size={18} />
+						<Icon icon={IconPlayerPlay} size={18} />
 						Publish & Activate
 					</button>
 				{:else if funnel.status === 'active'}
@@ -461,7 +445,7 @@
 						onclick={() => updateFunnelStatus('active')}
 						disabled={isSaving}
 					>
-						<IconPlayerPlay size={18} />
+						<Icon icon={IconPlayerPlay} size={18} />
 						Activate
 					</button>
 				{/if}
@@ -471,17 +455,17 @@
 		<!-- Alerts -->
 		{#if error}
 			<div class="error-alert">
-				<IconAlertCircle size={18} />
+				<Icon icon={IconAlertCircle} size={18} />
 				<span>{error}</span>
 				<button onclick={() => (error = '')}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/if}
 
 		{#if successMessage}
 			<div class="success-alert">
-				<IconCheck size={18} />
+				<Icon icon={IconCheck} size={18} />
 				<span>{successMessage}</span>
 			</div>
 		{/if}
@@ -492,7 +476,7 @@
 			<div class="workflow-card trigger-card">
 				<div class="card-header">
 					<div class="card-icon bg-emerald-500/20 text-emerald-400">
-						<IconBolt size={24} />
+						<Icon icon={IconBolt} size={24} />
 					</div>
 					<div class="card-title">
 						<span class="card-type">TRIGGER</span>
@@ -519,7 +503,7 @@
 				{@const ActionIcon = getActionIcon(action.action_type)}
 				<div class="workflow-card action-card {getActionColor(action.action_type)}">
 					<div class="card-drag">
-						<IconGripVertical size={16} />
+						<Icon icon={IconGripVertical} size={16} />
 					</div>
 					<div class="card-header">
 						<div class="card-icon">
@@ -533,20 +517,20 @@
 						</div>
 						<div class="card-actions">
 							<button class="card-btn" onclick={() => openEditActionModal(action)} title="Edit">
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 							</button>
 							<button
 								class="card-btn danger"
 								onclick={() => deleteAction(action.id)}
 								title="Delete"
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						</div>
 					</div>
 					{#if action.delay_seconds > 0}
 						<div class="card-delay">
-							<IconClock size={14} />
+							<Icon icon={IconClock} size={14} />
 							Wait {formatDelay(action.delay_seconds)} before this action
 						</div>
 					{/if}
@@ -576,7 +560,7 @@
 			</div>
 
 			<button class="add-action-btn" onclick={openAddActionModal}>
-				<IconPlus size={24} />
+				<Icon icon={IconPlus} size={24} />
 				<span>Add Action</span>
 			</button>
 		</div>
@@ -600,7 +584,7 @@
 					{editingAction ? 'Edit Action' : 'Add Action'}
 				</h2>
 				<button class="modal-close" onclick={closeActionModal} aria-label="Close modal">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -749,7 +733,7 @@
 							</div>
 						{:else if actionForm.action_type === 'wait'}
 							<div class="info-card">
-								<IconAlertCircle size={18} />
+								<Icon icon={IconAlertCircle} size={18} />
 								<p>
 									The delay settings above configure how long to wait before proceeding to the next
 									action.
@@ -757,7 +741,7 @@
 							</div>
 						{:else if actionForm.action_type === 'end_funnel'}
 							<div class="info-card">
-								<IconAlertCircle size={18} />
+								<Icon icon={IconAlertCircle} size={18} />
 								<p>
 									This action will end the automation for the current contact. They will be marked
 									as completed.
@@ -775,10 +759,10 @@
 					</button>
 					<button class="btn-primary" onclick={saveAction} disabled={!canSaveAction}>
 						{#if isSaving}
-							<IconLoader2 size={16} class="spinning" />
+							<Icon icon={IconLoader2} size={16} class="spinning" />
 							Saving...
 						{:else}
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 							{editingAction ? 'Update Action' : 'Add Action'}
 						{/if}
 					</button>

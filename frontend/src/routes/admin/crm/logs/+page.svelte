@@ -1,23 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconActivityHeartbeat from '@tabler/icons-svelte-runes/icons/activity-heartbeat';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-	import IconBug from '@tabler/icons-svelte-runes/icons/bug';
-	import IconExclamationCircle from '@tabler/icons-svelte-runes/icons/exclamation-circle';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconApi from '@tabler/icons-svelte-runes/icons/api';
-	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import { crmAPI } from '$lib/api/crm';
+																import { crmAPI } from '$lib/api/crm';
         import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import type { SystemLog, LogLevel, LogCategory } from '$lib/crm/types';
+	import { Icon, IconActivityHeartbeat, IconAlertCircle, IconAlertTriangle, IconApi, IconBug, IconExclamationCircle, IconInfoCircle, IconMail, IconRefresh, IconRoute, IconSearch, IconSettings, IconTrash, IconUpload, IconWebhook } from '$lib/icons';
 
 	let logs = $state<SystemLog[]>([]);
 	let isLoading = $state(true);
@@ -150,10 +136,10 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadLogs()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<button class="btn-danger" onclick={clearLogs}>
-				<IconTrash size={18} />
+				<Icon icon={IconTrash} size={18} />
 				Clear Logs
 			</button>
 		</div>
@@ -163,7 +149,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconActivityHeartbeat size={24} />
+				<Icon icon={IconActivityHeartbeat} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{stats.total.toLocaleString()}</span>
@@ -172,7 +158,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon red">
-				<IconAlertCircle size={24} />
+				<Icon icon={IconAlertCircle} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{(stats.by_level?.error || 0).toLocaleString()}</span>
@@ -181,7 +167,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon yellow">
-				<IconAlertTriangle size={24} />
+				<Icon icon={IconAlertTriangle} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{(stats.by_level?.warning || 0).toLocaleString()}</span>
@@ -190,7 +176,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconExclamationCircle size={24} />
+				<Icon icon={IconExclamationCircle} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{(stats.by_level?.critical || 0).toLocaleString()}</span>
@@ -202,7 +188,7 @@
 	<!-- Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-searchquery" name="page-searchquery" type="text"
 				placeholder="Search logs..."
@@ -242,7 +228,7 @@
 		</div>
 	{:else if filteredLogs.length === 0}
 		<div class="empty-state">
-			<IconActivityHeartbeat size={48} />
+			<Icon icon={IconActivityHeartbeat} size={48} />
 			<h3>No logs found</h3>
 			<p>System logs will appear here as activity occurs</p>
 		</div>

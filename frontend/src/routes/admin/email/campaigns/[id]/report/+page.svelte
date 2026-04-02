@@ -25,26 +25,7 @@
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ExportButton from '$lib/components/ExportButton.svelte';
-	import {
-		IconMail,
-		IconArrowLeft,
-		IconRefresh,
-		IconSend,
-		IconCheck,
-		IconEye,
-		IconClick,
-		IconAlertTriangle,
-		IconUserMinus,
-		IconUsers,
-		IconCalendar,
-		IconChartBar,
-		IconLink,
-		IconWorld,
-		IconDeviceMobile,
-		IconDevices,
-		IconBrowser,
-		IconTrendingUp
-	} from '$lib/icons';
+	import { Icon, IconMail, IconArrowLeft, IconRefresh, IconSend, IconCheck, IconEye, IconClick, IconAlertTriangle, IconUserMinus, IconUsers, IconCalendar, IconChartBar, IconLink, IconWorld, IconDeviceMobile, IconDevices, IconBrowser, IconTrendingUp } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Props (Svelte 5 - no destructuring)
@@ -393,14 +374,14 @@
 	<!-- Header -->
 	<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
 		<button class="back-btn" onclick={() => goto('/admin/email/campaigns')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Campaigns
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconChartBar size={28} />
+					<Icon icon={IconChartBar} size={28} />
 				</div>
 				<div>
 					<h1>Campaign Report</h1>
@@ -412,7 +393,7 @@
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={loadReport} disabled={loading}>
 						<span class:spinning={loading}>
-							<IconRefresh size={18} />
+							<Icon icon={IconRefresh} size={18} />
 						</span>
 						Refresh
 					</button>
@@ -437,7 +418,7 @@
 	{:else if error}
 		<!-- Error State -->
 		<div class="error-state" in:fade={{ duration: 300 }}>
-			<IconAlertTriangle size={48} />
+			<Icon icon={IconAlertTriangle} size={48} />
 			<h3>Unable to Load Report</h3>
 			<p>{error}</p>
 			<button class="btn-primary" onclick={loadReport}>Try Again</button>
@@ -459,18 +440,18 @@
 					</div>
 					<div class="campaign-meta">
 						<div class="meta-item">
-							<IconCalendar size={16} />
+							<Icon icon={IconCalendar} size={16} />
 							<span>Sent: {formatDate(report.sent_at)}</span>
 						</div>
 						{#if report.segment_name}
 							<div class="meta-item">
-								<IconUsers size={16} />
+								<Icon icon={IconUsers} size={16} />
 								<span>Segment: {report.segment_name}</span>
 							</div>
 						{/if}
 						{#if report.template_name}
 							<div class="meta-item">
-								<IconMail size={16} />
+								<Icon icon={IconMail} size={16} />
 								<span>Template: {report.template_name}</span>
 							</div>
 						{/if}
@@ -483,7 +464,7 @@
 				<div class="metrics-grid">
 					<div class="metric-card purple" in:scale={{ duration: 400, delay: 200 }}>
 						<div class="metric-icon purple">
-							<IconSend size={24} />
+							<Icon icon={IconSend} size={24} />
 						</div>
 						<div class="metric-content">
 							<span class="metric-value">{formatNumber(report.metrics.sent)}</span>
@@ -494,7 +475,7 @@
 
 					<div class="metric-card green" in:scale={{ duration: 400, delay: 250 }}>
 						<div class="metric-icon green">
-							<IconCheck size={24} />
+							<Icon icon={IconCheck} size={24} />
 						</div>
 						<div class="metric-content">
 							<span class="metric-value">{formatNumber(report.metrics.delivered)}</span>
@@ -506,7 +487,7 @@
 
 					<div class="metric-card gold" in:scale={{ duration: 400, delay: 300 }}>
 						<div class="metric-icon gold">
-							<IconEye size={24} />
+							<Icon icon={IconEye} size={24} />
 						</div>
 						<div class="metric-content">
 							<span class="metric-value">{formatNumber(report.metrics.unique_opens)}</span>
@@ -518,7 +499,7 @@
 
 					<div class="metric-card blue" in:scale={{ duration: 400, delay: 350 }}>
 						<div class="metric-icon blue">
-							<IconClick size={24} />
+							<Icon icon={IconClick} size={24} />
 						</div>
 						<div class="metric-content">
 							<span class="metric-value">{formatNumber(report.metrics.unique_clicks)}</span>
@@ -530,7 +511,7 @@
 
 					<div class="metric-card orange" in:scale={{ duration: 400, delay: 400 }}>
 						<div class="metric-icon orange">
-							<IconAlertTriangle size={24} />
+							<Icon icon={IconAlertTriangle} size={24} />
 						</div>
 						<div class="metric-content">
 							<span class="metric-value">{formatNumber(report.metrics.bounced)}</span>
@@ -542,7 +523,7 @@
 
 					<div class="metric-card red" in:scale={{ duration: 400, delay: 450 }}>
 						<div class="metric-icon red">
-							<IconUserMinus size={24} />
+							<Icon icon={IconUserMinus} size={24} />
 						</div>
 						<div class="metric-content">
 							<span class="metric-value">{formatNumber(report.metrics.unsubscribed)}</span>
@@ -564,7 +545,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							<div class="panel-icon gold">
-								<IconTrendingUp size={24} />
+								<Icon icon={IconTrendingUp} size={24} />
 							</div>
 							<div>
 								<h3>Engagement Over Time</h3>
@@ -608,7 +589,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							<div class="panel-icon blue">
-								<IconChartBar size={24} />
+								<Icon icon={IconChartBar} size={24} />
 							</div>
 							<div>
 								<h3>Engagement Quality</h3>
@@ -649,7 +630,7 @@
 				<div class="panel-header">
 					<div class="panel-title">
 						<div class="panel-icon orange">
-							<IconLink size={24} />
+							<Icon icon={IconLink} size={24} />
 						</div>
 						<div>
 							<h3>Top Links Clicked</h3>
@@ -691,7 +672,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							<div class="panel-icon purple">
-								<IconDevices size={24} />
+								<Icon icon={IconDevices} size={24} />
 							</div>
 							<div>
 								<h3>Device Breakdown</h3>
@@ -703,7 +684,7 @@
 					<div class="device-chart">
 						<div class="device-row">
 							<div class="device-info">
-								<IconDevices size={18} />
+								<Icon icon={IconDevices} size={18} />
 								<span>Desktop</span>
 							</div>
 							<div class="device-bar-wrap">
@@ -718,7 +699,7 @@
 						</div>
 						<div class="device-row">
 							<div class="device-info">
-								<IconDeviceMobile size={18} />
+								<Icon icon={IconDeviceMobile} size={18} />
 								<span>Mobile</span>
 							</div>
 							<div class="device-bar-wrap">
@@ -733,7 +714,7 @@
 						</div>
 						<div class="device-row">
 							<div class="device-info">
-								<IconBrowser size={18} />
+								<Icon icon={IconBrowser} size={18} />
 								<span>Tablet</span>
 							</div>
 							<div class="device-bar-wrap">
@@ -770,7 +751,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							<div class="panel-icon green">
-								<IconWorld size={24} />
+								<Icon icon={IconWorld} size={24} />
 							</div>
 							<div>
 								<h3>Geographic Distribution</h3>
@@ -808,7 +789,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							<div class="panel-icon gold">
-								<IconChartBar size={24} />
+								<Icon icon={IconChartBar} size={24} />
 							</div>
 							<div>
 								<h3>A/B Test Results</h3>

@@ -7,13 +7,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconChartCandle,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconTarget,
-		IconShieldCheck
-	} from '$lib/icons';
+	import { Icon, IconChartCandle, IconTrendingUp, IconTrendingDown, IconTarget, IconShieldCheck } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -59,7 +53,7 @@
 >
 	<div class="trade-header">
 		<div class="trade-icon">
-			<IconChartCandle size={24} aria-hidden="true" />
+			<Icon icon={IconChartCandle} size={24} aria-hidden="true" />
 		</div>
 		<div class="trade-info">
 			{#if props.isEditing}
@@ -77,10 +71,10 @@
 		</div>
 		<div class="direction-badge">
 			{#if isLong}
-				<IconTrendingUp size={18} aria-hidden="true" />
+				<Icon icon={IconTrendingUp} size={18} aria-hidden="true" />
 				<span>LONG</span>
 			{:else}
-				<IconTrendingDown size={18} aria-hidden="true" />
+				<Icon icon={IconTrendingDown} size={18} aria-hidden="true" />
 				<span>SHORT</span>
 			{/if}
 		</div>
@@ -103,7 +97,7 @@
 				{/if}
 			</div>
 			<div class="level-row stop-level">
-				<span class="level-label"><IconShieldCheck size={14} /> Stop Loss</span>
+				<span class="level-label"><Icon icon={IconShieldCheck} size={14} /> Stop Loss</span>
 				{#if props.isEditing}
 					<input
 						type="number"
@@ -118,7 +112,7 @@
 				<span class="level-risk">Risk: ${risk.toFixed(2)}</span>
 			</div>
 			<div class="level-row target-level">
-				<span class="level-label"><IconTarget size={14} /> Target 1</span>
+				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target 1</span>
 				{#if props.isEditing}
 					<input
 						type="number"
@@ -133,7 +127,7 @@
 				<span class="level-rr">{rr1}:1 R:R</span>
 			</div>
 			<div class="level-row target-level">
-				<span class="level-label"><IconTarget size={14} /> Target 2</span>
+				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target 2</span>
 				{#if props.isEditing}
 					<input
 						type="number"
@@ -223,7 +217,7 @@
 		</div>
 
 		<div class="chart-placeholder">
-			<IconChartCandle size={48} aria-hidden="true" />
+			<Icon icon={IconChartCandle} size={48} aria-hidden="true" />
 			<span>Chart View</span>
 		</div>
 	</div>

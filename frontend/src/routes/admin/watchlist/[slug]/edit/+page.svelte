@@ -27,11 +27,8 @@ import { logger } from '$lib/utils/logger';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-
+	import { Icon, IconArrowLeft, IconDeviceFloppy, IconEye, IconTrash } from '$lib/icons';
+				
 	// Get slug from URL using Svelte 5 $derived
 	const slug = $derived(page.params.slug ?? '');
 
@@ -165,7 +162,7 @@ import { logger } from '$lib/utils/logger';
 	<header class="page-header">
 		<div class="header-left">
 			<a href="/admin/watchlist" class="back-btn">
-				<IconArrowLeft size={20} />
+				<Icon icon={IconArrowLeft} size={20} />
 				Back
 			</a>
 			<div class="header-titles">
@@ -178,16 +175,16 @@ import { logger } from '$lib/utils/logger';
 		<div class="header-actions">
 			{#if originalItem}
 				<a href="/watchlist/{slug}" target="_blank" class="btn-secondary">
-					<IconEye size={18} />
+					<Icon icon={IconEye} size={18} />
 					Preview
 				</a>
 			{/if}
 			<button type="button" class="btn-danger" onclick={() => (showDeleteModal = true)}>
-				<IconTrash size={18} />
+				<Icon icon={IconTrash} size={18} />
 				Delete
 			</button>
 			<button type="button" class="btn-primary" onclick={handleSave} disabled={isSaving}>
-				<IconDeviceFloppy size={18} />
+				<Icon icon={IconDeviceFloppy} size={18} />
 				{isSaving ? 'Saving...' : 'Save Changes'}
 			</button>
 		</div>

@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconNews from '@tabler/icons-svelte-runes/icons/news';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import type { Post } from '$lib/types/post';
+					import type { Post } from '$lib/types/post';
+	import { Icon, IconArrowRight, IconChartCandle, IconClock, IconNews } from '$lib/icons';
 
 	// ─────────────────────────────────────────────────────────────────────────
 	// Props & Logic
@@ -107,7 +104,7 @@
 					in:heavySlide={{ delay: 0, duration: 1000 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconNews size={14} />
+					<Icon icon={IconNews} size={14} />
 					Intelligence Wire
 				</div>
 
@@ -167,7 +164,7 @@
 										class="flex items-center gap-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4"
 									>
 										<span class="flex items-center gap-2">
-											<IconClock size={12} />
+											<Icon icon={IconClock} size={12} />
 											{getRelativeTime(leadPost.published_at)}
 										</span>
 										<span class="w-px h-3 bg-white/20"></span>
@@ -190,7 +187,7 @@
 										class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white"
 									>
 										<span>Read Full Protocol</span>
-										<IconArrowRight
+										<Icon icon={IconArrowRight}
 											size={14}
 											class="group-hover:translate-x-2 transition-transform duration-300 text-amber-500"
 										/>
@@ -207,7 +204,7 @@
 							in:heavySlide={{ delay: 400 }}
 							class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
 						>
-							<IconNews size={14} />
+							<Icon icon={IconNews} size={14} />
 							<span>Incoming Signals</span>
 						</div>
 
@@ -221,7 +218,7 @@
 										<span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
 											{getRelativeTime(post.published_at)}
 										</span>
-										<IconChartCandle
+										<Icon icon={IconChartCandle}
 											size={14}
 											class="text-slate-600 group-hover:text-amber-500 transition-colors"
 										/>
@@ -239,7 +236,7 @@
 											class="read-more-link inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-slate-500 group-hover:text-amber-500 transition-all duration-300"
 										>
 											<span>Read More</span>
-											<IconArrowRight
+											<Icon icon={IconArrowRight}
 												size={12}
 												class="transform group-hover:translate-x-1 transition-transform duration-300"
 											/>
@@ -256,7 +253,7 @@
 				<div
 					class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 text-slate-500 mb-4"
 				>
-					<IconNews size={24} />
+					<Icon icon={IconNews} size={24} />
 				</div>
 				<h3 class="text-lg font-serif text-white mb-2">Wire Silent</h3>
 				<p class="text-sm font-mono text-slate-500 uppercase tracking-widest">

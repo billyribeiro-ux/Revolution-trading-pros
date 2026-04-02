@@ -1,15 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconBrain,
-		IconClock,
-		IconUsers,
-		IconStar,
-		IconCheck,
-		IconBolt,
-		IconTrendingUp
-	} from '$lib/icons';
+	import { Icon, IconBrain, IconClock, IconUsers, IconStar, IconCheck, IconBolt, IconTrendingUp } from '$lib/icons';
 
 	let heroVisible = $state(false);
 
@@ -39,7 +31,7 @@
 
 		<div class="hero-content">
 			<div class="hero-badge">
-				<IconBrain size={20} stroke={2} />
+				<Icon icon={IconBrain} size={20} stroke={2} />
 				<span>Advanced Options Course</span>
 			</div>
 
@@ -55,21 +47,21 @@
 
 			<div class="hero-meta">
 				<div class="meta-item">
-					<IconClock size={24} stroke={2} />
+					<Icon icon={IconClock} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Duration</div>
 						<div class="meta-value">10 Weeks</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconUsers size={24} stroke={2} />
+					<Icon icon={IconUsers} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Students</div>
 						<div class="meta-value">1,892</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconStar size={24} stroke={2} />
+					<Icon icon={IconStar} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Rating</div>
 						<div class="meta-value">4.9/5.0</div>
@@ -80,7 +72,7 @@
 			<div class="hero-cta">
 				<a href="/register" class="cta-button primary">
 					Enroll Now - $597
-					<IconBolt size={20} stroke={2} />
+					<Icon icon={IconBolt} size={20} stroke={2} />
 				</a>
 			</div>
 		</div>
@@ -92,7 +84,7 @@
 
 			<div class="learning-grid">
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Options Fundamentals</h3>
 					<p>
 						Understand calls, puts, strikes, expiration, and how options are priced in the market.
@@ -100,19 +92,19 @@
 				</div>
 
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>The Greeks</h3>
 					<p>Master Delta, Gamma, Theta, and Vega to predict and manage your options positions.</p>
 				</div>
 
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Advanced Strategies</h3>
 					<p>Learn spreads, straddles, strangles, iron condors, and calendar spreads.</p>
 				</div>
 
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Risk Management</h3>
 					<p>Professional position sizing and portfolio management for options traders.</p>
 				</div>
@@ -127,15 +119,15 @@
 
 			<div class="features-list">
 				<div class="feature-item">
-					<IconCheck size={20} stroke={2} />
+					<Icon icon={IconCheck} size={20} stroke={2} />
 					<span>60+ hours of content</span>
 				</div>
 				<div class="feature-item">
-					<IconCheck size={20} stroke={2} />
+					<Icon icon={IconCheck} size={20} stroke={2} />
 					<span>Lifetime access</span>
 				</div>
 				<div class="feature-item">
-					<IconCheck size={20} stroke={2} />
+					<Icon icon={IconCheck} size={20} stroke={2} />
 					<span>Professional certification</span>
 				</div>
 			</div>
@@ -144,7 +136,7 @@
 				<span class="price">$597</span>
 				<a href="/register" class="enroll-button">
 					Enroll Now
-					<IconBolt size={20} stroke={2} />
+					<Icon icon={IconBolt} size={20} stroke={2} />
 				</a>
 			</div>
 		</div>

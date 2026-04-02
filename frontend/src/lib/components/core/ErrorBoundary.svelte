@@ -14,7 +14,7 @@
 	import { browser } from '$app/environment';
 	import { log } from '$lib/api/enterprise/tracing';
 	import { serializeError } from '$lib/api/enterprise/errors';
-	import { IconAlertTriangle, IconRefresh } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconRefresh } from '$lib/icons';
 
 	// Props
 	interface Props {
@@ -106,7 +106,7 @@
 		<div class="error-boundary">
 			<div class="error-content">
 				<div class="error-icon">
-					<IconAlertTriangle size={48} stroke={1.5} />
+					<Icon icon={IconAlertTriangle} size={48} stroke={1.5} />
 				</div>
 				<h2 class="error-title">{title}</h2>
 				<p class="error-message">{message}</p>
@@ -130,7 +130,7 @@
 
 				<div class="error-actions">
 					<button class="btn-retry" onclick={reset}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 						Try Again
 					</button>
 					<button class="btn-home" onclick={() => (window.location.href = '/')}>

@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconLoader2 } from '$lib/icons';
+	import { Icon, IconLoader2 } from '$lib/icons';
 	import type { Block } from './types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -105,7 +105,7 @@
 
 {#if isLoading}
 	<div class="block-loader" aria-busy="true" aria-label="Loading block">
-		<IconLoader2 size={24} class="spinner" />
+		<Icon icon={IconLoader2} size={24} class="spinner" />
 		<span>Loading {props.block.type}...</span>
 	</div>
 {:else if loadError}

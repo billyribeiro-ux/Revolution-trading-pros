@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
-	import { IconCircleCheck, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconCircleCheck, IconAlertCircle } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let verifying = $state(true);
@@ -85,9 +85,9 @@
 			{#if verifying}
 				<div class="spinner"></div>
 			{:else if success}
-				<IconCircleCheck size={64} stroke={1.5} class="success-icon" />
+				<Icon icon={IconCircleCheck} size={64} stroke={1.5} class="success-icon" />
 			{:else}
-				<IconAlertCircle size={64} stroke={1.5} class="error-icon" />
+				<Icon icon={IconAlertCircle} size={64} stroke={1.5} class="error-icon" />
 			{/if}
 		</div>
 

@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconSparkles, IconRefresh, IconLoader2, IconCopy, IconCheck } from '$lib/icons';
+	import { Icon, IconSparkles, IconRefresh, IconLoader2, IconCopy, IconCheck } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -85,7 +85,7 @@
 <div class="ai-generated-block" role="region" aria-label="AI content generator">
 	<div class="ai-header">
 		<div class="ai-icon">
-			<IconSparkles size={20} aria-hidden="true" />
+			<Icon icon={IconSparkles} size={20} aria-hidden="true" />
 		</div>
 		<span class="ai-title">AI Content Generator</span>
 	</div>
@@ -125,10 +125,10 @@
 					aria-label={aiState.loading ? 'Generating...' : 'Generate content'}
 				>
 					{#if aiState.loading}
-						<IconLoader2 size={18} class="spinning" aria-hidden="true" />
+						<Icon icon={IconLoader2} size={18} class="spinning" aria-hidden="true" />
 						<span>Generating...</span>
 					{:else}
-						<IconSparkles size={18} aria-hidden="true" />
+						<Icon icon={IconSparkles} size={18} aria-hidden="true" />
 						<span>Generate</span>
 					{/if}
 				</button>
@@ -155,7 +155,7 @@
 							disabled={aiState.loading}
 							aria-label="Regenerate"
 						>
-							<IconRefresh size={16} aria-hidden="true" />
+							<Icon icon={IconRefresh} size={16} aria-hidden="true" />
 						</button>
 					{/if}
 					<button
@@ -165,9 +165,9 @@
 						aria-label={copied ? 'Copied!' : 'Copy'}
 					>
 						{#if copied}
-							<IconCheck size={16} aria-hidden="true" />
+							<Icon icon={IconCheck} size={16} aria-hidden="true" />
 						{:else}
-							<IconCopy size={16} aria-hidden="true" />
+							<Icon icon={IconCopy} size={16} aria-hidden="true" />
 						{/if}
 					</button>
 				</div>
@@ -185,7 +185,7 @@
 		</div>
 	{:else if !props.isEditing}
 		<div class="ai-empty">
-			<IconSparkles size={32} aria-hidden="true" />
+			<Icon icon={IconSparkles} size={32} aria-hidden="true" />
 			<span>No AI content generated yet</span>
 		</div>
 	{/if}

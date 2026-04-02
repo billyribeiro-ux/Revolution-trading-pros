@@ -11,9 +11,8 @@
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
-	import IconCommand from '@tabler/icons-svelte-runes/icons/command';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-
+	import { Icon, IconCommand, IconX } from '$lib/icons';
+		
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;
@@ -77,11 +76,11 @@
 			<!-- Header -->
 			<div class="modal-header">
 				<div class="header-title">
-					<IconCommand size={24} />
+					<Icon icon={IconCommand} size={24} />
 					<h2>Keyboard Shortcuts</h2>
 				</div>
 				<button class="close-btn" onclick={close}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 

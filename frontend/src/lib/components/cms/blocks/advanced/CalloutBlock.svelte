@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { IconX } from '$lib/icons';
+	import { Icon, IconX } from '$lib/icons';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -201,7 +201,7 @@
 				onclick={handleDismiss}
 				onkeydown={handleKeyDown}
 			>
-				<IconX size={18} aria-hidden="true" />
+				<Icon icon={IconX} size={18} aria-hidden="true" />
 			</button>
 		{/if}
 	</div>

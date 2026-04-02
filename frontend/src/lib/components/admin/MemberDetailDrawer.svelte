@@ -7,24 +7,7 @@
 	 * with tabs for overview, subscriptions, orders, activity, and notes.
 	 */
 	import { membersApi, type MemberFullDetails } from '$lib/api/members';
-	import {
-		IconX,
-		IconUser,
-		IconMail,
-		IconCalendar,
-		IconCreditCard,
-		IconReceipt,
-		IconActivity,
-		IconNotes,
-		IconEdit,
-		IconBan,
-		IconPlayerPlay,
-		IconTrash,
-		IconSend,
-		IconClock,
-		IconCheck,
-		IconAlertTriangle
-	} from '$lib/icons';
+	import { Icon, IconX, IconUser, IconMail, IconCalendar, IconCreditCard, IconReceipt, IconActivity, IconNotes, IconEdit, IconBan, IconPlayerPlay, IconTrash, IconSend, IconClock, IconCheck, IconAlertTriangle } from '$lib/icons';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
 	interface Props {
@@ -260,7 +243,7 @@
 				</div>
 			{:else if error && !data}
 				<div class="error-state">
-					<IconAlertTriangle size={48} />
+					<Icon icon={IconAlertTriangle} size={48} />
 					<p>{error}</p>
 					<button type="button" class="btn-retry" onclick={loadMemberData}>Try Again</button>
 				</div>
@@ -286,7 +269,7 @@
 						</div>
 					</div>
 					<button type="button" class="btn-close" onclick={onClose} aria-label="Close">
-						<IconX size={24} />
+						<Icon icon={IconX} size={24} />
 					</button>
 				</header>
 
@@ -313,11 +296,11 @@
 				<!-- Action Buttons -->
 				<div class="action-buttons">
 					<button type="button" class="btn-action" onclick={() => onEdit?.(data!.member)}>
-						<IconEdit size={16} />
+						<Icon icon={IconEdit} size={16} />
 						Edit
 					</button>
 					<button type="button" class="btn-action">
-						<IconSend size={16} />
+						<Icon icon={IconSend} size={16} />
 						Email
 					</button>
 					{#if data.member.status === 'banned' || data.member.status === 'suspended'}
@@ -326,7 +309,7 @@
 							class="btn-action success"
 							onclick={() => (showUnbanModal = true)}
 						>
-							<IconPlayerPlay size={16} />
+							<Icon icon={IconPlayerPlay} size={16} />
 							Restore
 						</button>
 					{:else}
@@ -335,11 +318,11 @@
 							class="btn-action warning"
 							onclick={() => (showSuspendModal = true)}
 						>
-							<IconClock size={16} />
+							<Icon icon={IconClock} size={16} />
 							Suspend
 						</button>
 						<button type="button" class="btn-action danger" onclick={() => (showBanModal = true)}>
-							<IconBan size={16} />
+							<Icon icon={IconBan} size={16} />
 							Ban
 						</button>
 					{/if}
@@ -353,7 +336,7 @@
 						class:active={activeTab === 'overview'}
 						onclick={() => (activeTab = 'overview')}
 					>
-						<IconUser size={16} />
+						<Icon icon={IconUser} size={16} />
 						Overview
 					</button>
 					<button
@@ -362,7 +345,7 @@
 						class:active={activeTab === 'subscriptions'}
 						onclick={() => (activeTab = 'subscriptions')}
 					>
-						<IconCreditCard size={16} />
+						<Icon icon={IconCreditCard} size={16} />
 						Subscriptions
 					</button>
 					<button
@@ -371,7 +354,7 @@
 						class:active={activeTab === 'orders'}
 						onclick={() => (activeTab = 'orders')}
 					>
-						<IconReceipt size={16} />
+						<Icon icon={IconReceipt} size={16} />
 						Orders
 					</button>
 					<button
@@ -380,7 +363,7 @@
 						class:active={activeTab === 'activity'}
 						onclick={() => (activeTab = 'activity')}
 					>
-						<IconActivity size={16} />
+						<Icon icon={IconActivity} size={16} />
 						Activity
 					</button>
 					<button
@@ -389,7 +372,7 @@
 						class:active={activeTab === 'notes'}
 						onclick={() => (activeTab = 'notes')}
 					>
-						<IconNotes size={16} />
+						<Icon icon={IconNotes} size={16} />
 						Notes
 					</button>
 				</nav>
@@ -402,28 +385,28 @@
 								<h3 class="section-title">Account Details</h3>
 								<div class="info-grid">
 									<div class="info-item">
-										<IconMail size={16} />
+										<Icon icon={IconMail} size={16} />
 										<div>
 											<span class="info-label">Email</span>
 											<span class="info-value">{data.member.email}</span>
 										</div>
 									</div>
 									<div class="info-item">
-										<IconCalendar size={16} />
+										<Icon icon={IconCalendar} size={16} />
 										<div>
 											<span class="info-label">Joined</span>
 											<span class="info-value">{formatDate(data.member.joined_at)}</span>
 										</div>
 									</div>
 									<div class="info-item">
-										<IconCheck size={16} />
+										<Icon icon={IconCheck} size={16} />
 										<div>
 											<span class="info-label">Email Verified</span>
 											<span class="info-value">{data.member.email_verified ? 'Yes' : 'No'}</span>
 										</div>
 									</div>
 									<div class="info-item">
-										<IconClock size={16} />
+										<Icon icon={IconClock} size={16} />
 										<div>
 											<span class="info-label">Last Login</span>
 											<span class="info-value">{formatDateTime(data.member.last_login)}</span>
@@ -435,7 +418,7 @@
 							{#if data.member.status === 'banned' || data.member.status === 'suspended'}
 								<section class="info-section warning-section">
 									<h3 class="section-title">
-										<IconAlertTriangle size={16} />
+										<Icon icon={IconAlertTriangle} size={16} />
 										{data.member.status === 'banned' ? 'Ban Details' : 'Suspension Details'}
 									</h3>
 									<div class="info-grid">
@@ -482,7 +465,7 @@
 						<div class="tab-content">
 							{#if data.subscriptions.length === 0}
 								<div class="empty-state">
-									<IconCreditCard size={48} />
+									<Icon icon={IconCreditCard} size={48} />
 									<p>No subscriptions found</p>
 								</div>
 							{:else}
@@ -529,7 +512,7 @@
 						<div class="tab-content">
 							{#if data.orders.length === 0}
 								<div class="empty-state">
-									<IconReceipt size={48} />
+									<Icon icon={IconReceipt} size={48} />
 									<p>No orders found</p>
 								</div>
 							{:else}
@@ -564,7 +547,7 @@
 						<div class="tab-content">
 							{#if data.activity.length === 0}
 								<div class="empty-state">
-									<IconActivity size={48} />
+									<Icon icon={IconActivity} size={48} />
 									<p>No activity recorded</p>
 								</div>
 							{:else}
@@ -572,7 +555,7 @@
 									{#each data.activity as act}
 										<div class="activity-item">
 											<div class="activity-icon">
-												<IconActivity size={14} />
+												<Icon icon={IconActivity} size={14} />
 											</div>
 											<div class="activity-content">
 												<span class="activity-action">{act.action}</span>
@@ -614,7 +597,7 @@
 
 							{#if data.notes.length === 0}
 								<div class="empty-state">
-									<IconNotes size={48} />
+									<Icon icon={IconNotes} size={48} />
 									<p>No notes yet</p>
 								</div>
 							{:else}
@@ -631,7 +614,7 @@
 													onclick={() => deleteNote(note.id)}
 													title="Delete note"
 												>
-													<IconTrash size={14} />
+													<Icon icon={IconTrash} size={14} />
 												</button>
 											</div>
 										</div>

@@ -5,7 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
 	import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
 	import { createBlock, deserializeBlocks } from '$lib/utils/blocks';
-	import { IconPlus } from '$lib/icons';
+	import { Icon, IconPlus } from '$lib/icons';
 	import type { Block } from '$lib/components/cms/blocks/types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -206,7 +206,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="empty-state">
 					<p>No blocks yet. Add your first block to get started!</p>
 					<button type="button" class="add-first-block" onclick={() => addBlock()}>
-						<IconPlus size={20} />
+						<Icon icon={IconPlus} size={20} />
 						Add Block
 					</button>
 				</div>
@@ -217,19 +217,19 @@ import { logger } from '$lib/utils/logger';
 		{#if isEditing}
 			<div class="add-block-menu">
 				<button type="button" class="add-block-btn" onclick={() => addBlock('paragraph')}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 					Paragraph
 				</button>
 				<button type="button" class="add-block-btn" onclick={() => addBlock('heading')}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 					Heading
 				</button>
 				<button type="button" class="add-block-btn" onclick={() => addBlock('image')}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 					Image
 				</button>
 				<button type="button" class="add-block-btn" onclick={() => addBlock('code')}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 					Code
 				</button>
 			</div>

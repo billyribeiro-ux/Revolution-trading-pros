@@ -4,19 +4,7 @@
 	 * @version 2.0.0
 	 */
 	import { register } from '$lib/api/auth';
-	import {
-		IconUser,
-		IconMail,
-		IconLock,
-		IconAlertCircle,
-		IconUserPlus,
-		IconSparkles,
-		IconArrowRight,
-		IconCircleCheck,
-		IconInbox,
-		IconEye,
-		IconEyeOff
-	} from '$lib/icons';
+	import { Icon, IconUser, IconMail, IconLock, IconAlertCircle, IconUserPlus, IconSparkles, IconArrowRight, IconCircleCheck, IconInbox, IconEye, IconEyeOff } from '$lib/icons';
 	import { browser } from '$app/environment';
 
 	// Svelte 5 state runes
@@ -285,7 +273,7 @@
 						<div class="icon-pulse-bg"></div>
 						<div class="icon-container">
 							<div class="icon-inner">
-								<IconSparkles size={52} class="sparkle-icon" />
+								<Icon icon={IconSparkles} size={52} class="sparkle-icon" />
 							</div>
 						</div>
 					</div>
@@ -296,7 +284,7 @@
 				<!-- General error -->
 				{#if generalError}
 					<div class="error-banner">
-						<IconAlertCircle size={20} class="error-icon" />
+						<Icon icon={IconAlertCircle} size={20} class="error-icon" />
 						<p class="error-text">{generalError}</p>
 					</div>
 				{/if}
@@ -308,7 +296,7 @@
 						<label for="name" class="field-label">Full Name</label>
 						<div class="input-wrapper">
 							<div class="input-icon">
-								<IconUser size={20} />
+								<Icon icon={IconUser} size={20} />
 							</div>
 							<input
 								id="name"
@@ -333,7 +321,7 @@
 						<label for="email" class="field-label">Email Address</label>
 						<div class="input-wrapper">
 							<div class="input-icon">
-								<IconMail size={20} />
+								<Icon icon={IconMail} size={20} />
 							</div>
 							<input
 								id="email"
@@ -358,7 +346,7 @@
 						<label for="password" class="field-label">Password</label>
 						<div class="input-wrapper">
 							<div class="input-icon">
-								<IconLock size={20} />
+								<Icon icon={IconLock} size={20} />
 							</div>
 							<input
 								id="password"
@@ -379,9 +367,9 @@
 								tabindex={-1}
 							>
 								{#if showPassword}
-									<IconEyeOff size={20} />
+									<Icon icon={IconEyeOff} size={20} />
 								{:else}
-									<IconEye size={20} />
+									<Icon icon={IconEye} size={20} />
 								{/if}
 							</button>
 							<div class="input-glow"></div>
@@ -398,7 +386,7 @@
 						<label for="password_confirmation" class="field-label">Confirm Password</label>
 						<div class="input-wrapper">
 							<div class="input-icon">
-								<IconLock size={20} />
+								<Icon icon={IconLock} size={20} />
 							</div>
 							<input
 								id="password_confirmation"
@@ -418,9 +406,9 @@
 								tabindex={-1}
 							>
 								{#if showConfirmPassword}
-									<IconEyeOff size={20} />
+									<Icon icon={IconEyeOff} size={20} />
 								{:else}
-									<IconEye size={20} />
+									<Icon icon={IconEye} size={20} />
 								{/if}
 							</button>
 							<div class="input-glow"></div>
@@ -434,9 +422,9 @@
 								<span class="spinner"></span>
 								<span>Creating Account...</span>
 							{:else}
-								<IconUserPlus size={22} />
+								<Icon icon={IconUserPlus} size={22} />
 								<span>Create Account</span>
-								<IconArrowRight size={22} class="arrow-icon" />
+								<Icon icon={IconArrowRight} size={22} class="arrow-icon" />
 							{/if}
 						</span>
 						<div class="btn-shine"></div>
@@ -457,22 +445,22 @@
 			{#if registrationSuccess}
 				<div class="success-content">
 					<div class="success-icon-wrapper">
-						<IconCircleCheck size={80} class="success-check-icon" />
+						<Icon icon={IconCircleCheck} size={80} class="success-check-icon" />
 					</div>
 					<h2 class="success-title">Check Your Email!</h2>
 					<p class="success-message">{successMessage}</p>
 
 					<div class="email-instructions">
 						<div class="instruction-item">
-							<IconInbox size={24} class="instruction-icon" />
+							<Icon icon={IconInbox} size={24} class="instruction-icon" />
 							<p>We've sent a verification link to <strong>{email}</strong></p>
 						</div>
 						<div class="instruction-item">
-							<IconMail size={24} class="instruction-icon" />
+							<Icon icon={IconMail} size={24} class="instruction-icon" />
 							<p>Click the link in the email to verify your account</p>
 						</div>
 						<div class="instruction-item">
-							<IconAlertCircle size={24} class="instruction-icon" />
+							<Icon icon={IconAlertCircle} size={24} class="instruction-icon" />
 							<p>Don't forget to check your spam folder if you don't see it</p>
 						</div>
 					</div>
@@ -480,7 +468,7 @@
 					<div class="success-actions">
 						<a href="/login" class="success-btn-primary">
 							Go to Login
-							<IconArrowRight size={20} />
+							<Icon icon={IconArrowRight} size={20} />
 						</a>
 					</div>
 

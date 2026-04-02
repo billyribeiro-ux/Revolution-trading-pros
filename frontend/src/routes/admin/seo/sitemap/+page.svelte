@@ -1,7 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { IconRefresh, IconDownload, IconUpload, IconFileText } from '$lib/icons';
+	import { Icon, IconRefresh, IconDownload, IconUpload, IconFileText } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let stats = $state<any>(null);
@@ -85,7 +85,7 @@ import { logger } from '$lib/utils/logger';
 	{#if stats}
 		<div class="stats-grid">
 			<div class="stat-card">
-				<IconFileText size={32} />
+				<Icon icon={IconFileText} size={32} />
 				<div class="stat-value">{stats.total_urls || 0}</div>
 				<div class="stat-label">Total URLs</div>
 			</div>
@@ -110,7 +110,7 @@ import { logger } from '$lib/utils/logger';
 		<h2>Actions</h2>
 		<div class="action-buttons">
 			<button class="action-btn primary" onclick={generateSitemap} disabled={generating}>
-				<IconRefresh size={20} class={generating ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={20} class={generating ? 'spinning' : ''} />
 				{generating ? 'Generating...' : 'Generate Sitemap'}
 			</button>
 
@@ -119,13 +119,13 @@ import { logger } from '$lib/utils/logger';
 				onclick={submitToSearchEngines}
 				disabled={submitting || !stats?.total_urls}
 			>
-				<IconUpload size={20} />
+				<Icon icon={IconUpload} size={20} />
 				{submitting ? 'Submitting...' : 'Submit to Search Engines'}
 			</button>
 
 			{#if sitemapContent}
 				<button class="action-btn" onclick={downloadSitemap}>
-					<IconDownload size={20} />
+					<Icon icon={IconDownload} size={20} />
 					Download XML
 				</button>
 			{/if}

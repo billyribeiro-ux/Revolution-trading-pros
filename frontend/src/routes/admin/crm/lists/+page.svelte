@@ -11,17 +11,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconList,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconRefresh,
-		IconUsers,
-		IconWorld,
-		IconLock
-	} from '$lib/icons';
+	import { Icon, IconList, IconPlus, IconSearch, IconEdit, IconTrash, IconRefresh, IconUsers, IconWorld, IconLock } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactList } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -121,10 +111,10 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadLists()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<a href="/admin/crm/lists/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New List
 			</a>
 		</div>
@@ -134,7 +124,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconList size={24} />
+				<Icon icon={IconList} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -143,7 +133,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconWorld size={24} />
+				<Icon icon={IconWorld} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.public)}</span>
@@ -152,7 +142,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconLock size={24} />
+				<Icon icon={IconLock} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.private)}</span>
@@ -161,7 +151,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconUsers size={24} />
+				<Icon icon={IconUsers} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
@@ -173,7 +163,7 @@
 	<!-- Search & Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-lists"
@@ -202,11 +192,11 @@
 		</div>
 	{:else if filteredLists.length === 0}
 		<div class="empty-state">
-			<IconList size={48} />
+			<Icon icon={IconList} size={48} />
 			<h3>No lists found</h3>
 			<p>Create your first list to organize your contacts</p>
 			<a href="/admin/crm/lists/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create List
 			</a>
 		</div>
@@ -228,7 +218,7 @@
 							<td>
 								<div class="list-cell">
 									<div class="list-icon">
-										<IconList size={20} />
+										<Icon icon={IconList} size={20} />
 									</div>
 									<div class="list-info">
 										<span class="list-title">{list.title}</span>
@@ -241,10 +231,10 @@
 							<td>
 								<span class="visibility-badge {list.is_public ? 'public' : 'private'}">
 									{#if list.is_public}
-										<IconWorld size={14} />
+										<Icon icon={IconWorld} size={14} />
 										Public
 									{:else}
-										<IconLock size={14} />
+										<Icon icon={IconLock} size={14} />
 										Private
 									{/if}
 								</span>
@@ -254,17 +244,17 @@
 							<td>
 								<div class="action-buttons">
 									<a href="/admin/crm/lists/{list.id}" class="btn-icon" title="View Contacts">
-										<IconUsers size={16} />
+										<Icon icon={IconUsers} size={16} />
 									</a>
 									<a href="/admin/crm/lists/{list.id}/edit" class="btn-icon" title="Edit">
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</a>
 									<button
 										class="btn-icon danger"
 										title="Delete"
 										onclick={() => deleteList(list.id)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>

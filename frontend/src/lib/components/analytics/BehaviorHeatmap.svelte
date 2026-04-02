@@ -8,7 +8,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconClick, IconEye, IconChartBar } from '$lib/icons';
+	import { Icon, IconClick, IconEye, IconChartBar } from '$lib/icons';
 
 	interface DataPoint {
 		x: number;
@@ -80,7 +80,7 @@
 <div class="heatmap-container">
 	<div class="heatmap-header">
 		<h3 class="heatmap-title">
-			<IconChartBar size={20} />
+			<Icon icon={IconChartBar} size={20} />
 			Behavior Heatmap
 		</h3>
 		{#if showLegend}
@@ -107,11 +107,11 @@
 
 	<div class="heatmap-stats">
 		<div class="stat">
-			<IconClick size={18} />
+			<Icon icon={IconClick} size={18} />
 			<span>{data.filter((d) => d.type === 'click').length} Clicks</span>
 		</div>
 		<div class="stat">
-			<IconEye size={18} />
+			<Icon icon={IconEye} size={18} />
 			<span>{data.filter((d) => d.type === 'hover').length} Hovers</span>
 		</div>
 	</div>

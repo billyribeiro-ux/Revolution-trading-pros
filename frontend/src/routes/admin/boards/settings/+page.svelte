@@ -5,19 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
-	import {
-		IconLayoutKanban,
-		IconArrowLeft,
-		IconSettings,
-		IconCloud,
-		IconClock,
-		IconPalette,
-		IconPlus,
-		IconTrash,
-		IconCheck,
-		IconAlertCircle,
-		IconRefresh
-	} from '$lib/icons';
+	import { Icon, IconLayoutKanban, IconArrowLeft, IconSettings, IconCloud, IconClock, IconPalette, IconPlus, IconTrash, IconCheck, IconAlertCircle, IconRefresh } from '$lib/icons';
 
 	// State
 	let settings = $state<BoardsSettings>({
@@ -147,11 +135,11 @@ import { logger } from '$lib/utils/logger';
 					href="/admin/boards"
 					class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 				>
-					<IconArrowLeft class="w-5 h-5" />
+					<Icon icon={IconArrowLeft} class="w-5 h-5" />
 				</a>
 				<div class="flex items-center gap-3">
 					<div class="p-2 bg-[#E6B800]/10 dark:bg-[#B38F00]/30 rounded-lg">
-						<IconSettings class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
+						<Icon icon={IconSettings} class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Settings</h1>
@@ -181,7 +169,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
 								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconLayoutKanban class="w-4 h-4" />
+							<Icon icon={IconLayoutKanban} class="w-4 h-4" />
 							General
 						</button>
 						<button
@@ -191,7 +179,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
 								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconPalette class="w-4 h-4" />
+							<Icon icon={IconPalette} class="w-4 h-4" />
 							Default Stages
 						</button>
 						<button
@@ -201,7 +189,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
 								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconPalette class="w-4 h-4" />
+							<Icon icon={IconPalette} class="w-4 h-4" />
 							Default Labels
 						</button>
 						<button
@@ -211,7 +199,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
 								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconClock class="w-4 h-4" />
+							<Icon icon={IconClock} class="w-4 h-4" />
 							Time Tracking
 						</button>
 						<button
@@ -221,7 +209,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
 								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconCloud class="w-4 h-4" />
+							<Icon icon={IconCloud} class="w-4 h-4" />
 							Cloud Storage
 						</button>
 					</nav>
@@ -318,7 +306,7 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => removeStage(index)}
 											class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
 										>
-											<IconTrash class="w-4 h-4" />
+											<Icon icon={IconTrash} class="w-4 h-4" />
 										</button>
 									</div>
 								{/each}
@@ -357,7 +345,7 @@ import { logger } from '$lib/utils/logger';
 									disabled={!newStage.title.trim()}
 									class="px-3 py-1.5 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] text-sm rounded-lg disabled:opacity-50"
 								>
-									<IconPlus class="w-4 h-4" />
+									<Icon icon={IconPlus} class="w-4 h-4" />
 								</button>
 							</div>
 						{:else if activeTab === 'labels'}
@@ -395,7 +383,7 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => removeLabel(index)}
 											class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
 										>
-											<IconTrash class="w-4 h-4" />
+											<Icon icon={IconTrash} class="w-4 h-4" />
 										</button>
 									</div>
 								{/each}
@@ -424,7 +412,7 @@ import { logger } from '$lib/utils/logger';
 									disabled={!newLabel.title.trim()}
 									class="px-3 py-1.5 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] text-sm rounded-lg disabled:opacity-50"
 								>
-									<IconPlus class="w-4 h-4" />
+									<Icon icon={IconPlus} class="w-4 h-4" />
 								</button>
 							</div>
 						{:else if activeTab === 'time'}
@@ -632,9 +620,9 @@ import { logger } from '$lib/utils/logger';
 											class="px-4 py-2 text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded-lg flex items-center gap-2 disabled:opacity-50"
 										>
 											{#if testingStorage}
-												<IconRefresh class="w-4 h-4 animate-spin" />
+												<Icon icon={IconRefresh} class="w-4 h-4 animate-spin" />
 											{:else}
-												<IconRefresh class="w-4 h-4" />
+												<Icon icon={IconRefresh} class="w-4 h-4" />
 											{/if}
 											Test Connection
 										</button>
@@ -645,9 +633,9 @@ import { logger } from '$lib/utils/logger';
 													: 'text-red-600'}"
 											>
 												{#if storageTestResult.success}
-													<IconCheck class="w-4 h-4" />
+													<Icon icon={IconCheck} class="w-4 h-4" />
 												{:else}
-													<IconAlertCircle class="w-4 h-4" />
+													<Icon icon={IconAlertCircle} class="w-4 h-4" />
 												{/if}
 												{storageTestResult.message}
 											</span>
@@ -674,9 +662,9 @@ import { logger } from '$lib/utils/logger';
 									class="px-6 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 flex items-center gap-2"
 								>
 									{#if saving}
-										<IconRefresh class="w-4 h-4 animate-spin" />
+										<Icon icon={IconRefresh} class="w-4 h-4 animate-spin" />
 									{:else}
-										<IconCheck class="w-4 h-4" />
+										<Icon icon={IconCheck} class="w-4 h-4" />
 									{/if}
 									Save Settings
 								</button>

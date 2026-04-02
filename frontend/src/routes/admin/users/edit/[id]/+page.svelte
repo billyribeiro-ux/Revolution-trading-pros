@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { IconCheck, IconX, IconUser } from '$lib/icons';
+	import { Icon, IconCheck, IconX, IconUser } from '$lib/icons';
 
 	let loading = $state(true);
 	let saving = $state(false);
@@ -150,21 +150,21 @@ import { logger } from '$lib/utils/logger';
 			<p>Update user information and roles</p>
 		</div>
 		<button class="btn-secondary" onclick={() => goto('/admin/users')}>
-			<IconX size={18} />
+			<Icon icon={IconX} size={18} />
 			Cancel
 		</button>
 	</div>
 
 	{#if success}
 		<div class="alert success">
-			<IconCheck size={20} />
+			<Icon icon={IconCheck} size={20} />
 			{success}
 		</div>
 	{/if}
 
 	{#if error}
 		<div class="alert error">
-			<IconX size={20} />
+			<Icon icon={IconX} size={20} />
 			<span class="error-message">{error}</span>
 			<button class="btn-retry" onclick={loadUser}>Retry</button>
 		</div>
@@ -268,7 +268,7 @@ import { logger } from '$lib/utils/logger';
 						/>
 						<div class="role-card">
 							<div class="role-icon admin">
-								<IconUser size={24} />
+								<Icon icon={IconUser} size={24} />
 							</div>
 							<div class="role-info">
 								<div class="role-name">Admin</div>
@@ -287,7 +287,7 @@ import { logger } from '$lib/utils/logger';
 						/>
 						<div class="role-card">
 							<div class="role-icon super-admin">
-								<IconUser size={24} />
+								<Icon icon={IconUser} size={24} />
 							</div>
 							<div class="role-info">
 								<div class="role-name">Super Admin</div>
@@ -306,7 +306,7 @@ import { logger } from '$lib/utils/logger';
 					{#if saving}
 						Saving...
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 						Update User
 					{/if}
 				</button>

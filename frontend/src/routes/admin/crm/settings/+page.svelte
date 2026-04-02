@@ -12,14 +12,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import { crmAPI } from '$lib/api/crm';
+							import { crmAPI } from '$lib/api/crm';
 	import type { DoubleOptInSettings, EmailPreferencePage } from '$lib/crm/types';
+	import { Icon, IconCheck, IconMail, IconMailCheck, IconRefresh, IconShoppingCart, IconUsers } from '$lib/icons';
 
 	let activeTab = $state('double-optin');
 	let isLoading = $state(true);
@@ -137,7 +132,7 @@
 	<!-- Success/Error Messages -->
 	{#if successMessage}
 		<div class="success-message">
-			<IconCheck size={18} />
+			<Icon icon={IconCheck} size={18} />
 			<span>{successMessage}</span>
 		</div>
 	{/if}
@@ -251,9 +246,9 @@
 					<div class="form-actions">
 						<button class="btn-primary" onclick={saveDoubleOptIn} disabled={isSaving}>
 							{#if isSaving}
-								<IconRefresh size={18} class="spinning" />
+								<Icon icon={IconRefresh} size={18} class="spinning" />
 							{:else}
-								<IconCheck size={18} />
+								<Icon icon={IconCheck} size={18} />
 							{/if}
 							Save Settings
 						</button>
@@ -374,9 +369,9 @@
 					<div class="form-actions">
 						<button class="btn-primary" onclick={saveEmailPreferences} disabled={isSaving}>
 							{#if isSaving}
-								<IconRefresh size={18} class="spinning" />
+								<Icon icon={IconRefresh} size={18} class="spinning" />
 							{:else}
-								<IconCheck size={18} />
+								<Icon icon={IconCheck} size={18} />
 							{/if}
 							Save Settings
 						</button>

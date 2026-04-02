@@ -12,6 +12,7 @@
 	 */
 
 	import {
+	import { Icon, IconCheck, IconChevronDown, IconChevronRight, IconCopy, IconEdit, IconEye, IconFile, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconVideo, IconX } from '$lib/icons';
 		coursesApi,
 		sectionsApi,
 		lessonsApi,
@@ -21,20 +22,7 @@
 		type CreateLessonRequest
 	} from '$lib/api/courses-enhanced';
 
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-
+													
 	interface Props {
 		courseId?: number;
 		onSave?: (course: Course) => void;
@@ -282,12 +270,12 @@
 		<div class="header-actions">
 			{#if courseId}
 				<button type="button" class="btn-secondary" onclick={cloneCourse}>
-					<IconCopy size={16} /> Clone
+					<Icon icon={IconCopy} size={16} /> Clone
 				</button>
 			{/if}
 			{#if onClose}
 				<button type="button" class="btn-close" onclick={onClose}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			{/if}
 		</div>
@@ -480,11 +468,11 @@
 				<div class="form-actions">
 					{#if courseId && !editMode}
 						<button type="button" class="btn-primary" onclick={() => (editMode = true)}>
-							<IconEdit size={16} /> Edit
+							<Icon icon={IconEdit} size={16} /> Edit
 						</button>
 					{:else}
 						<button type="button" class="btn-primary" onclick={saveCourse} disabled={isSaving}>
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 							{isSaving ? 'Saving...' : 'Save'}
 						</button>
 						{#if courseId}
@@ -510,7 +498,7 @@
 				<div class="content-header">
 					<h3>Course Content</h3>
 					<button type="button" class="btn-add" onclick={() => (showSectionForm = true)}>
-						<IconPlus size={16} /> Add Section
+						<Icon icon={IconPlus} size={16} /> Add Section
 					</button>
 				</div>
 
@@ -523,10 +511,10 @@
 							placeholder="Description (optional)"
 						/>
 						<button type="button" class="btn-save" onclick={createSection} disabled={isSaving}>
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 						</button>
 						<button type="button" class="btn-cancel" onclick={() => (showSectionForm = false)}>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 					</div>
 				{/if}
@@ -547,13 +535,13 @@
 								}}
 							>
 								<div class="section-grip">
-									<IconGripVertical size={16} />
+									<Icon icon={IconGripVertical} size={16} />
 								</div>
 								<button type="button" class="expand-btn">
 									{#if expandedSections.has(section.id)}
-										<IconChevronDown size={16} />
+										<Icon icon={IconChevronDown} size={16} />
 									{:else}
-										<IconChevronRight size={16} />
+										<Icon icon={IconChevronRight} size={16} />
 									{/if}
 								</button>
 								<div class="section-info">
@@ -573,7 +561,7 @@
 										onclick={() => openLessonForm(section.id)}
 										title="Add lesson"
 									>
-										<IconPlus size={16} />
+										<Icon icon={IconPlus} size={16} />
 									</button>
 									<button
 										type="button"
@@ -581,7 +569,7 @@
 										onclick={() => deleteSection(section.id)}
 										title="Delete section"
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</div>
@@ -591,13 +579,13 @@
 									{#each section.lessons || [] as lesson (lesson.id)}
 										<div class="lesson-item">
 											<div class="lesson-grip">
-												<IconGripVertical size={14} />
+												<Icon icon={IconGripVertical} size={14} />
 											</div>
 											<div class="lesson-icon">
 												{#if lesson.lesson_type === 'video'}
-													<IconVideo size={16} />
+													<Icon icon={IconVideo} size={16} />
 												{:else}
-													<IconFile size={16} />
+													<Icon icon={IconFile} size={16} />
 												{/if}
 											</div>
 											<div class="lesson-info">
@@ -616,7 +604,7 @@
 											</div>
 											<div class="lesson-actions">
 												<button type="button" class="btn-icon" title="Edit lesson">
-													<IconEdit size={14} />
+													<Icon icon={IconEdit} size={14} />
 												</button>
 												<button
 													type="button"
@@ -624,7 +612,7 @@
 													onclick={() => deleteLesson(lesson.id)}
 													title="Delete lesson"
 												>
-													<IconTrash size={14} />
+													<Icon icon={IconTrash} size={14} />
 												</button>
 											</div>
 										</div>
@@ -738,7 +726,7 @@
 				<div class="content-header">
 					<h3>Live Sessions</h3>
 					<button type="button" class="btn-add">
-						<IconPlus size={16} /> Add Session
+						<Icon icon={IconPlus} size={16} /> Add Session
 					</button>
 				</div>
 
@@ -760,11 +748,11 @@
 							<div class="session-actions">
 								{#if session.embed_url}
 									<button type="button" class="btn-icon" title="Preview">
-										<IconPlayerPlay size={16} />
+										<Icon icon={IconPlayerPlay} size={16} />
 									</button>
 								{/if}
 								<button type="button" class="btn-icon danger" title="Delete">
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>
@@ -785,7 +773,7 @@
 				<div class="content-header">
 					<h3>Course Resources</h3>
 					<button type="button" class="btn-add">
-						<IconPlus size={16} /> Add Resource
+						<Icon icon={IconPlus} size={16} /> Add Resource
 					</button>
 				</div>
 
@@ -793,7 +781,7 @@
 					{#each course.resources || [] as resource (resource.id)}
 						<div class="resource-item">
 							<div class="resource-icon">
-								<IconFile size={20} />
+								<Icon icon={IconFile} size={20} />
 							</div>
 							<div class="resource-info">
 								<span class="resource-title">{resource.title}</span>
@@ -803,10 +791,10 @@
 							</div>
 							<div class="resource-actions">
 								<a href={resource.file_url} target="_blank" class="btn-icon" title="Download">
-									<IconEye size={16} />
+									<Icon icon={IconEye} size={16} />
 								</a>
 								<button type="button" class="btn-icon danger" title="Delete">
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>

@@ -12,17 +12,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconTag,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconRefresh,
-		IconUsers,
-		IconX,
-		IconCheck
-	} from '$lib/icons';
+	import { Icon, IconTag, IconPlus, IconSearch, IconEdit, IconTrash, IconRefresh, IconUsers, IconX, IconCheck } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -210,10 +200,10 @@
 			<p class="subtitle">Label and categorize your contacts with tags</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={() => loadTags()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<button class="btn-primary" onclick={openCreateModal}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Tag
 				</button>
 			</div>
@@ -224,7 +214,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconTag size={24} />
+				<Icon icon={IconTag} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -233,7 +223,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon gold">
-				<IconUsers size={24} />
+				<Icon icon={IconUsers} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
@@ -245,7 +235,7 @@
 	<!-- Search -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-tags"
@@ -269,11 +259,11 @@
 		</div>
 	{:else if filteredTags.length === 0}
 		<div class="empty-state">
-			<IconTag size={48} />
+			<Icon icon={IconTag} size={48} />
 			<h3>No tags found</h3>
 			<p>Create your first tag to label your contacts</p>
 			<button class="btn-primary" onclick={openCreateModal}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Tag
 			</button>
 		</div>
@@ -292,7 +282,7 @@
 					</div>
 					<div class="tag-stats">
 						<div class="tag-stat">
-							<IconUsers size={16} />
+							<Icon icon={IconUsers} size={16} />
 							<span>{formatNumber(tag.contacts_count)} contacts</span>
 						</div>
 						<div class="tag-stat">
@@ -301,13 +291,13 @@
 					</div>
 					<div class="tag-actions">
 						<a href="/admin/crm/tags/{tag.id}" class="btn-icon" title="View Contacts">
-							<IconUsers size={16} />
+							<Icon icon={IconUsers} size={16} />
 						</a>
 						<button class="btn-icon" title="Edit" onclick={() => openEditModal(tag)}>
-							<IconEdit size={16} />
+							<Icon icon={IconEdit} size={16} />
 						</button>
 						<button class="btn-icon danger" title="Delete" onclick={() => deleteTag(tag.id)}>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 						</button>
 					</div>
 				</div>
@@ -337,7 +327,7 @@
 			<div class="modal-header">
 				<h2>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
 				<button class="modal-close" onclick={closeModal}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<form
@@ -389,7 +379,7 @@
 									disabled={isSaving}
 								>
 									{#if formData.color === color}
-										<IconCheck size={12} />
+										<Icon icon={IconCheck} size={12} />
 									{/if}
 								</button>
 							{/each}
@@ -405,7 +395,7 @@
 							<span class="btn-spinner"></span>
 							Saving...
 						{:else}
-							<IconCheck size={18} />
+							<Icon icon={IconCheck} size={18} />
 							{editingTag ? 'Update Tag' : 'Create Tag'}
 						{/if}
 					</button>

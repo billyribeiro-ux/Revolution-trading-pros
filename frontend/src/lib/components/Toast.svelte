@@ -15,7 +15,7 @@
 	import { flip } from 'svelte/animate';
 	import { toasts, toastStore } from '$lib/stores/toast.svelte';
 	import type { Toast } from '$lib/stores/toast.svelte';
-	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
+	import { Icon, IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
 
 	// Local derived from getter
 	const toastList = $derived(toasts.value);
@@ -66,7 +66,7 @@
 					onclick={() => toastStore.dismiss(toast.id)}
 					aria-label="Dismiss"
 				>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			{/if}
 		</div>

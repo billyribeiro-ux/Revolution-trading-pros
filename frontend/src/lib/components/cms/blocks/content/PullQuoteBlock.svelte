@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-	import { IconColorPicker } from '$lib/icons';
+	import { Icon, IconColorPicker } from '$lib/icons';
 	import type { Block } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -355,7 +355,7 @@
 				title="Choose accent color"
 			>
 				<span class="color-preview" style:background-color={accentColor}></span>
-				<IconColorPicker size={14} aria-hidden="true" />
+				<Icon icon={IconColorPicker} size={14} aria-hidden="true" />
 			</button>
 
 			{#if showColorPicker}

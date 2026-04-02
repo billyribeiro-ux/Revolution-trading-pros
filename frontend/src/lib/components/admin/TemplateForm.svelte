@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
-	import { IconDeviceFloppy, IconX } from '$lib/icons';
+	import { Icon, IconDeviceFloppy, IconX } from '$lib/icons';
 
 	interface Props {
 		template?: any;
@@ -141,13 +141,13 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		<div class="actions">
 			<button type="button" class="btn-secondary" onclick={cancel} disabled={loading} title="Cancel"
-				><IconX size={18} /> Cancel</button
+				><Icon icon={IconX} size={18} /> Cancel</button
 			>
 			<button type="submit" class="btn-primary" disabled={loading} title="Save">
 				{#if loading}
 					Saving...
 				{:else}
-					<IconDeviceFloppy size={18} /> Save
+					<Icon icon={IconDeviceFloppy} size={18} /> Save
 				{/if}
 			</button>
 		</div>

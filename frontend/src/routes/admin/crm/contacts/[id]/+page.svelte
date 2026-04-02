@@ -33,34 +33,9 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconPhone from '@tabler/icons-svelte-runes/icons/phone';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconSend from '@tabler/icons-svelte-runes/icons/send';
-	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
-	import IconMailOpen from '@tabler/icons-svelte-runes/icons/mail-opened';
-	import IconClick from '@tabler/icons-svelte-runes/icons/click';
-	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import { api } from '$lib/api/config';
+																	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+											import { api } from '$lib/api/config';
+	import { Icon, IconActivity, IconArrowLeft, IconBriefcase, IconBuilding, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconCursor, IconEdit, IconList, IconMail, IconMailFast, IconMailOpened, IconNotes, IconPhone, IconPlus, IconRefresh, IconSend, IconTag, IconTrash, IconTrendingUp, IconUserCircle, IconWorld, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -538,7 +513,7 @@ import { logger } from '$lib/utils/logger';
 <div class="contact-detail-page">
 	<!-- Back Button -->
 	<button class="back-btn" onclick={goBack}>
-		<IconArrowLeft size={18} />
+		<Icon icon={IconArrowLeft} size={18} />
 		Back to Contacts
 	</button>
 
@@ -588,18 +563,18 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<button class="btn-icon" onclick={() => loadContact()} title="Refresh">
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 				</button>
 				<button class="btn-secondary" onclick={openSendEmailModal}>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					Send Email
 				</button>
 				<a href="/admin/crm/contacts/{contactId}/edit" class="btn-primary">
-					<IconEdit size={18} />
+					<Icon icon={IconEdit} size={18} />
 					Edit Contact
 				</a>
 				<button class="btn-icon danger" onclick={deleteContact} title="Delete">
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 				</button>
 			</div>
 		</header>
@@ -607,42 +582,42 @@ import { logger } from '$lib/utils/logger';
 		<!-- Quick Stats -->
 		<section class="quick-stats">
 			<div class="stat-box">
-				<IconTrendingUp size={20} class="stat-icon green" />
+				<Icon icon={IconTrendingUp} size={20} class="stat-icon green" />
 				<div class="stat-info">
 					<span class="stat-value">{contact.lead_score}</span>
 					<span class="stat-label">Lead Score</span>
 				</div>
 			</div>
 			<div class="stat-box">
-				<IconChartBar size={20} class="stat-icon blue" />
+				<Icon icon={IconChartBar} size={20} class="stat-icon blue" />
 				<div class="stat-info">
 					<span class="stat-value">{contact.health_score}</span>
 					<span class="stat-label">Health Score</span>
 				</div>
 			</div>
 			<div class="stat-box">
-				<IconActivity size={20} class="stat-icon gold" />
+				<Icon icon={IconActivity} size={20} class="stat-icon gold" />
 				<div class="stat-info">
 					<span class="stat-value">{contact.engagement_score}</span>
 					<span class="stat-label">Engagement</span>
 				</div>
 			</div>
 			<div class="stat-box">
-				<IconMailOpen size={20} class="stat-icon cyan" />
+				<Icon icon={IconMailOpened} size={20} class="stat-icon cyan" />
 				<div class="stat-info">
 					<span class="stat-value">{contact.email_opens}</span>
 					<span class="stat-label">Email Opens</span>
 				</div>
 			</div>
 			<div class="stat-box">
-				<IconClick size={20} class="stat-icon amber" />
+				<Icon icon={IconCursor} size={20} class="stat-icon amber" />
 				<div class="stat-info">
 					<span class="stat-value">{contact.email_clicks}</span>
 					<span class="stat-label">Email Clicks</span>
 				</div>
 			</div>
 			<div class="stat-box">
-				<IconCurrencyDollar size={20} class="stat-icon emerald" />
+				<Icon icon={IconCurrencyDollar} size={20} class="stat-icon emerald" />
 				<div class="stat-info">
 					<span class="stat-value">${(contact.lifetime_value || 0).toLocaleString()}</span>
 					<span class="stat-label">Lifetime Value</span>
@@ -657,7 +632,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'overview'}
 				onclick={() => (activeTab = 'overview')}
 			>
-				<IconUserCircle size={18} />
+				<Icon icon={IconUserCircle} size={18} />
 				Overview
 			</button>
 			<button
@@ -665,7 +640,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'emails'}
 				onclick={() => (activeTab = 'emails')}
 			>
-				<IconMail size={18} />
+				<Icon icon={IconMail} size={18} />
 				Emails ({emailHistory.length})
 			</button>
 			<button
@@ -673,7 +648,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'notes'}
 				onclick={() => (activeTab = 'notes')}
 			>
-				<IconNotes size={18} />
+				<Icon icon={IconNotes} size={18} />
 				Notes ({notes.length})
 			</button>
 			<button
@@ -681,7 +656,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'activity'}
 				onclick={() => (activeTab = 'activity')}
 			>
-				<IconActivity size={18} />
+				<Icon icon={IconActivity} size={18} />
 				Activity ({timeline.length})
 			</button>
 		</nav>
@@ -700,7 +675,7 @@ import { logger } from '$lib/utils/logger';
 						<h3>Contact Information</h3>
 						<div class="info-grid">
 							<div class="info-item">
-								<IconMail size={16} />
+								<Icon icon={IconMail} size={16} />
 								<div>
 									<span class="info-label">Email</span>
 									<a href="mailto:{contact.email || ''}" class="info-value link"
@@ -710,7 +685,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if contact.phone}
 								<div class="info-item">
-									<IconPhone size={16} />
+									<Icon icon={IconPhone} size={16} />
 									<div>
 										<span class="info-label">Phone</span>
 										<a href="tel:{contact.phone}" class="info-value link">{contact.phone}</a>
@@ -719,7 +694,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if contact.mobile}
 								<div class="info-item">
-									<IconPhone size={16} />
+									<Icon icon={IconPhone} size={16} />
 									<div>
 										<span class="info-label">Mobile</span>
 										<a href="tel:{contact.mobile}" class="info-value link">{contact.mobile}</a>
@@ -728,7 +703,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if contact.company_name}
 								<div class="info-item">
-									<IconBuilding size={16} />
+									<Icon icon={IconBuilding} size={16} />
 									<div>
 										<span class="info-label">Company</span>
 										<span class="info-value">{contact.company_name}</span>
@@ -737,7 +712,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if contact.job_title}
 								<div class="info-item">
-									<IconBriefcase size={16} />
+									<Icon icon={IconBriefcase} size={16} />
 									<div>
 										<span class="info-label">Job Title</span>
 										<span class="info-value">{contact.job_title}</span>
@@ -746,7 +721,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if contact.website}
 								<div class="info-item">
-									<IconWorld size={16} />
+									<Icon icon={IconWorld} size={16} />
 									<div>
 										<span class="info-label">Website</span>
 										<a href={contact.website} target="_blank" class="info-value link"
@@ -757,7 +732,7 @@ import { logger } from '$lib/utils/logger';
 							{/if}
 							{#if contact.city || contact.country}
 								<div class="info-item">
-									<IconWorld size={16} />
+									<Icon icon={IconWorld} size={16} />
 									<div>
 										<span class="info-label">Location</span>
 										<span class="info-value">
@@ -767,14 +742,14 @@ import { logger } from '$lib/utils/logger';
 								</div>
 							{/if}
 							<div class="info-item">
-								<IconCalendar size={16} />
+								<Icon icon={IconCalendar} size={16} />
 								<div>
 									<span class="info-label">Created</span>
 									<span class="info-value">{formatDate(contact.created_at)}</span>
 								</div>
 							</div>
 							<div class="info-item">
-								<IconClock size={16} />
+								<Icon icon={IconClock} size={16} />
 								<div>
 									<span class="info-label">Last Activity</span>
 									<span class="info-value">{formatDate(contact.last_activity_at)}</span>
@@ -787,11 +762,11 @@ import { logger } from '$lib/utils/logger';
 					<div class="info-card">
 						<div class="card-header">
 							<h3>
-								<IconTag size={18} />
+								<Icon icon={IconTag} size={18} />
 								Tags
 							</h3>
 							<button class="btn-add" onclick={() => (showAddTagModal = true)}>
-								<IconPlus size={14} />
+								<Icon icon={IconPlus} size={14} />
 								Add
 							</button>
 						</div>
@@ -805,7 +780,7 @@ import { logger } from '$lib/utils/logger';
 									>
 										{tag.name}
 										<button class="tag-remove" onclick={() => removeTag(tag.id)}>
-											<IconX size={12} />
+											<Icon icon={IconX} size={12} />
 										</button>
 									</span>
 								{/each}
@@ -819,11 +794,11 @@ import { logger } from '$lib/utils/logger';
 					<div class="info-card">
 						<div class="card-header">
 							<h3>
-								<IconList size={18} />
+								<Icon icon={IconList} size={18} />
 								Lists
 							</h3>
 							<button class="btn-add" onclick={() => (showAddListModal = true)}>
-								<IconPlus size={14} />
+								<Icon icon={IconPlus} size={14} />
 								Add
 							</button>
 						</div>
@@ -831,10 +806,10 @@ import { logger } from '$lib/utils/logger';
 							{#if contact.lists && contact.lists.length > 0}
 								{#each contact.lists as list}
 									<div class="list-item">
-										<IconList size={16} />
+										<Icon icon={IconList} size={16} />
 										<span>{list.name}</span>
 										<button class="list-remove" onclick={() => removeFromList(list.id)}>
-											<IconX size={12} />
+											<Icon icon={IconX} size={12} />
 										</button>
 									</div>
 								{/each}
@@ -886,7 +861,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="emails-section">
 					{#if emailHistory.length === 0}
 						<div class="empty-state">
-							<IconMail size={48} />
+							<Icon icon={IconMail} size={48} />
 							<h3>No emails yet</h3>
 							<p>Email history will appear here once emails are sent to this contact</p>
 						</div>
@@ -895,7 +870,7 @@ import { logger } from '$lib/utils/logger';
 							{#each emailHistory as email}
 								<div class="email-item">
 									<div class="email-icon">
-										<IconMail size={20} />
+										<Icon icon={IconMail} size={20} />
 									</div>
 									<div class="email-content">
 										<div class="email-header">
@@ -933,13 +908,13 @@ import { logger } from '$lib/utils/logger';
 				<div class="notes-section">
 					<div class="notes-header">
 						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Add Note
 						</button>
 					</div>
 					{#if notes.length === 0}
 						<div class="empty-state">
-							<IconNotes size={48} />
+							<Icon icon={IconNotes} size={48} />
 							<h3>No notes yet</h3>
 							<p>Add notes to keep track of important information about this contact</p>
 						</div>
@@ -968,7 +943,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="activity-section">
 					{#if timeline.length === 0}
 						<div class="empty-state">
-							<IconActivity size={48} />
+							<Icon icon={IconActivity} size={48} />
 							<h3>No activity yet</h3>
 							<p>Activity timeline will appear here as events occur</p>
 						</div>
@@ -998,7 +973,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="empty-state">
-			<IconUserCircle size={48} />
+			<Icon icon={IconUserCircle} size={48} />
 			<h3>Contact not found</h3>
 			<p>The contact you're looking for doesn't exist or has been deleted</p>
 			<button class="btn-primary" onclick={goBack}>Go Back</button>
@@ -1021,7 +996,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3 id="add-tag-title">Add Tag</h3>
 				<button class="modal-close" onclick={() => (showAddTagModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1031,7 +1006,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="tag-options">
 						{#each availableTags as tag}
 							<button class="tag-option" onclick={() => addTag(tag.id)}>
-								<IconTag size={16} />
+								<Icon icon={IconTag} size={16} />
 								{tag.name}
 							</button>
 						{/each}
@@ -1057,7 +1032,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3 id="add-list-title">Add to List</h3>
 				<button class="modal-close" onclick={() => (showAddListModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1067,7 +1042,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="list-options">
 						{#each availableLists as list}
 							<button class="list-option" onclick={() => addToList(list.id)}>
-								<IconList size={16} />
+								<Icon icon={IconList} size={16} />
 								{list.name}
 							</button>
 						{/each}
@@ -1093,7 +1068,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3 id="add-note-title">Add Note</h3>
 				<button class="modal-close" onclick={() => (showAddNoteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1107,7 +1082,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showAddNoteModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={addNote} disabled={!newNoteContent.trim()}>
-					<IconCheck size={18} />
+					<Icon icon={IconCheck} size={18} />
 					Save Note
 				</button>
 			</div>
@@ -1130,7 +1105,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<div class="modal-title-section">
 					<h3 id="send-email-title">
-						<IconMailFast size={22} />
+						<Icon icon={IconMailFast} size={22} />
 						Send Email
 					</h3>
 					{#if contact}
@@ -1140,7 +1115,7 @@ import { logger } from '$lib/utils/logger';
 					{/if}
 				</div>
 				<button class="modal-close" onclick={closeSendEmailModal} aria-label="Close modal">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -1148,7 +1123,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Template Selector -->
 				<div class="form-group">
 					<label for="email-template" class="form-label">
-						<IconList size={16} />
+						<Icon icon={IconList} size={16} />
 						Email Template
 						<span class="label-optional">(optional)</span>
 					</label>
@@ -1174,7 +1149,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Subject Line -->
 				<div class="form-group">
 					<label for="email-subject" class="form-label required">
-						<IconTag size={16} />
+						<Icon icon={IconTag} size={16} />
 						Subject Line
 					</label>
 					<input
@@ -1191,7 +1166,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Email Body -->
 				<div class="form-group">
 					<label for="email-body" class="form-label required">
-						<IconNotes size={16} />
+						<Icon icon={IconNotes} size={16} />
 						Email Body
 					</label>
 					<textarea
@@ -1219,7 +1194,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="btn-spinner"></div>
 						Sending...
 					{:else}
-						<IconSend size={18} />
+						<Icon icon={IconSend} size={18} />
 						Send Email
 					{/if}
 				</button>
@@ -1232,13 +1207,13 @@ import { logger } from '$lib/utils/logger';
 {#if toastMessage}
 	<div class="toast toast-{toastMessage.type}" role="alert" aria-live="polite">
 		{#if toastMessage.type === 'success'}
-			<IconCheck size={18} />
+			<Icon icon={IconCheck} size={18} />
 		{:else}
-			<IconX size={18} />
+			<Icon icon={IconX} size={18} />
 		{/if}
 		<span>{toastMessage.text}</span>
 		<button class="toast-close" onclick={() => (toastMessage = null)} aria-label="Dismiss">
-			<IconX size={14} />
+			<Icon icon={IconX} size={14} />
 		</button>
 	</div>
 {/if}

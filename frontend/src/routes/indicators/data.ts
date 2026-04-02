@@ -7,15 +7,8 @@
  * Static data that doesn't need reactivity - imported as constants.
  */
 
-import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-import IconWaveSine from '@tabler/icons-svelte-runes/icons/wave-sine';
-import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 import type { Component } from 'svelte';
+	import { Icon, IconActivity, IconAlertTriangle, IconChartBar, IconChartCandle, IconChartLine, IconClock, IconTarget, IconWaveSine } from '$lib/icons';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

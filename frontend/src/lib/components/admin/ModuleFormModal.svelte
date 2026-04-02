@@ -11,7 +11,7 @@
 		type CreateModuleRequest,
 		type UpdateModuleRequest
 	} from '$lib/api/courses';
-	import { IconX, IconPlus, IconEdit, IconClock } from '$lib/icons';
+	import { Icon, IconX, IconPlus, IconEdit, IconClock } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -174,9 +174,9 @@
 			<div class="modal-header">
 				<div class="header-icon">
 					{#if mode === 'create'}
-						<IconPlus size={24} />
+						<Icon icon={IconPlus} size={24} />
 					{:else}
-						<IconEdit size={24} />
+						<Icon icon={IconEdit} size={24} />
 					{/if}
 				</div>
 				<h2 id="modal-title" class="modal-title">
@@ -189,7 +189,7 @@
 					disabled={isLoading}
 					aria-label="Close"
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -281,7 +281,7 @@
 				{#if dripEnabled}
 					<div class="form-group drip-config">
 						<label for="dripDays" class="form-label">
-							<IconClock size={16} />
+							<Icon icon={IconClock} size={16} />
 							Days After Enrollment
 						</label>
 						<div class="drip-input-wrapper">

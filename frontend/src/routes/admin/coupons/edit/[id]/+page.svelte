@@ -21,14 +21,7 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '$lib/api/admin';
-	import {
-		IconTicket,
-		IconCheck,
-		IconX,
-		IconRefresh,
-		IconAlertCircle,
-		IconTrash
-	} from '$lib/icons';
+	import { Icon, IconTicket, IconCheck, IconX, IconRefresh, IconAlertCircle, IconTrash } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -372,7 +365,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="header-content">
 			<div class="header-main">
 				<h1>
-					<IconTicket size={32} />
+					<Icon icon={IconTicket} size={32} />
 					Edit Coupon
 				</h1>
 				{#if originalCoupon}
@@ -392,14 +385,14 @@ import { logger } from '$lib/utils/logger';
 
 		<div class="header-actions">
 			<button class="btn-ghost" onclick={() => goto('/admin/coupons')}>
-				<IconX size={18} />
+				<Icon icon={IconX} size={18} />
 				Cancel
 			</button>
 			<button class="btn-danger" onclick={handleDelete} disabled={deleting || loading}>
 				{#if deleting}
-					<IconRefresh size={18} class="spinning" />
+					<Icon icon={IconRefresh} size={18} class="spinning" />
 				{:else}
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 				{/if}
 				Delete
 			</button>
@@ -409,10 +402,10 @@ import { logger } from '$lib/utils/logger';
 				disabled={saving || loading || !hasChanges}
 			>
 				{#if saving}
-					<IconRefresh size={18} class="spinning" />
+					<Icon icon={IconRefresh} size={18} class="spinning" />
 					Saving...
 				{:else}
-					<IconCheck size={18} />
+					<Icon icon={IconCheck} size={18} />
 					Save Changes
 				{/if}
 			</button>
@@ -422,7 +415,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Loading State -->
 	{#if loading}
 		<div class="loading-state">
-			<IconRefresh size={32} class="spinning" />
+			<Icon icon={IconRefresh} size={32} class="spinning" />
 			<p>Loading coupon...</p>
 		</div>
 	{:else}
@@ -431,7 +424,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="alerts" transition:slide={{ duration: 300 }}>
 				{#each errors as error}
 					<div class="alert alert-{error.severity}">
-						<IconAlertCircle size={20} />
+						<Icon icon={IconAlertCircle} size={20} />
 						<span>{error.message}</span>
 					</div>
 				{/each}

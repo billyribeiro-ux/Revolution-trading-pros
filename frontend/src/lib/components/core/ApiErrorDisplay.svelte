@@ -10,13 +10,7 @@
 	 * - Severity-based styling
 	 */
 
-	import {
-		IconAlertCircle,
-		IconAlertTriangle,
-		IconInfoCircle,
-		IconRefresh,
-		IconX
-	} from '$lib/icons';
+	import { Icon, IconAlertCircle, IconAlertTriangle, IconInfoCircle, IconRefresh, IconX } from '$lib/icons';
 	import {
 		isApiError,
 		getUserFriendlyMessage,
@@ -126,13 +120,13 @@
 		<div class="error-actions">
 			{#if canRetry}
 				<button class="btn-retry" onclick={onRetry} aria-label="Retry">
-					<IconRefresh size={16} />
+					<Icon icon={IconRefresh} size={16} />
 				</button>
 			{/if}
 
 			{#if dismissible}
 				<button class="btn-dismiss" onclick={onDismiss} aria-label="Dismiss">
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			{/if}
 		</div>

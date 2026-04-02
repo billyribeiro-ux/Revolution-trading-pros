@@ -29,26 +29,7 @@ import { logger } from '$lib/utils/logger';
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import {
-		IconCrown,
-		IconPlus,
-		IconSearch,
-		IconFilter,
-		IconEdit,
-		IconEye,
-		IconTrash,
-		IconCheck,
-		IconX,
-		IconChevronDown,
-		IconRefresh,
-		IconUsers,
-		IconCurrencyDollar,
-		IconStar,
-		IconToggleLeft,
-		IconToggleRight,
-		IconCopy,
-		IconChartBar
-	} from '$lib/icons';
+	import { Icon, IconCrown, IconPlus, IconSearch, IconFilter, IconEdit, IconEye, IconTrash, IconCheck, IconX, IconChevronDown, IconRefresh, IconUsers, IconCurrencyDollar, IconStar, IconToggleLeft, IconToggleRight, IconCopy, IconChartBar } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -457,11 +438,11 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Manage subscription tiers, pricing, and plan features</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={loadData} disabled={isLoading}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 				<button class="btn-primary" onclick={() => goto('/admin/memberships/create')}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Plan
 				</button>
 			</div>
@@ -471,7 +452,7 @@ import { logger } from '$lib/utils/logger';
 		<section class="stats-grid">
 			<div class="stat-card highlight">
 				<div class="stat-icon amber">
-					<IconCrown size={24} />
+					<Icon icon={IconCrown} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.total_plans}</span>
@@ -480,7 +461,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald">
-					<IconCheck size={24} />
+					<Icon icon={IconCheck} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.active_plans}</span>
@@ -489,7 +470,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconUsers size={24} />
+					<Icon icon={IconUsers} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.total_subscribers.toLocaleString()}</span>
@@ -498,7 +479,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconCurrencyDollar size={24} />
+					<Icon icon={IconCurrencyDollar} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatCurrency(stats.total_mrr)}</span>
@@ -507,7 +488,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon cyan">
-					<IconStar size={24} />
+					<Icon icon={IconStar} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value truncate">{stats.top_plan || 'N/A'}</span>
@@ -519,7 +500,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Search and Filter Bar -->
 		<div class="search-filter-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					id="page-searchquery"
 					name="page-searchquery"
@@ -530,9 +511,9 @@ import { logger } from '$lib/utils/logger';
 				/>
 			</div>
 			<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
-				<IconFilter size={18} />
+				<Icon icon={IconFilter} size={18} />
 				Filters
-				<IconChevronDown size={16} class={showFilters ? 'rotate' : ''} />
+				<Icon icon={IconChevronDown} size={16} class={showFilters ? 'rotate' : ''} />
 			</button>
 		</div>
 
@@ -599,11 +580,11 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if filteredPlans.length === 0}
 				<div class="empty-state">
-					<IconCrown size={48} />
+					<Icon icon={IconCrown} size={48} />
 					<h3>No membership plans found</h3>
 					<p>Create your first membership plan to start monetizing your content</p>
 					<button class="btn-primary" onclick={() => goto('/admin/memberships/create')}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add Plan
 					</button>
 				</div>
@@ -620,9 +601,9 @@ import { logger } from '$lib/utils/logger';
 										title={plan.is_active ? 'Deactivate plan' : 'Activate plan'}
 									>
 										{#if plan.is_active}
-											<IconToggleRight size={24} />
+											<Icon icon={IconToggleRight} size={24} />
 										{:else}
-											<IconToggleLeft size={24} />
+											<Icon icon={IconToggleLeft} size={24} />
 										{/if}
 									</button>
 									<span class="status-label" class:active={plan.is_active}>
@@ -631,27 +612,27 @@ import { logger } from '$lib/utils/logger';
 								</div>
 								<div class="plan-actions">
 									<button class="btn-icon" title="Preview" onclick={() => openPreviewModal(plan)}>
-										<IconEye size={16} />
+										<Icon icon={IconEye} size={16} />
 									</button>
 									<button class="btn-icon" title="Edit" onclick={() => openEditModal(plan)}>
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</button>
 									<button class="btn-icon" title="Duplicate" onclick={() => duplicatePlan(plan)}>
-										<IconCopy size={16} />
+										<Icon icon={IconCopy} size={16} />
 									</button>
 									<button
 										class="btn-icon danger"
 										title="Delete"
 										onclick={() => openDeleteModal(plan)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</div>
 
 							<div class="plan-body">
 								<div class="plan-crown">
-									<IconCrown size={28} />
+									<Icon icon={IconCrown} size={28} />
 								</div>
 								<h3 class="plan-name">{plan.name}</h3>
 								<div class="plan-pricing">
@@ -667,7 +648,7 @@ import { logger } from '$lib/utils/logger';
 								<div class="plan-features">
 									{#each (plan.features || []).slice(0, 3) as feature}
 										<div class="feature-item">
-											<IconCheck size={14} />
+											<Icon icon={IconCheck} size={14} />
 											<span>{feature.feature_name}</span>
 										</div>
 									{/each}
@@ -679,11 +660,11 @@ import { logger } from '$lib/utils/logger';
 
 							<div class="plan-footer">
 								<div class="plan-stat">
-									<IconUsers size={16} />
+									<Icon icon={IconUsers} size={16} />
 									<span>{plan.subscriber_count || 0} subscribers</span>
 								</div>
 								<div class="plan-stat">
-									<IconChartBar size={16} />
+									<Icon icon={IconChartBar} size={16} />
 									<span>{formatCurrency(plan.revenue || 0)} revenue</span>
 								</div>
 							</div>
@@ -712,11 +693,11 @@ import { logger } from '$lib/utils/logger';
 		<div class="modal modal-large" role="document">
 			<div class="modal-header">
 				<h3 id="edit-modal-title">
-					<IconEdit size={20} />
+					<Icon icon={IconEdit} size={20} />
 					Edit Membership Plan
 				</h3>
 				<button class="modal-close" onclick={() => (showEditModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -785,7 +766,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="features-header">
 							<span class="label-text">Features</span>
 							<button type="button" class="btn-add-feature" onclick={addFeature}>
-								<IconPlus size={14} />
+								<Icon icon={IconPlus} size={14} />
 								Add Feature
 							</button>
 						</div>
@@ -814,7 +795,7 @@ import { logger } from '$lib/utils/logger';
 											class="btn-remove-feature"
 											onclick={() => removeFeature(index)}
 										>
-											<IconX size={14} />
+											<Icon icon={IconX} size={14} />
 										</button>
 									{/if}
 								</div>
@@ -833,7 +814,7 @@ import { logger } from '$lib/utils/logger';
 					{#if formLoading}
 						Saving...
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 						Save Changes
 					{/if}
 				</button>
@@ -858,11 +839,11 @@ import { logger } from '$lib/utils/logger';
 		<div class="modal modal-small" role="document">
 			<div class="modal-header">
 				<h3 id="delete-modal-title">
-					<IconTrash size={20} />
+					<Icon icon={IconTrash} size={20} />
 					Delete Plan
 				</h3>
 				<button class="modal-close" onclick={() => (showDeleteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -879,7 +860,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
 				<button class="btn-danger" onclick={deletePlan}>
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 					Delete Plan
 				</button>
 			</div>
@@ -903,17 +884,17 @@ import { logger } from '$lib/utils/logger';
 		<div class="modal modal-preview" role="document">
 			<div class="modal-header">
 				<h3 id="preview-modal-title">
-					<IconEye size={20} />
+					<Icon icon={IconEye} size={20} />
 					Plan Preview
 				</h3>
 				<button class="modal-close" onclick={() => (showPreviewModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body preview-body">
 				<div class="preview-card">
 					<div class="preview-crown">
-						<IconCrown size={32} />
+						<Icon icon={IconCrown} size={32} />
 					</div>
 					<h4 class="preview-name">{previewingPlan.name}</h4>
 					<div class="preview-pricing">
@@ -926,7 +907,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="preview-features">
 						{#each previewingPlan.features as feature}
 							<div class="preview-feature">
-								<IconCheck size={16} />
+								<Icon icon={IconCheck} size={16} />
 								<span>{feature.feature_name}</span>
 							</div>
 						{/each}

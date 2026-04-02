@@ -1,13 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import {
-		IconSearch,
-		IconArrowForward,
-		IconTrash,
-		IconEyeOff,
-		IconAlertTriangle
-	} from '$lib/icons';
+	import { Icon, IconSearch, IconArrowForward, IconTrash, IconEyeOff, IconAlertTriangle } from '$lib/icons';
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -142,7 +136,7 @@ import { logger } from '$lib/utils/logger';
 	{#if stats}
 		<div class="stats-grid">
 			<div class="stat-card warning">
-				<IconAlertTriangle size={32} />
+				<Icon icon={IconAlertTriangle} size={32} />
 				<div class="stat-value">{stats.total}</div>
 				<div class="stat-label">Total 404s</div>
 			</div>
@@ -163,7 +157,7 @@ import { logger } from '$lib/utils/logger';
 
 	<div class="controls-bar">
 		<div class="search-box">
-			<IconSearch size={20} />
+			<Icon icon={IconSearch} size={20} />
 			<label for="search-urls" class="sr-only">Search URLs</label>
 			<input
 				type="text"
@@ -182,7 +176,7 @@ import { logger } from '$lib/utils/logger';
 
 		{#if selectedIds.length > 0}
 			<button class="btn-danger" onclick={() => deleteLogs(selectedIds)}>
-				<IconTrash size={18} />
+				<Icon icon={IconTrash} size={18} />
 				Delete ({selectedIds.length})
 			</button>
 		{/if}
@@ -256,10 +250,10 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => createRedirect(log)}
 											title="Create Redirect"
 										>
-											<IconArrowForward size={18} />
+											<Icon icon={IconArrowForward} size={18} />
 										</button>
 										<button class="action-btn" onclick={() => ignore(log.id)} title="Ignore">
-											<IconEyeOff size={18} />
+											<Icon icon={IconEyeOff} size={18} />
 										</button>
 									{/if}
 									<button
@@ -267,7 +261,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => deleteLogs([log.id])}
 										title="Delete"
 									>
-										<IconTrash size={18} />
+										<Icon icon={IconTrash} size={18} />
 									</button>
 								</div>
 							</td>

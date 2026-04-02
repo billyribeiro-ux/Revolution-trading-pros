@@ -11,14 +11,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconCode,
-		IconEye,
-		IconAlertTriangle,
-		IconShieldCheck,
-		IconMaximize,
-		IconMinimize
-	} from '$lib/icons';
+	import { Icon, IconCode, IconEye, IconAlertTriangle, IconShieldCheck, IconMaximize, IconMinimize } from '$lib/icons';
 	import { sanitizeHTML } from '$lib/utils/sanitization';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -121,7 +114,7 @@
 		<!-- Edit Mode Header -->
 		<header class="html-header">
 			<div class="header-title">
-				<IconCode size={18} aria-hidden="true" />
+				<Icon icon={IconCode} size={18} aria-hidden="true" />
 				<span>Custom HTML</span>
 			</div>
 
@@ -136,7 +129,7 @@
 						aria-pressed={viewMode === 'edit'}
 						onclick={() => setViewMode('edit')}
 					>
-						<IconCode size={16} aria-hidden="true" />
+						<Icon icon={IconCode} size={16} aria-hidden="true" />
 						<span>Edit</span>
 					</button>
 					<button
@@ -147,7 +140,7 @@
 						aria-pressed={viewMode === 'preview'}
 						onclick={() => setViewMode('preview')}
 					>
-						<IconEye size={16} aria-hidden="true" />
+						<Icon icon={IconEye} size={16} aria-hidden="true" />
 						<span>Preview</span>
 					</button>
 					<button
@@ -170,9 +163,9 @@
 					onclick={toggleExpand}
 				>
 					{#if isExpanded}
-						<IconMinimize size={16} aria-hidden="true" />
+						<Icon icon={IconMinimize} size={16} aria-hidden="true" />
 					{:else}
-						<IconMaximize size={16} aria-hidden="true" />
+						<Icon icon={IconMaximize} size={16} aria-hidden="true" />
 					{/if}
 				</button>
 			</div>
@@ -181,7 +174,7 @@
 		<!-- XSS Warning Banner -->
 		{#if showWarning}
 			<div class="xss-warning" role="alert">
-				<IconAlertTriangle size={16} aria-hidden="true" />
+				<Icon icon={IconAlertTriangle} size={16} aria-hidden="true" />
 				<span>
 					<strong>Security Notice:</strong> HTML is sanitized to prevent XSS attacks. Some tags and attributes
 					may be removed.
@@ -222,7 +215,7 @@ Example:
 						</div>
 						{#if wasSanitized}
 							<div class="sanitized-badge">
-								<IconShieldCheck size={14} aria-hidden="true" />
+								<Icon icon={IconShieldCheck} size={14} aria-hidden="true" />
 								<span>Content sanitized</span>
 							</div>
 						{/if}
@@ -239,7 +232,7 @@ Example:
 							{@html safeHtml}
 						{:else}
 							<div class="preview-placeholder">
-								<IconEye size={24} aria-hidden="true" />
+								<Icon icon={IconEye} size={24} aria-hidden="true" />
 								<span>Enter HTML to see preview</span>
 							</div>
 						{/if}

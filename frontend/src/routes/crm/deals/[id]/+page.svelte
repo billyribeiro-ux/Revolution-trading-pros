@@ -9,7 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Deal } from '$lib/crm/types';
-	import { IconArrowLeft, IconCurrencyDollar, IconActivity } from '$lib/icons';
+	import { Icon, IconArrowLeft, IconCurrencyDollar, IconActivity } from '$lib/icons';
 
 	let deal = $state<Deal | null>(null);
 	let loading = $state(true);
@@ -49,7 +49,7 @@ import { logger } from '$lib/utils/logger';
 			class="mb-4 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200"
 			onclick={goBack}
 		>
-			<IconArrowLeft size={16} />
+			<Icon icon={IconArrowLeft} size={16} />
 			Back to deals
 		</button>
 
@@ -73,7 +73,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 						<div class="rounded-xl bg-slate-800/80 px-3 py-2 text-right text-xs">
 							<p class="flex items-center justify-end gap-1 text-slate-200">
-								<IconCurrencyDollar size={16} />
+								<Icon icon={IconCurrencyDollar} size={16} />
 								{deal.amount.toLocaleString('en-US', {
 									style: 'currency',
 									currency: deal.currency
@@ -105,7 +105,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5 text-xs">
 					<div class="mb-3 flex items-center gap-2 text-sm font-medium text-slate-100">
-						<IconActivity size={18} class="text-sky-400" />
+						<Icon icon={IconActivity} size={18} class="text-sky-400" />
 						Deal Metrics
 					</div>
 					<div class="grid gap-3 md:grid-cols-3">

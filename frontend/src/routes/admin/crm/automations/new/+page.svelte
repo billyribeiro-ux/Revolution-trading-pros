@@ -14,26 +14,9 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
-	import IconShare from '@tabler/icons-svelte-runes/icons/share';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconForms from '@tabler/icons-svelte-runes/icons/forms';
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
-	import IconLogin from '@tabler/icons-svelte-runes/icons/login';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconLink from '@tabler/icons-svelte-runes/icons/link';
-	import IconCode from '@tabler/icons-svelte-runes/icons/code';
-	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { crmAPI } from '$lib/api/crm';
+																			import { crmAPI } from '$lib/api/crm';
 	import type { TriggerType, FunnelStatus } from '$lib/crm/types';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconCalendar, IconCheck, IconCode, IconCreditCard, IconForms, IconLink, IconList, IconLoader2, IconLogin, IconMail, IconShare, IconShoppingCart, IconTag, IconUserPlus, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -336,11 +319,11 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="page-header">
 		<a href="/admin/crm/automations" class="back-link">
-			<IconArrowLeft size={18} />
+			<Icon icon={IconArrowLeft} size={18} />
 			Back to Automations
 		</a>
 		<h1>
-			<IconShare size={28} class="header-icon" />
+			<Icon icon={IconShare} size={28} class="header-icon" />
 			Create New Automation
 		</h1>
 		<p class="page-description">Build a powerful marketing automation triggered by events</p>
@@ -358,7 +341,7 @@ import { logger } from '$lib/utils/logger';
 			>
 				<span class="step-number">
 					{#if currentStep > step.number}
-						<IconCheck size={14} />
+						<Icon icon={IconCheck} size={14} />
 					{:else}
 						{step.number}
 					{/if}
@@ -374,10 +357,10 @@ import { logger } from '$lib/utils/logger';
 	<!-- Error Alert -->
 	{#if error}
 		<div class="error-alert">
-			<IconAlertCircle size={18} />
+			<Icon icon={IconAlertCircle} size={18} />
 			<span>{error}</span>
 			<button onclick={() => (error = '')} aria-label="Dismiss error">
-				<IconX size={16} />
+				<Icon icon={IconX} size={16} />
 			</button>
 		</div>
 	{/if}
@@ -385,7 +368,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Success Alert -->
 	{#if successMessage}
 		<div class="success-alert">
-			<IconCheck size={18} />
+			<Icon icon={IconCheck} size={18} />
 			<span>{successMessage}</span>
 		</div>
 	{/if}
@@ -445,7 +428,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if formData.trigger_type === trigger.value}
 								<div class="selected-indicator">
-									<IconCheck size={16} />
+									<Icon icon={IconCheck} size={16} />
 								</div>
 							{/if}
 						</button>
@@ -511,7 +494,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				{:else}
 					<div class="info-card">
-						<IconAlertCircle size={20} />
+						<Icon icon={IconAlertCircle} size={20} />
 						<p>
 							This trigger type doesn't require additional configuration. You can proceed to the
 							next step.
@@ -591,7 +574,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 
 				<div class="info-card">
-					<IconAlertCircle size={20} />
+					<Icon icon={IconAlertCircle} size={20} />
 					<p>
 						After creating the automation, you'll be redirected to the editor where you can add
 						actions to the workflow.
@@ -606,7 +589,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="nav-left">
 			{#if currentStep > 1}
 				<button class="btn-secondary" onclick={prevStep} disabled={isSubmitting}>
-					<IconArrowLeft size={18} />
+					<Icon icon={IconArrowLeft} size={18} />
 					Previous
 				</button>
 			{/if}
@@ -615,7 +598,7 @@ import { logger } from '$lib/utils/logger';
 			{#if currentStep < steps.length}
 				<button class="btn-primary" onclick={nextStep} disabled={!canProceed || isSubmitting}>
 					Next
-					<IconArrowRight size={18} />
+					<Icon icon={IconArrowRight} size={18} />
 				</button>
 			{:else}
 				<button
@@ -624,7 +607,7 @@ import { logger } from '$lib/utils/logger';
 					disabled={isSubmitting}
 				>
 					{#if isSubmitting}
-						<IconLoader2 size={18} class="spinning" />
+						<Icon icon={IconLoader2} size={18} class="spinning" />
 					{/if}
 					Save as Draft
 				</button>
@@ -634,9 +617,9 @@ import { logger } from '$lib/utils/logger';
 					disabled={isSubmitting}
 				>
 					{#if isSubmitting}
-						<IconLoader2 size={18} class="spinning" />
+						<Icon icon={IconLoader2} size={18} class="spinning" />
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{/if}
 					Create & Activate
 				</button>

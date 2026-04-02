@@ -18,16 +18,7 @@ import { logger } from '$lib/utils/logger';
 	} from '$lib/stores/media.svelte';
 	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
 	import FolderTree from '$lib/components/media/FolderTree.svelte';
-	import {
-		IconPhoto,
-		IconVideo,
-		IconFileText,
-		IconSearch,
-		IconTable,
-		IconList,
-		IconTrash,
-		IconSparkles
-	} from '$lib/icons';
+	import { Icon, IconPhoto, IconVideo, IconFileText, IconSearch, IconTable, IconList, IconTrash, IconSparkles } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let showUploadModal = $state(false);
@@ -98,7 +89,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="dashboard-header">
 		<div class="header-title">
-			<IconPhoto size={32} class="text-yellow-400" />
+			<Icon icon={IconPhoto} size={32} class="text-yellow-400" />
 			<div>
 				<h1 class="text-3xl font-bold text-white">Media Library</h1>
 				<p class="text-gray-400 mt-1">Manage your files, images, and videos</p>
@@ -107,7 +98,7 @@ import { logger } from '$lib/utils/logger';
 
 		<div class="header-actions">
 			<button class="btn-primary" onclick={() => (showUploadModal = !showUploadModal)}>
-				<IconPhoto size={18} />
+				<Icon icon={IconPhoto} size={18} />
 				Upload Files
 			</button>
 		</div>
@@ -141,7 +132,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="toolbar-left">
 					<!-- Search -->
 					<div class="search-box">
-						<IconSearch size={20} class="search-icon" />
+						<Icon icon={IconSearch} size={20} class="search-icon" />
 						<input
 							id="page-searchquery"
 							name="page-searchquery"
@@ -181,7 +172,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => mediaStore.setViewMode('grid')}
 							aria-label="Grid view"
 						>
-							<IconTable size={20} />
+							<Icon icon={IconTable} size={20} />
 						</button>
 						<button
 							class="view-btn"
@@ -189,7 +180,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => mediaStore.setViewMode('list')}
 							aria-label="List view"
 						>
-							<IconList size={20} />
+							<Icon icon={IconList} size={20} />
 						</button>
 					</div>
 
@@ -198,7 +189,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="bulk-actions">
 							<span class="selected-count">{selectedCount} selected</span>
 							<button class="bulk-btn" onclick={handleBulkDelete}>
-								<IconTrash size={18} />
+								<Icon icon={IconTrash} size={18} />
 								Delete
 							</button>
 							<button class="bulk-btn" onclick={() => mediaStore.deselectAll()}> Clear </button>
@@ -249,7 +240,7 @@ import { logger } from '$lib/utils/logger';
 								{/if}
 								{#if file.ai_metadata}
 									<div class="file-badge ai">
-										<IconSparkles size={12} />
+										<Icon icon={IconSparkles} size={12} />
 										AI
 									</div>
 								{/if}
@@ -335,11 +326,11 @@ import { logger } from '$lib/utils/logger';
 				{/if}
 			{:else}
 				<div class="empty-state">
-					<IconPhoto size={64} class="text-gray-600" />
+					<Icon icon={IconPhoto} size={64} class="text-gray-600" />
 					<h3 class="text-xl font-semibold text-gray-400 mt-4">No files yet</h3>
 					<p class="text-gray-500 mt-2">Upload your first file to get started</p>
 					<button class="btn-primary mt-4" onclick={() => (showUploadModal = true)}>
-						<IconPhoto size={18} />
+						<Icon icon={IconPhoto} size={18} />
 						Upload Files
 					</button>
 				</div>

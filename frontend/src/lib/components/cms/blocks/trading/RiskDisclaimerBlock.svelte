@@ -11,17 +11,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconAlertTriangle,
-		IconCircleX,
-		IconInfoCircle,
-		IconChevronDown,
-		IconChevronUp,
-		IconShieldCheck,
-		IconEdit,
-		IconSquare,
-		IconSquareCheck
-	} from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconCircleX, IconInfoCircle, IconChevronDown, IconChevronUp, IconShieldCheck, IconEdit, IconSquare, IconSquareCheck } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
@@ -297,7 +287,7 @@
 	{#if props.isEditing && props.isSelected}
 		<div class="disclaimer-settings">
 			<div class="settings-header">
-				<IconEdit size={16} aria-hidden="true" />
+				<Icon icon={IconEdit} size={16} aria-hidden="true" />
 				<span>Disclaimer Settings</span>
 			</div>
 
@@ -386,9 +376,9 @@
 					>
 						<span>{isExpanded ? 'Hide details' : 'Read more'}</span>
 						{#if isExpanded}
-							<IconChevronUp size={16} aria-hidden="true" />
+							<Icon icon={IconChevronUp} size={16} aria-hidden="true" />
 						{:else}
-							<IconChevronDown size={16} aria-hidden="true" />
+							<Icon icon={IconChevronDown} size={16} aria-hidden="true" />
 						{/if}
 					</button>
 
@@ -423,9 +413,9 @@
 							onkeydown={handleCheckboxKeyDown}
 						>
 							{#if isAcknowledged}
-								<IconSquareCheck size={22} aria-hidden="true" />
+								<Icon icon={IconSquareCheck} size={22} aria-hidden="true" />
 							{:else}
-								<IconSquare size={22} aria-hidden="true" />
+								<Icon icon={IconSquare} size={22} aria-hidden="true" />
 							{/if}
 						</button>
 						<span class="checkbox-label"> I understand and acknowledge the risks involved </span>
@@ -433,7 +423,7 @@
 
 					{#if isAcknowledged}
 						<div class="acknowledgment-confirmed">
-							<IconShieldCheck size={16} aria-hidden="true" />
+							<Icon icon={IconShieldCheck} size={16} aria-hidden="true" />
 							<span>Risk acknowledged</span>
 						</div>
 					{/if}
@@ -442,7 +432,7 @@
 
 			{#if requireAcknowledgment && props.isEditing}
 				<div class="acknowledgment-preview">
-					<IconSquare size={18} aria-hidden="true" />
+					<Icon icon={IconSquare} size={18} aria-hidden="true" />
 					<span>I understand and acknowledge the risks involved</span>
 					<em>(checkbox shown in preview)</em>
 				</div>

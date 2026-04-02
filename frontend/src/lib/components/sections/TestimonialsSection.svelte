@@ -2,14 +2,8 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
-	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
-	import IconChartDots from '@tabler/icons-svelte-runes/icons/chart-dots';
-	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-
+	import { Icon, IconActivity, IconChartDots, IconCircleCheckFilled, IconQuote, IconShieldCheck, IconTrendingUp, IconUserCircle } from '$lib/icons';
+							
 	// --- Institutional Client Data ---
 	const reviews = [
 		{
@@ -189,7 +183,7 @@
 					in:heavySlide={{ delay: 0, duration: 1000 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-emerald-900/30 bg-emerald-950/10 text-emerald-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconShieldCheck size={14} />
+					<Icon icon={IconShieldCheck} size={14} />
 					Verified Performance
 				</div>
 
@@ -222,7 +216,7 @@
 								<div
 									class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-500"
 								>
-									<IconUserCircle size={20} />
+									<Icon icon={IconUserCircle} size={20} />
 								</div>
 								<div>
 									<div class="text-sm font-medium text-white">{review.name}</div>
@@ -239,7 +233,7 @@
 						</div>
 
 						<div class="relative mb-8">
-							<IconQuote
+							<Icon icon={IconQuote}
 								size={24}
 								class="absolute -top-2 -left-2 text-white/5 transform -scale-x-100"
 							/>
@@ -256,14 +250,14 @@
 									{review.metric}
 								</span>
 								<div class="flex items-center gap-2">
-									<IconTrendingUp size={14} class="text-emerald-500" />
+									<Icon icon={IconTrendingUp} size={14} class="text-emerald-500" />
 									<span class="text-lg font-serif text-white">{review.value}</span>
 								</div>
 							</div>
 							<div
 								class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest"
 							>
-								<IconCircleCheckFilled size={14} />
+								<Icon icon={IconCircleCheckFilled} size={14} />
 								Verified
 							</div>
 						</div>
@@ -291,15 +285,15 @@
 				class="mt-20 pt-10 border-t border-white/5 flex flex-wrap justify-center gap-12 lg:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500"
 			>
 				<div class="flex items-center gap-3 text-white/60">
-					<IconChartDots size={24} />
+					<Icon icon={IconChartDots} size={24} />
 					<span class="text-xs font-mono uppercase tracking-widest">Audited by NinjaTrader</span>
 				</div>
 				<div class="flex items-center gap-3 text-white/60">
-					<IconShieldCheck size={24} />
+					<Icon icon={IconShieldCheck} size={24} />
 					<span class="text-xs font-mono uppercase tracking-widest">MyFxBook Verified</span>
 				</div>
 				<div class="flex items-center gap-3 text-white/60">
-					<IconActivity size={24} />
+					<Icon icon={IconActivity} size={24} />
 					<span class="text-xs font-mono uppercase tracking-widest">Institutional Data Feed</span>
 				</div>
 			</div>

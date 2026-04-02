@@ -3,17 +3,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, BoardReport, ReportPeriod } from '$lib/boards/types';
-	import {
-		IconChartBar,
-		IconArrowLeft,
-		IconDownload,
-		IconRefresh,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconChecks,
-		IconClock,
-		IconCalendar
-	} from '$lib/icons';
+	import { Icon, IconChartBar, IconArrowLeft, IconDownload, IconRefresh, IconTrendingUp, IconTrendingDown, IconChecks, IconClock, IconCalendar } from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);
@@ -94,11 +84,11 @@ import { logger } from '$lib/utils/logger';
 						href="/admin/boards"
 						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconArrowLeft class="w-5 h-5" />
+						<Icon icon={IconArrowLeft} class="w-5 h-5" />
 					</a>
 					<div class="flex items-center gap-3">
 						<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-							<IconChartBar class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+							<Icon icon={IconChartBar} class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Reports</h1>
@@ -114,14 +104,14 @@ import { logger } from '$lib/utils/logger';
 						onclick={() => exportReport('csv')}
 						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 					>
-						<IconDownload class="w-4 h-4" />
+						<Icon icon={IconDownload} class="w-4 h-4" />
 						Export CSV
 					</button>
 					<button
 						onclick={() => exportReport('pdf')}
 						class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center gap-2"
 					>
-						<IconDownload class="w-4 h-4" />
+						<Icon icon={IconDownload} class="w-4 h-4" />
 						Export PDF
 					</button>
 				</div>
@@ -158,7 +148,7 @@ import { logger } from '$lib/utils/logger';
 				onclick={loadReport}
 				class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 			>
-				<IconRefresh class="w-5 h-5" />
+				<Icon icon={IconRefresh} class="w-5 h-5" />
 			</button>
 		</div>
 
@@ -174,7 +164,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Tasks</span>
-						<IconChecks class="w-5 h-5 text-blue-500" />
+						<Icon icon={IconChecks} class="w-5 h-5 text-blue-500" />
 					</div>
 					<div class="text-3xl font-bold text-gray-900 dark:text-white">{report.total_tasks}</div>
 				</div>
@@ -184,7 +174,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Completed</span>
-						<IconChecks class="w-5 h-5 text-green-500" />
+						<Icon icon={IconChecks} class="w-5 h-5 text-green-500" />
 					</div>
 					<div class="text-3xl font-bold text-green-600">{report.completed_tasks}</div>
 					<div class="text-sm text-gray-500 dark:text-gray-400">
@@ -197,7 +187,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Overdue</span>
-						<IconCalendar class="w-5 h-5 text-red-500" />
+						<Icon icon={IconCalendar} class="w-5 h-5 text-red-500" />
 					</div>
 					<div class="text-3xl font-bold text-red-600">{report.overdue_tasks}</div>
 				</div>
@@ -207,7 +197,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Avg. Completion Time</span>
-						<IconClock class="w-5 h-5 text-purple-500" />
+						<Icon icon={IconClock} class="w-5 h-5 text-purple-500" />
 					</div>
 					<div class="text-3xl font-bold text-gray-900 dark:text-white">
 						{formatMinutes(report.avg_completion_time)}
@@ -235,12 +225,12 @@ import { logger } from '$lib/utils/logger';
 					</div>
 					<div class="flex items-center gap-2">
 						{#if report.velocity.trend === 'up'}
-							<IconTrendingUp class="w-6 h-6 text-green-500" />
+							<Icon icon={IconTrendingUp} class="w-6 h-6 text-green-500" />
 							<span class="text-green-600 font-medium"
 								>+{report.velocity.change_percentage.toFixed(1)}%</span
 							>
 						{:else if report.velocity.trend === 'down'}
-							<IconTrendingDown class="w-6 h-6 text-red-500" />
+							<Icon icon={IconTrendingDown} class="w-6 h-6 text-red-500" />
 							<span class="text-red-600 font-medium"
 								>{report.velocity.change_percentage.toFixed(1)}%</span
 							>
@@ -375,7 +365,7 @@ import { logger } from '$lib/utils/logger';
 			<div
 				class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
 			>
-				<IconChartBar class="w-12 h-12 text-gray-400 mx-auto mb-4" />
+				<Icon icon={IconChartBar} class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No report available</h3>
 				<p class="text-gray-500 dark:text-gray-400">Select a board to view its report</p>
 			</div>

@@ -3,14 +3,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { TimeEntry, Board, TimeTrackingStats } from '$lib/boards/types';
-	import {
-		IconClock,
-		IconArrowLeft,
-		IconLayoutKanban,
-		IconCurrencyDollar,
-		IconDownload,
-		IconRefresh
-	} from '$lib/icons';
+	import { Icon, IconClock, IconArrowLeft, IconLayoutKanban, IconCurrencyDollar, IconDownload, IconRefresh } from '$lib/icons';
 
 	// State
 	let timeEntries = $state<TimeEntry[]>([]);
@@ -156,11 +149,11 @@ import { logger } from '$lib/utils/logger';
 						href="/admin/boards"
 						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconArrowLeft class="w-5 h-5" />
+						<Icon icon={IconArrowLeft} class="w-5 h-5" />
 					</a>
 					<div class="flex items-center gap-3">
 						<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-							<IconClock class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+							<Icon icon={IconClock} class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Time Tracking</h1>
@@ -176,12 +169,12 @@ import { logger } from '$lib/utils/logger';
 						onclick={loadData}
 						class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconRefresh class="w-5 h-5" />
+						<Icon icon={IconRefresh} class="w-5 h-5" />
 					</button>
 					<button
 						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 					>
-						<IconDownload class="w-4 h-4" />
+						<Icon icon={IconDownload} class="w-4 h-4" />
 						Export
 					</button>
 				</div>
@@ -198,7 +191,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-							<IconClock class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+							<Icon icon={IconClock} class="w-5 h-5 text-blue-600 dark:text-blue-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Time</span>
 					</div>
@@ -212,7 +205,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-							<IconCurrencyDollar class="w-5 h-5 text-green-600 dark:text-green-400" />
+							<Icon icon={IconCurrencyDollar} class="w-5 h-5 text-green-600 dark:text-green-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Billable Time</span>
 					</div>
@@ -226,7 +219,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-							<IconClock class="w-5 h-5 text-gray-600 dark:text-gray-400" />
+							<Icon icon={IconClock} class="w-5 h-5 text-gray-600 dark:text-gray-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Non-Billable</span>
 					</div>
@@ -240,7 +233,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-							<IconCurrencyDollar class="w-5 h-5 text-purple-600 dark:text-purple-400" />
+							<Icon icon={IconCurrencyDollar} class="w-5 h-5 text-purple-600 dark:text-purple-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Cost</span>
 					</div>
@@ -332,7 +325,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if timeEntries.length === 0}
 				<div class="text-center py-12">
-					<IconClock class="w-12 h-12 text-gray-400 mx-auto mb-4" />
+					<Icon icon={IconClock} class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 					<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No time entries</h3>
 					<p class="text-gray-500 dark:text-gray-400">
 						No time has been logged for the selected filters
@@ -377,7 +370,7 @@ import { logger } from '$lib/utils/logger';
 							<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
 								<td class="px-4 py-3">
 									<div class="flex items-center gap-2">
-										<IconLayoutKanban class="w-4 h-4 text-gray-400" />
+										<Icon icon={IconLayoutKanban} class="w-4 h-4 text-gray-400" />
 										<span class="text-sm font-medium text-gray-900 dark:text-white"
 											>{entry.task?.title || 'Unknown Task'}</span
 										>

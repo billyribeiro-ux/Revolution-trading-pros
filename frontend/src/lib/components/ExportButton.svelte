@@ -11,15 +11,7 @@
 	 */
 
 	import { fade, scale } from 'svelte/transition';
-	import {
-		IconDownload,
-		IconTable,
-		IconCode,
-		IconFileText,
-		IconChevronDown,
-		IconCheck,
-		IconLoader
-	} from '$lib/icons';
+	import { Icon, IconDownload, IconTable, IconCode, IconFileText, IconChevronDown, IconCheck, IconLoader } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
@@ -198,14 +190,14 @@
 	>
 		{#if isExporting}
 			<span class="spinning">
-				<IconLoader size={18} />
+				<Icon icon={IconLoader} size={18} />
 			</span>
 		{:else}
-			<IconDownload size={18} />
+			<Icon icon={IconDownload} size={18} />
 		{/if}
 		<span>{label}</span>
 		<span class="chevron" class:rotated={isOpen}>
-			<IconChevronDown size={16} />
+			<Icon icon={IconChevronDown} size={16} />
 		</span>
 	</button>
 
@@ -229,7 +221,7 @@
 					role="menuitem"
 				>
 					{#if exportedFormat === format}
-						<IconCheck size={18} class="success-icon" />
+						<Icon icon={IconCheck} size={18} class="success-icon" />
 					{:else}
 						<FormatIcon size={18} />
 					{/if}

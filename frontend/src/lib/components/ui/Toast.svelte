@@ -11,7 +11,7 @@
 	 * @version 2.0.0 - Accessibility Enhanced
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
-	import { IconCheck, IconX, IconAlertCircle, IconInfoCircle, IconLoader } from '$lib/icons';
+	import { Icon, IconCheck, IconX, IconAlertCircle, IconInfoCircle, IconLoader } from '$lib/icons';
 	import { toasts, removeToast, type ToastType } from '$lib/stores/toast.svelte';
 
 	// Local derived from getter
@@ -75,7 +75,7 @@
 						rounded p-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 					aria-label="Dismiss notification"
 				>
-					<IconX size={16} aria-hidden="true" />
+					<Icon icon={IconX} size={16} aria-hidden="true" />
 				</button>
 			{/if}
 		</div>

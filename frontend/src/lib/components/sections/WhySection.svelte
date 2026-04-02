@@ -2,12 +2,8 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
-	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
-	import IconCpu from '@tabler/icons-svelte-runes/icons/cpu';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-
+	import { Icon, IconBuilding, IconCheck, IconCpu, IconShield, IconSitemap } from '$lib/icons';
+					
 	const features = [
 		{
 			title: 'Structured Curriculum',
@@ -116,7 +112,7 @@
 					in:heavySlide={{ delay: 0, duration: 1000 }}
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
-					<IconBuilding size={14} />
+					<Icon icon={IconBuilding} size={14} />
 					System Design
 				</div>
 
@@ -235,7 +231,7 @@
 							<div
 								class="flex items-center gap-2 text-[10px] font-mono text-zinc-600 border-t border-zinc-900 pt-4 group-hover/card:text-zinc-500 transition-colors"
 							>
-								<IconCheck
+								<Icon icon={IconCheck}
 									size={12}
 									class={feature.accent === 'cyan'
 										? 'text-cyan-500'

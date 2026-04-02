@@ -10,7 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { IconChevronRight } from '$lib/icons';
+	import { Icon, IconChevronRight } from '$lib/icons';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import type { PageData } from './$types';
 
@@ -384,7 +384,7 @@
 											<h3>
 												<a href="/traders/{trader.slug}">
 													{trader.name}
-													<IconChevronRight size={16} />
+													<Icon icon={IconChevronRight} size={16} />
 												</a>
 											</h3>
 											<p>{trader.title}</p>

@@ -12,21 +12,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
-	import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
-	import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import { crmAPI } from '$lib/api/crm';
+														import { crmAPI } from '$lib/api/crm';
 	import type { ImportJob, ExportJob } from '$lib/crm/types';
+	import { Icon, IconCheck, IconClock, IconDownload, IconListDetails, IconMail, IconMailForward, IconRefresh, IconRoute, IconTags, IconTemplate, IconUpload, IconUsers, IconX } from '$lib/icons';
 
 	let importJobs = $state<ImportJob[]>([]);
 	let exportJobs = $state<ExportJob[]>([]);
@@ -186,7 +174,7 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadJobs()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 		</div>
 	</div>
@@ -198,7 +186,7 @@
 			class:active={activeTab === 'import'}
 			onclick={() => (activeTab = 'import')}
 		>
-			<IconUpload size={18} />
+			<Icon icon={IconUpload} size={18} />
 			Import
 		</button>
 		<button
@@ -206,7 +194,7 @@
 			class:active={activeTab === 'export'}
 			onclick={() => (activeTab = 'export')}
 		>
-			<IconDownload size={18} />
+			<Icon icon={IconDownload} size={18} />
 			Export
 		</button>
 	</div>
@@ -339,7 +327,7 @@
 									<td>
 										{#if job.status === 'completed' && job.file_url}
 											<button class="btn-download" onclick={() => downloadExport(job.id)}>
-												<IconDownload size={16} />
+												<Icon icon={IconDownload} size={16} />
 												Download
 											</button>
 										{/if}
@@ -355,7 +343,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<IconX size={18} />
+			<Icon icon={IconX} size={18} />
 			<span>{error}</span>
 		</div>
 	{/if}

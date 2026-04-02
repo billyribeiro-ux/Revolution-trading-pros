@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconDeviceFloppy } from '$lib/icons';
+	import { Icon, IconX, IconDeviceFloppy } from '$lib/icons';
 
 	interface Props {
 		url404?: string;
@@ -79,7 +79,7 @@
 		<div class="modal-header">
 			<h2>Create Redirect from 404</h2>
 			<button class="close-btn" onclick={cancel} aria-label="Close modal">
-				<IconX size={24} />
+				<Icon icon={IconX} size={24} />
 			</button>
 		</div>
 
@@ -130,7 +130,7 @@
 			<div class="modal-footer">
 				<button type="button" class="btn-secondary" onclick={cancel}> Cancel </button>
 				<button type="submit" class="btn-primary" disabled={saving}>
-					<IconDeviceFloppy size={18} />
+					<Icon icon={IconDeviceFloppy} size={18} />
 					{saving ? 'Creating...' : 'Create Redirect'}
 				</button>
 			</div>

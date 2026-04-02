@@ -7,13 +7,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconBrandYoutube,
-		IconBrandVimeo,
-		IconBrandTwitter,
-		IconCode,
-		IconLink
-	} from '$lib/icons';
+	import { Icon, IconBrandYoutube, IconBrandVimeo, IconBrandTwitter, IconCode, IconLink } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -104,7 +98,7 @@
 				<span class="embed-type">{embedType.charAt(0).toUpperCase() + embedType.slice(1)}</span>
 			</div>
 			<div class="embed-input-wrapper">
-				<IconLink size={18} aria-hidden="true" />
+				<Icon icon={IconLink} size={18} aria-hidden="true" />
 				<input
 					type="url"
 					placeholder="Paste YouTube, Vimeo, or other embed URL..."
@@ -147,7 +141,7 @@
 		</div>
 	{:else}
 		<div class="embed-empty">
-			<IconCode size={32} aria-hidden="true" />
+			<Icon icon={IconCode} size={32} aria-hidden="true" />
 			<p>No embed URL provided</p>
 		</div>
 	{/if}

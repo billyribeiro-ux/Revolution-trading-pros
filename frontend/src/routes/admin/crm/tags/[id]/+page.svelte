@@ -13,17 +13,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
-	import {
-		IconTag,
-		IconUsers,
-		IconArrowLeft,
-		IconSearch,
-		IconRefresh,
-		IconUser,
-		IconX,
-		IconChevronLeft,
-		IconChevronRight
-	} from '$lib/icons';
+	import { Icon, IconTag, IconUsers, IconArrowLeft, IconSearch, IconRefresh, IconUser, IconX, IconChevronLeft, IconChevronRight } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag, Contact } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -162,13 +152,13 @@ import { logger } from '$lib/utils/logger';
 	<div class="page-header">
 		<div class="header-left">
 			<a href="/admin/crm/tags" class="back-link">
-				<IconArrowLeft size={20} />
+				<Icon icon={IconArrowLeft} size={20} />
 				Back to Tags
 			</a>
 			{#if tag}
 				<div class="tag-header-info">
 					<div class="tag-badge" style="background-color: {tag.color || '#6366f1'}">
-						<IconTag size={20} />
+						<Icon icon={IconTag} size={20} />
 					</div>
 					<div>
 						<h1>{tag.title}</h1>
@@ -181,7 +171,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadTag()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 		</div>
 	</div>
@@ -201,7 +191,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconUsers size={24} />
+					<Icon icon={IconUsers} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{contactsCount.toLocaleString()}</span>
@@ -210,7 +200,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconTag size={24} />
+					<Icon icon={IconTag} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatDate(tag.created_at)}</span>
@@ -224,7 +214,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="section-header">
 				<h2>Contacts with this Tag</h2>
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						id="page-searchquery"
 						name="page-searchquery"
@@ -242,7 +232,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if filteredContacts.length === 0}
 				<div class="empty-state">
-					<IconUsers size={48} />
+					<Icon icon={IconUsers} size={48} />
 					<h3>No contacts found</h3>
 					<p>{searchQuery ? 'Try a different search term' : 'No contacts have this tag yet'}</p>
 				</div>
@@ -298,14 +288,14 @@ import { logger } from '$lib/utils/logger';
 												class="btn-icon"
 												title="View Contact"
 											>
-												<IconUser size={16} />
+												<Icon icon={IconUser} size={16} />
 											</a>
 											<button
 												class="btn-icon danger"
 												title="Remove Tag"
 												onclick={() => removeTagFromContact(contact.id)}
 											>
-												<IconX size={16} />
+												<Icon icon={IconX} size={16} />
 											</button>
 										</div>
 									</td>
@@ -326,7 +316,7 @@ import { logger } from '$lib/utils/logger';
 								loadContacts();
 							}}
 						>
-							<IconChevronLeft size={18} />
+							<Icon icon={IconChevronLeft} size={18} />
 						</button>
 						<span class="page-info">Page {currentPage} of {totalPages}</span>
 						<button
@@ -337,7 +327,7 @@ import { logger } from '$lib/utils/logger';
 								loadContacts();
 							}}
 						>
-							<IconChevronRight size={18} />
+							<Icon icon={IconChevronRight} size={18} />
 						</button>
 					</div>
 				{/if}

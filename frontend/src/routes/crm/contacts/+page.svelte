@@ -10,7 +10,7 @@ import { logger } from '$lib/utils/logger';
 	import { crmAPI } from '$lib/api/crm';
 	import { crmStore } from '$lib/stores/crm.svelte';
 	import type { Contact, ContactStatus, LifecycleStage } from '$lib/crm/types';
-	import { IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
+	import { Icon, IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
 
 	// Initialize filters from URL query params (ICT 7: URL-driven state)
 	let localSearch = $state(page.url.searchParams.get('search') ?? '');
@@ -95,7 +95,7 @@ import { logger } from '$lib/utils/logger';
 				<div
 					class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-400"
 				>
-					<IconUser size={22} />
+					<Icon icon={IconUser} size={22} />
 				</div>
 				<div>
 					<h1 class="text-2xl font-semibold tracking-tight">Contacts</h1>
@@ -120,7 +120,7 @@ import { logger } from '$lib/utils/logger';
 			<div
 				class="flex flex-1 items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2"
 			>
-				<IconSearch size={18} class="text-slate-500" />
+				<Icon icon={IconSearch} size={18} class="text-slate-500" />
 				<input
 					id="contact-search"
 					name="contact-search"
@@ -132,7 +132,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 
 			<div class="flex items-center gap-2 text-xs text-slate-300">
-				<IconFilter size={16} class="text-slate-500" />
+				<Icon icon={IconFilter} size={16} class="text-slate-500" />
 				<select
 					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
 					bind:value={localStatus}
@@ -169,7 +169,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="mt-1 text-2xl font-semibold">{totalContacts}</p>
 					</div>
 					<div class="rounded-xl bg-slate-800/80 p-2">
-						<IconUser size={20} class="text-indigo-400" />
+						<Icon icon={IconUser} size={20} class="text-indigo-400" />
 					</div>
 				</div>
 			</div>
@@ -181,7 +181,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="mt-1 text-2xl font-semibold">{highScoreContacts}</p>
 					</div>
 					<div class="rounded-xl bg-emerald-500/10 p-2">
-						<IconTrendingUp size={20} class="text-emerald-400" />
+						<Icon icon={IconTrendingUp} size={20} class="text-emerald-400" />
 					</div>
 				</div>
 			</div>
@@ -193,7 +193,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="mt-1 text-2xl font-semibold">{atRiskCustomers}</p>
 					</div>
 					<div class="rounded-xl bg-rose-500/10 p-2">
-						<IconAlertTriangle size={20} class="text-rose-400" />
+						<Icon icon={IconAlertTriangle} size={20} class="text-rose-400" />
 					</div>
 				</div>
 			</div>

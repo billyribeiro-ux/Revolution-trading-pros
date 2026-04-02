@@ -4,7 +4,7 @@
 	 * @version 2.0.0
 	 */
 	import { forgotPassword } from '$lib/api/auth';
-	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
+	import { Icon, IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let email = $state('');
@@ -81,8 +81,8 @@
 					<div
 						class="w-full h-full bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center"
 					>
-						<IconMail size={32} class="text-amber-400 sm:hidden" />
-						<IconMail size={40} class="text-amber-400 hidden sm:block" />
+						<Icon icon={IconMail} size={32} class="text-amber-400 sm:hidden" />
+						<Icon icon={IconMail} size={40} class="text-amber-400 hidden sm:block" />
 					</div>
 				</div>
 				<h1
@@ -98,7 +98,7 @@
 				<div
 					class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconCheck size={20} class="text-emerald-400 shrink-0 mt-0.5" />
+					<Icon icon={IconCheck} size={20} class="text-emerald-400 shrink-0 mt-0.5" />
 					<p class="text-sm text-emerald-300">{successMessage}</p>
 				</div>
 			{/if}
@@ -108,7 +108,7 @@
 				<div
 					class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in"
 				>
-					<IconAlertCircle size={20} class="text-red-400 shrink-0 mt-0.5" />
+					<Icon icon={IconAlertCircle} size={20} class="text-red-400 shrink-0 mt-0.5" />
 					<p class="text-sm text-red-300">{generalError}</p>
 				</div>
 			{/if}
@@ -122,7 +122,7 @@
 					</label>
 					<div class="relative">
 						<div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
-							<IconMail size={20} />
+							<Icon icon={IconMail} size={20} />
 						</div>
 						<input
 							id="email"
@@ -154,7 +154,7 @@
 							></div>
 							<span>Sending...</span>
 						{:else}
-							<IconSend size={20} />
+							<Icon icon={IconSend} size={20} />
 							<span>Send Reset Link</span>
 						{/if}
 					</span>

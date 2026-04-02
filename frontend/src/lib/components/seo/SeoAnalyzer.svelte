@@ -1,13 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import {
-		IconCircleCheck,
-		IconAlertTriangle,
-		IconCircleX,
-		IconRefresh,
-		IconTrendingUp
-	} from '$lib/icons';
+	import { Icon, IconCircleCheck, IconAlertTriangle, IconCircleX, IconRefresh, IconTrendingUp } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - ICT 7+ Strict Type Safety
@@ -165,7 +159,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		<button class="refresh-btn" onclick={analyze} disabled={loading}>
-			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+			<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 			{loading ? 'Analyzing...' : 'Refresh'}
 		</button>
 	</div>
@@ -206,7 +200,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="empty-state">
-			<IconTrendingUp size={48} />
+			<Icon icon={IconTrendingUp} size={48} />
 			<h4>No Analysis Yet</h4>
 			<p>Add content to see SEO analysis results</p>
 		</div>

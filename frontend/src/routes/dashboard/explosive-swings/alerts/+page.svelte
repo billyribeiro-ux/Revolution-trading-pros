@@ -9,7 +9,7 @@
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import { IconSearch } from '$lib/icons';
+	import { Icon, IconSearch } from '$lib/icons';
 	import type { RoomAlert } from '$lib/types/trading';
 
 	// Props interface for SSR data - Svelte 5 best practice
@@ -276,7 +276,7 @@
 				</div>
 
 				<div class="search-container">
-					<IconSearch size={18} aria-hidden="true" />
+					<Icon icon={IconSearch} size={18} aria-hidden="true" />
 					<label for="search-alerts" class="sr-only">Search alerts</label>
 					<input
 						id="search-alerts"

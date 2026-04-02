@@ -23,16 +23,8 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
-	import IconLoader from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
+										import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
+	import { Icon, IconAlertCircle, IconCheck, IconCloudUpload, IconFile, IconLoader2, IconPhoto, IconUpload, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & PROPS
@@ -467,7 +459,7 @@
 				return IconAlertCircle;
 			case 'uploading':
 			case 'processing':
-				return IconLoader;
+				return IconLoader2;
 			default:
 				return IconCloudUpload;
 		}
@@ -512,12 +504,12 @@
 	<!-- Header -->
 	<div class="hub-header">
 		<div class="header-left">
-			<IconCloudUpload size={24} />
+			<Icon icon={IconCloudUpload} size={24} />
 			<h3>Media Upload Hub</h3>
 		</div>
 		{#if onClose}
 			<button type="button" class="btn-close" onclick={onClose}>
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		{/if}
 	</div>
@@ -546,15 +538,15 @@
 
 		{#if isDragging}
 			<div class="drop-indicator" in:scale={{ duration: 200 }}>
-				<IconUpload size={64} class="animate-bounce" />
+				<Icon icon={IconUpload} size={64} class="animate-bounce" />
 				<p class="drop-text">Drop files here</p>
 			</div>
 		{:else}
 			<div class="drop-content">
 				<div class="icons-row">
-					<IconPhoto size={32} class="type-icon" />
-					<IconVideo size={32} class="type-icon" />
-					<IconFile size={32} class="type-icon" />
+					<Icon icon={IconPhoto} size={32} class="type-icon" />
+					<Icon icon={IconVideo} size={32} class="type-icon" />
+					<Icon icon={IconFile} size={32} class="type-icon" />
 				</div>
 				<p class="drop-title">Drag & drop files here</p>
 				<p class="drop-subtitle">or click to browse</p>
@@ -583,13 +575,13 @@
 					<div class="progress-fill" style="width: {$totalProgress}%"></div>
 				</div>
 				<div class="progress-stats">
-					<span class="stat completed"><IconCheck size={14} /> {completedCount}</span>
+					<span class="stat completed"><Icon icon={IconCheck} size={14} /> {completedCount}</span>
 					{#if failedCount > 0}
-						<span class="stat failed"><IconAlertCircle size={14} /> {failedCount}</span>
+						<span class="stat failed"><Icon icon={IconAlertCircle} size={14} /> {failedCount}</span>
 					{/if}
 					{#if pendingCount > 0}
 						<span class="stat pending"
-							><IconLoader size={14} class="spinning" /> {pendingCount}</span
+							><Icon icon={IconLoader2} size={14} class="spinning" /> {pendingCount}</span
 						>
 					{/if}
 				</div>
@@ -644,7 +636,7 @@
 						<!-- Remove -->
 						{#if item.status !== 'uploading' && item.status !== 'processing'}
 							<button type="button" class="btn-remove" onclick={() => removeItem(item.id)}>
-								<IconX size={16} />
+								<Icon icon={IconX} size={16} />
 							</button>
 						{/if}
 					</div>

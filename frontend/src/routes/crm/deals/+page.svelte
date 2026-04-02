@@ -9,7 +9,7 @@ import { logger } from '$lib/utils/logger';
 	import { crmAPI } from '$lib/api/crm';
 	import { crmStore } from '$lib/stores/crm.svelte';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
-	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
+	import { Icon, IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 
 	let forecastPeriod = $state('this_month');
 	let forecast = $state<{
@@ -102,7 +102,7 @@ import { logger } from '$lib/utils/logger';
 				<div
 					class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400"
 				>
-					<IconActivity size={22} />
+					<Icon icon={IconActivity} size={22} />
 				</div>
 				<div>
 					<h1 class="text-2xl font-semibold tracking-tight">Deals Pipeline</h1>
@@ -133,28 +133,28 @@ import { logger } from '$lib/utils/logger';
 				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
 					<p class="text-[11px] uppercase tracking-wide text-slate-500">Commit</p>
 					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-emerald-300">
-						<IconCurrencyDollar size={18} />
+						<Icon icon={IconCurrencyDollar} size={18} />
 						{formatCurrency(forecast.commit)}
 					</p>
 				</div>
 				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
 					<p class="text-[11px] uppercase tracking-wide text-slate-500">Best Case</p>
 					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-sky-300">
-						<IconCurrencyDollar size={18} />
+						<Icon icon={IconCurrencyDollar} size={18} />
 						{formatCurrency(forecast.best_case)}
 					</p>
 				</div>
 				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
 					<p class="text-[11px] uppercase tracking-wide text-slate-500">Pipeline</p>
 					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-slate-100">
-						<IconCurrencyDollar size={18} />
+						<Icon icon={IconCurrencyDollar} size={18} />
 						{formatCurrency(forecast.pipeline)}
 					</p>
 				</div>
 				<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-xs">
 					<p class="text-[11px] uppercase tracking-wide text-slate-500">Worst Case</p>
 					<p class="mt-2 flex items-center gap-1 text-lg font-semibold text-amber-300">
-						<IconCurrencyDollar size={18} />
+						<Icon icon={IconCurrencyDollar} size={18} />
 						{formatCurrency(forecast.worst_case)}
 					</p>
 				</div>
@@ -225,7 +225,7 @@ import { logger } from '$lib/utils/logger';
 											<span>{formatCurrency(deal.amount)}</span>
 											<span class="flex items-center gap-1">
 												{deal.probability}%
-												<IconArrowRight size={12} class="text-sky-400" />
+												<Icon icon={IconArrowRight} size={12} class="text-sky-400" />
 											</span>
 										</div>
 									</button>

@@ -9,15 +9,7 @@
 	 */
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import {
-		IconChartLine,
-		IconWorld,
-		IconArrowRight,
-		IconQuestionMark,
-		IconExternalLink,
-		IconChartBar,
-		IconBuildingSkyscraper
-	} from '$lib/icons';
+	import { Icon, IconChartLine, IconWorld, IconArrowRight, IconQuestionMark, IconExternalLink, IconChartBar, IconBuildingSkyscraper } from '$lib/icons';
 
 	// Major Stock Indexes with detailed info
 	const majorIndexes = [
@@ -187,7 +179,7 @@
 		</div>
 		<div class="hero__content" in:fly={{ y: 30, duration: 600, easing: cubicOut }}>
 			<div class="hero__badge">
-				<IconChartBar size={20} />
+				<Icon icon={IconChartBar} size={20} />
 				<span>Market Reference</span>
 			</div>
 			<h1 class="hero__title">Stock Indexes List</h1>
@@ -257,7 +249,7 @@
 				</div>
 				<div class="sp500-feature__chart">
 					<div class="chart-placeholder">
-						<IconChartLine size={64} />
+						<Icon icon={IconChartLine} size={64} />
 						<span>SPY Chart</span>
 						<a
 							href="https://www.tradingview.com/symbols/AMEX-SPY/"
@@ -266,7 +258,7 @@
 							class="chart-link"
 						>
 							View on TradingView
-							<IconExternalLink size={16} />
+							<Icon icon={IconExternalLink} size={16} />
 						</a>
 					</div>
 				</div>
@@ -287,7 +279,7 @@
 			<!-- Region Filter -->
 			<div class="filter-bar">
 				<label for="region-filter">
-					<IconWorld size={20} />
+					<Icon icon={IconWorld} size={20} />
 				</label>
 				<select id="region-filter" bind:value={selectedRegion} class="filter-select">
 					{#each regions as region}
@@ -309,11 +301,11 @@
 						<p class="index-card__description">{index.description}</p>
 						<div class="index-card__meta">
 							<div class="index-card__meta-item">
-								<IconBuildingSkyscraper size={16} />
+								<Icon icon={IconBuildingSkyscraper} size={16} />
 								<span>{index.companies > 0 ? `${index.companies} Companies` : 'N/A'}</span>
 							</div>
 							<div class="index-card__meta-item">
-								<IconChartBar size={16} />
+								<Icon icon={IconChartBar} size={16} />
 								<span>{index.type}</span>
 							</div>
 						</div>
@@ -352,7 +344,7 @@
 				{#each faqItems as faq, i}
 					<div class="faq-item" class:faq-item--expanded={expandedFaq === i}>
 						<button class="faq-item__question" onclick={() => toggleFaq(i)}>
-							<IconQuestionMark size={20} class="faq-item__icon" />
+							<Icon icon={IconQuestionMark} size={20} class="faq-item__icon" />
 							<span>{faq.question}</span>
 							<svg
 								class="faq-item__chevron"
@@ -393,7 +385,7 @@
 				<div class="cta-buttons">
 					<a href="/live-trading-rooms" class="cta-btn cta-btn--primary">
 						Get Started
-						<IconArrowRight size={20} />
+						<Icon icon={IconArrowRight} size={20} />
 					</a>
 					<a href="/resources/etf-stocks-list" class="cta-btn cta-btn--secondary">
 						View ETF Stock List

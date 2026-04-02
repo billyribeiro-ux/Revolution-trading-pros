@@ -7,7 +7,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
-	import { IconMail, IconUser, IconCheck } from '$lib/icons';
+	import { Icon, IconMail, IconUser, IconCheck } from '$lib/icons';
 
 	// Form state
 	let formData = $state({
@@ -172,7 +172,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="status-grid">
 			<div class="status-card">
 				<div class="status-icon success">
-					<IconCheck size={24} />
+					<Icon icon={IconCheck} size={24} />
 				</div>
 				<h3>Backend Connected</h3>
 				<p>API running on revolution-trading-pros-api.fly.dev</p>
@@ -180,7 +180,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="status-card">
 				<div class="status-icon success">
-					<IconCheck size={24} />
+					<Icon icon={IconCheck} size={24} />
 				</div>
 				<h3>SEO Configured</h3>
 				<p>Meta tags and structured data active</p>
@@ -188,7 +188,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="status-card">
 				<div class="status-icon success">
-					<IconCheck size={24} />
+					<Icon icon={IconCheck} size={24} />
 				</div>
 				<h3>Forms Ready</h3>
 				<p>Contact and newsletter forms active</p>
@@ -246,7 +246,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="form-row">
 						<div class="form-group">
 							<label for="name">
-								<IconUser size={18} />
+								<Icon icon={IconUser} size={18} />
 								Name
 							</label>
 							<input
@@ -267,7 +267,7 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="form-group">
 							<label for="email">
-								<IconMail size={18} />
+								<Icon icon={IconMail} size={18} />
 								Email
 							</label>
 							<input

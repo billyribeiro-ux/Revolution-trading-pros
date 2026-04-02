@@ -21,27 +21,7 @@
 	 */
 
 	import { browser } from '$app/environment';
-	import {
-		IconVideo,
-		IconFileText,
-		IconPhoto,
-		IconTable,
-		IconFile,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconRefresh,
-		IconPlus,
-		IconLink,
-		IconCheck,
-		IconX,
-		IconStar,
-		IconStarFilled,
-		IconPin,
-		IconPinFilled,
-		IconAlertCircle
-	} from '$lib/icons';
+	import { Icon, IconVideo, IconFileText, IconPhoto, IconTable, IconFile, IconSearch, IconEdit, IconTrash, IconEye, IconRefresh, IconPlus, IconLink, IconCheck, IconX, IconStar, IconStarFilled, IconPin, IconPinFilled, IconAlertCircle } from '$lib/icons';
 	import {
 		roomResourcesApi,
 		type RoomResource,
@@ -790,17 +770,17 @@
 		<!-- Alerts -->
 		{#if successMessage}
 			<div class="alert alert-success">
-				<IconCheck size={18} />
+				<Icon icon={IconCheck} size={18} />
 				{successMessage}
 			</div>
 		{/if}
 
 		{#if error}
 			<div class="alert alert-error">
-				<IconAlertCircle size={18} />
+				<Icon icon={IconAlertCircle} size={18} />
 				{error}
 				<button class="alert-close" onclick={() => (error = '')}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/if}
@@ -816,10 +796,10 @@
 					</button>
 				{/if}
 				<button class="btn-secondary" onclick={() => loadResources()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<button class="btn-primary" onclick={openCreateModal} disabled={!selectedRoom}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Resource
 				</button>
 			</div>
@@ -853,27 +833,27 @@
 					<span class="stat-label">Total</span>
 				</div>
 				<div class="stat">
-					<IconVideo size={16} />
+					<Icon icon={IconVideo} size={16} />
 					<span class="stat-value">{stats.videos}</span>
 					<span class="stat-label">Videos</span>
 				</div>
 				<div class="stat">
-					<IconFileText size={16} />
+					<Icon icon={IconFileText} size={16} />
 					<span class="stat-value">{stats.pdfs}</span>
 					<span class="stat-label">PDFs</span>
 				</div>
 				<div class="stat">
-					<IconPhoto size={16} />
+					<Icon icon={IconPhoto} size={16} />
 					<span class="stat-value">{stats.images}</span>
 					<span class="stat-label">Images</span>
 				</div>
 				<div class="stat">
-					<IconCheck size={16} />
+					<Icon icon={IconCheck} size={16} />
 					<span class="stat-value">{stats.published}</span>
 					<span class="stat-label">Published</span>
 				</div>
 				<div class="stat">
-					<IconStarFilled size={16} />
+					<Icon icon={IconStarFilled} size={16} />
 					<span class="stat-value">{stats.featured}</span>
 					<span class="stat-label">Featured</span>
 				</div>
@@ -883,7 +863,7 @@
 		<!-- Filters -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					type="text"
 					id="search-resources"
@@ -923,11 +903,11 @@
 			</div>
 		{:else if filteredResources.length === 0}
 			<div class="empty-state">
-				<IconFile size={64} />
+				<Icon icon={IconFile} size={64} />
 				<h3>No resources found</h3>
 				<p>Add your first resource to {selectedRoom?.name}</p>
 				<button class="btn-primary" onclick={openCreateModal}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Resource
 				</button>
 			</div>
@@ -964,10 +944,10 @@
 
 							<!-- Featured/Pinned indicators -->
 							{#if resource.is_featured}
-								<span class="featured-badge"><IconStarFilled size={14} /></span>
+								<span class="featured-badge"><Icon icon={IconStarFilled} size={14} /></span>
 							{/if}
 							{#if resource.is_pinned}
-								<span class="pinned-badge"><IconPinFilled size={14} /></span>
+								<span class="pinned-badge"><Icon icon={IconPinFilled} size={14} /></span>
 							{/if}
 						</div>
 
@@ -993,10 +973,10 @@
 						<!-- Actions -->
 						<div class="resource-actions">
 							<button class="btn-icon" title="Replace" onclick={() => openReplaceModal(resource)}>
-								<IconLink size={16} />
+								<Icon icon={IconLink} size={16} />
 							</button>
 							<button class="btn-icon" title="Edit" onclick={() => openEditModal(resource)}>
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 							</button>
 							<button
 								class="btn-icon"
@@ -1004,9 +984,9 @@
 								onclick={() => toggleFeatured(resource)}
 							>
 								{#if resource.is_featured}
-									<IconStarFilled size={16} />
+									<Icon icon={IconStarFilled} size={16} />
 								{:else}
-									<IconStar size={16} />
+									<Icon icon={IconStar} size={16} />
 								{/if}
 							</button>
 							<button
@@ -1015,9 +995,9 @@
 								onclick={() => togglePinned(resource)}
 							>
 								{#if resource.is_pinned}
-									<IconPinFilled size={16} />
+									<Icon icon={IconPinFilled} size={16} />
 								{:else}
-									<IconPin size={16} />
+									<Icon icon={IconPin} size={16} />
 								{/if}
 							</button>
 							<button
@@ -1026,14 +1006,14 @@
 								title={resource.is_published ? 'Unpublish' : 'Publish'}
 								onclick={() => togglePublished(resource)}
 							>
-								<IconEye size={16} />
+								<Icon icon={IconEye} size={16} />
 							</button>
 							<button
 								class="btn-icon danger"
 								title="Delete"
 								onclick={() => deleteResource(resource)}
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						</div>
 					</div>
@@ -1224,7 +1204,7 @@
 								onclick={() => toggleTag(category.id)}
 							>
 								{#if formData.tags?.includes(category.id)}
-									<IconCheck size={14} />
+									<Icon icon={IconCheck} size={14} />
 								{/if}
 								{category.name}
 							</button>
@@ -1355,7 +1335,7 @@
 						<span class="spinner-small"></span>
 						Replacing...
 					{:else}
-						<IconLink size={16} />
+						<Icon icon={IconLink} size={16} />
 						Replace
 					{/if}
 				</button>
@@ -1415,7 +1395,7 @@
 
 				{#if bulkAction === 'delete'}
 					<div class="alert alert-error">
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 						This will permanently delete {selectedResources.size} resources. This cannot be undone.
 					</div>
 				{/if}

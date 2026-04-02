@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
+	import { Icon, IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let loading = $state(true);
@@ -88,7 +88,7 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Manage admin users and permissions</p>
 			<div class="header-actions">
 				<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Admin User
 				</button>
 			</div>
@@ -106,11 +106,11 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if users.length === 0}
 			<div class="empty-state">
-				<IconUser size={64} stroke={1} />
+				<Icon icon={IconUser} size={64} stroke={1} />
 				<h3>No users found</h3>
 				<p>Add your first admin user to get started</p>
 				<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Admin User
 				</button>
 			</div>
@@ -151,7 +151,7 @@ import { logger } from '$lib/utils/logger';
 										{#if user.roles && user.roles.length > 0}
 											{#each user.roles as role}
 												<span class="role-badge">
-													<IconShield size={14} />
+													<Icon icon={IconShield} size={14} />
 													{role.name}
 												</span>
 											{/each}
@@ -168,14 +168,14 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => goto(`/admin/users/edit/${user.id}`)}
 											title="Edit user"
 										>
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</button>
 										<button
 											class="action-btn delete"
 											onclick={() => deleteUser(user.id)}
 											title="Delete user"
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</div>
 								</td>

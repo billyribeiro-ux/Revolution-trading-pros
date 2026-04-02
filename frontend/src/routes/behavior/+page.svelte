@@ -7,14 +7,7 @@ import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
 	import { behaviorAPI } from '$lib/api/behavior';
-	import {
-		IconBrain,
-		IconAlertTriangle,
-		IconTarget,
-		IconTrendingUp,
-		IconUsers,
-		IconChartBar
-	} from '$lib/icons';
+	import { Icon, IconBrain, IconAlertTriangle, IconTarget, IconTrendingUp, IconUsers, IconChartBar } from '$lib/icons';
 
 	let selectedPeriod = $state('7d');
 
@@ -49,7 +42,7 @@ import { logger } from '$lib/utils/logger';
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="header-title">
-				<IconBrain size={32} class="text-purple-400" />
+				<Icon icon={IconBrain} size={32} class="text-purple-400" />
 				<div>
 					<h1 class="text-3xl font-bold text-white">Behavior Analytics</h1>
 					<p class="text-gray-400 mt-1">RevolutionBehavior-L8-System</p>
@@ -100,7 +93,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="kpi-grid">
 			<div class="kpi-card">
 				<div class="kpi-icon bg-blue-500/20">
-					<IconUsers size={24} class="text-blue-400" />
+					<Icon icon={IconUsers} size={24} class="text-blue-400" />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Total Sessions</div>
@@ -110,7 +103,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="kpi-card">
 				<div class="kpi-icon bg-green-500/20">
-					<IconTrendingUp size={24} class="text-green-400" />
+					<Icon icon={IconTrendingUp} size={24} class="text-green-400" />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Engagement</div>
@@ -120,7 +113,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="kpi-card">
 				<div class="kpi-icon bg-yellow-500/20">
-					<IconTarget size={24} class="text-yellow-400" />
+					<Icon icon={IconTarget} size={24} class="text-yellow-400" />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Intent</div>
@@ -130,7 +123,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="kpi-card">
 				<div class="kpi-icon bg-orange-500/20">
-					<IconAlertTriangle size={24} class="text-orange-400" />
+					<Icon icon={IconAlertTriangle} size={24} class="text-orange-400" />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Friction</div>
@@ -140,7 +133,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="kpi-card critical">
 				<div class="kpi-icon bg-red-500/20">
-					<IconAlertTriangle size={24} class="text-red-400" />
+					<Icon icon={IconAlertTriangle} size={24} class="text-red-400" />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">High Churn Risk</div>
@@ -210,7 +203,7 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 	{:else}
 		<div class="empty-state">
-			<IconChartBar size={64} class="text-gray-600" />
+			<Icon icon={IconChartBar} size={64} class="text-gray-600" />
 			<h3 class="text-xl font-semibold text-gray-400 mt-4">No Behavior Data</h3>
 			<p class="text-gray-500 mt-2">Start tracking user behavior to see insights</p>
 		</div>

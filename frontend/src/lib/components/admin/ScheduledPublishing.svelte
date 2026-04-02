@@ -6,14 +6,8 @@
 
 	import { onMount } from 'svelte';
 	import { scheduledApi, type ScheduledJob } from '$lib/api/video-advanced';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-
+	import { Icon, IconAlertCircle, IconCalendar, IconCheck, IconClock, IconPlus, IconTrash, IconX } from '$lib/icons';
+							
 	interface Props {
 		resourceType?: 'video' | 'series';
 		resourceId?: number;
@@ -185,12 +179,12 @@
 <div class="scheduled-publishing">
 	<div class="header">
 		<div class="header-left">
-			<IconCalendar size={24} />
+			<Icon icon={IconCalendar} size={24} />
 			<h3>Scheduled Publishing</h3>
 		</div>
 		{#if onClose}
 			<button type="button" class="btn-close" onclick={onClose}>
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		{/if}
 	</div>
@@ -203,7 +197,7 @@
 
 	{#if error}
 		<div class="error-message">
-			<IconAlertCircle size={16} />
+			<Icon icon={IconAlertCircle} size={16} />
 			{error}
 		</div>
 	{/if}
@@ -218,7 +212,7 @@
 				{#each jobs as job (job.id)}
 					<div class="job-item">
 						<div class="job-icon" style="color: {getActionColor(job.action)}">
-							<IconClock size={20} />
+							<Icon icon={IconClock} size={20} />
 						</div>
 						<div class="job-info">
 							<div class="job-action" style="color: {getActionColor(job.action)}">
@@ -235,7 +229,7 @@
 							onclick={() => cancelJob(job.id)}
 							title="Cancel"
 						>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 						</button>
 					</div>
 				{/each}
@@ -250,7 +244,7 @@
 				onclick={() => (showForm = true)}
 				disabled={!resourceId}
 			>
-				<IconPlus size={18} /> Schedule New Action
+				<Icon icon={IconPlus} size={18} /> Schedule New Action
 			</button>
 		{:else}
 			<div class="schedule-form">
@@ -294,7 +288,7 @@
 
 				<div class="form-actions">
 					<button type="button" class="btn-schedule" onclick={createJob} disabled={isSaving}>
-						<IconCheck size={16} />
+						<Icon icon={IconCheck} size={16} />
 						{isSaving ? 'Scheduling...' : 'Schedule'}
 					</button>
 					<button type="button" class="btn-cancel" onclick={() => (showForm = false)}>

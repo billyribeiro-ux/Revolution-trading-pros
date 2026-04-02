@@ -26,33 +26,7 @@ import { logger } from '$lib/utils/logger';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import {
-		IconPlus,
-		IconGripVertical,
-		IconTrash,
-		IconCopy,
-		IconSettings,
-		IconChevronUp,
-		IconChevronDown,
-		IconArrowBackUp,
-		IconArrowForwardUp,
-		IconDeviceDesktop,
-		IconDeviceTablet,
-		IconDeviceMobile,
-		IconEye,
-		IconEdit,
-		IconMaximize,
-		IconMinimize,
-		IconDeviceFloppy,
-		IconCloudUpload,
-		IconSearch,
-		IconRobot,
-		IconSeo,
-		IconStack2,
-		IconKeyboard,
-		IconHistory,
-		IconCalendar
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconGripVertical, IconTrash, IconCopy, IconSettings, IconChevronUp, IconChevronDown, IconArrowBackUp, IconArrowForwardUp, IconDeviceDesktop, IconDeviceTablet, IconDeviceMobile, IconEye, IconEdit, IconMaximize, IconMinimize, IconDeviceFloppy, IconCloudUpload, IconSearch, IconRobot, IconSeo, IconStack2, IconKeyboard, IconHistory, IconCalendar } from '$lib/icons';
 
 	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
 	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
@@ -1363,7 +1337,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Undo last action"
 					aria-keyshortcuts="Control+Z"
 				>
-					<IconArrowBackUp size={18} aria-hidden="true" />
+					<Icon icon={IconArrowBackUp} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1374,7 +1348,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Redo last undone action"
 					aria-keyshortcuts="Control+Shift+Z"
 				>
-					<IconArrowForwardUp size={18} aria-hidden="true" />
+					<Icon icon={IconArrowForwardUp} size={18} aria-hidden="true" />
 				</button>
 			</div>
 
@@ -1396,7 +1370,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Preview as desktop"
 					aria-pressed={editorState.devicePreview === 'desktop'}
 				>
-					<IconDeviceDesktop size={18} aria-hidden="true" />
+					<Icon icon={IconDeviceDesktop} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1407,7 +1381,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Preview as tablet"
 					aria-pressed={editorState.devicePreview === 'tablet'}
 				>
-					<IconDeviceTablet size={18} aria-hidden="true" />
+					<Icon icon={IconDeviceTablet} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1418,7 +1392,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Preview as mobile"
 					aria-pressed={editorState.devicePreview === 'mobile'}
 				>
-					<IconDeviceMobile size={18} aria-hidden="true" />
+					<Icon icon={IconDeviceMobile} size={18} aria-hidden="true" />
 				</button>
 			</div>
 
@@ -1431,7 +1405,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Edit mode"
 					aria-pressed={editorState.viewMode === 'edit'}
 				>
-					<IconEdit size={16} aria-hidden="true" />
+					<Icon icon={IconEdit} size={16} aria-hidden="true" />
 					Edit
 				</button>
 				<button
@@ -1442,7 +1416,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Preview mode"
 					aria-pressed={editorState.viewMode === 'preview'}
 				>
-					<IconEye size={16} aria-hidden="true" />
+					<Icon icon={IconEye} size={16} aria-hidden="true" />
 					Preview
 				</button>
 			</div>
@@ -1453,7 +1427,7 @@ import { logger } from '$lib/utils/logger';
 				{#if saveError}
 					<span class="error">{saveError}</span>
 				{:else if isSaving}
-					<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
+					<span class="saving"><Icon icon={IconCloudUpload} size={16} class="spin" /> Saving...</span>
 				{:else if editorState.hasUnsavedChanges}
 					<span class="unsaved">Unsaved changes</span>
 				{:else}
@@ -1474,7 +1448,7 @@ import { logger } from '$lib/utils/logger';
 					title="Schedule Content"
 					aria-label="Schedule content publish/unpublish"
 				>
-					<IconCalendar size={18} aria-hidden="true" />
+					<Icon icon={IconCalendar} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1483,7 +1457,7 @@ import { logger } from '$lib/utils/logger';
 					title="Revision History"
 					aria-label="View revision history"
 				>
-					<IconHistory size={18} aria-hidden="true" />
+					<Icon icon={IconHistory} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1493,7 +1467,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Show keyboard shortcuts"
 					aria-keyshortcuts="Control+/"
 				>
-					<IconKeyboard size={18} aria-hidden="true" />
+					<Icon icon={IconKeyboard} size={18} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1504,9 +1478,9 @@ import { logger } from '$lib/utils/logger';
 					aria-pressed={editorState.isFullscreen}
 				>
 					{#if editorState.isFullscreen}
-						<IconMinimize size={18} aria-hidden="true" />
+						<Icon icon={IconMinimize} size={18} aria-hidden="true" />
 					{:else}
-						<IconMaximize size={18} aria-hidden="true" />
+						<Icon icon={IconMaximize} size={18} aria-hidden="true" />
 					{/if}
 				</button>
 			</div>
@@ -1519,7 +1493,7 @@ import { logger } from '$lib/utils/logger';
 				aria-label="Save draft"
 				aria-keyshortcuts="Control+S"
 			>
-				<IconDeviceFloppy size={18} aria-hidden="true" />
+				<Icon icon={IconDeviceFloppy} size={18} aria-hidden="true" />
 				Save Draft
 			</button>
 			<button
@@ -1529,7 +1503,7 @@ import { logger } from '$lib/utils/logger';
 				disabled={isSaving}
 				aria-label="Publish post"
 			>
-				<IconCloudUpload size={18} aria-hidden="true" />
+				<Icon icon={IconCloudUpload} size={18} aria-hidden="true" />
 				Publish
 			</button>
 		</div>
@@ -1550,7 +1524,7 @@ import { logger } from '$lib/utils/logger';
 					aria-controls="panel-blocks"
 					aria-label="Add blocks panel"
 				>
-					<IconPlus size={20} aria-hidden="true" />
+					<Icon icon={IconPlus} size={20} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1563,7 +1537,7 @@ import { logger } from '$lib/utils/logger';
 					aria-controls="panel-settings"
 					aria-label="Block settings panel"
 				>
-					<IconSettings size={20} aria-hidden="true" />
+					<Icon icon={IconSettings} size={20} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1576,7 +1550,7 @@ import { logger } from '$lib/utils/logger';
 					aria-controls="panel-layers"
 					aria-label="Block layers panel"
 				>
-					<IconStack2 size={20} aria-hidden="true" />
+					<Icon icon={IconStack2} size={20} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1589,7 +1563,7 @@ import { logger } from '$lib/utils/logger';
 					aria-controls="panel-ai"
 					aria-label="AI assistant panel"
 				>
-					<IconRobot size={20} aria-hidden="true" />
+					<Icon icon={IconRobot} size={20} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -1602,7 +1576,7 @@ import { logger } from '$lib/utils/logger';
 					aria-controls="panel-seo"
 					aria-label="SEO analysis panel"
 				>
-					<IconSeo size={20} aria-hidden="true" />
+					<Icon icon={IconSeo} size={20} aria-hidden="true" />
 				</button>
 			</div>
 
@@ -1612,7 +1586,7 @@ import { logger } from '$lib/utils/logger';
 						<h3>Add Block</h3>
 					</div>
 					<div class="block-search">
-						<IconSearch size={16} aria-hidden="true" />
+						<Icon icon={IconSearch} size={16} aria-hidden="true" />
 						<input
 							type="text"
 							id="search-blocks"
@@ -1632,7 +1606,7 @@ import { logger } from '$lib/utils/logger';
 							/>
 						{:else}
 							<div class="empty-panel">
-								<IconSettings size={48} stroke={1} aria-hidden="true" />
+								<Icon icon={IconSettings} size={48} stroke={1} aria-hidden="true" />
 								<p>Select a block to edit its settings</p>
 							</div>
 						{/if}
@@ -1653,7 +1627,7 @@ import { logger } from '$lib/utils/logger';
 									aria-selected={block.id === editorState.selectedBlockId}
 									aria-label="{BLOCK_DEFINITIONS[block.type]?.name || block.type}, position {i + 1}"
 								>
-									<IconGripVertical size={14} aria-hidden="true" />
+									<Icon icon={IconGripVertical} size={14} aria-hidden="true" />
 									<span class="layer-type">{BLOCK_DEFINITIONS[block.type]?.name || block.type}</span
 									>
 									<span class="layer-index">#{i + 1}</span>
@@ -1704,12 +1678,12 @@ import { logger } from '$lib/utils/logger';
 					<!-- Empty State -->
 					<div class="empty-state" transition:fade>
 						<div class="empty-icon">
-							<IconPlus size={48} />
+							<Icon icon={IconPlus} size={48} />
 						</div>
 						<h2>Start creating your content</h2>
 						<p>Click the button below to add your first block</p>
 						<button type="button" class="btn-add-first" onclick={() => openBlockInserter(0)}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Add Block
 						</button>
 					</div>
@@ -1794,7 +1768,7 @@ import { logger } from '$lib/utils/logger';
 											draggable="true"
 											title="Drag to reorder"
 										>
-											<IconGripVertical size={16} />
+											<Icon icon={IconGripVertical} size={16} />
 										</button>
 										<button
 											type="button"
@@ -1806,7 +1780,7 @@ import { logger } from '$lib/utils/logger';
 											disabled={index === 0}
 											title="Move up"
 										>
-											<IconChevronUp size={16} />
+											<Icon icon={IconChevronUp} size={16} />
 										</button>
 										<button
 											type="button"
@@ -1818,7 +1792,7 @@ import { logger } from '$lib/utils/logger';
 											disabled={index === editorState.blocks.length - 1}
 											title="Move down"
 										>
-											<IconChevronDown size={16} />
+											<Icon icon={IconChevronDown} size={16} />
 										</button>
 										<div class="tool-divider"></div>
 										<button
@@ -1830,7 +1804,7 @@ import { logger } from '$lib/utils/logger';
 											}}
 											title="Duplicate"
 										>
-											<IconCopy size={16} />
+											<Icon icon={IconCopy} size={16} />
 										</button>
 										<button
 											type="button"
@@ -1841,7 +1815,7 @@ import { logger } from '$lib/utils/logger';
 											}}
 											title="Delete"
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</div>
 								{/if}
@@ -1865,7 +1839,7 @@ import { logger } from '$lib/utils/logger';
 										}}
 										title="Add block"
 									>
-										<IconPlus size={16} />
+										<Icon icon={IconPlus} size={16} />
 									</button>
 								{/if}
 							</div>

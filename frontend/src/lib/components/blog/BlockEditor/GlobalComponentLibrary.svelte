@@ -21,30 +21,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { fade, slide, fly } from 'svelte/transition';
-	import {
-		IconLayoutRows,
-		IconClick,
-		IconForms,
-		IconMenu2,
-		IconLayoutKanban,
-		IconFlag,
-		IconMaximize,
-		IconId,
-		IconLayoutDashboard,
-		IconSearch,
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconCopy,
-		IconHistory,
-		IconLink,
-		IconRefresh,
-		IconCheck,
-		IconX,
-		IconLoader,
-		IconAlertCircle,
-		IconFilter
-	} from '$lib/icons';
+	import { Icon, IconLayoutRows, IconClick, IconForms, IconMenu2, IconLayoutKanban, IconFlag, IconMaximize, IconId, IconLayoutDashboard, IconSearch, IconPlus, IconEdit, IconTrash, IconCopy, IconHistory, IconLink, IconRefresh, IconCheck, IconX, IconLoader, IconAlertCircle, IconFilter } from '$lib/icons';
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
@@ -544,7 +521,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Header -->
 			<div class="library-header">
 				<div class="header-title">
-					<IconLayoutDashboard size={24} />
+					<Icon icon={IconLayoutDashboard} size={24} />
 					<div>
 						<h2>Global Components</h2>
 						<span class="subtitle">Reusable headers, footers, CTAs & more</span>
@@ -552,11 +529,11 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="header-actions">
 					<button type="button" class="btn-create" onclick={openCreateModal}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						New Component
 					</button>
 					<button type="button" class="btn-close" onclick={onclose} title="Close">
-						<IconX size={20} />
+						<Icon icon={IconX} size={20} />
 					</button>
 				</div>
 			</div>
@@ -566,7 +543,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="library-sidebar">
 					<!-- Search -->
 					<div class="search-box">
-						<IconSearch size={18} />
+						<Icon icon={IconSearch} size={18} />
 						<input
 							type="text"
 							bind:value={searchQuery}
@@ -587,7 +564,7 @@ import { logger } from '$lib/utils/logger';
 							}}
 						>
 							<span class="category-icon" style="background-color: #94a3b8">
-								<IconFilter size={16} />
+								<Icon icon={IconFilter} size={16} />
 							</span>
 							<span class="category-label">All Components</span>
 							<span class="category-count">{components.length}</span>
@@ -630,22 +607,22 @@ import { logger } from '$lib/utils/logger';
 				<div class="library-content">
 					{#if isLoading}
 						<div class="loading-state">
-							<IconLoader size={32} class="spin" />
+							<Icon icon={IconLoader} size={32} class="spin" />
 							<span>Loading components...</span>
 						</div>
 					{:else if error}
 						<div class="error-state">
-							<IconAlertCircle size={32} />
+							<Icon icon={IconAlertCircle} size={32} />
 							<span>{error}</span>
 							<button type="button" onclick={() => loadComponents()}>Try Again</button>
 						</div>
 					{:else if filteredComponents.length === 0}
 						<div class="empty-state">
-							<IconLayoutDashboard size={48} />
+							<Icon icon={IconLayoutDashboard} size={48} />
 							<h3>No components found</h3>
 							<p>Create your first global component to get started.</p>
 							<button type="button" class="btn-create" onclick={openCreateModal}>
-								<IconPlus size={18} />
+								<Icon icon={IconPlus} size={18} />
 								Create Component
 							</button>
 						</div>
@@ -689,7 +666,7 @@ import { logger } from '$lib/utils/logger';
 
 									<div class="card-footer">
 										<span class="usage-count" title="{component.usage_count} usages">
-											<IconLink size={14} />
+											<Icon icon={IconLink} size={14} />
 											{component.usage_count}
 										</span>
 										<span class="version-badge">v{component.version}</span>
@@ -705,7 +682,7 @@ import { logger } from '$lib/utils/logger';
 											}}
 											title="Insert into editor"
 										>
-											<IconPlus size={16} />
+											<Icon icon={IconPlus} size={16} />
 										</button>
 										<button
 											type="button"
@@ -716,7 +693,7 @@ import { logger } from '$lib/utils/logger';
 											}}
 											title="Edit"
 										>
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</button>
 										<button
 											type="button"
@@ -727,7 +704,7 @@ import { logger } from '$lib/utils/logger';
 											}}
 											title="Duplicate"
 										>
-											<IconCopy size={16} />
+											<Icon icon={IconCopy} size={16} />
 										</button>
 									</div>
 								</div>
@@ -749,7 +726,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={toggleVersionHistory}
 									title="Version History"
 								>
-									<IconHistory size={18} />
+									<Icon icon={IconHistory} size={18} />
 								</button>
 								<button
 									type="button"
@@ -758,7 +735,7 @@ import { logger } from '$lib/utils/logger';
 									onclick={toggleUsagePanel}
 									title="Usage ({selectedComponent.usage_count})"
 								>
-									<IconLink size={18} />
+									<Icon icon={IconLink} size={18} />
 									<span class="badge">{selectedComponent.usage_count}</span>
 								</button>
 								<button
@@ -768,7 +745,7 @@ import { logger } from '$lib/utils/logger';
 									title="Delete"
 									disabled={selectedComponent.is_locked}
 								>
-									<IconTrash size={18} />
+									<Icon icon={IconTrash} size={18} />
 								</button>
 							</div>
 						</div>
@@ -777,7 +754,7 @@ import { logger } from '$lib/utils/logger';
 							{#if showVersionHistory}
 								<div class="version-history" transition:slide>
 									<h4>
-										<IconHistory size={16} />
+										<Icon icon={IconHistory} size={16} />
 										Version History
 									</h4>
 									{#if versions.length === 0}
@@ -807,7 +784,7 @@ import { logger } from '$lib/utils/logger';
 															class="restore-btn"
 															onclick={() => handleRestoreVersion(version.version)}
 														>
-															<IconRefresh size={14} />
+															<Icon icon={IconRefresh} size={14} />
 															Restore
 														</button>
 													{:else}
@@ -821,7 +798,7 @@ import { logger } from '$lib/utils/logger';
 							{:else if showUsagePanel}
 								<div class="usage-panel" transition:slide>
 									<h4>
-										<IconLink size={16} />
+										<Icon icon={IconLink} size={16} />
 										Used in {usages.length} places
 									</h4>
 									{#if usages.length === 0}
@@ -838,18 +815,18 @@ import { logger } from '$lib/utils/logger';
 														{#if usage.is_synced}
 															{#if usage.needs_update}
 																<span class="status-badge outdated">
-																	<IconAlertCircle size={12} />
+																	<Icon icon={IconAlertCircle} size={12} />
 																	Needs Update
 																</span>
 															{:else}
 																<span class="status-badge synced">
-																	<IconCheck size={12} />
+																	<Icon icon={IconCheck} size={12} />
 																	Synced
 																</span>
 															{/if}
 														{:else}
 															<span class="status-badge detached">
-																<IconLink size={12} />
+																<Icon icon={IconLink} size={12} />
 																Detached
 															</span>
 														{/if}
@@ -901,7 +878,7 @@ import { logger } from '$lib/utils/logger';
 										class="insert-btn"
 										onclick={() => handleInsert(selectedComponent!)}
 									>
-										<IconPlus size={18} />
+										<Icon icon={IconPlus} size={18} />
 										Insert into Editor
 									</button>
 								</div>
@@ -921,7 +898,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h3>{editMode ? 'Edit Component' : 'Create Component'}</h3>
 				<button type="button" class="modal-close" onclick={() => (showCreateModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -983,7 +960,7 @@ import { logger } from '$lib/utils/logger';
 
 				{#if error}
 					<div class="form-error">
-						<IconAlertCircle size={16} />
+						<Icon icon={IconAlertCircle} size={16} />
 						{error}
 					</div>
 				{/if}
@@ -999,7 +976,7 @@ import { logger } from '$lib/utils/logger';
 					</button>
 					<button type="submit" class="btn-primary" disabled={isSubmitting}>
 						{#if isSubmitting}
-							<IconLoader size={16} class="spin" />
+							<Icon icon={IconLoader} size={16} class="spin" />
 						{/if}
 						{editMode ? 'Save Changes' : 'Create Component'}
 					</button>

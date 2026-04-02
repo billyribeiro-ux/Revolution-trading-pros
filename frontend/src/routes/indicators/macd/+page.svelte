@@ -5,15 +5,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconWaveSine,
-		IconTrendingUp,
-		IconCheck,
-		IconAlertTriangle,
-		IconBolt,
-		IconChartLine,
-		IconTarget
-	} from '$lib/icons';
+	import { Icon, IconWaveSine, IconTrendingUp, IconCheck, IconAlertTriangle, IconBolt, IconChartLine, IconTarget } from '$lib/icons';
 
 	let heroVisible = $state(false);
 
@@ -44,7 +36,7 @@
 
 		<div class="hero-content">
 			<div class="hero-badge">
-				<IconWaveSine size={20} stroke={2} />
+				<Icon icon={IconWaveSine} size={20} stroke={2} />
 				<span>Trend Following Indicator</span>
 			</div>
 
@@ -60,21 +52,21 @@
 
 			<div class="hero-meta">
 				<div class="meta-item">
-					<IconChartLine size={24} stroke={2} />
+					<Icon icon={IconChartLine} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Type</div>
 						<div class="meta-value">Trend + Momentum</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconTarget size={24} stroke={2} />
+					<Icon icon={IconTarget} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Components</div>
 						<div class="meta-value">3 Lines</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconBolt size={24} stroke={2} />
+					<Icon icon={IconBolt} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Best For</div>
 						<div class="meta-value">Trend Changes</div>
@@ -125,48 +117,48 @@
 			<div class="signals-grid">
 				<div class="signal-card bullish">
 					<div class="signal-icon">
-						<IconTrendingUp size={32} stroke={1.5} />
+						<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					</div>
 					<h3>Bullish Crossover</h3>
 					<p>MACD line crosses above signal line - potential buy signal</p>
 					<div class="signal-tip">
-						<IconCheck size={16} stroke={2} />
+						<Icon icon={IconCheck} size={16} stroke={2} />
 						<span>Confirm with price action</span>
 					</div>
 				</div>
 
 				<div class="signal-card bearish">
 					<div class="signal-icon">
-						<IconTrendingUp size={32} stroke={1.5} style="transform: rotate(180deg)" />
+						<Icon icon={IconTrendingUp} size={32} stroke={1.5} style="transform: rotate(180deg)" />
 					</div>
 					<h3>Bearish Crossover</h3>
 					<p>MACD line crosses below signal line - potential sell signal</p>
 					<div class="signal-tip">
-						<IconCheck size={16} stroke={2} />
+						<Icon icon={IconCheck} size={16} stroke={2} />
 						<span>Watch for volume confirmation</span>
 					</div>
 				</div>
 
 				<div class="signal-card divergence">
 					<div class="signal-icon">
-						<IconWaveSine size={32} stroke={1.5} />
+						<Icon icon={IconWaveSine} size={32} stroke={1.5} />
 					</div>
 					<h3>Divergence</h3>
 					<p>Price makes new high/low but MACD doesn't - reversal signal</p>
 					<div class="signal-tip">
-						<IconAlertTriangle size={16} stroke={2} />
+						<Icon icon={IconAlertTriangle} size={16} stroke={2} />
 						<span>High probability setup</span>
 					</div>
 				</div>
 
 				<div class="signal-card histogram">
 					<div class="signal-icon">
-						<IconChartLine size={32} stroke={1.5} />
+						<Icon icon={IconChartLine} size={32} stroke={1.5} />
 					</div>
 					<h3>Histogram Reversal</h3>
 					<p>Histogram peaks and starts declining - momentum shift</p>
 					<div class="signal-tip">
-						<IconCheck size={16} stroke={2} />
+						<Icon icon={IconCheck} size={16} stroke={2} />
 						<span>Early reversal warning</span>
 					</div>
 				</div>
@@ -180,7 +172,7 @@
 			<p>Learn advanced MACD strategies in our comprehensive courses</p>
 			<a href="/courses" class="cta-button">
 				View Courses
-				<IconBolt size={20} stroke={2} />
+				<Icon icon={IconBolt} size={20} stroke={2} />
 			</a>
 		</div>
 	</section>

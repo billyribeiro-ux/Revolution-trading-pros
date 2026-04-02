@@ -1,16 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import {
-		IconFileText,
-		IconBrandTwitter,
-		IconBrandFacebook,
-		IconRobot,
-		IconDeviceFloppy,
-		IconRefresh,
-		IconEye,
-		IconCode
-	} from '$lib/icons';
+	import { Icon, IconFileText, IconBrandTwitter, IconBrandFacebook, IconRobot, IconDeviceFloppy, IconRefresh, IconEye, IconCode } from '$lib/icons';
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
 
@@ -114,11 +105,11 @@ import { logger } from '$lib/utils/logger';
 		<h2>{entity.title}</h2>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={loadMeta}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Refresh
 			</button>
 			<button class="btn-primary" onclick={saveMeta} disabled={saving}>
-				<IconDeviceFloppy size={18} />
+				<Icon icon={IconDeviceFloppy} size={18} />
 				{saving ? 'Saving...' : 'Save Changes'}
 			</button>
 		</div>
@@ -208,7 +199,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if activeTab === 'social'}
 			<div class="tab-panel">
-				<h3><IconBrandFacebook size={20} /> Open Graph (Facebook)</h3>
+				<h3><Icon icon={IconBrandFacebook} size={20} /> Open Graph (Facebook)</h3>
 
 				<div class="form-group">
 					<label for="og-title">OG Title</label>
@@ -252,7 +243,7 @@ import { logger } from '$lib/utils/logger';
 
 				<hr />
 
-				<h3><IconBrandTwitter size={20} /> Twitter Cards</h3>
+				<h3><Icon icon={IconBrandTwitter} size={20} /> Twitter Cards</h3>
 
 				<div class="form-group">
 					<label for="twitter-card">Card Type</label>
@@ -294,7 +285,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if activeTab === 'advanced'}
 			<div class="tab-panel">
-				<h3><IconRobot size={20} /> Robots Meta</h3>
+				<h3><Icon icon={IconRobot} size={20} /> Robots Meta</h3>
 
 				<div class="checkbox-group">
 					<label>

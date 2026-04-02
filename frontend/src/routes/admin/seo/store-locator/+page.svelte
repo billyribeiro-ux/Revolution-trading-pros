@@ -1,18 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconMapPin,
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconDownload,
-		IconExternalLink,
-		IconCheck,
-		IconClock,
-		IconPhone,
-		IconMail,
-		IconWorld
-	} from '$lib/icons';
+	import { Icon, IconMapPin, IconPlus, IconEdit, IconTrash, IconDownload, IconExternalLink, IconCheck, IconClock, IconPhone, IconMail, IconWorld } from '$lib/icons';
 	import {
 		locations,
 		generateLocationSchema,
@@ -227,18 +215,18 @@
 	<header class="page-header">
 		<div>
 			<h1>
-				<IconMapPin size={28} />
+				<Icon icon={IconMapPin} size={28} />
 				Store Locator & Local SEO
 			</h1>
 			<p>Manage multiple locations with LocalBusiness schema and KML export</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={downloadKml}>
-				<IconDownload size={18} />
+				<Icon icon={IconDownload} size={18} />
 				Export KML
 			</button>
 			<button class="btn-primary" onclick={openAddModal}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Add Location
 			</button>
 		</div>
@@ -264,10 +252,10 @@
 			<div class="loading">Loading locations...</div>
 		{:else if locationList.length === 0}
 			<div class="empty-state">
-				<IconMapPin size={48} />
+				<Icon icon={IconMapPin} size={48} />
 				<p>No locations yet. Add your first location to get started.</p>
 				<button class="btn-primary" onclick={openAddModal}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Location
 				</button>
 			</div>
@@ -282,33 +270,33 @@
 							<h3>{location.name}</h3>
 							<div class="location-status">
 								{#if isLocationOpen(location)}
-									<span class="open"><IconCheck size={14} /> Open</span>
+									<span class="open"><Icon icon={IconCheck} size={14} /> Open</span>
 								{:else}
-									<span class="closed"><IconClock size={14} /> {getNextOpenTime(location)}</span>
+									<span class="closed"><Icon icon={IconClock} size={14} /> {getNextOpenTime(location)}</span>
 								{/if}
 							</div>
 						</div>
 
 						<div class="location-details">
 							<div class="detail">
-								<IconMapPin size={16} />
+								<Icon icon={IconMapPin} size={16} />
 								{formatAddress(location.address)}
 							</div>
 							{#if location.contacts.find((c) => c.type === 'phone')}
 								<div class="detail">
-									<IconPhone size={16} />
+									<Icon icon={IconPhone} size={16} />
 									{location.contacts.find((c) => c.type === 'phone')?.value}
 								</div>
 							{/if}
 							{#if location.contacts.find((c) => c.type === 'email')}
 								<div class="detail">
-									<IconMail size={16} />
+									<Icon icon={IconMail} size={16} />
 									{location.contacts.find((c) => c.type === 'email')?.value}
 								</div>
 							{/if}
 							{#if location.website}
 								<div class="detail">
-									<IconWorld size={16} />
+									<Icon icon={IconWorld} size={16} />
 									<a href={location.website} target="_blank" rel="noopener">{location.website}</a>
 								</div>
 							{/if}
@@ -322,14 +310,14 @@
 								class="action-btn"
 								title="Get Directions"
 							>
-								<IconExternalLink size={16} />
+								<Icon icon={IconExternalLink} size={16} />
 								Directions
 							</a>
 							<button class="action-btn" onclick={() => viewSchema(location)} title="View Schema">
 								View Schema
 							</button>
 							<button class="action-btn" onclick={() => openEditModal(location)} title="Edit">
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 							</button>
 							<button
 								class="action-btn"
@@ -343,7 +331,7 @@
 								onclick={() => deleteLocation(location.id)}
 								title="Delete"
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						</div>
 					</div>

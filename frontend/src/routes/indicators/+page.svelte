@@ -7,17 +7,7 @@
 	import { browser } from '$app/environment';
 
 	// Icons (only those used directly in template)
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+											import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Data & types extracted for maintainability
 	import { indicators, goldenSetup, faqs, categories, indicatorsSchema as _indicatorsSchema } from './data';
@@ -57,6 +47,7 @@
 		// Use IIFE for async operations
 		(async () => {
 			// Dynamically import GSAP to avoid SSR issues
+	import { Icon, IconAlertTriangle, IconArrowRight, IconBolt, IconChartLine, IconCheck, IconChevronDown, IconSchool, IconStar, IconTarget, IconUsers } from '$lib/icons';
 			const { gsap } = await import('gsap');
 			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
 			gsap.registerPlugin(ScrollTrigger);
@@ -222,7 +213,7 @@
 
 		<div class="hero-content relative z-10 px-4">
 			<div class="hero-badge animate-float">
-				<IconChartLine size={18} stroke={2} />
+				<Icon icon={IconChartLine} size={18} stroke={2} />
 				<span class="tracking-wide text-xs uppercase font-bold">The Professional Toolkit</span>
 			</div>
 
@@ -245,7 +236,7 @@
 				<button class="cta-button primary group relative overflow-hidden">
 					<span class="relative z-10 flex items-center gap-2">
 						Join the Live Room
-						<IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
+						<Icon icon={IconArrowRight} size={20} class="transition-transform group-hover:translate-x-1" />
 					</span>
 					<div
 						class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"
@@ -257,7 +248,7 @@
 			<div class="hero-stats border-t border-white/10 mt-12 pt-8">
 				<div class="stat-item group">
 					<div class="p-3 rounded-full bg-white/5 group-hover:bg-blue-500/10 transition-colors">
-						<IconTarget size={28} stroke={1.5} class="stat-icon text-blue-400" />
+						<Icon icon={IconTarget} size={28} stroke={1.5} class="stat-icon text-blue-400" />
 					</div>
 					<div class="stat-content">
 						<div class="stat-value text-white font-mono">Precision</div>
@@ -266,7 +257,7 @@
 				</div>
 				<div class="stat-item group">
 					<div class="p-3 rounded-full bg-white/5 group-hover:bg-emerald-500/10 transition-colors">
-						<IconBolt size={28} stroke={1.5} class="stat-icon text-emerald-400" />
+						<Icon icon={IconBolt} size={28} stroke={1.5} class="stat-icon text-emerald-400" />
 					</div>
 					<div class="stat-content">
 						<div class="stat-value text-white font-mono">Real-Time</div>
@@ -275,7 +266,7 @@
 				</div>
 				<div class="stat-item group">
 					<div class="p-3 rounded-full bg-white/5 group-hover:bg-purple-500/10 transition-colors">
-						<IconUsers size={28} stroke={1.5} class="stat-icon text-purple-400" />
+						<Icon icon={IconUsers} size={28} stroke={1.5} class="stat-icon text-purple-400" />
 					</div>
 					<div class="stat-content">
 						<div class="stat-value text-white font-mono">Community</div>
@@ -344,15 +335,15 @@
 					</p>
 					<ul class="truth-list space-y-4">
 						<li class="bg-white/5 p-4 rounded-lg border border-white/5">
-							<IconAlertTriangle size={24} class="warning-icon shrink-0" />
+							<Icon icon={IconAlertTriangle} size={24} class="warning-icon shrink-0" />
 							<span>Stop chasing "lagging" signals blindly.</span>
 						</li>
 						<li class="bg-white/5 p-4 rounded-lg border border-white/5">
-							<IconCheck size={24} class="check-icon shrink-0" />
+							<Icon icon={IconCheck} size={24} class="check-icon shrink-0" />
 							<span>Start using indicators to confirm price action.</span>
 						</li>
 						<li class="bg-white/5 p-4 rounded-lg border border-white/5">
-							<IconCheck size={24} class="check-icon shrink-0" />
+							<Icon icon={IconCheck} size={24} class="check-icon shrink-0" />
 							<span>Learn to spot what the institutions are doing.</span>
 						</li>
 					</ul>
@@ -402,7 +393,7 @@
 								class="mockup-annotation absolute top-4 right-8 bg-emerald-500 text-black font-bold px-3 py-1 rounded shadow-lg transform origin-bottom-left"
 							>
 								<div class="flex items-center gap-1 text-xs">
-									<IconAlertTriangle size={14} />
+									<Icon icon={IconAlertTriangle} size={14} />
 									<span>Bearish Divergence</span>
 								</div>
 							</div>
@@ -472,13 +463,13 @@
 							<p class="card-description">{indicator.description}</p>
 
 							<div class="card-use-case bg-white/5 border-l-2 border-(--card-color)">
-								<IconTarget size={18} stroke={2} />
+								<Icon icon={IconTarget} size={18} stroke={2} />
 								<span>{indicator.useCase}</span>
 							</div>
 
 							<div class="card-meta">
 								<div class="meta-badge difficulty border border-white/10">
-									<IconStar size={16} stroke={2} />
+									<Icon icon={IconStar} size={16} stroke={2} />
 									<span>{indicator.difficulty}</span>
 								</div>
 							</div>
@@ -486,7 +477,7 @@
 							<ul class="card-features">
 								{#each indicator.features as feature}
 									<li class="group-hover:pl-1 transition-all duration-300">
-										<IconCheck size={16} stroke={2} />
+										<Icon icon={IconCheck} size={16} stroke={2} />
 										<span>{feature}</span>
 									</li>
 								{/each}
@@ -494,7 +485,7 @@
 
 							<a href="/indicators/{indicator.slug}" class="card-button group/btn">
 								View Strategy Guide
-								<IconArrowRight
+								<Icon icon={IconArrowRight}
 									size={18}
 									stroke={2}
 									class="transition-transform group-hover/btn:translate-x-1"
@@ -531,10 +522,10 @@
 				</div>
 
 				<div class="confluence-connector hidden md:block">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+					<Icon icon={IconArrowRight} size={32} class="text-slate-600 animate-pulse" />
 				</div>
 				<div class="confluence-connector md:hidden rotate-90">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+					<Icon icon={IconArrowRight} size={32} class="text-slate-600 animate-pulse" />
 				</div>
 
 				<div class="confluence-step hover:border-emerald-500/50 transition-colors duration-300">
@@ -547,10 +538,10 @@
 				</div>
 
 				<div class="confluence-connector hidden md:block">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+					<Icon icon={IconArrowRight} size={32} class="text-slate-600 animate-pulse" />
 				</div>
 				<div class="confluence-connector md:hidden rotate-90">
-					<IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+					<Icon icon={IconArrowRight} size={32} class="text-slate-600 animate-pulse" />
 				</div>
 
 				<div class="confluence-step hover:border-purple-500/50 transition-colors duration-300">
@@ -567,7 +558,7 @@
 				<p class="text-slate-400 mb-2">Want to see this confluence strategy in action?</p>
 				<a href="/trading-room" class="text-link inline-flex items-center gap-2 group">
 					Watch us trade this setup live tomorrow morning
-					<IconArrowRight size={18} class="transition-transform group-hover:translate-x-1" />
+					<Icon icon={IconArrowRight} size={18} class="transition-transform group-hover:translate-x-1" />
 				</a>
 			</div>
 		</div>
@@ -588,7 +579,7 @@
 								class="faq-icon transform transition-transform duration-300"
 								class:rotate-180={openFaq === i}
 							>
-								<IconChevronDown size={20} />
+								<Icon icon={IconChevronDown} size={20} />
 							</div>
 						</button>
 						<div class="faq-answer">
@@ -607,7 +598,7 @@
 
 		<div class="cta-content relative z-10">
 			<div class="inline-block p-4 rounded-full bg-blue-500/10 mb-6">
-				<IconSchool size={48} class="cta-icon text-blue-400 mb-0!" />
+				<Icon icon={IconSchool} size={48} class="cta-icon text-blue-400 mb-0!" />
 			</div>
 			<h2 class="tracking-tight">Stop Learning Alone. Start Trading Together.</h2>
 			<p>

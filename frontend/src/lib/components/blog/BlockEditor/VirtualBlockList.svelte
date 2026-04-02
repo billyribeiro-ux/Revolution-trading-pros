@@ -20,13 +20,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { tick, onMount, onDestroy } from 'svelte';
-	import {
-		IconGripVertical,
-		IconTrash,
-		IconCopy,
-		IconChevronUp,
-		IconChevronDown
-	} from '$lib/icons';
+	import { Icon, IconGripVertical, IconTrash, IconCopy, IconChevronUp, IconChevronDown } from '$lib/icons';
 	import BlockRenderer from './BlockRenderer.svelte';
 	import type {
 		VirtualBlockListProps,
@@ -739,7 +733,7 @@ import { logger } from '$lib/utils/logger';
 							aria-label="Drag to reorder"
 							title="Drag to reorder"
 						>
-							<IconGripVertical size={16} />
+							<Icon icon={IconGripVertical} size={16} />
 						</button>
 
 						<div class="toolbar-divider"></div>
@@ -755,7 +749,7 @@ import { logger } from '$lib/utils/logger';
 							aria-label="Move up"
 							title="Move up"
 						>
-							<IconChevronUp size={16} />
+							<Icon icon={IconChevronUp} size={16} />
 						</button>
 
 						<button
@@ -769,7 +763,7 @@ import { logger } from '$lib/utils/logger';
 							aria-label="Move down"
 							title="Move down"
 						>
-							<IconChevronDown size={16} />
+							<Icon icon={IconChevronDown} size={16} />
 						</button>
 
 						<div class="toolbar-divider"></div>
@@ -784,7 +778,7 @@ import { logger } from '$lib/utils/logger';
 							aria-label="Duplicate block"
 							title="Duplicate"
 						>
-							<IconCopy size={16} />
+							<Icon icon={IconCopy} size={16} />
 						</button>
 
 						<button
@@ -797,7 +791,7 @@ import { logger } from '$lib/utils/logger';
 							aria-label="Delete block"
 							title="Delete"
 						>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 						</button>
 					</div>
 				{/if}

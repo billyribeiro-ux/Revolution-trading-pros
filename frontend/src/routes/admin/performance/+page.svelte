@@ -2,20 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import {
-		IconGauge,
-		IconServer,
-		IconDatabase,
-		IconRefresh,
-		IconActivity,
-		IconBolt,
-		IconCheck,
-		IconAlertTriangle,
-		IconX,
-		IconChartBar,
-		IconClock,
-		IconFlame
-	} from '$lib/icons';
+	import { Icon, IconGauge, IconServer, IconDatabase, IconRefresh, IconActivity, IconBolt, IconCheck, IconAlertTriangle, IconX, IconChartBar, IconClock, IconFlame } from '$lib/icons';
 	import {
 		bingSeoApi,
 		type PerformanceDashboard,
@@ -126,7 +113,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="header-content">
 				<div class="header-title">
 					<div class="title-icon">
-						<IconGauge size={28} />
+						<Icon icon={IconGauge} size={28} />
 					</div>
 					<div>
 						<h1>Performance Dashboard</h1>
@@ -136,14 +123,14 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={loadData}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 						Refresh
 					</button>
 					<button class="btn-primary" onclick={handleWarmCaches} disabled={warmingCaches}>
 						{#if warmingCaches}
 							Warming...
 						{:else}
-							<IconFlame size={18} />
+							<Icon icon={IconFlame} size={18} />
 							Warm Caches
 						{/if}
 					</button>
@@ -161,7 +148,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Core Web Vitals -->
 			<div class="section">
 				<h2 class="section-title">
-					<IconBolt size={20} />
+					<Icon icon={IconBolt} size={20} />
 					Core Web Vitals
 				</h2>
 				<p class="section-description">
@@ -241,7 +228,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="metric-card">
 					<div class="metric-header">
 						<div class="metric-icon server">
-							<IconServer size={24} />
+							<Icon icon={IconServer} size={24} />
 						</div>
 						<h3>Server</h3>
 					</div>
@@ -292,7 +279,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="metric-card">
 					<div class="metric-header">
 						<div class="metric-icon database">
-							<IconDatabase size={24} />
+							<Icon icon={IconDatabase} size={24} />
 						</div>
 						<h3>Database</h3>
 					</div>
@@ -321,7 +308,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="metric-card">
 					<div class="metric-header">
 						<div class="metric-icon cache">
-							<IconActivity size={24} />
+							<Icon icon={IconActivity} size={24} />
 						</div>
 						<h3>Cache</h3>
 					</div>
@@ -355,13 +342,13 @@ import { logger } from '$lib/utils/logger';
 			<!-- Recommendations -->
 			<div class="section">
 				<h2 class="section-title">
-					<IconChartBar size={20} />
+					<Icon icon={IconChartBar} size={20} />
 					Optimization Recommendations
 				</h2>
 
 				{#if recommendations.length === 0}
 					<div class="empty-state">
-						<IconCheck size={48} stroke={1} />
+						<Icon icon={IconCheck} size={48} stroke={1} />
 						<h3>All Good!</h3>
 						<p>No immediate optimizations recommended</p>
 					</div>

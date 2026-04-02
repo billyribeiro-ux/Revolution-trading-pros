@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
-	import { IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
+	import { Icon, IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes
@@ -156,11 +156,11 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Manage discount codes and promotional offers</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
-					<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 					Refresh
 				</button>
 				<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Create Coupon
 				</button>
 			</div>
@@ -188,7 +188,7 @@ import { logger } from '$lib/utils/logger';
 		{#if !loading && coupons.length > 0}
 			<div class="filters-bar">
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						type="text"
 						id="search-coupons"
@@ -226,7 +226,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Content -->
 		{#if loading}
 			<div class="loading-state">
-				<IconRefresh size={32} class="spinning" />
+				<Icon icon={IconRefresh} size={32} class="spinning" />
 				<p>Loading coupons...</p>
 			</div>
 		{:else if error}
@@ -237,12 +237,12 @@ import { logger } from '$lib/utils/logger';
 		{:else if coupons.length === 0}
 			<div class="empty-state">
 				<div class="empty-icon">
-					<IconFilter size={48} />
+					<Icon icon={IconFilter} size={48} />
 				</div>
 				<h2>No coupons yet</h2>
 				<p>Create your first coupon to start offering discounts to your customers.</p>
 				<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Create First Coupon
 				</button>
 			</div>
@@ -303,7 +303,7 @@ import { logger } from '$lib/utils/logger';
 								class="action-btn edit"
 								onclick={() => goto(`/admin/coupons/edit/${coupon.id}`)}
 							>
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 								Edit
 							</button>
 							<button
@@ -312,9 +312,9 @@ import { logger } from '$lib/utils/logger';
 								disabled={deleting === coupon.id}
 							>
 								{#if deleting === coupon.id}
-									<IconRefresh size={16} class="spinning" />
+									<Icon icon={IconRefresh} size={16} class="spinning" />
 								{:else}
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								{/if}
 								Delete
 							</button>

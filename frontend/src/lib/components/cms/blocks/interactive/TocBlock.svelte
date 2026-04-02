@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconList, IconChevronDown } from '$lib/icons';
+	import { Icon, IconList, IconChevronDown } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -214,7 +214,7 @@
 		aria-controls="toc-list-{props.blockId}"
 		onclick={toggleCollapse}
 	>
-		<IconList size={20} aria-hidden="true" />
+		<Icon icon={IconList} size={20} aria-hidden="true" />
 
 		{#if props.isEditing}
 			<span
@@ -235,7 +235,7 @@
 		{/if}
 
 		<span class="toc-toggle" class:rotated={!isCollapsed} aria-hidden="true">
-			<IconChevronDown size={18} />
+			<Icon icon={IconChevronDown} size={18} />
 		</span>
 	</button>
 

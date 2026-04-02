@@ -27,16 +27,7 @@ import { logger } from '$lib/utils/logger';
 		type Product,
 		type SubscriptionPlan
 	} from '$lib/api/admin';
-	import {
-		IconCheck,
-		IconX,
-		IconTag,
-		IconRefresh,
-		IconAlertCircle,
-		IconSparkles,
-		IconPercentage,
-		IconCurrencyDollar
-	} from '$lib/icons';
+	import { Icon, IconCheck, IconX, IconTag, IconRefresh, IconAlertCircle, IconSparkles, IconPercentage, IconCurrencyDollar } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types
@@ -320,7 +311,7 @@ import { logger } from '$lib/utils/logger';
 		<header class="page-header">
 			<div class="header-content">
 				<button class="btn-back" onclick={() => goto('/admin/coupons')}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 				<div>
 					<h1>Create New Coupon</h1>
@@ -332,7 +323,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Success Message -->
 		{#if successMessage}
 			<div class="alert alert-success" transition:slide={{ duration: 200 }}>
-				<IconCheck size={20} />
+				<Icon icon={IconCheck} size={20} />
 				<span>{successMessage}</span>
 			</div>
 		{/if}
@@ -342,7 +333,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="alerts" transition:slide={{ duration: 200 }}>
 				{#each errors as error}
 					<div class="alert alert-error">
-						<IconAlertCircle size={20} />
+						<Icon icon={IconAlertCircle} size={20} />
 						<span>{error}</span>
 					</div>
 				{/each}
@@ -352,7 +343,7 @@ import { logger } from '$lib/utils/logger';
 		<form onsubmit={handleSubmit} class="coupon-form">
 			<!-- SECTION: Basic Info -->
 			<div class="form-section">
-				<h2><IconTag size={20} /> Coupon Details</h2>
+				<h2><Icon icon={IconTag} size={20} /> Coupon Details</h2>
 
 				<!-- Coupon Code -->
 				<div class="form-group">
@@ -369,7 +360,7 @@ import { logger } from '$lib/utils/logger';
 							required
 						/>
 						<button type="button" class="btn-generate" onclick={generateCode} disabled={generating}>
-							<IconSparkles size={18} />
+							<Icon icon={IconSparkles} size={18} />
 							{generating ? 'Generating...' : 'Generate'}
 						</button>
 					</div>
@@ -399,7 +390,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={formData.discount_type === 'percentage'}
 							onclick={() => (formData.discount_type = 'percentage')}
 						>
-							<IconPercentage size={20} />
+							<Icon icon={IconPercentage} size={20} />
 							Percentage
 						</button>
 						<button
@@ -408,7 +399,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={formData.discount_type === 'fixed'}
 							onclick={() => (formData.discount_type = 'fixed')}
 						>
-							<IconCurrencyDollar size={20} />
+							<Icon icon={IconCurrencyDollar} size={20} />
 							Fixed Amount
 						</button>
 					</div>
@@ -667,10 +658,10 @@ import { logger } from '$lib/utils/logger';
 				</button>
 				<button type="submit" class="btn-save" disabled={saving}>
 					{#if saving}
-						<IconRefresh size={20} class="spinning" />
+						<Icon icon={IconRefresh} size={20} class="spinning" />
 						Saving...
 					{:else}
-						<IconCheck size={20} />
+						<Icon icon={IconCheck} size={20} />
 						Save Coupon
 					{/if}
 				</button>

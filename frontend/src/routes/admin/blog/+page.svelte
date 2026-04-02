@@ -4,36 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import {
-		IconPlus,
-		IconSearch,
-		IconFilter,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconCopy,
-		IconCalendar,
-		IconUser,
-		IconClock,
-		IconChartBar,
-		IconDownload,
-		IconUpload,
-		IconList,
-		IconTrendingUp,
-		IconExternalLink,
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconStar,
-		IconStarFilled,
-		IconSortAscending,
-		IconSortDescending,
-		IconRefresh,
-		IconAlertCircle,
-		IconCheck,
-		IconX,
-		IconMenu2,
-		IconLayoutGrid
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconSearch, IconFilter, IconEdit, IconTrash, IconEye, IconCopy, IconCalendar, IconUser, IconClock, IconChartBar, IconDownload, IconUpload, IconList, IconTrendingUp, IconExternalLink, IconPlayerPlay, IconPlayerPause, IconStar, IconStarFilled, IconSortAscending, IconSortDescending, IconRefresh, IconAlertCircle, IconCheck, IconX, IconMenu2, IconLayoutGrid } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -671,11 +642,11 @@ import { logger } from '$lib/utils/logger';
 			{#each notifications as notification (notification.id)}
 				<div class="notification {notification.type}" transition:fly={{ y: -20, duration: 300 }}>
 					{#if notification.type === 'success'}
-						<IconCheck size={20} />
+						<Icon icon={IconCheck} size={20} />
 					{:else if notification.type === 'error'}
-						<IconX size={20} />
+						<Icon icon={IconX} size={20} />
 					{:else}
-						<IconAlertCircle size={20} />
+						<Icon icon={IconAlertCircle} size={20} />
 					{/if}
 					{notification.message}
 				</div>
@@ -697,14 +668,14 @@ import { logger } from '$lib/utils/logger';
 					}}
 					title="Refresh (R)"
 				>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 				</button>
 				<button
 					class="btn-primary"
 					onclick={() => goto('/admin/blog/create')}
 					title="New Post (Ctrl+N)"
 				>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Post
 				</button>
 			</div>
@@ -714,7 +685,7 @@ import { logger } from '$lib/utils/logger';
 		{#if stats}
 			<div class="stats-grid">
 				<div class="stat-card">
-					<div class="stat-icon"><IconChartBar size={24} /></div>
+					<div class="stat-icon"><Icon icon={IconChartBar} size={24} /></div>
 					<div class="stat-content">
 						<div class="stat-value">{stats.total}</div>
 						<div class="stat-label">Total Posts</div>
@@ -722,7 +693,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				</div>
 				<div class="stat-card published">
-					<div class="stat-icon"><IconCheck size={24} /></div>
+					<div class="stat-icon"><Icon icon={IconCheck} size={24} /></div>
 					<div class="stat-content">
 						<div class="stat-value">{stats.published}</div>
 						<div class="stat-label">Published</div>
@@ -730,7 +701,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				</div>
 				<div class="stat-card draft">
-					<div class="stat-icon"><IconEdit size={24} /></div>
+					<div class="stat-icon"><Icon icon={IconEdit} size={24} /></div>
 					<div class="stat-content">
 						<div class="stat-value">{stats.draft}</div>
 						<div class="stat-label">Drafts</div>
@@ -738,12 +709,12 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				</div>
 				<div class="stat-card views">
-					<div class="stat-icon"><IconEye size={24} /></div>
+					<div class="stat-icon"><Icon icon={IconEye} size={24} /></div>
 					<div class="stat-content">
 						<div class="stat-value">{formatNumber(stats.total_views || 0)}</div>
 						<div class="stat-label">Total Views</div>
 						<div class="stat-change">
-							<IconTrendingUp size={16} />
+							<Icon icon={IconTrendingUp} size={16} />
 							{stats.views_growth || 0}%
 						</div>
 					</div>
@@ -762,7 +733,7 @@ import { logger } from '$lib/utils/logger';
 						</button>
 						<button class="btn-secondary" onclick={() => bulkChangeStatus('draft')}> Draft </button>
 						<button class="btn-secondary danger" onclick={bulkDelete}>
-							<IconTrash size={18} />
+							<Icon icon={IconTrash} size={18} />
 							Delete
 						</button>
 						<button
@@ -777,7 +748,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				{:else}
 					<div class="search-box">
-						<IconSearch size={20} />
+						<Icon icon={IconSearch} size={20} />
 						<input
 							id="blog-search"
 							name="blog-search"
@@ -835,9 +806,9 @@ import { logger } from '$lib/utils/logger';
 						onclick={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
 					>
 						{#if sortOrder === 'asc'}
-							<IconSortAscending size={18} />
+							<Icon icon={IconSortAscending} size={18} />
 						{:else}
-							<IconSortDescending size={18} />
+							<Icon icon={IconSortDescending} size={18} />
 						{/if}
 					</button>
 				</div>
@@ -849,30 +820,30 @@ import { logger } from '$lib/utils/logger';
 						onclick={() => (viewMode = 'grid')}
 						title="Grid View"
 					>
-						<IconLayoutGrid size={18} />
+						<Icon icon={IconLayoutGrid} size={18} />
 					</button>
 					<button
 						class:active={viewMode === 'list'}
 						onclick={() => (viewMode = 'list')}
 						title="List View"
 					>
-						<IconList size={18} />
+						<Icon icon={IconList} size={18} />
 					</button>
 				</div>
 
 				<!-- Actions -->
 				<div class="action-buttons">
 					<button class="btn-secondary" onclick={() => (showExportModal = true)}>
-						<IconDownload size={18} />
+						<Icon icon={IconDownload} size={18} />
 						Export
 					</button>
 					<label class="btn-secondary">
-						<IconUpload size={18} />
+						<Icon icon={IconUpload} size={18} />
 						Import
 						<input type="file" accept=".csv,.json" onchange={importPosts} hidden />
 					</label>
 					<a href="/admin/blog/categories" class="btn-secondary">
-						<IconFilter size={18} />
+						<Icon icon={IconFilter} size={18} />
 						Categories
 					</a>
 				</div>
@@ -894,11 +865,11 @@ import { logger } from '$lib/utils/logger';
 					{/each}
 				{:else if posts.length === 0}
 					<div class="empty-state">
-						<IconEdit size={48} />
+						<Icon icon={IconEdit} size={48} />
 						<h3>No posts found</h3>
 						<p>{searchQuery ? 'Try a different search' : 'Create your first blog post'}</p>
 						<button class="btn-primary" onclick={() => goto('/admin/blog/create')}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Post
 						</button>
 					</div>
@@ -941,9 +912,9 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => toggleFeatured(post)}
 							>
 								{#if post.featured}
-									<IconStarFilled size={20} />
+									<Icon icon={IconStarFilled} size={20} />
 								{:else}
-									<IconStar size={20} />
+									<Icon icon={IconStar} size={20} />
 								{/if}
 							</button>
 
@@ -952,14 +923,14 @@ import { logger } from '$lib/utils/logger';
 								<div class="post-image" style="background-image: url({post.featured_image})">
 									{#if post.status === 'scheduled'}
 										<div class="scheduled-overlay">
-											<IconClock size={20} />
+											<Icon icon={IconClock} size={20} />
 											{formatDateTime(post.publish_at)}
 										</div>
 									{/if}
 								</div>
 							{:else}
 								<div class="post-image placeholder">
-									<IconEdit size={32} />
+									<Icon icon={IconEdit} size={32} />
 								</div>
 							{/if}
 
@@ -990,22 +961,22 @@ import { logger } from '$lib/utils/logger';
 								<!-- Metrics -->
 								<div class="post-metrics">
 									<div class="metric">
-										<IconEye size={16} />
+										<Icon icon={IconEye} size={16} />
 										{formatNumber(post.view_count || 0)}
 									</div>
 									<div class="metric">
-										<IconChartBar size={16} />
+										<Icon icon={IconChartBar} size={16} />
 										{post.engagement_rate || 0}%
 									</div>
 									{#if post.bounce_rate}
 										<div class="metric">
-											<IconTrendingUp size={16} />
+											<Icon icon={IconTrendingUp} size={16} />
 											{post.bounce_rate}% bounce
 										</div>
 									{/if}
 									{#if post.avg_read_time}
 										<div class="metric">
-											<IconClock size={16} />
+											<Icon icon={IconClock} size={16} />
 											{post.avg_read_time}s read
 										</div>
 									{/if}
@@ -1014,14 +985,14 @@ import { logger } from '$lib/utils/logger';
 								<div class="post-meta">
 									{#if post.author}
 										<div class="meta-item">
-											<IconUser size={16} />
+											<Icon icon={IconUser} size={16} />
 											{post.author.name}
 										</div>
 									{/if}
 
 									{#if post.published_at}
 										<div class="meta-item">
-											<IconCalendar size={16} />
+											<Icon icon={IconCalendar} size={16} />
 											{formatDate(post.published_at)}
 										</div>
 									{/if}
@@ -1056,12 +1027,12 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => goto(`/admin/blog/edit/${post.id}`)}
 										title="Edit"
 									>
-										<IconEdit size={18} />
+										<Icon icon={IconEdit} size={18} />
 										Edit
 									</button>
 
 									<button class="action-btn" onclick={() => (previewPost = post)} title="Preview">
-										<IconEye size={18} />
+										<Icon icon={IconEye} size={18} />
 									</button>
 
 									<button
@@ -1070,22 +1041,22 @@ import { logger } from '$lib/utils/logger';
 										title="Toggle Status"
 									>
 										{#if post.status === 'published'}
-											<IconPlayerPause size={18} />
+											<Icon icon={IconPlayerPause} size={18} />
 										{:else}
-											<IconPlayerPlay size={18} />
+											<Icon icon={IconPlayerPlay} size={18} />
 										{/if}
 									</button>
 
 									<!-- More Actions -->
 									<div class="action-dropdown">
 										<button class="action-btn" onclick={() => toggleActionMenu(post.id)}>
-											<IconMenu2 size={18} />
+											<Icon icon={IconMenu2} size={18} />
 										</button>
 
 										{#if activeActionMenu === post.id}
 											<div class="action-menu" transition:scale={{ duration: 150 }}>
 												<button onclick={() => duplicatePost(post.id)}>
-													<IconCopy size={16} />
+													<Icon icon={IconCopy} size={16} />
 													Duplicate
 												</button>
 												<button
@@ -1094,20 +1065,20 @@ import { logger } from '$lib/utils/logger';
 														showScheduleModal = true;
 													}}
 												>
-													<IconClock size={16} />
+													<Icon icon={IconClock} size={16} />
 													Schedule
 												</button>
 												<button onclick={() => loadPostAnalytics(post)}>
-													<IconChartBar size={16} />
+													<Icon icon={IconChartBar} size={16} />
 													Analytics
 												</button>
 												<button onclick={() => window.open(`/blog/${post.slug}`, '_blank')}>
-													<IconExternalLink size={16} />
+													<Icon icon={IconExternalLink} size={16} />
 													View Live
 												</button>
 												<hr />
 												<button class="danger" onclick={() => deletePost(post.id)}>
-													<IconTrash size={16} />
+													<Icon icon={IconTrash} size={16} />
 													Delete
 												</button>
 											</div>
@@ -1160,7 +1131,7 @@ import { logger } from '$lib/utils/logger';
 									<td class="td-title">
 										<div class="table-title">
 											{#if post.featured}
-												<IconStarFilled size={16} class="featured-icon" />
+												<Icon icon={IconStarFilled} size={16} class="featured-icon" />
 											{/if}
 											<a href="/admin/blog/edit/{post.id}">{post.title}</a>
 										</div>
@@ -1214,28 +1185,28 @@ import { logger } from '$lib/utils/logger';
 												onclick={() => goto(`/admin/blog/edit/${post.id}`)}
 												title="Edit"
 											>
-												<IconEdit size={16} />
+												<Icon icon={IconEdit} size={16} />
 											</button>
 											<button
 												class="action-icon hidden-mobile"
 												onclick={() => (previewPost = post)}
 												title="Preview"
 											>
-												<IconEye size={16} />
+												<Icon icon={IconEye} size={16} />
 											</button>
 											<button
 												class="action-icon hidden-mobile hidden-tablet"
 												onclick={() => duplicatePost(post.id)}
 												title="Duplicate"
 											>
-												<IconCopy size={16} />
+												<Icon icon={IconCopy} size={16} />
 											</button>
 											<button
 												class="action-icon danger"
 												onclick={() => deletePost(post.id)}
 												title="Delete"
 											>
-												<IconTrash size={16} />
+												<Icon icon={IconTrash} size={16} />
 											</button>
 										</div>
 									</td>
@@ -1279,7 +1250,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="modal-header">
 						<h2>Preview: {previewPost.title}</h2>
 						<button class="btn-icon" onclick={() => (previewPost = null)}>
-							<IconX size={20} />
+							<Icon icon={IconX} size={20} />
 						</button>
 					</div>
 					<div class="modal-content">
@@ -1309,7 +1280,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="modal-header">
 						<h2>Export Posts</h2>
 						<button class="btn-icon" onclick={() => (showExportModal = false)}>
-							<IconX size={20} />
+							<Icon icon={IconX} size={20} />
 						</button>
 					</div>
 					<div class="modal-content">
@@ -1356,7 +1327,7 @@ import { logger } from '$lib/utils/logger';
 							Cancel
 						</button>
 						<button class="btn-primary" onclick={exportPosts}>
-							<IconDownload size={18} />
+							<Icon icon={IconDownload} size={18} />
 							Export
 						</button>
 					</div>
@@ -1384,7 +1355,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="modal-header">
 						<h2>Schedule Post</h2>
 						<button class="btn-icon" onclick={() => (showScheduleModal = false)}>
-							<IconX size={20} />
+							<Icon icon={IconX} size={20} />
 						</button>
 					</div>
 					<div class="modal-content">
@@ -1412,7 +1383,7 @@ import { logger } from '$lib/utils/logger';
 								showScheduleModal = false;
 							}}
 						>
-							<IconCalendar size={18} />
+							<Icon icon={IconCalendar} size={18} />
 							Schedule
 						</button>
 					</div>
@@ -1440,7 +1411,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="modal-header">
 						<h2>Analytics: {analyticsPost.title}</h2>
 						<button class="btn-icon" onclick={() => (showAnalyticsModal = false)}>
-							<IconX size={20} />
+							<Icon icon={IconX} size={20} />
 						</button>
 					</div>
 					<div class="modal-content">

@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconBrandGoogle,
-		IconRefresh,
-		IconDownload,
-		IconPlugConnected,
-		IconPlugConnectedX
-	} from '$lib/icons';
+	import { Icon, IconBrandGoogle, IconRefresh, IconDownload, IconPlugConnected, IconPlugConnectedX } from '$lib/icons';
 	import { logger } from '$lib/utils/logger';
 
 	// State using Svelte 5 runes
@@ -100,7 +94,7 @@
 <div class="gsc-page">
 	<header class="page-header">
 		<div>
-			<h1><IconBrandGoogle size={32} /> Google Search Console</h1>
+			<h1><Icon icon={IconBrandGoogle} size={32} /> Google Search Console</h1>
 			<p>Connect and sync data from Google Search Console</p>
 		</div>
 	</header>
@@ -109,7 +103,7 @@
 		{#if status}
 			{#if status.connected}
 				<div class="status-card connected">
-					<IconPlugConnected size={48} />
+					<Icon icon={IconPlugConnected} size={48} />
 					<h3>Connected</h3>
 					<p>Your site is connected to Google Search Console</p>
 					{#if status.site_info}
@@ -123,11 +117,11 @@
 				</div>
 			{:else}
 				<div class="status-card disconnected">
-					<IconPlugConnectedX size={48} />
+					<Icon icon={IconPlugConnectedX} size={48} />
 					<h3>Not Connected</h3>
 					<p>Connect to Google Search Console to import analytics data</p>
 					<button class="btn-primary" onclick={connect}>
-						<IconBrandGoogle size={20} />
+						<Icon icon={IconBrandGoogle} size={20} />
 						Connect with Google
 					</button>
 				</div>
@@ -140,12 +134,12 @@
 			<h2>Actions</h2>
 			<div class="action-buttons">
 				<button class="action-btn" onclick={importAnalytics} disabled={importing}>
-					<IconDownload size={20} />
+					<Icon icon={IconDownload} size={20} />
 					{importing ? 'Importing...' : 'Import Analytics Data'}
 				</button>
 
 				<button class="action-btn" onclick={updateKeywords}>
-					<IconRefresh size={20} />
+					<Icon icon={IconRefresh} size={20} />
 					Update Keyword Rankings
 				</button>
 			</div>

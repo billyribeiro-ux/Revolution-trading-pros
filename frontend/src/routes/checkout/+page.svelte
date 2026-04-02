@@ -19,16 +19,8 @@ import { logger } from '$lib/utils/logger';
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
-	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
-	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
-
+	import { Icon, IconArrowLeft, IconArrowRight, IconCheck, IconCreditCard, IconLoader, IconLock, IconShieldCheck, IconTicket, IconX } from '$lib/icons';
+									
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -265,7 +257,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Page Header -->
 		<header class="checkout-page-header">
 			<a href="/cart" class="back-link">
-				<IconArrowLeft size={18} />
+				<Icon icon={IconArrowLeft} size={18} />
 				<span>Back to Cart</span>
 			</a>
 			<h1 class="page-title">Checkout</h1>
@@ -275,7 +267,7 @@ import { logger } from '$lib/utils/logger';
 		<nav class="checkout-steps-nav">
 			<ul>
 				<li id="nav-checkout-account" class="completed">
-					<span class="step-number"><IconCheck size={16} /></span>
+					<span class="step-number"><Icon icon={IconCheck} size={16} /></span>
 					<span class="step-label">Sign In</span>
 				</li>
 				<li
@@ -285,7 +277,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					<span class="step-number">
 						{#if currentStep === 'payment'}
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 						{:else}
 							2
 						{/if}
@@ -319,7 +311,7 @@ import { logger } from '$lib/utils/logger';
 
 								<!-- Logged in user info -->
 								<div class="user-info-box">
-									<IconCheck size={20} />
+									<Icon icon={IconCheck} size={20} />
 									<div>
 										<p class="label">Signed in as:</p>
 										<p class="value">{$user?.name || $user?.email}</p>
@@ -470,12 +462,12 @@ import { logger } from '$lib/utils/logger';
 							<div class="card-footer">
 								<div class="checkout-steps-actions">
 									<a href="/cart" class="btn btn-default back-to-cart">
-										<IconArrowLeft size={16} />
+										<Icon icon={IconArrowLeft} size={16} />
 										Back to Cart
 									</a>
 									<button type="button" class="btn btn-orange submit-billing" onclick={goToPayment}>
 										Continue to Payment
-										<IconArrowRight size={16} />
+										<Icon icon={IconArrowRight} size={16} />
 									</button>
 								</div>
 							</div>
@@ -490,14 +482,14 @@ import { logger } from '$lib/utils/logger';
 
 								{#if checkoutError}
 									<div class="checkout-error" role="alert">
-										<IconX size={18} />
+										<Icon icon={IconX} size={18} />
 										<span>{checkoutError}</span>
 										<button
 											type="button"
 											onclick={() => (checkoutError = '')}
 											aria-label="Dismiss error"
 										>
-											<IconX size={14} />
+											<Icon icon={IconX} size={14} />
 										</button>
 									</div>
 								{/if}
@@ -526,7 +518,7 @@ import { logger } from '$lib/utils/logger';
 											onchange={() => (paymentMethod = 'stripe')}
 										/>
 										<label for="payment_stripe">
-											<IconCreditCard size={24} />
+											<Icon icon={IconCreditCard} size={24} />
 											<span class="method-title">Credit Card</span>
 											<span class="method-description"
 												>Pay securely with your credit or debit card</span
@@ -583,7 +575,7 @@ import { logger } from '$lib/utils/logger';
 								</div>
 
 								<div class="security-notice">
-									<IconLock size={18} />
+									<Icon icon={IconLock} size={18} />
 									<span
 										>Your payment information is encrypted and secure. We never store your card
 										details.</span
@@ -598,7 +590,7 @@ import { logger } from '$lib/utils/logger';
 										class="btn btn-default back-to-billing"
 										onclick={goToBilling}
 									>
-										<IconArrowLeft size={16} />
+										<Icon icon={IconArrowLeft} size={16} />
 										Back to Billing
 									</button>
 									<button
@@ -608,10 +600,10 @@ import { logger } from '$lib/utils/logger';
 										disabled={isProcessing}
 									>
 										{#if isProcessing}
-											<IconLoader size={18} class="spin" />
+											<Icon icon={IconLoader} size={18} class="spin" />
 											Processing...
 										{:else}
-											<IconShieldCheck size={18} />
+											<Icon icon={IconShieldCheck} size={18} />
 											Place Order
 										{/if}
 									</button>
@@ -675,7 +667,7 @@ import { logger } from '$lib/utils/logger';
 											<th>
 												Discount ({appliedCoupon.code})
 												<button type="button" class="remove-coupon" onclick={removeCouponCode}>
-													<IconX size={14} />
+													<Icon icon={IconX} size={14} />
 												</button>
 											</th>
 											<td class="discount">-{formatPrice(discountAmount)}</td>
@@ -722,7 +714,7 @@ import { logger } from '$lib/utils/logger';
 									class="showcoupon"
 									onclick={() => (couponFormVisible = !couponFormVisible)}
 								>
-									<IconTicket size={16} />
+									<Icon icon={IconTicket} size={16} />
 									Have a coupon? Click here to enter your code
 								</button>
 

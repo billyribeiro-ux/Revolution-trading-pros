@@ -21,39 +21,14 @@ import { logger } from '$lib/utils/logger';
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import IconHeartbeat from '@tabler/icons-svelte-runes/icons/heartbeat';
-	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
-	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
-	import IconServer from '@tabler/icons-svelte-runes/icons/server';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
-	import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
-	import IconCircleX from '@tabler/icons-svelte-runes/icons/circle-x';
-	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconApiApp from '@tabler/icons-svelte-runes/icons/api-app';
-	import IconCertificate from '@tabler/icons-svelte-runes/icons/certificate';
-	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
-	import IconCloud from '@tabler/icons-svelte-runes/icons/cloud';
-	import IconCode from '@tabler/icons-svelte-runes/icons/code';
-	import IconBug from '@tabler/icons-svelte-runes/icons/bug';
-	import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import {
+																											import {
 		connections,
 		getConnectedCount,
 		getOverallHealth,
 		getServicesWithErrors
 	} from '$lib/stores/connections.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { Icon, IconAlertTriangle, IconApiApp, IconArrowRight, IconBug, IconCertificate, IconChartLine, IconCheck, IconCircleCheck, IconCircleX, IconClock, IconCloud, IconCode, IconDatabase, IconExternalLink, IconFolder, IconHeartbeat, IconInfoCircle, IconPlayerPlay, IconPlugConnected, IconPlugConnectedX, IconRefresh, IconRocket, IconServer, IconSettings, IconShieldCheck, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types
@@ -363,15 +338,15 @@ import { logger } from '$lib/utils/logger';
 				<div class="connections-status">
 					<div class="connection-indicator" class:healthy={connectedCount > 0}>
 						{#if connectedCount > 0}
-							<IconPlugConnected size={14} />
+							<Icon icon={IconPlugConnected} size={14} />
 						{:else}
-							<IconPlugConnectedX size={14} />
+							<Icon icon={IconPlugConnectedX} size={14} />
 						{/if}
 						<span>{connectedCount} APIs Connected</span>
 					</div>
 					{#if servicesWithErrors.length > 0}
 						<div class="error-indicator">
-							<IconAlertTriangle size={14} />
+							<Icon icon={IconAlertTriangle} size={14} />
 							<span>{servicesWithErrors.length} with issues</span>
 						</div>
 					{/if}
@@ -379,14 +354,14 @@ import { logger } from '$lib/utils/logger';
 
 				<button class="btn-primary" onclick={runHealthTests} disabled={isRunningTests}>
 					<span class="icon-wrapper" class:spinning={isRunningTests}>
-						<IconPlayerPlay size={18} />
+						<Icon icon={IconPlayerPlay} size={18} />
 					</span>
 					<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
 				</button>
 
 				<button class="btn-secondary" onclick={handleRefresh} disabled={isRefreshing}>
 					<span class="icon-wrapper" class:spinning={isRefreshing}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 					</span>
 					<span>Refresh</span>
 				</button>
@@ -443,21 +418,21 @@ import { logger } from '$lib/utils/logger';
 				<div class="quick-stats">
 					{#if healthData}
 						<div class="stat-item good">
-							<IconCircleCheck size={20} />
+							<Icon icon={IconCircleCheck} size={20} />
 							<span class="stat-value"
 								>{healthData.checks.filter((c) => c.status === 'good').length}</span
 							>
 							<span class="stat-label">Passed</span>
 						</div>
 						<div class="stat-item warning">
-							<IconAlertTriangle size={20} />
+							<Icon icon={IconAlertTriangle} size={20} />
 							<span class="stat-value"
 								>{healthData.checks.filter((c) => c.status === 'warning').length}</span
 							>
 							<span class="stat-label">Warnings</span>
 						</div>
 						<div class="stat-item critical">
-							<IconCircleX size={20} />
+							<Icon icon={IconCircleX} size={20} />
 							<span class="stat-value"
 								>{healthData.checks.filter((c) => c.status === 'critical').length}</span
 							>
@@ -465,7 +440,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else}
 						<div class="stat-item unknown">
-							<IconInfoCircle size={20} />
+							<Icon icon={IconInfoCircle} size={20} />
 							<span class="stat-value">—</span>
 							<span class="stat-label">No data</span>
 						</div>
@@ -499,7 +474,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="overview-card performance">
 							<div class="card-header">
 								<div class="card-icon">
-									<IconRocket size={24} />
+									<Icon icon={IconRocket} size={24} />
 								</div>
 								<div class="card-title">
 									<h3>Performance</h3>
@@ -527,7 +502,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<button class="card-action" onclick={() => (activeTab = 'performance')}>
 								<span>View Details</span>
-								<IconArrowRight size={16} />
+								<Icon icon={IconArrowRight} size={16} />
 							</button>
 						</div>
 
@@ -535,7 +510,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="overview-card security">
 							<div class="card-header">
 								<div class="card-icon">
-									<IconShieldCheck size={24} />
+									<Icon icon={IconShieldCheck} size={24} />
 								</div>
 								<div class="card-title">
 									<h3>Security</h3>
@@ -573,7 +548,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<button class="card-action" onclick={() => (activeTab = 'security')}>
 								<span>View Details</span>
-								<IconArrowRight size={16} />
+								<Icon icon={IconArrowRight} size={16} />
 							</button>
 						</div>
 
@@ -581,7 +556,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="overview-card database">
 							<div class="card-header">
 								<div class="card-icon">
-									<IconDatabase size={24} />
+									<Icon icon={IconDatabase} size={24} />
 								</div>
 								<div class="card-title">
 									<h3>Database</h3>
@@ -613,7 +588,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<button class="card-action" onclick={() => (activeTab = 'database')}>
 								<span>View Details</span>
-								<IconArrowRight size={16} />
+								<Icon icon={IconArrowRight} size={16} />
 							</button>
 						</div>
 
@@ -621,7 +596,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="overview-card server">
 							<div class="card-header">
 								<div class="card-icon">
-									<IconServer size={24} />
+									<Icon icon={IconServer} size={24} />
 								</div>
 								<div class="card-title">
 									<h3>Server</h3>
@@ -647,7 +622,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<button class="card-action" onclick={() => (activeTab = 'server')}>
 								<span>View Details</span>
-								<IconArrowRight size={16} />
+								<Icon icon={IconArrowRight} size={16} />
 							</button>
 						</div>
 					</div>
@@ -658,7 +633,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="api-health-grid">
 							<div class="api-health-card">
 								<div class="api-health-header">
-									<IconApiApp size={20} />
+									<Icon icon={IconApiApp} size={20} />
 									<span>Connected APIs</span>
 								</div>
 								<div class="api-health-value">{connectedCount}</div>
@@ -668,7 +643,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="api-health-card" class:has-errors={servicesWithErrors.length > 0}>
 								<div class="api-health-header">
-									<IconAlertTriangle size={20} />
+									<Icon icon={IconAlertTriangle} size={20} />
 									<span>Connection Issues</span>
 								</div>
 								<div class="api-health-value">{servicesWithErrors.length}</div>
@@ -685,7 +660,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="api-health-card">
 								<div class="api-health-header">
-									<IconHeartbeat size={20} />
+									<Icon icon={IconHeartbeat} size={20} />
 									<span>Overall API Health</span>
 								</div>
 								<div class="api-health-value">{overallHealth}%</div>
@@ -724,7 +699,7 @@ import { logger } from '$lib/utils/logger';
 											{#if check.action.href}
 												<a href={check.action.href} class="check-action">
 													{check.action.label}
-													<IconExternalLink size={14} />
+													<Icon icon={IconExternalLink} size={14} />
 												</a>
 											{:else if check.action.onClick}
 												<button class="check-action" onclick={check.action.onClick}>
@@ -746,7 +721,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData?.performance.responseTime !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconClock size={24} />
+											<Icon icon={IconClock} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Response Time</span>
@@ -759,7 +734,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData?.performance.memoryUsage !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconServer size={24} />
+											<Icon icon={IconServer} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Memory Usage</span>
@@ -778,7 +753,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData?.performance.cpuUsage !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconChartLine size={24} />
+											<Icon icon={IconChartLine} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">CPU Usage</span>
@@ -797,7 +772,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData?.performance.diskUsage !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconFolder size={24} />
+											<Icon icon={IconFolder} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Disk Usage</span>
@@ -816,11 +791,11 @@ import { logger } from '$lib/utils/logger';
 							</div>
 						{:else}
 							<div class="empty-state">
-								<IconRocket size={48} />
+								<Icon icon={IconRocket} size={48} />
 								<h4>No Performance Data</h4>
 								<p>Run health tests to collect performance metrics</p>
 								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-									<IconPlayerPlay size={18} />
+									<Icon icon={IconPlayerPlay} size={18} />
 									<span>Run Tests</span>
 								</button>
 							</div>
@@ -838,7 +813,7 @@ import { logger } from '$lib/utils/logger';
 									class:invalid={!healthData?.security.sslValid}
 								>
 									<div class="metric-icon">
-										<IconCertificate size={24} />
+										<Icon icon={IconCertificate} size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">SSL Certificate</span>
@@ -853,16 +828,16 @@ import { logger } from '$lib/utils/logger';
 									</div>
 									<div class="metric-status">
 										{#if healthData?.security.sslValid}
-											<IconCheck size={24} />
+											<Icon icon={IconCheck} size={24} />
 										{:else}
-											<IconX size={24} />
+											<Icon icon={IconX} size={24} />
 										{/if}
 									</div>
 								</div>
 								{#if healthData?.security.headersScore !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconShieldCheck size={24} />
+											<Icon icon={IconShieldCheck} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Security Headers</span>
@@ -886,7 +861,7 @@ import { logger } from '$lib/utils/logger';
 									class:critical={(healthData?.security.vulnerabilities ?? 0) > 0}
 								>
 									<div class="metric-icon">
-										<IconBug size={24} />
+										<Icon icon={IconBug} size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Vulnerabilities</span>
@@ -898,18 +873,18 @@ import { logger } from '$lib/utils/logger';
 									</div>
 									{#if (healthData?.security.vulnerabilities ?? 0) === 0}
 										<div class="metric-status good">
-											<IconCheck size={24} />
+											<Icon icon={IconCheck} size={24} />
 										</div>
 									{/if}
 								</div>
 							</div>
 						{:else}
 							<div class="empty-state">
-								<IconShieldCheck size={48} />
+								<Icon icon={IconShieldCheck} size={48} />
 								<h4>No Security Data</h4>
 								<p>Run health tests to check security status</p>
 								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-									<IconPlayerPlay size={18} />
+									<Icon icon={IconPlayerPlay} size={18} />
 									<span>Run Tests</span>
 								</button>
 							</div>
@@ -923,20 +898,20 @@ import { logger } from '$lib/utils/logger';
 							<div class="metrics-grid">
 								<div class="metric-card connection" class:connected={healthData.database.connected}>
 									<div class="metric-icon">
-										<IconDatabase size={24} />
+										<Icon icon={IconDatabase} size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Connection Status</span>
 										<span class="metric-value large">Connected</span>
 									</div>
 									<div class="metric-status good">
-										<IconCheck size={24} />
+										<Icon icon={IconCheck} size={24} />
 									</div>
 								</div>
 								{#if healthData.database.responseTime !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconClock size={24} />
+											<Icon icon={IconClock} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Query Response</span>
@@ -949,7 +924,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData.database.size}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconFolder size={24} />
+											<Icon icon={IconFolder} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Database Size</span>
@@ -960,7 +935,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData.database.tables !== null}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconSettings size={24} />
+											<Icon icon={IconSettings} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Tables</span>
@@ -971,7 +946,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 						{:else}
 							<div class="empty-state" class:error={healthData?.database.connected === false}>
-								<IconDatabase size={48} />
+								<Icon icon={IconDatabase} size={48} />
 								<h4>
 									{healthData?.database.connected === false
 										? 'Database Disconnected'
@@ -983,7 +958,7 @@ import { logger } from '$lib/utils/logger';
 										: 'Run health tests to check database status'}
 								</p>
 								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-									<IconPlayerPlay size={18} />
+									<Icon icon={IconPlayerPlay} size={18} />
 									<span>Run Tests</span>
 								</button>
 							</div>
@@ -998,7 +973,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData.server.phpVersion}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconCode size={24} />
+											<Icon icon={IconCode} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">PHP Version</span>
@@ -1009,7 +984,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData.server.webServer}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconCloud size={24} />
+											<Icon icon={IconCloud} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Web Server</span>
@@ -1020,7 +995,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData.server.os}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconServer size={24} />
+											<Icon icon={IconServer} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Operating System</span>
@@ -1031,7 +1006,7 @@ import { logger } from '$lib/utils/logger';
 								{#if healthData.server.uptime}
 									<div class="metric-card">
 										<div class="metric-icon">
-											<IconClock size={24} />
+											<Icon icon={IconClock} size={24} />
 										</div>
 										<div class="metric-content">
 											<span class="metric-label">Uptime</span>
@@ -1042,11 +1017,11 @@ import { logger } from '$lib/utils/logger';
 							</div>
 						{:else}
 							<div class="empty-state">
-								<IconServer size={48} />
+								<Icon icon={IconServer} size={48} />
 								<h4>No Server Data</h4>
 								<p>Run health tests to collect server information</p>
 								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-									<IconPlayerPlay size={18} />
+									<Icon icon={IconPlayerPlay} size={18} />
 									<span>Run Tests</span>
 								</button>
 							</div>
@@ -1058,7 +1033,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Last Updated Footer -->
 			{#if lastUpdated}
 				<div class="last-updated" in:fade={{ delay: 500 }}>
-					<IconClock size={14} />
+					<Icon icon={IconClock} size={14} />
 					<span>Last updated: {lastUpdated.toLocaleString()}</span>
 				</div>
 			{/if}

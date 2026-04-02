@@ -4,35 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
-	import {
-		IconUsers,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconCurrencyDollar,
-		IconCrown,
-		IconAlertTriangle,
-		IconMail,
-		IconSearch,
-		IconFilter,
-		IconDownload,
-		IconRefresh,
-		IconChevronLeft,
-		IconChevronRight,
-		IconExternalLink,
-		IconUserCheck,
-		IconCreditCard,
-		IconChartBar,
-		IconX,
-		IconSend,
-		IconUpload,
-		IconUserPlus,
-		IconEdit,
-		IconTrash,
-		IconBan,
-		IconPlayerPlay,
-		IconFileSpreadsheet,
-		IconPdf
-	} from '$lib/icons';
+	import { Icon, IconUsers, IconTrendingUp, IconTrendingDown, IconCurrencyDollar, IconCrown, IconAlertTriangle, IconMail, IconSearch, IconFilter, IconDownload, IconRefresh, IconChevronLeft, IconChevronRight, IconExternalLink, IconUserCheck, IconCreditCard, IconChartBar, IconX, IconSend, IconUpload, IconUserPlus, IconEdit, IconTrash, IconBan, IconPlayerPlay, IconFileSpreadsheet, IconPdf } from '$lib/icons';
 	import { membersApi } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
 
@@ -406,7 +378,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Error Banner -->
 		{#if initError}
 			<div class="error-banner">
-				<IconAlertTriangle size={20} />
+				<Icon icon={IconAlertTriangle} size={20} />
 				<span>{initError}</span>
 				<button onclick={() => window.location.reload()}>Refresh Page</button>
 			</div>
@@ -418,11 +390,11 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Comprehensive member management and analytics</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={handleRefresh} title="Refresh data">
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
-					<IconUpload size={18} />
+					<Icon icon={IconUpload} size={18} />
 					Import
 				</button>
 				<div class="export-dropdown">
@@ -431,30 +403,30 @@ import { logger } from '$lib/utils/logger';
 						onclick={() => handleExportAdvanced(exportFormat)}
 						disabled={exporting}
 					>
-						<IconDownload size={18} />
+						<Icon icon={IconDownload} size={18} />
 						{exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}`}
 					</button>
 					<div class="export-options">
 						<button onclick={() => handleExportAdvanced('csv')} disabled={exporting}>
-							<IconDownload size={14} />
+							<Icon icon={IconDownload} size={14} />
 							CSV
 						</button>
 						<button onclick={() => handleExportAdvanced('xlsx')} disabled={exporting}>
-							<IconFileSpreadsheet size={14} />
+							<Icon icon={IconFileSpreadsheet} size={14} />
 							Excel
 						</button>
 						<button onclick={() => handleExportAdvanced('pdf')} disabled={exporting}>
-							<IconPdf size={14} />
+							<Icon icon={IconPdf} size={14} />
 							PDF
 						</button>
 					</div>
 				</div>
 				<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
-					<IconAlertTriangle size={18} />
+					<Icon icon={IconAlertTriangle} size={18} />
 					Win-Back
 				</button>
 				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
-					<IconUserPlus size={18} />
+					<Icon icon={IconUserPlus} size={18} />
 					Create Member
 				</button>
 			</div>
@@ -466,13 +438,13 @@ import { logger } from '$lib/utils/logger';
 				<!-- Total Members -->
 				<div class="stat-card gradient-purple">
 					<div class="stat-icon">
-						<IconUsers size={28} />
+						<Icon icon={IconUsers} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Total Members</div>
 						<div class="stat-value">{stats.overview.total_members.toLocaleString()}</div>
 						<div class="stat-change positive">
-							<IconTrendingUp size={14} />
+							<Icon icon={IconTrendingUp} size={14} />
 							+{stats.overview.new_this_month} this month
 						</div>
 					</div>
@@ -491,13 +463,13 @@ import { logger } from '$lib/utils/logger';
 				<!-- Active Subscribers -->
 				<div class="stat-card gradient-emerald">
 					<div class="stat-icon">
-						<IconUserCheck size={28} />
+						<Icon icon={IconUserCheck} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Active Subscribers</div>
 						<div class="stat-value">{stats.subscriptions.active.toLocaleString()}</div>
 						<div class="stat-change neutral">
-							<IconCrown size={14} />
+							<Icon icon={IconCrown} size={14} />
 							{stats.subscriptions.trial} in trial
 						</div>
 					</div>
@@ -536,13 +508,13 @@ import { logger } from '$lib/utils/logger';
 				<!-- Monthly Recurring Revenue -->
 				<div class="stat-card gradient-gold">
 					<div class="stat-icon">
-						<IconCreditCard size={28} />
+						<Icon icon={IconCreditCard} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Monthly Revenue</div>
 						<div class="stat-value">{formatCurrency(stats?.revenue?.mrr ?? 0)}</div>
 						<div class="stat-change neutral">
-							<IconCurrencyDollar size={14} />
+							<Icon icon={IconCurrencyDollar} size={14} />
 							{formatCurrency(stats?.revenue?.avg_ltv ?? 0)} avg LTV
 						</div>
 					</div>
@@ -552,18 +524,18 @@ import { logger } from '$lib/utils/logger';
 				<!-- Churn Rate -->
 				<div class="stat-card gradient-red">
 					<div class="stat-icon">
-						<IconTrendingDown size={28} />
+						<Icon icon={IconTrendingDown} size={28} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Churn Rate</div>
 						<div class="stat-value">{stats?.subscriptions?.churn_rate ?? 0}%</div>
 						<div class="stat-change negative">
-							<IconAlertTriangle size={14} />
+							<Icon icon={IconAlertTriangle} size={14} />
 							{stats?.subscriptions?.churned ?? 0} churned
 						</div>
 					</div>
 					<button class="stat-action" onclick={() => goto('/admin/members/churned')}>
-						Recover <IconExternalLink size={14} />
+						Recover <Icon icon={IconExternalLink} size={14} />
 					</button>
 				</div>
 			</div>
@@ -580,7 +552,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => goto(`/admin/members/service/${service.id}`)}
 						>
 							<div class="service-icon">
-								<IconChartBar size={20} />
+								<Icon icon={IconChartBar} size={20} />
 							</div>
 							<div class="service-info">
 								<div class="service-name">{service.name}</div>
@@ -596,7 +568,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Toolbar -->
 		<div class="toolbar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					id="search-members"
 					name="search-members"
@@ -616,19 +588,19 @@ import { logger } from '$lib/utils/logger';
 					aria-expanded={showFilters}
 					aria-label="Toggle filters"
 				>
-					<IconFilter size={18} />
+					<Icon icon={IconFilter} size={18} />
 					Filters
 				</button>
 
 				{#if selectedMembers.size > 0}
 					<button class="btn-email" onclick={() => (showEmailModal = true)}>
-						<IconMail size={18} />
+						<Icon icon={IconMail} size={18} />
 						Email ({selectedMembers.size})
 					</button>
 				{/if}
 
 				<button class="btn-export" onclick={handleExport}>
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					Export CSV
 				</button>
 			</div>
@@ -710,7 +682,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if members.length === 0}
 				<div class="empty-state">
-					<IconUsers size={64} stroke={1} />
+					<Icon icon={IconUsers} size={64} stroke={1} />
 					<h3>No members found</h3>
 					<p>Try adjusting your filters or search query</p>
 				</div>
@@ -806,7 +778,7 @@ import { logger } from '$lib/utils/logger';
 								disabled={pagination.current_page === 1}
 								onclick={() => membersStore.goToPage(pagination.current_page - 1)}
 							>
-								<IconChevronLeft size={18} />
+								<Icon icon={IconChevronLeft} size={18} />
 							</button>
 							<span class="page-indicator"
 								>Page {pagination.current_page} of {pagination.last_page}</span
@@ -816,7 +788,7 @@ import { logger } from '$lib/utils/logger';
 								disabled={pagination.current_page === pagination.last_page}
 								onclick={() => membersStore.goToPage(pagination.current_page + 1)}
 							>
-								<IconChevronRight size={18} />
+								<Icon icon={IconChevronRight} size={18} />
 							</button>
 						</div>
 					</div>
@@ -847,7 +819,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -892,7 +864,7 @@ import { logger } from '$lib/utils/logger';
 					onclick={handleBulkEmail}
 					disabled={!emailSubject || !emailBody}
 				>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					Send Email
 				</button>
 			</div>
@@ -921,7 +893,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Import Members</h2>
 				<button class="close-btn" onclick={() => (showImportModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -941,7 +913,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="file-upload">
 					<label for="import-file" class="upload-zone" class:has-file={importFile}>
-						<IconUpload size={32} />
+						<Icon icon={IconUpload} size={32} />
 						{#if importFile}
 							<span class="file-name">{importFile.name}</span>
 							<span class="file-size">{(importFile.size / 1024).toFixed(1)} KB</span>
@@ -966,7 +938,7 @@ import { logger } from '$lib/utils/logger';
 						style="margin-top: 1rem"
 						onclick={() => (importFile = null)}
 					>
-						<IconX size={16} />
+						<Icon icon={IconX} size={16} />
 						Remove File
 					</button>
 				{/if}
@@ -975,7 +947,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showImportModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleImport} disabled={!importFile || importing}>
-					<IconUpload size={18} />
+					<Icon icon={IconUpload} size={18} />
 					{importing ? 'Importing...' : 'Import Members'}
 				</button>
 			</div>

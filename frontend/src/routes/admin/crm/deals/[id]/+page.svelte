@@ -31,28 +31,11 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconPhone from '@tabler/icons-svelte-runes/icons/phone';
-	import IconFlag from '@tabler/icons-svelte-runes/icons/flag';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconHistory from '@tabler/icons-svelte-runes/icons/history';
-	import { crmAPI } from '$lib/api/crm';
+												import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+								import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage, TimelineEvent } from '$lib/crm/types';
 	import { api } from '$lib/api/config';
+	import { Icon, IconAlertTriangle, IconArrowLeft, IconArrowRight, IconBriefcase, IconCheck, IconEdit, IconFlag, IconHistory, IconMail, IconNotes, IconPhone, IconPlus, IconRefresh, IconTag, IconTrash, IconTrophy, IconUser, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -334,7 +317,7 @@ import { logger } from '$lib/utils/logger';
 <div class="deal-detail-page">
 	<!-- Back Button -->
 	<button class="back-btn" onclick={goBack}>
-		<IconArrowLeft size={18} />
+		<Icon icon={IconArrowLeft} size={18} />
 		Back to Deals
 	</button>
 
@@ -345,7 +328,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else if error}
 		<div class="error-state">
-			<IconAlertTriangle size={48} />
+			<Icon icon={IconAlertTriangle} size={48} />
 			<p>{error}</p>
 			<button class="btn-primary" onclick={loadDeal}>Try Again</button>
 		</div>
@@ -357,7 +340,7 @@ import { logger } from '$lib/utils/logger';
 					class="deal-icon"
 					style="background: {getStageColor(currentStage)}20; color: {getStageColor(currentStage)}"
 				>
-					<IconBriefcase size={28} />
+					<Icon icon={IconBriefcase} size={28} />
 				</div>
 				<div class="deal-info">
 					<div class="name-row">
@@ -374,13 +357,13 @@ import { logger } from '$lib/utils/logger';
 					<div class="deal-meta-row">
 						{#if deal.contact}
 							<span class="meta-item">
-								<IconUser size={14} />
+								<Icon icon={IconUser} size={14} />
 								{deal.contact.full_name}
 							</span>
 						{/if}
 						{#if currentStage}
 							<span class="meta-item">
-								<IconFlag size={14} style="color: {getStageColor(currentStage)}" />
+								<Icon icon={IconFlag} size={14} style="color: {getStageColor(currentStage)}" />
 								{currentStage.name}
 							</span>
 						{/if}
@@ -395,24 +378,24 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<button class="btn-icon" onclick={loadDeal} title="Refresh">
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 				</button>
 				{#if isOpen}
 					<button class="btn-success" onclick={() => (showWinModal = true)}>
-						<IconTrophy size={18} />
+						<Icon icon={IconTrophy} size={18} />
 						Mark Won
 					</button>
 					<button class="btn-danger-outline" onclick={() => (showLoseModal = true)}>
-						<IconX size={18} />
+						<Icon icon={IconX} size={18} />
 						Mark Lost
 					</button>
 				{/if}
 				<a href="/admin/crm/deals/{dealId}/edit" class="btn-primary">
-					<IconEdit size={18} />
+					<Icon icon={IconEdit} size={18} />
 					Edit Deal
 				</a>
 				<button class="btn-icon danger" onclick={deleteDeal} title="Delete">
-					<IconTrash size={18} />
+					<Icon icon={IconTrash} size={18} />
 				</button>
 			</div>
 		</header>
@@ -485,7 +468,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'overview'}
 				onclick={() => (activeTab = 'overview')}
 			>
-				<IconBriefcase size={18} />
+				<Icon icon={IconBriefcase} size={18} />
 				Overview
 			</button>
 			<button
@@ -493,7 +476,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'timeline'}
 				onclick={() => (activeTab = 'timeline')}
 			>
-				<IconHistory size={18} />
+				<Icon icon={IconHistory} size={18} />
 				Timeline ({timeline.length})
 			</button>
 			<button
@@ -501,7 +484,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'notes'}
 				onclick={() => (activeTab = 'notes')}
 			>
-				<IconNotes size={18} />
+				<Icon icon={IconNotes} size={18} />
 				Notes ({notes.length})
 			</button>
 		</nav>
@@ -518,7 +501,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Deal Details Card -->
 					<div class="info-card">
 						<h3>
-							<IconBriefcase size={18} />
+							<Icon icon={IconBriefcase} size={18} />
 							Deal Details
 						</h3>
 						<div class="info-grid">
@@ -572,7 +555,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Contact Card -->
 					<div class="info-card">
 						<h3>
-							<IconUser size={18} />
+							<Icon icon={IconUser} size={18} />
 							Associated Contact
 						</h3>
 						{#if deal.contact}
@@ -586,13 +569,13 @@ import { logger } from '$lib/utils/logger';
 									</a>
 									{#if deal.contact.email}
 										<a href="mailto:{deal.contact.email}" class="contact-email">
-											<IconMail size={12} />
+											<Icon icon={IconMail} size={12} />
 											{deal.contact.email}
 										</a>
 									{/if}
 									{#if deal.contact.phone}
 										<a href="tel:{deal.contact.phone}" class="contact-phone">
-											<IconPhone size={12} />
+											<Icon icon={IconPhone} size={12} />
 											{deal.contact.phone}
 										</a>
 									{/if}
@@ -607,7 +590,7 @@ import { logger } from '$lib/utils/logger';
 					{#if isWon && deal.won_details}
 						<div class="info-card success">
 							<h3>
-								<IconTrophy size={18} />
+								<Icon icon={IconTrophy} size={18} />
 								Won Details
 							</h3>
 							<p class="detail-text">{deal.won_details}</p>
@@ -617,7 +600,7 @@ import { logger } from '$lib/utils/logger';
 					{#if isLost && deal.lost_reason}
 						<div class="info-card danger">
 							<h3>
-								<IconX size={18} />
+								<Icon icon={IconX} size={18} />
 								Lost Reason
 							</h3>
 							<p class="detail-text">{deal.lost_reason}</p>
@@ -628,7 +611,7 @@ import { logger } from '$lib/utils/logger';
 					{#if deal.tags && deal.tags.length > 0}
 						<div class="info-card">
 							<h3>
-								<IconTag size={18} />
+								<Icon icon={IconTag} size={18} />
 								Tags
 							</h3>
 							<div class="tags-list">
@@ -650,7 +633,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="timeline-section">
 					{#if timeline.length === 0}
 						<div class="empty-state">
-							<IconHistory size={48} />
+							<Icon icon={IconHistory} size={48} />
 							<h3>No activity yet</h3>
 							<p>Activity timeline will appear here as events occur</p>
 						</div>
@@ -687,13 +670,13 @@ import { logger } from '$lib/utils/logger';
 				<div class="notes-section">
 					<div class="notes-header">
 						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Add Note
 						</button>
 					</div>
 					{#if notes.length === 0}
 						<div class="empty-state">
-							<IconNotes size={48} />
+							<Icon icon={IconNotes} size={48} />
 							<h3>No notes yet</h3>
 							<p>Add notes to keep track of important information about this deal</p>
 						</div>
@@ -715,7 +698,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="empty-state">
-			<IconBriefcase size={48} />
+			<Icon icon={IconBriefcase} size={48} />
 			<h3>Deal not found</h3>
 			<p>The deal you're looking for doesn't exist or has been deleted</p>
 			<button class="btn-primary" onclick={goBack}>Go Back</button>
@@ -741,10 +724,10 @@ import { logger } from '$lib/utils/logger';
 			role="document"
 		>
 			<div class="modal-header success">
-				<IconTrophy size={24} />
+				<Icon icon={IconTrophy} size={24} />
 				<h3>Mark Deal as Won</h3>
 				<button class="modal-close" onclick={() => (showWinModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -774,7 +757,7 @@ import { logger } from '$lib/utils/logger';
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{/if}
 					Mark as Won
 				</button>
@@ -801,10 +784,10 @@ import { logger } from '$lib/utils/logger';
 			role="document"
 		>
 			<div class="modal-header danger">
-				<IconX size={24} />
+				<Icon icon={IconX} size={24} />
 				<h3>Mark Deal as Lost</h3>
 				<button class="modal-close" onclick={() => (showLoseModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -839,7 +822,7 @@ import { logger } from '$lib/utils/logger';
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
-						<IconX size={18} />
+						<Icon icon={IconX} size={18} />
 					{/if}
 					Mark as Lost
 				</button>
@@ -866,10 +849,10 @@ import { logger } from '$lib/utils/logger';
 			role="document"
 		>
 			<div class="modal-header">
-				<IconArrowRight size={24} />
+				<Icon icon={IconArrowRight} size={24} />
 				<h3>Change Stage</h3>
 				<button class="modal-close" onclick={() => (showStageChangeModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -880,7 +863,7 @@ import { logger } from '$lib/utils/logger';
 							>{currentStage?.name}</span
 						>
 					</div>
-					<IconArrowRight size={20} class="stage-arrow" />
+					<Icon icon={IconArrowRight} size={20} class="stage-arrow" />
 					<div class="stage-to">
 						<span class="stage-label">To</span>
 						<span class="stage-name" style="color: {getStageColor(selectedStage)}"
@@ -910,7 +893,7 @@ import { logger } from '$lib/utils/logger';
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{/if}
 					Update Stage
 				</button>
@@ -937,10 +920,10 @@ import { logger } from '$lib/utils/logger';
 			role="document"
 		>
 			<div class="modal-header">
-				<IconNotes size={24} />
+				<Icon icon={IconNotes} size={24} />
 				<h3>Add Note</h3>
 				<button class="modal-close" onclick={() => (showAddNoteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -970,7 +953,7 @@ import { logger } from '$lib/utils/logger';
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{/if}
 					Save Note
 				</button>
@@ -983,13 +966,13 @@ import { logger } from '$lib/utils/logger';
 {#if toastMessage}
 	<div class="toast toast-{toastMessage.type}" role="alert" aria-live="polite">
 		{#if toastMessage.type === 'success'}
-			<IconCheck size={18} />
+			<Icon icon={IconCheck} size={18} />
 		{:else}
-			<IconX size={18} />
+			<Icon icon={IconX} size={18} />
 		{/if}
 		<span>{toastMessage.text}</span>
 		<button class="toast-close" onclick={() => (toastMessage = null)} aria-label="Dismiss">
-			<IconX size={14} />
+			<Icon icon={IconX} size={14} />
 		</button>
 	</div>
 {/if}

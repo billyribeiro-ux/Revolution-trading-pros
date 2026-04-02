@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconBell, IconTrendingUp, IconTrendingDown, IconTarget } from '$lib/icons';
+	import { Icon, IconBell, IconTrendingUp, IconTrendingDown, IconTarget } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -50,7 +50,7 @@
 >
 	<div class="alert-header">
 		<div class="alert-icon">
-			<IconBell size={20} aria-hidden="true" />
+			<Icon icon={IconBell} size={20} aria-hidden="true" />
 		</div>
 		<div class="alert-title">
 			{#if props.isEditing}
@@ -69,10 +69,10 @@
 		</div>
 		<div class="direction-badge">
 			{#if isBullish}
-				<IconTrendingUp size={16} aria-hidden="true" />
+				<Icon icon={IconTrendingUp} size={16} aria-hidden="true" />
 				<span>Bullish</span>
 			{:else}
-				<IconTrendingDown size={16} aria-hidden="true" />
+				<Icon icon={IconTrendingDown} size={16} aria-hidden="true" />
 				<span>Bearish</span>
 			{/if}
 		</div>
@@ -81,7 +81,7 @@
 	<div class="alert-body">
 		<div class="price-levels">
 			<div class="level target">
-				<span class="level-label"><IconTarget size={14} /> Target</span>
+				<span class="level-label"><Icon icon={IconTarget} size={14} /> Target</span>
 				{#if props.isEditing}
 					<input
 						type="number"

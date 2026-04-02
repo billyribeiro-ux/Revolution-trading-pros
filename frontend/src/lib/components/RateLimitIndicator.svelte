@@ -12,14 +12,8 @@ import { logger } from '$lib/utils/logger';
 
 	import { onMount, onDestroy } from 'svelte';
 	import { scale } from 'svelte/transition';
-	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
-	import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconPlugOff from '@tabler/icons-svelte-runes/icons/plug-off';
-	import { adminFetch } from '$lib/utils/adminFetch';
+								import { adminFetch } from '$lib/utils/adminFetch';
+	import { Icon, IconAlertTriangle, IconChevronDown, IconCircleCheck, IconClock, IconPlugConnected, IconPlugConnectedX, IconPlugOff } from '$lib/icons';
 
 	interface RateLimitInfo {
 		service: string;
@@ -170,16 +164,16 @@ import { logger } from '$lib/utils/logger';
 		title="API Rate Limits"
 	>
 		{#if hasConnectedServices}
-			<IconPlugConnected size={18} />
+			<Icon icon={IconPlugConnected} size={18} />
 			<span class="limit-percentage"
 				>{lowestPercentage !== null ? Math.round(lowestPercentage ?? 0) : '--'}%</span
 			>
 		{:else}
-			<IconPlugConnectedX size={18} />
+			<Icon icon={IconPlugConnectedX} size={18} />
 			<span class="limit-percentage">--</span>
 		{/if}
 		<span class="chevron" class:rotated={isOpen}>
-			<IconChevronDown size={14} />
+			<Icon icon={IconChevronDown} size={14} />
 		</span>
 	</button>
 
@@ -219,7 +213,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- No services connected - show helpful message -->
 				<div class="no-services">
 					<div class="no-services-icon">
-						<IconPlugOff size={32} />
+						<Icon icon={IconPlugOff} size={32} />
 					</div>
 					<p class="no-services-title">No Services Connected</p>
 					<p class="no-services-desc">
@@ -246,7 +240,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="limit-footer">
 								<span class="reset-time">
-									<IconClock size={12} />
+									<Icon icon={IconClock} size={12} />
 									Resets in {formatTimeUntilReset(limit.resetsAt)}
 								</span>
 								<span class="percentage">{Math.round(limit.percentage)}% remaining</span>

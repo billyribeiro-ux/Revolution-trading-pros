@@ -6,13 +6,8 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { bulkUploadApi, type BatchStatus, type UploadQueueItem } from '$lib/api/video-advanced';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconLoader from '@tabler/icons-svelte-runes/icons/loader-2';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconFile from '@tabler/icons-svelte-runes/icons/file';
-
+	import { Icon, IconAlertCircle, IconCheck, IconFile, IconLoader2, IconUpload, IconX } from '$lib/icons';
+						
 	interface Props {
 		contentType?: string;
 		traderId?: number | null;
@@ -229,7 +224,7 @@ import { logger } from '$lib/utils/logger';
 				return IconAlertCircle;
 			case 'uploading':
 			case 'processing':
-				return IconLoader;
+				return IconLoader2;
 			default:
 				return IconFile;
 		}
@@ -261,7 +256,7 @@ import { logger } from '$lib/utils/logger';
 		<h3>Bulk Video Upload</h3>
 		{#if onClose}
 			<button type="button" class="btn-close" onclick={onClose}>
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		{/if}
 	</div>
@@ -283,7 +278,7 @@ import { logger } from '$lib/utils/logger';
 			onclick={() => fileInput?.click()}
 			onkeypress={(e) => e.key === 'Enter' && fileInput?.click()}
 		>
-			<IconUpload size={48} />
+			<Icon icon={IconUpload} size={48} />
 			<p>Drag & drop video files here</p>
 			<p class="hint">or click to browse</p>
 			<p class="formats">MP4, WebM, MOV, AVI, MKV</p>
@@ -309,13 +304,13 @@ import { logger } from '$lib/utils/logger';
 
 				{#each files as file, index (index)}
 					<div class="file-item">
-						<IconFile size={20} />
+						<Icon icon={IconFile} size={20} />
 						<div class="file-info">
 							<div class="file-name">{file.name}</div>
 							<div class="file-size">{formatFileSize(file.size)}</div>
 						</div>
 						<button type="button" class="btn-remove" onclick={() => removeFile(index)}>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 					</div>
 				{/each}
@@ -323,9 +318,9 @@ import { logger } from '$lib/utils/logger';
 
 			<button type="button" class="btn-start" onclick={startBulkUpload} disabled={isInitializing}>
 				{#if isInitializing}
-					<IconLoader size={20} class="spinning" /> Initializing...
+					<Icon icon={IconLoader2} size={20} class="spinning" /> Initializing...
 				{:else}
-					<IconUpload size={20} /> Start Upload ({files.length} files)
+					<Icon icon={IconUpload} size={20} /> Start Upload ({files.length} files)
 				{/if}
 			</button>
 		{/if}
@@ -344,18 +339,18 @@ import { logger } from '$lib/utils/logger';
 					</div>
 					<div class="progress-stats">
 						<span class="stat completed">
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 							{batchStatus.completed} completed
 						</span>
 						{#if batchStatus.failed > 0}
 							<span class="stat failed">
-								<IconAlertCircle size={16} />
+								<Icon icon={IconAlertCircle} size={16} />
 								{batchStatus.failed} failed
 							</span>
 						{/if}
 						{#if batchStatus.in_progress > 0}
 							<span class="stat in-progress">
-								<IconLoader size={16} class="spinning" />
+								<Icon icon={IconLoader2} size={16} class="spinning" />
 								{batchStatus.in_progress} uploading
 							</span>
 						{/if}
@@ -398,14 +393,14 @@ import { logger } from '$lib/utils/logger';
 
 				{#if batchStatus.completed + batchStatus.failed === batchStatus.total_files}
 					<div class="upload-complete">
-						<IconCheck size={32} />
+						<Icon icon={IconCheck} size={32} />
 						<p>Upload complete!</p>
 						<button type="button" class="btn-done" onclick={onClose}>Done</button>
 					</div>
 				{/if}
 			{:else}
 				<div class="loading">
-					<IconLoader size={32} class="spinning" />
+					<Icon icon={IconLoader2} size={32} class="spinning" />
 					<p>Preparing uploads...</p>
 				</div>
 			{/if}

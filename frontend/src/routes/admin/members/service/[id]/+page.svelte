@@ -4,23 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { serviceMembersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
-	import {
-		IconArrowLeft,
-		IconUsers,
-		IconUserCheck,
-		IconAlertTriangle,
-		IconCurrencyDollar,
-		IconSearch,
-		IconMail,
-		IconChevronLeft,
-		IconChevronRight,
-		IconExternalLink,
-		IconFilter,
-		IconX,
-		IconSend,
-		IconCrown,
-		IconChartBar
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconUsers, IconUserCheck, IconAlertTriangle, IconCurrencyDollar, IconSearch, IconMail, IconChevronLeft, IconChevronRight, IconExternalLink, IconFilter, IconX, IconSend, IconCrown, IconChartBar } from '$lib/icons';
 
 	let serviceId = $derived(Number(page.params.id));
 
@@ -145,14 +129,14 @@
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Members
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconChartBar size={28} />
+					<Icon icon={IconChartBar} size={28} />
 				</div>
 				<div>
 					<h1>{service?.name || 'Loading...'}</h1>
@@ -161,7 +145,7 @@
 			</div>
 			{#if selectedMembers.size > 0}
 				<button class="btn-email" onclick={() => (showEmailModal = true)}>
-					<IconMail size={18} />
+					<Icon icon={IconMail} size={18} />
 					Email ({selectedMembers.size})
 				</button>
 			{/if}
@@ -172,27 +156,27 @@
 	{#if stats}
 		<div class="stats-grid">
 			<div class="stat-card">
-				<div class="stat-icon purple"><IconUsers size={24} /></div>
+				<div class="stat-icon purple"><Icon icon={IconUsers} size={24} /></div>
 				<div class="stat-value">{stats.total_members}</div>
 				<div class="stat-label">Total Members</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon emerald"><IconUserCheck size={24} /></div>
+				<div class="stat-icon emerald"><Icon icon={IconUserCheck} size={24} /></div>
 				<div class="stat-value">{stats.active_members}</div>
 				<div class="stat-label">Active</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon blue"><IconCrown size={24} /></div>
+				<div class="stat-icon blue"><Icon icon={IconCrown} size={24} /></div>
 				<div class="stat-value">{stats.trial_members}</div>
 				<div class="stat-label">Trial</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon red"><IconAlertTriangle size={24} /></div>
+				<div class="stat-icon red"><Icon icon={IconAlertTriangle} size={24} /></div>
 				<div class="stat-value">{stats.churned_members}</div>
 				<div class="stat-label">Churned</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-icon gold"><IconCurrencyDollar size={24} /></div>
+				<div class="stat-icon gold"><Icon icon={IconCurrencyDollar} size={24} /></div>
 				<div class="stat-value">{formatCurrency(stats.total_revenue)}</div>
 				<div class="stat-label">Total Revenue</div>
 			</div>
@@ -202,7 +186,7 @@
 	<!-- Toolbar -->
 	<div class="toolbar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-searchquery"
 				name="page-searchquery"
@@ -214,7 +198,7 @@
 		</div>
 
 		<div class="filter-group">
-			<IconFilter size={16} />
+			<Icon icon={IconFilter} size={16} />
 			<select bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
 				<option value="">All Status</option>
 				<option value="active">Active</option>
@@ -234,7 +218,7 @@
 			</div>
 		{:else if members.length === 0}
 			<div class="empty-state">
-				<IconUsers size={64} stroke={1} />
+				<Icon icon={IconUsers} size={64} stroke={1} />
 				<h3>No members found</h3>
 				<p>No members have subscribed to this service yet</p>
 			</div>
@@ -303,7 +287,7 @@
 										title="View Details"
 										onclick={() => goto(`/admin/members/${member.id}`)}
 									>
-										<IconExternalLink size={16} />
+										<Icon icon={IconExternalLink} size={16} />
 									</button>
 									<button
 										class="action-btn"
@@ -315,7 +299,7 @@
 											showEmailModal = true;
 										}}
 									>
-										<IconMail size={16} />
+										<Icon icon={IconMail} size={16} />
 									</button>
 								</div>
 							</td>
@@ -342,7 +326,7 @@
 									page: pagination.current_page - 1
 								})}
 						>
-							<IconChevronLeft size={18} />
+							<Icon icon={IconChevronLeft} size={18} />
 						</button>
 						<span class="page-indicator"
 							>Page {pagination.current_page} of {pagination.last_page}</span
@@ -355,7 +339,7 @@
 									page: pagination.current_page + 1
 								})}
 						>
-							<IconChevronRight size={18} />
+							<Icon icon={IconChevronRight} size={18} />
 						</button>
 					</div>
 				</div>
@@ -384,7 +368,7 @@
 			<div class="modal-header">
 				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -425,7 +409,7 @@
 					onclick={handleBulkEmail}
 					disabled={!emailSubject || !emailBody}
 				>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					Send Email
 				</button>
 			</div>

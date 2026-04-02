@@ -4,7 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type Error404 } from '$lib/api/seo';
-	import { IconAlertCircle, IconTrash } from '$lib/icons';
+	import { Icon, IconAlertCircle, IconTrash } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
@@ -85,7 +85,7 @@ import { logger } from '$lib/utils/logger';
 			<p class="text-gray-600 mt-1">Track and fix broken links on your site</p>
 		</div>
 		<Button variant="danger" onclick={() => handleBulkDelete(true)}>
-			<IconTrash size={20} />
+			<Icon icon={IconTrash} size={20} />
 			Delete Resolved
 		</Button>
 	</div>
@@ -121,7 +121,7 @@ import { logger } from '$lib/utils/logger';
 	{:else if errors.length === 0}
 		<Card>
 			<div class="text-center py-12">
-				<IconAlertCircle size={48} class="mx-auto text-green-500 mb-4" />
+				<Icon icon={IconAlertCircle} size={48} class="mx-auto text-green-500 mb-4" />
 				<p class="text-gray-500">No 404 errors found. Great job!</p>
 			</div>
 		</Card>

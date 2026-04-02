@@ -1,17 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconMail,
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconPlayerPlay,
-		IconCalendar,
-		IconClock,
-		IconCheck,
-		IconX,
-		IconDownload
-	} from '$lib/icons';
+	import { Icon, IconMail, IconPlus, IconEdit, IconTrash, IconPlayerPlay, IconCalendar, IconClock, IconCheck, IconX, IconDownload } from '$lib/icons';
 	import {
 		reportTemplates,
 		formatSchedule,
@@ -226,14 +215,14 @@
 	<header class="page-header">
 		<div>
 			<h1>
-				<IconMail size={28} />
+				<Icon icon={IconMail} size={28} />
 				SEO Email Reports
 			</h1>
 			<p>Schedule automated SEO reports delivered to your inbox</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-primary" onclick={openAddModal}>
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New Report Template
 			</button>
 		</div>
@@ -258,10 +247,10 @@
 		<h2>Report Templates</h2>
 		{#if templates.length === 0}
 			<div class="empty-state">
-				<IconMail size={48} />
+				<Icon icon={IconMail} size={48} />
 				<p>No report templates yet. Create your first automated report.</p>
 				<button class="btn-primary" onclick={openAddModal}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Create Template
 				</button>
 			</div>
@@ -273,26 +262,26 @@
 							<h3>{template.name}</h3>
 							<div class="template-status">
 								{#if template.isActive}
-									<span class="active"><IconCheck size={14} /> Active</span>
+									<span class="active"><Icon icon={IconCheck} size={14} /> Active</span>
 								{:else}
-									<span class="inactive"><IconX size={14} /> Inactive</span>
+									<span class="inactive"><Icon icon={IconX} size={14} /> Inactive</span>
 								{/if}
 							</div>
 						</div>
 
 						<div class="template-details">
 							<div class="detail">
-								<IconCalendar size={16} />
+								<Icon icon={IconCalendar} size={16} />
 								<span
 									>{template.frequency.charAt(0).toUpperCase() + template.frequency.slice(1)}</span
 								>
 							</div>
 							<div class="detail">
-								<IconClock size={16} />
+								<Icon icon={IconClock} size={16} />
 								<span>{formatSchedule(template.schedule, template.frequency)}</span>
 							</div>
 							<div class="detail">
-								<IconMail size={16} />
+								<Icon icon={IconMail} size={16} />
 								<span>{template.recipients.length} recipient(s)</span>
 							</div>
 						</div>
@@ -309,11 +298,11 @@
 								onclick={() => runReport(template)}
 								title="Run Now"
 							>
-								<IconPlayerPlay size={16} />
+								<Icon icon={IconPlayerPlay} size={16} />
 								Run Now
 							</button>
 							<button class="action-btn" onclick={() => openEditModal(template)} title="Edit">
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 							</button>
 							<button
 								class="action-btn"
@@ -327,7 +316,7 @@
 								onclick={() => deleteTemplate(template.id)}
 								title="Delete"
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						</div>
 					</div>
@@ -357,7 +346,7 @@
 							<span class="report-recipients">{report.recipients} recipients</span>
 						</div>
 						<button class="action-btn" title="Download">
-							<IconDownload size={16} />
+							<Icon icon={IconDownload} size={16} />
 						</button>
 					</div>
 				{/each}

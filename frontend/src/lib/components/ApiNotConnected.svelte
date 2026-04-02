@@ -12,7 +12,7 @@
 
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
-	import { IconPlugConnected, IconArrowRight, IconLock } from '$lib/icons';
+	import { Icon, IconPlugConnected, IconArrowRight, IconLock } from '$lib/icons';
 
 	interface Props {
 		/** Name of the service that needs to be connected */
@@ -56,12 +56,12 @@
 	<!-- Compact Inline Version -->
 	<div class="api-not-connected-compact" in:fade={{ duration: 300 }} role="alert">
 		<div class="compact-icon">
-			<IconPlugConnected size={18} />
+			<Icon icon={IconPlugConnected} size={18} />
 		</div>
 		<span class="compact-message">{serviceName} not connected</span>
 		<button class="compact-btn" onclick={handleConnect}>
 			Connect
-			<IconArrowRight size={14} />
+			<Icon icon={IconArrowRight} size={14} />
 		</button>
 	</div>
 {:else}
@@ -76,7 +76,7 @@
 			<div class="icon-container" style="--icon-color: {color}">
 				<span class="service-icon">{icon}</span>
 				<div class="plug-indicator">
-					<IconPlugConnected size={20} />
+					<Icon icon={IconPlugConnected} size={20} />
 				</div>
 			</div>
 
@@ -101,14 +101,14 @@
 
 			<!-- Connect Button -->
 			<button class="connect-btn" onclick={handleConnect} style="--btn-color: {color}">
-				<IconPlugConnected size={20} />
+				<Icon icon={IconPlugConnected} size={20} />
 				<span>Connect {serviceName}</span>
-				<IconArrowRight size={18} />
+				<Icon icon={IconArrowRight} size={18} />
 			</button>
 
 			<!-- Security Note -->
 			<div class="security-note">
-				<IconLock size={14} />
+				<Icon icon={IconLock} size={14} />
 				<span>Your credentials are encrypted and stored securely</span>
 			</div>
 		</div>

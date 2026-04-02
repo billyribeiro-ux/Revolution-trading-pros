@@ -9,7 +9,7 @@
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
-	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
+	import { Icon, IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
 
 	interface Props {
 		period?: string;
@@ -69,7 +69,7 @@ import { logger } from '$lib/utils/logger';
 	<div class="explorer-header">
 		<h2 class="explorer-title">Event Explorer</h2>
 		<button class="btn-refresh" onclick={loadEvents}>
-			<IconRefresh size={18} />
+			<Icon icon={IconRefresh} size={18} />
 			Refresh
 		</button>
 	</div>
@@ -77,7 +77,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Filters -->
 	<div class="explorer-filters">
 		<div class="search-box">
-			<IconSearch size={20} class="search-icon" />
+			<Icon icon={IconSearch} size={20} class="search-icon" />
 			<input
 				type="text"
 				bind:value={searchQuery}
@@ -95,7 +95,7 @@ import { logger } from '$lib/utils/logger';
 		</select>
 
 		<button class="btn-export">
-			<IconDownload size={18} />
+			<Icon icon={IconDownload} size={18} />
 			Export
 		</button>
 	</div>
@@ -161,7 +161,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else}
 			<div class="empty-state">
-				<IconFilter size={48} class="text-gray-600" />
+				<Icon icon={IconFilter} size={48} class="text-gray-600" />
 				<p class="text-gray-400 mt-3">No events found</p>
 			</div>
 		{/if}

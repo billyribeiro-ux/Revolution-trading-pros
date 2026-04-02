@@ -1,15 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		IconShield,
-		IconClock,
-		IconUsers,
-		IconStar,
-		IconCheck,
-		IconBolt,
-		IconTrendingUp
-	} from '$lib/icons';
+	import { Icon, IconShield, IconClock, IconUsers, IconStar, IconCheck, IconBolt, IconTrendingUp } from '$lib/icons';
 
 	let heroVisible = $state(false);
 
@@ -39,7 +31,7 @@
 
 		<div class="hero-content">
 			<div class="hero-badge">
-				<IconShield size={20} stroke={2} />
+				<Icon icon={IconShield} size={20} stroke={2} />
 				<span>Essential Risk Management</span>
 			</div>
 
@@ -55,21 +47,21 @@
 
 			<div class="hero-meta">
 				<div class="meta-item">
-					<IconClock size={24} stroke={2} />
+					<Icon icon={IconClock} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Duration</div>
 						<div class="meta-value">4 Weeks</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconUsers size={24} stroke={2} />
+					<Icon icon={IconUsers} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Students</div>
 						<div class="meta-value">4,156</div>
 					</div>
 				</div>
 				<div class="meta-item">
-					<IconStar size={24} stroke={2} />
+					<Icon icon={IconStar} size={24} stroke={2} />
 					<div>
 						<div class="meta-label">Rating</div>
 						<div class="meta-value">5.0/5.0</div>
@@ -80,7 +72,7 @@
 			<div class="hero-cta">
 				<a href="/register" class="cta-button primary">
 					Enroll Now - $297
-					<IconBolt size={20} stroke={2} />
+					<Icon icon={IconBolt} size={20} stroke={2} />
 				</a>
 			</div>
 		</div>
@@ -92,7 +84,7 @@
 
 			<div class="learning-grid">
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Position Sizing</h3>
 					<p>
 						Calculate optimal position sizes based on account size, risk tolerance, and market
@@ -101,7 +93,7 @@
 				</div>
 
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Stop-Loss Strategies</h3>
 					<p>
 						Professional stop-loss placement techniques to protect capital while giving trades room
@@ -110,13 +102,13 @@
 				</div>
 
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Drawdown Prevention</h3>
 					<p>Techniques to prevent catastrophic drawdowns and preserve your trading capital.</p>
 				</div>
 
 				<div class="learning-card">
-					<IconTrendingUp size={32} stroke={1.5} />
+					<Icon icon={IconTrendingUp} size={32} stroke={1.5} />
 					<h3>Trading Plan Development</h3>
 					<p>
 						Build a comprehensive trading plan with clear rules, risk parameters, and performance
@@ -134,15 +126,15 @@
 
 			<div class="features-list">
 				<div class="feature-item">
-					<IconCheck size={20} stroke={2} />
+					<Icon icon={IconCheck} size={20} stroke={2} />
 					<span>24 hours of content</span>
 				</div>
 				<div class="feature-item">
-					<IconCheck size={20} stroke={2} />
+					<Icon icon={IconCheck} size={20} stroke={2} />
 					<span>Risk calculators included</span>
 				</div>
 				<div class="feature-item">
-					<IconCheck size={20} stroke={2} />
+					<Icon icon={IconCheck} size={20} stroke={2} />
 					<span>Trading plan templates</span>
 				</div>
 			</div>
@@ -151,7 +143,7 @@
 				<span class="price">$297</span>
 				<a href="/register" class="enroll-button">
 					Enroll Now
-					<IconBolt size={20} stroke={2} />
+					<Icon icon={IconBolt} size={20} stroke={2} />
 				</a>
 			</div>
 		</div>

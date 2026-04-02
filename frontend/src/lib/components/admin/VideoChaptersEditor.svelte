@@ -5,13 +5,7 @@
 	 */
 
 	import { chaptersApi, parseTimeToSeconds, type VideoChapter } from '$lib/api/video-advanced';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-
+						
 	interface Props {
 		videoId: number;
 		videoDuration?: number;
@@ -200,7 +194,7 @@
 		<h3>Video Chapters</h3>
 		{#if onClose}
 			<button type="button" class="btn-close" onclick={onClose}>
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		{/if}
 	</div>
@@ -251,16 +245,16 @@
 									onclick={() => saveEdit(chapter.id)}
 									disabled={isSaving}
 								>
-									<IconCheck size={16} /> Save
+									<Icon icon={IconCheck} size={16} /> Save
 								</button>
 								<button type="button" class="btn-cancel" onclick={cancelEditing}>
-									<IconX size={16} /> Cancel
+									<Icon icon={IconX} size={16} /> Cancel
 								</button>
 							</div>
 						</div>
 					{:else}
 						<div class="chapter-grip">
-							<IconGripVertical size={16} />
+							<Icon icon={IconGripVertical} size={16} />
 						</div>
 						<div class="chapter-number">{chapter.chapter_number}</div>
 						<div class="chapter-time">{chapter.formatted_start_time}</div>
@@ -277,7 +271,7 @@
 								onclick={() => startEditing(chapter)}
 								title="Edit"
 							>
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 							</button>
 							<button
 								type="button"
@@ -285,7 +279,7 @@
 								onclick={() => deleteChapter(chapter.id)}
 								title="Delete"
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						</div>
 					{/if}
@@ -328,7 +322,7 @@
 				onclick={addChapter}
 				disabled={isSaving || !newChapter.title || !newChapter.startTime}
 			>
-				<IconPlus size={16} /> Add Chapter
+				<Icon icon={IconPlus} size={16} /> Add Chapter
 			</button>
 		</div>
 
@@ -574,6 +568,7 @@
 
 	.btn-add,
 	.btn-import {
+	import { Icon, IconCheck, IconEdit, IconGripVertical, IconPlus, IconTrash, IconX } from '$lib/icons';
 		display: flex;
 		align-items: center;
 		justify-content: center;

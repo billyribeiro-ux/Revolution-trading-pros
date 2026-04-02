@@ -14,10 +14,8 @@
 	import { goto } from '$app/navigation';
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { login, register } from '$lib/api/auth';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-
+	import { Icon, IconArrowLeft, IconShoppingCart, IconTicket } from '$lib/icons';
+			
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -137,7 +135,7 @@
 		<!-- Page Header -->
 		<header class="checkout-page-header">
 			<a href="/" class="back-link">
-				<IconArrowLeft size={18} />
+				<Icon icon={IconArrowLeft} size={18} />
 				<span>Continue Shopping</span>
 			</a>
 			<h1 class="page-title">Checkout</h1>
@@ -333,7 +331,7 @@
 												onclick={toggleForms}
 												disabled={isSubmitting}
 											>
-												<IconArrowLeft size={16} />
+												<Icon icon={IconArrowLeft} size={16} />
 												Back to Sign In
 											</button>
 											<button
@@ -372,7 +370,7 @@
 															: undefined}
 													>
 														{#if !item.thumbnail && !item.image}
-															<IconShoppingCart size={20} />
+															<Icon icon={IconShoppingCart} size={20} />
 														{/if}
 													</div>
 													<div class="product-name">
@@ -452,7 +450,7 @@
 									<div class="coupon-section">
 										<div class="rtp-form-coupon-toggle">
 											<div class="rtp-info">
-												<IconTicket size={16} />
+												<Icon icon={IconTicket} size={16} />
 												<button
 													type="button"
 													class="showcoupon"

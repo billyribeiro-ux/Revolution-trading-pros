@@ -6,46 +6,7 @@
 import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
-	import {
-		IconReceipt,
-		IconTicket,
-		IconUsers,
-		IconChartBar,
-		IconRefresh,
-		IconNews,
-		IconForms,
-		IconMail,
-		IconBellRinging,
-		IconPhoto,
-		IconSettings,
-		IconSeo,
-		IconUserCircle,
-		IconFilter,
-		IconActivity,
-		IconSend,
-		IconAlertCircle,
-		IconShoppingCart,
-		IconVideo,
-		IconTag,
-		IconEye,
-		IconClick,
-		IconClock,
-		IconArrowUpRight,
-		IconWorld,
-		IconBrandGoogle,
-		IconLink,
-		IconAlertTriangle,
-		IconTrendingUp,
-		IconCalendar,
-		IconSearch,
-		IconTarget,
-		IconChartLine,
-		IconDevices,
-		IconBrowser,
-		IconDeviceMobile,
-		IconExternalLink,
-		IconPlugConnected
-	} from '$lib/icons';
+	import { Icon, IconReceipt, IconTicket, IconUsers, IconChartBar, IconRefresh, IconNews, IconForms, IconMail, IconBellRinging, IconPhoto, IconSettings, IconSeo, IconUserCircle, IconFilter, IconActivity, IconSend, IconAlertCircle, IconShoppingCart, IconVideo, IconTag, IconEye, IconClick, IconClock, IconArrowUpRight, IconWorld, IconBrandGoogle, IconLink, IconAlertTriangle, IconTrendingUp, IconCalendar, IconSearch, IconTarget, IconChartLine, IconDevices, IconBrowser, IconDeviceMobile, IconExternalLink, IconPlugConnected } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import {
 		connections,
@@ -397,7 +358,7 @@ import { logger } from '$lib/utils/logger';
 					disabled={isLoading}
 					class:loading={isLoading}
 				>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 			</div>
@@ -405,7 +366,7 @@ import { logger } from '$lib/utils/logger';
 
 		{#if error}
 			<div class="error-banner" in:fly={{ y: -10, duration: 300 }}>
-				<IconAlertCircle size={20} />
+				<Icon icon={IconAlertCircle} size={20} />
 				<span>{error}</span>
 			</div>
 		{/if}
@@ -415,7 +376,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="panel-header">
 				<div class="panel-title">
 					<div class="panel-icon analytics-icon">
-						<IconChartBar size={24} />
+						<Icon icon={IconChartBar} size={24} />
 					</div>
 					<div>
 						<h2>Site Analytics</h2>
@@ -424,12 +385,12 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				{#if analyticsConnected}
 					<div class="panel-badge connected">
-						<IconCalendar size={14} />
+						<Icon icon={IconCalendar} size={14} />
 						Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} Days
 					</div>
 				{:else}
 					<a href="/admin/connections" class="panel-badge not-connected">
-						<IconPlugConnected size={14} />
+						<Icon icon={IconPlugConnected} size={14} />
 						Connect Analytics
 					</a>
 				{/if}
@@ -439,7 +400,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Not Connected State -->
 				<div class="not-connected-banner">
 					<div class="not-connected-icon">
-						<IconChartBar size={32} />
+						<Icon icon={IconChartBar} size={32} />
 					</div>
 					<div class="not-connected-text">
 						<h3>Analytics Not Connected</h3>
@@ -449,7 +410,7 @@ import { logger } from '$lib/utils/logger';
 						</p>
 					</div>
 					<a href="/admin/connections" class="connect-btn">
-						<IconPlugConnected size={16} />
+						<Icon icon={IconPlugConnected} size={16} />
 						Connect Service
 					</a>
 				</div>
@@ -486,7 +447,7 @@ import { logger } from '$lib/utils/logger';
 											class:positive={metric.trend === 'up'}
 											class:negative={metric.trend === 'down'}
 										>
-											<IconArrowUpRight size={14} />
+											<Icon icon={IconArrowUpRight} size={14} />
 											<span>{Math.abs(metric.change).toFixed(1)}%</span>
 										</div>
 									{/if}
@@ -509,7 +470,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="panel-header">
 					<div class="panel-title">
 						<div class="panel-icon google-icon">
-							<IconBrandGoogle size={24} />
+							<Icon icon={IconBrandGoogle} size={24} />
 						</div>
 						<div>
 							<h2>SEO Performance</h2>
@@ -518,11 +479,11 @@ import { logger } from '$lib/utils/logger';
 					</div>
 					{#if seoConnected}
 						<a href="/admin/seo" class="panel-link">
-							View Details <IconExternalLink size={14} />
+							View Details <Icon icon={IconExternalLink} size={14} />
 						</a>
 					{:else}
 						<a href="/admin/connections" class="panel-badge not-connected">
-							<IconPlugConnected size={14} />
+							<Icon icon={IconPlugConnected} size={14} />
 							Connect SEO Tools
 						</a>
 					{/if}
@@ -532,7 +493,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Not Connected State -->
 					<div class="not-connected-banner">
 						<div class="not-connected-icon">
-							<IconBrandGoogle size={32} />
+							<Icon icon={IconBrandGoogle} size={32} />
 						</div>
 						<div class="not-connected-text">
 							<h3>SEO Tools Not Connected</h3>
@@ -542,7 +503,7 @@ import { logger } from '$lib/utils/logger';
 							</p>
 						</div>
 						<a href="/admin/connections" class="connect-btn">
-							<IconPlugConnected size={16} />
+							<Icon icon={IconPlugConnected} size={16} />
 							Connect Service
 						</a>
 					</div>
@@ -550,7 +511,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="seo-metrics-grid">
 						<div class="seo-metric-card primary">
 							<div class="seo-metric-header">
-								<IconSearch size={18} />
+								<Icon icon={IconSearch} size={18} />
 								<span>Search Traffic</span>
 							</div>
 							<div class="seo-metric-value">
@@ -560,7 +521,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if seoMetrics.searchTraffic.value !== null && seoMetrics.searchTraffic.change !== 0}
 								<div class="seo-metric-change positive">
-									<IconArrowUpRight size={12} />
+									<Icon icon={IconArrowUpRight} size={12} />
 									+{seoMetrics.searchTraffic.change}%
 								</div>
 							{/if}
@@ -574,7 +535,7 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="seo-metric-card">
 							<div class="seo-metric-header">
-								<IconEye size={18} />
+								<Icon icon={IconEye} size={18} />
 								<span>Impressions</span>
 							</div>
 							<div class="seo-metric-value">
@@ -584,7 +545,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if seoMetrics.totalImpressions.value !== null && seoMetrics.totalImpressions.change !== 0}
 								<div class="seo-metric-change positive">
-									<IconArrowUpRight size={12} />
+									<Icon icon={IconArrowUpRight} size={12} />
 									+{seoMetrics.totalImpressions.change}%
 								</div>
 							{/if}
@@ -592,7 +553,7 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="seo-metric-card">
 							<div class="seo-metric-header">
-								<IconClick size={18} />
+								<Icon icon={IconClick} size={18} />
 								<span>Clicks</span>
 							</div>
 							<div class="seo-metric-value">
@@ -602,7 +563,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if seoMetrics.totalClicks.value !== null && seoMetrics.totalClicks.change !== 0}
 								<div class="seo-metric-change positive">
-									<IconArrowUpRight size={12} />
+									<Icon icon={IconArrowUpRight} size={12} />
 									+{seoMetrics.totalClicks.change}%
 								</div>
 							{/if}
@@ -610,7 +571,7 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="seo-metric-card">
 							<div class="seo-metric-header">
-								<IconTarget size={18} />
+								<Icon icon={IconTarget} size={18} />
 								<span>Avg CTR</span>
 							</div>
 							<div class="seo-metric-value">
@@ -618,7 +579,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if seoMetrics.avgCTR.value !== null && seoMetrics.avgCTR.change !== 0}
 								<div class="seo-metric-change positive">
-									<IconArrowUpRight size={12} />
+									<Icon icon={IconArrowUpRight} size={12} />
 									+{seoMetrics.avgCTR.change}%
 								</div>
 							{/if}
@@ -626,7 +587,7 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="seo-metric-card">
 							<div class="seo-metric-header">
-								<IconChartLine size={18} />
+								<Icon icon={IconChartLine} size={18} />
 								<span>Keywords</span>
 							</div>
 							<div class="seo-metric-value">
@@ -636,7 +597,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							{#if seoMetrics.totalKeywords.value !== null && seoMetrics.totalKeywords.change !== 0}
 								<div class="seo-metric-change positive">
-									<IconArrowUpRight size={12} />
+									<Icon icon={IconArrowUpRight} size={12} />
 									+{seoMetrics.totalKeywords.change}
 								</div>
 							{/if}
@@ -644,7 +605,7 @@ import { logger } from '$lib/utils/logger';
 
 						<div class="seo-metric-card">
 							<div class="seo-metric-header">
-								<IconTrendingUp size={18} />
+								<Icon icon={IconTrendingUp} size={18} />
 								<span>Avg Position</span>
 							</div>
 							<div class="seo-metric-value">
@@ -658,7 +619,7 @@ import { logger } from '$lib/utils/logger';
 									class:positive={seoMetrics.avgPosition.change < 0}
 									class:negative={seoMetrics.avgPosition.change > 0}
 								>
-									<IconArrowUpRight size={12} />
+									<Icon icon={IconArrowUpRight} size={12} />
 									{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
 								</div>
 							{/if}
@@ -675,7 +636,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="panel-header">
 					<div class="panel-title">
 						<div class="panel-icon health-icon">
-							<IconActivity size={24} />
+							<Icon icon={IconActivity} size={24} />
 						</div>
 						<div>
 							<h2>Site Health</h2>
@@ -691,7 +652,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="device-bars">
 							<div class="device-row">
 								<div class="device-info">
-									<IconDevices size={16} />
+									<Icon icon={IconDevices} size={16} />
 									<span>Desktop</span>
 								</div>
 								<div class="device-bar-wrap">
@@ -701,7 +662,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="device-row">
 								<div class="device-info">
-									<IconDeviceMobile size={16} />
+									<Icon icon={IconDeviceMobile} size={16} />
 									<span>Mobile</span>
 								</div>
 								<div class="device-bar-wrap">
@@ -711,7 +672,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="device-row">
 								<div class="device-info">
-									<IconBrowser size={16} />
+									<Icon icon={IconBrowser} size={16} />
 									<span>Tablet</span>
 								</div>
 								<div class="device-bar-wrap">
@@ -766,7 +727,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="panel-header">
 				<div class="panel-title">
 					<div class="panel-icon business-icon">
-						<IconTrendingUp size={24} />
+						<Icon icon={IconTrendingUp} size={24} />
 					</div>
 					<div>
 						<h2>Business Overview</h2>
@@ -793,7 +754,7 @@ import { logger } from '$lib/utils/logger';
 							<span class="business-card-label">{item.label}</span>
 						</div>
 						<div class="business-card-arrow">
-							<IconArrowUpRight size={18} />
+							<Icon icon={IconArrowUpRight} size={18} />
 						</div>
 					</a>
 				{/each}
@@ -808,7 +769,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="panel-header">
 				<div class="panel-title">
 					<div class="panel-icon actions-icon">
-						<IconSettings size={24} />
+						<Icon icon={IconSettings} size={24} />
 					</div>
 					<div>
 						<h2>Quick Actions</h2>
@@ -843,7 +804,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="panel-header">
 					<div class="panel-title">
 						<div class="panel-icon pages-icon">
-							<IconLink size={24} />
+							<Icon icon={IconLink} size={24} />
 						</div>
 						<div>
 							<h2>Top Pages</h2>

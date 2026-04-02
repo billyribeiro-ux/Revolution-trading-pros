@@ -8,22 +8,10 @@
 	let gsapInstance: typeof import('gsap').gsap | null = null;
 
 	// --- ICONS ---
-	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
-	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
-	import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-
+													
 	// Assumed existing component based on your snippet
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { Icon, IconActivity, IconArrowRight, IconBolt, IconBrain, IconChartCandle, IconChartLine, IconCheck, IconChevronDown, IconRocket, IconSchool, IconShield, IconTrendingUp, IconX } from '$lib/icons';
 
 	// --- TYPES ---
 
@@ -437,7 +425,7 @@
 					></div>
 					<span class="relative flex items-center gap-2">
 						View Curriculum
-						<IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
+						<Icon icon={IconArrowRight} size={20} class="transition-transform group-hover:translate-x-1" />
 					</span>
 				</a>
 
@@ -466,13 +454,13 @@
 				{#each Array(8) as _}
 					<div class="flex items-center gap-8 px-4">
 						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
-							><IconTrendingUp size={14} /> SPY $542.30 +1.2%</span
+							><Icon icon={IconTrendingUp} size={14} /> SPY $542.30 +1.2%</span
 						>
 						<span class="flex items-center gap-2 text-xs font-mono text-red-400"
-							><IconActivity size={14} /> VIX 13.45 -2.1%</span
+							><Icon icon={IconActivity} size={14} /> VIX 13.45 -2.1%</span
 						>
 						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
-							><IconBolt size={14} /> NVDA $135.20 +3.4%</span
+							><Icon icon={IconBolt} size={14} /> NVDA $135.20 +3.4%</span
 						>
 						<span class="flex items-center gap-2 text-xs font-mono text-slate-400"
 							>BTC $92,430 +0.1%</span
@@ -498,14 +486,14 @@
 
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 						<div class="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
-							<IconX class="text-red-500 mb-4" size={32} />
+							<Icon icon={IconX} class="text-red-500 mb-4" size={32} />
 							<h3 class="text-white font-bold mb-2">Gambling</h3>
 							<p class="text-sm text-slate-400">
 								Entry based on "feeling" rather than statistical edge.
 							</p>
 						</div>
 						<div class="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-							<IconCheck class="text-emerald-500 mb-4" size={32} />
+							<Icon icon={IconCheck} class="text-emerald-500 mb-4" size={32} />
 							<h3 class="text-white font-bold mb-2">Business</h3>
 							<p class="text-sm text-slate-400">
 								Execution based on a pre-defined, backtested playbook.
@@ -605,7 +593,7 @@
 							<div class="space-y-3 mb-8">
 								{#each course.features as feature}
 									<div class="flex items-center gap-3 text-sm text-slate-300">
-										<IconCheck size={16} class={colors.icon} />
+										<Icon icon={IconCheck} size={16} class={colors.icon} />
 										{feature}
 									</div>
 								{/each}
@@ -620,7 +608,7 @@
 									href={`/courses/${course.slug}`}
 									class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black font-semibold text-sm hover:bg-slate-200 transition-colors"
 								>
-									Start <IconArrowRight size={16} />
+									Start <Icon icon={IconArrowRight} size={16} />
 								</a>
 							</div>
 						</div>
@@ -645,7 +633,7 @@
 								class="text-lg font-medium text-slate-200 group-hover:text-white transition-colors"
 								>{faq.question}</span
 							>
-							<IconChevronDown
+							<Icon icon={IconChevronDown}
 								size={20}
 								class={`text-slate-500 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-400' : ''}`}
 							/>
@@ -668,7 +656,7 @@
 		<div class="absolute inset-0 bg-blue-600/5 blur-[100px]"></div>
 
 		<div class="container mx-auto px-6 relative z-10 text-center">
-			<IconRocket size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
+			<Icon icon={IconRocket} size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
 			<h2 class="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8">
 				Market Opens In... Now.
 			</h2>
@@ -680,7 +668,7 @@
 				href="#curriculum"
 				class="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]"
 			>
-				<IconSchool size={24} />
+				<Icon icon={IconSchool} size={24} />
 				Enroll Now
 			</a>
 		</div>

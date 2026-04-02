@@ -9,15 +9,7 @@
 
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
-	import {
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconVolume,
-		IconVolumeOff,
-		IconWaveSine,
-		IconAlertCircle,
-		IconUpload
-	} from '$lib/icons';
+	import { Icon, IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff, IconWaveSine, IconAlertCircle, IconUpload } from '$lib/icons';
 	import { useMediaControls } from '../hooks/useMediaControls.svelte';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
@@ -209,15 +201,15 @@ import { logger } from '$lib/utils/logger';
 				aria-pressed={controls.playing}
 			>
 				{#if controls.playing}
-					<IconPlayerPause size={24} aria-hidden="true" />
+					<Icon icon={IconPlayerPause} size={24} aria-hidden="true" />
 				{:else}
-					<IconPlayerPlay size={24} aria-hidden="true" />
+					<Icon icon={IconPlayerPlay} size={24} aria-hidden="true" />
 				{/if}
 			</button>
 
 			<!-- Waveform Icon (decorative) -->
 			<div class="audio-waveform" aria-hidden="true">
-				<IconWaveSine size={20} />
+				<Icon icon={IconWaveSine} size={20} />
 			</div>
 
 			<!-- Progress Bar -->
@@ -257,9 +249,9 @@ import { logger } from '$lib/utils/logger';
 					aria-pressed={controls.muted}
 				>
 					{#if controls.muted}
-						<IconVolumeOff size={20} aria-hidden="true" />
+						<Icon icon={IconVolumeOff} size={20} aria-hidden="true" />
 					{:else}
-						<IconVolume size={20} aria-hidden="true" />
+						<Icon icon={IconVolume} size={20} aria-hidden="true" />
 					{/if}
 				</button>
 				<input
@@ -294,7 +286,7 @@ import { logger } from '$lib/utils/logger';
 	{:else if props.isEditing}
 		<!-- Placeholder (Edit Mode) -->
 		<div class="audio-placeholder">
-			<IconWaveSine size={48} aria-hidden="true" />
+			<Icon icon={IconWaveSine} size={48} aria-hidden="true" />
 			<span class="audio-placeholder-title">Add Audio</span>
 			<span class="audio-placeholder-subtitle">Enter a URL or upload an audio file</span>
 
@@ -321,7 +313,7 @@ import { logger } from '$lib/utils/logger';
 			<span class="audio-upload-divider">or</span>
 
 			<label class="audio-file-upload">
-				<IconUpload size={20} aria-hidden="true" />
+				<Icon icon={IconUpload} size={20} aria-hidden="true" />
 				<span>Upload audio file</span>
 				<input
 					type="file"
@@ -336,7 +328,7 @@ import { logger } from '$lib/utils/logger';
 	{:else}
 		<!-- No audio in view mode -->
 		<div class="audio-empty" role="status">
-			<IconAlertCircle size={24} aria-hidden="true" />
+			<Icon icon={IconAlertCircle} size={24} aria-hidden="true" />
 			<span>No audio available</span>
 		</div>
 	{/if}

@@ -2,21 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import {
-		IconWorld as IconBrandBing,
-		IconRocket,
-		IconCheck,
-		IconX,
-		IconRefresh,
-		IconSend,
-		IconClock,
-		IconTrendingUp,
-		IconExternalLink,
-		IconBolt,
-		IconWorld,
-		IconSearch,
-		IconFileText
-	} from '$lib/icons';
+	import { Icon, IconWorld as IconBrandBing, IconRocket, IconCheck, IconX, IconRefresh, IconSend, IconClock, IconTrendingUp, IconExternalLink, IconBolt, IconWorld, IconSearch, IconFileText } from '$lib/icons';
 	import {
 		bingSeoApi,
 		type BingSeoStats,
@@ -166,7 +152,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon bing">
-					<IconBrandBing size={28} />
+					<Icon icon={IconBrandBing} size={28} />
 				</div>
 				<div>
 					<h1>Bing SEO & IndexNow</h1>
@@ -178,15 +164,15 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={loadData}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Refresh
 				</button>
 				<button class="btn-secondary" onclick={() => (showBatchModal = true)}>
-					<IconFileText size={18} />
+					<Icon icon={IconFileText} size={18} />
 					Batch Submit
 				</button>
 				<button class="btn-primary bing" onclick={handleSubmitSitemap}>
-					<IconWorld size={18} />
+					<Icon icon={IconWorld} size={18} />
 					Submit Sitemap
 				</button>
 			</div>
@@ -196,7 +182,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Competitive Advantage Banner -->
 	<div class="advantage-banner">
 		<div class="advantage-icon">
-			<IconBolt size={32} />
+			<Icon icon={IconBolt} size={32} />
 		</div>
 		<div class="advantage-content">
 			<h3>Massive Competitive Advantage</h3>
@@ -219,7 +205,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconSend size={24} />
+					<Icon icon={IconSend} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{stats?.total_submissions?.toLocaleString() || 0}</div>
@@ -228,7 +214,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald">
-					<IconCheck size={24} />
+					<Icon icon={IconCheck} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{stats?.successful_submissions?.toLocaleString() || 0}</div>
@@ -237,7 +223,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconTrendingUp size={24} />
+					<Icon icon={IconTrendingUp} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{stats?.success_rate?.toFixed(1) || 0}%</div>
@@ -246,7 +232,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon yellow">
-					<IconClock size={24} />
+					<Icon icon={IconClock} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{stats?.submissions_today || 0}</div>
@@ -259,7 +245,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="submit-section">
 			<div class="submit-card">
 				<div class="submit-header">
-					<IconRocket size={24} />
+					<Icon icon={IconRocket} size={24} />
 					<h2>Submit URL to IndexNow</h2>
 				</div>
 				<p class="submit-description">
@@ -280,7 +266,7 @@ import { logger } from '$lib/utils/logger';
 						{#if submitting}
 							Submitting...
 						{:else}
-							<IconSend size={18} />
+							<Icon icon={IconSend} size={18} />
 							Submit to Bing
 						{/if}
 					</button>
@@ -299,7 +285,7 @@ import { logger } from '$lib/utils/logger';
 
 				{#if recentSubmissions.length === 0}
 					<div class="empty-state small">
-						<IconSend size={32} stroke={1} />
+						<Icon icon={IconSend} size={32} stroke={1} />
 						<p>No submissions yet</p>
 					</div>
 				{:else}
@@ -308,9 +294,9 @@ import { logger } from '$lib/utils/logger';
 							<div class="submission-item">
 								<div class="submission-status" class:success={submission.success}>
 									{#if submission.success}
-										<IconCheck size={16} />
+										<Icon icon={IconCheck} size={16} />
 									{:else}
-										<IconX size={16} />
+										<Icon icon={IconX} size={16} />
 									{/if}
 								</div>
 								<div class="submission-info">
@@ -337,7 +323,7 @@ import { logger } from '$lib/utils/logger';
 
 				{#if topQueries.length === 0}
 					<div class="empty-state small">
-						<IconSearch size={32} stroke={1} />
+						<Icon icon={IconSearch} size={32} stroke={1} />
 						<p>No search data yet</p>
 						<small>Connect Bing Webmaster Tools to see search performance</small>
 					</div>
@@ -388,7 +374,7 @@ import { logger } from '$lib/utils/logger';
 						<p>
 							Ensure <code>{'{your-key}'}.txt</code> is accessible at your domain root.
 							<a href="https://www.bing.com/indexnow" target="_blank" rel="noopener">
-								Learn more <IconExternalLink size={14} />
+								Learn more <Icon icon={IconExternalLink} size={14} />
 							</a>
 						</p>
 					</div>
@@ -400,7 +386,7 @@ import { logger } from '$lib/utils/logger';
 						<p>
 							Add your Bing Webmaster API key in settings for search performance data.
 							<a href="https://www.bing.com/webmasters/" target="_blank" rel="noopener">
-								Get API Key <IconExternalLink size={14} />
+								Get API Key <Icon icon={IconExternalLink} size={14} />
 							</a>
 						</p>
 					</div>
@@ -433,7 +419,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Batch URL Submission</h2>
 				<button class="close-btn" onclick={() => (showBatchModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -461,7 +447,7 @@ https://yourdomain.com/page-3"
 					{#if submitting}
 						Submitting...
 					{:else}
-						<IconSend size={18} />
+						<Icon icon={IconSend} size={18} />
 						Submit All
 					{/if}
 				</button>

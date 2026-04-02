@@ -13,7 +13,7 @@
 		type Form,
 		type FormEntry
 	} from '$lib/api/forms';
-	import { IconDownload, IconEye } from '$lib/icons';
+	import { Icon, IconDownload, IconEye } from '$lib/icons';
 
 	let forms = $state<Form[]>([]);
 	let entries = $state<FormEntry[]>([]);
@@ -103,7 +103,7 @@
 			<p class="text-gray-600 mt-1">View and manage form submissions</p>
 		</div>
 		<Button onclick={handleExport} disabled={!selectedFormId || entries.length === 0}>
-			<IconDownload size={20} />
+			<Icon icon={IconDownload} size={20} />
 			Export CSV
 		</Button>
 	</div>
@@ -160,7 +160,7 @@
 								title="View Entry"
 							>
 								<a href="/admin/forms/{selectedFormId}/entries/{entry.id}">
-									<IconEye size={18} />
+									<Icon icon={IconEye} size={18} />
 								</a>
 							</button>
 						</td>

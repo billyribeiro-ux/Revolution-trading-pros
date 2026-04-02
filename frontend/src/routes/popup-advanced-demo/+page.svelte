@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
-	import { IconClock, IconVideo, IconRocket } from '$lib/icons';
+	import { Icon, IconClock, IconVideo, IconRocket } from '$lib/icons';
 
 	// Get date 24 hours from now for countdown demo
 	const tomorrow = new Date();
@@ -262,7 +262,7 @@
 		<!-- Header -->
 		<div class="demo-header">
 			<h1 class="demo-title">
-				<IconRocket size={48} class="title-icon" />
+				<Icon icon={IconRocket} size={48} class="title-icon" />
 				Advanced Popup Features
 			</h1>
 			<p class="demo-subtitle">Countdown Timers, Video Embeds, and More</p>
@@ -284,13 +284,13 @@
 						<div class="card-badges">
 							{#if popup.countdownTimer?.enabled}
 								<span class="badge blue">
-									<IconClock size={14} />
+									<Icon icon={IconClock} size={14} />
 									Countdown
 								</span>
 							{/if}
 							{#if popup.videoEmbed?.enabled}
 								<span class="badge purple">
-									<IconVideo size={14} />
+									<Icon icon={IconVideo} size={14} />
 									Video
 								</span>
 							{/if}

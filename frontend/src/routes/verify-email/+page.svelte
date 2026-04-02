@@ -24,16 +24,7 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import {
-		IconCheck,
-		IconX,
-		IconLoader,
-		IconMail,
-		IconRefresh,
-		IconLogin,
-		IconAlertTriangle,
-		IconClock
-	} from '$lib/icons';
+	import { Icon, IconCheck, IconX, IconLoader, IconMail, IconRefresh, IconLogin, IconAlertTriangle, IconClock } from '$lib/icons';
 	import { verifyEmail, resendVerificationEmail } from '$lib/api/auth';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -315,7 +306,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Logo -->
 		<div class="mb-8 text-center">
 			<div class="inline-block rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 p-3 mb-4">
-				<IconMail class="h-8 w-8 text-white" />
+				<Icon icon={IconMail} class="h-8 w-8 text-white" />
 			</div>
 			<h1 class="text-3xl font-bold text-white">Revolution Trading Pros</h1>
 		</div>
@@ -328,7 +319,7 @@ import { logger } from '$lib/utils/logger';
 						class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20"
 						in:scale={{ duration: 300, easing: quintOut }}
 					>
-						<IconLoader class="h-10 w-10 animate-spin text-emerald-400" />
+						<Icon icon={IconLoader} class="h-10 w-10 animate-spin text-emerald-400" />
 					</div>
 					<h2 class="mt-6 text-2xl font-bold text-white">Verifying Your Email</h2>
 					<p class="mt-2 text-slate-300">Please wait while we verify your email address...</p>
@@ -342,7 +333,7 @@ import { logger } from '$lib/utils/logger';
 						class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20"
 						in:scale={{ duration: 400, easing: quintOut, start: 0.5 }}
 					>
-						<IconCheck class="h-10 w-10 text-emerald-400" />
+						<Icon icon={IconCheck} class="h-10 w-10 text-emerald-400" />
 					</div>
 					<h2 class="mt-6 text-2xl font-bold text-white">Email Verified!</h2>
 					<p class="mt-2 text-slate-300">
@@ -355,7 +346,7 @@ import { logger } from '$lib/utils/logger';
 							class="mt-4 flex items-center justify-center gap-2 text-sm text-slate-400"
 							in:fly={{ y: 10, duration: 300 }}
 						>
-							<IconClock class="h-4 w-4" />
+							<Icon icon={IconClock} class="h-4 w-4" />
 							<span
 								>Redirecting in {autoRedirectSeconds} second{autoRedirectSeconds !== 1
 									? 's'
@@ -376,7 +367,7 @@ import { logger } from '$lib/utils/logger';
 							href="/login"
 							class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white transition hover:from-emerald-600 hover:to-teal-600"
 						>
-							<IconLogin class="h-5 w-5" />
+							<Icon icon={IconLogin} class="h-5 w-5" />
 							Login to Your Account
 						</a>
 					</div>
@@ -403,11 +394,11 @@ import { logger } from '$lib/utils/logger';
 						in:scale={{ duration: 300, easing: quintOut }}
 					>
 						{#if status === 'expired'}
-							<IconMail class="h-10 w-10 text-yellow-400" />
+							<Icon icon={IconMail} class="h-10 w-10 text-yellow-400" />
 						{:else if status === 'rate-limited'}
-							<IconAlertTriangle class="h-10 w-10 text-orange-400" />
+							<Icon icon={IconAlertTriangle} class="h-10 w-10 text-orange-400" />
 						{:else}
-							<IconX class="h-10 w-10 text-red-400" />
+							<Icon icon={IconX} class="h-10 w-10 text-red-400" />
 						{/if}
 					</div>
 					<h2 class="mt-6 text-2xl font-bold text-white">
@@ -428,7 +419,7 @@ import { logger } from '$lib/utils/logger';
 							class="mt-4 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
 							aria-label="Retry verification"
 						>
-							<IconRefresh class="h-4 w-4" />
+							<Icon icon={IconRefresh} class="h-4 w-4" />
 							Retry Verification ({maxRetries - retryCount} attempts left)
 						</button>
 					{/if}
@@ -436,7 +427,7 @@ import { logger } from '$lib/utils/logger';
 					{#if resendSuccess}
 						<div class="mt-6 rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-4">
 							<p class="text-emerald-300 flex items-center justify-center gap-2">
-								<IconCheck class="h-5 w-5" />
+								<Icon icon={IconCheck} class="h-5 w-5" />
 								A new verification email has been sent! Check your inbox.
 							</p>
 						</div>
@@ -473,10 +464,10 @@ import { logger } from '$lib/utils/logger';
 								class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white transition hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50"
 							>
 								{#if resending}
-									<IconLoader class="h-5 w-5 animate-spin" />
+									<Icon icon={IconLoader} class="h-5 w-5 animate-spin" />
 									Sending...
 								{:else}
-									<IconRefresh class="h-5 w-5" />
+									<Icon icon={IconRefresh} class="h-5 w-5" />
 									Resend Verification Email
 								{/if}
 							</button>

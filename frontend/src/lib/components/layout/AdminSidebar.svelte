@@ -8,34 +8,7 @@
 	 */
 	import { page } from '$app/state';
 	import { user } from '$lib/stores/auth.svelte';
-	import {
-		IconDashboard,
-		IconReceipt,
-		IconTicket,
-		IconUsers,
-		IconUserCircle,
-		IconSettings,
-		IconLogout,
-		IconX,
-		IconForms,
-		IconSeo,
-		IconNews,
-		IconMail,
-		IconChartBar,
-		IconSend,
-		IconFilter,
-		IconEye,
-		IconPhoto,
-		IconTag,
-		IconVideo,
-		IconShoppingCart,
-		IconBellRinging,
-		IconHeartbeat,
-		IconPlugConnected,
-		IconBook,
-		IconFileText,
-		IconTrendingUp
-	} from '$lib/icons';
+	import { Icon, IconDashboard, IconReceipt, IconTicket, IconUsers, IconUserCircle, IconSettings, IconLogout, IconX, IconForms, IconSeo, IconNews, IconMail, IconChartBar, IconSend, IconFilter, IconEye, IconPhoto, IconTag, IconVideo, IconShoppingCart, IconBellRinging, IconHeartbeat, IconPlugConnected, IconBook, IconFileText, IconTrendingUp } from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;
@@ -115,7 +88,7 @@
 			<img src="/revolution-trading-pros.png" alt="RTP Admin" />
 		</a>
 		<button class="close-btn" onclick={closeSidebar}>
-			<IconX size={24} />
+			<Icon icon={IconX} size={24} />
 		</button>
 	</div>
 
@@ -152,7 +125,7 @@
 			</div>
 		</div>
 		<a href="/" class="exit-btn">
-			<IconLogout size={18} />
+			<Icon icon={IconLogout} size={18} />
 			<span>Exit Admin</span>
 		</a>
 	</div>

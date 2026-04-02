@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconTrendingUp, IconTrendingDown, IconPlus, IconX, IconChartLine } from '$lib/icons';
+	import { Icon, IconTrendingUp, IconTrendingDown, IconPlus, IconX, IconChartLine } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
@@ -145,7 +145,7 @@
 							onclick={() => removeTicker(index)}
 							aria-label="Remove ticker"
 						>
-							<IconX size={14} />
+							<Icon icon={IconX} size={14} />
 						</button>
 					{/if}
 				{:else}
@@ -153,9 +153,9 @@
 						<span class="ticker-symbol">{ticker.symbol}</span>
 						<span class="ticker-icon" aria-hidden="true">
 							{#if isPositive}
-								<IconTrendingUp size={16} />
+								<Icon icon={IconTrendingUp} size={16} />
 							{:else}
-								<IconTrendingDown size={16} />
+								<Icon icon={IconTrendingDown} size={16} />
 							{/if}
 						</span>
 					</div>
@@ -165,7 +165,7 @@
 						<span class="change-percent">({formatPercent(ticker.changePercent)})</span>
 					</div>
 					<div class="ticker-sparkline" aria-hidden="true">
-						<IconChartLine size={40} />
+						<Icon icon={IconChartLine} size={40} />
 					</div>
 				{/if}
 			</div>
@@ -173,7 +173,7 @@
 
 		{#if props.isEditing}
 			<button type="button" class="add-ticker" onclick={addTicker} aria-label="Add ticker">
-				<IconPlus size={20} />
+				<Icon icon={IconPlus} size={20} />
 				<span>Add Ticker</span>
 			</button>
 		{/if}

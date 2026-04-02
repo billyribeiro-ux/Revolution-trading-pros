@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconPlus, IconX, IconExternalLink } from '$lib/icons';
+	import { Icon, IconPlus, IconX, IconExternalLink } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -107,7 +107,7 @@
 							onclick={() => removeButton(index)}
 							aria-label="Remove"
 						>
-							<IconX size={12} />
+							<Icon icon={IconX} size={12} />
 						</button>
 					{/if}
 				{:else}
@@ -118,14 +118,14 @@
 						rel={button.newTab ? 'noopener noreferrer' : undefined}
 					>
 						{button.text}
-						{#if button.newTab}<IconExternalLink size={14} aria-hidden="true" />{/if}
+						{#if button.newTab}<Icon icon={IconExternalLink} size={14} aria-hidden="true" />{/if}
 					</a>
 				{/if}
 			</div>
 		{/each}
 		{#if props.isEditing}
 			<button type="button" class="add-btn" onclick={addButton} aria-label="Add button">
-				<IconPlus size={14} />
+				<Icon icon={IconPlus} size={14} />
 			</button>
 		{/if}
 	</div>

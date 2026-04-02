@@ -7,14 +7,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconFile,
-		IconDownload,
-		IconFileTypePdf,
-		IconFileTypeDoc,
-		IconFileSpreadsheet,
-		IconFileZip
-	} from '$lib/icons';
+	import { Icon, IconFile, IconDownload, IconFileTypePdf, IconFileTypeDoc, IconFileSpreadsheet, IconFileZip } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -122,7 +115,7 @@
 				</span>
 			</div>
 			<div class="file-download">
-				<IconDownload size={20} aria-hidden="true" />
+				<Icon icon={IconDownload} size={20} aria-hidden="true" />
 			</div>
 		</a>
 	{/if}

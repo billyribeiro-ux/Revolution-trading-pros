@@ -8,17 +8,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import {
-		IconPlus,
-		IconEdit,
-		IconTrash,
-		IconBook,
-		IconChartLine,
-		IconCrown,
-		IconShoppingCart,
-		IconRefresh,
-		IconSearch
-	} from '$lib/icons';
+	import { Icon, IconPlus, IconEdit, IconTrash, IconBook, IconChartLine, IconCrown, IconShoppingCart, IconRefresh, IconSearch } from '$lib/icons';
 
 	// Svelte 5 state runes
 	let loading = $state(true);
@@ -185,7 +175,7 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Manage courses, indicators, and memberships</p>
 			<div class="header-actions">
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						id="search-products"
 						name="search-products"
@@ -195,11 +185,11 @@ import { logger } from '$lib/utils/logger';
 					/>
 				</div>
 				<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
-					<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 					Refresh
 				</button>
 				<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Product
 				</button>
 			</div>
@@ -250,7 +240,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if filteredProducts.length === 0}
 			<div class="empty-state">
-				<IconShoppingCart size={64} stroke={1} />
+				<Icon icon={IconShoppingCart} size={64} stroke={1} />
 				<h3>No products found</h3>
 				{#if searchQuery}
 					<p>No products match your search "{searchQuery}"</p>
@@ -258,7 +248,7 @@ import { logger } from '$lib/utils/logger';
 				{:else}
 					<p>Create your first {selectedType === 'all' ? 'product' : selectedType}</p>
 					<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add Product
 					</button>
 				{/if}
@@ -316,7 +306,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => goto(`/admin/products/${product.id}/edit`)}
 								title="Edit"
 							>
-								<IconEdit size={16} />
+								<Icon icon={IconEdit} size={16} />
 								Edit
 							</button>
 							<button
@@ -328,7 +318,7 @@ import { logger } from '$lib/utils/logger';
 								{#if deleting === product.id}
 									<div class="btn-spinner"></div>
 								{:else}
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								{/if}
 								Delete
 							</button>

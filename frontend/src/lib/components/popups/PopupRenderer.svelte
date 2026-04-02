@@ -19,7 +19,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
-	import { IconX } from '$lib/icons';
+	import { Icon, IconX } from '$lib/icons';
 	import {
 		activePopup,
 		getActivePopups,
@@ -449,7 +449,7 @@
 			<!-- Close Button -->
 			{#if currentPopup.show_close_button !== false}
 				<button type="button" class="popup-close" onclick={handleClose} aria-label="Close popup">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			{/if}
 

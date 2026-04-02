@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconMail, IconLoader2, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { Icon, IconMail, IconLoader2, IconCheck, IconAlertCircle } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { isValidEmail } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
@@ -137,7 +137,7 @@
 >
 	<div class="newsletter-header">
 		<div class="newsletter-icon">
-			<IconMail size={24} aria-hidden="true" />
+			<Icon icon={IconMail} size={24} aria-hidden="true" />
 		</div>
 		<h3 class="newsletter-title">Subscribe to Our Newsletter</h3>
 		<p class="newsletter-description">Get the latest trading insights delivered to your inbox.</p>
@@ -147,7 +147,7 @@
 		<!-- Success State -->
 		<div class="newsletter-success" role="status" aria-live="polite">
 			<div class="success-icon">
-				<IconCheck size={28} aria-hidden="true" />
+				<Icon icon={IconCheck} size={28} aria-hidden="true" />
 			</div>
 			<p class="success-message">Thanks for subscribing!</p>
 			<p class="success-subtext">Check your inbox for a confirmation email.</p>
@@ -176,7 +176,7 @@
 					aria-busy={newsletterState.submitting}
 				>
 					{#if newsletterState.submitting}
-						<IconLoader2 size={18} class="spinner" aria-hidden="true" />
+						<Icon icon={IconLoader2} size={18} class="spinner" aria-hidden="true" />
 						<span class="sr-only">Subscribing...</span>
 					{:else}
 						{buttonText}
@@ -186,7 +186,7 @@
 
 			{#if newsletterState.error}
 				<div class="form-error" id="newsletter-error" role="alert">
-					<IconAlertCircle size={16} aria-hidden="true" />
+					<Icon icon={IconAlertCircle} size={16} aria-hidden="true" />
 					<span>{newsletterState.error}</span>
 				</div>
 			{/if}

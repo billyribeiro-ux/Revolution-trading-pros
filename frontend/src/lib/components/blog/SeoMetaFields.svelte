@@ -6,7 +6,7 @@
 	 * @version 2.0.0 - January 2026
 	 * Updated: TypeScript strict mode, modern CSS patterns
 	 */
-	import { IconX, IconPlus } from '$lib/icons';
+	import { Icon, IconX, IconPlus } from '$lib/icons';
 
 	/**
 	 * SEO metadata structure for blog posts
@@ -102,7 +102,7 @@
 						<span class="keyword-tag">
 							{keyword}
 							<button type="button" class="remove-keyword" onclick={() => removeKeyword(keyword)}>
-								<IconX size={14} />
+								<Icon icon={IconX} size={14} />
 							</button>
 						</span>
 					{/each}
@@ -117,7 +117,7 @@
 					onkeydown={handleKeywordKeydown}
 				/>
 				<button type="button" class="add-keyword-btn" onclick={addKeyword}>
-					<IconPlus size={16} />
+					<Icon icon={IconPlus} size={16} />
 				</button>
 			</div>
 		</div>

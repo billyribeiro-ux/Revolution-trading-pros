@@ -5,30 +5,7 @@ import { logger } from '$lib/utils/logger';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import {
-		IconLayoutKanban,
-		IconPlus,
-		IconFolder,
-		IconStar,
-		IconStarFilled,
-		IconArchive,
-		IconSearch,
-		IconClock,
-		IconChecks,
-		IconAlertTriangle,
-		IconCalendar,
-		IconChartBar,
-		IconSettings,
-		IconUpload,
-		IconTemplate,
-		IconUsers,
-		IconList,
-		IconLayoutGrid,
-		IconRefresh,
-		IconTrash,
-		IconCopy,
-		IconEye
-	} from '$lib/icons';
+	import { Icon, IconLayoutKanban, IconPlus, IconFolder, IconStar, IconStarFilled, IconArchive, IconSearch, IconClock, IconChecks, IconAlertTriangle, IconCalendar, IconChartBar, IconSettings, IconUpload, IconTemplate, IconUsers, IconList, IconLayoutGrid, IconRefresh, IconTrash, IconCopy, IconEye } from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);
@@ -240,7 +217,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
 					<div class="p-2 bg-[#E6B800]/10 dark:bg-[#E6B800]/20 rounded-lg">
-						<IconLayoutKanban class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
+						<Icon icon={IconLayoutKanban} class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Project Boards</h1>
@@ -253,28 +230,28 @@ import { logger } from '$lib/utils/logger';
 						href="/admin/boards/time-tracking"
 						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 					>
-						<IconClock class="w-4 h-4" />
+						<Icon icon={IconClock} class="w-4 h-4" />
 						Time Tracking
 					</a>
 					<a
 						href="/admin/boards/reports"
 						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 					>
-						<IconChartBar class="w-4 h-4" />
+						<Icon icon={IconChartBar} class="w-4 h-4" />
 						Reports
 					</a>
 					<a
 						href="/admin/boards/settings"
 						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 					>
-						<IconSettings class="w-4 h-4" />
+						<Icon icon={IconSettings} class="w-4 h-4" />
 						Settings
 					</a>
 					<button
 						onclick={() => (showCreateModal = true)}
 						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg flex items-center gap-2"
 					>
-						<IconPlus class="w-4 h-4" />
+						<Icon icon={IconPlus} class="w-4 h-4" />
 						New Board
 					</button>
 				</div>
@@ -342,28 +319,28 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => (showCreateModal = true)}
 							class="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 						>
-							<IconPlus class="w-4 h-4" />
+							<Icon icon={IconPlus} class="w-4 h-4" />
 							Create Board
 						</button>
 						<button
 							onclick={() => (showFolderModal = true)}
 							class="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 						>
-							<IconFolder class="w-4 h-4" />
+							<Icon icon={IconFolder} class="w-4 h-4" />
 							Create Folder
 						</button>
 						<a
 							href="/admin/boards/import"
 							class="w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 						>
-							<IconUpload class="w-4 h-4" />
+							<Icon icon={IconUpload} class="w-4 h-4" />
 							Import from Trello/Asana
 						</a>
 						<a
 							href="/admin/boards/templates"
 							class="w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
 						>
-							<IconTemplate class="w-4 h-4" />
+							<Icon icon={IconTemplate} class="w-4 h-4" />
 							Browse Templates
 						</a>
 					</div>
@@ -382,7 +359,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800] dark:text-[#FFD11A]'
 								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconLayoutKanban class="w-4 h-4" />
+							<Icon icon={IconLayoutKanban} class="w-4 h-4" />
 							All Boards
 							<span class="ml-auto text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full"
 								>{boards.filter((b) => !b.is_archived).length}</span
@@ -396,7 +373,7 @@ import { logger } from '$lib/utils/logger';
 									? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800] dark:text-[#FFD11A]'
 									: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 							>
-								<IconFolder class="w-4 h-4" style="color: {folder.color}" />
+								<Icon icon={IconFolder} class="w-4 h-4" style="color: {folder.color}" />
 								{folder.title}
 								<span class="ml-auto text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full"
 									>{folder.board_count || 0}</span
@@ -412,7 +389,7 @@ import { logger } from '$lib/utils/logger';
 						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
 					>
 						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-							<IconCalendar class="w-4 h-4 text-orange-500" />
+							<Icon icon={IconCalendar} class="w-4 h-4 text-orange-500" />
 							Due Today
 						</h3>
 						<div class="space-y-2">
@@ -439,7 +416,7 @@ import { logger } from '$lib/utils/logger';
 						class="bg-white dark:bg-gray-800 rounded-xl border border-red-200 dark:border-red-900/50 p-4"
 					>
 						<h3 class="font-semibold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2">
-							<IconAlertTriangle class="w-4 h-4" />
+							<Icon icon={IconAlertTriangle} class="w-4 h-4" />
 							Overdue Tasks
 						</h3>
 						<div class="space-y-2">
@@ -466,7 +443,7 @@ import { logger } from '$lib/utils/logger';
 						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
 					>
 						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-							<IconChecks class="w-4 h-4 text-blue-500" />
+							<Icon icon={IconChecks} class="w-4 h-4 text-blue-500" />
 							My Tasks
 						</h3>
 						<div class="space-y-2">
@@ -493,7 +470,7 @@ import { logger } from '$lib/utils/logger';
 						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
 					>
 						<h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-							<IconClock class="w-4 h-4 text-gray-500" />
+							<Icon icon={IconClock} class="w-4 h-4 text-gray-500" />
 							Recent Activity
 						</h3>
 						<div class="space-y-2">
@@ -516,7 +493,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Search and Filters -->
 				<div class="flex items-center gap-4 mb-6">
 					<div class="flex-1 relative">
-						<IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+						<Icon icon={IconSearch} class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 						<input
 							id="boards-searchquery"
 							name="boards-searchquery"
@@ -533,7 +510,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800]'
 								: 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconLayoutGrid class="w-5 h-5" />
+							<Icon icon={IconLayoutGrid} class="w-5 h-5" />
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
@@ -541,7 +518,7 @@ import { logger } from '$lib/utils/logger';
 								? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800]'
 								: 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
-							<IconList class="w-5 h-5" />
+							<Icon icon={IconList} class="w-5 h-5" />
 						</button>
 					</div>
 					<label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -558,7 +535,7 @@ import { logger } from '$lib/utils/logger';
 						onclick={loadData}
 						class="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 					>
-						<IconRefresh class="w-5 h-5" />
+						<Icon icon={IconRefresh} class="w-5 h-5" />
 					</button>
 				</div>
 
@@ -568,7 +545,7 @@ import { logger } from '$lib/utils/logger';
 						<h3
 							class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2"
 						>
-							<IconStarFilled class="w-4 h-4 text-yellow-500" />
+							<Icon icon={IconStarFilled} class="w-4 h-4 text-yellow-500" />
 							Favorites
 						</h3>
 						<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -592,7 +569,7 @@ import { logger } from '$lib/utils/logger';
 											}}
 											class="text-yellow-500 hover:text-yellow-600"
 										>
-											<IconStarFilled class="w-5 h-5" />
+											<Icon icon={IconStarFilled} class="w-5 h-5" />
 										</button>
 									</div>
 									{#if board.description}
@@ -626,7 +603,7 @@ import { logger } from '$lib/utils/logger';
 						<div
 							class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
 						>
-							<IconLayoutKanban class="w-12 h-12 text-gray-400 mx-auto mb-4" />
+							<Icon icon={IconLayoutKanban} class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 							<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No boards yet</h3>
 							<p class="text-gray-500 dark:text-gray-400 mb-4">
 								Create your first board to start managing projects
@@ -672,9 +649,9 @@ import { logger } from '$lib/utils/logger';
 													: 'text-gray-400 opacity-0 group-hover:opacity-100'} hover:text-yellow-500 transition-all"
 											>
 												{#if board.is_favorite}
-													<IconStarFilled class="w-5 h-5" />
+													<Icon icon={IconStarFilled} class="w-5 h-5" />
 												{:else}
-													<IconStar class="w-5 h-5" />
+													<Icon icon={IconStar} class="w-5 h-5" />
 												{/if}
 											</button>
 										</div>
@@ -685,11 +662,11 @@ import { logger } from '$lib/utils/logger';
 										{/if}
 										<div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
 											<span class="flex items-center gap-1">
-												<IconChecks class="w-3.5 h-3.5" />
+												<Icon icon={IconChecks} class="w-3.5 h-3.5" />
 												{board.completed_task_count || 0}/{board.task_count || 0}
 											</span>
 											<span class="flex items-center gap-1">
-												<IconUsers class="w-3.5 h-3.5" />
+												<Icon icon={IconUsers} class="w-3.5 h-3.5" />
 												{board.member_count || 1}
 											</span>
 										</div>
@@ -702,28 +679,28 @@ import { logger } from '$lib/utils/logger';
 											class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
 											title="Open"
 										>
-											<IconEye class="w-4 h-4" />
+											<Icon icon={IconEye} class="w-4 h-4" />
 										</button>
 										<button
 											onclick={() => duplicateBoard(board)}
 											class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
 											title="Duplicate"
 										>
-											<IconCopy class="w-4 h-4" />
+											<Icon icon={IconCopy} class="w-4 h-4" />
 										</button>
 										<button
 											onclick={() => archiveBoard(board)}
 											class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
 											title="Archive"
 										>
-											<IconArchive class="w-4 h-4" />
+											<Icon icon={IconArchive} class="w-4 h-4" />
 										</button>
 										<button
 											onclick={() => deleteBoard(board)}
 											class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
 											title="Delete"
 										>
-											<IconTrash class="w-4 h-4" />
+											<Icon icon={IconTrash} class="w-4 h-4" />
 										</button>
 									</div>
 								</div>
@@ -773,7 +750,7 @@ import { logger } from '$lib/utils/logger';
 														>
 															{board.title}
 															{#if board.is_favorite}
-																<IconStarFilled class="w-4 h-4 text-yellow-500" />
+																<Icon icon={IconStarFilled} class="w-4 h-4 text-yellow-500" />
 															{/if}
 															{#if board.is_archived}
 																<span
@@ -808,22 +785,22 @@ import { logger } from '$lib/utils/logger';
 														class="p-1.5 text-gray-500 hover:text-yellow-500 rounded"
 													>
 														{#if board.is_favorite}
-															<IconStarFilled class="w-4 h-4 text-yellow-500" />
+															<Icon icon={IconStarFilled} class="w-4 h-4 text-yellow-500" />
 														{:else}
-															<IconStar class="w-4 h-4" />
+															<Icon icon={IconStar} class="w-4 h-4" />
 														{/if}
 													</button>
 													<button
 														onclick={() => duplicateBoard(board)}
 														class="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 rounded"
 													>
-														<IconCopy class="w-4 h-4" />
+														<Icon icon={IconCopy} class="w-4 h-4" />
 													</button>
 													<button
 														onclick={() => deleteBoard(board)}
 														class="p-1.5 text-red-500 hover:text-red-700 rounded"
 													>
-														<IconTrash class="w-4 h-4" />
+														<Icon icon={IconTrash} class="w-4 h-4" />
 													</button>
 												</div>
 											</td>

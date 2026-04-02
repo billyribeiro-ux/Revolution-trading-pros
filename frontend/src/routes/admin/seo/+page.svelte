@@ -17,33 +17,7 @@ import { logger } from '$lib/utils/logger';
 	import { fade, fly } from 'svelte/transition';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
-	import {
-		IconSearch,
-		IconFileText,
-		IconArrowForward,
-		IconExternalLink,
-		IconError404,
-		IconCode,
-		IconKey,
-		IconChartBar,
-		IconSettings,
-		IconSitemap,
-		IconBrandGoogle,
-		IconNews,
-		IconVideo,
-		IconPhoto,
-		IconMapPin,
-		IconMail,
-		IconPlugConnected,
-		IconRefresh,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconWorld,
-		IconLink,
-		IconCheck,
-		IconClock,
-		IconTarget
-	} from '$lib/icons';
+	import { Icon, IconSearch, IconFileText, IconArrowForward, IconExternalLink, IconError404, IconCode, IconKey, IconChartBar, IconSettings, IconSitemap, IconBrandGoogle, IconNews, IconVideo, IconPhoto, IconMapPin, IconMail, IconPlugConnected, IconRefresh, IconTrendingUp, IconTrendingDown, IconWorld, IconLink, IconCheck, IconClock, IconTarget } from '$lib/icons';
 	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -327,7 +301,7 @@ import { logger } from '$lib/utils/logger';
 		<header class="dashboard-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
 			<div class="header-content">
 				<div class="header-icon">
-					<IconSearch size={32} />
+					<Icon icon={IconSearch} size={32} />
 				</div>
 				<div class="header-text">
 					<h1>SEO Command Center</h1>
@@ -338,13 +312,13 @@ import { logger } from '$lib/utils/logger';
 			<div class="header-actions">
 				<!-- Built-in SEO Status Badge -->
 				<div class="connection-badge connected">
-					<IconPlugConnected size={16} />
+					<Icon icon={IconPlugConnected} size={16} />
 					<span>Built-in SEO Active</span>
 				</div>
 
 				<button class="refresh-btn" onclick={handleRefresh} disabled={isLoading}>
 					<span class="refresh-icon" class:spinning={isLoading}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 					</span>
 					<span>Refresh</span>
 				</button>
@@ -367,7 +341,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="stat-card visibility">
 							<div class="stat-header">
 								<div class="stat-icon">
-									<IconWorld size={24} />
+									<Icon icon={IconWorld} size={24} />
 								</div>
 								<span class="stat-label">Search Visibility</span>
 							</div>
@@ -377,9 +351,9 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="stat-change" class:positive={seoData.searchVisibility.change > 0}>
 								{#if seoData.searchVisibility.change > 0}
-									<IconTrendingUp size={14} />
+									<Icon icon={IconTrendingUp} size={14} />
 								{:else}
-									<IconTrendingDown size={14} />
+									<Icon icon={IconTrendingDown} size={14} />
 								{/if}
 								<span>{Math.abs(seoData.searchVisibility.change)}% this month</span>
 							</div>
@@ -389,7 +363,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="stat-card keywords">
 							<div class="stat-header">
 								<div class="stat-icon">
-									<IconKey size={24} />
+									<Icon icon={IconKey} size={24} />
 								</div>
 								<span class="stat-label">Keywords Tracked</span>
 							</div>
@@ -406,7 +380,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="stat-card backlinks">
 							<div class="stat-header">
 								<div class="stat-icon">
-									<IconLink size={24} />
+									<Icon icon={IconLink} size={24} />
 								</div>
 								<span class="stat-label">Total Backlinks</span>
 							</div>
@@ -423,7 +397,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="stat-card technical">
 							<div class="stat-header">
 								<div class="stat-icon">
-									<IconTarget size={24} />
+									<Icon icon={IconTarget} size={24} />
 								</div>
 								<span class="stat-label">Indexed Pages</span>
 							</div>
@@ -442,7 +416,7 @@ import { logger } from '$lib/utils/logger';
 				{:else}
 					<!-- No data yet message -->
 					<div class="no-data-message" in:fade>
-						<IconClock size={48} />
+						<Icon icon={IconClock} size={48} />
 						<h3>Syncing SEO Data</h3>
 						<p>
 							Your SEO tools are connected. Data will appear here once the first sync completes.
@@ -460,13 +434,13 @@ import { logger } from '$lib/utils/logger';
 								<div class="connected-service">
 									<span class="service-icon-small">{service.icon}</span>
 									<span class="service-name">{service.name}</span>
-									<IconCheck size={16} class="check-icon" />
+									<Icon icon={IconCheck} size={16} class="check-icon" />
 								</div>
 							{/if}
 						{/each}
 					</div>
 					<button class="manage-connections-btn" onclick={navigateToConnections}>
-						<IconSettings size={16} />
+						<Icon icon={IconSettings} size={16} />
 						<span>Manage Connections</span>
 					</button>
 				</div>
@@ -494,7 +468,7 @@ import { logger } from '$lib/utils/logger';
 						<h3>{section.title}</h3>
 						<p>{section.description}</p>
 						<div class="card-arrow">
-							<IconExternalLink size={18} />
+							<Icon icon={IconExternalLink} size={18} />
 						</div>
 					</a>
 				{/each}
@@ -504,7 +478,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Last Updated Footer -->
 		{#if lastUpdated}
 			<div class="last-updated" in:fade={{ delay: 600 }}>
-				<IconClock size={14} />
+				<Icon icon={IconClock} size={14} />
 				<span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
 			</div>
 		{/if}

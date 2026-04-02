@@ -11,15 +11,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconChartCandle,
-		IconPhoto,
-		IconAlertCircle,
-		IconLoader2,
-		IconRefresh,
-		IconExternalLink,
-		IconMaximize
-	} from '$lib/icons';
+	import { Icon, IconChartCandle, IconPhoto, IconAlertCircle, IconLoader2, IconRefresh, IconExternalLink, IconMaximize } from '$lib/icons';
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
@@ -332,7 +324,7 @@
 						onclick={() => handleModeChange('embed')}
 						aria-pressed={mode === 'embed'}
 					>
-						<IconChartCandle size={16} aria-hidden="true" />
+						<Icon icon={IconChartCandle} size={16} aria-hidden="true" />
 						<span>TradingView</span>
 					</button>
 					<button
@@ -342,7 +334,7 @@
 						onclick={() => handleModeChange('image')}
 						aria-pressed={mode === 'image'}
 					>
-						<IconPhoto size={16} aria-hidden="true" />
+						<Icon icon={IconPhoto} size={16} aria-hidden="true" />
 						<span>Image</span>
 					</button>
 				</div>
@@ -452,24 +444,24 @@
 		{#if mode === 'embed'}
 			{#if !isValidSymbol}
 				<div class="chart-placeholder">
-					<IconChartCandle size={48} aria-hidden="true" />
+					<Icon icon={IconChartCandle} size={48} aria-hidden="true" />
 					<p>Enter a valid trading symbol</p>
 					<span class="hint">Format: EXCHANGE:SYMBOL (e.g., NASDAQ:AAPL)</span>
 				</div>
 			{:else}
 				{#if isLoading}
 					<div class="chart-loading" role="status" aria-live="polite">
-						<IconLoader2 size={32} class="spinner" aria-hidden="true" />
+						<Icon icon={IconLoader2} size={32} class="spinner" aria-hidden="true" />
 						<p>Loading chart...</p>
 					</div>
 				{/if}
 
 				{#if hasError}
 					<div class="chart-error" role="alert">
-						<IconAlertCircle size={32} aria-hidden="true" />
+						<Icon icon={IconAlertCircle} size={32} aria-hidden="true" />
 						<p>{errorMessage}</p>
 						<button type="button" class="retry-btn" onclick={retryLoad}>
-							<IconRefresh size={16} aria-hidden="true" />
+							<Icon icon={IconRefresh} size={16} aria-hidden="true" />
 							<span>Retry</span>
 						</button>
 					</div>
@@ -489,29 +481,29 @@
 			{/if}
 		{:else if !imageUrl}
 			<div class="chart-placeholder">
-				<IconPhoto size={48} aria-hidden="true" />
+				<Icon icon={IconPhoto} size={48} aria-hidden="true" />
 				<p>Enter an image URL</p>
 				<span class="hint">Supports PNG, JPG, WebP, and GIF formats</span>
 			</div>
 		{:else if !isValidImageUrl}
 			<div class="chart-error" role="alert">
-				<IconAlertCircle size={32} aria-hidden="true" />
+				<Icon icon={IconAlertCircle} size={32} aria-hidden="true" />
 				<p>Please enter a valid URL starting with http:// or https://</p>
 			</div>
 		{:else}
 			{#if isLoading && !imageLoaded}
 				<div class="chart-loading" role="status" aria-live="polite">
-					<IconLoader2 size={32} class="spinner" aria-hidden="true" />
+					<Icon icon={IconLoader2} size={32} class="spinner" aria-hidden="true" />
 					<p>Loading image...</p>
 				</div>
 			{/if}
 
 			{#if hasError}
 				<div class="chart-error" role="alert">
-					<IconAlertCircle size={32} aria-hidden="true" />
+					<Icon icon={IconAlertCircle} size={32} aria-hidden="true" />
 					<p>{errorMessage}</p>
 					<button type="button" class="retry-btn" onclick={retryLoad}>
-						<IconRefresh size={16} aria-hidden="true" />
+						<Icon icon={IconRefresh} size={16} aria-hidden="true" />
 						<span>Retry</span>
 					</button>
 				</div>
@@ -537,7 +529,7 @@
 						onclick={toggleFullscreen}
 						aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
 					>
-						<IconMaximize size={18} aria-hidden="true" />
+						<Icon icon={IconMaximize} size={18} aria-hidden="true" />
 					</button>
 				{/if}
 				<button
@@ -546,7 +538,7 @@
 					onclick={openInNewTab}
 					aria-label="Open in new tab"
 				>
-					<IconExternalLink size={18} aria-hidden="true" />
+					<Icon icon={IconExternalLink} size={18} aria-hidden="true" />
 				</button>
 				{#if mode === 'embed'}
 					<div class="toolbar-info">

@@ -15,12 +15,7 @@
 	import { getUnreadCount } from '$lib/stores/notifications.svelte';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
 
-	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
-	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
-	import IconCommand from '@tabler/icons-svelte-runes/icons/command';
-
+					
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
 	import CommandPalette from '$lib/components/CommandPalette.svelte';
@@ -31,6 +26,7 @@
 	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 	import type { Snippet } from 'svelte';
+	import { Icon, IconBell, IconCommand, IconMenu2, IconPlugConnected, IconSearch } from '$lib/icons';
 
 	// Props (Svelte 5 - no destructuring)
 	interface Props {
@@ -145,7 +141,7 @@
 				onclick={toggleSidebar}
 				aria-label="Toggle sidebar"
 			>
-				<IconMenu2 size={24} />
+				<Icon icon={IconMenu2} size={24} />
 			</button>
 
 			<div class="header-title">
@@ -161,7 +157,7 @@
 					title="Search (⌘K)"
 					aria-label="Open search"
 				>
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<span class="btn-label desktop-only">Search</span>
 					<kbd class="kbd desktop-only">⌘K</kbd>
 				</button>
@@ -174,7 +170,7 @@
 					title="Notifications"
 					aria-label="Open notifications"
 				>
-					<IconBell size={18} />
+					<Icon icon={IconBell} size={18} />
 					{#if unreadCount > 0}
 						<span class="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
 					{/if}
@@ -188,7 +184,7 @@
 					title="API Connection Status"
 					aria-label="View API connection status"
 				>
-					<IconPlugConnected size={18} />
+					<Icon icon={IconPlugConnected} size={18} />
 				</button>
 
 				<!-- Rate Limit -->
@@ -202,7 +198,7 @@
 					title="Keyboard Shortcuts (?)"
 					aria-label="View keyboard shortcuts"
 				>
-					<IconCommand size={18} />
+					<Icon icon={IconCommand} size={18} />
 				</button>
 
 				<a href="/" class="view-site-btn" title="View main website">View Site</a>

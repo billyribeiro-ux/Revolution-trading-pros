@@ -18,31 +18,7 @@
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import {
-		IconSearch,
-		IconCode,
-		IconArrowUp,
-		IconArrowDown,
-		IconHome,
-		IconChartBar,
-		IconUsers,
-		IconMail,
-		IconSettings,
-		IconShoppingCart,
-		IconFileText,
-		IconPhoto,
-		IconPlugConnected,
-		IconActivity,
-		IconBrandGoogle,
-		IconForms,
-		IconVideo,
-		IconCreditCard,
-		IconDatabase,
-		IconRefresh,
-		IconDownload,
-		IconUpload,
-		IconLogout
-	} from '$lib/icons';
+	import { Icon, IconSearch, IconCode, IconArrowUp, IconArrowDown, IconHome, IconChartBar, IconUsers, IconMail, IconSettings, IconShoppingCart, IconFileText, IconPhoto, IconPlugConnected, IconActivity, IconBrandGoogle, IconForms, IconVideo, IconCreditCard, IconDatabase, IconRefresh, IconDownload, IconUpload, IconLogout } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -353,7 +329,7 @@
 			<!-- Search Input -->
 			<div class="search-header">
 				<div class="search-icon">
-					<IconSearch size={20} />
+					<Icon icon={IconSearch} size={20} />
 				</div>
 				<input
 					bind:this={inputRef}
@@ -375,7 +351,7 @@
 			<div class="results-container">
 				{#if flatResults.length === 0}
 					<div class="no-results" in:fade={{ duration: 150 }}>
-						<IconSearch size={32} />
+						<Icon icon={IconSearch} size={32} />
 						<p>No results found for "{searchQuery}"</p>
 					</div>
 				{:else}
@@ -397,7 +373,7 @@
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}
 										<div class="item-action">
-											<IconArrowDown size={14} />
+											<Icon icon={IconArrowDown} size={14} />
 										</div>
 									{/if}
 								</button>
@@ -411,12 +387,12 @@
 			<div class="palette-footer">
 				<div class="footer-hints">
 					<span class="hint">
-						<kbd><IconArrowUp size={12} /></kbd>
-						<kbd><IconArrowDown size={12} /></kbd>
+						<kbd><Icon icon={IconArrowUp} size={12} /></kbd>
+						<kbd><Icon icon={IconArrowDown} size={12} /></kbd>
 						Navigate
 					</span>
 					<span class="hint">
-						<kbd><IconArrowDown size={12} /></kbd>
+						<kbd><Icon icon={IconArrowDown} size={12} /></kbd>
 						Select
 					</span>
 					<span class="hint">
@@ -425,7 +401,7 @@
 					</span>
 				</div>
 				<div class="footer-shortcut">
-					<kbd><IconCode size={12} /></kbd>
+					<kbd><Icon icon={IconCode} size={12} /></kbd>
 					<kbd>K</kbd>
 				</div>
 			</div>

@@ -11,7 +11,7 @@ import { logger } from '$lib/utils/logger';
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { IconTrash, IconInbox, IconDownload, IconX, IconCheck, IconLoader } from '$lib/icons';
+	import { Icon, IconTrash, IconInbox, IconDownload, IconX, IconCheck, IconLoader } from '$lib/icons';
 
 	interface BatchAction {
 		id: string;
@@ -117,7 +117,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Selection Info -->
 			<div class="selection-info">
 				<div class="selection-count">
-					<IconCheck size={16} />
+					<Icon icon={IconCheck} size={16} />
 					<span class="count">{selectedIds.length}</span>
 					<span class="label">selected</span>
 				</div>
@@ -130,7 +130,7 @@ import { logger } from '$lib/utils/logger';
 				{/if}
 
 				<button class="clear-btn" onclick={onClearSelection} title="Clear selection">
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 
@@ -147,7 +147,7 @@ import { logger } from '$lib/utils/logger';
 						disabled={isProcessing}
 					>
 						{#if processingAction === action.id}
-							<IconLoader size={18} class="spinning" />
+							<Icon icon={IconLoader} size={18} class="spinning" />
 						{:else}
 							<ActionIcon size={18} />
 						{/if}

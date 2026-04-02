@@ -2,22 +2,11 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
-	import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
-	import IconMaximize from '@tabler/icons-svelte-runes/icons/maximize';
-	import IconMinimize from '@tabler/icons-svelte-runes/icons/minimize';
-	import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
+													import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
+	import { Icon, IconCalendar, IconCheck, IconDeviceFloppy, IconEye, IconKeyboard, IconLoader, IconMaximize, IconMinimize, IconPhoto, IconPlus, IconTags, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PREDEFINED BLOG CATEGORIES (same system as videos)
@@ -330,11 +319,11 @@ import { logger } from '$lib/utils/logger';
 			{/if}
 			<button class="btn-secondary" onclick={() => goto('/admin/blog')}> Cancel </button>
 			<button class="btn-secondary" onclick={() => savePost('draft')} disabled={saving}>
-				<IconDeviceFloppy size={18} />
+				<Icon icon={IconDeviceFloppy} size={18} />
 				{saving ? 'Saving...' : 'Save Draft'}
 			</button>
 			<button class="btn-primary" onclick={() => savePost('published')} disabled={saving}>
-				<IconEye size={18} />
+				<Icon icon={IconEye} size={18} />
 				{saving ? 'Publishing...' : 'Publish'}
 			</button>
 		</div>
@@ -394,7 +383,7 @@ import { logger } from '$lib/utils/logger';
 								/* Handled by BlockEditor */
 							}}
 						>
-							<IconKeyboard size={18} />
+							<Icon icon={IconKeyboard} size={18} />
 						</button>
 						<button
 							type="button"
@@ -403,9 +392,9 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => (isFullscreen = !isFullscreen)}
 						>
 							{#if isFullscreen}
-								<IconMinimize size={18} />
+								<Icon icon={IconMinimize} size={18} />
 							{:else}
-								<IconMaximize size={18} />
+								<Icon icon={IconMaximize} size={18} />
 							{/if}
 						</button>
 					</div>
@@ -445,7 +434,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="form-group">
 					<label for="publish-date">
-						<IconCalendar size={16} />
+						<Icon icon={IconCalendar} size={16} />
 						Publish Date
 					</label>
 					<input
@@ -475,14 +464,14 @@ import { logger } from '$lib/utils/logger';
 
 				{#if uploadingImage}
 					<div class="upload-loading">
-						<IconLoader size={48} class="spin" />
+						<Icon icon={IconLoader} size={48} class="spin" />
 						<span>Uploading image...</span>
 					</div>
 				{:else if post.featured_image}
 					<div class="featured-image-preview">
 						<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} />
 						<button type="button" class="remove-image" onclick={removeFeaturedImage}>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 					</div>
 
@@ -540,7 +529,7 @@ import { logger } from '$lib/utils/logger';
 							hidden
 							disabled={uploadingImage}
 						/>
-						<IconPhoto size={48} />
+						<Icon icon={IconPhoto} size={48} />
 						<span>Click to upload featured image</span>
 					</label>
 					{#if uploadError}
@@ -552,7 +541,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Categories (Colorful Button Selection) -->
 			<div class="sidebar-panel categories-panel">
 				<h3>
-					<IconTags size={16} />
+					<Icon icon={IconTags} size={16} />
 					Categories
 				</h3>
 				<div class="categories-grid">
@@ -565,7 +554,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => toggleCategorySelection(category.id)}
 						>
 							{#if isCategorySelected(category.id)}
-								<IconCheck size={14} />
+								<Icon icon={IconCheck} size={14} />
 							{/if}
 							{category.name}
 						</button>
@@ -585,7 +574,7 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => toggleCategorySelection(categoryId)}
 										aria-label="Remove {category.name}"
 									>
-										<IconX size={12} />
+										<Icon icon={IconX} size={12} />
 									</button>
 								</span>
 							{/if}
@@ -608,7 +597,7 @@ import { logger } from '$lib/utils/logger';
 									type="button"
 									onclick={() => (post.tags = post.tags.filter((id) => id !== tagId))}
 								>
-									<IconX size={14} />
+									<Icon icon={IconX} size={14} />
 								</button>
 							</span>
 						{/if}
@@ -626,7 +615,7 @@ import { logger } from '$lib/utils/logger';
 						autocomplete="off"
 					/>
 					<button type="button" class="btn-add-tag" onclick={createTag}>
-						<IconPlus size={16} />
+						<Icon icon={IconPlus} size={16} />
 					</button>
 				</div>
 

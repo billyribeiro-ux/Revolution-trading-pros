@@ -25,7 +25,7 @@ import { logger } from '$lib/utils/logger';
 	import type { Snippet } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
-	import { IconAlertTriangle, IconRefresh, IconTrash, IconArrowBackUp } from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconRefresh, IconTrash, IconArrowBackUp } from '$lib/icons';
 
 	import type { Block } from './types';
 	import { BLOCK_DEFINITIONS } from './types';
@@ -284,7 +284,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Error Header -->
 					<div class="error-header">
 						<div class="error-icon" in:scale={{ duration: 400, easing: elasticOut }}>
-							<IconAlertTriangle size={24} />
+							<Icon icon={IconAlertTriangle} size={24} />
 						</div>
 						<div class="error-info">
 							<h4 class="error-title">
@@ -372,7 +372,7 @@ import { logger } from '$lib/utils/logger';
 								aria-label="Retry rendering this block"
 								title={maxRetriesExceeded ? 'Maximum retries exceeded' : 'Retry rendering'}
 							>
-								<IconRefresh size={16} class={isRecovering ? 'spin' : ''} />
+								<Icon icon={IconRefresh} size={16} class={isRecovering ? 'spin' : ''} />
 								<span>Retry</span>
 								{#if retryCount > 0}
 									<span class="retry-count">({retryCount}/3)</span>
@@ -388,7 +388,7 @@ import { logger } from '$lib/utils/logger';
 								aria-label="Reset block to default state"
 								title="Reset block to default values"
 							>
-								<IconArrowBackUp size={16} />
+								<Icon icon={IconArrowBackUp} size={16} />
 								<span>Reset to Default</span>
 							</button>
 
@@ -401,7 +401,7 @@ import { logger } from '$lib/utils/logger';
 								aria-label="Delete this block"
 								title="Remove this block"
 							>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 								<span>Delete Block</span>
 							</button>
 						{/if}

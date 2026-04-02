@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { IconStar, IconQuote, IconUser, IconUpload, IconX } from '$lib/icons';
+	import { Icon, IconStar, IconQuote, IconUser, IconUpload, IconX } from '$lib/icons';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -231,7 +231,7 @@
 <figure class="testimonial-block" aria-label="Testimonial">
 	<!-- Quote Icon -->
 	<div class="testimonial-block__quote-icon" aria-hidden="true">
-		<IconQuote size={32} />
+		<Icon icon={IconQuote} size={32} />
 	</div>
 
 	<!-- Star Rating -->
@@ -256,7 +256,7 @@
 					aria-label="Rate {starValue} star{starValue === 1 ? '' : 's'}"
 					aria-pressed={starValue === rating}
 				>
-					<IconStar size={20} />
+					<Icon icon={IconStar} size={20} />
 				</button>
 			{:else}
 				<span
@@ -264,7 +264,7 @@
 					class:testimonial-block__star--filled={isFilled}
 					aria-hidden="true"
 				>
-					<IconStar size={20} />
+					<Icon icon={IconStar} size={20} />
 				</span>
 			{/if}
 		{/each}
@@ -304,12 +304,12 @@
 							onclick={removePhoto}
 							aria-label="Remove photo"
 						>
-							<IconX size={14} />
+							<Icon icon={IconX} size={14} />
 						</button>
 					{/if}
 				{:else}
 					<div class="testimonial-block__photo-placeholder">
-						<IconUser size={24} aria-hidden="true" />
+						<Icon icon={IconUser} size={24} aria-hidden="true" />
 					</div>
 				{/if}
 			</div>
@@ -390,7 +390,7 @@
 						aria-label="Photo upload area"
 					>
 						<button type="button" class="testimonial-block__upload-btn" onclick={triggerFileInput}>
-							<IconUpload size={16} />
+							<Icon icon={IconUpload} size={16} />
 							Upload Photo
 						</button>
 

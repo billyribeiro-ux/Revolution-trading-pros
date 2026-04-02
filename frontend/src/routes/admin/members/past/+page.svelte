@@ -26,27 +26,7 @@ import { logger } from '$lib/utils/logger';
 		TIME_PERIOD_LABELS,
 		invalidateDashboardCache
 	} from '$lib/api/past-members-dashboard';
-	import {
-		IconArrowLeft,
-		IconUsers,
-		IconClock,
-		IconMail,
-		IconSend,
-		IconSearch,
-		IconRefresh,
-		IconChevronLeft,
-		IconChevronRight,
-		IconX,
-		IconGift,
-		IconCurrencyDollar,
-		IconTrendingUp,
-		IconChartPie,
-		IconCalendar,
-		IconFileAnalytics,
-		IconSparkles,
-		IconCheck,
-		IconAlertTriangle
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconUsers, IconClock, IconMail, IconSend, IconSearch, IconRefresh, IconChevronLeft, IconChevronRight, IconX, IconGift, IconCurrencyDollar, IconTrendingUp, IconChartPie, IconCalendar, IconFileAnalytics, IconSparkles, IconCheck, IconAlertTriangle } from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { PastMembersPageData } from './+page';
 
@@ -374,14 +354,14 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Members
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconClock size={32} />
+					<Icon icon={IconClock} size={32} />
 				</div>
 				<div>
 					<h1>Past Members Dashboard</h1>
@@ -390,11 +370,11 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={() => (showSurveyModal = true)}>
-					<IconFileAnalytics size={18} />
+					<Icon icon={IconFileAnalytics} size={18} />
 					Send Survey
 				</button>
 				<button class="btn-refresh" onclick={refreshDashboard} disabled={isRefreshing}>
-					<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isRefreshing ? 'spin' : ''} />
 					{isRefreshing ? 'Refreshing...' : 'Refresh'}
 				</button>
 			</div>
@@ -411,7 +391,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Error State -->
 		<div class="error-state">
 			<div class="error-icon">
-				<IconAlertTriangle size={48} />
+				<Icon icon={IconAlertTriangle} size={48} />
 			</div>
 			<h3>Failed to load dashboard</h3>
 			<p>{error}</p>
@@ -432,7 +412,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="period-revenue">{formatCurrency(stats?.potential_revenue || 0)}</div>
 					{#if selectedPeriod === period}
 						<div class="period-indicator">
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 						</div>
 					{/if}
 				</button>
@@ -444,7 +424,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="stats-row">
 				<div class="stat-card primary">
 					<div class="stat-icon">
-						<IconUsers size={24} />
+						<Icon icon={IconUsers} size={24} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Past Members</div>
@@ -454,7 +434,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="stat-card success">
 					<div class="stat-icon">
-						<IconCurrencyDollar size={24} />
+						<Icon icon={IconCurrencyDollar} size={24} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Potential Revenue</div>
@@ -464,7 +444,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="stat-card warning">
 					<div class="stat-icon">
-						<IconCalendar size={24} />
+						<Icon icon={IconCalendar} size={24} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Avg Days Since Expired</div>
@@ -474,7 +454,7 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="stat-card info">
 					<div class="stat-icon">
-						<IconTrendingUp size={24} />
+						<Icon icon={IconTrendingUp} size={24} />
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Top Plan</div>
@@ -490,7 +470,7 @@ import { logger } from '$lib/utils/logger';
 		{#if churnReasons.length > 0}
 			<div class="churn-reasons-section">
 				<div class="section-header">
-					<IconChartPie size={20} />
+					<Icon icon={IconChartPie} size={20} />
 					<h3>Top Cancellation Reasons</h3>
 				</div>
 				<div class="reasons-grid">
@@ -511,22 +491,22 @@ import { logger } from '$lib/utils/logger';
 		<!-- Campaign Action Bar -->
 		<div class="campaign-bar">
 			<div class="campaign-info">
-				<IconSparkles size={20} />
+				<Icon icon={IconSparkles} size={20} />
 				<span
 					>Ready to win back <strong>{periodStats?.total_count || 0}</strong> members from {periodLabel}?</span
 				>
 			</div>
 			<div class="campaign-actions">
 				<button class="campaign-btn free" onclick={() => openEmailModal('30_free')}>
-					<IconGift size={18} />
+					<Icon icon={IconGift} size={18} />
 					30 Days Free
 				</button>
 				<button class="campaign-btn discount" onclick={() => openEmailModal('discount')}>
-					<IconCurrencyDollar size={18} />
+					<Icon icon={IconCurrencyDollar} size={18} />
 					Discount Offer
 				</button>
 				<button class="campaign-btn personal" onclick={() => openEmailModal('missed')}>
-					<IconMail size={18} />
+					<Icon icon={IconMail} size={18} />
 					Personal Email
 				</button>
 			</div>
@@ -535,7 +515,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Toolbar -->
 		<div class="toolbar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					id="page-searchquery"
 					name="page-searchquery"
@@ -549,7 +529,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="toolbar-actions">
 				{#if hasSelectedMembers}
 					<button class="btn-selected" onclick={() => (showEmailModal = true)}>
-						<IconMail size={18} />
+						<Icon icon={IconMail} size={18} />
 						Email {selectedMembers.size} Selected
 					</button>
 				{/if}
@@ -565,7 +545,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if !hasMembers}
 				<div class="empty-state">
-					<IconUsers size={64} stroke={1} />
+					<Icon icon={IconUsers} size={64} stroke={1} />
 					<h3>No past members found</h3>
 					<p>No members have expired in this time period</p>
 				</div>
@@ -656,7 +636,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => loadPeriodMembers(pagination.current_page - 1)}
 							aria-label="Previous page"
 						>
-							<IconChevronLeft size={18} />
+							<Icon icon={IconChevronLeft} size={18} />
 						</button>
 						<span class="page-indicator"
 							>Page {pagination.current_page} of {pagination.last_page}</span
@@ -667,7 +647,7 @@ import { logger } from '$lib/utils/logger';
 							onclick={() => loadPeriodMembers(pagination.current_page + 1)}
 							aria-label="Next page"
 						>
-							<IconChevronRight size={18} />
+							<Icon icon={IconChevronRight} size={18} />
 						</button>
 					</div>
 				</div>
@@ -703,7 +683,7 @@ import { logger } from '$lib/utils/logger';
 					<p>Sending to all {periodStats?.total_count || 0} members from {periodLabel}</p>
 				</div>
 				<button class="close-btn" onclick={() => (showEmailModal = false)} aria-label="Close modal">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -717,7 +697,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={emailTemplate === '30_free'}
 							onclick={() => (emailTemplate = '30_free')}
 						>
-							<IconGift size={24} />
+							<Icon icon={IconGift} size={24} />
 							<span class="template-name">30 Days Free</span>
 							<span class="template-desc">Free trial offer</span>
 						</button>
@@ -726,7 +706,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={emailTemplate === 'discount'}
 							onclick={() => (emailTemplate = 'discount')}
 						>
-							<IconCurrencyDollar size={24} />
+							<Icon icon={IconCurrencyDollar} size={24} />
 							<span class="template-name">Discount</span>
 							<span class="template-desc">Percentage off</span>
 						</button>
@@ -735,7 +715,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={emailTemplate === 'missed'}
 							onclick={() => (emailTemplate = 'missed')}
 						>
-							<IconMail size={24} />
+							<Icon icon={IconMail} size={24} />
 							<span class="template-name">We Miss You</span>
 							<span class="template-desc">Personal touch</span>
 						</button>
@@ -744,7 +724,7 @@ import { logger } from '$lib/utils/logger';
 							class:active={emailTemplate === 'custom'}
 							onclick={() => (emailTemplate = 'custom')}
 						>
-							<IconSparkles size={24} />
+							<Icon icon={IconSparkles} size={24} />
 							<span class="template-name">Custom</span>
 							<span class="template-desc">Your message</span>
 						</button>
@@ -820,7 +800,7 @@ import { logger } from '$lib/utils/logger';
 					onclick={handleSendBulkWinBack}
 					disabled={sending || (emailTemplate === 'custom' && (!customSubject || !customBody))}
 				>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					{sending ? 'Sending...' : `Send to ${periodStats?.total_count || 0} Members`}
 				</button>
 			</div>
@@ -859,13 +839,13 @@ import { logger } from '$lib/utils/logger';
 					onclick={() => (showSurveyModal = false)}
 					aria-label="Close modal"
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body">
 				<div class="survey-info">
-					<IconFileAnalytics size={48} />
+					<Icon icon={IconFileAnalytics} size={48} />
 					<p>
 						Send a feedback survey to understand why members canceled and what would bring them
 						back.
@@ -890,7 +870,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showSurveyModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleSendBulkSurvey} disabled={sending}>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					{sending ? 'Sending...' : 'Send Survey'}
 				</button>
 			</div>

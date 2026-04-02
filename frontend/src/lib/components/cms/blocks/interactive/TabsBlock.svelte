@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconPlus, IconX } from '$lib/icons';
+	import { Icon, IconPlus, IconX } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
 
@@ -172,7 +172,7 @@
 						}}
 						aria-label="Remove tab"
 					>
-						<IconX size={12} />
+						<Icon icon={IconX} size={12} />
 					</button>
 				{/if}
 			</div>
@@ -180,7 +180,7 @@
 
 		{#if props.isEditing}
 			<button type="button" class="add-tab-btn" onclick={addTab} aria-label="Add tab">
-				<IconPlus size={14} />
+				<Icon icon={IconPlus} size={14} />
 			</button>
 		{/if}
 	</div>

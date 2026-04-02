@@ -7,7 +7,7 @@
 	 *
 	 * @version 1.0.0
 	 */
-	import { IconSearch } from '$lib/icons';
+	import { Icon, IconSearch } from '$lib/icons';
 
 	// Filter state
 	let selectedFilter = $state('all');
@@ -189,7 +189,7 @@
 				</div>
 
 				<div class="search-container">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						id="page-searchquery"
 						name="page-searchquery"

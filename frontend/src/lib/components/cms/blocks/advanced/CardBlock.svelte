@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconPhoto, IconExternalLink } from '$lib/icons';
+	import { Icon, IconPhoto, IconExternalLink } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -46,7 +46,7 @@
 			<img src={sanitizeURL(imageUrl)} alt={title} loading="lazy" />
 		{:else}
 			<div class="image-placeholder">
-				<IconPhoto size={32} aria-hidden="true" />
+				<Icon icon={IconPhoto} size={32} aria-hidden="true" />
 			</div>
 		{/if}
 		{#if props.isEditing}
@@ -124,7 +124,7 @@
 				rel={newTab ? 'noopener noreferrer' : undefined}
 			>
 				{buttonText}
-				{#if newTab}<IconExternalLink size={14} aria-hidden="true" />{/if}
+				{#if newTab}<Icon icon={IconExternalLink} size={14} aria-hidden="true" />{/if}
 			</a>
 		{/if}
 	</div>

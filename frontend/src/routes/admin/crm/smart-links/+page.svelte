@@ -15,21 +15,7 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import {
-		IconLink,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconCopy,
-		IconRefresh,
-		IconClick,
-		IconChartBar,
-		IconExternalLink,
-		IconToggleLeft,
-		IconToggleRight,
-		IconCheck
-	} from '$lib/icons';
+	import { Icon, IconLink, IconPlus, IconSearch, IconEdit, IconTrash, IconCopy, IconRefresh, IconClick, IconChartBar, IconExternalLink, IconToggleLeft, IconToggleRight, IconCheck } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -226,10 +212,10 @@
 			<p class="subtitle">Create action links that trigger automations when clicked</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={() => loadSmartLinks()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/smart-links/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Smart Link
 				</a>
 			</div>
@@ -240,7 +226,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconLink size={24} />
+				<Icon icon={IconLink} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -249,7 +235,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconExternalLink size={24} />
+				<Icon icon={IconExternalLink} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.active)}</span>
@@ -258,7 +244,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon gold">
-				<IconClick size={24} />
+				<Icon icon={IconClick} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalClicks)}</span>
@@ -267,7 +253,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconChartBar size={24} />
+				<Icon icon={IconChartBar} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.uniqueClicks)}</span>
@@ -279,7 +265,7 @@
 	<!-- Search & Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-smart-links"
@@ -308,11 +294,11 @@
 		</div>
 	{:else if filteredLinks.length === 0}
 		<div class="empty-state">
-			<IconLink size={48} />
+			<Icon icon={IconLink} size={48} />
 			<h3>No smart links found</h3>
 			<p>Create your first smart link to trigger actions when contacts click</p>
 			<a href="/admin/crm/smart-links/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Smart Link
 			</a>
 		</div>
@@ -336,7 +322,7 @@
 							<td>
 								<div class="link-cell">
 									<div class="link-icon">
-										<IconLink size={20} />
+										<Icon icon={IconLink} size={20} />
 									</div>
 									<div class="link-info">
 										<span class="link-title">{link.title}</span>
@@ -354,9 +340,9 @@
 									{#if togglingId === link.id}
 										<span class="toggle-loading"></span>
 									{:else if link.is_active}
-										<IconToggleRight size={18} />
+										<Icon icon={IconToggleRight} size={18} />
 									{:else}
-										<IconToggleLeft size={18} />
+										<Icon icon={IconToggleLeft} size={18} />
 									{/if}
 									<span>{link.is_active ? 'Active' : 'Inactive'}</span>
 								</button>
@@ -370,9 +356,9 @@
 										title={copySuccess === link.id ? 'Copied!' : 'Copy URL'}
 									>
 										{#if copySuccess === link.id}
-											<IconCheck size={14} />
+											<Icon icon={IconCheck} size={14} />
 										{:else}
-											<IconCopy size={14} />
+											<Icon icon={IconCopy} size={14} />
 										{/if}
 									</button>
 								</div>
@@ -401,17 +387,17 @@
 										class="btn-icon"
 										title="View Analytics"
 									>
-										<IconChartBar size={16} />
+										<Icon icon={IconChartBar} size={16} />
 									</a>
 									<a href="/admin/crm/smart-links/{link.id}/edit" class="btn-icon" title="Edit">
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</a>
 									<button
 										class="btn-icon danger"
 										title="Delete"
 										onclick={() => deleteSmartLink(link.id)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>

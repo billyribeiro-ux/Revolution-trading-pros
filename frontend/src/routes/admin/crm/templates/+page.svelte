@@ -17,25 +17,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
-	import IconSquareCheck from '@tabler/icons-svelte-runes/icons/square-check';
-	import IconFileExport from '@tabler/icons-svelte-runes/icons/file-export';
-	import { crmAPI } from '$lib/api/crm';
+																			import { crmAPI } from '$lib/api/crm';
 	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
@@ -390,14 +372,14 @@
 					aria-label="Refresh templates"
 					title="Refresh"
 				>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/templates/prebuilt" class="btn-secondary">
-					<IconDownload size={18} />
+					<Icon icon={IconDownload} size={18} />
 					<span>Pre-built Library</span>
 				</a>
 				<a href="/admin/crm/templates/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					<span>New Template</span>
 				</a>
 			</div>
@@ -407,7 +389,7 @@
 		<section class="stats-grid" aria-label="Template statistics">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconTemplate size={24} />
+					<Icon icon={IconTemplate} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.total}</span>
@@ -416,7 +398,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon gold">
-					<IconFolder size={24} />
+					<Icon icon={IconFolder} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{categories.length}</span>
@@ -425,7 +407,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon green">
-					<IconEye size={24} />
+					<Icon icon={IconEye} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.visual}</span>
@@ -434,7 +416,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon orange">
-					<IconEdit size={24} />
+					<Icon icon={IconEdit} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.raw}</span>
@@ -446,7 +428,7 @@
 		<!-- Filters Bar -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					id="page-searchquery"
 					name="page-searchquery"
@@ -457,7 +439,7 @@
 				/>
 				{#if searchQuery}
 					<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
-						<IconX size={16} />
+						<Icon icon={IconX} size={16} />
 					</button>
 				{/if}
 			</div>
@@ -483,7 +465,7 @@
 		{#if selectedCount > 0}
 			<div class="bulk-actions-bar" role="toolbar" aria-label="Bulk actions">
 				<div class="selection-info">
-					<IconSquareCheck size={18} />
+					<Icon icon={IconSquareCheck} size={18} />
 					<span>{selectedCount} template{selectedCount > 1 ? 's' : ''} selected</span>
 				</div>
 				<div class="bulk-buttons">
@@ -496,12 +478,12 @@
 						{#if isBulkDeleting}
 							<span class="btn-spinner"></span>
 						{:else}
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 						{/if}
 						<span>Delete Selected</span>
 					</button>
 					<button class="btn-bulk-action" aria-label="Export selected templates">
-						<IconFileExport size={16} />
+						<Icon icon={IconFileExport} size={16} />
 						<span>Export</span>
 					</button>
 					<button
@@ -509,7 +491,7 @@
 						onclick={() => (selectedTemplates = new Set())}
 						aria-label="Clear selection"
 					>
-						<IconX size={16} />
+						<Icon icon={IconX} size={16} />
 						<span>Clear</span>
 					</button>
 				</div>
@@ -524,23 +506,24 @@
 			</div>
 		{:else if error && templates.length === 0}
 			<div class="error-state" role="alert">
-				<IconAlertCircle size={48} />
+				<Icon icon={IconAlertCircle} size={48} />
 				<h3>Failed to Load Templates</h3>
 				<p>{error}</p>
 				<button class="btn-primary" onclick={() => loadTemplates()}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Try Again
 				</button>
 			</div>
 		{:else if templates.length === 0}
 			<div class="empty-state">
-				<IconTemplate size={48} />
+				<Icon icon={IconTemplate} size={48} />
 				<h3>No templates found</h3>
 				<p>
 					{#if searchQuery || selectedCategory}
 						No templates match your current filters. Try adjusting your search criteria.
 					{:else}
 						Create your first template or import from the pre-built library.
+	import { Icon, IconAlertCircle, IconCheck, IconChevronLeft, IconChevronRight, IconCopy, IconDownload, IconEdit, IconEye, IconFileExport, IconFolder, IconPlus, IconRefresh, IconSearch, IconSquare, IconSquareCheck, IconTemplate, IconTrash, IconX } from '$lib/icons';
 					{/if}
 				</p>
 				<div class="empty-actions">
@@ -552,16 +535,16 @@
 								selectedCategory = '';
 							}}
 						>
-							<IconX size={18} />
+							<Icon icon={IconX} size={18} />
 							Clear Filters
 						</button>
 					{:else}
 						<a href="/admin/crm/templates/new" class="btn-primary">
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Template
 						</a>
 						<a href="/admin/crm/templates/prebuilt" class="btn-secondary">
-							<IconDownload size={18} />
+							<Icon icon={IconDownload} size={18} />
 							Pre-built Templates
 						</a>
 					{/if}
@@ -576,9 +559,9 @@
 					aria-label={allSelected ? 'Deselect all templates' : 'Select all templates'}
 				>
 					{#if allSelected}
-						<IconSquareCheck size={20} />
+						<Icon icon={IconSquareCheck} size={20} />
 					{:else}
-						<IconSquare size={20} />
+						<Icon icon={IconSquare} size={20} />
 					{/if}
 					<span>Select All</span>
 				</button>
@@ -606,9 +589,9 @@
 								: `Select ${template.title}`}
 						>
 							{#if selectedTemplates.has(template.id)}
-								<IconSquareCheck size={20} />
+								<Icon icon={IconSquareCheck} size={20} />
 							{:else}
-								<IconSquare size={20} />
+								<Icon icon={IconSquare} size={20} />
 							{/if}
 						</button>
 
@@ -617,7 +600,7 @@
 								<img src={template.thumbnail} alt={`${template.title} preview`} loading="lazy" />
 							{:else}
 								<div class="thumbnail-placeholder">
-									<IconTemplate size={32} />
+									<Icon icon={IconTemplate} size={32} />
 								</div>
 							{/if}
 							<div class="template-overlay">
@@ -627,7 +610,7 @@
 									onclick={() => openPreview(template)}
 									aria-label={`Preview ${template.title}`}
 								>
-									<IconEye size={18} />
+									<Icon icon={IconEye} size={18} />
 								</button>
 								<a
 									href="/admin/crm/templates/{template.id}/edit"
@@ -635,7 +618,7 @@
 									title="Edit"
 									aria-label={`Edit ${template.title}`}
 								>
-									<IconEdit size={18} />
+									<Icon icon={IconEdit} size={18} />
 								</a>
 							</div>
 						</div>
@@ -666,7 +649,7 @@
 										onclick={() => duplicateTemplate(template.id)}
 										aria-label={`Duplicate ${template.title}`}
 									>
-										<IconCopy size={14} />
+										<Icon icon={IconCopy} size={14} />
 									</button>
 									<button
 										class="btn-icon-sm danger"
@@ -674,7 +657,7 @@
 										onclick={() => deleteTemplate(template.id)}
 										aria-label={`Delete ${template.title}`}
 									>
-										<IconTrash size={14} />
+										<Icon icon={IconTrash} size={14} />
 									</button>
 								</div>
 							</div>
@@ -692,7 +675,7 @@
 						disabled={currentPage === 1}
 						aria-label="Previous page"
 					>
-						<IconChevronLeft size={18} />
+						<Icon icon={IconChevronLeft} size={18} />
 						<span>Previous</span>
 					</button>
 
@@ -721,7 +704,7 @@
 						aria-label="Next page"
 					>
 						<span>Next</span>
-						<IconChevronRight size={18} />
+						<Icon icon={IconChevronRight} size={18} />
 					</button>
 				</nav>
 			{/if}
@@ -750,7 +733,7 @@
 			<header class="modal-header">
 				<h2 id="preview-title">{previewTemplate?.title || 'Template Preview'}</h2>
 				<button class="modal-close" onclick={closePreview} aria-label="Close preview">
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</header>
 
@@ -798,7 +781,7 @@
 				<button class="btn-secondary" onclick={closePreview}>Close</button>
 				{#if previewTemplate}
 					<a href="/admin/crm/templates/{previewTemplate.id}/edit" class="btn-primary">
-						<IconEdit size={18} />
+						<Icon icon={IconEdit} size={18} />
 						Edit Template
 					</a>
 				{/if}
@@ -814,11 +797,11 @@
 			<div class="toast toast-{toast.type}" role="alert" aria-live="polite">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{:else if toast.type === 'error'}
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 					{:else}
-						<IconTemplate size={18} />
+						<Icon icon={IconTemplate} size={18} />
 					{/if}
 				</div>
 				<span class="toast-message">{toast.message}</span>
@@ -827,7 +810,7 @@
 					onclick={() => dismissToast(toast.id)}
 					aria-label="Dismiss notification"
 				>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/each}

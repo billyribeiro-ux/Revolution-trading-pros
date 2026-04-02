@@ -3,25 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
-	import {
-		IconArrowLeft,
-		IconHeart,
-		IconMail,
-		IconGift,
-		IconCurrencyDollar,
-		IconSearch,
-		IconFilter,
-		IconSend,
-		IconX,
-		IconChevronLeft,
-		IconChevronRight,
-		IconExternalLink,
-		IconCalendar,
-		IconAlertTriangle,
-		IconTrendingDown,
-		IconSparkles,
-		IconRefresh
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconHeart, IconMail, IconGift, IconCurrencyDollar, IconSearch, IconFilter, IconSend, IconX, IconChevronLeft, IconChevronRight, IconExternalLink, IconCalendar, IconAlertTriangle, IconTrendingDown, IconSparkles, IconRefresh } from '$lib/icons';
 
 	// Store state (local derived from getters)
 	let members = $derived(churnedStore.members);
@@ -176,14 +158,14 @@
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Members
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconHeart size={32} />
+					<Icon icon={IconHeart} size={32} />
 				</div>
 				<div>
 					<h1>Win-Back Center</h1>
@@ -191,7 +173,7 @@
 				</div>
 			</div>
 			<button class="btn-refresh" onclick={() => churnedStore.loadChurnedMembers()}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Refresh
 			</button>
 		</div>
@@ -207,7 +189,7 @@
 			}}
 		>
 			<div class="campaign-icon">
-				<IconGift size={28} />
+				<Icon icon={IconGift} size={28} />
 			</div>
 			<div class="campaign-content">
 				<h3>30 Days Free</h3>
@@ -224,7 +206,7 @@
 			}}
 		>
 			<div class="campaign-icon">
-				<IconCurrencyDollar size={28} />
+				<Icon icon={IconCurrencyDollar} size={28} />
 			</div>
 			<div class="campaign-content">
 				<h3>50% Discount</h3>
@@ -240,7 +222,7 @@
 			}}
 		>
 			<div class="campaign-icon">
-				<IconMail size={28} />
+				<Icon icon={IconMail} size={28} />
 			</div>
 			<div class="campaign-content">
 				<h3>We Miss You</h3>
@@ -254,31 +236,31 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-header">
-					<IconAlertTriangle size={24} />
+					<Icon icon={IconAlertTriangle} size={24} />
 					<span class="stat-label">Total Churned</span>
 				</div>
 				<div class="stat-value">{stats.total_churned}</div>
 				<div class="stat-sublabel">
-					<IconTrendingDown size={14} />
+					<Icon icon={IconTrendingDown} size={14} />
 					{stats.churned_this_month} this month
 				</div>
 			</div>
 
 			<div class="stat-card recovery">
 				<div class="stat-header">
-					<IconCurrencyDollar size={24} />
+					<Icon icon={IconCurrencyDollar} size={24} />
 					<span class="stat-label">Recovery Potential</span>
 				</div>
 				<div class="stat-value">{formatCurrency(stats.potential_recovery_revenue)}</div>
 				<div class="stat-sublabel">
-					<IconSparkles size={14} />
+					<Icon icon={IconSparkles} size={14} />
 					Estimated monthly recovery
 				</div>
 			</div>
 
 			<div class="stat-card">
 				<div class="stat-header">
-					<IconAlertTriangle size={24} />
+					<Icon icon={IconAlertTriangle} size={24} />
 					<span class="stat-label">Top Churn Reason</span>
 				</div>
 				<div class="stat-value churn-reason">
@@ -294,7 +276,7 @@
 	<!-- Toolbar -->
 	<div class="toolbar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="search-churned-members"
 				name="search-churned-members"
@@ -307,7 +289,7 @@
 
 		<div class="filters">
 			<div class="filter-group">
-				<IconFilter size={16} />
+				<Icon icon={IconFilter} size={16} />
 				<select
 					bind:value={winbackPotential}
 					onchange={() => handlePotentialFilter(winbackPotential)}
@@ -320,7 +302,7 @@
 			</div>
 
 			<div class="filter-group">
-				<IconCalendar size={16} />
+				<Icon icon={IconCalendar} size={16} />
 				<select bind:value={churnedWithinDays} onchange={() => handleDaysFilter(churnedWithinDays)}>
 					<option value="">Any Time</option>
 					<option value="7">Last 7 days</option>
@@ -333,7 +315,7 @@
 
 		{#if selectedMembers.size > 0}
 			<button class="btn-email" onclick={() => (showEmailModal = true)}>
-				<IconMail size={18} />
+				<Icon icon={IconMail} size={18} />
 				Email Selected ({selectedMembers.size})
 			</button>
 		{/if}
@@ -348,7 +330,7 @@
 			</div>
 		{:else if members.length === 0}
 			<div class="empty-state">
-				<IconHeart size={64} stroke={1} />
+				<Icon icon={IconHeart} size={64} stroke={1} />
 				<h3>No churned members</h3>
 				<p>Great news! No members have churned matching your filters.</p>
 			</div>
@@ -435,7 +417,7 @@
 											startCampaign('free_trial');
 										}}
 									>
-										<IconGift size={16} />
+										<Icon icon={IconGift} size={16} />
 									</button>
 									<button
 										class="action-btn"
@@ -447,14 +429,14 @@
 											showEmailModal = true;
 										}}
 									>
-										<IconMail size={16} />
+										<Icon icon={IconMail} size={16} />
 									</button>
 									<button
 										class="action-btn"
 										title="View Details"
 										onclick={() => goto(`/admin/members/${member.id}`)}
 									>
-										<IconExternalLink size={16} />
+										<Icon icon={IconExternalLink} size={16} />
 									</button>
 								</div>
 							</td>
@@ -478,7 +460,7 @@
 							disabled={pagination.current_page === 1}
 							onclick={() => churnedStore.goToPage(pagination.current_page - 1)}
 						>
-							<IconChevronLeft size={18} />
+							<Icon icon={IconChevronLeft} size={18} />
 						</button>
 						<span class="page-indicator"
 							>Page {pagination.current_page} of {pagination.last_page}</span
@@ -488,7 +470,7 @@
 							disabled={pagination.current_page === pagination.last_page}
 							onclick={() => churnedStore.goToPage(pagination.current_page + 1)}
 						>
-							<IconChevronRight size={18} />
+							<Icon icon={IconChevronRight} size={18} />
 						</button>
 					</div>
 				</div>
@@ -520,7 +502,7 @@
 					<p>Sending to {selectedMembers.size} member{selectedMembers.size > 1 ? 's' : ''}</p>
 				</div>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -536,7 +518,7 @@
 								if (t) applyTemplate(t);
 							}}
 						>
-							<IconGift size={18} />
+							<Icon icon={IconGift} size={18} />
 							30 Days Free
 						</button>
 						<button
@@ -547,7 +529,7 @@
 								if (t) applyTemplate(t);
 							}}
 						>
-							<IconCurrencyDollar size={18} />
+							<Icon icon={IconCurrencyDollar} size={18} />
 							50% Off
 						</button>
 						<button
@@ -558,7 +540,7 @@
 								if (t) applyTemplate(t);
 							}}
 						>
-							<IconHeart size={18} />
+							<Icon icon={IconHeart} size={18} />
 							We Miss You
 						</button>
 					</div>
@@ -596,7 +578,7 @@
 					onclick={handleBulkEmail}
 					disabled={!emailSubject || !emailBody}
 				>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					Send Win-Back Email
 				</button>
 			</div>

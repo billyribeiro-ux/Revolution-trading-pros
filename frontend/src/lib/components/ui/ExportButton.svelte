@@ -8,7 +8,7 @@
 	 * @level L8 Principal Engineer
 	 */
 	import { fly } from 'svelte/transition';
-	import { IconDownload, IconCsv, IconPdf, IconJson } from '$lib/icons';
+	import { Icon, IconDownload, IconCsv, IconPdf, IconJson } from '$lib/icons';
 	import {
 		exportToCSV,
 		exportToPDF,
@@ -102,7 +102,7 @@
 			disabled:opacity-50 disabled:cursor-not-allowed"
 		disabled={disabled || data.length === 0}
 	>
-		<IconDownload size={size === 'sm' ? 14 : size === 'md' ? 16 : 18} />
+		<Icon icon={IconDownload} size={size === 'sm' ? 14 : size === 'md' ? 16 : 18} />
 		<span>Export</span>
 		{#if data.length > 0}
 			<span class="text-slate-500">({data.length})</span>
@@ -130,7 +130,7 @@
 					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
 						hover:bg-slate-700/50 hover:text-white transition-colors"
 				>
-					<IconCsv size={18} class="text-emerald-400" />
+					<Icon icon={IconCsv} size={18} class="text-emerald-400" />
 					<span>Export as CSV</span>
 				</button>
 
@@ -139,7 +139,7 @@
 					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
 						hover:bg-slate-700/50 hover:text-white transition-colors"
 				>
-					<IconPdf size={18} class="text-red-400" />
+					<Icon icon={IconPdf} size={18} class="text-red-400" />
 					<span>Export as PDF</span>
 				</button>
 
@@ -148,7 +148,7 @@
 					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
 						hover:bg-slate-700/50 hover:text-white transition-colors"
 				>
-					<IconJson size={18} class="text-blue-400" />
+					<Icon icon={IconJson} size={18} class="text-blue-400" />
 					<span>Export as JSON</span>
 				</button>
 			</div>

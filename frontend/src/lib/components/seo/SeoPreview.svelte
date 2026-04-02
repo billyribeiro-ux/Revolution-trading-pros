@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconSearch } from '$lib/icons';
+	import { Icon, IconSearch } from '$lib/icons';
 
 	interface Props {
 		title?: string;
@@ -16,7 +16,7 @@
 
 <div class="seo-preview">
 	<div class="preview-header">
-		<IconSearch size={16} />
+		<Icon icon={IconSearch} size={16} />
 		<span>Search Preview</span>
 	</div>
 

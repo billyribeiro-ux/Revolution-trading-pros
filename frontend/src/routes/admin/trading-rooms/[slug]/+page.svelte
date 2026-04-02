@@ -39,21 +39,8 @@ import { logger } from '$lib/utils/logger';
 	} from '$lib/api/room-resources';
 
 	// Icons
-	import IconTable from '@tabler/icons-svelte-runes/icons/table';
-	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconPin from '@tabler/icons-svelte-runes/icons/pin';
-	import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+															import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconBell, IconChartLine, IconCheck, IconChevronLeft, IconCurrencyDollar, IconEdit, IconPin, IconPinFilled, IconPlayerPlay, IconPlus, IconTable, IconTrash, IconVideo, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -842,7 +829,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<header class="page-header">
 		<a href="/admin/trading-rooms" class="back-link">
-			<IconChevronLeft size={20} />
+			<Icon icon={IconChevronLeft} size={20} />
 			<span>All Trading Rooms</span>
 		</a>
 		<div class="header-row">
@@ -881,13 +868,13 @@ import { logger } from '$lib/utils/logger';
 	<!-- Messages -->
 	{#if successMessage}
 		<div class="message success">
-			<IconCheck size={20} />
+			<Icon icon={IconCheck} size={20} />
 			{successMessage}
 		</div>
 	{/if}
 	{#if errorMessage}
 		<div class="message error">
-			<IconX size={20} />
+			<Icon icon={IconX} size={20} />
 			{errorMessage}
 			<button onclick={() => (errorMessage = '')}>×</button>
 		</div>
@@ -900,7 +887,7 @@ import { logger } from '$lib/utils/logger';
 			class:active={activeTab === 'trade-plan'}
 			onclick={() => (activeTab = 'trade-plan')}
 		>
-			<IconTable size={20} />
+			<Icon icon={IconTable} size={20} />
 			<span>Trade Plan</span>
 			<span class="badge">{tradePlanCount}</span>
 		</button>
@@ -909,7 +896,7 @@ import { logger } from '$lib/utils/logger';
 			class:active={activeTab === 'alerts'}
 			onclick={() => (activeTab = 'alerts')}
 		>
-			<IconBell size={20} />
+			<Icon icon={IconBell} size={20} />
 			<span>Alerts</span>
 			<span class="badge">{alertsCount}</span>
 		</button>
@@ -918,7 +905,7 @@ import { logger } from '$lib/utils/logger';
 			class:active={activeTab === 'weekly-video'}
 			onclick={() => (activeTab = 'weekly-video')}
 		>
-			<IconVideo size={20} />
+			<Icon icon={IconVideo} size={20} />
 			<span>Weekly Video</span>
 			{#if hasCurrentVideo}
 				<span class="badge active">1</span>
@@ -929,7 +916,7 @@ import { logger } from '$lib/utils/logger';
 			class:active={activeTab === 'trades'}
 			onclick={() => (activeTab = 'trades')}
 		>
-			<IconChartLine size={20} />
+			<Icon icon={IconChartLine} size={20} />
 			<span>Trade Tracker</span>
 			{#if activeTradesCount > 0}
 				<span class="badge active">{activeTradesCount}</span>
@@ -942,7 +929,7 @@ import { logger } from '$lib/utils/logger';
 			class:active={activeTab === 'video-library'}
 			onclick={() => (activeTab = 'video-library')}
 		>
-			<IconPlayerPlay size={20} />
+			<Icon icon={IconPlayerPlay} size={20} />
 			<span>Video Library</span>
 			<span class="badge">{videosCount}</span>
 		</button>
@@ -957,7 +944,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="section-header">
 				<h2>Trade Plan Entries</h2>
 				<button class="btn-primary" onclick={openAddTradePlan}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Entry
 				</button>
 			</div>
@@ -966,11 +953,11 @@ import { logger } from '$lib/utils/logger';
 				<div class="loading">Loading trade plan...</div>
 			{:else if !hasTradePlanEntries}
 				<div class="empty-state">
-					<IconTable size={48} />
+					<Icon icon={IconTable} size={48} />
 					<h3>No Trade Plan Entries</h3>
 					<p>Add your first trade plan entry to get started</p>
 					<button class="btn-primary" onclick={openAddTradePlan}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add First Entry
 					</button>
 				</div>
@@ -1011,14 +998,14 @@ import { logger } from '$lib/utils/logger';
 									<td>{entry.options_exp || '-'}</td>
 									<td class="actions-cell">
 										<button class="icon-btn" onclick={() => openEditTradePlan(entry)} title="Edit">
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</button>
 										<button
 											class="icon-btn danger"
 											onclick={() => deleteTradePlan(entry)}
 											title="Delete"
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</td>
 								</tr>
@@ -1075,7 +1062,7 @@ import { logger } from '$lib/utils/logger';
 						</button>
 					</div>
 					<button class="btn-primary" onclick={openAddAlert}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						New Alert
 					</button>
 				</div>
@@ -1085,17 +1072,17 @@ import { logger } from '$lib/utils/logger';
 				<div class="loading">Loading alerts...</div>
 			{:else if !hasAlerts}
 				<div class="empty-state">
-					<IconBell size={48} />
+					<Icon icon={IconBell} size={48} />
 					<h3>No Alerts</h3>
 					<p>Create your first trading alert</p>
 					<button class="btn-primary" onclick={openAddAlert}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Create Alert
 					</button>
 				</div>
 			{:else if filteredAlerts.length === 0}
 				<div class="empty-state">
-					<IconBell size={48} />
+					<Icon icon={IconBell} size={48} />
 					<h3>No {alertTypeFilter} Alerts</h3>
 					<p>No alerts match the selected filter</p>
 				</div>
@@ -1124,9 +1111,9 @@ import { logger } from '$lib/utils/logger';
 										title={alert.is_pinned ? 'Unpin' : 'Pin'}
 									>
 										{#if alert.is_pinned}
-											<IconPinFilled size={16} />
+											<Icon icon={IconPinFilled} size={16} />
 										{:else}
-											<IconPin size={16} />
+											<Icon icon={IconPin} size={16} />
 										{/if}
 									</button>
 									<button
@@ -1135,13 +1122,13 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => toggleAlertNew(alert)}
 										title={alert.is_new ? 'Mark as read' : 'Mark as new'}
 									>
-										<IconCheck size={16} />
+										<Icon icon={IconCheck} size={16} />
 									</button>
 									<button class="icon-btn" onclick={() => openEditAlert(alert)} title="Edit">
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</button>
 									<button class="icon-btn danger" onclick={() => deleteAlert(alert)} title="Delete">
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</div>
@@ -1169,7 +1156,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="section-header">
 				<h2>Weekly Video</h2>
 				<button class="btn-primary" onclick={openAddVideo}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Publish New Video
 				</button>
 			</div>
@@ -1204,11 +1191,11 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				{:else}
 					<div class="empty-state">
-						<IconVideo size={48} />
+						<Icon icon={IconVideo} size={48} />
 						<h3>No Weekly Video</h3>
 						<p>Publish your first weekly video for this room</p>
 						<button class="btn-primary" onclick={openAddVideo}>
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Publish Video
 						</button>
 					</div>
@@ -1269,7 +1256,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="loading">Loading trades...</div>
 			{:else if filteredTrades.length === 0}
 				<div class="empty-state">
-					<IconChartLine size={48} />
+					<Icon icon={IconChartLine} size={48} />
 					<h3>No Trades Found</h3>
 					<p>Trades are created automatically from entry alerts</p>
 				</div>
@@ -1346,7 +1333,7 @@ import { logger } from '$lib/utils/logger';
 												onclick={() => openCloseTrade(trade)}
 												title="Close Trade"
 											>
-												<IconCurrencyDollar size={16} />
+												<Icon icon={IconCurrencyDollar} size={16} />
 												Close
 											</button>
 										{/if}
@@ -1355,7 +1342,7 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => deleteTrade(trade)}
 											title="Delete"
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</td>
 								</tr>
@@ -1423,7 +1410,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="loading">Loading videos...</div>
 			{:else if filteredVideos.length === 0}
 				<div class="empty-state">
-					<IconPlayerPlay size={48} />
+					<Icon icon={IconPlayerPlay} size={48} />
 					<h3>No Videos Found</h3>
 					<p>Videos will appear here when uploaded through the Resources page</p>
 					<a href="/admin/resources" class="btn-primary"> Go to Resources </a>
@@ -1455,7 +1442,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<div class="video-card-actions">
 								<a href="/admin/resources/{video.id}" class="icon-btn" title="Edit">
-									<IconEdit size={16} />
+									<Icon icon={IconEdit} size={16} />
 								</a>
 								<button
 									class="icon-btn danger"
@@ -1465,7 +1452,7 @@ import { logger } from '$lib/utils/logger';
 									}}
 									title="Delete"
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						</div>
@@ -1498,7 +1485,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2 id="trade-plan-modal-title">{editingTradePlan ? 'Edit' : 'Add'} Trade Plan Entry</h2>
 				<button class="close-btn" onclick={() => (showTradePlanModal = false)}>
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			</div>
 			<form
@@ -1667,7 +1654,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2 id="alert-modal-title">{editingAlert ? 'Edit' : 'Create'} Alert</h2>
 				<button class="close-btn" onclick={() => (showAlertModal = false)}>
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			</div>
 			<form
@@ -1909,7 +1896,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2 id="video-modal-title">Publish Weekly Video</h2>
 				<button class="close-btn" onclick={() => (showVideoModal = false)}>
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			</div>
 			<form
@@ -2030,7 +2017,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2 id="close-trade-modal-title">Close Trade: {closingTrade.ticker}</h2>
 				<button class="close-btn" onclick={() => (showCloseTradeModal = false)}>
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			</div>
 			<form

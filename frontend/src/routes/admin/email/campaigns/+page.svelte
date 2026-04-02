@@ -20,24 +20,7 @@ import { logger } from '$lib/utils/logger';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
-	import {
-		IconMail,
-		IconPlus,
-		IconCalendar,
-		IconUsers,
-		IconChartBar,
-		IconRefresh,
-		IconSend,
-		IconClock,
-		IconCheck,
-		IconX,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconCopy,
-		IconTrendingUp,
-		IconArrowLeft
-	} from '$lib/icons';
+	import { Icon, IconMail, IconPlus, IconCalendar, IconUsers, IconChartBar, IconRefresh, IconSend, IconClock, IconCheck, IconX, IconEdit, IconTrash, IconEye, IconCopy, IconTrendingUp, IconArrowLeft } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getCampaigns,
@@ -386,14 +369,14 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/email/templates')}>
-			<IconArrowLeft size={20} />
+			<Icon icon={IconArrowLeft} size={20} />
 			Back to Templates
 		</button>
 
 		<div class="header-content">
 			<div class="header-title">
 				<div class="title-icon">
-					<IconMail size={28} />
+					<Icon icon={IconMail} size={28} />
 				</div>
 				<div>
 					<h1>Email Campaigns</h1>
@@ -404,11 +387,11 @@ import { logger } from '$lib/utils/logger';
 			{#if getIsEmailConnected()}
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={loadCampaigns}>
-						<IconRefresh size={18} />
+						<Icon icon={IconRefresh} size={18} />
 						Refresh
 					</button>
 					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						New Campaign
 					</button>
 				</div>
@@ -450,7 +433,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconSend size={24} />
+					<Icon icon={IconSend} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{formatNumber(stats?.total_sent || 0)}</div>
@@ -459,7 +442,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald">
-					<IconEye size={24} />
+					<Icon icon={IconEye} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{formatNumber(stats?.total_opened || 0)}</div>
@@ -468,7 +451,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconTrendingUp size={24} />
+					<Icon icon={IconTrendingUp} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{stats?.avg_open_rate || 0}%</div>
@@ -477,7 +460,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon yellow">
-					<IconChartBar size={24} />
+					<Icon icon={IconChartBar} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{stats?.avg_click_rate || 0}%</div>
@@ -493,15 +476,15 @@ import { logger } from '$lib/utils/logger';
 					All ({campaigns.length})
 				</button>
 				<button class:active={activeTab === 'scheduled'} onclick={() => (activeTab = 'scheduled')}>
-					<IconClock size={16} />
+					<Icon icon={IconClock} size={16} />
 					Scheduled ({scheduledCount})
 				</button>
 				<button class:active={activeTab === 'sent'} onclick={() => (activeTab = 'sent')}>
-					<IconCheck size={16} />
+					<Icon icon={IconCheck} size={16} />
 					Sent ({sentCount})
 				</button>
 				<button class:active={activeTab === 'drafts'} onclick={() => (activeTab = 'drafts')}>
-					<IconEdit size={16} />
+					<Icon icon={IconEdit} size={16} />
 					Drafts ({draftCount})
 				</button>
 			</div>
@@ -528,19 +511,19 @@ import { logger } from '$lib/utils/logger';
 
 					<div class="campaign-meta">
 						<div class="meta-item">
-							<IconUsers size={16} />
+							<Icon icon={IconUsers} size={16} />
 							<span>{getSegmentName(campaign.segment_id)}</span>
 							<span class="meta-count">({formatNumber(campaign.total_recipients)})</span>
 						</div>
 						{#if campaign.scheduled_at}
 							<div class="meta-item">
-								<IconCalendar size={16} />
+								<Icon icon={IconCalendar} size={16} />
 								<span>Scheduled: {formatDate(campaign.scheduled_at)}</span>
 							</div>
 						{/if}
 						{#if campaign.sent_at}
 							<div class="meta-item">
-								<IconClock size={16} />
+								<Icon icon={IconClock} size={16} />
 								<span>Sent: {formatDate(campaign.sent_at)}</span>
 							</div>
 						{/if}
@@ -598,32 +581,32 @@ import { logger } from '$lib/utils/logger';
 					<div class="campaign-actions">
 						{#if campaign.status === 'draft'}
 							<button class="btn-primary small" onclick={() => handleSendCampaign(campaign.id)}>
-								<IconSend size={16} />
+								<Icon icon={IconSend} size={16} />
 								Send Now
 							</button>
 							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
-								<IconCopy size={16} />
+								<Icon icon={IconCopy} size={16} />
 								Duplicate
 							</button>
 							<button class="btn-danger small" onclick={() => handleDeleteCampaign(campaign.id)}>
-								<IconTrash size={16} />
+								<Icon icon={IconTrash} size={16} />
 							</button>
 						{:else if campaign.status === 'scheduled'}
 							<button class="btn-secondary small" onclick={() => handleCancelCampaign(campaign.id)}>
-								<IconX size={16} />
+								<Icon icon={IconX} size={16} />
 								Cancel
 							</button>
 							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
-								<IconCopy size={16} />
+								<Icon icon={IconCopy} size={16} />
 								Duplicate
 							</button>
 						{:else}
 							<button class="btn-secondary small" onclick={() => viewCampaignReport(campaign)}>
-								<IconChartBar size={16} />
+								<Icon icon={IconChartBar} size={16} />
 								View Report
 							</button>
 							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
-								<IconCopy size={16} />
+								<Icon icon={IconCopy} size={16} />
 								Duplicate
 							</button>
 						{/if}
@@ -633,11 +616,11 @@ import { logger } from '$lib/utils/logger';
 
 			{#if filteredCampaigns.length === 0}
 				<div class="empty-state">
-					<IconMail size={48} stroke={1} />
+					<Icon icon={IconMail} size={48} stroke={1} />
 					<h3>No campaigns found</h3>
 					<p>Create your first email campaign to get started</p>
 					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Create Campaign
 					</button>
 				</div>
@@ -666,7 +649,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Create New Campaign</h2>
 				<button class="close-btn" onclick={() => (showCreateModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -770,10 +753,10 @@ import { logger } from '$lib/utils/logger';
 				<button class="btn-secondary" onclick={() => (showCreateModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleCreateCampaign}>
 					{#if newCampaign.scheduledFor}
-						<IconCalendar size={18} />
+						<Icon icon={IconCalendar} size={18} />
 						Schedule Campaign
 					{:else}
-						<IconEdit size={18} />
+						<Icon icon={IconEdit} size={18} />
 						Save as Draft
 					{/if}
 				</button>

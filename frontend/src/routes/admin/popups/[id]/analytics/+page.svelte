@@ -6,14 +6,7 @@ import { logger } from '$lib/utils/logger';
 	import { Card, Button, Badge } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
-	import {
-		IconArrowLeft,
-		IconTrendingUp,
-		IconEye,
-		IconClick,
-		IconDevices,
-		IconCalendar
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconTrendingUp, IconEye, IconClick, IconDevices, IconCalendar } from '$lib/icons';
 
 	const popupId = parseInt(page.params.id!);
 
@@ -92,7 +85,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Header -->
 		<div class="mb-6">
 			<Button variant="ghost" onclick={() => goto('/admin/popups')} class="mb-4">
-				<IconArrowLeft size={20} class="mr-2" />
+				<Icon icon={IconArrowLeft} size={20} class="mr-2" />
 				Back to Popups
 			</Button>
 
@@ -140,7 +133,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					</div>
 					<div class="p-3 bg-blue-50 rounded-lg">
-						<IconEye size={24} class="text-blue-600" />
+						<Icon icon={IconEye} size={24} class="text-blue-600" />
 					</div>
 				</div>
 			</Card>
@@ -168,7 +161,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					</div>
 					<div class="p-3 bg-green-50 rounded-lg">
-						<IconClick size={24} class="text-green-600" />
+						<Icon icon={IconClick} size={24} class="text-green-600" />
 					</div>
 				</div>
 			</Card>
@@ -186,7 +179,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					</div>
 					<div class="p-3 bg-purple-50 rounded-lg">
-						<IconTrendingUp size={24} class="text-purple-600" />
+						<Icon icon={IconTrendingUp} size={24} class="text-purple-600" />
 					</div>
 				</div>
 			</Card>
@@ -212,7 +205,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					</div>
 					<div class="p-3 bg-yellow-50 rounded-lg">
-						<IconCalendar size={24} class="text-yellow-600" />
+						<Icon icon={IconCalendar} size={24} class="text-yellow-600" />
 					</div>
 				</div>
 			</Card>
@@ -289,7 +282,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Device Breakdown -->
 			<Card>
 				<h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-					<IconDevices size={24} />
+					<Icon icon={IconDevices} size={24} />
 					Device Breakdown
 				</h2>
 

@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-	import { IconPlus, IconX, IconCheck, IconCircleCheck, IconProgress } from '$lib/icons';
+	import { Icon, IconPlus, IconX, IconCheck, IconCircleCheck, IconProgress } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -326,7 +326,7 @@
 		<div class="progress-section" id={progressId} aria-live="polite">
 			<div class="progress-header">
 				<span class="progress-text">
-					<IconProgress size={16} aria-hidden="true" />
+					<Icon icon={IconProgress} size={16} aria-hidden="true" />
 					<span class="progress-count">{completedItems} of {totalItems} completed</span>
 				</span>
 				<span class="progress-percent">{progressPercent}%</span>
@@ -377,7 +377,7 @@
 					tabindex={props.isEditing ? 0 : -1}
 				>
 					{#if item.checked}
-						<IconCheck size={14} aria-hidden="true" />
+						<Icon icon={IconCheck} size={14} aria-hidden="true" />
 					{/if}
 				</button>
 
@@ -409,7 +409,7 @@
 						aria-label="Remove item"
 						title="Remove item"
 					>
-						<IconX size={14} aria-hidden="true" />
+						<Icon icon={IconX} size={14} aria-hidden="true" />
 					</button>
 				{/if}
 			</li>
@@ -424,7 +424,7 @@
 			onclick={addItem}
 			aria-label="Add new checklist item"
 		>
-			<IconPlus size={16} aria-hidden="true" />
+			<Icon icon={IconPlus} size={16} aria-hidden="true" />
 			<span>Add item</span>
 		</button>
 	{/if}
@@ -432,7 +432,7 @@
 	<!-- Empty State -->
 	{#if items.length === 0 && !props.isEditing}
 		<div class="empty-state" role="status">
-			<IconCircleCheck size={32} aria-hidden="true" />
+			<Icon icon={IconCircleCheck} size={32} aria-hidden="true" />
 			<p>No items in this checklist</p>
 		</div>
 	{/if}

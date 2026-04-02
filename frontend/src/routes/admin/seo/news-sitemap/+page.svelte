@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
+	import { Icon, IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let articles = $state<any[]>([]);
@@ -98,18 +98,18 @@
 	<header class="page-header">
 		<div>
 			<h1>
-				<IconNews size={28} />
+				<Icon icon={IconNews} size={28} />
 				Google News Sitemap
 			</h1>
 			<p>Manage your Google News sitemap for better news indexing</p>
 		</div>
 		<div class="header-actions">
 			<a href={sitemapUrl} target="_blank" rel="noopener" class="btn-secondary">
-				<IconExternalLink size={18} />
+				<Icon icon={IconExternalLink} size={18} />
 				View Sitemap
 			</a>
 			<button class="btn-primary" onclick={regenerateSitemap} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 				{loading ? 'Regenerating...' : 'Regenerate'}
 			</button>
 		</div>
@@ -166,7 +166,7 @@
 			<h2>Articles in Sitemap ({articles.length})</h2>
 			{#if lastGenerated}
 				<span class="last-updated">
-					<IconClock size={16} />
+					<Icon icon={IconClock} size={16} />
 					Last updated: {getTimeAgo(lastGenerated)}
 				</span>
 			{/if}
@@ -176,7 +176,7 @@
 			<div class="loading">Loading articles...</div>
 		{:else if articles.length === 0}
 			<div class="empty-state">
-				<IconNews size={48} />
+				<Icon icon={IconNews} size={48} />
 				<p>No articles found within the last {settings.maxAge} hours</p>
 			</div>
 		{:else}
@@ -185,9 +185,9 @@
 					<div class="article-item">
 						<div class="article-status" class:included={article.inSitemap}>
 							{#if article.inSitemap}
-								<IconCheck size={16} />
+								<Icon icon={IconCheck} size={16} />
 							{:else}
-								<IconX size={16} />
+								<Icon icon={IconX} size={16} />
 							{/if}
 						</div>
 						<div class="article-info">

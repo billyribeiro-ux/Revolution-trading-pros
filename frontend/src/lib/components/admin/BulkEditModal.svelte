@@ -5,12 +5,8 @@
 	 */
 
 	import { videoOpsApi } from '$lib/api/video-advanced';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconMinus from '@tabler/icons-svelte-runes/icons/minus';
-
+	import { Icon, IconCheck, IconEdit, IconMinus, IconPlus, IconX } from '$lib/icons';
+					
 	interface Props {
 		selectedIds: number[];
 		contentTypes?: { value: string; label: string }[];
@@ -141,12 +137,12 @@
 <div class="bulk-edit-modal">
 	<div class="modal-header">
 		<div class="header-left">
-			<IconEdit size={24} />
+			<Icon icon={IconEdit} size={24} />
 			<h3>Bulk Edit {selectedIds.length} Videos</h3>
 		</div>
 		{#if onClose}
 			<button type="button" class="btn-close" onclick={onClose}>
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		{/if}
 	</div>
@@ -260,7 +256,7 @@
 									onclick={() => toggleAddTag(tag.slug)}
 									title="Add tag"
 								>
-									<IconPlus size={14} />
+									<Icon icon={IconPlus} size={14} />
 								</button>
 								<button
 									type="button"
@@ -269,7 +265,7 @@
 									onclick={() => toggleRemoveTag(tag.slug)}
 									title="Remove tag"
 								>
-									<IconMinus size={14} />
+									<Icon icon={IconMinus} size={14} />
 								</button>
 							</div>
 						</div>
@@ -294,7 +290,7 @@
 									onclick={() => toggleAddRoom(room.id)}
 									title="Add to room"
 								>
-									<IconPlus size={14} />
+									<Icon icon={IconPlus} size={14} />
 								</button>
 								<button
 									type="button"
@@ -303,7 +299,7 @@
 									onclick={() => toggleRemoveRoom(room.id)}
 									title="Remove from room"
 								>
-									<IconMinus size={14} />
+									<Icon icon={IconMinus} size={14} />
 								</button>
 							</div>
 						</div>
@@ -316,7 +312,7 @@
 	<div class="modal-actions">
 		<button type="button" class="btn-cancel" onclick={onClose}>Cancel</button>
 		<button type="button" class="btn-save" onclick={saveBulkEdit} disabled={isSaving}>
-			<IconCheck size={16} />
+			<Icon icon={IconCheck} size={16} />
 			{isSaving ? 'Saving...' : `Update ${selectedIds.length} Videos`}
 		</button>
 	</div>

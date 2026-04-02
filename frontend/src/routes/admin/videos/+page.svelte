@@ -19,25 +19,7 @@ import { logger } from '$lib/utils/logger';
 	 */
 
 	import { browser } from '$app/environment';
-	import {
-		IconVideo,
-		IconSearch,
-		IconPlayerPlay,
-		IconEdit,
-		IconTrash,
-		IconRefresh,
-		IconPlus,
-		IconLink,
-		IconCheck,
-		IconX,
-		IconChartBar,
-		IconUser,
-		IconBuilding,
-		IconTags,
-		IconAlertCircle,
-		IconCloudUpload,
-		IconProgressCheck
-	} from '$lib/icons';
+	import { Icon, IconVideo, IconSearch, IconPlayerPlay, IconEdit, IconTrash, IconRefresh, IconPlus, IconLink, IconCheck, IconX, IconChartBar, IconUser, IconBuilding, IconTags, IconAlertCircle, IconCloudUpload, IconProgressCheck, IconCode, IconCheckbox, IconSquare, IconStar, IconStarOff } from '$lib/icons';
 	import {
 		tradingRoomApi,
 		type TradingRoom,
@@ -53,12 +35,7 @@ import { logger } from '$lib/utils/logger';
 		type AnalyticsDashboard,
 		type BatchStatus
 	} from '$lib/api/video-advanced';
-	import IconCode from '@tabler/icons-svelte-runes/icons/code';
-	import IconCheckbox from '@tabler/icons-svelte-runes/icons/checkbox';
-	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
-	import IconStar from '@tabler/icons-svelte-runes/icons/star';
-	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+						import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -991,17 +968,17 @@ import { logger } from '$lib/utils/logger';
 		<!-- Success/Error Messages -->
 		{#if successMessage}
 			<div class="alert alert-success">
-				<IconCheck size={18} />
+				<Icon icon={IconCheck} size={18} />
 				{successMessage}
 			</div>
 		{/if}
 
 		{#if error}
 			<div class="alert alert-error">
-				<IconAlertCircle size={18} />
+				<Icon icon={IconAlertCircle} size={18} />
 				{error}
 				<button class="alert-close" onclick={() => (error = '')}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/if}
@@ -1012,7 +989,7 @@ import { logger } from '$lib/utils/logger';
 			<p class="subtitle">Manage daily videos with category tags for each room and service</p>
 			<div class="header-actions">
 				<button class="btn-secondary" onclick={toggleAnalyticsPanel} title="View Analytics">
-					<IconChartBar size={18} />
+					<Icon icon={IconChartBar} size={18} />
 					Analytics
 				</button>
 				<button
@@ -1021,14 +998,14 @@ import { logger } from '$lib/utils/logger';
 					disabled={!selectedRoom}
 					title="Upload to Bunny.net"
 				>
-					<IconCloudUpload size={18} />
+					<Icon icon={IconCloudUpload} size={18} />
 					Bunny Upload
 				</button>
 				<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<button class="btn-primary" onclick={openUploadModal} disabled={!selectedRoom}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Video
 				</button>
 			</div>
@@ -1042,7 +1019,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if rooms.length === 0}
 			<div class="room-selector empty">
-				<IconBuilding size={32} />
+				<Icon icon={IconBuilding} size={32} />
 				<p>No trading rooms found. Create rooms in the Trading Rooms admin.</p>
 			</div>
 		{:else}
@@ -1050,7 +1027,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Trading Rooms -->
 				<div class="room-group">
 					<h3 class="room-group-title">
-						<IconBuilding size={16} />
+						<Icon icon={IconBuilding} size={16} />
 						Trading Rooms
 					</h3>
 					<div class="room-tabs">
@@ -1074,7 +1051,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Alert Services -->
 				<div class="room-group">
 					<h3 class="room-group-title">
-						<IconChartBar size={16} />
+						<Icon icon={IconChartBar} size={16} />
 						Alert Services
 					</h3>
 					<div class="room-tabs">
@@ -1127,7 +1104,7 @@ import { logger } from '$lib/utils/logger';
 		{#if showAnalyticsPanel}
 			<div class="analytics-panel">
 				<div class="analytics-header">
-					<h3><IconChartBar size={20} /> Video Analytics</h3>
+					<h3><Icon icon={IconChartBar} size={20} /> Video Analytics</h3>
 					<div class="analytics-controls">
 						<label for="analytics-period" class="sr-only">Analytics period</label>
 						<select id="analytics-period" class="filter-select" bind:value={analyticsPeriod}>
@@ -1136,7 +1113,7 @@ import { logger } from '$lib/utils/logger';
 							<option value="90d">Last 90 days</option>
 						</select>
 						<button class="btn-icon" onclick={() => (showAnalyticsPanel = false)} title="Close">
-							<IconX size={18} />
+							<Icon icon={IconX} size={18} />
 						</button>
 					</div>
 				</div>
@@ -1206,7 +1183,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Filters -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<label for="search-videos" class="sr-only">Search videos or categories</label>
 				<input
 					type="text"
@@ -1249,7 +1226,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if filteredVideos.length === 0}
 			<div class="empty-state">
-				<IconVideo size={64} />
+				<Icon icon={IconVideo} size={64} />
 				<h3>No videos found</h3>
 				<p>
 					{#if searchQuery || selectedCategory !== 'all' || selectedTrader !== 'all'}
@@ -1259,7 +1236,7 @@ import { logger } from '$lib/utils/logger';
 					{/if}
 				</p>
 				<button class="btn-primary" onclick={openUploadModal}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Video
 				</button>
 			</div>
@@ -1269,7 +1246,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="bulk-action-bar">
 					<div class="bulk-selection-info">
 						<button class="btn-icon" onclick={clearSelection} title="Clear selection">
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 						<span>{selectedVideoIds.size} video(s) selected</span>
 					</div>
@@ -1280,7 +1257,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={isBulkActionLoading}
 							title="Publish selected"
 						>
-							<IconCheck size={16} />
+							<Icon icon={IconCheck} size={16} />
 							Publish
 						</button>
 						<button
@@ -1289,7 +1266,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={isBulkActionLoading}
 							title="Unpublish selected"
 						>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 							Unpublish
 						</button>
 						<button
@@ -1298,7 +1275,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={isBulkActionLoading}
 							title="Feature selected"
 						>
-							<IconStar size={16} />
+							<Icon icon={IconStar} size={16} />
 							Feature
 						</button>
 						<button
@@ -1307,7 +1284,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={isBulkActionLoading}
 							title="Unfeature selected"
 						>
-							<IconStarOff size={16} />
+							<Icon icon={IconStarOff} size={16} />
 							Unfeature
 						</button>
 						<button
@@ -1316,7 +1293,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={isBulkActionLoading}
 							title="Manage tags"
 						>
-							<IconTags size={16} />
+							<Icon icon={IconTags} size={16} />
 							Tags
 						</button>
 						<button
@@ -1325,7 +1302,7 @@ import { logger } from '$lib/utils/logger';
 							disabled={isBulkActionLoading}
 							title="Delete selected"
 						>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 							Delete
 						</button>
 						{#if isBulkActionLoading}
@@ -1348,11 +1325,11 @@ import { logger } from '$lib/utils/logger';
 										: 'Select all'}
 								>
 									{#if selectedVideoIds.size === filteredVideos.length && filteredVideos.length > 0}
-										<IconCheckbox size={18} />
+										<Icon icon={IconCheckbox} size={18} />
 									{:else if selectedVideoIds.size > 0}
-										<IconSquare size={18} class="partial" />
+										<Icon icon={IconSquare} size={18} class="partial" />
 									{:else}
-										<IconSquare size={18} />
+										<Icon icon={IconSquare} size={18} />
 									{/if}
 								</button>
 							</th>
@@ -1375,9 +1352,9 @@ import { logger } from '$lib/utils/logger';
 										title={selectedVideoIds.has(video.id) ? 'Deselect' : 'Select'}
 									>
 										{#if selectedVideoIds.has(video.id)}
-											<IconCheckbox size={18} />
+											<Icon icon={IconCheckbox} size={18} />
 										{:else}
-											<IconSquare size={18} />
+											<Icon icon={IconSquare} size={18} />
 										{/if}
 									</button>
 								</td>
@@ -1387,7 +1364,7 @@ import { logger } from '$lib/utils/logger';
 											<img src={video.thumbnail_url} alt="" />
 										{:else}
 											<div class="thumbnail-placeholder-small">
-												<IconVideo size={20} />
+												<Icon icon={IconVideo} size={20} />
 											</div>
 										{/if}
 										{#if video.duration}
@@ -1420,7 +1397,7 @@ import { logger } from '$lib/utils/logger';
 											<img src={video.trader.photo_url} alt="" class="trader-avatar" />
 										{:else}
 											<div class="trader-avatar-placeholder">
-												<IconUser size={16} />
+												<Icon icon={IconUser} size={16} />
 											</div>
 										{/if}
 										<span>{video.trader?.name || 'Unassigned'}</span>
@@ -1435,10 +1412,10 @@ import { logger } from '$lib/utils/logger';
 										onclick={() => togglePublished(video)}
 									>
 										{#if video.is_published}
-											<IconCheck size={14} />
+											<Icon icon={IconCheck} size={14} />
 											Published
 										{:else}
-											<IconX size={14} />
+											<Icon icon={IconX} size={14} />
 											Draft
 										{/if}
 									</button>
@@ -1450,31 +1427,31 @@ import { logger } from '$lib/utils/logger';
 											title="Preview Video"
 											onclick={() => window.open(video.video_url, '_blank')}
 										>
-											<IconPlayerPlay size={16} />
+											<Icon icon={IconPlayerPlay} size={16} />
 										</button>
 										<button
 											class="btn-icon"
 											title="Embed Code"
 											onclick={() => showEmbedCode(video)}
 										>
-											<IconCode size={16} />
+											<Icon icon={IconCode} size={16} />
 										</button>
 										<button
 											class="btn-icon"
 											title="Replace Video"
 											onclick={() => openReplaceModal(video)}
 										>
-											<IconLink size={16} />
+											<Icon icon={IconLink} size={16} />
 										</button>
 										<button class="btn-icon" title="Edit" onclick={() => openEditModal(video)}>
-											<IconEdit size={16} />
+											<Icon icon={IconEdit} size={16} />
 										</button>
 										<button
 											class="btn-icon"
 											title="Fetch Duration"
 											onclick={() => fetchVideoDuration(video.id)}
 										>
-											<IconRefresh size={16} />
+											<Icon icon={IconRefresh} size={16} />
 										</button>
 										<button
 											class="btn-icon danger"
@@ -1482,7 +1459,7 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => deleteVideo(video)}
 											disabled={isDeleting}
 										>
-											<IconTrash size={16} />
+											<Icon icon={IconTrash} size={16} />
 										</button>
 									</div>
 								</td>
@@ -1606,7 +1583,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Categories Section -->
 				<div class="form-group">
 					<label>
-						<IconTags
+						<Icon icon={IconTags}
 							size={16}
 							style="display: inline; vertical-align: middle; margin-right: 4px;"
 						/>
@@ -1622,7 +1599,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => toggleCategory(category.id)}
 							>
 								{#if isCategorySelected(category.id)}
-									<IconCheck size={14} />
+									<Icon icon={IconCheck} size={14} />
 								{/if}
 								{category.name}
 							</button>
@@ -1641,7 +1618,7 @@ import { logger } from '$lib/utils/logger';
 											onclick={() => toggleCategory(categoryId)}
 											aria-label="Remove {category.name}"
 										>
-											<IconX size={12} />
+											<Icon icon={IconX} size={12} />
 										</button>
 									</span>
 								{/if}
@@ -1805,7 +1782,7 @@ import { logger } from '$lib/utils/logger';
 						<span class="btn-spinner"></span>
 						Replacing...
 					{:else}
-						<IconLink size={16} />
+						<Icon icon={IconLink} size={16} />
 						Replace Video
 					{/if}
 				</button>
@@ -1841,7 +1818,7 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header bunny-header">
 				<h2>
-					<IconCloudUpload size={24} />
+					<Icon icon={IconCloudUpload} size={24} />
 					Upload to Bunny.net
 				</h2>
 				<button
@@ -1876,7 +1853,7 @@ import { logger } from '$lib/utils/logger';
 					aria-label="Drop video files here or click to select"
 				>
 					{#if bunnyUploadFiles.length === 0}
-						<IconCloudUpload size={48} />
+						<Icon icon={IconCloudUpload} size={48} />
 						<p>Drag and drop video files here</p>
 						<p class="text-muted">or</p>
 						<label class="btn-secondary">
@@ -1892,7 +1869,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="file-types">Supported: MP4, MOV, WebM</p>
 					{:else}
 						<div class="selected-files">
-							<h4><IconProgressCheck size={20} /> {bunnyUploadFiles.length} file(s) selected</h4>
+							<h4><Icon icon={IconProgressCheck} size={20} /> {bunnyUploadFiles.length} file(s) selected</h4>
 							<ul class="file-list">
 								{#each bunnyUploadFiles as file, index}
 									<li>
@@ -1904,7 +1881,7 @@ import { logger } from '$lib/utils/logger';
 												onclick={() => removeBunnyFile(index)}
 												aria-label="Remove {file.name}"
 											>
-												<IconX size={14} />
+												<Icon icon={IconX} size={14} />
 											</button>
 										{/if}
 									</li>
@@ -1956,7 +1933,7 @@ import { logger } from '$lib/utils/logger';
 						<span class="btn-spinner"></span>
 						Uploading...
 					{:else}
-						<IconCloudUpload size={16} />
+						<Icon icon={IconCloudUpload} size={16} />
 						Upload to Bunny.net
 					{/if}
 				</button>
@@ -1984,7 +1961,7 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h2>
-					<IconTags size={24} />
+					<Icon icon={IconTags} size={24} />
 					Bulk Update Tags
 				</h2>
 				<button class="modal-close" onclick={closeBulkTagsModal} type="button" aria-label="Close"
@@ -1999,7 +1976,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Tags to Add -->
 				<div class="form-group">
 					<label>
-						<IconPlus
+						<Icon icon={IconPlus}
 							size={16}
 							style="display:inline;vertical-align:middle;color:#22c55e;margin-right:4px;"
 						/>
@@ -2015,7 +1992,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => toggleBulkTagToAdd(category.id)}
 							>
 								{#if bulkTagsToAdd.includes(category.id)}
-									<IconCheck size={14} />
+									<Icon icon={IconCheck} size={14} />
 								{/if}
 								{category.name}
 							</button>
@@ -2026,7 +2003,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Tags to Remove -->
 				<div class="form-group">
 					<label>
-						<IconX
+						<Icon icon={IconX}
 							size={16}
 							style="display:inline;vertical-align:middle;color:#ef4444;margin-right:4px;"
 						/>
@@ -2042,7 +2019,7 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => toggleBulkTagToRemove(category.id)}
 							>
 								{#if bulkTagsToRemove.includes(category.id)}
-									<IconTrash size={14} />
+									<Icon icon={IconTrash} size={14} />
 								{/if}
 								{category.name}
 							</button>
@@ -2079,7 +2056,7 @@ import { logger } from '$lib/utils/logger';
 						<span class="btn-spinner"></span>
 						Updating...
 					{:else}
-						<IconTags size={16} />
+						<Icon icon={IconTags} size={16} />
 						Update Tags
 					{/if}
 				</button>
@@ -2111,7 +2088,7 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="modal-header">
 				<h2>
-					<IconCode size={24} />
+					<Icon icon={IconCode} size={24} />
 					Embed Code
 				</h2>
 				<button
@@ -2141,7 +2118,7 @@ import { logger } from '$lib/utils/logger';
 					type="button">Close</button
 				>
 				<button class="btn-primary" onclick={copyEmbedCode}>
-					<IconCode size={16} />
+					<Icon icon={IconCode} size={16} />
 					Copy to Clipboard
 				</button>
 			</div>

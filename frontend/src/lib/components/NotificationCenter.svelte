@@ -21,18 +21,7 @@
 		getUnreadCount,
 		type Notification
 	} from '$lib/stores/notifications.svelte';
-	import {
-		IconBell,
-		IconX,
-		IconCheck,
-		IconTrash,
-		IconInfoCircle,
-		IconCircleCheck,
-		IconAlertTriangle,
-		IconAlertCircle,
-		IconSettings,
-		IconChevronRight
-	} from '$lib/icons';
+	import { Icon, IconBell, IconX, IconCheck, IconTrash, IconInfoCircle, IconCircleCheck, IconAlertTriangle, IconAlertCircle, IconSettings, IconChevronRight } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;
@@ -166,14 +155,14 @@
 			<!-- Header -->
 			<div class="panel-header">
 				<div class="header-left">
-					<IconBell size={20} />
+					<Icon icon={IconBell} size={20} />
 					<h2>Notifications</h2>
 					{#if unreadCount > 0}
 						<span class="unread-badge">{unreadCount}</span>
 					{/if}
 				</div>
 				<button class="close-btn" onclick={close}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -202,7 +191,7 @@
 			{#if unreadCount > 0}
 				<div class="actions-bar" in:fade={{ duration: 150 }}>
 					<button class="action-btn" onclick={() => notificationStore.markAllAsRead()}>
-						<IconCheck size={16} />
+						<Icon icon={IconCheck} size={16} />
 						Mark all as read
 					</button>
 				</div>
@@ -212,7 +201,7 @@
 			<div class="notifications-list">
 				{#if filteredNotifications.length === 0}
 					<div class="empty-state" in:scale={{ duration: 200 }}>
-						<IconBell size={48} />
+						<Icon icon={IconBell} size={48} />
 						<h3>No notifications</h3>
 						<p>You're all caught up!</p>
 					</div>
@@ -242,7 +231,7 @@
 										{#if notification.action}
 											<div class="item-action">
 												<span>{notification.action.label}</span>
-												<IconChevronRight size={14} />
+												<Icon icon={IconChevronRight} size={14} />
 											</div>
 										{/if}
 									</div>
@@ -259,7 +248,7 @@
 			<!-- Footer -->
 			<div class="panel-footer">
 				<button class="footer-btn" onclick={() => notificationStore.clear()}>
-					<IconTrash size={16} />
+					<Icon icon={IconTrash} size={16} />
 					Clear all
 				</button>
 			</div>

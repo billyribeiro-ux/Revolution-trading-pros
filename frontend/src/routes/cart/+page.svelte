@@ -12,12 +12,8 @@
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
-
+	import { Icon, IconArrowLeft, IconArrowRight, IconShieldCheck, IconShoppingCart, IconX } from '$lib/icons';
+					
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -149,7 +145,7 @@
 			<!-- Page Header -->
 			<header class="cart-page-header">
 				<a href="/" class="back-link">
-					<IconArrowLeft size={14} stroke={2.5} />
+					<Icon icon={IconArrowLeft} size={14} stroke={2.5} />
 					<span>Continue Shopping</span>
 				</a>
 				<h1 class="page-title">CART</h1>
@@ -165,13 +161,13 @@
 					<div class="card">
 						<div class="card-body">
 							<div class="cart-empty-icon">
-								<IconShoppingCart size={64} />
+								<Icon icon={IconShoppingCart} size={64} />
 							</div>
 							<h2>Your cart is empty</h2>
 							<p>Looks like you haven't added any products to your cart yet.</p>
 							<a href="/live-trading-rooms" class="btn btn-lg btn-orange">
 								Browse Trading Rooms
-								<IconArrowRight size={16} />
+								<Icon icon={IconArrowRight} size={16} />
 							</a>
 						</div>
 					</div>
@@ -198,7 +194,7 @@
 																: undefined}
 														>
 															{#if !item.thumbnail && !item.image}
-																<IconShoppingCart size={32} />
+																<Icon icon={IconShoppingCart} size={32} />
 															{/if}
 														</div>
 													</figure>
@@ -233,7 +229,7 @@
 																aria-label="Remove this item"
 																onclick={() => removeItem(item.id, item.interval)}
 															>
-																<IconX size={13} stroke={2} />&nbsp;Remove
+																<Icon icon={IconX} size={13} stroke={2} />&nbsp;Remove
 															</button>
 														</div>
 														<div class="product-price">
@@ -280,7 +276,7 @@
 														<span class="coupon-label">Coupon: {appliedCoupon.code}</span>
 														<span class="coupon-discount">-{formatPrice(discountAmount)}</span>
 														<button type="button" class="remove-coupon" onclick={removeCouponCode}>
-															<IconX size={14} stroke={2} />
+															<Icon icon={IconX} size={14} stroke={2} />
 														</button>
 													</div>
 												{/if}
@@ -356,7 +352,7 @@
 
 												<!-- Security Badge -->
 												<div class="security-badge">
-													<IconShieldCheck size={13} />
+													<Icon icon={IconShieldCheck} size={13} />
 													<span>Secure checkout guaranteed</span>
 												</div>
 											</div>

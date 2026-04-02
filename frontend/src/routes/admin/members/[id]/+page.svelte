@@ -6,30 +6,7 @@ import { logger } from '$lib/utils/logger';
 	import { membersApi } from '$lib/api/members';
 	import type { Member, Subscription } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import {
-		IconArrowLeft,
-		IconMail,
-		IconCalendar,
-		IconCreditCard,
-		IconReceipt,
-		IconActivity,
-		IconUser,
-		IconEdit,
-		IconSend,
-		IconX,
-		IconCheck,
-		IconClock,
-		IconAlertTriangle,
-		IconTrendingUp,
-		IconGift,
-		IconPlus,
-		IconTrash,
-		IconChartBar,
-		IconRefresh,
-		IconDownload,
-		IconExternalLink,
-		IconFileText
-	} from '$lib/icons';
+	import { Icon, IconArrowLeft, IconMail, IconCalendar, IconCreditCard, IconReceipt, IconActivity, IconUser, IconEdit, IconSend, IconX, IconCheck, IconClock, IconAlertTriangle, IconTrendingUp, IconGift, IconPlus, IconTrash, IconChartBar, IconRefresh, IconDownload, IconExternalLink, IconFileText } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	let memberId = $derived(Number(page.params.id));
@@ -476,11 +453,11 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else if error}
 		<div class="error-state">
-			<IconAlertTriangle size={48} />
+			<Icon icon={IconAlertTriangle} size={48} />
 			<h2>Failed to load member</h2>
 			<p>{error}</p>
 			<button class="btn-primary" onclick={loadMember}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Retry
 			</button>
 		</div>
@@ -488,7 +465,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Header -->
 		<div class="page-header">
 			<button class="back-btn" onclick={() => goto('/admin/members')}>
-				<IconArrowLeft size={20} />
+				<Icon icon={IconArrowLeft} size={20} />
 				Back to Members
 			</button>
 
@@ -514,12 +491,12 @@ import { logger } from '$lib/utils/logger';
 								<span class="tag">
 									{tag}
 									<button class="tag-remove" onclick={() => removeTag(tag)}>
-										<IconX size={12} />
+										<Icon icon={IconX} size={12} />
 									</button>
 								</span>
 							{/each}
 							<button class="tag-add" onclick={() => (showTagModal = true)}>
-								<IconPlus size={14} />
+								<Icon icon={IconPlus} size={14} />
 								Add Tag
 							</button>
 						</div>
@@ -528,11 +505,11 @@ import { logger } from '$lib/utils/logger';
 
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={() => (showNoteModal = true)}>
-						<IconFileText size={18} />
+						<Icon icon={IconFileText} size={18} />
 						Add Note
 					</button>
 					<button class="btn-primary" onclick={() => (showEmailModal = true)}>
-						<IconMail size={18} />
+						<Icon icon={IconMail} size={18} />
 						Send Email
 					</button>
 				</div>
@@ -543,7 +520,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconCreditCard size={24} />
+					<Icon icon={IconCreditCard} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{formatCurrency(member.total_spent)}</div>
@@ -552,7 +529,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald">
-					<IconReceipt size={24} />
+					<Icon icon={IconReceipt} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{member.active_subscriptions_count}</div>
@@ -561,7 +538,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconCalendar size={24} />
+					<Icon icon={IconCalendar} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{formatDate(member.joined_at)}</div>
@@ -570,7 +547,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon {getEngagementLabel(engagementScore).color.replace('text-', '')}">
-					<IconChartBar size={24} />
+					<Icon icon={IconChartBar} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-value">{engagementScore}%</div>
@@ -585,26 +562,26 @@ import { logger } from '$lib/utils/logger';
 		<div class="tabs-container">
 			<div class="tabs">
 				<button class:active={activeTab === 'overview'} onclick={() => (activeTab = 'overview')}>
-					<IconActivity size={18} />
+					<Icon icon={IconActivity} size={18} />
 					Overview
 				</button>
 				<button
 					class:active={activeTab === 'subscriptions'}
 					onclick={() => (activeTab = 'subscriptions')}
 				>
-					<IconCreditCard size={18} />
+					<Icon icon={IconCreditCard} size={18} />
 					Subscriptions
 				</button>
 				<button class:active={activeTab === 'orders'} onclick={() => (activeTab = 'orders')}>
-					<IconReceipt size={18} />
+					<Icon icon={IconReceipt} size={18} />
 					Orders
 				</button>
 				<button class:active={activeTab === 'emails'} onclick={() => (activeTab = 'emails')}>
-					<IconMail size={18} />
+					<Icon icon={IconMail} size={18} />
 					Emails
 				</button>
 				<button class:active={activeTab === 'notes'} onclick={() => (activeTab = 'notes')}>
-					<IconFileText size={18} />
+					<Icon icon={IconFileText} size={18} />
 					Notes
 				</button>
 			</div>
@@ -619,13 +596,13 @@ import { logger } from '$lib/utils/logger';
 						<div class="panel-header">
 							<h3>Activity Timeline</h3>
 							<button class="btn-icon" onclick={loadMember}>
-								<IconRefresh size={18} />
+								<Icon icon={IconRefresh} size={18} />
 							</button>
 						</div>
 						<div class="timeline">
 							{#if timeline.length === 0}
 								<div class="empty-timeline">
-									<IconActivity size={32} stroke={1} />
+									<Icon icon={IconActivity} size={32} stroke={1} />
 									<p>No activity recorded yet</p>
 								</div>
 							{:else}
@@ -650,7 +627,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="panel-header">
 							<h3>Member Details</h3>
 							<button class="btn-icon">
-								<IconEdit size={18} />
+								<Icon icon={IconEdit} size={18} />
 							</button>
 						</div>
 						<div class="details-list">
@@ -663,7 +640,7 @@ import { logger } from '$lib/utils/logger';
 								<span class="detail-value">
 									{member.email || ''}
 									{#if member.email_verified}
-										<IconCheck size={14} class="verified-icon" />
+										<Icon icon={IconCheck} size={14} class="verified-icon" />
 									{/if}
 								</span>
 							</div>
@@ -689,13 +666,13 @@ import { logger } from '$lib/utils/logger';
 					<div class="panel-header">
 						<h3>Subscription History</h3>
 						<button class="btn-primary small" onclick={openGrantModal}>
-							<IconGift size={16} />
+							<Icon icon={IconGift} size={16} />
 							Grant Membership
 						</button>
 					</div>
 					{#if !member.subscriptions || member.subscriptions.length === 0}
 						<div class="empty-state">
-							<IconCreditCard size={48} stroke={1} />
+							<Icon icon={IconCreditCard} size={48} stroke={1} />
 							<h4>No Subscriptions</h4>
 							<p>This member has no subscription history</p>
 						</div>
@@ -740,11 +717,11 @@ import { logger } from '$lib/utils/logger';
 									</div>
 									<div class="subscription-actions">
 										<button class="btn-secondary small" onclick={() => openExtendModal(sub)}>
-											<IconCalendar size={14} />
+											<Icon icon={IconCalendar} size={14} />
 											Extend
 										</button>
 										<button class="btn-danger-outline small" onclick={() => handleRevoke(sub.id)}>
-											<IconTrash size={14} />
+											<Icon icon={IconTrash} size={14} />
 											Revoke
 										</button>
 									</div>
@@ -758,13 +735,13 @@ import { logger } from '$lib/utils/logger';
 					<div class="panel-header">
 						<h3>Order History</h3>
 						<button class="btn-secondary small">
-							<IconDownload size={16} />
+							<Icon icon={IconDownload} size={16} />
 							Export
 						</button>
 					</div>
 					{#if !member.orders || member.orders.length === 0}
 						<div class="empty-state">
-							<IconReceipt size={48} stroke={1} />
+							<Icon icon={IconReceipt} size={48} stroke={1} />
 							<h4>No Orders</h4>
 							<p>This member has no order history</p>
 						</div>
@@ -796,7 +773,7 @@ import { logger } from '$lib/utils/logger';
 										<td class="order-total">{formatCurrency(order.total)}</td>
 										<td>
 											<button class="btn-icon small">
-												<IconExternalLink size={16} />
+												<Icon icon={IconExternalLink} size={16} />
 											</button>
 										</td>
 									</tr>
@@ -810,13 +787,13 @@ import { logger } from '$lib/utils/logger';
 					<div class="panel-header">
 						<h3>Email History</h3>
 						<button class="btn-primary small" onclick={() => (showEmailModal = true)}>
-							<IconSend size={16} />
+							<Icon icon={IconSend} size={16} />
 							Send Email
 						</button>
 					</div>
 					{#if emailHistory.length === 0}
 						<div class="empty-state">
-							<IconMail size={48} stroke={1} />
+							<Icon icon={IconMail} size={48} stroke={1} />
 							<h4>No Emails Sent</h4>
 							<p>No emails have been sent to this member yet</p>
 						</div>
@@ -825,7 +802,7 @@ import { logger } from '$lib/utils/logger';
 							{#each emailHistory as email}
 								<div class="email-item">
 									<div class="email-icon {getEmailStatusColor(email.status)}">
-										<IconMail size={20} />
+										<Icon icon={IconMail} size={20} />
 									</div>
 									<div class="email-content">
 										<div class="email-subject">{email.subject}</div>
@@ -836,16 +813,16 @@ import { logger } from '$lib/utils/logger';
 									</div>
 									<div class="email-status {getEmailStatusColor(email.status)}">
 										{#if email.status === 'opened'}
-											<IconCheck size={16} />
+											<Icon icon={IconCheck} size={16} />
 											Opened
 										{:else if email.status === 'clicked'}
-											<IconTrendingUp size={16} />
+											<Icon icon={IconTrendingUp} size={16} />
 											Clicked
 										{:else if email.status === 'bounced'}
-											<IconAlertTriangle size={16} />
+											<Icon icon={IconAlertTriangle} size={16} />
 											Bounced
 										{:else}
-											<IconClock size={16} />
+											<Icon icon={IconClock} size={16} />
 											Sent
 										{/if}
 									</div>
@@ -859,13 +836,13 @@ import { logger } from '$lib/utils/logger';
 					<div class="panel-header">
 						<h3>Internal Notes</h3>
 						<button class="btn-primary small" onclick={() => (showNoteModal = true)}>
-							<IconPlus size={16} />
+							<Icon icon={IconPlus} size={16} />
 							Add Note
 						</button>
 					</div>
 					{#if notes.length === 0}
 						<div class="empty-state">
-							<IconFileText size={48} stroke={1} />
+							<Icon icon={IconFileText} size={48} stroke={1} />
 							<h4>No Notes</h4>
 							<p>Add internal notes about this member</p>
 						</div>
@@ -879,7 +856,7 @@ import { logger } from '$lib/utils/logger';
 										<span class="note-date">{formatDateTime(note.created_at)}</span>
 									</div>
 									<button class="note-delete">
-										<IconTrash size={14} />
+										<Icon icon={IconTrash} size={14} />
 									</button>
 								</div>
 							{/each}
@@ -911,7 +888,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Send Email to {member?.name}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -942,7 +919,7 @@ import { logger } from '$lib/utils/logger';
 					onclick={handleSendEmail}
 					disabled={!emailSubject || !emailBody || emailSending}
 				>
-					<IconSend size={18} />
+					<Icon icon={IconSend} size={18} />
 					{emailSending ? 'Sending...' : 'Send Email'}
 				</button>
 			</div>
@@ -970,7 +947,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Add Note</h2>
 				<button class="close-btn" onclick={() => (showNoteModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -987,7 +964,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showNoteModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={addNote} disabled={!newNote.trim()}>
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					Add Note
 				</button>
 			</div>
@@ -1015,7 +992,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Manage Tags</h2>
 				<button class="close-btn" onclick={() => (showTagModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1029,9 +1006,9 @@ import { logger } from '$lib/utils/logger';
 								onclick={() => (tags.includes(tag) ? removeTag(tag) : addTag(tag))}
 							>
 								{#if tags.includes(tag)}
-									<IconCheck size={14} />
+									<Icon icon={IconCheck} size={14} />
 								{:else}
-									<IconPlus size={14} />
+									<Icon icon={IconPlus} size={14} />
 								{/if}
 								{tag}
 							</button>
@@ -1082,7 +1059,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Extend Membership</h2>
 				<button class="close-btn" onclick={() => (showExtendModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1132,7 +1109,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showExtendModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleExtend} disabled={extending || extendDays < 1}>
-					<IconCalendar size={18} />
+					<Icon icon={IconCalendar} size={18} />
 					{extending ? 'Extending...' : `Extend by ${extendDays} Days`}
 				</button>
 			</div>
@@ -1160,7 +1137,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-header">
 				<h2>Grant Membership</h2>
 				<button class="close-btn" onclick={() => (showGrantModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1191,7 +1168,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showGrantModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleGrant} disabled={granting || !selectedPlanId}>
-					<IconGift size={18} />
+					<Icon icon={IconGift} size={18} />
 					{granting ? 'Granting...' : 'Grant Membership'}
 				</button>
 			</div>

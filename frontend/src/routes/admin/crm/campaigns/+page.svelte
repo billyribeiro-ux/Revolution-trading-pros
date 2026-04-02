@@ -21,20 +21,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import {
-		IconMail,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconRefresh,
-		IconChartBar,
-		IconCopy,
-		IconSend,
-		IconClock,
-		IconCheck,
-		IconX
-	} from '$lib/icons';
+	import { Icon, IconMail, IconPlus, IconSearch, IconEdit, IconTrash, IconRefresh, IconChartBar, IconCopy, IconSend, IconClock, IconCheck, IconX } from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -236,17 +223,17 @@
 	<div class="page-header">
 		<div>
 			<h1>
-				<IconMail size={28} class="header-icon" />
+				<Icon icon={IconMail} size={28} class="header-icon" />
 				Email Campaigns
 			</h1>
 			<p class="page-description">Create and send one-time email broadcasts to your contacts</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadCampaigns()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<a href="/admin/crm/campaigns/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				New Campaign
 			</a>
 		</div>
@@ -256,7 +243,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconMail size={24} />
+				<Icon icon={IconMail} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -265,7 +252,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconCheck size={24} />
+				<Icon icon={IconCheck} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.sent)}</span>
@@ -274,7 +261,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon purple">
-				<IconClock size={24} />
+				<Icon icon={IconClock} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.scheduled)}</span>
@@ -283,7 +270,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconSend size={24} />
+				<Icon icon={IconSend} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalSent)}</span>
@@ -295,7 +282,7 @@
 	<!-- Search & Filters -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				type="text"
 				id="search-campaigns"
@@ -324,11 +311,11 @@
 		</div>
 	{:else if filteredCampaigns.length === 0}
 		<div class="empty-state">
-			<IconMail size={48} />
+			<Icon icon={IconMail} size={48} />
 			<h3>No campaigns found</h3>
 			<p>Create your first email campaign to reach your contacts</p>
 			<a href="/admin/crm/campaigns/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Campaign
 			</a>
 		</div>
@@ -353,7 +340,7 @@
 							<td>
 								<div class="campaign-cell">
 									<div class="campaign-icon">
-										<IconMail size={20} />
+										<Icon icon={IconMail} size={20} />
 									</div>
 									<div class="campaign-info">
 										<span class="campaign-title">{campaign.title}</span>
@@ -388,24 +375,24 @@
 							<td>
 								<div class="action-buttons">
 									<a href="/admin/crm/campaigns/{campaign.id}" class="btn-icon" title="View Report">
-										<IconChartBar size={16} />
+										<Icon icon={IconChartBar} size={16} />
 									</a>
 									<a href="/admin/crm/campaigns/{campaign.id}/edit" class="btn-icon" title="Edit">
-										<IconEdit size={16} />
+										<Icon icon={IconEdit} size={16} />
 									</a>
 									<button
 										class="btn-icon"
 										title="Duplicate"
 										onclick={() => duplicateCampaign(campaign.id)}
 									>
-										<IconCopy size={16} />
+										<Icon icon={IconCopy} size={16} />
 									</button>
 									<button
 										class="btn-icon danger"
 										title="Delete"
 										onclick={() => deleteCampaign(campaign.id)}
 									>
-										<IconTrash size={16} />
+										<Icon icon={IconTrash} size={16} />
 									</button>
 								</div>
 							</td>

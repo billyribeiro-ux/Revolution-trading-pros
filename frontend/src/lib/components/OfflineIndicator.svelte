@@ -17,7 +17,7 @@
 		getPendingActionsCount,
 		getIsSyncing
 	} from '$lib/stores/offline.svelte';
-	import { IconWifi, IconUpload, IconLoader, IconCheck, IconX, IconRefresh } from '$lib/icons';
+	import { Icon, IconWifi, IconUpload, IconLoader, IconCheck, IconX, IconRefresh } from '$lib/icons';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);
@@ -47,7 +47,7 @@
 	>
 		<div class="banner-content">
 			<div class="banner-icon">
-				<IconWifi size={18} />
+				<Icon icon={IconWifi} size={18} />
 			</div>
 			<div class="banner-text">
 				<span class="banner-title">You're offline</span>
@@ -55,7 +55,7 @@
 			</div>
 			{#if hasPendingActions}
 				<div class="pending-badge">
-					<IconUpload size={14} />
+					<Icon icon={IconUpload} size={14} />
 					{pendingActionsCount} pending
 				</div>
 			{/if}
@@ -69,22 +69,22 @@
 	>
 		<div class="banner-content">
 			<div class="banner-icon online">
-				<IconWifi size={18} />
+				<Icon icon={IconWifi} size={18} />
 			</div>
 			<span class="banner-title">Back online</span>
 			{#if isSyncing}
 				<div class="syncing-indicator">
-					<IconLoader size={14} class="spinning" />
+					<Icon icon={IconLoader} size={14} class="spinning" />
 					Syncing...
 				</div>
 			{:else if hasPendingActions}
 				<button class="sync-btn" onclick={() => offlineStore.sync()}>
-					<IconRefresh size={14} />
+					<Icon icon={IconRefresh} size={14} />
 					Sync now
 				</button>
 			{:else}
 				<div class="synced-indicator">
-					<IconCheck size={14} />
+					<Icon icon={IconCheck} size={14} />
 					All synced
 				</div>
 			{/if}
@@ -100,9 +100,9 @@
 		in:fly={{ y: 20, duration: 200 }}
 	>
 		{#if isSyncing}
-			<IconLoader size={18} class="spinning" />
+			<Icon icon={IconLoader} size={18} class="spinning" />
 		{:else}
-			<IconUpload size={18} />
+			<Icon icon={IconUpload} size={18} />
 		{/if}
 		<span>{pendingActionsCount}</span>
 	</button>
@@ -112,17 +112,17 @@
 			<div class="details-header">
 				<span>Pending Changes</span>
 				<button class="close-details" onclick={() => (showDetails = false)}>
-					<IconX size={14} />
+					<Icon icon={IconX} size={14} />
 				</button>
 			</div>
 			<div class="details-content">
 				<p>{pendingActionsCount} changes waiting to sync</p>
 				<button class="sync-all-btn" onclick={() => offlineStore.sync()} disabled={isSyncing}>
 					{#if isSyncing}
-						<IconLoader size={14} class="spinning" />
+						<Icon icon={IconLoader} size={14} class="spinning" />
 						Syncing...
 					{:else}
-						<IconRefresh size={14} />
+						<Icon icon={IconRefresh} size={14} />
 						Sync Now
 					{/if}
 				</button>

@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconGif, IconSearch, IconLoader2, IconX } from '$lib/icons';
+	import { Icon, IconGif, IconSearch, IconLoader2, IconX } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
@@ -104,7 +104,7 @@
 			<div class="gif-preview">
 				<img src={sanitizeURL(gifUrl)} alt={gifAlt} />
 				<button type="button" class="gif-remove" onclick={clearGif} aria-label="Remove GIF">
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 			<div class="gif-meta">
@@ -118,11 +118,11 @@
 		{:else}
 			<div class="gif-search">
 				<div class="search-header">
-					<IconGif size={24} aria-hidden="true" />
+					<Icon icon={IconGif} size={24} aria-hidden="true" />
 					<span>Search for GIFs</span>
 				</div>
 				<div class="search-input">
-					<IconSearch size={18} aria-hidden="true" />
+					<Icon icon={IconSearch} size={18} aria-hidden="true" />
 					<input
 						type="text"
 						placeholder="Search Giphy..."
@@ -131,7 +131,7 @@
 					/>
 					<button type="button" onclick={searchGifs} disabled={isSearching || !searchQuery.trim()}>
 						{#if isSearching}
-							<IconLoader2 size={18} class="spinning" />
+							<Icon icon={IconLoader2} size={18} class="spinning" />
 						{:else}
 							Search
 						{/if}
@@ -148,7 +148,7 @@
 								aria-label="Select {gif.title}"
 							>
 								<div class="gif-placeholder">
-									<IconGif size={24} />
+									<Icon icon={IconGif} size={24} />
 									<span>{gif.title}</span>
 								</div>
 							</button>
@@ -173,7 +173,7 @@
 		<img src={sanitizeURL(gifUrl)} alt={gifAlt} loading="lazy" />
 	{:else}
 		<div class="gif-empty">
-			<IconGif size={48} aria-hidden="true" />
+			<Icon icon={IconGif} size={48} aria-hidden="true" />
 			<p>No GIF selected</p>
 		</div>
 	{/if}

@@ -19,20 +19,8 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-
+	import { Icon, IconAlertCircle, IconCalendar, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCopy, IconEdit, IconPlus, IconRefresh, IconTrash, IconUser, IconX } from '$lib/icons';
+													
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -629,7 +617,7 @@ import { logger } from '$lib/utils/logger';
 		<header class="page-header">
 			<div class="header-content">
 				<div class="header-title">
-					<IconCalendar size={32} />
+					<Icon icon={IconCalendar} size={32} />
 					<div>
 						<h1>Trading Room Schedules</h1>
 						<p class="subtitle">Manage weekly schedules for each trading room and service</p>
@@ -638,12 +626,12 @@ import { logger } from '$lib/utils/logger';
 				<div class="header-actions">
 					{#if hasConflicts}
 						<div class="conflict-warning">
-							<IconAlertCircle size={18} />
+							<Icon icon={IconAlertCircle} size={18} />
 							<span>{conflicts.length} time conflict{conflicts.length !== 1 ? 's' : ''}</span>
 						</div>
 					{/if}
 					<button class="btn btn-primary" onclick={openCreateModal}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Add Schedule
 					</button>
 				</div>
@@ -653,20 +641,20 @@ import { logger } from '$lib/utils/logger';
 		<!-- Alerts -->
 		{#if error}
 			<div class="alert alert-error" role="alert">
-				<IconAlertCircle size={18} />
+				<Icon icon={IconAlertCircle} size={18} />
 				<span>{error}</span>
 				<button onclick={() => (error = null)} aria-label="Dismiss">
-					<IconX size={18} />
+					<Icon icon={IconX} size={18} />
 				</button>
 			</div>
 		{/if}
 
 		{#if success}
 			<div class="alert alert-success" role="status">
-				<IconCheck size={18} />
+				<Icon icon={IconCheck} size={18} />
 				<span>{success}</span>
 				<button onclick={() => (success = null)} aria-label="Dismiss">
-					<IconX size={18} />
+					<Icon icon={IconX} size={18} />
 				</button>
 			</div>
 		{/if}
@@ -705,11 +693,11 @@ import { logger } from '$lib/utils/logger';
 			<!-- Week Navigation -->
 			<div class="week-nav">
 				<button class="btn btn-icon" onclick={() => navigateWeek(-1)} title="Previous week">
-					<IconChevronLeft size={20} />
+					<Icon icon={IconChevronLeft} size={20} />
 				</button>
 				<span class="week-label">{weekRangeText}</span>
 				<button class="btn btn-icon" onclick={() => navigateWeek(1)} title="Next week">
-					<IconChevronRight size={20} />
+					<Icon icon={IconChevronRight} size={20} />
 				</button>
 				<button class="btn btn-text" onclick={goToCurrentWeek}>Today</button>
 			</div>
@@ -730,7 +718,7 @@ import { logger } from '$lib/utils/logger';
 				</select>
 
 				<button class="btn btn-icon" onclick={loadSchedules} title="Refresh">
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 				</button>
 			</div>
 		</div>
@@ -740,15 +728,15 @@ import { logger } from '$lib/utils/logger';
 			<div class="bulk-actions">
 				<span class="bulk-count">{selectedIds.size} selected</span>
 				<button class="btn btn-sm" onclick={() => bulkToggleActive(true)}>
-					<IconCheck size={16} />
+					<Icon icon={IconCheck} size={16} />
 					Activate
 				</button>
 				<button class="btn btn-sm" onclick={() => bulkToggleActive(false)}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 					Deactivate
 				</button>
 				<button class="btn btn-sm btn-danger" onclick={bulkDelete}>
-					<IconTrash size={16} />
+					<Icon icon={IconTrash} size={16} />
 					Delete
 				</button>
 				<button class="btn btn-sm btn-text" onclick={() => (selectedIds = new Set())}>
@@ -766,11 +754,11 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else if !hasSchedules}
 				<div class="empty-state">
-					<IconCalendar size={64} stroke={1} />
+					<Icon icon={IconCalendar} size={64} stroke={1} />
 					<h3>No Schedules Yet</h3>
 					<p>Create your first schedule for {selectedRoom?.name || 'this room'}</p>
 					<button class="btn btn-primary" onclick={openCreateModal}>
-						<IconPlus size={18} />
+						<Icon icon={IconPlus} size={18} />
 						Create Schedule
 					</button>
 				</div>
@@ -805,13 +793,13 @@ import { logger } from '$lib/utils/logger';
 										</div>
 										<div class="event-content">
 											<div class="event-time">
-												<IconClock size={14} />
+												<Icon icon={IconClock} size={14} />
 												{formatTime(event.start_time)} - {formatTime(event.end_time)}
 											</div>
 											<div class="event-title">{event.title}</div>
 											{#if event.trader_name}
 												<div class="event-trader">
-													<IconUser size={12} />
+													<Icon icon={IconUser} size={12} />
 													{event.trader_name}
 												</div>
 											{/if}
@@ -829,9 +817,9 @@ import { logger } from '$lib/utils/logger';
 												title={event.is_active ? 'Deactivate' : 'Activate'}
 											>
 												{#if event.is_active}
-													<IconCheck size={16} />
+													<Icon icon={IconCheck} size={16} />
 												{:else}
-													<IconX size={16} />
+													<Icon icon={IconX} size={16} />
 												{/if}
 											</button>
 											<button
@@ -839,17 +827,17 @@ import { logger } from '$lib/utils/logger';
 												onclick={() => duplicateSchedule(event)}
 												title="Duplicate"
 											>
-												<IconCopy size={16} />
+												<Icon icon={IconCopy} size={16} />
 											</button>
 											<button class="btn-icon" onclick={() => openEditModal(event)} title="Edit">
-												<IconEdit size={16} />
+												<Icon icon={IconEdit} size={16} />
 											</button>
 											<button
 												class="btn-icon btn-danger"
 												onclick={() => deleteSchedule(event.id)}
 												title="Delete"
 											>
-												<IconTrash size={16} />
+												<Icon icon={IconTrash} size={16} />
 											</button>
 										</div>
 									</div>
@@ -893,26 +881,26 @@ import { logger } from '$lib/utils/logger';
 										<div class="event-card" class:inactive={!event.is_active}>
 											<div class="event-content">
 												<div class="event-time">
-													<IconClock size={14} />
+													<Icon icon={IconClock} size={14} />
 													{formatTime(event.start_time)} - {formatTime(event.end_time)}
 												</div>
 												<div class="event-title">{event.title}</div>
 												{#if event.trader_name}
 													<div class="event-trader">
-														<IconUser size={12} />
+														<Icon icon={IconUser} size={12} />
 														{event.trader_name}
 													</div>
 												{/if}
 											</div>
 											<div class="event-actions">
 												<button class="btn-icon" onclick={() => openEditModal(event)}>
-													<IconEdit size={16} />
+													<Icon icon={IconEdit} size={16} />
 												</button>
 												<button
 													class="btn-icon btn-danger"
 													onclick={() => deleteSchedule(event.id)}
 												>
-													<IconTrash size={16} />
+													<Icon icon={IconTrash} size={16} />
 												</button>
 											</div>
 										</div>
@@ -948,7 +936,7 @@ import { logger } from '$lib/utils/logger';
 					{editingSchedule ? 'Edit Schedule' : 'Create Schedule'}
 				</h3>
 				<button class="modal-close" onclick={closeModal} aria-label="Close">
-					<IconX size={24} />
+					<Icon icon={IconX} size={24} />
 				</button>
 			</div>
 

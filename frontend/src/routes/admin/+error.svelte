@@ -15,15 +15,7 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
-	import {
-		IconAlertTriangle,
-		IconLock,
-		IconServer,
-		IconSearch,
-		IconHome,
-		IconRefresh,
-		IconArrowLeft
-	} from '$lib/icons';
+	import { Icon, IconAlertTriangle, IconLock, IconServer, IconSearch, IconHome, IconRefresh, IconArrowLeft } from '$lib/icons';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);
@@ -179,34 +171,34 @@ import { logger } from '$lib/utils/logger';
 		<div class="error-actions">
 			{#if status === 401}
 				<button type="button" class="btn btn-primary" onclick={handleLogin}>
-					<IconLock size={18} />
+					<Icon icon={IconLock} size={18} />
 					Sign In
 				</button>
 			{:else if status === 403}
 				<a href="/admin" class="btn btn-primary">
-					<IconHome size={18} />
+					<Icon icon={IconHome} size={18} />
 					Admin Dashboard
 				</a>
 				<button type="button" class="btn btn-secondary" onclick={handleGoBack}>
-					<IconArrowLeft size={18} />
+					<Icon icon={IconArrowLeft} size={18} />
 					Go Back
 				</button>
 			{:else if status >= 500}
 				<button type="button" class="btn btn-primary" onclick={handleRetry}>
-					<IconRefresh size={18} />
+					<Icon icon={IconRefresh} size={18} />
 					Retry
 				</button>
 				<a href="/admin" class="btn btn-secondary">
-					<IconHome size={18} />
+					<Icon icon={IconHome} size={18} />
 					Dashboard
 				</a>
 			{:else}
 				<a href="/admin" class="btn btn-primary">
-					<IconHome size={18} />
+					<Icon icon={IconHome} size={18} />
 					Admin Dashboard
 				</a>
 				<button type="button" class="btn btn-secondary" onclick={handleGoBack}>
-					<IconArrowLeft size={18} />
+					<Icon icon={IconArrowLeft} size={18} />
 					Go Back
 				</button>
 			{/if}

@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconPhoto,
-		IconRefresh,
-		IconSparkles,
-		IconCheck,
-		IconAlertTriangle,
-		IconSettings
-	} from '$lib/icons';
+	import { Icon, IconPhoto, IconRefresh, IconSparkles, IconCheck, IconAlertTriangle, IconSettings } from '$lib/icons';
 	import {
 		imageSeoSettings,
 		processImages,
@@ -145,18 +138,18 @@
 	<header class="page-header">
 		<div>
 			<h1>
-				<IconPhoto size={28} />
+				<Icon icon={IconPhoto} size={28} />
 				Image SEO
 			</h1>
 			<p>Optimize images with auto-generated alt text and titles</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={loadImages} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				<Icon icon={IconRefresh} size={18} class={loading ? 'spinning' : ''} />
 				Scan Images
 			</button>
 			<button class="btn-primary" onclick={processAllImages} disabled={processing}>
-				<IconSparkles size={18} />
+				<Icon icon={IconSparkles} size={18} />
 				{processing ? 'Processing...' : 'Optimize All'}
 			</button>
 		</div>
@@ -189,7 +182,7 @@
 			class:active={activeTab === 'images'}
 			onclick={() => (activeTab = 'images')}
 		>
-			<IconPhoto size={18} />
+			<Icon icon={IconPhoto} size={18} />
 			Images
 		</button>
 		<button
@@ -197,7 +190,7 @@
 			class:active={activeTab === 'settings'}
 			onclick={() => (activeTab = 'settings')}
 		>
-			<IconSettings size={18} />
+			<Icon icon={IconSettings} size={18} />
 			Settings
 		</button>
 	</div>
@@ -208,7 +201,7 @@
 				<div class="loading">Scanning for images...</div>
 			{:else if images.length === 0}
 				<div class="empty-state">
-					<IconPhoto size={48} />
+					<Icon icon={IconPhoto} size={48} />
 					<p>No images found. Click "Scan Images" to analyze your content.</p>
 				</div>
 			{:else}
@@ -249,7 +242,7 @@
 									<div class="issues">
 										{#each image.issues as issue}
 											<div class="issue error">
-												<IconAlertTriangle size={14} />
+												<Icon icon={IconAlertTriangle} size={14} />
 												{issue}
 											</div>
 										{/each}
@@ -260,7 +253,7 @@
 									<div class="recommendations">
 										{#each image.recommendations as rec}
 											<div class="recommendation">
-												<IconCheck size={14} />
+												<Icon icon={IconCheck} size={14} />
 												{rec}
 											</div>
 										{/each}

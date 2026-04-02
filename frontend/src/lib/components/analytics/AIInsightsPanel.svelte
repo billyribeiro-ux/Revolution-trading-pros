@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { IconBrain, IconTrendingUp, IconAlertTriangle, IconBulb, IconTarget } from '$lib/icons';
+	import { Icon, IconBrain, IconTrendingUp, IconAlertTriangle, IconBulb, IconTarget } from '$lib/icons';
 
 	interface Insight {
 		id: string;
@@ -60,7 +60,7 @@
 <div class="insights-panel">
 	<div class="panel-header">
 		<div class="header-title">
-			<IconBrain size={24} class="text-purple-400" />
+			<Icon icon={IconBrain} size={24} class="text-purple-400" />
 			<h3 class="title">AI Insights</h3>
 		</div>
 		<div class="insights-count">{insights.length} insights</div>
@@ -117,7 +117,7 @@
 			{/each}
 		{:else}
 			<div class="empty-state">
-				<IconBrain size={48} class="text-gray-600" />
+				<Icon icon={IconBrain} size={48} class="text-gray-600" />
 				<p class="text-gray-400 mt-3">No insights available yet</p>
 				<p class="text-sm text-gray-500 mt-1">AI insights will appear as data is analyzed</p>
 			</div>

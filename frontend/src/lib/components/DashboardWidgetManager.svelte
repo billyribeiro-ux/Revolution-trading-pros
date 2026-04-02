@@ -16,6 +16,7 @@
 	import { quintOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import {
+	import { Icon, IconActivity, IconBolt, IconCaretDown, IconCaretUp, IconChartLine, IconCurrencyDollar, IconEye, IconEyeCheck, IconEyeOff, IconFileText, IconGripVertical, IconLayoutGrid, IconList, IconMail, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconUsers, IconWorld, IconX } from '$lib/icons';
 		widgetStore,
 		getVisibleWidgets,
 		getHiddenWidgets,
@@ -24,29 +25,7 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets.svelte';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
-	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCaretUp from '@tabler/icons-svelte-runes/icons/caret-up';
-	import IconCaretDown from '@tabler/icons-svelte-runes/icons/caret-down';
-	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
-	import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEyeCheck from '@tabler/icons-svelte-runes/icons/eye-check';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-
+																						
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;
@@ -155,11 +134,11 @@
 			<!-- Header -->
 			<div class="manager-header">
 				<div class="header-left">
-					<IconSettings size={22} />
+					<Icon icon={IconSettings} size={22} />
 					<h2>Customize Dashboard</h2>
 				</div>
 				<button class="close-btn" onclick={close}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -170,7 +149,7 @@
 					class:active={activeTab === 'visible'}
 					onclick={() => (activeTab = 'visible')}
 				>
-					<IconEye size={16} />
+					<Icon icon={IconEye} size={16} />
 					Visible ({visibleWidgets.length})
 				</button>
 				<button
@@ -178,7 +157,7 @@
 					class:active={activeTab === 'hidden'}
 					onclick={() => (activeTab = 'hidden')}
 				>
-					<IconEyeOff size={16} />
+					<Icon icon={IconEyeOff} size={16} />
 					Hidden ({hiddenWidgets.length})
 				</button>
 				<button
@@ -186,7 +165,7 @@
 					class:active={activeTab === 'settings'}
 					onclick={() => (activeTab = 'settings')}
 				>
-					<IconSettings size={16} />
+					<Icon icon={IconSettings} size={16} />
 					Settings
 				</button>
 			</div>
@@ -212,7 +191,7 @@
 								role="listitem"
 							>
 								<div class="drag-handle">
-									<IconGripVertical size={18} />
+									<Icon icon={IconGripVertical} size={18} />
 								</div>
 								<div
 									class="widget-icon"
@@ -239,21 +218,21 @@
 										onclick={() => widgetStore.moveWidget(widget.id, 'up')}
 										disabled={index === 0}
 									>
-										<IconCaretUp size={16} />
+										<Icon icon={IconCaretUp} size={16} />
 									</button>
 									<button
 										class="move-btn"
 										onclick={() => widgetStore.moveWidget(widget.id, 'down')}
 										disabled={index === visibleWidgets.length - 1}
 									>
-										<IconCaretDown size={16} />
+										<Icon icon={IconCaretDown} size={16} />
 									</button>
 									<button
 										class="hide-btn"
 										onclick={() => widgetStore.toggleWidget(widget.id)}
 										title="Hide widget"
 									>
-										<IconEyeOff size={16} />
+										<Icon icon={IconEyeOff} size={16} />
 									</button>
 								</div>
 							</div>
@@ -263,7 +242,7 @@
 					<div class="widget-list" in:fade={{ duration: 150 }}>
 						{#if hiddenWidgets.length === 0}
 							<div class="empty-state">
-								<IconEye size={48} />
+								<Icon icon={IconEye} size={48} />
 								<h3>All widgets visible</h3>
 								<p>No hidden widgets</p>
 							</div>
@@ -289,7 +268,7 @@
 										onclick={() => widgetStore.toggleWidget(widget.id)}
 										title="Show widget"
 									>
-										<IconEye size={16} />
+										<Icon icon={IconEye} size={16} />
 										Show
 									</button>
 								</div>
@@ -308,7 +287,7 @@
 									onclick={() => widgetStore.setLayout('grid')}
 									aria-label="Grid layout"
 								>
-									<IconLayoutGrid size={18} />
+									<Icon icon={IconLayoutGrid} size={18} />
 									Grid
 								</button>
 								<button
@@ -317,7 +296,7 @@
 									onclick={() => widgetStore.setLayout('list')}
 									aria-label="List layout"
 								>
-									<IconList size={18} />
+									<Icon icon={IconList} size={18} />
 									List
 								</button>
 							</div>
@@ -347,7 +326,7 @@
 								onclick={() => widgetStore.resetToDefaults()}
 								aria-label="Reset to defaults"
 							>
-								<IconRefresh size={16} />
+								<Icon icon={IconRefresh} size={16} />
 								Reset to Defaults
 							</button>
 						</div>

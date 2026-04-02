@@ -20,20 +20,9 @@
 import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-
+												
 	import type { Block, BlockContent, BlockSettings, BlockType } from './types';
+	import { Icon, IconBriefcase, IconCalendar, IconChartBar, IconDeviceFloppy, IconPalette, IconPlus, IconSearch, IconSettings, IconStarFilled, IconTag, IconTemplate, IconX } from '$lib/icons';
 
 	// ==========================================================================
 	// Types
@@ -355,17 +344,17 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="preset-header">
 				<div class="header-title">
-					<IconTemplate size={20} />
+					<Icon icon={IconTemplate} size={20} />
 					<span>Presets for <strong>{blockType}</strong></span>
 				</div>
 				<button type="button" class="close-btn" onclick={() => props.onclose?.()}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
 			<div class="preset-toolbar">
 				<div class="search-box">
-					<IconSearch size={18} />
+					<Icon icon={IconSearch} size={18} />
 					<input
 						type="text"
 						placeholder="Search presets..."
@@ -374,14 +363,14 @@ import { logger } from '$lib/utils/logger';
 					/>
 					{#if searchQuery}
 						<button type="button" class="clear-search" onclick={() => (searchQuery = '')}>
-							<IconX size={16} />
+							<Icon icon={IconX} size={16} />
 						</button>
 					{/if}
 				</div>
 
 				{#if showSaveOption && currentBlock}
 					<button type="button" class="save-preset-btn" onclick={handleSaveAsPreset}>
-						<IconDeviceFloppy size={18} />
+						<Icon icon={IconDeviceFloppy} size={18} />
 						<span>Save as Preset</span>
 					</button>
 				{/if}
@@ -428,7 +417,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				{:else if totalPresets === 0}
 					<div class="empty-state">
-						<IconTemplate size={48} stroke={1.5} />
+						<Icon icon={IconTemplate} size={48} stroke={1.5} />
 						<p>No presets found</p>
 						{#if searchQuery}
 							<span>Try a different search term</span>
@@ -440,7 +429,7 @@ import { logger } from '$lib/utils/logger';
 					<!-- Blank Option -->
 					<div class="blank-option">
 						<button type="button" class="blank-btn" onclick={handleBlankOption}>
-							<IconPlus size={24} />
+							<Icon icon={IconPlus} size={24} />
 							<span>Start Blank</span>
 						</button>
 					</div>
@@ -473,14 +462,14 @@ import { logger } from '$lib/utils/logger';
 											</div>
 										{:else}
 											<div class="preset-thumbnail placeholder">
-												<IconTemplate size={32} stroke={1.5} />
+												<Icon icon={IconTemplate} size={32} stroke={1.5} />
 											</div>
 										{/if}
 
 										<div class="preset-info">
 											<span class="preset-name">
 												{#if preset.is_default}
-													<IconStarFilled size={12} class="default-star" />
+													<Icon icon={IconStarFilled} size={12} class="default-star" />
 												{/if}
 												{preset.name}
 											</span>
@@ -491,7 +480,7 @@ import { logger } from '$lib/utils/logger';
 
 										{#if preset.usage_count > 0}
 											<div class="preset-usage" title="{preset.usage_count} uses">
-												<IconChartBar size={12} />
+												<Icon icon={IconChartBar} size={12} />
 												{preset.usage_count}
 											</div>
 										{/if}
@@ -514,7 +503,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="preview-tags">
 							{#each hoveredPreset.tags.slice(0, 5) as tag}
 								<span class="tag">
-									<IconTag size={10} />
+									<Icon icon={IconTag} size={10} />
 									{tag}
 								</span>
 							{/each}
@@ -531,7 +520,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Inline/Sidebar Mode -->
 	<div class="preset-inline">
 		<div class="inline-header">
-			<IconTemplate size={18} />
+			<Icon icon={IconTemplate} size={18} />
 			<span>Presets</span>
 		</div>
 
@@ -550,7 +539,7 @@ import { logger } from '$lib/utils/logger';
 							title={preset.description || preset.name}
 						>
 							{#if preset.is_default}
-								<IconStarFilled size={12} class="default-indicator" />
+								<Icon icon={IconStarFilled} size={12} class="default-indicator" />
 							{/if}
 							{preset.name}
 						</button>
@@ -585,7 +574,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="save-modal-header">
 				<h3>Save as Preset</h3>
 				<button type="button" class="close-btn" onclick={() => (showSaveModal = false)}>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 
@@ -632,7 +621,7 @@ import { logger } from '$lib/utils/logger';
 					disabled={!savePresetName.trim()}
 					onclick={saveBlockAsPreset}
 				>
-					<IconDeviceFloppy size={18} />
+					<Icon icon={IconDeviceFloppy} size={18} />
 					Save Preset
 				</button>
 			</div>

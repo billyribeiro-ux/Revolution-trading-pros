@@ -5,7 +5,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
-	import { IconUserPlus, IconArrowLeft } from '$lib/icons';
+	import { Icon, IconUserPlus, IconArrowLeft } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 
 	let formData = $state({
@@ -47,7 +47,7 @@ import { logger } from '$lib/utils/logger';
 <div class="new-contact-page">
 	<div class="page-header">
 		<a href="/admin/contacts" class="back-link">
-			<IconArrowLeft size={18} />
+			<Icon icon={IconArrowLeft} size={18} />
 			Back to Contacts
 		</a>
 		<h1>Add New Contact</h1>
@@ -108,7 +108,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="form-actions">
 			<a href="/admin/contacts" class="btn-secondary">Cancel</a>
 			<button type="submit" class="btn-primary" disabled={isSubmitting}>
-				<IconUserPlus size={18} />
+				<Icon icon={IconUserPlus} size={18} />
 				{isSubmitting ? 'Creating...' : 'Create Contact'}
 			</button>
 		</div>

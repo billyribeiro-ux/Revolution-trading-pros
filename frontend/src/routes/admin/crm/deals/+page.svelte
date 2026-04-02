@@ -28,30 +28,10 @@
 
 	import { onMount } from 'svelte';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
-	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconLayoutKanban from '@tabler/icons-svelte-runes/icons/layout-kanban';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import { crmAPI } from '$lib/api/crm';
+																						import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconAlertTriangle, IconBriefcase, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconEdit, IconEye, IconGripVertical, IconLayoutKanban, IconList, IconPlus, IconRefresh, IconSearch, IconTarget, IconTrash, IconTrendingUp, IconTrophy, IconUser, IconX } from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)
@@ -362,7 +342,7 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>
-				<IconBriefcase size={28} />
+				<Icon icon={IconBriefcase} size={28} />
 				Deal Pipeline
 			</h1>
 			<p class="subtitle">Manage your sales pipeline and track deal progress</p>
@@ -373,21 +353,21 @@
 						class:active={viewMode === 'kanban'}
 						onclick={() => (viewMode = 'kanban')}
 					>
-						<IconLayoutKanban size={18} />
+						<Icon icon={IconLayoutKanban} size={18} />
 					</button>
 					<button
 						class="toggle-btn"
 						class:active={viewMode === 'list'}
 						onclick={() => (viewMode = 'list')}
 					>
-						<IconList size={18} />
+						<Icon icon={IconList} size={18} />
 					</button>
 				</div>
 				<button class="btn-secondary" onclick={() => loadData()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/deals/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Deal
 				</a>
 			</div>
@@ -397,7 +377,7 @@
 		<section class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
-					<IconBriefcase size={24} />
+					<Icon icon={IconBriefcase} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.openDeals}</span>
@@ -406,7 +386,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon purple">
-					<IconCurrencyDollar size={24} />
+					<Icon icon={IconCurrencyDollar} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatCurrency(stats.totalValue)}</span>
@@ -415,7 +395,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon cyan">
-					<IconTarget size={24} />
+					<Icon icon={IconTarget} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatCurrency(stats.weightedValue)}</span>
@@ -424,7 +404,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon green">
-					<IconTrendingUp size={24} />
+					<Icon icon={IconTrendingUp} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.winRate.toFixed(1)}%</span>
@@ -433,7 +413,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon amber">
-					<IconChartBar size={24} />
+					<Icon icon={IconChartBar} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatCurrency(stats.avgDealSize)}</span>
@@ -442,7 +422,7 @@
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald">
-					<IconTrophy size={24} />
+					<Icon icon={IconTrophy} size={24} />
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{stats.wonDeals}</span>
@@ -454,7 +434,7 @@
 		<!-- Filters Bar -->
 		<div class="filters-bar">
 			<div class="search-box">
-				<IconSearch size={18} />
+				<Icon icon={IconSearch} size={18} />
 				<input
 					type="text"
 					id="search-deals"
@@ -481,11 +461,11 @@
 
 			<div class="pipeline-stats">
 				<span class="stat-item">
-					<IconBriefcase size={14} />
+					<Icon icon={IconBriefcase} size={14} />
 					{pipelineStats.dealsCount} deals
 				</span>
 				<span class="stat-item">
-					<IconCurrencyDollar size={14} />
+					<Icon icon={IconCurrencyDollar} size={14} />
 					{formatCurrency(pipelineStats.totalValue)}
 				</span>
 			</div>
@@ -499,7 +479,7 @@
 			</div>
 		{:else if error}
 			<div class="error-state">
-				<IconAlertTriangle size={48} />
+				<Icon icon={IconAlertTriangle} size={48} />
 				<p>{error}</p>
 				<button class="btn-primary" onclick={() => loadData()}>Try Again</button>
 			</div>
@@ -539,7 +519,7 @@
 									role="listitem"
 								>
 									<div class="card-grip">
-										<IconGripVertical size={14} />
+										<Icon icon={IconGripVertical} size={14} />
 									</div>
 
 									<div class="card-content">
@@ -553,19 +533,19 @@
 
 										{#if deal.contact}
 											<div class="deal-contact">
-												<IconUser size={12} />
+												<Icon icon={IconUser} size={12} />
 												<span>{deal.contact.full_name}</span>
 											</div>
 										{/if}
 
 										<div class="deal-meta">
 											<span class="meta-item" style="color: {getDaysColor(deal.days_in_stage)}">
-												<IconClock size={12} />
+												<Icon icon={IconClock} size={12} />
 												{deal.days_in_stage}d in stage
 											</span>
 											{#if deal.expected_close_date}
 												<span class="meta-item">
-													<IconCalendar size={12} />
+													<Icon icon={IconCalendar} size={12} />
 													{formatDate(deal.expected_close_date)}
 												</span>
 											{/if}
@@ -590,18 +570,18 @@
 												title="Mark as Won"
 												onclick={() => openWinModal(deal)}
 											>
-												<IconCheck size={14} />
+												<Icon icon={IconCheck} size={14} />
 											</button>
 											<button
 												class="action-btn danger"
 												title="Mark as Lost"
 												onclick={() => openLoseModal(deal)}
 											>
-												<IconX size={14} />
+												<Icon icon={IconX} size={14} />
 											</button>
 										{/if}
 										<a href="/admin/crm/deals/{deal.id}/edit" class="action-btn" title="Edit">
-											<IconEdit size={14} />
+											<Icon icon={IconEdit} size={14} />
 										</a>
 									</div>
 								</div>
@@ -621,11 +601,11 @@
 			<div class="table-container">
 				{#if filteredDeals.length === 0}
 					<div class="empty-state">
-						<IconBriefcase size={48} />
+						<Icon icon={IconBriefcase} size={48} />
 						<h3>No deals found</h3>
 						<p>Create your first deal to start tracking your sales pipeline</p>
 						<a href="/admin/crm/deals/new" class="btn-primary">
-							<IconPlus size={18} />
+							<Icon icon={IconPlus} size={18} />
 							Create Deal
 						</a>
 					</div>
@@ -709,28 +689,28 @@
 													title="Mark as Won"
 													onclick={() => openWinModal(deal)}
 												>
-													<IconCheck size={16} />
+													<Icon icon={IconCheck} size={16} />
 												</button>
 												<button
 													class="btn-icon danger"
 													title="Mark as Lost"
 													onclick={() => openLoseModal(deal)}
 												>
-													<IconX size={16} />
+													<Icon icon={IconX} size={16} />
 												</button>
 											{/if}
 											<a href="/admin/crm/deals/{deal.id}" class="btn-icon" title="View">
-												<IconEye size={16} />
+												<Icon icon={IconEye} size={16} />
 											</a>
 											<a href="/admin/crm/deals/{deal.id}/edit" class="btn-icon" title="Edit">
-												<IconEdit size={16} />
+												<Icon icon={IconEdit} size={16} />
 											</a>
 											<button
 												class="btn-icon danger"
 												title="Delete"
 												onclick={() => deleteDeal(deal)}
 											>
-												<IconTrash size={16} />
+												<Icon icon={IconTrash} size={16} />
 											</button>
 										</div>
 									</td>
@@ -772,7 +752,7 @@
 			role="document"
 		>
 			<div class="modal-header success">
-				<IconTrophy size={24} />
+				<Icon icon={IconTrophy} size={24} />
 				<h3>Mark Deal as Won</h3>
 				<button
 					class="modal-close"
@@ -781,7 +761,7 @@
 						selectedDeal = null;
 					}}
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -814,7 +794,7 @@
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{/if}
 					Mark as Won
 				</button>
@@ -844,7 +824,7 @@
 			role="document"
 		>
 			<div class="modal-header danger">
-				<IconX size={24} />
+				<Icon icon={IconX} size={24} />
 				<h3>Mark Deal as Lost</h3>
 				<button
 					class="modal-close"
@@ -853,7 +833,7 @@
 						selectedDeal = null;
 					}}
 				>
-					<IconX size={20} />
+					<Icon icon={IconX} size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
@@ -891,7 +871,7 @@
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
-						<IconX size={18} />
+						<Icon icon={IconX} size={18} />
 					{/if}
 					Mark as Lost
 				</button>

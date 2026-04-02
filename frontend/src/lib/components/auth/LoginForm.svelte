@@ -40,18 +40,7 @@ import { logger } from '$lib/utils/logger';
 	// GSAP loaded dynamically to prevent SSR blocking
 	let gsap: any = null;
 	let gsapContext: any = null; // GSAP 3.12+ context for proper cleanup
-	import {
-		IconMail,
-		IconLock,
-		IconAlertCircle,
-		IconTrendingUp,
-		IconChartCandle,
-		IconEye,
-		IconEyeOff,
-		IconArrowRight,
-		IconCheck,
-		IconLoader
-	} from '$lib/icons';
+	import { Icon, IconMail, IconLock, IconAlertCircle, IconTrendingUp, IconChartCandle, IconEye, IconEyeOff, IconArrowRight, IconCheck, IconLoader } from '$lib/icons';
 
 	// Import new components
 	import TypedHeadline from './TypedHeadline.svelte';
@@ -538,7 +527,7 @@ import { logger } from '$lib/utils/logger';
 		{#if isSuccess}
 			<div class="success-overlay" in:fade={{ duration: 300 }}>
 				<div class="success-icon">
-					<IconCheck size={64} stroke={2.5} />
+					<Icon icon={IconCheck} size={64} stroke={2.5} />
 				</div>
 				<p class="success-message">Welcome back!</p>
 				<p class="success-submessage">Redirecting...</p>
@@ -549,7 +538,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="logo-wrapper">
 					<div class="logo-glow" aria-hidden="true"></div>
 					<div class="logo-icon">
-						<IconChartCandle size={32} stroke={1.5} />
+						<Icon icon={IconChartCandle} size={32} stroke={1.5} />
 					</div>
 				</div>
 				<h1 class="form-title">
@@ -566,7 +555,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Email Not Verified Banner -->
 			{#if emailNotVerified}
 				<div class="verification-banner" in:fade={{ duration: 200 }} role="alert">
-					<IconMail size={20} />
+					<Icon icon={IconMail} size={20} />
 					<div class="verification-content">
 						<p class="verification-title">Email Not Verified</p>
 						<p class="verification-text">
@@ -580,7 +569,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Error Banner -->
 			{#if generalError}
 				<div class="error-banner" in:fade={{ duration: 200 }} role="alert">
-					<IconAlertCircle size={20} />
+					<Icon icon={IconAlertCircle} size={20} />
 					<p>{generalError}</p>
 				</div>
 			{/if}
@@ -592,7 +581,7 @@ import { logger } from '$lib/utils/logger';
 					<label for="email" class="field-label">Email Address</label>
 					<div class="input-wrapper" class:error={errors['email']}>
 						<div class="input-icon">
-							<IconMail size={20} />
+							<Icon icon={IconMail} size={20} />
 						</div>
 						<input
 							bind:this={emailInputRef}
@@ -623,7 +612,7 @@ import { logger } from '$lib/utils/logger';
 					<label for="password" class="field-label">Password</label>
 					<div class="input-wrapper" class:error={errors['password']}>
 						<div class="input-icon">
-							<IconLock size={20} />
+							<Icon icon={IconLock} size={20} />
 						</div>
 						<input
 							id="password"
@@ -649,9 +638,9 @@ import { logger } from '$lib/utils/logger';
 							disabled={isLoading || isSuccess}
 						>
 							{#if showPassword}
-								<IconEyeOff size={20} />
+								<Icon icon={IconEyeOff} size={20} />
 							{:else}
-								<IconEye size={20} />
+								<Icon icon={IconEye} size={20} />
 							{/if}
 						</button>
 					</div>
@@ -691,15 +680,15 @@ import { logger } from '$lib/utils/logger';
 					>
 						<span class="btn-content">
 							{#if isSuccess}
-								<IconCheck size={20} />
+								<Icon icon={IconCheck} size={20} />
 								<span>Success!</span>
 							{:else if isLoading}
-								<IconLoader size={20} class="spin" />
+								<Icon icon={IconLoader} size={20} class="spin" />
 								<span>Signing in...</span>
 							{:else}
-								<IconTrendingUp size={20} />
+								<Icon icon={IconTrendingUp} size={20} />
 								<span>Sign In to Trade</span>
-								<IconArrowRight size={20} class="arrow-icon" />
+								<Icon icon={IconArrowRight} size={20} class="arrow-icon" />
 							{/if}
 						</span>
 						<div class="btn-glow" aria-hidden="true"></div>

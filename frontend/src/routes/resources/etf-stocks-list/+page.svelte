@@ -9,21 +9,7 @@
 	 */
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import {
-		IconChartLine,
-		IconCoin,
-		IconBuildingBank,
-		IconHeartbeat,
-		IconBolt,
-		IconCpu,
-		IconShoppingCart,
-		IconHome,
-		IconTools,
-		IconLeaf,
-		IconArrowRight,
-		IconCheck,
-		IconExternalLink
-	} from '$lib/icons';
+	import { Icon, IconChartLine, IconCoin, IconBuildingBank, IconHeartbeat, IconBolt, IconCpu, IconShoppingCart, IconHome, IconTools, IconLeaf, IconArrowRight, IconCheck, IconExternalLink } from '$lib/icons';
 
 	// Featured ETFs with full descriptions
 	const featuredETFs = [
@@ -298,7 +284,7 @@
 		</div>
 		<div class="hero__content" in:fly={{ y: 30, duration: 600, easing: cubicOut }}>
 			<div class="hero__badge">
-				<IconChartLine size={20} />
+				<Icon icon={IconChartLine} size={20} />
 				<span>Investment Resource</span>
 			</div>
 			<h1 class="hero__title">ETF Stock List</h1>
@@ -327,7 +313,7 @@
 				{#each etfBenefits as benefit, i}
 					<div class="benefit-card" in:fly={{ y: 20, delay: 100 * i, duration: 400 }}>
 						<div class="benefit-card__icon">
-							<IconCheck size={24} />
+							<Icon icon={IconCheck} size={24} />
 						</div>
 						<h3 class="benefit-card__title">{benefit.title}</h3>
 						<p class="benefit-card__text">{benefit.description}</p>
@@ -373,7 +359,7 @@
 								class="etf-card__chart-link"
 								aria-label="View {etf.symbol} chart on TradingView"
 							>
-								<IconExternalLink size={16} />
+								<Icon icon={IconExternalLink} size={16} />
 							</a>
 						</div>
 						<h3 class="etf-card__name">{etf.name}</h3>
@@ -455,7 +441,7 @@
 									class:comparison-table__cell--better={row.etfBetter === true}
 								>
 									{#if row.etfBetter === true}
-										<IconCheck
+										<Icon icon={IconCheck}
 											size={16}
 											class="comparison-table__icon comparison-table__icon--check"
 										/>
@@ -467,7 +453,7 @@
 									class:comparison-table__cell--better={row.etfBetter === false}
 								>
 									{#if row.etfBetter === false}
-										<IconCheck
+										<Icon icon={IconCheck}
 											size={16}
 											class="comparison-table__icon comparison-table__icon--check"
 										/>
@@ -510,7 +496,7 @@
 				<div class="cta-buttons">
 					<a href="/live-trading-rooms" class="cta-btn cta-btn--primary">
 						Get Started
-						<IconArrowRight size={20} />
+						<Icon icon={IconArrowRight} size={20} />
 					</a>
 					<a href="/resources/stock-indexes-list" class="cta-btn cta-btn--secondary">
 						View Stock Indexes List

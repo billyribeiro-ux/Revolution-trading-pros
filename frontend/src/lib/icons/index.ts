@@ -1,946 +1,430 @@
 /**
- * Tabler Icons - Comprehensive Enterprise Export Barrel
+ * Revolution Trading Pros - Icon System (Iconify)
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * All icons are imported from '@tabler/icons-svelte' subpaths.
- * This pattern is required for tabler-icons-svelte v3.x.
+ * All icons are string constants for use with the Icon component.
+ * Icons use the Tabler icon set via @iconify/svelte.
  *
  * Usage:
- * import { IconMapPin, IconUser, IconMail } from '$lib/icons';
+ * import { Icon, IconUser, IconSettings } from '$lib/icons';
+ * <Icon icon={IconUser} size={24} />
  */
 
-// Core UI Icons
-import IconAB from '@tabler/icons-svelte-runes/icons/a-b';
-import IconAB2 from '@tabler/icons-svelte-runes/icons/a-b-2';
-import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-import IconActivityHeartbeat from '@tabler/icons-svelte-runes/icons/activity-heartbeat';
-import IconAdjustments from '@tabler/icons-svelte-runes/icons/adjustments';
-import IconAdjustmentsAlt from '@tabler/icons-svelte-runes/icons/adjustments-alt';
-import IconAdjustmentsHorizontal from '@tabler/icons-svelte-runes/icons/adjustments-horizontal';
-import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-import IconAntenna from '@tabler/icons-svelte-runes/icons/antenna';
-import IconApi from '@tabler/icons-svelte-runes/icons/api';
-import IconApiApp from '@tabler/icons-svelte-runes/icons/api-app';
-import IconApps from '@tabler/icons-svelte-runes/icons/apps';
-import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
+// Icon wrapper component
+export { default as Icon } from './Icon.svelte';
 
-// Alignment Icons
-import IconAlignCenter from '@tabler/icons-svelte-runes/icons/align-center';
-import IconAlignJustified from '@tabler/icons-svelte-runes/icons/align-justified';
-import IconAlignLeft from '@tabler/icons-svelte-runes/icons/align-left';
-import IconAlignRight from '@tabler/icons-svelte-runes/icons/align-right';
+// =============================================================================
+// Tabler Icon Constants
+// =============================================================================
 
-// Arrow Icons
-import IconArrowBackUp from '@tabler/icons-svelte-runes/icons/arrow-back-up';
-import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
-import IconArrowDownRight from '@tabler/icons-svelte-runes/icons/arrow-down-right';
-import IconArrowForwardUp from '@tabler/icons-svelte-runes/icons/arrow-forward-up';
-import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-import IconArrowNarrowLeft from '@tabler/icons-svelte-runes/icons/arrow-narrow-left';
-import IconArrowNarrowRight from '@tabler/icons-svelte-runes/icons/arrow-narrow-right';
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
-import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right';
-import IconArrowsLeftRight from '@tabler/icons-svelte-runes/icons/arrows-left-right';
-import IconArrowsSort from '@tabler/icons-svelte-runes/icons/arrows-sort';
-import IconArrowsUpDown from '@tabler/icons-svelte-runes/icons/arrows-up-down';
+export const IconAB = 'tabler:a-b';
+export const IconAB2 = 'tabler:a-b-2';
+export const IconActivity = 'tabler:activity';
+export const IconActivityHeartbeat = 'tabler:activity-heartbeat';
+export const IconAdjustments = 'tabler:adjustments';
+export const IconAdjustmentsAlt = 'tabler:adjustments-alt';
+export const IconAdjustmentsHorizontal = 'tabler:adjustments-horizontal';
+export const IconAlertCircle = 'tabler:alert-circle';
+export const IconAlertTriangle = 'tabler:alert-triangle';
+export const IconAntenna = 'tabler:antenna';
+export const IconApi = 'tabler:api';
+export const IconApiApp = 'tabler:api-app';
+export const IconApps = 'tabler:apps';
+export const IconArchive = 'tabler:archive';
+export const IconAlignCenter = 'tabler:align-center';
+export const IconAlignJustified = 'tabler:align-justified';
+export const IconAlignLeft = 'tabler:align-left';
+export const IconAlignRight = 'tabler:align-right';
+export const IconArrowBackUp = 'tabler:arrow-back-up';
+export const IconArrowDown = 'tabler:arrow-down';
+export const IconArrowDownRight = 'tabler:arrow-down-right';
+export const IconArrowForwardUp = 'tabler:arrow-forward-up';
+export const IconArrowLeft = 'tabler:arrow-left';
+export const IconArrowNarrowLeft = 'tabler:arrow-narrow-left';
+export const IconArrowNarrowRight = 'tabler:arrow-narrow-right';
+export const IconArrowRight = 'tabler:arrow-right';
+export const IconArrowUp = 'tabler:arrow-up';
+export const IconArrowUpRight = 'tabler:arrow-up-right';
+export const IconArrowsLeftRight = 'tabler:arrows-left-right';
+export const IconArrowsSort = 'tabler:arrows-sort';
+export const IconArrowsUpDown = 'tabler:arrows-up-down';
+export const IconArticle = 'tabler:article';
+export const IconAward = 'tabler:award';
+export const IconBadge = 'tabler:badge';
+export const IconBell = 'tabler:bell';
+export const IconBellRinging = 'tabler:bell-ringing';
+export const IconBlockquote = 'tabler:blockquote';
+export const IconBold = 'tabler:bold';
+export const IconBolt = 'tabler:bolt';
+export const IconBook = 'tabler:book';
+export const IconBookmark = 'tabler:bookmark';
+export const IconBookmarkFilled = 'tabler:bookmark-filled';
+export const IconBox = 'tabler:box';
+export const IconBrackets = 'tabler:brackets';
+export const IconBrain = 'tabler:brain';
+export const IconBriefcase = 'tabler:briefcase';
+export const IconBriefcase2 = 'tabler:briefcase-2';
+export const IconBrowser = 'tabler:browser';
+export const IconBug = 'tabler:bug';
+export const IconBuilding = 'tabler:building';
+export const IconBuildingBank = 'tabler:building-bank';
+export const IconBuildingSkyscraper = 'tabler:building-skyscraper';
+export const IconBuildingStore = 'tabler:building-store';
+export const IconBulb = 'tabler:bulb';
+export const IconBrandAsana = 'tabler:brand-asana';
+export const IconBrandBing = 'tabler:brand-bing';
+export const IconBrandDiscord = 'tabler:brand-discord';
+export const IconBrandFacebook = 'tabler:brand-facebook';
+export const IconBrandGithub = 'tabler:brand-github';
+export const IconBrandGoogle = 'tabler:brand-google';
+export const IconBrandInstagram = 'tabler:brand-instagram';
+export const IconBrandLinkedin = 'tabler:brand-linkedin';
+export const IconBrandMedium = 'tabler:brand-medium';
+export const IconBrandOpenai = 'tabler:brand-openai';
+export const IconBrandPaypal = 'tabler:brand-paypal';
+export const IconBrandReddit = 'tabler:brand-reddit';
+export const IconBrandTelegram = 'tabler:brand-telegram';
+export const IconBrandTiktok = 'tabler:brand-tiktok';
+export const IconBrandTrello = 'tabler:brand-trello';
+export const IconBrandTwitter = 'tabler:brand-twitter';
+export const IconBrandVimeo = 'tabler:brand-vimeo';
+export const IconBrandX = 'tabler:brand-x';
+export const IconBrandYoutube = 'tabler:brand-youtube';
+export const IconBroadcast = 'tabler:broadcast';
+export const IconCalculator = 'tabler:calculator';
+export const IconCalendar = 'tabler:calendar';
+export const IconCalendarEvent = 'tabler:calendar-event';
+export const IconCaretDown = 'tabler:caret-down';
+export const IconCaretUp = 'tabler:caret-up';
+export const IconCash = 'tabler:cash';
+export const IconCashBanknote = 'tabler:cash-banknote';
+export const IconCategory = 'tabler:category';
+export const IconCertificate = 'tabler:certificate';
+export const IconChartArcs = 'tabler:chart-arcs';
+export const IconChartArea = 'tabler:chart-area';
+export const IconChartBar = 'tabler:chart-bar';
+export const IconChartCandle = 'tabler:chart-candle';
+export const IconChartDonut = 'tabler:chart-donut';
+export const IconChartDots = 'tabler:chart-dots';
+export const IconChartHistogram = 'tabler:chart-histogram';
+export const IconChartInfographic = 'tabler:chart-infographic';
+export const IconChartLine = 'tabler:chart-line';
+export const IconChartPie = 'tabler:chart-pie';
+export const IconChartRadar = 'tabler:chart-radar';
+export const IconCheck = 'tabler:check';
+export const IconCheckbox = 'tabler:checkbox';
+export const IconChecklist = 'tabler:checklist';
+export const IconCheckupList = 'tabler:checkup-list';
+export const IconChevronDown = 'tabler:chevron-down';
+export const IconChevronLeft = 'tabler:chevron-left';
+export const IconChevronRight = 'tabler:chevron-right';
+export const IconChevronUp = 'tabler:chevron-up';
+export const IconCircleCheck = 'tabler:circle-check';
+export const IconCircleCheckFilled = 'tabler:circle-check-filled';
+export const IconCircleX = 'tabler:circle-x';
+export const IconClick = 'tabler:click';
+export const IconClipboard = 'tabler:clipboard';
+export const IconClock = 'tabler:clock';
+export const IconCloud = 'tabler:cloud';
+export const IconCloudUpload = 'tabler:cloud-upload';
+export const IconCode = 'tabler:code';
+export const IconCoin = 'tabler:coin';
+export const IconColorPicker = 'tabler:color-picker';
+export const IconCompass = 'tabler:compass';
+export const IconColumns = 'tabler:columns';
+export const IconCommand = 'tabler:command';
+export const IconCopy = 'tabler:copy';
+export const IconCpu = 'tabler:cpu';
+export const IconCreditCard = 'tabler:credit-card';
+export const IconCursor = 'tabler:click';
+export const IconCursorText = 'tabler:cursor-text';
+export const IconCrown = 'tabler:crown';
+export const IconCsv = 'tabler:csv';
+export const IconCurrencyDollar = 'tabler:currency-dollar';
+export const IconDashboard = 'tabler:dashboard';
+export const IconDatabase = 'tabler:database';
+export const IconDeviceAnalytics = 'tabler:device-analytics';
+export const IconDeviceDesktopAnalytics = 'tabler:device-desktop-analytics';
+export const IconDeviceDesktop = 'tabler:device-desktop';
+export const IconDeviceFloppy = 'tabler:device-floppy';
+export const IconDeviceMobile = 'tabler:device-mobile';
+export const IconDiamond = 'tabler:diamond';
+export const IconDeviceTablet = 'tabler:device-tablet';
+export const IconDevices = 'tabler:devices';
+export const IconDiscount = 'tabler:discount';
+export const IconDots = 'tabler:dots';
+export const IconDotsVertical = 'tabler:dots-vertical';
+export const IconDownload = 'tabler:download';
+export const IconEdit = 'tabler:edit';
+export const IconError404 = 'tabler:error-404';
+export const IconExclamationCircle = 'tabler:exclamation-circle';
+export const IconExternalLink = 'tabler:external-link';
+export const IconEye = 'tabler:eye';
+export const IconEyeCheck = 'tabler:eye-check';
+export const IconEyeOff = 'tabler:eye-off';
+export const IconFile = 'tabler:file';
+export const IconFileCode = 'tabler:file-code';
+export const IconFileDiff = 'tabler:file-diff';
+export const IconFileDownload = 'tabler:file-download';
+export const IconFileAnalytics = 'tabler:file-analytics';
+export const IconFileDescription = 'tabler:file-description';
+export const IconFileExport = 'tabler:file-export';
+export const IconFileSpreadsheet = 'tabler:file-spreadsheet';
+export const IconFileText = 'tabler:file-text';
+export const IconFileTypePdf = 'tabler:file-type-pdf';
+export const IconFileTypeDoc = 'tabler:file-type-doc';
+export const IconFileZip = 'tabler:file-zip';
+export const IconFilter = 'tabler:filter';
+export const IconFlag = 'tabler:flag';
+export const IconFlame = 'tabler:flame';
+export const IconFlask = 'tabler:flask';
+export const IconFocus = 'tabler:focus';
+export const IconFocusCentered = 'tabler:focus-centered';
+export const IconFingerprint = 'tabler:fingerprint';
+export const IconFingerprintScan = 'tabler:fingerprint-scan';
+export const IconFolder = 'tabler:folder';
+export const IconFolderPlus = 'tabler:folder-plus';
+export const IconForms = 'tabler:forms';
+export const IconGauge = 'tabler:gauge';
+export const IconGif = 'tabler:gif';
+export const IconGift = 'tabler:gift';
+export const IconGitMerge = 'tabler:git-merge';
+export const IconGridDots = 'tabler:grid-dots';
+export const IconGripVertical = 'tabler:grip-vertical';
+export const IconH1 = 'tabler:h-1';
+export const IconH2 = 'tabler:h-2';
+export const IconH3 = 'tabler:h-3';
+export const IconHeart = 'tabler:heart';
+export const IconHeadset = 'tabler:headset';
+export const IconHeartbeat = 'tabler:heartbeat';
+export const IconHelp = 'tabler:help';
+export const IconHistory = 'tabler:history';
+export const IconHome = 'tabler:home';
+export const IconHomeDollar = 'tabler:home-dollar';
+export const IconHourglass = 'tabler:hourglass';
+export const IconId = 'tabler:id';
+export const IconInbox = 'tabler:inbox';
+export const IconInfoCircle = 'tabler:info-circle';
+export const IconItalic = 'tabler:italic';
+export const IconJson = 'tabler:json';
+export const IconKey = 'tabler:key';
+export const IconKeyboard = 'tabler:keyboard';
+export const IconLanguage = 'tabler:language';
+export const IconLayout2 = 'tabler:layout-2';
+export const IconLayoutDashboard = 'tabler:layout-dashboard';
+export const IconLayoutDistributeHorizontal = 'tabler:layout-distribute-horizontal';
+export const IconLayoutGrid = 'tabler:layout-grid';
+export const IconLayoutGridAdd = 'tabler:layout-grid-add';
+export const IconLayoutKanban = 'tabler:layout-kanban';
+export const IconLayoutNavbarCollapse = 'tabler:layout-navbar-collapse';
+export const IconLayoutRows = 'tabler:layout-rows';
+export const IconLeaf = 'tabler:leaf';
+export const IconLink = 'tabler:link';
+export const IconList = 'tabler:list';
+export const IconListCheck = 'tabler:list-check';
+export const IconListDetails = 'tabler:list-details';
+export const IconListNumbers = 'tabler:list-numbers';
+export const IconListTree = 'tabler:list-tree';
+export const IconLive = 'tabler:live-photo';
+export const IconLoader = 'tabler:loader';
+export const IconLoader2 = 'tabler:loader-2';
+export const IconLocation = 'tabler:location';
+export const IconLock = 'tabler:lock';
+export const IconLockOpen = 'tabler:lock-open';
+export const IconLockSquare = 'tabler:lock-square';
+export const IconLogin = 'tabler:login';
+export const IconLogout = 'tabler:logout';
+export const IconMail = 'tabler:mail';
+export const IconMailCheck = 'tabler:mail-check';
+export const IconMailFast = 'tabler:mail-fast';
+export const IconMailForward = 'tabler:mail-forward';
+export const IconMailOpened = 'tabler:mail-opened';
+export const IconMap = 'tabler:map';
+export const IconMapPin = 'tabler:map-pin';
+export const IconMapPin2 = 'tabler:map-pin-2';
+export const IconMapPins = 'tabler:map-pins';
+export const IconMaximize = 'tabler:maximize';
+export const IconMedal = 'tabler:medal';
+export const IconMenu = 'tabler:menu';
+export const IconMenu2 = 'tabler:menu-2';
+export const IconMessage = 'tabler:message';
+export const IconMessageCircle = 'tabler:message-circle';
+export const IconMinimize = 'tabler:minimize';
+export const IconMinus = 'tabler:minus';
+export const IconMoneybag = 'tabler:moneybag';
+export const IconMoodSmile = 'tabler:mood-smile';
+export const IconMoon = 'tabler:moon';
+export const IconMouse = 'tabler:mouse';
+export const IconNavigation = 'tabler:navigation';
+export const IconNetwork = 'tabler:network';
+export const IconNews = 'tabler:news';
+export const IconNote = 'tabler:note';
+export const IconNotes = 'tabler:notes';
+export const IconPackage = 'tabler:package';
+export const IconPalette = 'tabler:palette';
+export const IconPaperclip = 'tabler:paperclip';
+export const IconPdf = 'tabler:pdf';
+export const IconPencil = 'tabler:pencil';
+export const IconPercentage = 'tabler:percentage';
+export const IconPhone = 'tabler:phone';
+export const IconPhoto = 'tabler:photo';
+export const IconPhotoFilled = 'tabler:photo-filled';
+export const IconPigMoney = 'tabler:pig-money';
+export const IconPin = 'tabler:pin';
+export const IconPinFilled = 'tabler:pin-filled';
+export const IconPlay = 'tabler:player-play';
+export const IconPointer = 'tabler:pointer';
+export const IconPictureInPicture = 'tabler:picture-in-picture';
+export const IconPictureInPictureOn = 'tabler:picture-in-picture-on';
+export const IconPlayerPause = 'tabler:player-pause';
+export const IconPlayerPlay = 'tabler:player-play';
+export const IconPlayerStop = 'tabler:player-stop';
+export const IconPlugConnected = 'tabler:plug-connected';
+export const IconPlugConnectedX = 'tabler:plug-connected-x';
+export const IconPlugOff = 'tabler:plug-off';
+export const IconPlus = 'tabler:plus';
+export const IconProgress = 'tabler:progress';
+export const IconProgressCheck = 'tabler:progress-check';
+export const IconQrcode = 'tabler:qrcode';
+export const IconQuestionMark = 'tabler:question-mark';
+export const IconRadar = 'tabler:radar';
+export const IconRadar2 = 'tabler:radar-2';
+export const IconRotate = 'tabler:rotate';
+export const IconRotateClockwise = 'tabler:rotate-clockwise';
+export const IconQuote = 'tabler:quote';
+export const IconReceipt = 'tabler:receipt';
+export const IconReceiptTax = 'tabler:receipt-tax';
+export const IconRefresh = 'tabler:refresh';
+export const IconReload = 'tabler:reload';
+export const IconRepeat = 'tabler:repeat';
+export const IconReportAnalytics = 'tabler:report-analytics';
+export const IconRobot = 'tabler:robot';
+export const IconRocket = 'tabler:rocket';
+export const IconRoute = 'tabler:route';
+export const IconScan = 'tabler:scan';
+export const IconScale = 'tabler:scale';
+export const IconSchool = 'tabler:school';
+export const IconSearch = 'tabler:search';
+export const IconSeedling = 'tabler:seedling';
+export const IconSend = 'tabler:send';
+export const IconSeo = 'tabler:seo';
+export const IconServer = 'tabler:server';
+export const IconSettings = 'tabler:settings';
+export const IconShare = 'tabler:share';
+export const IconShield = 'tabler:shield';
+export const IconShieldCheck = 'tabler:shield-check';
+export const IconShieldLock = 'tabler:shield-lock';
+export const IconShoppingCart = 'tabler:shopping-cart';
+export const IconSitemap = 'tabler:sitemap';
+export const IconSortAscending = 'tabler:sort-ascending';
+export const IconSortDescending = 'tabler:sort-descending';
+export const IconSpacingVertical = 'tabler:spacing-vertical';
+export const IconSparkles = 'tabler:sparkles';
+export const IconSpeakerphone = 'tabler:speakerphone';
+export const IconSpeedboat = 'tabler:speedboat';
+export const IconSquare = 'tabler:square';
+export const IconSquareCheck = 'tabler:square-check';
+export const IconSquareRounded = 'tabler:square-rounded';
+export const IconSquareRoundedCheck = 'tabler:square-rounded-check';
+export const IconSquareRoundedCheckFilled = 'tabler:square-rounded-check-filled';
+export const IconSquareRoundedMinus = 'tabler:square-rounded-minus';
+export const IconSquareRoundedPlus = 'tabler:square-rounded-plus';
+export const IconSquareRoundedX = 'tabler:square-rounded-x';
+export const IconStack = 'tabler:stack';
+export const IconStack2 = 'tabler:stack-2';
+export const IconStar = 'tabler:star';
+export const IconStarFilled = 'tabler:star-filled';
+export const IconStarOff = 'tabler:star-off';
+export const IconStrikethrough = 'tabler:strikethrough';
+export const IconSubtask = 'tabler:subtask';
+export const IconSunHigh = 'tabler:sun-high';
+export const IconTable = 'tabler:table';
+export const IconTag = 'tabler:tag';
+export const IconTags = 'tabler:tags';
+export const IconTarget = 'tabler:target';
+export const IconTargetArrow = 'tabler:target-arrow';
+export const IconTemplate = 'tabler:template';
+export const IconTerminal = 'tabler:terminal';
+export const IconTestPipe = 'tabler:test-pipe';
+export const IconTestPipe2 = 'tabler:test-pipe-2';
+export const IconTextCaption = 'tabler:text-caption';
+export const IconThumbUp = 'tabler:thumb-up';
+export const IconTicket = 'tabler:ticket';
+export const IconTimeline = 'tabler:timeline';
+export const IconToggleLeft = 'tabler:toggle-left';
+export const IconToggleRight = 'tabler:toggle-right';
+export const IconTool = 'tabler:tool';
+export const IconTools = 'tabler:tools';
+export const IconTrash = 'tabler:trash';
+export const IconTrendingDown = 'tabler:trending-down';
+export const IconTrendingDown2 = 'tabler:trending-down-2';
+export const IconTrendingDown3 = 'tabler:trending-down-3';
+export const IconTrendingUp = 'tabler:trending-up';
+export const IconTrendingUp2 = 'tabler:trending-up-2';
+export const IconTrendingUp3 = 'tabler:trending-up-3';
+export const IconTrophy = 'tabler:trophy';
+export const IconUnderline = 'tabler:underline';
+export const IconUpload = 'tabler:upload';
+export const IconUser = 'tabler:user';
+export const IconUserCheck = 'tabler:user-check';
+export const IconUserCircle = 'tabler:user-circle';
+export const IconUserEdit = 'tabler:user-edit';
+export const IconUserMinus = 'tabler:user-minus';
+export const IconUserPlus = 'tabler:user-plus';
+export const IconUserOff = 'tabler:user-off';
+export const IconUsers = 'tabler:users';
+export const IconUsersGroup = 'tabler:users-group';
+export const IconBan = 'tabler:ban';
+export const IconVideo = 'tabler:video';
+export const IconVolume = 'tabler:volume';
+export const IconVolumeOff = 'tabler:volume-off';
+export const IconWallet = 'tabler:wallet';
+export const IconWand = 'tabler:wand';
+export const IconWaveSine = 'tabler:wave-sine';
+export const IconWebhook = 'tabler:webhook';
+export const IconWifi = 'tabler:wifi';
+export const IconWorld = 'tabler:world';
+export const IconWorldWww = 'tabler:world-www';
+export const IconX = 'tabler:x';
+export const IconZoomCheck = 'tabler:zoom-check';
+export const IconZoomIn = 'tabler:zoom-in';
+export const IconZoomMoney = 'tabler:zoom-money';
+export const IconZoomOut = 'tabler:zoom-out';
 
-// Content Icons
-import IconArticle from '@tabler/icons-svelte-runes/icons/article';
-import IconAward from '@tabler/icons-svelte-runes/icons/award';
-import IconBadge from '@tabler/icons-svelte-runes/icons/badge';
-import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-import IconBellRinging from '@tabler/icons-svelte-runes/icons/bell-ringing';
-import IconBlockquote from '@tabler/icons-svelte-runes/icons/blockquote';
-import IconBold from '@tabler/icons-svelte-runes/icons/bold';
-import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
-import IconBook from '@tabler/icons-svelte-runes/icons/book';
-import IconBookmark from '@tabler/icons-svelte-runes/icons/bookmark';
-import IconBookmarkFilled from '@tabler/icons-svelte-runes/icons/bookmark-filled';
-import IconBox from '@tabler/icons-svelte-runes/icons/box';
-import IconBrackets from '@tabler/icons-svelte-runes/icons/brackets';
-import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
-import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-import IconBriefcase2 from '@tabler/icons-svelte-runes/icons/briefcase-2';
-import IconBrowser from '@tabler/icons-svelte-runes/icons/browser';
-import IconBug from '@tabler/icons-svelte-runes/icons/bug';
-import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
-import IconBuildingSkyscraper from '@tabler/icons-svelte-runes/icons/building-skyscraper';
-import IconBuildingStore from '@tabler/icons-svelte-runes/icons/building-store';
-import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
+// Aliases
+export const IconArrowForward = IconArrowForwardUp;
+export const IconBrandTradingview = IconChartCandle;
+export const IconChecks = IconChecklist;
+export const IconSave = IconDeviceFloppy;
 
-// Brand Icons
-import IconBrandAsana from '@tabler/icons-svelte-runes/icons/brand-asana';
-import IconBrandBing from '@tabler/icons-svelte-runes/icons/brand-bing';
-import IconBrandDiscord from '@tabler/icons-svelte-runes/icons/brand-discord';
-import IconBrandFacebook from '@tabler/icons-svelte-runes/icons/brand-facebook';
-import IconBrandGithub from '@tabler/icons-svelte-runes/icons/brand-github';
-import IconBrandGoogle from '@tabler/icons-svelte-runes/icons/brand-google';
-import IconBrandInstagram from '@tabler/icons-svelte-runes/icons/brand-instagram';
-import IconBrandLinkedin from '@tabler/icons-svelte-runes/icons/brand-linkedin';
-import IconBrandMedium from '@tabler/icons-svelte-runes/icons/brand-medium';
-import IconBrandOpenai from '@tabler/icons-svelte-runes/icons/brand-openai';
-import IconBrandPaypal from '@tabler/icons-svelte-runes/icons/brand-paypal';
-import IconBrandReddit from '@tabler/icons-svelte-runes/icons/brand-reddit';
-import IconBrandTelegram from '@tabler/icons-svelte-runes/icons/brand-telegram';
-import IconBrandTiktok from '@tabler/icons-svelte-runes/icons/brand-tiktok';
-import IconBrandTrello from '@tabler/icons-svelte-runes/icons/brand-trello';
-import IconBrandTwitter from '@tabler/icons-svelte-runes/icons/brand-twitter';
-import IconBrandVimeo from '@tabler/icons-svelte-runes/icons/brand-vimeo';
-import IconBrandX from '@tabler/icons-svelte-runes/icons/brand-x';
-import IconBrandYoutube from '@tabler/icons-svelte-runes/icons/brand-youtube';
-import IconBroadcast from '@tabler/icons-svelte-runes/icons/broadcast';
+// =============================================================================
+// Custom Local SVG Icons (lightweight alternatives)
+// =============================================================================
 
-// Calendar/Clock Icons
-import IconCalculator from '@tabler/icons-svelte-runes/icons/calculator';
-import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
-import IconCaretDown from '@tabler/icons-svelte-runes/icons/caret-down';
-import IconCaretUp from '@tabler/icons-svelte-runes/icons/caret-up';
-import IconCash from '@tabler/icons-svelte-runes/icons/cash';
-import IconCashBanknote from '@tabler/icons-svelte-runes/icons/cash-banknote';
-import IconCategory from '@tabler/icons-svelte-runes/icons/category';
-import IconCertificate from '@tabler/icons-svelte-runes/icons/certificate';
-
-// Chart Icons
-import IconChartArcs from '@tabler/icons-svelte-runes/icons/chart-arcs';
-import IconChartArea from '@tabler/icons-svelte-runes/icons/chart-area';
-import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-import IconChartDonut from '@tabler/icons-svelte-runes/icons/chart-donut';
-import IconChartDots from '@tabler/icons-svelte-runes/icons/chart-dots';
-import IconChartHistogram from '@tabler/icons-svelte-runes/icons/chart-histogram';
-import IconChartInfographic from '@tabler/icons-svelte-runes/icons/chart-infographic';
-import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
-import IconChartPie from '@tabler/icons-svelte-runes/icons/chart-pie';
-import IconChartRadar from '@tabler/icons-svelte-runes/icons/chart-radar';
-
-// Check/Status Icons
-import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-import IconCheckbox from '@tabler/icons-svelte-runes/icons/checkbox';
-import IconChecklist from '@tabler/icons-svelte-runes/icons/checklist';
-import IconCheckupList from '@tabler/icons-svelte-runes/icons/checkup-list';
-
-// Chevron Icons
-import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-import IconChevronUp from '@tabler/icons-svelte-runes/icons/chevron-up';
-
-// Misc Icons
-import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
-import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
-import IconCircleX from '@tabler/icons-svelte-runes/icons/circle-x';
-import IconClick from '@tabler/icons-svelte-runes/icons/click';
-import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
-import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-import IconCloud from '@tabler/icons-svelte-runes/icons/cloud';
-import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
-import IconCode from '@tabler/icons-svelte-runes/icons/code';
-import IconCoin from '@tabler/icons-svelte-runes/icons/coin';
-import IconColorPicker from '@tabler/icons-svelte-runes/icons/color-picker';
-import IconCompass from '@tabler/icons-svelte-runes/icons/compass';
-import IconColumns from '@tabler/icons-svelte-runes/icons/columns';
-import IconCommand from '@tabler/icons-svelte-runes/icons/command';
-import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-import IconCpu from '@tabler/icons-svelte-runes/icons/cpu';
-import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
-import IconCursor from '@tabler/icons-svelte-runes/icons/click';
-import IconCursorText from '@tabler/icons-svelte-runes/icons/cursor-text';
-import IconCrown from '@tabler/icons-svelte-runes/icons/crown';
-import IconCsv from '@tabler/icons-svelte-runes/icons/csv';
-import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-
-// Dashboard/Device Icons
-import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
-import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
-import IconDeviceAnalytics from '@tabler/icons-svelte-runes/icons/device-analytics';
-import IconDeviceDesktopAnalytics from '@tabler/icons-svelte-runes/icons/device-desktop-analytics';
-import IconDeviceDesktop from '@tabler/icons-svelte-runes/icons/device-desktop';
-import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
-import IconDiamond from '@tabler/icons-svelte-runes/icons/diamond';
-import IconDeviceTablet from '@tabler/icons-svelte-runes/icons/device-tablet';
-import IconDevices from '@tabler/icons-svelte-runes/icons/devices';
-import IconDiscount from '@tabler/icons-svelte-runes/icons/discount';
-import IconDots from '@tabler/icons-svelte-runes/icons/dots';
-import IconDotsVertical from '@tabler/icons-svelte-runes/icons/dots-vertical';
-import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-
-// Edit Icons
-import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-import IconError404 from '@tabler/icons-svelte-runes/icons/error-404';
-import IconExclamationCircle from '@tabler/icons-svelte-runes/icons/exclamation-circle';
-import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
-
-// Eye Icons
-import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-import IconEyeCheck from '@tabler/icons-svelte-runes/icons/eye-check';
-import IconEyeOff from '@tabler/icons-svelte-runes/icons/eye-off';
-
-// File Icons
-import IconFile from '@tabler/icons-svelte-runes/icons/file';
-import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code';
-import IconFileDiff from '@tabler/icons-svelte-runes/icons/file-diff';
-import IconFileDownload from '@tabler/icons-svelte-runes/icons/file-download';
-import IconFileAnalytics from '@tabler/icons-svelte-runes/icons/file-analytics';
-import IconFileDescription from '@tabler/icons-svelte-runes/icons/file-description';
-import IconFileExport from '@tabler/icons-svelte-runes/icons/file-export';
-import IconFileSpreadsheet from '@tabler/icons-svelte-runes/icons/file-spreadsheet';
-import IconFileText from '@tabler/icons-svelte-runes/icons/file-text';
-import IconFileTypePdf from '@tabler/icons-svelte-runes/icons/file-type-pdf';
-import IconFileTypeDoc from '@tabler/icons-svelte-runes/icons/file-type-doc';
-import IconFileZip from '@tabler/icons-svelte-runes/icons/file-zip';
-import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
-import IconFlag from '@tabler/icons-svelte-runes/icons/flag';
-import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
-import IconFlask from '@tabler/icons-svelte-runes/icons/flask';
-import IconFocus from '@tabler/icons-svelte-runes/icons/focus';
-import IconFocusCentered from '@tabler/icons-svelte-runes/icons/focus-centered';
-import IconFingerprint from '@tabler/icons-svelte-runes/icons/fingerprint';
-import IconFingerprintScan from '@tabler/icons-svelte-runes/icons/fingerprint-scan';
-import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
-import IconFolderPlus from '@tabler/icons-svelte-runes/icons/folder-plus';
-import IconForms from '@tabler/icons-svelte-runes/icons/forms';
-
-// Gauge/Gift Icons
-import IconGauge from '@tabler/icons-svelte-runes/icons/gauge';
-import IconGif from '@tabler/icons-svelte-runes/icons/gif';
-import IconGift from '@tabler/icons-svelte-runes/icons/gift';
-import IconGitMerge from '@tabler/icons-svelte-runes/icons/git-merge';
-import IconGridDots from '@tabler/icons-svelte-runes/icons/grid-dots';
-import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-
-// Heading Icons
-import IconH1 from '@tabler/icons-svelte-runes/icons/h-1';
-import IconH2 from '@tabler/icons-svelte-runes/icons/h-2';
-import IconH3 from '@tabler/icons-svelte-runes/icons/h-3';
-import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
-import IconHeadset from '@tabler/icons-svelte-runes/icons/headset';
-import IconHeartbeat from '@tabler/icons-svelte-runes/icons/heartbeat';
-import IconHelp from '@tabler/icons-svelte-runes/icons/help';
-import IconHistory from '@tabler/icons-svelte-runes/icons/history';
-import IconHome from '@tabler/icons-svelte-runes/icons/home';
-import IconHomeDollar from '@tabler/icons-svelte-runes/icons/home-dollar';
-import IconHourglass from '@tabler/icons-svelte-runes/icons/hourglass';
-
-// ID/Inbox Icons
-import IconId from '@tabler/icons-svelte-runes/icons/id';
-import IconInbox from '@tabler/icons-svelte-runes/icons/inbox';
-import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-import IconItalic from '@tabler/icons-svelte-runes/icons/italic';
-import IconJson from '@tabler/icons-svelte-runes/icons/json';
-
-// Key/Keyboard Icons
-import IconKey from '@tabler/icons-svelte-runes/icons/key';
-import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
-
-// Language/Layout Icons
-import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
-import IconLayout2 from '@tabler/icons-svelte-runes/icons/layout-2';
-import IconLayoutDashboard from '@tabler/icons-svelte-runes/icons/layout-dashboard';
-import IconLayoutDistributeHorizontal from '@tabler/icons-svelte-runes/icons/layout-distribute-horizontal';
-import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
-import IconLayoutGridAdd from '@tabler/icons-svelte-runes/icons/layout-grid-add';
-import IconLayoutKanban from '@tabler/icons-svelte-runes/icons/layout-kanban';
-import IconLayoutNavbarCollapse from '@tabler/icons-svelte-runes/icons/layout-navbar-collapse';
-import IconLayoutRows from '@tabler/icons-svelte-runes/icons/layout-rows';
-import IconLeaf from '@tabler/icons-svelte-runes/icons/leaf';
-import IconLink from '@tabler/icons-svelte-runes/icons/link';
-
-// List Icons
-import IconList from '@tabler/icons-svelte-runes/icons/list';
-import IconListCheck from '@tabler/icons-svelte-runes/icons/list-check';
-import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
-import IconListNumbers from '@tabler/icons-svelte-runes/icons/list-numbers';
-import IconListTree from '@tabler/icons-svelte-runes/icons/list-tree';
-import IconLive from '@tabler/icons-svelte-runes/icons/live-photo';
-import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
-import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-import IconLocation from '@tabler/icons-svelte-runes/icons/location';
-import IconLock from '@tabler/icons-svelte-runes/icons/lock';
-import IconLockOpen from '@tabler/icons-svelte-runes/icons/lock-open';
-import IconLockSquare from '@tabler/icons-svelte-runes/icons/lock-square';
-import IconLogin from '@tabler/icons-svelte-runes/icons/login';
-import IconLogout from '@tabler/icons-svelte-runes/icons/logout';
-
-// Mail Icons
-import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
-import IconMailFast from '@tabler/icons-svelte-runes/icons/mail-fast';
-import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
-import IconMailOpened from '@tabler/icons-svelte-runes/icons/mail-opened';
-const IconMailOpen = IconMailOpened; // Alias for compatibility
-
-// Map Icons
-import IconMap from '@tabler/icons-svelte-runes/icons/map';
-import IconMapPin from '@tabler/icons-svelte-runes/icons/map-pin';
-import IconMapPin2 from '@tabler/icons-svelte-runes/icons/map-pin-2';
-import IconMapPins from '@tabler/icons-svelte-runes/icons/map-pins';
-
-// Maximize/Media Icons
-import IconMaximize from '@tabler/icons-svelte-runes/icons/maximize';
-import IconMedal from '@tabler/icons-svelte-runes/icons/medal';
-import IconMenu from '@tabler/icons-svelte-runes/icons/menu';
-import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
-import IconMessage from '@tabler/icons-svelte-runes/icons/message';
-import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
-import IconMinimize from '@tabler/icons-svelte-runes/icons/minimize';
-import IconMinus from '@tabler/icons-svelte-runes/icons/minus';
-import IconMoneybag from '@tabler/icons-svelte-runes/icons/moneybag';
-import IconMoodSmile from '@tabler/icons-svelte-runes/icons/mood-smile';
-import IconMoon from '@tabler/icons-svelte-runes/icons/moon';
-import IconMouse from '@tabler/icons-svelte-runes/icons/mouse';
-
-// Navigation Icons
-import IconNavigation from '@tabler/icons-svelte-runes/icons/navigation';
-
-// Network/News Icons
-import IconNetwork from '@tabler/icons-svelte-runes/icons/network';
-import IconNews from '@tabler/icons-svelte-runes/icons/news';
-import IconNote from '@tabler/icons-svelte-runes/icons/note';
-import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
-
-// Package/Palette Icons
-import IconPackage from '@tabler/icons-svelte-runes/icons/package';
-import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
-import IconPaperclip from '@tabler/icons-svelte-runes/icons/paperclip';
-import IconPdf from '@tabler/icons-svelte-runes/icons/pdf';
-import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
-import IconPercentage from '@tabler/icons-svelte-runes/icons/percentage';
-import IconPhone from '@tabler/icons-svelte-runes/icons/phone';
-import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
-import IconPhotoFilled from '@tabler/icons-svelte-runes/icons/photo-filled';
-import IconPigMoney from '@tabler/icons-svelte-runes/icons/pig-money';
-import IconPin from '@tabler/icons-svelte-runes/icons/pin';
-import IconPinFilled from '@tabler/icons-svelte-runes/icons/pin-filled';
-import IconPlay from '@tabler/icons-svelte-runes/icons/player-play';
-import IconPointer from '@tabler/icons-svelte-runes/icons/pointer';
-import IconPictureInPicture from '@tabler/icons-svelte-runes/icons/picture-in-picture';
-import IconPictureInPictureOn from '@tabler/icons-svelte-runes/icons/picture-in-picture-on';
-
-// Player Icons
-import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
-import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-import IconPlayerStop from '@tabler/icons-svelte-runes/icons/player-stop';
-import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
-import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
-import IconPlugOff from '@tabler/icons-svelte-runes/icons/plug-off';
-import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-import IconProgress from '@tabler/icons-svelte-runes/icons/progress';
-import IconProgressCheck from '@tabler/icons-svelte-runes/icons/progress-check';
-
-// Qr/Question Icons
-import IconQrcode from '@tabler/icons-svelte-runes/icons/qrcode';
-import IconQuestionMark from '@tabler/icons-svelte-runes/icons/question-mark';
-import IconRadar from '@tabler/icons-svelte-runes/icons/radar';
-import IconRadar2 from '@tabler/icons-svelte-runes/icons/radar-2';
-
-// Rotate Icons
-import IconRotate from '@tabler/icons-svelte-runes/icons/rotate';
-import IconRotateClockwise from '@tabler/icons-svelte-runes/icons/rotate-clockwise';
-import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
-
-// Receipt Icons
-import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
-import IconReceiptTax from '@tabler/icons-svelte-runes/icons/receipt-tax';
-import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-import IconReload from '@tabler/icons-svelte-runes/icons/reload';
-import IconRepeat from '@tabler/icons-svelte-runes/icons/repeat';
-import IconReportAnalytics from '@tabler/icons-svelte-runes/icons/report-analytics';
-import IconRobot from '@tabler/icons-svelte-runes/icons/robot';
-import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
-import IconRoute from '@tabler/icons-svelte-runes/icons/route';
-
-// Scale/Scan Icons
-import IconScan from '@tabler/icons-svelte-runes/icons/scan';
-import IconScale from '@tabler/icons-svelte-runes/icons/scale';
-import IconSchool from '@tabler/icons-svelte-runes/icons/school';
-import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-import IconSeedling from '@tabler/icons-svelte-runes/icons/seedling';
-import IconSend from '@tabler/icons-svelte-runes/icons/send';
-import IconSeo from '@tabler/icons-svelte-runes/icons/seo';
-import IconServer from '@tabler/icons-svelte-runes/icons/server';
-import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-import IconShare from '@tabler/icons-svelte-runes/icons/share';
-
-// Shield Icons
-import IconShield from '@tabler/icons-svelte-runes/icons/shield';
-import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
-import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
-import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
-import IconSitemap from '@tabler/icons-svelte-runes/icons/sitemap';
-
-// Sort Icons
-import IconSortAscending from '@tabler/icons-svelte-runes/icons/sort-ascending';
-import IconSortDescending from '@tabler/icons-svelte-runes/icons/sort-descending';
-import IconSpacingVertical from '@tabler/icons-svelte-runes/icons/spacing-vertical';
-import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
-import IconSpeakerphone from '@tabler/icons-svelte-runes/icons/speakerphone';
-import IconSpeedboat from '@tabler/icons-svelte-runes/icons/speedboat';
-
-// Square Icons
-import IconSquare from '@tabler/icons-svelte-runes/icons/square';
-import IconSquareCheck from '@tabler/icons-svelte-runes/icons/square-check';
-import IconSquareRounded from '@tabler/icons-svelte-runes/icons/square-rounded';
-import IconSquareRoundedCheck from '@tabler/icons-svelte-runes/icons/square-rounded-check';
-import IconSquareRoundedCheckFilled from '@tabler/icons-svelte-runes/icons/square-rounded-check-filled';
-import IconSquareRoundedMinus from '@tabler/icons-svelte-runes/icons/square-rounded-minus';
-import IconSquareRoundedPlus from '@tabler/icons-svelte-runes/icons/square-rounded-plus';
-import IconSquareRoundedX from '@tabler/icons-svelte-runes/icons/square-rounded-x';
-import IconStack from '@tabler/icons-svelte-runes/icons/stack';
-import IconStack2 from '@tabler/icons-svelte-runes/icons/stack-2';
-
-// Star Icons
-import IconStar from '@tabler/icons-svelte-runes/icons/star';
-import IconStarFilled from '@tabler/icons-svelte-runes/icons/star-filled';
-import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
-import IconStrikethrough from '@tabler/icons-svelte-runes/icons/strikethrough';
-import IconSubtask from '@tabler/icons-svelte-runes/icons/subtask';
-import IconSunHigh from '@tabler/icons-svelte-runes/icons/sun-high';
-
-// Table/Tag Icons
-import IconTable from '@tabler/icons-svelte-runes/icons/table';
-import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-import IconTags from '@tabler/icons-svelte-runes/icons/tags';
-import IconTarget from '@tabler/icons-svelte-runes/icons/target';
-import IconTargetArrow from '@tabler/icons-svelte-runes/icons/target-arrow';
-import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-import IconTerminal from '@tabler/icons-svelte-runes/icons/terminal';
-import IconTestPipe from '@tabler/icons-svelte-runes/icons/test-pipe';
-import IconTestPipe2 from '@tabler/icons-svelte-runes/icons/test-pipe-2';
-import IconTextCaption from '@tabler/icons-svelte-runes/icons/text-caption';
-import IconThumbUp from '@tabler/icons-svelte-runes/icons/thumb-up';
-import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
-import IconTimeline from '@tabler/icons-svelte-runes/icons/timeline';
-import IconToggleLeft from '@tabler/icons-svelte-runes/icons/toggle-left';
-import IconToggleRight from '@tabler/icons-svelte-runes/icons/toggle-right';
-import IconTool from '@tabler/icons-svelte-runes/icons/tool';
-import IconTools from '@tabler/icons-svelte-runes/icons/tools';
-import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-
-// Trending Icons
-import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-import IconTrendingDown2 from '@tabler/icons-svelte-runes/icons/trending-down-2';
-import IconTrendingDown3 from '@tabler/icons-svelte-runes/icons/trending-down-3';
-import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-import IconTrendingUp2 from '@tabler/icons-svelte-runes/icons/trending-up-2';
-import IconTrendingUp3 from '@tabler/icons-svelte-runes/icons/trending-up-3';
-import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
-import IconUnderline from '@tabler/icons-svelte-runes/icons/underline';
-import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-
-// User Icons
-import IconUser from '@tabler/icons-svelte-runes/icons/user';
-import IconUserCheck from '@tabler/icons-svelte-runes/icons/user-check';
-import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
-import IconUserEdit from '@tabler/icons-svelte-runes/icons/user-edit';
-import IconUserMinus from '@tabler/icons-svelte-runes/icons/user-minus';
-import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
-import IconUserOff from '@tabler/icons-svelte-runes/icons/user-off';
-import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
-
-// Ban/Block Icons
-import IconBan from '@tabler/icons-svelte-runes/icons/ban';
-
-// Video/Volume Icons
-import IconVideo from '@tabler/icons-svelte-runes/icons/video';
-import IconVolume from '@tabler/icons-svelte-runes/icons/volume';
-import IconVolumeOff from '@tabler/icons-svelte-runes/icons/volume-off';
-
-// Wand/World Icons
-import IconWallet from '@tabler/icons-svelte-runes/icons/wallet';
-import IconWand from '@tabler/icons-svelte-runes/icons/wand';
-import IconWaveSine from '@tabler/icons-svelte-runes/icons/wave-sine';
-import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
-import IconWifi from '@tabler/icons-svelte-runes/icons/wifi';
-import IconWorld from '@tabler/icons-svelte-runes/icons/world';
-import IconWorldWww from '@tabler/icons-svelte-runes/icons/world-www';
-import IconX from '@tabler/icons-svelte-runes/icons/x';
-
-// Zoom Icons
-import IconZoomCheck from '@tabler/icons-svelte-runes/icons/zoom-check';
-import IconZoomIn from '@tabler/icons-svelte-runes/icons/zoom-in';
-import IconZoomMoney from '@tabler/icons-svelte-runes/icons/zoom-money';
-import IconZoomOut from '@tabler/icons-svelte-runes/icons/zoom-out';
-
-// Custom local SVG icons
-import IconPlusLocal from './IconPlus.svelte';
-import IconXLocal from './IconX.svelte';
-import IconChevronDownLocal from './IconChevronDown.svelte';
-import IconChevronLeftLocal from './IconChevronLeft.svelte';
-import IconChevronRightLocal from './IconChevronRight.svelte';
-import IconCheckLocal from './IconCheck.svelte';
-import IconMinusLocal from './IconMinus.svelte';
-import IconPhotoLocal from './IconPhoto.svelte';
-import IconVideoLocal from './IconVideo.svelte';
-import IconCodeLocal from './IconCode.svelte';
-import IconListLocal from './IconList.svelte';
-import IconPlayerPlayLocal from './IconPlayerPlay.svelte';
-import IconPlayerPauseLocal from './IconPlayerPause.svelte';
-import IconVolumeLocal from './IconVolume.svelte';
-import IconVolumeOffLocal from './IconVolumeOff.svelte';
-import IconMaximizeLocal from './IconMaximize.svelte';
-import IconCopyLocal from './IconCopy.svelte';
-import IconLinkLocal from './IconLink.svelte';
-import IconLayoutGridLocal from './IconLayoutGrid.svelte';
-import IconColumnsLocal from './IconColumns.svelte';
-import IconStarLocal from './IconStar.svelte';
-import IconCircleLocal from './IconCircle.svelte';
-import IconSquareLocal from './IconSquare.svelte';
-import IconSparklesLocal from './IconSparkles.svelte';
-
-// Re-export all icons
-export {
-	// Alignment Icons
-	IconAlignCenter,
-	IconAlignJustified,
-	IconAlignLeft,
-	IconAlignRight,
-	// Core UI Icons
-	IconAB,
-	IconAB2,
-	IconActivity,
-	IconActivityHeartbeat,
-	IconAdjustments,
-	IconAdjustmentsAlt,
-	IconAdjustmentsHorizontal,
-	IconAlertCircle,
-	IconAlertTriangle,
-	IconAntenna,
-	IconApi,
-	IconApiApp,
-	IconApps,
-	IconArchive,
-	// Arrow Icons
-	IconArrowBackUp,
-	IconArrowDown,
-	IconArrowDownRight,
-	IconArrowForwardUp,
-	IconArrowForwardUp as IconArrowForward,
-	IconArrowLeft,
-	IconArrowNarrowLeft,
-	IconArrowNarrowRight,
-	IconArrowRight,
-	IconArrowUp,
-	IconArrowUpRight,
-	IconArrowsLeftRight,
-	IconArrowsSort,
-	IconArrowsUpDown,
-	// Content Icons
-	IconArticle,
-	IconAward,
-	IconBadge,
-	IconBell,
-	IconBellRinging,
-	IconBlockquote,
-	IconBold,
-	IconBolt,
-	IconBook,
-	IconBookmark,
-	IconBookmarkFilled,
-	IconBox,
-	IconBrackets,
-	IconBrain,
-	IconBriefcase,
-	IconBriefcase2,
-	IconBrowser,
-	IconBug,
-	IconBuilding,
-	IconBuildingBank,
-	IconBuildingSkyscraper,
-	IconBuildingStore,
-	IconBulb,
-	// Brand Icons
-	IconBrandAsana,
-	IconBrandBing,
-	IconBrandDiscord,
-	IconBrandFacebook,
-	IconBrandGithub,
-	IconBrandGoogle,
-	IconBrandInstagram,
-	IconBrandLinkedin,
-	IconBrandMedium,
-	IconBrandOpenai,
-	IconBrandPaypal,
-	IconBrandReddit,
-	IconBrandTelegram,
-	IconBrandTiktok,
-	IconBrandTrello,
-	IconBrandTwitter,
-	IconBrandVimeo,
-	IconBrandX,
-	IconBrandYoutube,
-	IconBroadcast,
-	// Calendar/Clock Icons
-	IconCalculator,
-	IconCalendar,
-	IconCalendarEvent,
-	IconCaretDown,
-	IconCaretUp,
-	IconCash,
-	IconCashBanknote,
-	IconCategory,
-	IconCertificate,
-	// Chart Icons
-	IconChartArcs,
-	IconChartArea,
-	IconChartBar,
-	IconChartCandle,
-	IconChartCandle as IconBrandTradingview,
-	IconChartDonut,
-	IconChartDots,
-	IconChartHistogram,
-	IconChartInfographic,
-	IconChartLine,
-	IconChartPie,
-	IconChartRadar,
-	// Check/Status Icons
-	IconCheck,
-	IconCheckbox,
-	IconChecklist,
-	IconChecklist as IconChecks,
-	IconCheckupList,
-	// Chevron Icons
-	IconChevronDown,
-	IconChevronLeft,
-	IconChevronRight,
-	IconChevronUp,
-	// Misc Icons
-	IconCircleCheck,
-	IconCircleCheckFilled,
-	IconCircleX,
-	IconClick,
-	IconClipboard,
-	IconClock,
-	IconCloud,
-	IconCloudUpload,
-	IconCode,
-	IconCoin,
-	IconColorPicker,
-	IconColumns,
-	IconCommand,
-	IconCompass,
-	IconCopy,
-	IconCpu,
-	IconCreditCard,
-	IconCrown,
-	IconCursor,
-	IconCursorText,
-	IconCsv,
-	IconCurrencyDollar,
-	// Dashboard/Device Icons
-	IconDashboard,
-	IconDatabase,
-	IconDeviceAnalytics,
-	IconDeviceDesktop,
-	IconDeviceDesktopAnalytics,
-	IconDeviceFloppy,
-	IconDeviceFloppy as IconSave,
-	IconDeviceMobile,
-	IconDeviceTablet,
-	IconDevices,
-	IconDiamond,
-	IconDiscount,
-	IconDots,
-	IconDotsVertical,
-	IconDownload,
-	// Edit Icons
-	IconEdit,
-	IconError404,
-	IconExclamationCircle,
-	IconExternalLink,
-	// Eye Icons
-	IconEye,
-	IconEyeCheck,
-	IconEyeOff,
-	// File Icons
-	IconFile,
-	IconFileAnalytics,
-	IconFileCode,
-	IconFileDescription,
-	IconFileDiff,
-	IconFileDownload,
-	IconFileExport,
-	IconFileSpreadsheet,
-	IconFileText,
-	IconFileTypePdf,
-	IconFileTypeDoc,
-	IconFileZip,
-	IconFilter,
-	IconFingerprint,
-	IconFingerprintScan,
-	IconFlag,
-	IconFlame,
-	IconFlask,
-	IconFocus,
-	IconFocusCentered,
-	IconFolder,
-	IconFolderPlus,
-	IconForms,
-	// Gauge/Gift Icons
-	IconGauge,
-	IconGif,
-	IconGift,
-	IconGitMerge,
-	IconGridDots,
-	IconGripVertical,
-	// Heading Icons
-	IconH1,
-	IconH2,
-	IconH3,
-	IconHeadset,
-	IconHeart,
-	IconHeartbeat,
-	IconHelp,
-	IconHistory,
-	IconHome,
-	IconHomeDollar,
-	IconHourglass,
-	// ID/Inbox Icons
-	IconId,
-	IconInbox,
-	IconInfoCircle,
-	IconItalic,
-	IconJson,
-	// Key/Keyboard Icons
-	IconKey,
-	IconKeyboard,
-	// Language/Layout Icons
-	IconLanguage,
-	IconLayout2,
-	IconLayoutDashboard,
-	IconLayoutDistributeHorizontal,
-	IconLayoutGrid,
-	IconLayoutGridAdd,
-	IconLayoutKanban,
-	IconLayoutNavbarCollapse,
-	IconLayoutRows,
-	IconLeaf,
-	IconLink,
-	// List Icons
-	IconList,
-	IconListCheck,
-	IconListDetails,
-	IconListNumbers,
-	IconListTree,
-	IconLive,
-	IconLoader,
-	IconLoader2,
-	IconLocation,
-	IconLock,
-	IconLockOpen,
-	IconLockSquare,
-	IconLogin,
-	IconLogout,
-	// Mail Icons
-	IconMail,
-	IconMailCheck,
-	IconMailFast,
-	IconMailForward,
-	IconMailOpen,
-	IconMailOpened,
-	// Map Icons
-	IconMap,
-	IconMapPin,
-	IconMapPin2,
-	IconMapPins,
-	// Maximize/Media Icons
-	IconMaximize,
-	IconMedal,
-	IconMenu,
-	IconMenu2,
-	IconMessage,
-	IconMessageCircle,
-	IconMinimize,
-	IconMinus,
-	IconMoneybag,
-	IconMoodSmile,
-	IconMoon,
-	IconMouse,
-	// Navigation Icons
-	IconNavigation,
-	// Network/News Icons
-	IconNetwork,
-	IconNews,
-	IconNote,
-	IconNotes,
-	// Package/Palette Icons
-	IconPackage,
-	IconPalette,
-	IconPaperclip,
-	IconPdf,
-	IconPencil,
-	IconPercentage,
-	IconPhone,
-	IconPhoto,
-	IconPhotoFilled,
-	IconPictureInPicture,
-	IconPictureInPictureOn,
-	IconPigMoney,
-	IconPin,
-	IconPinFilled,
-	IconPlay,
-	IconPointer,
-	// Player Icons
-	IconPlayerPause,
-	IconPlayerPlay,
-	IconPlayerStop,
-	IconPlugConnected,
-	IconPlugConnectedX,
-	IconPlugOff,
-	IconPlus,
-	IconProgress,
-	IconProgressCheck,
-	// Qr/Question Icons
-	IconQrcode,
-	IconQuestionMark,
-	IconRadar,
-	IconRadar2,
-	// Rotate Icons
-	IconRotate,
-	IconRotateClockwise,
-	IconQuote,
-	// Receipt Icons
-	IconReceipt,
-	IconReceiptTax,
-	IconRefresh,
-	IconReload,
-	IconRepeat,
-	IconReportAnalytics,
-	IconRobot,
-	IconRocket,
-	IconRoute,
-	// Scale/Scan Icons
-	IconScan,
-	IconScale,
-	IconSchool,
-	IconSearch,
-	IconSeedling,
-	IconSend,
-	IconSeo,
-	IconServer,
-	IconSettings,
-	IconShare,
-	// Shield Icons
-	IconShield,
-	IconShieldCheck,
-	IconShieldLock,
-	IconShoppingCart,
-	IconSitemap,
-	// Sort Icons
-	IconSortAscending,
-	IconSortDescending,
-	IconSpacingVertical,
-	IconSparkles,
-	IconSpeakerphone,
-	IconSpeedboat,
-	// Square Icons
-	IconSquare,
-	IconSquareCheck,
-	IconSquareRounded,
-	IconSquareRoundedCheck,
-	IconSquareRoundedCheckFilled,
-	IconSquareRoundedMinus,
-	IconSquareRoundedPlus,
-	IconSquareRoundedX,
-	IconStack,
-	IconStack2,
-	// Star Icons
-	IconStar,
-	IconStarFilled,
-	IconStarOff,
-	IconStrikethrough,
-	IconSubtask,
-	IconSunHigh,
-	// Table/Tag Icons
-	IconTable,
-	IconTag,
-	IconTags,
-	IconTarget,
-	IconTargetArrow,
-	IconTemplate,
-	IconTerminal,
-	IconTestPipe,
-	IconTestPipe2,
-	IconTextCaption,
-	IconThumbUp,
-	IconTicket,
-	IconTimeline,
-	IconToggleLeft,
-	IconToggleRight,
-	IconTool,
-	IconTools,
-	IconTrash,
-	// Trending Icons
-	IconTrendingDown,
-	IconTrendingDown2,
-	IconTrendingDown3,
-	IconTrendingUp,
-	IconTrendingUp2,
-	IconTrendingUp3,
-	IconTrophy,
-	IconUnderline,
-	IconUpload,
-	// User Icons
-	IconUser,
-	IconUserCheck,
-	IconUserCircle,
-	IconUserEdit,
-	IconUserMinus,
-	IconUserOff,
-	IconUserPlus,
-	IconUsers,
-	IconUsersGroup,
-	// Ban/Block Icons
-	IconBan,
-	// Video/Volume Icons
-	IconVideo,
-	IconVolume,
-	IconVolumeOff,
-	// Wand/World Icons
-	IconWallet,
-	IconWand,
-	IconWaveSine,
-	IconWebhook,
-	IconWifi,
-	IconWorld,
-	IconWorldWww,
-	IconX,
-	// Zoom Icons
-	IconZoomCheck,
-	IconZoomIn,
-	IconZoomMoney,
-	IconZoomOut,
-	// Custom local SVG icons (lightweight alternatives)
-	IconPlusLocal,
-	IconXLocal,
-	IconChevronDownLocal,
-	IconChevronLeftLocal,
-	IconChevronRightLocal,
-	IconCheckLocal,
-	IconMinusLocal,
-	IconPhotoLocal,
-	IconVideoLocal,
-	IconCodeLocal,
-	IconListLocal,
-	IconPlayerPlayLocal,
-	IconPlayerPauseLocal,
-	IconVolumeLocal,
-	IconVolumeOffLocal,
-	IconMaximizeLocal,
-	IconCopyLocal,
-	IconLinkLocal,
-	IconLayoutGridLocal,
-	IconColumnsLocal,
-	IconStarLocal,
-	IconCircleLocal,
-	IconSquareLocal,
-	IconSparklesLocal
-};
+export { default as IconPlusLocal } from './IconPlus.svelte';
+export { default as IconXLocal } from './IconX.svelte';
+export { default as IconChevronDownLocal } from './IconChevronDown.svelte';
+export { default as IconChevronLeftLocal } from './IconChevronLeft.svelte';
+export { default as IconChevronRightLocal } from './IconChevronRight.svelte';
+export { default as IconCheckLocal } from './IconCheck.svelte';
+export { default as IconMinusLocal } from './IconMinus.svelte';
+export { default as IconPhotoLocal } from './IconPhoto.svelte';
+export { default as IconVideoLocal } from './IconVideo.svelte';
+export { default as IconCodeLocal } from './IconCode.svelte';
+export { default as IconListLocal } from './IconList.svelte';
+export { default as IconPlayerPlayLocal } from './IconPlayerPlay.svelte';
+export { default as IconPlayerPauseLocal } from './IconPlayerPause.svelte';
+export { default as IconVolumeLocal } from './IconVolume.svelte';
+export { default as IconVolumeOffLocal } from './IconVolumeOff.svelte';
+export { default as IconMaximizeLocal } from './IconMaximize.svelte';
+export { default as IconCopyLocal } from './IconCopy.svelte';
+export { default as IconLinkLocal } from './IconLink.svelte';
+export { default as IconLayoutGridLocal } from './IconLayoutGrid.svelte';
+export { default as IconColumnsLocal } from './IconColumns.svelte';
+export { default as IconStarLocal } from './IconStar.svelte';
+export { default as IconCircleLocal } from './IconCircle.svelte';
+export { default as IconSquareLocal } from './IconSquare.svelte';
+export { default as IconSparklesLocal } from './IconSparkles.svelte';
 
 import type { Component } from 'svelte';
 
@@ -948,9 +432,4 @@ import type { Component } from 'svelte';
  * Type-safe icon component type
  * Use this for props that accept icon components
  */
-export type IconComponent = Component<{
-	size?: number | string;
-	stroke?: number | string;
-	color?: string;
-	class?: string;
-}>;
+export type IconComponent = Component<{ size?: number; color?: string; stroke?: number; class?: string }>;

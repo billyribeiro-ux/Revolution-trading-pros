@@ -13,19 +13,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
-	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconKey from '@tabler/icons-svelte-runes/icons/key';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
-	import { onMount } from 'svelte';
+											import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook, WebhookEvent } from '$lib/crm/types';
+	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconDeviceFloppy, IconKey, IconPlus, IconRefresh, IconTrash, IconWebhook, IconX } from '$lib/icons';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -277,7 +268,7 @@
 	<header class="page-header">
 		<div class="header-left">
 			<a href="/admin/crm/webhooks" class="back-link">
-				<IconArrowLeft size={20} />
+				<Icon icon={IconArrowLeft} size={20} />
 				<span>Back to Webhooks</span>
 			</a>
 			<h1>Edit Webhook</h1>
@@ -294,11 +285,11 @@
 		</div>
 	{:else if error && !originalWebhook}
 		<div class="error-state">
-			<IconAlertCircle size={48} />
+			<Icon icon={IconAlertCircle} size={48} />
 			<h3>Failed to Load Webhook</h3>
 			<p>{error}</p>
 			<button class="btn-primary" onclick={loadWebhook}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Try Again
 			</button>
 		</div>
@@ -367,7 +358,7 @@
 							onclick={generateSecret}
 							title="Generate Secret"
 						>
-							<IconKey size={16} />
+							<Icon icon={IconKey} size={16} />
 							Generate
 						</button>
 					</div>
@@ -423,7 +414,7 @@
 								onclick={() => toggleEvent(event as WebhookEvent)}
 							>
 								{#if selectedEvents.has(event as WebhookEvent)}
-									<IconCheck size={14} />
+									<Icon icon={IconCheck} size={14} />
 								{/if}
 								<span>{label || formatEventName(event)}</span>
 							</button>
@@ -437,7 +428,7 @@
 				<div class="section-header">
 					<h2 class="section-title">Custom Headers (Optional)</h2>
 					<button type="button" class="btn-add-header" onclick={addHeader}>
-						<IconPlus size={16} />
+						<Icon icon={IconPlus} size={16} />
 						Add Header
 					</button>
 				</div>
@@ -471,7 +462,7 @@
 									onclick={() => removeHeader(index)}
 									title="Remove Header"
 								>
-									<IconTrash size={16} />
+									<Icon icon={IconTrash} size={16} />
 								</button>
 							</div>
 						{/each}
@@ -516,10 +507,10 @@
 				<a href="/admin/crm/webhooks" class="btn-cancel">Cancel</a>
 				<button type="submit" class="btn-submit" disabled={isSaving || !isFormValid}>
 					{#if isSaving}
-						<IconRefresh size={18} class="spinning" />
+						<Icon icon={IconRefresh} size={18} class="spinning" />
 						Saving...
 					{:else}
-						<IconDeviceFloppy size={18} />
+						<Icon icon={IconDeviceFloppy} size={18} />
 						Save Changes
 					{/if}
 				</button>
@@ -535,16 +526,16 @@
 			<div class="toast toast-{toast.type}" role="alert">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{:else if toast.type === 'error'}
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 					{:else}
-						<IconWebhook size={18} />
+						<Icon icon={IconWebhook} size={18} />
 					{/if}
 				</div>
 				<span class="toast-message">{toast.message}</span>
 				<button class="toast-dismiss" onclick={() => dismissToast(toast.id)}>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/each}

@@ -16,23 +16,10 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconToggleLeft from '@tabler/icons-svelte-runes/icons/toggle-left';
-	import IconToggleRight from '@tabler/icons-svelte-runes/icons/toggle-right';
-	import { crmAPI } from '$lib/api/crm';
+															import { crmAPI } from '$lib/api/crm';
 	import type { Webhook } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Icon, IconActivity, IconAlertCircle, IconAlertTriangle, IconCheck, IconEdit, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconToggleLeft, IconToggleRight, IconTrash, IconWebhook, IconX } from '$lib/icons';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -220,10 +207,10 @@
 			<p class="subtitle">Send real-time notifications to external services</p>
 			<div class="header-actions">
 				<button class="btn-refresh" onclick={() => loadWebhooks()} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					<Icon icon={IconRefresh} size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/webhooks/new" class="btn-primary">
-					<IconPlus size={18} />
+					<Icon icon={IconPlus} size={18} />
 					New Webhook
 				</a>
 			</div>
@@ -234,7 +221,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconWebhook size={24} />
+				<Icon icon={IconWebhook} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{stats.total}</span>
@@ -243,7 +230,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon green">
-				<IconCheck size={24} />
+				<Icon icon={IconCheck} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{stats.active}</span>
@@ -252,7 +239,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon gold">
-				<IconActivity size={24} />
+				<Icon icon={IconActivity} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalTriggers)}</span>
@@ -261,7 +248,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon red">
-				<IconAlertTriangle size={24} />
+				<Icon icon={IconAlertTriangle} size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalFailures)}</span>
@@ -273,7 +260,7 @@
 	<!-- Filters Bar -->
 	<div class="filters-bar">
 		<div class="search-box">
-			<IconSearch size={18} />
+			<Icon icon={IconSearch} size={18} />
 			<input
 				id="page-searchquery"
 				name="page-searchquery"
@@ -284,7 +271,7 @@
 			/>
 			{#if searchQuery}
 				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			{/if}
 		</div>
@@ -301,7 +288,7 @@
 				class:active={statusFilter === 'active'}
 				onclick={() => (statusFilter = 'active')}
 			>
-				<IconCheck size={14} />
+				<Icon icon={IconCheck} size={14} />
 				Active ({stats.active})
 			</button>
 			<button
@@ -309,7 +296,7 @@
 				class:active={statusFilter === 'inactive'}
 				onclick={() => (statusFilter = 'inactive')}
 			>
-				<IconX size={14} />
+				<Icon icon={IconX} size={14} />
 				Inactive ({stats.total - stats.active})
 			</button>
 		</div>
@@ -328,11 +315,11 @@
 		</div>
 	{:else if filteredWebhooks.length === 0}
 		<div class="empty-state">
-			<IconWebhook size={48} />
+			<Icon icon={IconWebhook} size={48} />
 			<h3>No webhooks configured</h3>
 			<p>Create webhooks to send real-time notifications to external services</p>
 			<a href="/admin/crm/webhooks/new" class="btn-primary">
-				<IconPlus size={18} />
+				<Icon icon={IconPlus} size={18} />
 				Create Webhook
 			</a>
 		</div>
@@ -352,11 +339,11 @@
 							title={webhook.is_active ? 'Click to deactivate' : 'Click to activate'}
 						>
 							{#if togglingWebhook === webhook.id}
-								<IconRefresh size={16} class="spinning" />
+								<Icon icon={IconRefresh} size={16} class="spinning" />
 							{:else if webhook.is_active}
-								<IconToggleRight size={20} />
+								<Icon icon={IconToggleRight} size={20} />
 							{:else}
-								<IconToggleLeft size={20} />
+								<Icon icon={IconToggleLeft} size={20} />
 							{/if}
 							<span>{webhook.is_active ? 'Active' : 'Inactive'}</span>
 						</button>
@@ -402,9 +389,9 @@
 							aria-label={`Test ${webhook.name}`}
 						>
 							{#if testingWebhook === webhook.id}
-								<IconRefresh size={16} class="spinning" />
+								<Icon icon={IconRefresh} size={16} class="spinning" />
 							{:else}
-								<IconPlayerPlay size={16} />
+								<Icon icon={IconPlayerPlay} size={16} />
 							{/if}
 						</button>
 						<a
@@ -413,7 +400,7 @@
 							title="View Logs"
 							aria-label={`View logs for ${webhook.name}`}
 						>
-							<IconActivity size={16} />
+							<Icon icon={IconActivity} size={16} />
 						</a>
 						<a
 							href="/admin/crm/webhooks/{webhook.id}/edit"
@@ -421,7 +408,7 @@
 							title="Edit"
 							aria-label={`Edit ${webhook.name}`}
 						>
-							<IconEdit size={16} />
+							<Icon icon={IconEdit} size={16} />
 						</a>
 						<button
 							class="btn-icon danger"
@@ -429,7 +416,7 @@
 							onclick={() => deleteWebhook(webhook.id, webhook.name)}
 							aria-label={`Delete ${webhook.name}`}
 						>
-							<IconTrash size={16} />
+							<Icon icon={IconTrash} size={16} />
 						</button>
 					</div>
 				</article>
@@ -445,11 +432,11 @@
 			<div class="toast toast-{toast.type}" role="alert" aria-live="polite">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
-						<IconCheck size={18} />
+						<Icon icon={IconCheck} size={18} />
 					{:else if toast.type === 'error'}
-						<IconAlertCircle size={18} />
+						<Icon icon={IconAlertCircle} size={18} />
 					{:else}
-						<IconWebhook size={18} />
+						<Icon icon={IconWebhook} size={18} />
 					{/if}
 				</div>
 				<span class="toast-message">{toast.message}</span>
@@ -458,7 +445,7 @@
 					onclick={() => dismissToast(toast.id)}
 					aria-label="Dismiss notification"
 				>
-					<IconX size={16} />
+					<Icon icon={IconX} size={16} />
 				</button>
 			</div>
 		{/each}

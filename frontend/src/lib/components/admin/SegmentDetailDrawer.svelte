@@ -7,22 +7,7 @@ import { logger } from '$lib/utils/logger';
 	 * Enterprise-grade slide-out drawer showing segment details,
 	 * analytics, member preview, and quick actions.
 	 */
-	import {
-		IconX,
-		IconUsers,
-		IconChartBar,
-		IconMail,
-		IconDownload,
-		IconEdit,
-		IconTrash,
-		IconFilter,
-		IconTrendingUp,
-		IconTrendingDown,
-		IconCalendar,
-		IconClock,
-		IconRefresh,
-		IconExternalLink
-	} from '$lib/icons';
+	import { Icon, IconX, IconUsers, IconChartBar, IconMail, IconDownload, IconEdit, IconTrash, IconFilter, IconTrendingUp, IconTrendingDown, IconCalendar, IconClock, IconRefresh, IconExternalLink } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { goto } from '$app/navigation';
 
@@ -292,7 +277,7 @@ import { logger } from '$lib/utils/logger';
 		<header class="drawer-header">
 			<div class="header-content">
 				<div class="header-icon">
-					<IconFilter size={24} />
+					<Icon icon={IconFilter} size={24} />
 				</div>
 				<div class="header-info">
 					<h2 id="drawer-title">{segment.name}</h2>
@@ -307,14 +292,14 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			</div>
 			<button class="close-btn" onclick={onClose} aria-label="Close">
-				<IconX size={20} />
+				<Icon icon={IconX} size={20} />
 			</button>
 		</header>
 
 		<!-- Quick Stats -->
 		<div class="quick-stats">
 			<div class="stat">
-				<IconUsers size={20} />
+				<Icon icon={IconUsers} size={20} />
 				<div class="stat-content">
 					<span class="stat-value">{segment.memberCount.toLocaleString()}</span>
 					<span class="stat-label">Members</span>
@@ -327,9 +312,9 @@ import { logger } from '$lib/utils/logger';
 					class:negative={analytics.growth_30d < 0}
 				>
 					{#if analytics.growth_30d >= 0}
-						<IconTrendingUp size={20} />
+						<Icon icon={IconTrendingUp} size={20} />
 					{:else}
-						<IconTrendingDown size={20} />
+						<Icon icon={IconTrendingDown} size={20} />
 					{/if}
 					<div class="stat-content">
 						<span class="stat-value"
@@ -344,23 +329,23 @@ import { logger } from '$lib/utils/logger';
 		<!-- Action Buttons -->
 		<div class="action-buttons">
 			<button type="button" class="btn-action" onclick={viewAllMembers}>
-				<IconUsers size={16} />
+				<Icon icon={IconUsers} size={16} />
 				View Members
 			</button>
 			{#if !segment.isSystem && onEdit}
 				<button type="button" class="btn-action" onclick={() => onEdit?.(segment)}>
-					<IconEdit size={16} />
+					<Icon icon={IconEdit} size={16} />
 					Edit
 				</button>
 			{/if}
 			{#if onExport}
 				<button type="button" class="btn-action" onclick={() => onExport?.(segment)}>
-					<IconDownload size={16} />
+					<Icon icon={IconDownload} size={16} />
 					Export
 				</button>
 			{/if}
 			<button type="button" class="btn-action">
-				<IconMail size={16} />
+				<Icon icon={IconMail} size={16} />
 				Campaign
 			</button>
 		</div>
@@ -373,7 +358,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'overview'}
 				onclick={() => (activeTab = 'overview')}
 			>
-				<IconFilter size={16} />
+				<Icon icon={IconFilter} size={16} />
 				Overview
 			</button>
 			<button
@@ -382,7 +367,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'members'}
 				onclick={() => (activeTab = 'members')}
 			>
-				<IconUsers size={16} />
+				<Icon icon={IconUsers} size={16} />
 				Members
 			</button>
 			<button
@@ -391,7 +376,7 @@ import { logger } from '$lib/utils/logger';
 				class:active={activeTab === 'analytics'}
 				onclick={() => (activeTab = 'analytics')}
 			>
-				<IconChartBar size={16} />
+				<Icon icon={IconChartBar} size={16} />
 				Analytics
 			</button>
 		</nav>
@@ -407,7 +392,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="error-state">
 					<p>{error}</p>
 					<button onclick={loadSegmentData}>
-						<IconRefresh size={16} />
+						<Icon icon={IconRefresh} size={16} />
 						Retry
 					</button>
 				</div>
@@ -444,14 +429,14 @@ import { logger } from '$lib/utils/logger';
 							<h3 class="section-title">Details</h3>
 							<div class="metadata-grid">
 								<div class="metadata-item">
-									<IconCalendar size={16} />
+									<Icon icon={IconCalendar} size={16} />
 									<div>
 										<span class="meta-label">Last Updated</span>
 										<span class="meta-value">{formatDate(segment.lastUpdated)}</span>
 									</div>
 								</div>
 								<div class="metadata-item">
-									<IconClock size={16} />
+									<Icon icon={IconClock} size={16} />
 									<div>
 										<span class="meta-label">Type</span>
 										<span class="meta-value"
@@ -472,7 +457,7 @@ import { logger } from '$lib/utils/logger';
 								<h3 class="section-title">Member Preview</h3>
 								<button class="view-all-btn" onclick={viewAllMembers}>
 									View All
-									<IconExternalLink size={14} />
+									<Icon icon={IconExternalLink} size={14} />
 								</button>
 							</div>
 
@@ -548,7 +533,7 @@ import { logger } from '$lib/utils/logger';
 		{#if !segment.isSystem && onDelete}
 			<footer class="drawer-footer">
 				<button type="button" class="btn-danger" onclick={() => onDelete?.(segment)}>
-					<IconTrash size={16} />
+					<Icon icon={IconTrash} size={16} />
 					Delete Segment
 				</button>
 			</footer>

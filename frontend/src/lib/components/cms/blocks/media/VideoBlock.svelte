@@ -9,7 +9,7 @@
 -->
 
 <script lang="ts">
-	import { IconVideo } from '$lib/icons';
+	import { Icon, IconVideo } from '$lib/icons';
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -263,7 +263,7 @@
 			<!-- Error State -->
 			{#if hasError}
 				<div class="video-error" role="alert">
-					<IconVideo size={32} aria-hidden="true" />
+					<Icon icon={IconVideo} size={32} aria-hidden="true" />
 					<span>{errorMessage}</span>
 				</div>
 			{/if}
@@ -345,7 +345,7 @@
 		<!-- Placeholder State (Edit Mode) -->
 		<div class="video-placeholder">
 			<div class="video-placeholder-icon">
-				<IconVideo size={48} aria-hidden="true" />
+				<Icon icon={IconVideo} size={48} aria-hidden="true" />
 			</div>
 			<span class="video-placeholder-title">Add a Video</span>
 			<span class="video-placeholder-subtitle"> Paste a YouTube, Vimeo, or direct video URL </span>
@@ -427,7 +427,7 @@
 	{:else}
 		<!-- Empty State (View Mode) -->
 		<div class="video-empty" role="status">
-			<IconVideo size={32} aria-hidden="true" />
+			<Icon icon={IconVideo} size={32} aria-hidden="true" />
 			<span>No video available</span>
 		</div>
 	{/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
-	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
+	import { Icon, IconDeviceFloppy, IconRefresh } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let settings = $state<any>({});
@@ -104,11 +104,11 @@ import { logger } from '$lib/utils/logger';
 		</div>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={loadSettings} disabled={loading}>
-				<IconRefresh size={18} />
+				<Icon icon={IconRefresh} size={18} />
 				Reset
 			</button>
 			<button class="btn-primary" onclick={saveSettings} disabled={saving}>
-				<IconDeviceFloppy size={18} />
+				<Icon icon={IconDeviceFloppy} size={18} />
 				{saving ? 'Saving...' : 'Save Changes'}
 			</button>
 		</div>
