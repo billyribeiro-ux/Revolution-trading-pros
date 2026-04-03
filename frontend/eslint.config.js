@@ -6,6 +6,7 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
 export default [
+	{ ignores: ['.vercel/**'] },
 	js.configs.recommended,
 	...svelte.configs['flat/recommended'],
 	...svelte.configs['flat/prettier'],
