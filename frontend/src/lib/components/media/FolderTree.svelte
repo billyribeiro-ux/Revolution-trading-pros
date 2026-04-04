@@ -168,73 +168,119 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.folder-tree {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-4);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.folder-tree-header {
-		@apply flex items-center justify-between mb-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-4);
 	}
 
 	.folder-tree-title {
-		@apply text-lg font-semibold text-white;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
 	}
 
 	.btn-add-folder {
-		@apply p-2 text-gray-400 hover:text-yellow-400 hover:bg-gray-700/50 rounded-lg transition-colors;
+		padding: var(--space-2);
+		color: oklch(0.65 0.01 250);
+		border: none;
+		cursor: pointer;
+		border-radius: var(--radius-lg);
+		transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+		&:hover {
+			color: oklch(0.8 0.18 90);
+			background-color: oklch(0.38 0.01 250 / 50%);
+		}
 	}
 
 	.folder-list {
-		@apply space-y-1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
 	}
 
 	.folder-group {
-		@apply space-y-1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
 	}
 
 	.folder-item {
-		@apply w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left;
-		@apply text-gray-300 hover:bg-gray-700/50 transition-colors;
-	}
+		inline-size: 100%;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-3);
+		padding-block: var(--space-2);
+		border-radius: var(--radius-lg);
+		text-align: start;
+		color: oklch(0.75 0.01 250);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.38 0.01 250 / 50%); }
 
-	.folder-item.active {
-		@apply bg-yellow-500/20 text-yellow-400;
+		&.active {
+			background-color: oklch(0.8 0.18 90 / 20%);
+			color: oklch(0.8 0.18 90);
+		}
 	}
 
 	.expand-btn {
-		@apply p-0.5 text-gray-400 hover:text-white transition-colors;
+		padding: 0.125rem;
+		color: oklch(0.65 0.01 250);
+		border: none;
+		cursor: pointer;
+		transition: color var(--duration-fast) var(--ease-default);
+		&:hover { color: oklch(1 0 0); }
 	}
 
 	.expand-spacer {
-		@apply w-5;
+		inline-size: 1.25rem;
 	}
 
 	.folder-item :global(.folder-icon) {
-		@apply shrink-0;
+		flex-shrink: 0;
 	}
 
 	.folder-item.active :global(.folder-icon) {
-		@apply text-yellow-400;
+		color: oklch(0.8 0.18 90);
 	}
 
 	.folder-item-wrapper {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
 	}
 
 	.folder-name {
-		@apply flex-1 truncate text-sm;
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: var(--text-sm);
 	}
 
 	.folder-count {
-		@apply text-xs text-gray-500 bg-gray-700/50 px-2 py-0.5 rounded;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
+		background-color: oklch(0.38 0.01 250 / 50%);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		border-radius: var(--radius-sm);
 	}
 
 	.folder-item.active .folder-count {
-		@apply bg-yellow-500/20 text-yellow-400;
+		background-color: oklch(0.8 0.18 90 / 20%);
+		color: oklch(0.8 0.18 90);
 	}
 </style>

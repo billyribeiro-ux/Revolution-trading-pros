@@ -162,80 +162,100 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.retention-curve {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.curve-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
 	}
 
 	.curve-title {
-		@apply text-xl font-bold text-white;
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.curve-legend {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
 	}
 
 	.legend-item {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
 	}
 
 	.legend-color {
-		@apply w-3 h-3 rounded-full;
+		inline-size: 0.75rem;
+		block-size: 0.75rem;
+		border-radius: 9999px;
 	}
 
 	.legend-label {
-		@apply text-sm text-gray-400;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.curve-chart {
-		@apply mb-4;
+		margin-block-end: var(--space-4);
 	}
 
 	.axis-label {
-		@apply text-xs fill-gray-400;
+		font-size: var(--text-xs);
+		fill: oklch(0.65 0.01 250);
 	}
 
 	.retention-line {
-		@apply transition-all;
-	}
-
-	.retention-line:hover {
-		@apply stroke-[4];
+		transition: stroke-width var(--duration-fast) var(--ease-default);
+		&:hover { stroke-width: 4; }
 	}
 
 	.data-point {
-		@apply cursor-pointer transition-all;
-	}
-
-	.data-point:hover {
-		@apply scale-125;
+		cursor: pointer;
+		transition: transform var(--duration-fast) var(--ease-default);
+		&:hover { transform: scale(1.25); }
 	}
 
 	.curve-insights {
-		@apply grid grid-cols-1 md:grid-cols-2 gap-3;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-3);
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
 	}
 
 	.insight-item {
-		@apply bg-gray-900/50 rounded-lg p-3 border border-gray-700/50;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-3);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.insight-cohort {
-		@apply font-semibold text-white mb-2 pl-3 border-l-4;
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-2);
+		padding-inline-start: var(--space-3);
+		border-inline-start: 4px solid;
 	}
 
 	.insight-metrics {
-		@apply flex gap-4 text-sm text-gray-400;
+		display: flex;
+		gap: var(--space-4);
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.metric {
-		@apply font-medium;
+		font-weight: var(--weight-medium);
 	}
 </style>

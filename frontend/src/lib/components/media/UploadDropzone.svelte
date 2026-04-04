@@ -117,9 +117,9 @@
 					<div class="upload-item-info">
 						<div class="upload-item-icon">
 							{#if upload.status === 'complete'}
-								<Icon icon={IconCheck} size={20} class="text-green-400" />
+								<Icon icon={IconCheck} size={20} />
 							{:else if upload.status === 'error'}
-								<Icon icon={IconAlertCircle} size={20} class="text-red-400" />
+								<Icon icon={IconAlertCircle} size={20} />
 							{:else}
 								<div class="spinner-small"></div>
 							{/if}
@@ -158,113 +158,175 @@
 	{/if}
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.upload-container {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: var(--space-4);
 	}
 
 	.dropzone {
-		@apply border-2 border-dashed border-gray-600 rounded-xl p-12;
-		@apply flex flex-col items-center justify-center text-center;
-		@apply cursor-pointer transition-all;
-		@apply hover:border-yellow-500 hover:bg-gray-800/30;
-	}
+		border: 2px dashed oklch(0.45 0.01 250);
+		border-radius: var(--radius-xl);
+		padding: var(--space-12);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		cursor: pointer;
+		transition: border-color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 
-	.dropzone.dragging {
-		@apply border-yellow-500 bg-yellow-500/10;
+		&:hover {
+			border-color: oklch(0.8 0.18 90);
+			background-color: oklch(0.3 0.01 250 / 30%);
+		}
+
+		&.dragging {
+			border-color: oklch(0.8 0.18 90);
+			background-color: oklch(0.8 0.18 90 / 10%);
+		}
 	}
 
 	.dropzone :global(.upload-icon) {
-		@apply text-gray-400 mb-4;
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-4);
 	}
 
 	.dropzone.dragging :global(.upload-icon) {
-		@apply text-yellow-400;
+		color: oklch(0.8 0.18 90);
 	}
 
 	.upload-title {
-		@apply text-xl font-semibold text-white mb-2;
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-2);
 	}
 
 	.upload-subtitle {
-		@apply text-sm text-gray-400;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.hidden {
-		@apply sr-only;
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
 	}
 
 	.upload-list {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-4);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.upload-list-title {
-		@apply text-sm font-semibold text-white mb-3;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-3);
 	}
 
 	.upload-item {
-		@apply flex items-center gap-3 py-2 border-b border-gray-700/50 last:border-0;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		padding-block: var(--space-2);
+		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
+		&:last-child { border-block-end: none; }
 	}
 
 	.upload-item-info {
-		@apply flex items-center gap-3 flex-1 min-w-0;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		flex: 1;
+		min-inline-size: 0;
 	}
 
 	.upload-item-icon {
-		@apply shrink-0;
+		flex-shrink: 0;
+		color: oklch(0.7 0.18 160);
+
+		&:has(:global(.text-red-400)) { color: oklch(0.7 0.2 25); }
 	}
 
 	.upload-item-details {
-		@apply flex-1 min-w-0;
+		flex: 1;
+		min-inline-size: 0;
 	}
 
 	.upload-item-name {
-		@apply text-sm text-white truncate;
+		font-size: var(--text-sm);
+		color: oklch(1 0 0);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.upload-item-size {
-		@apply text-xs text-gray-400;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.upload-item-progress {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
 	}
 
 	.progress-bar {
-		@apply w-32 h-2 bg-gray-700 rounded-full overflow-hidden;
+		inline-size: 8rem;
+		block-size: 0.5rem;
+		background-color: oklch(0.38 0.01 250);
+		border-radius: 9999px;
+		overflow: hidden;
 	}
 
 	.progress-fill {
-		@apply h-full bg-yellow-500 transition-all duration-300;
+		block-size: 100%;
+		background-color: oklch(0.8 0.18 90);
+		transition: inline-size 300ms var(--ease-default);
 	}
 
 	.progress-text {
-		@apply text-xs text-gray-400 w-10 text-right;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		inline-size: 2.5rem;
+		text-align: end;
 	}
 
 	.status-text {
-		@apply text-xs font-medium;
-	}
-
-	.status-text.success {
-		@apply text-green-400;
-	}
-
-	.status-text.error {
-		@apply text-red-400;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		&.success { color: oklch(0.7 0.18 160); }
+		&.error { color: oklch(0.7 0.2 25); }
 	}
 
 	.remove-btn {
-		@apply p-1 text-gray-400 hover:text-white transition-colors;
+		padding: var(--space-1);
+		color: oklch(0.65 0.01 250);
+		border: none;
+		cursor: pointer;
+		transition: color var(--duration-fast) var(--ease-default);
+		&:hover { color: oklch(1 0 0); }
 	}
 
 	.spinner-small {
-		@apply w-5 h-5 border-2 border-gray-600 border-t-yellow-400 rounded-full animate-spin;
+		inline-size: 1.25rem;
+		block-size: 1.25rem;
+		border: 2px solid oklch(0.45 0.01 250);
+		border-block-start-color: oklch(0.8 0.18 90);
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
 	}
+
+	@keyframes spin { to { transform: rotate(360deg); } }
 </style>

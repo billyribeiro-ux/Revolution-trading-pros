@@ -95,7 +95,7 @@
 					<div class="step-connector">
 						<div class="connector-line"></div>
 						<div class="connector-stats">
-							<Icon icon={IconArrowRight} size={20} class="text-gray-400" />
+							<Icon icon={IconArrowRight} size={20} />
 							<span class="conversion-rate">
 								{journeyData[index + 1]?.conversion_rate?.toFixed(1) ?? '0.0'}%
 							</span>
@@ -109,7 +109,7 @@
 					</div>
 				{:else}
 					<div class="completion-badge">
-						<Icon icon={IconCheck} size={24} class="text-green-400" />
+						<Icon icon={IconCheck} size={24} />
 						<span>Journey Complete</span>
 					</div>
 				{/if}
@@ -118,130 +118,195 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.journey-map {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.journey-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
 	}
 
 	.journey-title {
-		@apply text-xl font-bold text-white;
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.journey-stats {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
 	}
 
 	.stat-item {
-		@apply text-sm text-gray-400;
-	}
-
-	.journey-flow {
-		@apply space-y-0;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.journey-step {
-		@apply relative;
+		position: relative;
 	}
 
 	.step-card {
-		@apply bg-gray-900/50 rounded-lg p-4 border border-gray-700/50;
-		@apply hover:border-yellow-500/30 transition-colors;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		transition: border-color var(--duration-fast) var(--ease-default);
+		&:hover { border-color: oklch(0.8 0.18 90 / 30%); }
 	}
 
 	.step-header {
-		@apply flex items-start gap-3 mb-3;
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-3);
+		margin-block-end: var(--space-3);
 	}
 
 	.step-number {
-		@apply w-8 h-8 rounded-full bg-yellow-500 text-gray-900 font-bold;
-		@apply flex items-center justify-center shrink-0;
+		inline-size: 2rem;
+		block-size: 2rem;
+		border-radius: 9999px;
+		background-color: oklch(0.8 0.18 90);
+		color: oklch(0.15 0.02 90);
+		font-weight: var(--weight-bold);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
 	}
 
-	.step-info {
-		@apply flex-1;
-	}
+	.step-info { flex: 1; }
 
 	.step-name {
-		@apply text-white font-semibold mb-1;
+		color: oklch(1 0 0);
+		font-weight: var(--weight-semibold);
+		margin-block-end: var(--space-1);
 	}
 
 	.step-users {
-		@apply text-sm text-gray-400;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.step-badge {
-		@apply px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm font-semibold;
+		padding-inline: var(--space-3);
+		padding-block: var(--space-1);
+		background-color: oklch(0.6 0.18 160 / 20%);
+		color: oklch(0.7 0.18 160);
+		border-radius: var(--radius-lg);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 	}
 
 	.step-metrics {
-		@apply flex gap-4 mb-3 pb-3 border-b border-gray-700/50;
+		display: flex;
+		gap: var(--space-4);
+		margin-block-end: var(--space-3);
+		padding-block-end: var(--space-3);
+		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.metric {
-		@apply flex flex-col;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.metric-label {
-		@apply text-xs text-gray-500;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
 	}
 
 	.metric-value {
-		@apply text-sm font-semibold text-white;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
 	}
 
 	.metric.drop-off .metric-value {
-		@apply text-red-400;
+		color: oklch(0.7 0.2 25);
 	}
 
 	.step-actions {
-		@apply space-y-2;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
 	}
 
 	.actions-label {
-		@apply text-xs text-gray-500 mb-2;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
+		margin-block-end: var(--space-2);
 	}
 
 	.action-item {
-		@apply flex items-center justify-between text-sm;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: var(--text-sm);
 	}
 
-	.action-name {
-		@apply text-gray-300;
-	}
+	.action-name { color: oklch(0.75 0.01 250); }
 
 	.action-count {
-		@apply text-yellow-400 font-semibold;
+		color: oklch(0.8 0.18 90);
+		font-weight: var(--weight-semibold);
 	}
 
 	.step-connector {
-		@apply relative py-4 flex flex-col items-center;
+		position: relative;
+		padding-block: var(--space-4);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.connector-line {
-		@apply w-0.5 h-8 bg-linear-to-b from-gray-600 to-gray-700;
+		inline-size: 0.125rem;
+		block-size: 2rem;
+		background: linear-gradient(to bottom, oklch(0.45 0.01 250), oklch(0.38 0.01 250));
 	}
 
 	.connector-stats {
-		@apply flex items-center gap-2 my-2;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		margin-block: var(--space-2);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.conversion-rate {
-		@apply text-sm font-semibold text-green-400;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.7 0.18 160);
 	}
 
 	.drop-off-indicator {
-		@apply flex items-center gap-1 px-2 py-1 bg-red-500/10 text-red-400 rounded text-xs;
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1);
+		background-color: oklch(0.55 0.22 25 / 10%);
+		color: oklch(0.7 0.2 25);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-xs);
 	}
 
 	.completion-badge {
-		@apply flex items-center justify-center gap-2 py-4 text-green-400 font-semibold;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+		padding-block: var(--space-4);
+		color: oklch(0.7 0.18 160);
+		font-weight: var(--weight-semibold);
 	}
 </style>

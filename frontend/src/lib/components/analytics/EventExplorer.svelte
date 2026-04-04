@@ -161,124 +161,222 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else}
 			<div class="empty-state">
-				<Icon icon={IconFilter} size={48} class="text-gray-600" />
-				<p class="text-gray-400 mt-3">No events found</p>
+				<Icon icon={IconFilter} size={48} />
+				<p class="empty-text">No events found</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.event-explorer {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.explorer-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
 	}
 
 	.explorer-title {
-		@apply text-2xl font-bold text-white;
+		font-size: var(--text-2xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.btn-refresh {
-		@apply flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg;
-		@apply hover:bg-gray-600 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.45 0.01 250); }
 	}
 
 	.explorer-filters {
-		@apply flex gap-4 mb-6 flex-wrap;
+		display: flex;
+		gap: var(--space-4);
+		margin-block-end: var(--space-6);
+		flex-wrap: wrap;
 	}
 
 	.search-box {
-		@apply relative flex-1 min-w-[300px];
+		position: relative;
+		flex: 1;
+		min-inline-size: 300px;
 	}
 
 	.search-box :global(.search-icon) {
-		@apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400;
+		position: absolute;
+		inset-inline-start: var(--space-3);
+		inset-block-start: 50%;
+		transform: translateY(-50%);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.search-input {
-		@apply w-full pl-10 pr-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		inline-size: 100%;
+		padding-inline-start: 2.5rem;
+		padding-inline-end: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.45 0.01 250);
+		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
 	}
 
 	.filter-select {
-		@apply px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.45 0.01 250);
+		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
 	}
 
 	.btn-export {
-		@apply flex items-center gap-2 px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg font-semibold;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.8 0.18 90);
+		color: oklch(0.15 0.02 90);
+		border-radius: var(--radius-lg);
+		font-weight: var(--weight-semibold);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.85 0.16 90); }
 	}
 
 	.events-table-container {
-		@apply overflow-x-auto;
+		overflow-x: auto;
 	}
 
 	.events-table {
-		@apply w-full text-sm;
-	}
+		inline-size: 100%;
+		font-size: var(--text-sm);
 
-	.events-table thead {
-		@apply bg-gray-900/50;
-	}
+		& thead { background-color: oklch(0.15 0.01 250 / 50%); }
 
-	.events-table th {
-		@apply px-4 py-3 text-left text-gray-400 font-semibold;
-	}
+		& th {
+			padding-inline: var(--space-4);
+			padding-block: var(--space-3);
+			text-align: start;
+			color: oklch(0.65 0.01 250);
+			font-weight: var(--weight-semibold);
+		}
 
-	.events-table tbody tr {
-		@apply border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors;
-	}
+		& tbody tr {
+			border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
+			transition: background-color var(--duration-fast) var(--ease-default);
+			&:hover { background-color: oklch(0.38 0.01 250 / 30%); }
+		}
 
-	.events-table td {
-		@apply px-4 py-3 text-gray-300;
+		& td {
+			padding-inline: var(--space-4);
+			padding-block: var(--space-3);
+			color: oklch(0.75 0.01 250);
+		}
 	}
 
 	.event-name {
-		@apply font-semibold text-white;
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
 	}
 
 	.badge {
-		@apply px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-medium;
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1);
+		background-color: oklch(0.6 0.2 260 / 20%);
+		color: oklch(0.7 0.18 260);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
 	}
 
 	.page-path {
-		@apply text-xs text-gray-400 max-w-[200px] truncate;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		max-inline-size: 200px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.timestamp {
-		@apply text-xs text-gray-500;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
 	}
 
 	.pagination {
-		@apply flex items-center justify-center gap-4 mt-6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-4);
+		margin-block-start: var(--space-6);
 	}
 
 	.page-btn {
-		@apply px-4 py-2 bg-gray-700 text-white rounded-lg;
-		@apply hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.45 0.01 250); }
+		&:disabled { opacity: 0.5; cursor: not-allowed; }
 	}
 
-	.page-info {
-		@apply text-gray-400;
-	}
+	.page-info { color: oklch(0.65 0.01 250); }
 
 	.loading {
-		@apply flex flex-col items-center justify-center py-12;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-12);
 	}
 
 	.spinner {
-		@apply w-8 h-8 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+		inline-size: 2rem;
+		block-size: 2rem;
+		border: 4px solid oklch(0.38 0.01 250);
+		border-block-start-color: oklch(0.8 0.18 90);
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
 	}
 
+	@keyframes spin { to { transform: rotate(360deg); } }
+
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-12 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-12);
+		text-align: center;
+		color: oklch(0.45 0.01 250);
+	}
+
+	.empty-text {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-3);
 	}
 </style>

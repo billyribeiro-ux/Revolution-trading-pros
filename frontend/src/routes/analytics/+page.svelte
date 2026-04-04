@@ -61,10 +61,10 @@
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="header-title">
-				<Icon icon={IconChartBar} size={32} class="text-yellow-400" />
+				<Icon icon={IconChartBar} size={32} />
 				<div>
-					<h1 class="text-3xl font-bold text-white">Analytics Dashboard</h1>
-					<p class="text-gray-400 mt-1">Enterprise-grade analytics and insights</p>
+					<h1 class="page-heading">Analytics Dashboard</h1>
+					<p class="page-subheading">Enterprise-grade analytics and insights</p>
 				</div>
 			</div>
 
@@ -136,7 +136,7 @@
 		{#if isLoading}
 			<div class="loading-state">
 				<div class="spinner"></div>
-				<p class="text-gray-400 mt-4">Loading analytics data...</p>
+				<p class="loading-text">Loading analytics data...</p>
 			</div>
 		{:else if dashboard}
 			<!-- Overview Tab -->
@@ -153,10 +153,10 @@
 
 					<!-- Anomalies & Alerts -->
 					{#if dashboard.anomalies && (dashboard.anomalies.anomalies_count > 0 || dashboard.anomalies.alerts_triggered > 0)}
-						<div class="section anomaly-section">
+						<div class="section" data-variant="anomaly">
 							<div class="section-header">
-								<div class="flex items-center gap-2">
-									<Icon icon={IconAlertTriangle} size={24} class="text-orange-400" />
+								<div class="anomaly-header-row">
+									<Icon icon={IconAlertTriangle} size={24} />
 									<h2 class="section-title">Anomalies & Alerts</h2>
 								</div>
 							</div>
@@ -169,7 +169,7 @@
 									<div class="anomaly-value">{dashboard.anomalies.alerts_triggered}</div>
 									<div class="anomaly-label">Alerts Triggered</div>
 								</div>
-								<div class="anomaly-card critical">
+								<div class="anomaly-card" data-variant="critical">
 									<div class="anomaly-value">{dashboard.anomalies.critical_count}</div>
 									<div class="anomaly-label">Critical Issues</div>
 								</div>
@@ -240,10 +240,10 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<Icon icon={IconTarget} size={64} class="text-gray-600" />
-							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Funnels Yet</h3>
-							<p class="text-gray-500 mt-2">Create your first funnel to track conversion paths</p>
-							<button class="btn-primary mt-4">Create Funnel</button>
+							<Icon icon={IconTarget} size={64} />
+							<h3 class="empty-title">No Funnels Yet</h3>
+							<p class="empty-subtitle">Create your first funnel to track conversion paths</p>
+							<button class="btn-primary empty-action">Create Funnel</button>
 						</div>
 					{/if}
 				</div>
@@ -283,12 +283,12 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<Icon icon={IconUsers} size={64} class="text-gray-600" />
-							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Cohorts Yet</h3>
-							<p class="text-gray-500 mt-2">
+							<Icon icon={IconUsers} size={64} />
+							<h3 class="empty-title">No Cohorts Yet</h3>
+							<p class="empty-subtitle">
 								Create cohorts to analyze user retention and behavior
 							</p>
-							<button class="btn-primary mt-4">Create Cohort</button>
+							<button class="btn-primary empty-action">Create Cohort</button>
 						</div>
 					{/if}
 				</div>
@@ -312,9 +312,9 @@
 						<AttributionChart channels={dashboard.attribution.channels} />
 					{:else}
 						<div class="empty-state">
-							<Icon icon={IconTrendingUp} size={64} class="text-gray-600" />
-							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Attribution Data</h3>
-							<p class="text-gray-500 mt-2">
+							<Icon icon={IconTrendingUp} size={64} />
+							<h3 class="empty-title">No Attribution Data</h3>
+							<p class="empty-subtitle">
 								Attribution data will appear once conversions are tracked
 							</p>
 						</div>
@@ -404,213 +404,340 @@
 			{/if}
 		{:else}
 			<div class="empty-state">
-				<Icon icon={IconBrain} size={64} class="text-gray-600" />
-				<h3 class="text-xl font-semibold text-gray-400 mt-4">No Data Available</h3>
-				<p class="text-gray-500 mt-2">Analytics data will appear once events are tracked</p>
+				<Icon icon={IconBrain} size={64} />
+				<h3 class="empty-title">No Data Available</h3>
+				<p class="empty-subtitle">Analytics data will appear once events are tracked</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.analytics-dashboard {
-		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
-		padding: 1.5rem;
+		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		padding: var(--space-6);
 	}
 
-	.dashboard-header {
-		margin-bottom: 2rem;
-	}
+	.dashboard-header { margin-block-end: var(--space-8); }
 
 	.header-content {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 1rem;
+		gap: var(--space-4);
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		color: oklch(0.8 0.18 90);
 	}
 
-	.header-actions {
-		@apply flex items-center gap-3;
+	.page-heading {
+		font-size: var(--text-3xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
-	.realtime-section {
-		@apply mb-8;
+	.page-subheading {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
 	}
+
+	.header-actions { display: flex; align-items: center; gap: var(--space-3); }
+
+	.realtime-section { margin-block-end: var(--space-8); }
 
 	.dashboard-tabs {
-		@apply flex gap-2 mb-8 overflow-x-auto pb-2;
+		display: flex;
+		gap: var(--space-2);
+		margin-block-end: var(--space-8);
+		overflow-x: auto;
+		padding-block-end: var(--space-2);
 		scrollbar-width: thin;
 	}
 
 	.tab {
-		@apply flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all;
-		@apply bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white;
-		@apply border border-gray-700/50;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		border-radius: var(--radius-lg);
+		font-weight: var(--weight-medium);
+		background-color: oklch(0.25 0.01 250 / 50%);
+		color: oklch(0.65 0.01 250);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 		white-space: nowrap;
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&:hover { background-color: oklch(0.38 0.01 250 / 50%); color: oklch(1 0 0); }
+		&.active { background-color: oklch(0.8 0.18 90 / 20%); color: oklch(0.8 0.18 90); border-color: oklch(0.8 0.18 90 / 50%); }
 	}
 
-	.tab.active {
-		@apply bg-yellow-500/20 text-yellow-400 border-yellow-500/50;
-	}
-
-	.dashboard-content {
-		@apply min-h-[400px];
-	}
+	.dashboard-content { min-block-size: 400px; }
 
 	.loading-state {
-		@apply flex flex-col items-center justify-center py-20;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
 	}
+
+	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
 
 	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+		inline-size: 3rem;
+		block-size: 3rem;
+		border: 4px solid oklch(0.38 0.01 250);
+		border-block-start-color: oklch(0.8 0.18 90);
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
 	}
 
+	@keyframes spin { to { transform: rotate(360deg); } }
+
 	.overview-grid {
-		@apply space-y-8;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-8);
 	}
 
 	.section {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50;
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+
+		&[data-variant='anomaly'] {
+			border-color: oklch(0.7 0.18 55 / 30%);
+			background-color: oklch(0.7 0.18 55 / 5%);
+		}
 	}
 
 	.section-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
 	}
 
 	.section-title {
-		@apply text-2xl font-bold text-white;
+		font-size: var(--text-2xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.section-subtitle {
-		@apply text-sm text-gray-400 mt-1;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
 	}
 
 	.view-all-link {
-		@apply text-yellow-400 hover:text-yellow-300 font-medium transition-colors;
+		color: oklch(0.8 0.18 90);
+		font-weight: var(--weight-medium);
+		text-decoration: none;
+		transition: color var(--duration-fast) var(--ease-default);
+		&:hover { color: oklch(0.85 0.16 90); }
 	}
 
-	.anomaly-section {
-		@apply border-orange-500/30 bg-orange-500/5;
+	.anomaly-header-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		color: oklch(0.75 0.16 55);
 	}
 
 	.anomaly-grid {
-		@apply grid grid-cols-1 md:grid-cols-3 gap-4;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-4);
+		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
 	}
 
 	.anomaly-card {
-		@apply bg-gray-900/50 rounded-lg p-6 text-center border border-orange-500/20;
-	}
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-6);
+		text-align: center;
+		border: 1px solid oklch(0.7 0.18 55 / 20%);
 
-	.anomaly-card.critical {
-		@apply border-red-500/50 bg-red-500/10;
+		&[data-variant='critical'] {
+			border-color: oklch(0.55 0.22 25 / 50%);
+			background-color: oklch(0.55 0.22 25 / 10%);
+		}
 	}
 
 	.anomaly-value {
-		@apply text-4xl font-bold text-orange-400;
+		font-size: var(--text-4xl);
+		font-weight: var(--weight-bold);
+		color: oklch(0.75 0.16 55);
 	}
 
-	.anomaly-card.critical .anomaly-value {
-		@apply text-red-400;
-	}
+	[data-variant='critical'] .anomaly-value { color: oklch(0.7 0.2 25); }
 
 	.anomaly-label {
-		@apply text-sm text-gray-400 mt-2;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-2);
 	}
 
-	.charts-grid {
-		@apply grid grid-cols-1 lg:grid-cols-2 gap-6;
-	}
-
-	.funnels-grid {
-		@apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+	.charts-grid,
+	.funnels-grid,
+	.behavior-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-6);
+		@media (min-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
 	}
 
 	.funnels-list,
 	.cohorts-list {
-		@apply space-y-6;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+		color: oklch(0.45 0.01 250);
 	}
 
+	.empty-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
+	}
+
+	.empty-subtitle {
+		color: oklch(0.55 0.01 250);
+		margin-block-start: var(--space-2);
+	}
+
+	.empty-action { margin-block-start: var(--space-4); }
+
 	.btn-primary {
-		@apply flex items-center gap-2 px-6 py-3 bg-yellow-500 text-gray-900 font-semibold rounded-lg;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		background-color: oklch(0.8 0.18 90);
+		color: oklch(0.15 0.02 90);
+		font-weight: var(--weight-semibold);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.85 0.16 90); }
 	}
 
 	.model-selector {
-		@apply px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
-	}
-
-	.behavior-grid {
-		@apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.45 0.01 250);
+		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
 	}
 
 	.behavior-card {
-		@apply bg-gray-900/50 rounded-lg p-6 border border-gray-700/50;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.card-title {
-		@apply text-lg font-semibold text-white mb-4;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-4);
 	}
 
 	.page-list,
 	.event-list {
-		@apply space-y-3;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
 	}
 
 	.page-item,
 	.event-item {
-		@apply flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-block: var(--space-2);
+		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
+		&:last-child { border-block-end: none; }
 	}
 
 	.page-path,
 	.event-name {
-		@apply text-gray-300 truncate flex-1;
+		color: oklch(0.75 0.01 250);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
 	}
 
 	.page-views,
 	.event-count {
-		@apply text-yellow-400 font-semibold ml-4;
+		color: oklch(0.8 0.18 90);
+		font-weight: var(--weight-semibold);
+		margin-inline-start: var(--space-4);
 	}
 
 	.revenue-grid {
-		@apply space-y-6;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
 	}
 
 	.revenue-kpis {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-4);
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
 	}
 
 	.revenue-kpi-card {
-		@apply bg-gray-900/50 rounded-lg p-6 border border-gray-700/50;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.kpi-label {
-		@apply text-sm text-gray-400 mb-2;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-2);
 	}
 
 	.kpi-value {
-		@apply text-3xl font-bold text-white mb-2;
+		font-size: var(--text-3xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-2);
 	}
 
 	.kpi-change {
-		@apply text-sm font-semibold;
-	}
-
-	.kpi-change.positive {
-		@apply text-green-400;
-	}
-
-	.kpi-change.negative {
-		@apply text-red-400;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		&.positive { color: oklch(0.7 0.18 160); }
+		&.negative { color: oklch(0.7 0.2 25); }
 	}
 </style>

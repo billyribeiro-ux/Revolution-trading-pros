@@ -42,10 +42,10 @@ import { logger } from '$lib/utils/logger';
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="header-title">
-				<Icon icon={IconBrain} size={32} class="text-purple-400" />
+				<Icon icon={IconBrain} size={32} />
 				<div>
-					<h1 class="text-3xl font-bold text-white">Behavior Analytics</h1>
-					<p class="text-gray-400 mt-1">RevolutionBehavior-L8-System</p>
+					<h1 class="page-heading">Behavior Analytics</h1>
+					<p class="page-subheading">RevolutionBehavior-L8-System</p>
 				</div>
 			</div>
 
@@ -86,14 +86,14 @@ import { logger } from '$lib/utils/logger';
 	{#if loading}
 		<div class="loading-state">
 			<div class="spinner"></div>
-			<p class="text-gray-400 mt-4">Loading behavior data...</p>
+			<p class="loading-text">Loading behavior data...</p>
 		</div>
 	{:else if dashboard}
 		<!-- Overview KPIs -->
 		<div class="kpi-grid">
 			<div class="kpi-card">
-				<div class="kpi-icon bg-blue-500/20">
-					<Icon icon={IconUsers} size={24} class="text-blue-400" />
+				<div class="kpi-icon" data-color="blue">
+					<Icon icon={IconUsers} size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Total Sessions</div>
@@ -102,8 +102,8 @@ import { logger } from '$lib/utils/logger';
 			</div>
 
 			<div class="kpi-card">
-				<div class="kpi-icon bg-green-500/20">
-					<Icon icon={IconTrendingUp} size={24} class="text-green-400" />
+				<div class="kpi-icon" data-color="green">
+					<Icon icon={IconTrendingUp} size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Engagement</div>
@@ -112,8 +112,8 @@ import { logger } from '$lib/utils/logger';
 			</div>
 
 			<div class="kpi-card">
-				<div class="kpi-icon bg-yellow-500/20">
-					<Icon icon={IconTarget} size={24} class="text-yellow-400" />
+				<div class="kpi-icon" data-color="yellow">
+					<Icon icon={IconTarget} size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Intent</div>
@@ -122,8 +122,8 @@ import { logger } from '$lib/utils/logger';
 			</div>
 
 			<div class="kpi-card">
-				<div class="kpi-icon bg-orange-500/20">
-					<Icon icon={IconAlertTriangle} size={24} class="text-orange-400" />
+				<div class="kpi-icon" data-color="orange">
+					<Icon icon={IconAlertTriangle} size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">Avg Friction</div>
@@ -131,9 +131,9 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			</div>
 
-			<div class="kpi-card critical">
-				<div class="kpi-icon bg-red-500/20">
-					<Icon icon={IconAlertTriangle} size={24} class="text-red-400" />
+			<div class="kpi-card" data-variant="critical">
+				<div class="kpi-icon" data-color="red">
+					<Icon icon={IconAlertTriangle} size={24} />
 				</div>
 				<div class="kpi-content">
 					<div class="kpi-label">High Churn Risk</div>
@@ -157,7 +157,7 @@ import { logger } from '$lib/utils/logger';
 								<div class="friction-url">{item.page_url}</div>
 								<div class="friction-meta">
 									<span class="badge badge-orange">{item.top_friction_type}</span>
-									<span class="text-gray-400">{item.friction_count} issues</span>
+									<span class="friction-count">{item.friction_count} issues</span>
 								</div>
 							</div>
 							<div class="friction-bar">
@@ -203,153 +203,268 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 	{:else}
 		<div class="empty-state">
-			<Icon icon={IconChartBar} size={64} class="text-gray-600" />
-			<h3 class="text-xl font-semibold text-gray-400 mt-4">No Behavior Data</h3>
-			<p class="text-gray-500 mt-2">Start tracking user behavior to see insights</p>
+			<Icon icon={IconChartBar} size={64} />
+			<h3 class="empty-title">No Behavior Data</h3>
+			<p class="empty-subtitle">Start tracking user behavior to see insights</p>
 		</div>
 	{/if}
 </div>
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.behavior-dashboard {
-		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
-		padding: 1.5rem;
+		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		padding: var(--space-6);
 	}
 
-	.dashboard-header {
-		@apply mb-8;
-	}
+	.dashboard-header { margin-block-end: var(--space-8); }
 
 	.header-content {
-		@apply flex items-center justify-between flex-wrap gap-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: var(--space-4);
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		color: oklch(0.7 0.18 300);
 	}
 
-	.period-selector {
-		@apply flex gap-2;
+	.page-heading {
+		font-size: var(--text-3xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
+
+	.page-subheading {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
+	}
+
+	.period-selector { display: flex; gap: var(--space-2); }
 
 	.period-btn {
-		@apply px-4 py-2 rounded-lg font-medium transition-all;
-		@apply bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white;
-		@apply border border-gray-700/50;
-	}
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		border-radius: var(--radius-lg);
+		font-weight: var(--weight-medium);
+		background-color: oklch(0.25 0.01 250 / 50%);
+		color: oklch(0.65 0.01 250);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
 
-	.period-btn.active {
-		@apply bg-purple-500/20 text-purple-400 border-purple-500/50;
+		&:hover { background-color: oklch(0.38 0.01 250 / 50%); color: oklch(1 0 0); }
+		&.active { background-color: oklch(0.55 0.2 300 / 20%); color: oklch(0.7 0.18 300); border-color: oklch(0.55 0.2 300 / 50%); }
 	}
 
 	.loading-state {
-		@apply flex flex-col items-center justify-center py-20;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
 	}
+
+	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
 
 	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-purple-400 rounded-full animate-spin;
+		inline-size: 3rem;
+		block-size: 3rem;
+		border: 4px solid oklch(0.38 0.01 250);
+		border-block-start-color: oklch(0.7 0.18 300);
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
 	}
 
+	@keyframes spin { to { transform: rotate(360deg); } }
+
 	.kpi-grid {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-4);
+		margin-block-end: var(--space-8);
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(5, 1fr); }
 	}
 
 	.kpi-card {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50;
-		@apply flex items-center gap-4;
-	}
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
 
-	.kpi-card.critical {
-		@apply border-red-500/30 bg-red-500/5;
+		&[data-variant='critical'] { border-color: oklch(0.55 0.22 25 / 30%); background-color: oklch(0.55 0.22 25 / 5%); }
 	}
 
 	.kpi-icon {
-		@apply w-12 h-12 rounded-lg flex items-center justify-center;
+		inline-size: 3rem;
+		block-size: 3rem;
+		border-radius: var(--radius-lg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&[data-color='blue'] { background-color: oklch(0.6 0.2 260 / 20%); color: oklch(0.7 0.18 260); }
+		&[data-color='green'] { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.7 0.18 160); }
+		&[data-color='yellow'] { background-color: oklch(0.8 0.18 90 / 20%); color: oklch(0.8 0.18 90); }
+		&[data-color='orange'] { background-color: oklch(0.7 0.18 55 / 20%); color: oklch(0.75 0.16 55); }
+		&[data-color='red'] { background-color: oklch(0.55 0.22 25 / 20%); color: oklch(0.7 0.2 25); }
 	}
 
-	.kpi-content {
-		@apply flex-1;
-	}
+	.kpi-content { flex: 1; }
 
 	.kpi-label {
-		@apply text-sm text-gray-400 mb-1;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-1);
 	}
 
 	.kpi-value {
-		@apply text-2xl font-bold text-white;
+		font-size: var(--text-2xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.section {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 mb-8;
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		margin-block-end: var(--space-8);
 	}
 
-	.section-header {
-		@apply mb-6;
-	}
+	.section-header { margin-block-end: var(--space-6); }
 
 	.section-title {
-		@apply text-2xl font-bold text-white;
+		font-size: var(--text-2xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.section-subtitle {
-		@apply text-sm text-gray-400 mt-1;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
 	}
 
 	.friction-list {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
 	}
 
 	.friction-item {
-		@apply bg-gray-900/50 rounded-lg p-4;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
 	}
 
 	.friction-info {
-		@apply flex items-start justify-between mb-3;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		margin-block-end: var(--space-3);
 	}
 
 	.friction-url {
-		@apply text-white font-medium truncate flex-1;
+		color: oklch(1 0 0);
+		font-weight: var(--weight-medium);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
 	}
 
 	.friction-meta {
-		@apply flex items-center gap-2 text-sm;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		font-size: var(--text-sm);
 	}
 
+	.friction-count { color: oklch(0.65 0.01 250); }
+
 	.badge {
-		@apply px-2 py-1 rounded text-xs font-semibold;
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-xs);
+		font-weight: var(--weight-semibold);
 	}
 
 	.badge-orange {
-		@apply bg-orange-500/20 text-orange-400;
+		background-color: oklch(0.7 0.18 55 / 20%);
+		color: oklch(0.75 0.16 55);
 	}
 
 	.friction-bar {
-		@apply h-2 bg-gray-700 rounded-full overflow-hidden;
+		block-size: 0.5rem;
+		background-color: oklch(0.38 0.01 250);
+		border-radius: 9999px;
+		overflow: hidden;
 	}
 
 	.friction-fill {
-		@apply h-full bg-linear-to-r from-orange-500 to-red-500;
+		block-size: 100%;
+		background: linear-gradient(to right, oklch(0.7 0.18 55), oklch(0.55 0.22 25));
 	}
 
 	.timeline-chart {
-		@apply flex items-end gap-2 h-64;
+		display: flex;
+		align-items: flex-end;
+		gap: var(--space-2);
+		block-size: 16rem;
 	}
 
 	.timeline-bar {
-		@apply flex-1 flex flex-col items-center gap-2;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2);
 	}
 
 	.bar-fill {
-		@apply w-full bg-linear-to-t from-purple-500 to-purple-400 rounded-t;
-		@apply transition-all hover:from-purple-400 hover:to-purple-300;
+		inline-size: 100%;
+		background: linear-gradient(to top, oklch(0.55 0.2 300), oklch(0.65 0.18 300));
+		border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+		transition: background var(--duration-fast) var(--ease-default);
+		&:hover { background: linear-gradient(to top, oklch(0.65 0.18 300), oklch(0.75 0.16 300)); }
 	}
 
 	.bar-label {
-		@apply text-xs text-gray-400 rotate-45 origin-left;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		transform: rotate(45deg);
+		transform-origin: left;
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+		color: oklch(0.45 0.01 250);
+	}
+
+	.empty-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
+	}
+
+	.empty-subtitle {
+		color: oklch(0.55 0.01 250);
+		margin-block-start: var(--space-2);
 	}
 </style>
