@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
 	type ItemProps = DropdownMenuPrimitive.ItemProps & {
@@ -30,9 +29,67 @@
 	data-slot="dropdown-menu-item"
 	data-inset={inset}
 	data-variant={variant}
-	class={cn(
-		"data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 dark:data-[variant=destructive]:data-highlighted:bg-destructive/20 data-[variant=destructive]:data-highlighted:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:ps-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-		className
-	)}
+	class={className}
 	{...restProps}
 />
+
+<style>
+	:global([data-slot='dropdown-menu-item']) {
+		position: relative;
+		display: flex;
+		cursor: default;
+		align-items: center;
+		gap: var(--space-2);
+		border-radius: var(--radius-sm);
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1-5);
+		font-size: var(--text-sm);
+		outline: none;
+		user-select: none;
+
+		&[data-highlighted] {
+			background-color: var(--accent);
+			color: var(--accent-foreground);
+		}
+
+		&[data-disabled] {
+			pointer-events: none;
+			opacity: 0.5;
+		}
+
+		&[data-inset] {
+			padding-inline-start: var(--space-8);
+		}
+
+		& :global(svg) {
+			pointer-events: none;
+			flex-shrink: 0;
+		}
+
+		& :global(svg:not([class*='size-'])) {
+			inline-size: 1rem;
+			block-size: 1rem;
+		}
+
+		& :global(svg:not([class*='text-'])) {
+			color: var(--muted-foreground);
+		}
+	}
+
+	:global([data-slot='dropdown-menu-item'][data-variant='destructive']) {
+		color: var(--destructive);
+
+		&[data-highlighted] {
+			background-color: oklch(from var(--destructive) l c h / 10%);
+			color: var(--destructive);
+		}
+
+		& :global(svg) {
+			color: var(--destructive) !important;
+		}
+	}
+
+	:global(.dark [data-slot='dropdown-menu-item'][data-variant='destructive'][data-highlighted]) {
+		background-color: oklch(from var(--destructive) l c h / 20%);
+	}
+</style>

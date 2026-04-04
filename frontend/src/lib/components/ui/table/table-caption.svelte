@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {
@@ -13,8 +13,16 @@
 <caption
 	bind:this={ref}
 	data-slot="table-caption"
-	class={cn('text-muted-foreground mt-4 text-sm', className)}
+	class={className}
 	{...restProps}
 >
 	{@render children?.()}
 </caption>
+
+<style>
+	:global([data-slot='table-caption']) {
+		color: var(--muted-foreground);
+		margin-block-start: var(--space-4);
+		font-size: var(--text-sm);
+	}
+</style>

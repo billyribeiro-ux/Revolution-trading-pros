@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let props: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
@@ -21,8 +21,20 @@
 <div
 	bind:this={ref}
 	data-slot="card-footer"
-	class={cn('flex items-center px-6 [.border-t]:pt-6', className)}
+	class={className}
 	{...restProps}
 >
 	{@render props.children?.()}
 </div>
+
+<style>
+	:global([data-slot='card-footer']) {
+		display: flex;
+		align-items: center;
+		padding-inline: var(--space-6);
+	}
+
+	:global(.border-t > [data-slot='card-footer']) {
+		padding-block-start: var(--space-6);
+	}
+</style>

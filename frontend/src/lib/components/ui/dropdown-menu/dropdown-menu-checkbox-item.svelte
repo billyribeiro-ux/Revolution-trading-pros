@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import { Check as CheckIcon, Minus as MinusIcon } from 'phosphor-svelte';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 	import type { Snippet } from 'svelte';
 
 	type CheckboxItemProps = WithoutChildrenOrChild<DropdownMenuPrimitive.CheckboxItemProps> & {
@@ -49,20 +49,74 @@
 	bind:checked
 	bind:indeterminate
 	data-slot="dropdown-menu-checkbox-item"
-	class={cn(
-		"focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 ps-8 pe-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-		className
-	)}
+	class={className}
 	{...restProps}
 >
 	{#snippet children({ checked, indeterminate })}
-		<span class="pointer-events-none absolute start-2 flex size-3.5 items-center justify-center">
+		<span class="ddm-check-indicator">
 			{#if indeterminate}
-				<MinusIcon class="size-4" />
+				<MinusIcon class="ddm-check-icon" />
 			{:else}
-				<CheckIcon class={cn('size-4', !checked && 'text-transparent')} />
+				<CheckIcon class={['ddm-check-icon', !checked && 'ddm-check-hidden'].filter(Boolean).join(' ')} />
 			{/if}
 		</span>
 		{@render childrenProp?.()}
 	{/snippet}
 </DropdownMenuPrimitive.CheckboxItem>
+
+<style>
+	:global([data-slot='dropdown-menu-checkbox-item']) {
+		position: relative;
+		display: flex;
+		cursor: default;
+		align-items: center;
+		gap: var(--space-2);
+		border-radius: var(--radius-sm);
+		padding-block: var(--space-1-5);
+		padding-inline-start: var(--space-8);
+		padding-inline-end: var(--space-2);
+		font-size: var(--text-sm);
+		outline: none;
+		user-select: none;
+
+		&:focus {
+			background-color: var(--accent);
+			color: var(--accent-foreground);
+		}
+
+		&[data-disabled] {
+			pointer-events: none;
+			opacity: 0.5;
+		}
+
+		& :global(svg) {
+			pointer-events: none;
+			flex-shrink: 0;
+		}
+
+		& :global(svg:not([class*='size-'])) {
+			inline-size: 1rem;
+			block-size: 1rem;
+		}
+	}
+
+	:global(.ddm-check-indicator) {
+		pointer-events: none;
+		position: absolute;
+		inset-inline-start: var(--space-2);
+		display: flex;
+		inline-size: 0.875rem;
+		block-size: 0.875rem;
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(.ddm-check-icon) {
+		inline-size: 1rem;
+		block-size: 1rem;
+	}
+
+	:global(.ddm-check-hidden) {
+		color: transparent;
+	}
+</style>

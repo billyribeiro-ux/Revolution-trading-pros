@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLTdAttributes } from 'svelte/elements';
 
 	let {
@@ -13,11 +13,21 @@
 <td
 	bind:this={ref}
 	data-slot="table-cell"
-	class={cn(
-		'bg-clip-padding p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pe-0',
-		className
-	)}
+	class={className}
 	{...restProps}
 >
 	{@render children?.()}
 </td>
+
+<style>
+	:global([data-slot='table-cell']) {
+		background-clip: padding-box;
+		padding: var(--space-2);
+		vertical-align: middle;
+		white-space: nowrap;
+
+		&:has([role='checkbox']) {
+			padding-inline-end: 0;
+		}
+	}
+</style>

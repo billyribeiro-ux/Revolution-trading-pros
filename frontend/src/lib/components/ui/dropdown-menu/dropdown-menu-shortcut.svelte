@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
 	let ref = $state<HTMLSpanElement | null>(null);
@@ -21,8 +21,17 @@
 <span
 	bind:this={ref}
 	data-slot="dropdown-menu-shortcut"
-	class={cn('text-muted-foreground ms-auto text-xs tracking-widest', className)}
+	class={className}
 	{...restProps}
 >
 	{@render props.children?.()}
 </span>
+
+<style>
+	:global([data-slot='dropdown-menu-shortcut']) {
+		color: var(--muted-foreground);
+		margin-inline-start: auto;
+		font-size: var(--text-xs);
+		letter-spacing: 0.1em;
+	}
+</style>

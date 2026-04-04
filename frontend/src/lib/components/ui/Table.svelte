@@ -14,15 +14,13 @@
 	let hoverable = $derived(props.hoverable ?? true);
 </script>
 
-<div class="overflow-x-auto">
-	<table class="min-w-full divide-y divide-gray-200">
+<div class="standalone-table-wrap">
+	<table class="standalone-table">
 		{#if headers.length > 0}
-			<thead class="bg-gray-50">
+			<thead class="standalone-table-head">
 				<tr>
 					{#each headers as header}
-						<th
-							class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-						>
+						<th class="standalone-table-th">
 							{header}
 						</th>
 					{/each}
@@ -31,9 +29,9 @@
 		{/if}
 
 		<tbody
-			class="bg-white divide-y divide-gray-200 {striped
-				? '[&>tr:nth-child(even)]:bg-gray-50'
-				: ''} {hoverable ? 'hoverable' : ''}"
+			class="standalone-table-body"
+			data-striped={striped || undefined}
+			data-hoverable={hoverable || undefined}
 		>
 			{@render props.children?.()}
 		</tbody>
@@ -41,18 +39,54 @@
 </div>
 
 <style>
-	tbody.hoverable :global(tr:hover) {
-		background-color: rgb(249 250 251);
-		transition: colors 150ms;
+	.standalone-table-wrap {
+		overflow-x: auto;
 	}
 
-	tbody :global(td) {
-		padding-left: 1.5rem;
-		padding-right: 1.5rem;
-		padding-top: 1rem;
-		padding-bottom: 1rem;
-		white-space: nowrap;
-		font-size: 0.875rem;
-		color: rgb(17 24 39);
+	.standalone-table {
+		min-inline-size: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+	}
+
+	.standalone-table-head {
+		background-color: oklch(0.98 0.002 265);
+	}
+
+	.standalone-table-th {
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		text-align: start;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		color: oklch(0.55 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		border-block-end: 1px solid var(--border);
+	}
+
+	.standalone-table-body {
+		background-color: var(--background);
+
+		& :global(tr) {
+			border-block-end: 1px solid var(--border);
+		}
+
+		& :global(td) {
+			padding-inline: var(--space-6);
+			padding-block: var(--space-4);
+			white-space: nowrap;
+			font-size: var(--text-sm);
+			color: oklch(0.2 0.01 265);
+		}
+
+		&[data-striped] :global(tr:nth-child(even)) {
+			background-color: oklch(0.98 0.002 265);
+		}
+
+		&[data-hoverable] :global(tr:hover) {
+			background-color: oklch(0.98 0.002 265);
+			transition: background-color var(--duration-fast) var(--ease-default);
+		}
 	}
 </style>

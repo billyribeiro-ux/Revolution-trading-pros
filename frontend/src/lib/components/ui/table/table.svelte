@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLTableAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLTableAttributes> = $props();
 	let ref = $state<HTMLElement | null>(null);
@@ -18,13 +18,27 @@
 	});
 </script>
 
-<div data-slot="table-container" class="relative w-full overflow-x-auto">
+<div data-slot="table-container">
 	<table
 		bind:this={ref}
 		data-slot="table"
-		class={cn('w-full caption-bottom text-sm', className)}
+		class={className}
 		{...restProps}
 	>
 		{@render props.children?.()}
 	</table>
 </div>
+
+<style>
+	:global([data-slot='table-container']) {
+		position: relative;
+		inline-size: 100%;
+		overflow-x: auto;
+	}
+
+	:global([data-slot='table']) {
+		inline-size: 100%;
+		caption-side: bottom;
+		font-size: var(--text-sm);
+	}
+</style>

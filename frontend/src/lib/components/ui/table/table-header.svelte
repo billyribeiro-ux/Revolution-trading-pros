@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {
@@ -13,8 +13,16 @@
 <thead
 	bind:this={ref}
 	data-slot="table-header"
-	class={cn('[&_tr]:border-b', className)}
+	class={className}
 	{...restProps}
 >
 	{@render children?.()}
 </thead>
+
+<style>
+	:global([data-slot='table-header']) {
+		& :global(tr) {
+			border-block-end: 1px solid var(--border);
+		}
+	}
+</style>

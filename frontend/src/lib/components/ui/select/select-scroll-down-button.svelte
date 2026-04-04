@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CaretDown as ChevronDownIcon } from 'phosphor-svelte';
 	import { Select as SelectPrimitive } from 'bits-ui';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -13,8 +13,23 @@
 <SelectPrimitive.ScrollDownButton
 	bind:ref
 	data-slot="select-scroll-down-button"
-	class={cn('flex cursor-default items-center justify-center py-1', className)}
+	class={className}
 	{...restProps}
 >
-	<ChevronDownIcon class="size-4" />
+	<ChevronDownIcon class="select-scroll-icon" />
 </SelectPrimitive.ScrollDownButton>
+
+<style>
+	:global([data-slot='select-scroll-down-button']) {
+		display: flex;
+		cursor: default;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-1);
+	}
+
+	:global(.select-scroll-icon) {
+		inline-size: 1rem;
+		block-size: 1rem;
+	}
+</style>

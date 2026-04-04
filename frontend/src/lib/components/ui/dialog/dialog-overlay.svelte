@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Dialog as DialogPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils.js';
 
 	let props: DialogPrimitive.OverlayProps = $props();
 	let ref = $state<HTMLElement | null>(null);
@@ -21,9 +20,23 @@
 <DialogPrimitive.Overlay
 	bind:ref
 	data-slot="dialog-overlay"
-	class={cn(
-		'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50',
-		className
-	)}
+	class={className}
 	{...restProps}
 />
+
+<style>
+	:global([data-slot='dialog-overlay']) {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		background-color: oklch(0 0 0 / 50%);
+
+		&[data-state='open'] {
+			animation: fade-in var(--duration-normal) var(--ease-default);
+		}
+
+		&[data-state='closed'] {
+			animation: fade-out var(--duration-normal) var(--ease-default);
+		}
+	}
+</style>

@@ -287,9 +287,6 @@ importers:
       bits-ui:
         specifier: ^2.11.7
         version: 2.16.5(@internationalized/date@3.12.0)(@sveltejs/kit@2.56.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.55.1)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)))(svelte@5.55.1)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)))(svelte@5.55.1)
-      clsx:
-        specifier: 2.1.1
-        version: 2.1.1
       d3-array:
         specifier: ^3.2.4
         version: 3.2.4

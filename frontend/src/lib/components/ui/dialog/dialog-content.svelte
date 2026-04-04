@@ -4,7 +4,7 @@
 	import { X as XIcon } from 'phosphor-svelte';
 	import type { Snippet } from 'svelte';
 	import * as Dialog from './index.js';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 	import type { ComponentProps } from 'svelte';
 
 	type ContentProps = WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
@@ -43,46 +43,143 @@
 	<DialogPrimitive.Content
 		bind:ref
 		data-slot="dialog-content"
-		class={cn(
-			// Base styles - Mobile first (full screen)
-			'bg-background fixed inset-0 z-50 flex flex-col w-full border-0 rounded-none shadow-lg',
-			// Safe area support
-			'pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]',
-			// Animations
-			'data-[state=open]:animate-in data-[state=closed]:animate-out',
-			'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-			'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-			// sm: 640px+ - Centered modal
-			'sm:inset-auto sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]',
-			'sm:max-w-lg sm:max-h-[85vh] sm:rounded-lg sm:border sm:p-0',
-			'sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95',
-			'sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=open]:slide-in-from-bottom-0',
-			// Duration
-			'duration-200',
-			className
-		)}
+		class={className}
 		{...restProps}
 	>
-		<!-- Mobile swipe indicator -->
-		<div
-			class="sm:hidden absolute top-2 left-1/2 -translate-x-1/2 w-9 h-1 bg-muted-foreground/30 rounded-full"
-			aria-hidden="true"
-		></div>
+		<div class="dialog-swipe-indicator" aria-hidden="true"></div>
 
-		<!-- Content wrapper with proper padding -->
-		<div
-			class="flex-1 overflow-y-auto overscroll-contain p-4 pt-6 sm:p-6 -webkit-overflow-scrolling-touch"
-		>
+		<div class="dialog-body">
 			{@render props.children?.()}
 		</div>
 
 		{#if showCloseButton}
-			<DialogPrimitive.Close
-				class="ring-offset-background focus:ring-ring absolute end-3 top-3 sm:end-4 sm:top-4 min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none touch-manipulation [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
-			>
+			<DialogPrimitive.Close class="dialog-close-btn">
 				<XIcon />
 				<span class="sr-only">Close</span>
 			</DialogPrimitive.Close>
 		{/if}
 	</DialogPrimitive.Content>
 </DialogPortal>
+
+<style>
+	:global([data-slot='dialog-content']) {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		inline-size: 100%;
+		border: 0;
+		border-radius: 0;
+		background-color: var(--background);
+		box-shadow: var(--shadow-lg);
+		padding-block-start: env(safe-area-inset-top);
+		padding-block-end: env(safe-area-inset-bottom);
+		transition-duration: var(--duration-normal);
+
+		&[data-state='open'] {
+			animation: fade-in var(--duration-normal) var(--ease-default),
+				slide-in-from-bottom var(--duration-normal) var(--ease-default);
+		}
+
+		&[data-state='closed'] {
+			animation: fade-out var(--duration-normal) var(--ease-default),
+				slide-out-to-bottom var(--duration-normal) var(--ease-default);
+		}
+	}
+
+	@media (min-width: 640px) {
+		:global([data-slot='dialog-content']) {
+			inset: auto;
+			inset-block-start: 50%;
+			inset-inline-start: 50%;
+			translate: -50% -50%;
+			max-inline-size: 32rem;
+			max-block-size: 85vh;
+			border-radius: var(--radius-lg);
+			border: 1px solid var(--border);
+			padding: 0;
+
+			&[data-state='open'] {
+				animation: fade-in var(--duration-normal) var(--ease-default),
+					zoom-in-95 var(--duration-normal) var(--ease-default);
+			}
+
+			&[data-state='closed'] {
+				animation: fade-out var(--duration-normal) var(--ease-default),
+					zoom-out-95 var(--duration-normal) var(--ease-default);
+			}
+		}
+	}
+
+	:global(.dialog-swipe-indicator) {
+		position: absolute;
+		inset-block-start: var(--space-2);
+		inset-inline-start: 50%;
+		translate: -50% 0;
+		inline-size: 2.25rem;
+		block-size: 0.25rem;
+		background-color: oklch(from var(--muted-foreground) l c h / 30%);
+		border-radius: var(--radius-full);
+
+		@media (min-width: 640px) {
+			display: none;
+		}
+	}
+
+	:global(.dialog-body) {
+		flex: 1;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: var(--space-4);
+		padding-block-start: var(--space-6);
+		-webkit-overflow-scrolling: touch;
+
+		@media (min-width: 640px) {
+			padding: var(--space-6);
+		}
+	}
+
+	:global(.dialog-close-btn) {
+		position: absolute;
+		inset-inline-end: var(--space-3);
+		inset-block-start: var(--space-3);
+		min-inline-size: 44px;
+		min-block-size: 44px;
+		inline-size: 2.75rem;
+		block-size: 2.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--radius-md);
+		opacity: 0.7;
+		touch-action: manipulation;
+		transition: opacity var(--duration-fast) var(--ease-default);
+
+		&:hover {
+			opacity: 1;
+			background-color: var(--accent);
+		}
+
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--background);
+		}
+
+		&:disabled {
+			pointer-events: none;
+		}
+
+		& :global(svg) {
+			pointer-events: none;
+			flex-shrink: 0;
+			inline-size: 1.25rem;
+			block-size: 1.25rem;
+		}
+
+		@media (min-width: 640px) {
+			inset-inline-end: var(--space-4);
+			inset-block-start: var(--space-4);
+		}
+	}
+</style>

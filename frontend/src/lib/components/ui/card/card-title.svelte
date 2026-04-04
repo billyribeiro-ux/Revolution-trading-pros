@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 	let ref = $state<HTMLElement | null>(null);
@@ -21,8 +21,15 @@
 <div
 	bind:this={ref}
 	data-slot="card-title"
-	class={cn('leading-none font-semibold', className)}
+	class={className}
 	{...restProps}
 >
 	{@render props.children?.()}
 </div>
+
+<style>
+	:global([data-slot='card-title']) {
+		line-height: 1;
+		font-weight: var(--weight-semibold);
+	}
+</style>

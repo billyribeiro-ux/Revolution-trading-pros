@@ -11,5 +11,10 @@
     "lint": "pnpm --filter frontend lint",
     "format": "pnpm --filter frontend format",
     "test": "pnpm --filter frontend test"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

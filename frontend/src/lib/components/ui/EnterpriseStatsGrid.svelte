@@ -43,17 +43,10 @@
 	let staggerDelay = $derived(props.staggerDelay ?? 0.1);
 	let onStatClick = $derived(props.onStatClick ?? null);
 
-	let gridCols = $derived(
-		{
-			2: 'grid-cols-1 sm:grid-cols-2',
-			3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-			4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-			5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-		}[columns]
-	);
+
 </script>
 
-<div class="grid {gridCols} gap-6">
+<div class="stats-grid" style:--columns={columns}>
 	{#if loading}
 		{#each Array(columns) as _}
 			<SkeletonLoader variant="stat" />
@@ -81,3 +74,23 @@
 		{/each}
 	{/if}
 </div>
+
+<style>
+	.stats-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-6);
+
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(min(var(--columns, 4), 4), 1fr);
+		}
+
+		@media (min-width: 1280px) {
+			grid-template-columns: repeat(var(--columns, 4), 1fr);
+		}
+	}
+</style>

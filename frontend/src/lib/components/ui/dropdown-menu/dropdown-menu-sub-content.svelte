@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils.js';
 
 	let props: DropdownMenuPrimitive.SubContentProps = $props();
 	let ref = $state<HTMLElement | null>(null);
@@ -21,9 +20,36 @@
 <DropdownMenuPrimitive.SubContent
 	bind:ref
 	data-slot="dropdown-menu-sub-content"
-	class={cn(
-		'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-end-2 data-[side=right]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--bits-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg',
-		className
-	)}
+	class={className}
 	{...restProps}
 />
+
+<style>
+	:global([data-slot='dropdown-menu-sub-content']) {
+		z-index: 50;
+		min-inline-size: 8rem;
+		overflow: hidden;
+		border-radius: var(--radius-md);
+		border: 1px solid var(--border);
+		background-color: var(--popover);
+		color: var(--popover-foreground);
+		padding: var(--space-1);
+		box-shadow: var(--shadow-lg);
+		transform-origin: var(--bits-dropdown-menu-content-transform-origin);
+
+		&[data-state='open'] {
+			animation: fade-in var(--duration-fast) var(--ease-default),
+				zoom-in-95 var(--duration-fast) var(--ease-default);
+		}
+
+		&[data-state='closed'] {
+			animation: fade-out var(--duration-fast) var(--ease-default),
+				zoom-out-95 var(--duration-fast) var(--ease-default);
+		}
+
+		&[data-side='bottom'] { animation-name: fade-in, slide-in-from-top-2; }
+		&[data-side='top'] { animation-name: fade-in, slide-in-from-bottom-2; }
+		&[data-side='left'] { animation-name: fade-in, slide-in-from-end-2; }
+		&[data-side='right'] { animation-name: fade-in, slide-in-from-start-2; }
+	}
+</style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	type LabelProps = WithElementRef<HTMLAttributes<HTMLDivElement>> & {
@@ -27,8 +27,21 @@
 	bind:this={ref}
 	data-slot="dropdown-menu-label"
 	data-inset={inset}
-	class={cn('px-2 py-1.5 text-sm font-semibold data-[inset]:ps-8', className)}
+	class={className}
 	{...restProps}
 >
 	{@render props.children?.()}
 </div>
+
+<style>
+	:global([data-slot='dropdown-menu-label']) {
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1-5);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+
+		&[data-inset] {
+			padding-inline-start: var(--space-8);
+		}
+	}
+</style>

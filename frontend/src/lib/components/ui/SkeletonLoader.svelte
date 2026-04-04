@@ -27,79 +27,150 @@
 </script>
 
 {#if variant === 'text'}
-	<div class="space-y-2 {className}" style="width: {width};">
+	<div class="skeleton-lines {className}" style:inline-size={width}>
 		{#each Array(lines) as _, i}
 			<div
-				class="skeleton-text rounded {animated ? 'animate-shimmer' : ''}"
-				style="width: {i === lines - 1 && lines > 1 ? '75%' : '100%'}; height: {height === 'auto'
-					? '1em'
-					: height};"
+				class="skeleton-bone"
+				data-animated={animated || undefined}
+				style:inline-size={i === lines - 1 && lines > 1 ? '75%' : '100%'}
+				style:block-size={height === 'auto' ? '1em' : height}
 			></div>
 		{/each}
 	</div>
 {:else if variant === 'circular'}
 	<div
-		class="skeleton-circular rounded-full {animated ? 'animate-shimmer' : ''} {className}"
-		style="width: {width}; height: {width};"
+		class="skeleton-bone skeleton-circular {className}"
+		data-animated={animated || undefined}
+		style:inline-size={width}
+		style:block-size={width}
 	></div>
 {:else if variant === 'rectangular'}
 	<div
-		class="skeleton-rect rounded-lg {animated ? 'animate-shimmer' : ''} {className}"
-		style="width: {width}; height: {height};"
+		class="skeleton-bone skeleton-rect {className}"
+		data-animated={animated || undefined}
+		style:inline-size={width}
+		style:block-size={height}
 	></div>
 {:else if variant === 'stat'}
-	<div class="skeleton-stat p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50 {className}">
-		<div class="flex items-start justify-between mb-4">
-			<div class="skeleton-circular w-12 h-12 rounded-xl {animated ? 'animate-shimmer' : ''}"></div>
-			<div class="skeleton-text w-16 h-5 rounded {animated ? 'animate-shimmer' : ''}"></div>
+	<div class="skeleton-compound skeleton-compound-stat {className}">
+		<div class="skeleton-stat-header">
+			<div class="skeleton-bone skeleton-stat-icon" data-animated={animated || undefined}></div>
+			<div class="skeleton-bone skeleton-stat-badge" data-animated={animated || undefined}></div>
 		</div>
-		<div class="skeleton-text w-24 h-4 rounded mb-2 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-32 h-8 rounded mb-3 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-20 h-4 rounded {animated ? 'animate-shimmer' : ''}"></div>
+		<div class="skeleton-bone skeleton-stat-label" data-animated={animated || undefined}></div>
+		<div class="skeleton-bone skeleton-stat-value" data-animated={animated || undefined}></div>
+		<div class="skeleton-bone skeleton-stat-trend" data-animated={animated || undefined}></div>
 	</div>
 {:else if variant === 'card'}
-	<div class="skeleton-card p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50 {className}">
-		<div
-			class="skeleton-rect w-full h-40 rounded-xl mb-4 {animated ? 'animate-shimmer' : ''}"
-		></div>
-		<div class="skeleton-text w-3/4 h-6 rounded mb-2 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-full h-4 rounded mb-1 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-2/3 h-4 rounded {animated ? 'animate-shimmer' : ''}"></div>
+	<div class="skeleton-compound skeleton-compound-card {className}">
+		<div class="skeleton-bone skeleton-card-image" data-animated={animated || undefined}></div>
+		<div class="skeleton-bone skeleton-card-title" data-animated={animated || undefined}></div>
+		<div class="skeleton-bone skeleton-card-line" data-animated={animated || undefined}></div>
+		<div class="skeleton-bone skeleton-card-line-short" data-animated={animated || undefined}></div>
 	</div>
 {/if}
 
 <style>
-	.skeleton-text,
-	.skeleton-circular,
-	.skeleton-rect {
-		background: linear-gradient(
-			90deg,
-			rgba(51, 65, 85, 0.5) 0%,
-			rgba(71, 85, 105, 0.5) 50%,
-			rgba(51, 65, 85, 0.5) 100%
-		);
-		background-size: 200% 100%;
+	.skeleton-lines {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
 	}
 
-	.animate-shimmer {
-		animation: shimmer 1.5s ease-in-out infinite;
+	.skeleton-bone {
+		background: linear-gradient(
+			90deg,
+			oklch(0.3 0.01 250 / 50%) 0%,
+			oklch(0.38 0.01 250 / 50%) 50%,
+			oklch(0.3 0.01 250 / 50%) 100%
+		);
+		background-size: 200% 100%;
+		border-radius: var(--radius-sm);
+		will-change: background-position;
+
+		&[data-animated] {
+			animation: shimmer 1.5s ease-in-out infinite;
+		}
+	}
+
+	.skeleton-circular {
+		border-radius: 9999px;
+	}
+
+	.skeleton-rect {
+		border-radius: var(--radius-lg);
+	}
+
+	.skeleton-compound {
+		padding: var(--space-6);
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		background-color: oklch(0.25 0.01 250 / 50%);
+	}
+
+	/* Stat variant */
+	.skeleton-stat-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		margin-block-end: var(--space-4);
+	}
+
+	.skeleton-stat-icon {
+		inline-size: 3rem;
+		block-size: 3rem;
+		border-radius: var(--radius-lg);
+	}
+
+	.skeleton-stat-badge {
+		inline-size: 4rem;
+		block-size: 1.25rem;
+	}
+
+	.skeleton-stat-label {
+		inline-size: 6rem;
+		block-size: 1rem;
+		margin-block-end: var(--space-2);
+	}
+
+	.skeleton-stat-value {
+		inline-size: 8rem;
+		block-size: 2rem;
+		margin-block-end: var(--space-3);
+	}
+
+	.skeleton-stat-trend {
+		inline-size: 5rem;
+		block-size: 1rem;
+	}
+
+	/* Card variant */
+	.skeleton-card-image {
+		inline-size: 100%;
+		block-size: 10rem;
+		border-radius: var(--radius-lg);
+		margin-block-end: var(--space-4);
+	}
+
+	.skeleton-card-title {
+		inline-size: 75%;
+		block-size: 1.5rem;
+		margin-block-end: var(--space-2);
+	}
+
+	.skeleton-card-line {
+		inline-size: 100%;
+		block-size: 1rem;
+		margin-block-end: var(--space-1);
+	}
+
+	.skeleton-card-line-short {
+		inline-size: 66%;
+		block-size: 1rem;
 	}
 
 	@keyframes shimmer {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
-	}
-
-	/* Ensure smooth animations */
-	.skeleton-text,
-	.skeleton-circular,
-	.skeleton-rect,
-	.skeleton-stat,
-	.skeleton-card {
-		will-change: background-position;
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
 	}
 </style>

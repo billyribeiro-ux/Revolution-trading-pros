@@ -25,14 +25,6 @@
 		loading: IconLoader
 	};
 
-	const colors: Record<ToastType, string> = {
-		success: 'bg-green-50 border-green-500 text-green-800',
-		error: 'bg-red-50 border-red-500 text-red-800',
-		warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
-		info: 'bg-blue-50 border-blue-500 text-blue-800',
-		loading: 'bg-gray-50 border-gray-400 text-gray-700'
-	};
-
 	// Determine aria-live politeness based on toast type
 	function getAriaLive(type: ToastType): 'polite' | 'assertive' {
 		// Errors should be assertive (announced immediately)
@@ -43,36 +35,34 @@
 </script>
 
 <!-- Screen reader live region - announces new toasts -->
-<div class="fixed top-4 right-4 z-50 space-y-2" role="region" aria-label="Notifications">
+<div class="toast-container" role="region" aria-label="Notifications">
 	{#each toastList as toast (toast.id)}
 		{@const iconStr = icons[toast.type]}
 		<div
-			class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 shadow-lg
-				min-w-[300px] max-w-md motion-safe:animate-slide-in motion-reduce:opacity-100
-				{colors[toast.type]}"
+			class="toast-item"
+			data-type={toast.type}
 			role="status"
 			aria-live={getAriaLive(toast.type)}
 			aria-atomic="true"
 		>
 			<!-- Icon -->
 			<span
-				class="shrink-0"
-				class:motion-safe:animate-spin={toast.type === 'loading'}
+				class="toast-icon"
+				class:toast-icon-spin={toast.type === 'loading'}
 				aria-hidden="true"
 			>
 				<Icon icon={iconStr} size={20} />
 			</span>
 
 			<!-- Message -->
-			<p class="flex-1 text-sm font-medium">{toast.message}</p>
+			<p class="toast-message">{toast.message}</p>
 
 			<!-- Dismiss button (only if dismissible) -->
 			{#if toast.dismissible}
 				<button
 					type="button"
 					onclick={() => removeToast(toast.id)}
-					class="shrink-0 text-gray-500 hover:text-gray-700 transition-colors
-						rounded p-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+					class="toast-dismiss"
 					aria-label="Dismiss notification"
 				>
 					<Icon icon={IconX} size={16} aria-hidden="true" />
@@ -83,29 +73,101 @@
 </div>
 
 <style>
-	@keyframes slide-in {
-		from {
-			transform: translateX(100%);
-			opacity: 0;
+	.toast-container {
+		position: fixed;
+		inset-block-start: var(--space-4);
+		inset-inline-end: var(--space-4);
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	.toast-item {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+		border-radius: var(--radius-lg);
+		border-inline-start: 4px solid;
+		box-shadow: var(--shadow-lg);
+		min-inline-size: 300px;
+		max-inline-size: 28rem;
+
+		&[data-type='success'] {
+			background-color: oklch(0.97 0.03 145);
+			border-color: oklch(0.6 0.18 150);
+			color: oklch(0.35 0.1 150);
 		}
-		to {
-			transform: translateX(0);
-			opacity: 1;
+
+		&[data-type='error'] {
+			background-color: oklch(0.97 0.02 25);
+			border-color: oklch(0.58 0.24 27);
+			color: oklch(0.4 0.15 25);
+		}
+
+		&[data-type='warning'] {
+			background-color: oklch(0.97 0.04 90);
+			border-color: oklch(0.75 0.18 85);
+			color: oklch(0.4 0.1 80);
+		}
+
+		&[data-type='info'] {
+			background-color: oklch(0.97 0.02 250);
+			border-color: oklch(0.55 0.2 260);
+			color: oklch(0.4 0.12 250);
+		}
+
+		&[data-type='loading'] {
+			background-color: oklch(0.97 0.002 265);
+			border-color: oklch(0.65 0.01 265);
+			color: oklch(0.4 0.01 265);
 		}
 	}
 
-	.motion-safe\:animate-slide-in {
-		animation: slide-in 0.3s ease-out;
+	.toast-icon {
+		flex-shrink: 0;
 	}
 
-	/* Respect reduced motion preference */
-	@media (prefers-reduced-motion: reduce) {
-		.motion-safe\:animate-slide-in {
-			animation: none;
+	.toast-message {
+		flex: 1;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+	}
+
+	.toast-dismiss {
+		flex-shrink: 0;
+		color: oklch(0.55 0.01 265);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1);
+		transition: color var(--duration-fast) var(--ease-default);
+
+		&:hover { color: oklch(0.35 0.01 265); }
+
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.55 0.01 265 / 50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.toast-item {
+			animation: toast-slide-in 0.3s ease-out;
 		}
 
-		.motion-safe\:animate-spin {
-			animation: none;
+		.toast-icon-spin {
+			animation: spin 1s linear infinite;
 		}
+	}
+
+	@keyframes toast-slide-in {
+		from { transform: translateX(100%); opacity: 0; }
+		to { transform: translateX(0); opacity: 1; }
+	}
+
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
 	}
 </style>

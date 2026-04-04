@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLAttributes<HTMLParagraphElement>> = $props();
 	let ref = $state<HTMLElement | null>(null);
@@ -21,8 +21,15 @@
 <p
 	bind:this={ref}
 	data-slot="card-description"
-	class={cn('text-muted-foreground text-sm', className)}
+	class={className}
 	{...restProps}
 >
 	{@render props.children?.()}
 </p>
+
+<style>
+	:global([data-slot='card-description']) {
+		color: var(--muted-foreground);
+		font-size: var(--text-sm);
+	}
+</style>

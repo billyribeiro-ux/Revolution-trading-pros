@@ -41,11 +41,6 @@
 	let isOpen = $state(false);
 	let buttonRef: HTMLButtonElement;
 
-	const sizeClasses = {
-		sm: 'px-2.5 py-1.5 text-xs',
-		md: 'px-4 py-2 text-sm',
-		lg: 'px-5 py-2.5 text-base'
-	};
 
 	function toggle() {
 		if (!disabled && data.length > 0) {
@@ -92,24 +87,22 @@
 
 <svelte:window onclick={handleClickOutside} />
 
-<div class="relative inline-block">
+<div class="export-wrapper">
 	<button
 		bind:this={buttonRef}
 		onclick={toggle}
-		class="flex items-center gap-2 {sizeClasses[size]} font-medium rounded-lg
-			bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50
-			text-slate-300 hover:text-white transition-all duration-200
-			disabled:opacity-50 disabled:cursor-not-allowed"
+		class="export-trigger"
+		data-size={size}
 		disabled={disabled || data.length === 0}
 	>
 		<Icon icon={IconDownload} size={size === 'sm' ? 14 : size === 'md' ? 16 : 18} />
 		<span>Export</span>
 		{#if data.length > 0}
-			<span class="text-slate-500">({data.length})</span>
+			<span class="export-count">({data.length})</span>
 		{/if}
 		<svg
-			class="w-4 h-4 transition-transform duration-200"
-			class:rotate-180={isOpen}
+			class="export-chevron"
+			class:export-chevron-open={isOpen}
 			fill="none"
 			stroke="currentColor"
 			viewBox="0 0 24 24"
@@ -119,43 +112,127 @@
 	</button>
 
 	{#if isOpen}
-		<div
-			transition:fly={{ y: -5, duration: 150 }}
-			class="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700/50
-				rounded-xl shadow-xl overflow-hidden z-50"
-		>
-			<div class="py-1">
-				<button
-					onclick={() => handleExport('csv')}
-					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
-						hover:bg-slate-700/50 hover:text-white transition-colors"
-				>
-					<Icon icon={IconCsv} size={18} class="text-emerald-400" />
+		<div transition:fly={{ y: -5, duration: 150 }} class="export-dropdown">
+			<div class="export-options">
+				<button onclick={() => handleExport('csv')} class="export-option">
+					<Icon icon={IconCsv} size={18} class="export-icon-csv" />
 					<span>Export as CSV</span>
 				</button>
 
-				<button
-					onclick={() => handleExport('pdf')}
-					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
-						hover:bg-slate-700/50 hover:text-white transition-colors"
-				>
-					<Icon icon={IconPdf} size={18} class="text-red-400" />
+				<button onclick={() => handleExport('pdf')} class="export-option">
+					<Icon icon={IconPdf} size={18} class="export-icon-pdf" />
 					<span>Export as PDF</span>
 				</button>
 
-				<button
-					onclick={() => handleExport('json')}
-					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
-						hover:bg-slate-700/50 hover:text-white transition-colors"
-				>
-					<Icon icon={IconJson} size={18} class="text-blue-400" />
+				<button onclick={() => handleExport('json')} class="export-option">
+					<Icon icon={IconJson} size={18} class="export-icon-json" />
 					<span>Export as JSON</span>
 				</button>
 			</div>
 
-			<div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/50">
-				<p class="text-xs text-slate-500">{data.length} records to export</p>
+			<div class="export-footer">
+				<p>{data.length} records to export</p>
 			</div>
 		</div>
 	{/if}
 </div>
+
+<style>
+	.export-wrapper {
+		position: relative;
+		display: inline-block;
+	}
+
+	.export-trigger {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		font-weight: var(--weight-medium);
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.3 0.01 250 / 50%);
+		border: 1px solid oklch(0.4 0.01 250 / 50%);
+		color: oklch(0.7 0.01 250);
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&[data-size='sm'] { padding-inline: 0.625rem; padding-block: 0.375rem; font-size: var(--text-xs); }
+		&[data-size='md'] { padding-inline: var(--space-4); padding-block: var(--space-2); font-size: var(--text-sm); }
+		&[data-size='lg'] { padding-inline: 1.25rem; padding-block: 0.625rem; font-size: var(--text-base); }
+
+		&:hover:not(:disabled) {
+			background-color: oklch(0.3 0.01 250);
+			color: oklch(1 0 0);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	.export-count {
+		color: oklch(0.55 0.01 250);
+	}
+
+	.export-chevron {
+		inline-size: 1rem;
+		block-size: 1rem;
+		transition: transform var(--duration-fast) var(--ease-default);
+	}
+
+	.export-chevron-open {
+		transform: rotate(180deg);
+	}
+
+	.export-dropdown {
+		position: absolute;
+		inset-inline-end: 0;
+		margin-block-start: var(--space-2);
+		inline-size: 12rem;
+		background-color: oklch(0.25 0.01 250);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		box-shadow: var(--shadow-xl);
+		overflow: hidden;
+		z-index: 50;
+	}
+
+	.export-options {
+		padding-block: var(--space-1);
+	}
+
+	.export-option {
+		inline-size: 100%;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		padding-inline: var(--space-4);
+		padding-block: 0.625rem;
+		font-size: var(--text-sm);
+		color: oklch(0.7 0.01 250);
+		background: none;
+		border: none;
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&:hover {
+			background-color: oklch(0.3 0.01 250 / 50%);
+			color: oklch(1 0 0);
+		}
+	}
+
+	.export-footer {
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		border-block-start: 1px solid oklch(0.38 0.01 250 / 50%);
+		background-color: oklch(0.25 0.01 250 / 50%);
+
+		& p {
+			font-size: var(--text-xs);
+			color: oklch(0.55 0.01 250);
+		}
+	}
+
+	:global(.export-icon-csv) { color: oklch(0.7 0.18 160); }
+	:global(.export-icon-pdf) { color: oklch(0.7 0.18 25); }
+	:global(.export-icon-json) { color: oklch(0.7 0.18 260); }
+</style>

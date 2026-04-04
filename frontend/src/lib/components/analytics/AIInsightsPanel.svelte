@@ -43,24 +43,12 @@
 		}
 	}
 
-	function getSeverityClass(severity: string): string {
-		switch (severity) {
-			case 'critical':
-				return 'severity-critical';
-			case 'warning':
-				return 'severity-warning';
-			case 'info':
-				return 'severity-info';
-			default:
-				return '';
-		}
-	}
 </script>
 
 <div class="insights-panel">
 	<div class="panel-header">
 		<div class="header-title">
-			<Icon icon={IconBrain} size={24} class="text-purple-400" />
+			<Icon icon={IconBrain} size={24} />
 			<h3 class="title">AI Insights</h3>
 		</div>
 		<div class="insights-count">{insights.length} insights</div>
@@ -70,7 +58,7 @@
 		{#if insights.length > 0}
 			{#each insights as insight}
 				{@const iconStr = getIcon(insight.type)}
-				<div class="insight-card {getSeverityClass(insight.severity)}">
+				<div class="insight-card" data-severity={insight.severity}>
 					<div class="insight-icon">
 						<Icon icon={iconStr} size={20} />
 					</div>
@@ -117,139 +105,183 @@
 			{/each}
 		{:else}
 			<div class="empty-state">
-				<Icon icon={IconBrain} size={48} class="text-gray-600" />
-				<p class="text-gray-400 mt-3">No insights available yet</p>
-				<p class="text-sm text-gray-500 mt-1">AI insights will appear as data is analyzed</p>
+				<Icon icon={IconBrain} size={48} />
+				<p class="empty-primary">No insights available yet</p>
+				<p class="empty-secondary">AI insights will appear as data is analyzed</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.insights-panel {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.panel-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
 	}
 
 	.header-title {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		color: oklch(0.7 0.18 300);
 	}
 
 	.title {
-		@apply text-xl font-bold text-white;
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.insights-count {
-		@apply px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-semibold;
+		padding-inline: var(--space-3);
+		padding-block: var(--space-1);
+		background-color: oklch(0.55 0.2 300 / 20%);
+		color: oklch(0.7 0.18 300);
+		border-radius: 9999px;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 	}
 
 	.insights-list {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
 	}
 
 	.insight-card {
-		@apply flex gap-4 p-4 rounded-lg border transition-all;
-		@apply bg-gray-900/50 border-gray-700/50 hover:border-gray-600;
-	}
+		display: flex;
+		gap: var(--space-4);
+		padding: var(--space-4);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		background-color: oklch(0.15 0.01 250 / 50%);
+		transition: border-color var(--duration-fast) var(--ease-default);
 
-	.insight-card.severity-critical {
-		@apply border-red-500/50 bg-red-500/5;
-	}
-
-	.insight-card.severity-warning {
-		@apply border-orange-500/50 bg-orange-500/5;
-	}
-
-	.insight-card.severity-info {
-		@apply border-blue-500/50 bg-blue-500/5;
+		&:hover { border-color: oklch(0.45 0.01 250); }
+		&[data-severity='critical'] { border-color: oklch(0.55 0.22 25 / 50%); background-color: oklch(0.55 0.22 25 / 5%); }
+		&[data-severity='warning'] { border-color: oklch(0.7 0.18 55 / 50%); background-color: oklch(0.7 0.18 55 / 5%); }
+		&[data-severity='info'] { border-color: oklch(0.6 0.2 260 / 50%); background-color: oklch(0.6 0.2 260 / 5%); }
 	}
 
 	.insight-icon {
-		@apply shrink-0 w-10 h-10 rounded-lg flex items-center justify-center;
-		@apply bg-purple-500/20 text-purple-400;
+		flex-shrink: 0;
+		inline-size: 2.5rem;
+		block-size: 2.5rem;
+		border-radius: var(--radius-lg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: oklch(0.55 0.2 300 / 20%);
+		color: oklch(0.7 0.18 300);
 	}
 
-	.severity-critical .insight-icon {
-		@apply bg-red-500/20 text-red-400;
-	}
+	[data-severity='critical'] .insight-icon { background-color: oklch(0.55 0.22 25 / 20%); color: oklch(0.7 0.2 25); }
+	[data-severity='warning'] .insight-icon { background-color: oklch(0.7 0.18 55 / 20%); color: oklch(0.75 0.16 55); }
+	[data-severity='info'] .insight-icon { background-color: oklch(0.6 0.2 260 / 20%); color: oklch(0.7 0.18 260); }
 
-	.severity-warning .insight-icon {
-		@apply bg-orange-500/20 text-orange-400;
-	}
-
-	.severity-info .insight-icon {
-		@apply bg-blue-500/20 text-blue-400;
-	}
-
-	.insight-content {
-		@apply flex-1;
-	}
+	.insight-content { flex: 1; }
 
 	.insight-header {
-		@apply flex items-start justify-between gap-2 mb-2;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--space-2);
+		margin-block-end: var(--space-2);
 	}
 
 	.insight-title {
-		@apply text-base font-semibold text-white;
+		font-size: var(--text-base);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
 	}
 
 	.insight-type {
-		@apply px-2 py-1 bg-gray-700/50 text-gray-400 rounded text-xs font-medium uppercase;
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1);
+		background-color: oklch(0.38 0.01 250 / 50%);
+		color: oklch(0.65 0.01 250);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		text-transform: uppercase;
 	}
 
 	.insight-description {
-		@apply text-sm text-gray-300 mb-3;
+		font-size: var(--text-sm);
+		color: oklch(0.75 0.01 250);
+		margin-block-end: var(--space-3);
 	}
 
-	.insight-metrics {
-		@apply mb-3;
-	}
+	.insight-metrics { margin-block-end: var(--space-3); }
 
 	.metric {
-		@apply flex items-center gap-3 text-sm;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		font-size: var(--text-sm);
 	}
 
-	.metric-label {
-		@apply text-gray-400;
-	}
-
-	.metric-value {
-		@apply text-white font-semibold;
-	}
+	.metric-label { color: oklch(0.65 0.01 250); }
+	.metric-value { color: oklch(1 0 0); font-weight: var(--weight-semibold); }
 
 	.metric-change {
-		@apply font-semibold;
-	}
-
-	.metric-change.positive {
-		@apply text-green-400;
-	}
-
-	.metric-change.negative {
-		@apply text-red-400;
+		font-weight: var(--weight-semibold);
+		&.positive { color: oklch(0.7 0.18 160); }
+		&.negative { color: oklch(0.7 0.2 25); }
 	}
 
 	.insight-action {
-		@apply px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-medium;
-		@apply hover:bg-purple-500/30 transition-colors;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.55 0.2 300 / 20%);
+		color: oklch(0.7 0.18 300);
+		border-radius: var(--radius-lg);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.55 0.2 300 / 30%); }
 	}
 
 	.insight-footer {
-		@apply mt-3 pt-3 border-t border-gray-700/50;
+		margin-block-start: var(--space-3);
+		padding-block-start: var(--space-3);
+		border-block-start: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.insight-timestamp {
-		@apply text-xs text-gray-500;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
 	}
 
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-12 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-12);
+		text-align: center;
+		color: oklch(0.45 0.01 250);
+	}
+
+	.empty-primary {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-3);
+	}
+
+	.empty-secondary {
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 250);
+		margin-block-start: var(--space-1);
 	}
 </style>

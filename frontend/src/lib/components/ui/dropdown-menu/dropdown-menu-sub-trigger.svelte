@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import { CaretRight as ChevronRightIcon } from 'phosphor-svelte';
-	import { cn } from '$lib/utils.js';
 
 	type SubTriggerProps = DropdownMenuPrimitive.SubTriggerProps & {
 		inset?: boolean;
@@ -28,12 +27,59 @@
 	bind:ref
 	data-slot="dropdown-menu-sub-trigger"
 	data-inset={inset}
-	class={cn(
-		"data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:ps-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-		className
-	)}
+	class={className}
 	{...restProps}
 >
 	{@render props.children?.()}
-	<ChevronRightIcon class="ms-auto size-4" />
+	<ChevronRightIcon class="ddm-sub-chevron" />
 </DropdownMenuPrimitive.SubTrigger>
+
+<style>
+	:global([data-slot='dropdown-menu-sub-trigger']) {
+		display: flex;
+		cursor: default;
+		align-items: center;
+		gap: var(--space-2);
+		border-radius: var(--radius-sm);
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1-5);
+		font-size: var(--text-sm);
+		outline: none;
+		user-select: none;
+
+		&[data-highlighted],
+		&[data-state='open'] {
+			background-color: var(--accent);
+			color: var(--accent-foreground);
+		}
+
+		&[data-disabled] {
+			pointer-events: none;
+			opacity: 0.5;
+		}
+
+		&[data-inset] {
+			padding-inline-start: var(--space-8);
+		}
+
+		& :global(svg) {
+			pointer-events: none;
+			flex-shrink: 0;
+		}
+
+		& :global(svg:not([class*='size-'])) {
+			inline-size: 1rem;
+			block-size: 1rem;
+		}
+
+		& :global(svg:not([class*='text-'])) {
+			color: var(--muted-foreground);
+		}
+	}
+
+	:global(.ddm-sub-chevron) {
+		margin-inline-start: auto;
+		inline-size: 1rem;
+		block-size: 1rem;
+	}
+</style>

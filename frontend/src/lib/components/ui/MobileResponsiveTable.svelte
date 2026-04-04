@@ -180,20 +180,20 @@
 <div class="mobile-responsive-table">
 	<!-- Header with export -->
 	{#if exportable}
-		<div class="flex justify-end mb-4">
+		<div class="mrt-export-bar">
 			<ExportButton {data} columns={exportColumns} filename={exportFilename} />
 		</div>
 	{/if}
 
 	{#if loading}
-		<div class="space-y-3">
+		<div class="mrt-loading-stack">
 			{#each Array(5) as _}
 				<SkeletonLoader variant="rectangular" width="100%" height="60px" />
 			{/each}
 		</div>
 	{:else if data.length === 0}
-		<div class="flex flex-col items-center justify-center py-12 text-slate-500">
-			<svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<div class="mrt-empty">
+			<svg class="mrt-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
 					stroke-linecap="round"
 					stroke-linejoin="round"
@@ -201,16 +201,14 @@
 					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
 				/>
 			</svg>
-			<p class="text-sm">{emptyMessage}</p>
+			<p>{emptyMessage}</p>
 		</div>
 	{:else if isMobile}
 		<!-- Mobile Card View -->
-		<div class="space-y-4">
+		<div class="mrt-card-list">
 			{#each data as row, index (getRowId(row))}
 				<div
-					class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 space-y-3
-						transition-all duration-150 hover:bg-slate-800/70 cursor-pointer
-						active:scale-[0.98] active:bg-slate-800/80"
+					class="mrt-card"
 					onclick={() => handleRowClick(row)}
 					onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleRowClick(row)}
 					onkeydown={(e: KeyboardEvent) =>
@@ -220,7 +218,7 @@
 					aria-label={`Row ${index + 1}`}
 				>
 					{#if selectable}
-						<div class="flex items-center gap-3 pb-2 border-b border-slate-700/50">
+						<div class="mrt-card-select">
 							<input
 								type="checkbox"
 								checked={isRowSelected(row)}
@@ -228,19 +226,17 @@
 									e.stopPropagation();
 									toggleSelect(getRowId(row));
 								}}
-								class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 							/>
-							<span class="text-xs text-slate-500">#{index + 1}</span>
+							<span class="mrt-card-index">#{index + 1}</span>
 						</div>
 					{/if}
 
 					{#each visibleColumns as column}
-						<div class="flex justify-between items-start gap-4">
-							<span class="text-xs text-slate-500 font-medium">{column.label}</span>
+						<div class="mrt-card-field">
+							<span class="mrt-card-label">{column.label}</span>
 							<span
-								class="text-sm text-white font-medium text-right flex-1"
-								class:text-left={column.align === 'left'}
-								class:text-center={column.align === 'center'}
+								class="mrt-card-value"
+								data-align={column.align ?? 'right'}
 							>
 								{@html getValue(row, column)}
 							</span>
@@ -251,37 +247,35 @@
 		</div>
 	{:else}
 		<!-- Desktop Table View -->
-		<div class="table-mobile-scroll rounded-xl border border-slate-700/50 overflow-hidden">
-			<table class="w-full">
-				<thead class="bg-slate-800/50">
+		<div class="mrt-table-wrap">
+			<table class="mrt-table">
+				<thead class="mrt-thead">
 					<tr>
 						{#if selectable}
-							<th class="w-12 px-4 py-3">
+							<th class="mrt-th mrt-th-checkbox">
 								<input
 									type="checkbox"
 									checked={isAllSelected}
 									onchange={toggleSelectAll}
-									class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 								/>
 							</th>
 						{/if}
 						{#each visibleColumns as column}
 							<th
-								class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider
-									{column.sortable ? 'cursor-pointer hover:text-white transition-colors' : ''}"
+								class="mrt-th"
+								data-sortable={column.sortable || undefined}
 								style={column.width ? `width: ${column.width}` : ''}
 								onclick={() => handleSort(column)}
 							>
 								<div
-									class="flex items-center gap-2"
-									class:justify-center={column.align === 'center'}
-									class:justify-end={column.align === 'right'}
+									class="mrt-th-inner"
+									data-align={column.align ?? 'left'}
 								>
 									<span>{column.label}</span>
 									{#if column.sortable && sortBy === column.key}
 										<svg
-											class="w-4 h-4 transition-transform"
-											class:rotate-180={sortDir === 'desc'}
+											class="mrt-sort-icon"
+											class:mrt-sort-desc={sortDir === 'desc'}
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"
@@ -299,16 +293,15 @@
 						{/each}
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-slate-700/50">
+				<tbody class="mrt-tbody">
 					{#each data as row (getRowId(row))}
 						<tr
-							class="hover:bg-slate-800/30 transition-colors cursor-pointer {isRowSelected(row)
-								? 'bg-indigo-500/10'
-								: ''}"
+							class="mrt-row"
+							data-selected={isRowSelected(row) || undefined}
 							onclick={() => handleRowClick(row)}
 						>
 							{#if selectable}
-								<td class="px-4 py-3">
+								<td class="mrt-td">
 									<input
 										type="checkbox"
 										checked={isRowSelected(row)}
@@ -316,15 +309,13 @@
 											e.stopPropagation();
 											toggleSelect(getRowId(row));
 										}}
-										class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 									/>
 								</td>
 							{/if}
 							{#each visibleColumns as column}
 								<td
-									class="px-4 py-3 text-sm text-slate-300"
-									class:text-center={column.align === 'center'}
-									class:text-right={column.align === 'right'}
+									class="mrt-td"
+									data-align={column.align ?? 'left'}
 								>
 									{@html getValue(row, column)}
 								</td>
@@ -338,17 +329,14 @@
 
 	<!-- Selected count -->
 	{#if selectable && selectedIds.length > 0}
-		<div
-			class="fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 bg-indigo-600 text-white
-				rounded-full shadow-xl flex items-center gap-4 z-50"
-		>
-			<span class="font-medium">{selectedIds.length} selected</span>
+		<div class="mrt-selection-bar">
+			<span class="mrt-selection-count">{selectedIds.length} selected</span>
 			<button
 				onclick={() => {
 					selectedIds = [];
 					onselect?.({ selectedIds: [] });
 				}}
-				class="text-sm underline hover:no-underline"
+				class="mrt-selection-clear"
 			>
 				Clear
 			</button>
@@ -357,35 +345,236 @@
 </div>
 
 <style>
-	/* Ensure table cells don't overflow */
-	td {
-		max-width: 200px;
+	.mrt-export-bar {
+		display: flex;
+		justify-content: flex-end;
+		margin-block-end: var(--space-4);
+	}
+
+	.mrt-loading-stack {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+	}
+
+	/* Empty state */
+	.mrt-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-12);
+		color: oklch(0.55 0.01 250);
+
+		& p { font-size: var(--text-sm); }
+	}
+
+	.mrt-empty-icon {
+		inline-size: 4rem;
+		block-size: 4rem;
+		margin-block-end: var(--space-4);
+		opacity: 0.5;
+	}
+
+	/* Mobile card list */
+	.mrt-card-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+
+	.mrt-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-4);
+		transition: background-color var(--duration-fast) var(--ease-default);
+		cursor: pointer;
+
+		&:hover { background-color: oklch(0.25 0.01 250 / 70%); }
+		&:active { transform: scale(0.98); background-color: oklch(0.25 0.01 250 / 80%); }
+	}
+
+	.mrt-card-select {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		padding-block-end: var(--space-2);
+		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
+	}
+
+	.mrt-card-index {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
+	}
+
+	.mrt-card-field {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: var(--space-4);
+	}
+
+	.mrt-card-label {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
+		font-weight: var(--weight-medium);
+	}
+
+	.mrt-card-value {
+		font-size: var(--text-sm);
+		color: oklch(1 0 0);
+		font-weight: var(--weight-medium);
+		flex: 1;
+
+		&[data-align='right'] { text-align: end; }
+		&[data-align='center'] { text-align: center; }
+		&[data-align='left'] { text-align: start; }
+	}
+
+	/* Desktop table */
+	.mrt-table-wrap {
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		overflow: hidden;
+	}
+
+	.mrt-table {
+		inline-size: 100%;
+		border-collapse: collapse;
+	}
+
+	.mrt-thead {
+		background-color: oklch(0.25 0.01 250 / 50%);
+	}
+
+	.mrt-th {
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+		text-align: start;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.65 0.01 250);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+
+		&[data-sortable] {
+			cursor: pointer;
+			transition: color var(--duration-fast) var(--ease-default);
+			&:hover { color: oklch(1 0 0); }
+		}
+	}
+
+	.mrt-th-checkbox {
+		inline-size: 3rem;
+	}
+
+	.mrt-th-inner {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+
+		&[data-align='center'] { justify-content: center; }
+		&[data-align='right'] { justify-content: flex-end; }
+	}
+
+	.mrt-sort-icon {
+		inline-size: 1rem;
+		block-size: 1rem;
+		transition: transform var(--duration-fast) var(--ease-default);
+	}
+
+	.mrt-sort-desc {
+		transform: rotate(180deg);
+	}
+
+	.mrt-tbody {
+		& .mrt-row + .mrt-row {
+			border-block-start: 1px solid oklch(0.38 0.01 250 / 50%);
+		}
+	}
+
+	.mrt-row {
+		transition: background-color var(--duration-fast) var(--ease-default);
+		cursor: pointer;
+
+		&:hover { background-color: oklch(0.25 0.01 250 / 30%); }
+		&[data-selected] { background-color: oklch(0.55 0.2 260 / 10%); }
+	}
+
+	.mrt-td {
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+		font-size: var(--text-sm);
+		color: oklch(0.7 0.01 250);
+		max-inline-size: 200px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+
+		&[data-align='center'] { text-align: center; }
+		&[data-align='right'] { text-align: end; }
+	}
+
+	/* Selection bar */
+	.mrt-selection-bar {
+		position: fixed;
+		inset-block-end: var(--space-4);
+		inset-inline-start: 50%;
+		transform: translateX(-50%);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		background-color: oklch(0.45 0.2 260);
+		color: oklch(1 0 0);
+		border-radius: 9999px;
+		box-shadow: var(--shadow-xl);
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		z-index: 50;
+	}
+
+	.mrt-selection-count {
+		font-weight: var(--weight-medium);
+	}
+
+	.mrt-selection-clear {
+		font-size: var(--text-sm);
+		text-decoration: underline;
+		background: none;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+
+		&:hover { text-decoration: none; }
 	}
 
 	/* Custom checkbox styling */
 	input[type='checkbox'] {
+		inline-size: 1rem;
+		block-size: 1rem;
 		appearance: none;
-		background-color: rgb(51 65 85);
-		border: 1px solid rgb(71 85 105);
-		border-radius: 0.25rem;
+		background-color: oklch(0.3 0.01 250);
+		border: 1px solid oklch(0.4 0.01 250);
+		border-radius: var(--radius-sm);
 		cursor: pointer;
-		transition: all 0.2s ease;
-	}
+		transition: all var(--duration-fast) var(--ease-default);
 
-	input[type='checkbox']:checked {
-		background-color: rgb(99 102 241);
-		border-color: rgb(99 102 241);
-		background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
-		background-size: 100% 100%;
-		background-position: center;
-		background-repeat: no-repeat;
-	}
+		&:checked {
+			background-color: oklch(0.55 0.2 260);
+			border-color: oklch(0.55 0.2 260);
+			background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+			background-size: 100% 100%;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
 
-	input[type='checkbox']:focus {
-		outline: none;
-		box-shadow: 0 0 0 3px rgb(99 102 241 / 0.3);
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 3px oklch(0.55 0.2 260 / 30%);
+		}
 	}
 </style>

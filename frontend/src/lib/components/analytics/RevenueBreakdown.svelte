@@ -64,10 +64,10 @@
 		return IconMinus;
 	}
 
-	function getTrendColor(change: number, inverse: boolean = false) {
-		if (change > 0) return inverse ? 'text-red-400' : 'text-green-400';
-		if (change < 0) return inverse ? 'text-green-400' : 'text-red-400';
-		return 'text-gray-400';
+	function getTrend(change: number, inverse: boolean = false): 'positive' | 'negative' | 'neutral' {
+		if (change > 0) return inverse ? 'negative' : 'positive';
+		if (change < 0) return inverse ? 'positive' : 'negative';
+		return 'neutral';
 	}
 </script>
 
@@ -79,7 +79,7 @@
 
 	<!-- Primary Metrics -->
 	<div class="primary-metrics">
-		<div class="metric-card primary">
+		<div class="metric-card" data-variant="primary">
 			<div class="metric-label">Monthly Recurring Revenue</div>
 			<div class="metric-value">{formatCurrency(safeData.mrr)}</div>
 			{#if true}
@@ -106,32 +106,30 @@
 	<div class="mrr-movement">
 		<h4 class="section-title">MRR Movement</h4>
 		<div class="movement-grid">
-			<div class="movement-item positive">
+			<div class="movement-item" data-trend="positive">
 				<div class="movement-label">New MRR</div>
 				<div class="movement-value">+{formatCurrency(safeData.new_mrr)}</div>
 			</div>
 
-			<div class="movement-item positive">
+			<div class="movement-item" data-trend="positive">
 				<div class="movement-label">Expansion MRR</div>
 				<div class="movement-value">+{formatCurrency(safeData.expansion_mrr)}</div>
 			</div>
 
-			<div class="movement-item negative">
+			<div class="movement-item" data-trend="negative">
 				<div class="movement-label">Contraction MRR</div>
 				<div class="movement-value">-{formatCurrency(safeData.contraction_mrr)}</div>
 			</div>
 
-			<div class="movement-item negative">
+			<div class="movement-item" data-trend="negative">
 				<div class="movement-label">Churned MRR</div>
 				<div class="movement-value">-{formatCurrency(safeData.churn_mrr)}</div>
 			</div>
 
 			<div
-				class="movement-item net {safeData.net_new_mrr > 0
-					? 'positive'
-					: safeData.net_new_mrr < 0
-						? 'negative'
-						: ''}"
+				class="movement-item"
+				data-variant="net"
+				data-trend={safeData.net_new_mrr > 0 ? 'positive' : safeData.net_new_mrr < 0 ? 'negative' : 'neutral'}
 			>
 				<div class="movement-label">Net New MRR</div>
 				<div class="movement-value">
@@ -146,7 +144,7 @@
 		<div class="metric-row">
 			<div class="metric-item">
 				<div class="metric-label">Churn Rate</div>
-				<div class="metric-value small {getTrendColor(safeData.churn_rate, true)}">
+				<div class="metric-value small" data-trend={getTrend(safeData.churn_rate, true)}>
 					{formatPercent(safeData.churn_rate)}
 				</div>
 			</div>
@@ -167,14 +165,14 @@
 	<div class="waterfall-chart">
 		<h4 class="section-title">MRR Waterfall</h4>
 		<div class="waterfall-bars">
-			<div class="waterfall-bar start">
+			<div class="waterfall-bar" data-type="start">
 				<div class="bar-label">Start MRR</div>
 				<div class="bar" style="height: 100%">
 					<span class="bar-value">{formatCurrency(safeData.mrr - safeData.net_new_mrr)}</span>
 				</div>
 			</div>
 
-			<div class="waterfall-bar positive">
+			<div class="waterfall-bar" data-type="positive">
 				<div class="bar-label">New</div>
 				<div
 					class="bar"
@@ -184,7 +182,7 @@
 				</div>
 			</div>
 
-			<div class="waterfall-bar positive">
+			<div class="waterfall-bar" data-type="positive">
 				<div class="bar-label">Expansion</div>
 				<div
 					class="bar"
@@ -194,7 +192,7 @@
 				</div>
 			</div>
 
-			<div class="waterfall-bar negative">
+			<div class="waterfall-bar" data-type="negative">
 				<div class="bar-label">Contraction</div>
 				<div
 					class="bar"
@@ -204,7 +202,7 @@
 				</div>
 			</div>
 
-			<div class="waterfall-bar negative">
+			<div class="waterfall-bar" data-type="negative">
 				<div class="bar-label">Churn</div>
 				<div
 					class="bar"
@@ -214,7 +212,7 @@
 				</div>
 			</div>
 
-			<div class="waterfall-bar end">
+			<div class="waterfall-bar" data-type="end">
 				<div class="bar-label">End MRR</div>
 				<div class="bar" style="height: 100%">
 					<span class="bar-value">{formatCurrency(safeData.mrr)}</span>
@@ -224,149 +222,205 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../../app.css";
+<style>
 	.revenue-breakdown {
-		background-color: rgba(30, 41, 59, 0.5);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		background-color: oklch(0.2 0.02 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.35 0.02 250 / 50%);
 	}
 
 	.breakdown-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
 	}
 
 	.breakdown-title {
-		@apply text-xl font-bold text-white;
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.period-badge {
-		@apply px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-lg text-sm font-medium;
+		padding-inline: var(--space-3);
+		padding-block: var(--space-1);
+		background-color: oklch(0.8 0.18 90 / 20%);
+		color: oklch(0.8 0.18 90);
+		border-radius: var(--radius-lg);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
 	}
 
 	.primary-metrics {
-		@apply grid grid-cols-1 md:grid-cols-2 gap-4 mb-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-4);
+		margin-block-end: var(--space-6);
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
 	}
 
 	.metric-card {
-		@apply bg-gray-900/50 rounded-lg p-4 border border-gray-700/50;
-	}
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 
-	.metric-card.primary {
-		@apply border-yellow-500/30 bg-yellow-500/5;
+		&[data-variant='primary'] {
+			border-color: oklch(0.8 0.18 90 / 30%);
+			background-color: oklch(0.8 0.18 90 / 5%);
+		}
 	}
 
 	.metric-label {
-		@apply text-sm text-gray-400 mb-2;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-2);
 	}
 
 	.metric-value {
-		@apply text-3xl font-bold text-white mb-1;
-	}
+		font-size: var(--text-3xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-1);
 
-	.metric-value.small {
-		@apply text-xl;
+		&.small { font-size: var(--text-xl); }
+		&[data-trend='positive'] { color: oklch(0.7 0.18 160); }
+		&[data-trend='negative'] { color: oklch(0.7 0.2 25); }
+		&[data-trend='neutral'] { color: oklch(0.65 0.01 250); }
 	}
 
 	.metric-sublabel {
-		@apply text-xs text-gray-500;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
 	}
 
 	.metric-change {
-		@apply flex items-center gap-1 text-sm font-medium;
-	}
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
 
-	.metric-change.positive {
-		@apply text-green-400;
-	}
-
-	.metric-change.negative {
-		@apply text-red-400;
+		&.positive { color: oklch(0.7 0.18 160); }
+		&.negative { color: oklch(0.7 0.2 25); }
 	}
 
 	.mrr-movement {
-		@apply mb-6;
+		margin-block-end: var(--space-6);
 	}
 
 	.section-title {
-		@apply text-lg font-semibold text-white mb-4;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-4);
 	}
 
 	.movement-grid {
-		@apply grid grid-cols-2 md:grid-cols-5 gap-3;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-3);
+		@media (min-width: 768px) { grid-template-columns: repeat(5, 1fr); }
 	}
 
 	.movement-item {
-		@apply bg-gray-900/50 rounded-lg p-3 border border-gray-700/50;
-	}
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-3);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 
-	.movement-item.positive {
-		@apply border-green-500/30 bg-green-500/5;
-	}
-
-	.movement-item.negative {
-		@apply border-red-500/30 bg-red-500/5;
-	}
-
-	.movement-item.net {
-		@apply border-yellow-500/30 bg-yellow-500/5;
+		&[data-trend='positive'] { border-color: oklch(0.6 0.18 160 / 30%); background-color: oklch(0.6 0.18 160 / 5%); }
+		&[data-trend='negative'] { border-color: oklch(0.55 0.22 25 / 30%); background-color: oklch(0.55 0.22 25 / 5%); }
+		&[data-variant='net'] { border-color: oklch(0.8 0.18 90 / 30%); background-color: oklch(0.8 0.18 90 / 5%); }
 	}
 
 	.movement-label {
-		@apply text-xs text-gray-400 mb-1;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-1);
 	}
 
 	.movement-value {
-		@apply text-lg font-bold text-white;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.secondary-metrics {
-		@apply mb-6;
+		margin-block-end: var(--space-6);
 	}
 
 	.metric-row {
-		@apply grid grid-cols-3 gap-4;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-4);
 	}
 
 	.metric-item {
-		@apply bg-gray-900/50 rounded-lg p-3 border border-gray-700/50;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-3);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.waterfall-chart {
-		@apply mt-6;
+		margin-block-start: var(--space-6);
 	}
 
 	.waterfall-bars {
-		@apply flex items-end justify-between gap-2 h-64 bg-gray-900/30 rounded-lg p-4;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--space-2);
+		block-size: 16rem;
+		background-color: oklch(0.15 0.01 250 / 30%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
 	}
 
 	.waterfall-bar {
-		@apply flex-1 flex flex-col items-center justify-end gap-2;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-end;
+		gap: var(--space-2);
 	}
 
 	.bar-label {
-		@apply text-xs text-gray-400 text-center;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		text-align: center;
 	}
 
 	.bar {
-		@apply w-full rounded-t relative flex items-start justify-center pt-2;
+		inline-size: 100%;
+		border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+		position: relative;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		padding-block-start: var(--space-2);
 	}
 
-	.waterfall-bar.start .bar,
-	.waterfall-bar.end .bar {
-		@apply bg-blue-500;
+	.waterfall-bar[data-type='start'] .bar,
+	.waterfall-bar[data-type='end'] .bar {
+		background-color: oklch(0.6 0.2 260);
 	}
 
-	.waterfall-bar.positive .bar {
-		@apply bg-green-500;
+	.waterfall-bar[data-type='positive'] .bar {
+		background-color: oklch(0.6 0.18 160);
 	}
 
-	.waterfall-bar.negative .bar {
-		@apply bg-red-500;
+	.waterfall-bar[data-type='negative'] .bar {
+		background-color: oklch(0.55 0.22 25);
 	}
 
 	.bar-value {
-		@apply text-xs font-semibold text-white;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
 	}
 </style>

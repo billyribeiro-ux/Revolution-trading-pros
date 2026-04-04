@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef, type WithoutChildren } from '$lib/utils.js';
+	import type { WithElementRef, WithoutChildren } from '$lib/utils.js';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 
 	let {
@@ -14,10 +14,54 @@
 <textarea
 	bind:this={ref}
 	data-slot={dataSlot}
-	class={cn(
-		'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-[88px] w-full rounded-md border bg-transparent px-4 py-3 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation',
-		className
-	)}
+	class={className}
 	bind:value
 	{...restProps}
 ></textarea>
+
+<style>
+	:global([data-slot='textarea']) {
+		display: flex;
+		field-sizing: content;
+		min-block-size: 88px;
+		inline-size: 100%;
+		border-radius: var(--radius-md);
+		border: 1px solid var(--input);
+		background-color: transparent;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+		font-size: var(--text-base);
+		box-shadow: var(--shadow-xs);
+		outline: none;
+		touch-action: manipulation;
+		transition: color var(--duration-fast) var(--ease-default),
+			box-shadow var(--duration-fast) var(--ease-default);
+
+		&::placeholder {
+			color: var(--muted-foreground);
+		}
+
+		&:focus-visible {
+			border-color: var(--ring);
+			box-shadow: 0 0 0 3px oklch(from var(--ring) l c h / 50%);
+		}
+
+		&[aria-invalid='true'] {
+			border-color: var(--destructive);
+			box-shadow: 0 0 0 3px oklch(from var(--destructive) l c h / 20%);
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+	}
+
+	:global(.dark [data-slot='textarea']) {
+		background-color: oklch(from var(--input) l c h / 30%);
+	}
+
+	:global(.dark [data-slot='textarea'][aria-invalid='true']) {
+		box-shadow: 0 0 0 3px oklch(from var(--destructive) l c h / 40%);
+	}
+</style>

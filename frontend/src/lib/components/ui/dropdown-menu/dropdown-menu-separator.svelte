@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils.js';
-
+	
 	let props: DropdownMenuPrimitive.SeparatorProps = $props();
 	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
@@ -21,6 +20,15 @@
 <DropdownMenuPrimitive.Separator
 	bind:ref
 	data-slot="dropdown-menu-separator"
-	class={cn('bg-border -mx-1 my-1 h-px', className)}
+	class={className}
 	{...restProps}
 />
+
+<style>
+	:global([data-slot='dropdown-menu-separator']) {
+		background-color: var(--border);
+		margin-inline: calc(-1 * var(--space-1));
+		margin-block: var(--space-1);
+		block-size: 1px;
+	}
+</style>

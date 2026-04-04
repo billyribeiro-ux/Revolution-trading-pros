@@ -56,66 +56,6 @@
 	let isVisible = $state(false);
 	let hasAnimated = $state(false);
 
-	const colorConfig = {
-		blue: {
-			bg: 'from-blue-500/20 to-blue-600/10',
-			border: 'border-blue-500/30',
-			icon: 'text-blue-400',
-			iconBg: 'bg-blue-500/20',
-			glow: 'shadow-blue-500/20',
-			gradient: 'from-blue-500 to-blue-600'
-		},
-		green: {
-			bg: 'from-emerald-500/20 to-emerald-600/10',
-			border: 'border-emerald-500/30',
-			icon: 'text-emerald-400',
-			iconBg: 'bg-emerald-500/20',
-			glow: 'shadow-emerald-500/20',
-			gradient: 'from-emerald-500 to-emerald-600'
-		},
-		purple: {
-			bg: 'from-purple-500/20 to-purple-600/10',
-			border: 'border-purple-500/30',
-			icon: 'text-purple-400',
-			iconBg: 'bg-purple-500/20',
-			glow: 'shadow-purple-500/20',
-			gradient: 'from-purple-500 to-purple-600'
-		},
-		orange: {
-			bg: 'from-orange-500/20 to-orange-600/10',
-			border: 'border-orange-500/30',
-			icon: 'text-orange-400',
-			iconBg: 'bg-orange-500/20',
-			glow: 'shadow-orange-500/20',
-			gradient: 'from-orange-500 to-orange-600'
-		},
-		pink: {
-			bg: 'from-pink-500/20 to-pink-600/10',
-			border: 'border-pink-500/30',
-			icon: 'text-pink-400',
-			iconBg: 'bg-pink-500/20',
-			glow: 'shadow-pink-500/20',
-			gradient: 'from-pink-500 to-pink-600'
-		},
-		cyan: {
-			bg: 'from-cyan-500/20 to-cyan-600/10',
-			border: 'border-cyan-500/30',
-			icon: 'text-cyan-400',
-			iconBg: 'bg-cyan-500/20',
-			glow: 'shadow-cyan-500/20',
-			gradient: 'from-cyan-500 to-cyan-600'
-		},
-		red: {
-			bg: 'from-red-500/20 to-red-600/10',
-			border: 'border-red-500/30',
-			icon: 'text-red-400',
-			iconBg: 'bg-red-500/20',
-			glow: 'shadow-red-500/20',
-			gradient: 'from-red-500 to-red-600'
-		}
-	};
-
-	let colors = $derived(colorConfig[color]);
 	let trendIsPositive = $derived(trend !== null && trend >= 0);
 	let progressPercent = $derived(target ? Math.min((value / target) * 100, 100) : 0);
 
@@ -173,12 +113,11 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	bind:this={cardRef}
-	class="enterprise-stat-card relative p-6 rounded-2xl border bg-linear-to-br {colors.bg} {colors.border}
-		backdrop-blur-xl transition-all duration-500
-		{!hasAnimated ? 'esc-enter' : ''} {hasAnimated ? 'esc-enter-active' : ''}
-		{clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-xl' : ''}
-		hover:{colors.glow}"
-	style={`transition-delay: ${delay}s`}
+	class="enterprise-stat-card"
+	data-color={color}
+	data-clickable={clickable || undefined}
+	data-animated={hasAnimated || undefined}
+	style:transition-delay="{delay}s"
 	role={clickable ? 'button' : undefined}
 	tabindex={clickable ? 0 : undefined}
 	onclick={clickable ? handleClick : undefined}
@@ -188,32 +127,27 @@
 		<SkeletonLoader variant="stat" />
 	{:else}
 		<!-- Header with icon -->
-		<div class="flex items-start justify-between mb-4">
+		<div class="stat-header">
 			{#if icon}
 				{@const iconStr = icon}
-				<div
-					class="stat-icon w-12 h-12 rounded-xl {colors.iconBg} flex items-center justify-center"
-				>
-					<Icon icon={iconStr} size={24} class={colors.icon} />
+				<div class="stat-icon">
+					<Icon icon={iconStr} size={24} />
 				</div>
 			{/if}
 
 			{#if trend !== null}
-				<div
-					class="flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold
-						{trendIsPositive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}"
-				>
-					<span class="text-xs">{trendIsPositive ? '↑' : '↓'}</span>
+				<div class="stat-trend" data-positive={trendIsPositive || undefined} data-negative={!trendIsPositive || undefined}>
+					<span class="stat-trend-arrow">{trendIsPositive ? '↑' : '↓'}</span>
 					<span>{Math.abs(trend).toFixed(1)}%</span>
 				</div>
 			{/if}
 		</div>
 
 		<!-- Title -->
-		<p class="text-sm font-medium text-slate-400 mb-1">{title}</p>
+		<p class="stat-title">{title}</p>
 
 		<!-- Animated Value -->
-		<div class="text-3xl font-bold text-white mb-2">
+		<div class="stat-value">
 			{#if isVisible}
 				<AnimatedNumber
 					{value}
@@ -225,26 +159,27 @@
 					duration={1.5}
 				/>
 			{:else}
-				<span class="opacity-0">{prefix}0{suffix}</span>
+				<span class="stat-value-hidden">{prefix}0{suffix}</span>
 			{/if}
 		</div>
 
 		<!-- Trend label -->
 		{#if trend !== null}
-			<p class="text-xs text-slate-500">{trendLabel}</p>
+			<p class="stat-trend-label">{trendLabel}</p>
 		{/if}
 
 		<!-- Target progress -->
 		{#if target !== null}
-			<div class="mt-4">
-				<div class="flex justify-between text-xs text-slate-400 mb-1">
+			<div class="stat-target">
+				<div class="stat-target-header">
 					<span>{targetLabel}</span>
 					<span>{Math.round(progressPercent)}%</span>
 				</div>
-				<div class="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+				<div class="stat-progress-track">
 					<div
-						class="progress-fill h-full rounded-full bg-linear-to-r {colors.gradient}"
-						style={`width: ${hasAnimated ? progressPercent : 0}%; transition: width 900ms ease; transition-delay: ${delay + 0.5}s;`}
+						class="stat-progress-fill"
+						style:width="{hasAnimated ? progressPercent : 0}%"
+						style:transition-delay="{delay + 0.5}s"
 					></div>
 				</div>
 			</div>
@@ -252,8 +187,8 @@
 
 		<!-- Sparkline -->
 		{#if sparklineData.length > 1}
-			<div class="mt-4 opacity-60">
-				<svg width="100" height="30" class="w-full" preserveAspectRatio="none">
+			<div class="stat-sparkline">
+				<svg width="100" height="30" class="stat-sparkline-svg" preserveAspectRatio="none">
 					<path
 						d={generateSparklinePath(sparklineData)}
 						fill="none"
@@ -261,7 +196,6 @@
 						stroke-width="2"
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						class={colors.icon}
 					/>
 				</svg>
 			</div>
@@ -271,40 +205,194 @@
 
 <style>
 	.enterprise-stat-card {
+		position: relative;
+		padding: var(--space-6);
+		border-radius: var(--radius-xl);
+		border: 1px solid;
+		backdrop-filter: blur(16px);
+		transition: all 500ms var(--ease-default);
 		will-change: transform, opacity;
-	}
-
-	.enterprise-stat-card:hover {
-		transform: translateY(-2px);
-	}
-
-	.esc-enter {
 		opacity: 0;
 		transform: translateY(30px) scale(0.95);
+
+		&[data-animated] {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+
+		&:hover { transform: translateY(-2px); }
+
+		&[data-clickable] {
+			cursor: pointer;
+			&:hover {
+				transform: scale(1.02);
+				box-shadow: var(--shadow-xl);
+			}
+		}
+
+		/* Color variants */
+		&[data-color='blue'] {
+			background: linear-gradient(to bottom right, oklch(0.55 0.2 260 / 20%), oklch(0.5 0.2 260 / 10%));
+			border-color: oklch(0.55 0.2 260 / 30%);
+			--_accent: oklch(0.7 0.18 260);
+			--_accent-bg: oklch(0.55 0.2 260 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.55 0.2 260), oklch(0.5 0.2 260));
+		}
+		&[data-color='green'] {
+			background: linear-gradient(to bottom right, oklch(0.6 0.18 160 / 20%), oklch(0.55 0.18 160 / 10%));
+			border-color: oklch(0.6 0.18 160 / 30%);
+			--_accent: oklch(0.7 0.18 160);
+			--_accent-bg: oklch(0.6 0.18 160 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.6 0.18 160), oklch(0.55 0.18 160));
+		}
+		&[data-color='purple'] {
+			background: linear-gradient(to bottom right, oklch(0.55 0.2 300 / 20%), oklch(0.5 0.2 300 / 10%));
+			border-color: oklch(0.55 0.2 300 / 30%);
+			--_accent: oklch(0.7 0.18 300);
+			--_accent-bg: oklch(0.55 0.2 300 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.55 0.2 300), oklch(0.5 0.2 300));
+		}
+		&[data-color='orange'] {
+			background: linear-gradient(to bottom right, oklch(0.65 0.2 55 / 20%), oklch(0.6 0.2 55 / 10%));
+			border-color: oklch(0.65 0.2 55 / 30%);
+			--_accent: oklch(0.75 0.18 55);
+			--_accent-bg: oklch(0.65 0.2 55 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.65 0.2 55), oklch(0.6 0.2 55));
+		}
+		&[data-color='pink'] {
+			background: linear-gradient(to bottom right, oklch(0.6 0.2 350 / 20%), oklch(0.55 0.2 350 / 10%));
+			border-color: oklch(0.6 0.2 350 / 30%);
+			--_accent: oklch(0.72 0.18 350);
+			--_accent-bg: oklch(0.6 0.2 350 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.6 0.2 350), oklch(0.55 0.2 350));
+		}
+		&[data-color='cyan'] {
+			background: linear-gradient(to bottom right, oklch(0.65 0.15 195 / 20%), oklch(0.6 0.15 195 / 10%));
+			border-color: oklch(0.65 0.15 195 / 30%);
+			--_accent: oklch(0.75 0.13 195);
+			--_accent-bg: oklch(0.65 0.15 195 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.65 0.15 195), oklch(0.6 0.15 195));
+		}
+		&[data-color='red'] {
+			background: linear-gradient(to bottom right, oklch(0.55 0.22 25 / 20%), oklch(0.5 0.22 25 / 10%));
+			border-color: oklch(0.55 0.22 25 / 30%);
+			--_accent: oklch(0.7 0.2 25);
+			--_accent-bg: oklch(0.55 0.22 25 / 20%);
+			--_gradient: linear-gradient(to right, oklch(0.55 0.22 25), oklch(0.5 0.22 25));
+		}
 	}
 
-	.esc-enter-active {
-		opacity: 1;
-		transform: translateY(0) scale(1);
+	.stat-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		margin-block-end: var(--space-4);
 	}
 
 	.stat-icon {
+		inline-size: 3rem;
+		block-size: 3rem;
+		border-radius: var(--radius-lg);
+		background-color: var(--_accent-bg);
+		color: var(--_accent);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		transform-origin: center;
 	}
 
-	/* Lightweight icon “pop” without GSAP */
-	.esc-enter-active .stat-icon {
+	/* Lightweight icon "pop" without GSAP */
+	[data-animated] .stat-icon {
 		animation: esc-icon-pop 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 		animation-delay: 0.3s;
 		animation-fill-mode: both;
 	}
 
+	.stat-trend {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+		padding-inline: 0.625rem;
+		padding-block: var(--space-1);
+		border-radius: 9999px;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+
+		&[data-positive] {
+			background-color: oklch(0.6 0.18 160 / 20%);
+			color: oklch(0.7 0.18 160);
+		}
+		&[data-negative] {
+			background-color: oklch(0.55 0.22 25 / 20%);
+			color: oklch(0.7 0.2 25);
+		}
+	}
+
+	.stat-trend-arrow {
+		font-size: var(--text-xs);
+	}
+
+	.stat-title {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-1);
+	}
+
+	.stat-value {
+		font-size: 1.875rem;
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-2);
+	}
+
+	.stat-value-hidden {
+		opacity: 0;
+	}
+
+	.stat-trend-label {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
+	}
+
+	.stat-target {
+		margin-block-start: var(--space-4);
+	}
+
+	.stat-target-header {
+		display: flex;
+		justify-content: space-between;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-1);
+	}
+
+	.stat-progress-track {
+		block-size: 0.5rem;
+		background-color: oklch(0.3 0.01 250 / 50%);
+		border-radius: 9999px;
+		overflow: hidden;
+	}
+
+	.stat-progress-fill {
+		block-size: 100%;
+		border-radius: 9999px;
+		background: var(--_gradient);
+		transition: width 900ms ease;
+	}
+
+	.stat-sparkline {
+		margin-block-start: var(--space-4);
+		opacity: 0.6;
+		color: var(--_accent);
+	}
+
+	.stat-sparkline-svg {
+		inline-size: 100%;
+	}
+
 	@keyframes esc-icon-pop {
-		0% {
-			transform: scale(0) rotate(-180deg);
-		}
-		100% {
-			transform: scale(1) rotate(0);
-		}
+		0% { transform: scale(0) rotate(-180deg); }
+		100% { transform: scale(1) rotate(0); }
 	}
 </style>

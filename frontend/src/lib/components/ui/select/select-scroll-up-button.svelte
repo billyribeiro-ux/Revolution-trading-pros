@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CaretUp as ChevronUpIcon } from 'phosphor-svelte';
 	import { Select as SelectPrimitive } from 'bits-ui';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -13,8 +13,23 @@
 <SelectPrimitive.ScrollUpButton
 	bind:ref
 	data-slot="select-scroll-up-button"
-	class={cn('flex cursor-default items-center justify-center py-1', className)}
+	class={className}
 	{...restProps}
 >
-	<ChevronUpIcon class="size-4" />
+	<ChevronUpIcon class="select-scroll-icon" />
 </SelectPrimitive.ScrollUpButton>
+
+<style>
+	:global([data-slot='select-scroll-up-button']) {
+		display: flex;
+		cursor: default;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-1);
+	}
+
+	:global(.select-scroll-icon) {
+		inline-size: 1rem;
+		block-size: 1rem;
+	}
+</style>
