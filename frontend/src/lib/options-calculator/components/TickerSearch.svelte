@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Search, X, Loader2 } from '@lucide/svelte';
+	import { MagnifyingGlass as Search, X, SpinnerGap as Loader2 } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { formatCurrency } from '../utils/formatters.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';

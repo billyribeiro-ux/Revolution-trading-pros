@@ -27,7 +27,7 @@
 	import KeyboardShortcuts from './power-user/KeyboardShortcuts.svelte';
 	import CTABanner from './growth/CTABanner.svelte';
 	import LeadCaptureModal from './growth/LeadCaptureModal.svelte';
-	import { Calculator as CalculatorIcon, Zap, FolderOpen } from '@lucide/svelte';
+	import { Calculator as CalculatorIcon, Lightning as Zap, FolderOpen } from 'phosphor-svelte';
 	import type { MarketSnapshot } from '../data/types.js';
 
 	const calc = createCalculatorState();

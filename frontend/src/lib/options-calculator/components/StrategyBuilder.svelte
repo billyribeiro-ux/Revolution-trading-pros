@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, Trash2, BarChart3 } from '@lucide/svelte';
+	import { Plus, Trash as Trash2, ChartBar as BarChart3 } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import StrategyLegRow from './ui/StrategyLegRow.svelte';
 	import StrategyPresets from './StrategyPresets.svelte';

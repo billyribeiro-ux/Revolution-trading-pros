@@ -11,7 +11,6 @@ use crate::{models::User, AppState};
 /// Admin user extractor - requires admin, super_admin, or developer role
 pub struct AdminUser(pub User);
 
-#[axum::async_trait]
 impl FromRequestParts<AppState> for AdminUser {
     type Rejection = (StatusCode, &'static str);
 
@@ -61,7 +60,6 @@ impl FromRequestParts<AppState> for AdminUser {
 /// Super admin user extractor - requires super_admin role
 pub struct SuperAdminUser(pub User);
 
-#[axum::async_trait]
 impl FromRequestParts<AppState> for SuperAdminUser {
     type Rejection = (StatusCode, &'static str);
 

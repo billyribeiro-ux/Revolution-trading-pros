@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RotateCcw } from '@lucide/svelte';
+	import { ArrowCounterClockwise as RotateCcw } from 'phosphor-svelte';
 	import AnimatedSlider from './ui/AnimatedSlider.svelte';
 	import InfoTooltip from './ui/InfoTooltip.svelte';
 	import { INPUT_FIELDS } from '../engine/constants.js';

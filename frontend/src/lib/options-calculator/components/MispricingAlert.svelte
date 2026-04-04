@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X, TrendingUp, TrendingDown } from '@lucide/svelte';
+	import { X, TrendUp as TrendingUp, TrendDown as TrendingDown } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';

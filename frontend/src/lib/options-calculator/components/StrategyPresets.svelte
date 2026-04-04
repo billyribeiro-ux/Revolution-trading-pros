@@ -1,6 +1,6 @@
 <script lang="ts">
 	import gsap from 'gsap';
-	import { TrendingUp, TrendingDown, Minus } from '@lucide/svelte';
+	import { TrendUp as TrendingUp, TrendDown as TrendingDown, Minus } from 'phosphor-svelte';
 	import { STRATEGY_TEMPLATES } from '../engine/constants.js';
 	import type { CalculatorState } from '../state/calculator.svelte.js';
 	import type { StrategyTemplate } from '../engine/types.js';

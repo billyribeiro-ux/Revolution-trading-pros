@@ -251,6 +251,42 @@ vi.mock('$app/environment', () => ({
 	version: 'test-1.0.0'
 }));
 
+vi.mock('$lib/observability', () => ({
+	useExperiment: vi.fn(() => ({ variant: 'control', experiment: null })),
+	useFeatureFlag: vi.fn(() => false),
+	trackConversion: vi.fn(),
+	overrideExperiment: vi.fn(),
+	clearOverrides: vi.fn(),
+	experimentAssignments: { subscribe: vi.fn((fn: (v: unknown) => void) => { fn({}); return () => {}; }) },
+	EXPERIMENTS: {},
+	FEATURE_FLAGS: {},
+	logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+	track: vi.fn(),
+	trackEvent: vi.fn(),
+	trackPageView: vi.fn(),
+	metrics: { track: vi.fn(), trackPageView: vi.fn(), identify: vi.fn(), initialize: vi.fn(() => Promise.resolve()) },
+	Events: new Proxy({}, { get: () => 'mock_event' }),
+	getOrchestrator: vi.fn(() => ({ updateConsent: vi.fn(), metrics: {}, flush: vi.fn(() => Promise.resolve()), destroy: vi.fn() })),
+	createOrchestrator: vi.fn(),
+	resetOrchestrator: vi.fn(),
+	initializeAnalytics: vi.fn(() => Promise.resolve()),
+	updateAnalyticsConsent: vi.fn(),
+	getAnalyticsMetrics: vi.fn(() => ({})),
+	flushAnalytics: vi.fn(() => Promise.resolve()),
+	destroyAnalytics: vi.fn()
+}));
+
+vi.mock('$lib/observability/experiments', () => ({
+	useExperiment: vi.fn(() => ({ variant: 'control', experiment: null })),
+	useFeatureFlag: vi.fn(() => false),
+	trackConversion: vi.fn(),
+	overrideExperiment: vi.fn(),
+	clearOverrides: vi.fn(),
+	experimentAssignments: { subscribe: vi.fn((fn: (v: unknown) => void) => { fn({}); return () => {}; }) },
+	EXPERIMENTS: {},
+	FEATURE_FLAGS: {}
+}));
+
 // ===============================================================================
 // TEST FIXTURES - Factory Functions
 // ===============================================================================

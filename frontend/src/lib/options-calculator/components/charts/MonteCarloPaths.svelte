@@ -3,7 +3,7 @@
 	import { scaleLinear } from 'd3-scale';
 	import { line as d3line, curveMonotoneX } from 'd3-shape';
 	import { axisBottom, axisLeft } from 'd3-axis';
-	import { Loader2, Play } from '@lucide/svelte';
+	import { SpinnerGap as Loader2, Play } from 'phosphor-svelte';
 	import { formatCurrency, formatPercent } from '../../utils/formatters.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
 	import type { MonteCarloPath } from '../../engine/types.js';

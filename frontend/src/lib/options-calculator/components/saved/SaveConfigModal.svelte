@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Save, X } from '@lucide/svelte';
+	import { FloppyDisk as Save, X } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { saveConfig } from '../../utils/saved-configs.js';
 	import { formatCurrency } from '../../utils/formatters.js';

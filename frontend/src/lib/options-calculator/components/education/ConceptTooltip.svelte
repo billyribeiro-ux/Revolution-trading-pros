@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Lightbulb, TrendingUp, TrendingDown, X } from '@lucide/svelte';
+	import { Lightbulb, TrendUp as TrendingUp, TrendDown as TrendingDown, X } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import type { EducationEntry } from '../../engine/types.js';
 

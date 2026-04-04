@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Link2, Copy, ExternalLink, X } from '@lucide/svelte';
+	import { Link as Link2, Copy, ArrowSquareOut as ExternalLink, X } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { generateShareURL, copyToClipboard } from '../../utils/share-utils.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';

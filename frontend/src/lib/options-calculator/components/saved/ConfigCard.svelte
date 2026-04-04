@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Trash2, Play } from '@lucide/svelte';
+	import { Trash as Trash2, Play } from 'phosphor-svelte';
 	import { formatCurrency } from '../../utils/formatters.js';
 	import type { SavedConfig } from '../../engine/types.js';
 

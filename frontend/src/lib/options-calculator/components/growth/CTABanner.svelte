@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X, ArrowRight } from '@lucide/svelte';
+	import { X, ArrowRight } from 'phosphor-svelte';
 	import gsap from 'gsap';
 
 	let bannerEl: HTMLDivElement | undefined = $state();

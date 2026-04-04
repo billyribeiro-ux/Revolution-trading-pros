@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronDown } from '@lucide/svelte';
+	import { CaretDown as ChevronDown } from 'phosphor-svelte';
 	import MetricCard from './ui/MetricCard.svelte';
 	import gsap from 'gsap';
 	import type { CalculatorState } from '../state/calculator.svelte.js';

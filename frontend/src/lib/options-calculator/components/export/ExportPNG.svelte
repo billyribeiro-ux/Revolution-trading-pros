@@ -3,12 +3,12 @@
 		Camera,
 		X,
 		Copy,
-		Download,
+		DownloadSimple as Download,
 		Monitor,
-		BarChart3,
-		LineChart,
-		Maximize
-	} from '@lucide/svelte';
+		ChartBar as BarChart3,
+		ChartLine as LineChart,
+		ArrowsOut as Maximize
+	} from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { captureScreenshot } from '../../utils/export-utils.js';
 	import type { CaptureZone, AspectRatio, ScreenshotConfig } from '../../engine/types.js';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Lightbulb } from '@lucide/svelte';
+	import { Lightbulb } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { GREEK_EDUCATION } from './education-content.js';
 	import type { EducationEntry } from '../../engine/types.js';

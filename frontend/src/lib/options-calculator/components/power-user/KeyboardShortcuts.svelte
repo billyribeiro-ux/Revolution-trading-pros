@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X, Keyboard } from '@lucide/svelte';
+	import { X, Keyboard } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { SHORTCUTS, CATEGORY_LABELS, matchesShortcut, isInputFocused } from './shortcuts.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';

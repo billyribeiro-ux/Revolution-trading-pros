@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X, Plus, Minus } from '@lucide/svelte';
+	import { X, Plus, Minus } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { priceOption } from '../../engine/black-scholes.js';
 	import { firstOrderGreeks } from '../../engine/greeks.js';

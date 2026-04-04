@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Info } from '@lucide/svelte';
+	import { Info } from 'phosphor-svelte';
 
 	interface Props {
 		content: string;

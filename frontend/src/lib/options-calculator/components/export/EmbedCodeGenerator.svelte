@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Code2, Copy, X } from '@lucide/svelte';
+	import { Code as Code2, Copy, X } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { copyToClipboard } from '../../utils/share-utils.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';

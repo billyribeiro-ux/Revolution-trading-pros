@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from '@lucide/svelte';
+	import { X, CheckCircle, WarningCircle as AlertCircle, Info, Warning as AlertTriangle } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import type { ToastType } from '../../engine/types.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';

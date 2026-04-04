@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GraduationCap } from '@lucide/svelte';
+	import { GraduationCap } from 'phosphor-svelte';
 	import ConceptTooltip from './ConceptTooltip.svelte';
 	import { getEducation } from './education-content.js';
 	import type { EducationEntry } from '../../engine/types.js';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Loader2 } from '@lucide/svelte';
+	import { SpinnerGap as Loader2 } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { price as bsPrice } from '../engine/black-scholes.js';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';

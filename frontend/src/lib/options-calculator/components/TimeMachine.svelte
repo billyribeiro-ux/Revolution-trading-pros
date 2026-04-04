@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Play, Pause } from '@lucide/svelte';
+	import { Play, Pause } from 'phosphor-svelte';
 	import { formatCurrency } from '../utils/formatters.js';
 	import type { CalculatorState } from '../state/calculator.svelte.js';
 

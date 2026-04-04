@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Mail, X, TrendingUp } from '@lucide/svelte';
+	import { Envelope as Mail, X, TrendUp as TrendingUp } from 'phosphor-svelte';
 	import gsap from 'gsap';
 
 	let modalEl: HTMLDivElement | undefined = $state();

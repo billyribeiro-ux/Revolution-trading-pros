@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AlertTriangle } from '@lucide/svelte';
+	import { Warning as AlertTriangle } from 'phosphor-svelte';
 	import gsap from 'gsap';
 
 	interface Props {

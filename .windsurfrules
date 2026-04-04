@@ -1,156 +1,178 @@
-# Windsurf AI Rules - Revolution Trading Pros v4
+# Windsurf Rules — RTP v7 | PE7 | April 2026
 
-## Apple Principal Engineer ICT Level 7 | Feb 2026
+# 🚨 ZERO ERRORS. ZERO WARNINGS. ZERO REGRESSIONS.
 
-# 🚨 ZERO ERRORS TOLERANCE
+## STACK (Latest Versions)
+Svelte 5.55 · SvelteKit 2.55 · Vite 7.3 · TS 5.9 strict · Axum 0.8 · PostgreSQL · Redis · GSAP 3.14 · Three.js 0.182 + @threlte/core 8.3 + @threlte/extras 9.7 · Vitest 4.x · @testing-library/svelte 5.3 · Playwright 1.58 · Valibot 1.3 · Bits UI 2.16 · better-auth 1.5 · @sentry/sveltekit 10.45 · @tiptap/core 3.22 · sveltekit-superforms 2.29 · LayerChart 1.0 · pnpm
 
-Every change MUST result in 0 errors, 0 warnings, 0 regressions.
+## PE7 CSS (NON-NEGOTIABLE)
+- OKLCH only — no hex/hsl/rgb
+- `@layer`: reset/tokens/base/layout/components/animations
+- Logical properties only (inline/block, never left/right/top/bottom)
+- Native CSS nesting — no SCSS/LESS
+- Design tokens in `:root` — colors, spacing, typography, borders, shadows
+- `var(--dur-*)` + `var(--ease-*)` for transitions
+- No Tailwind/UnoCSS/Windi · No clsx/cn()
+- Scoped `<style>` per component · Global only in layout tokens
+- `class` arrays/objects for conditionals (replaces `class:` directive)
+- `<Child --color="red" />` for cross-component styling
+- `style:--columns={columns}` for JS-driven values
+- `:global` scoping for child overrides when custom properties aren't enough
 
-## 📦 STACK
+## 🚫 BANNED
+**Packages:** Tailwind · @lucide/svelte (use Phosphor/Carbon via Iconify) · clsx/cn()
+**Patterns:** Stores for shared state (use `$state` classes or `createContext`) · `onMount`/`$effect` for window/document events (use `<svelte:window>`/`<svelte:document>`) · Global mutable state in SSR modules (use context) · `localStorage`/`sessionStorage` in components · `if (browser)` inside `$effect` (redundant) · `$effect` for derived state (use `$derived`) · `use:action` for state-dependent behavior (use `{@attach}`)
+**Svelte 4 (zero tolerance):** `export let` · `$:` · `<slot>` · `on:click` · `createEventDispatcher` · `<svelte:component this={X}>` · `<svelte:self>` · `<svelte:fragment>` · `setContext`/`getContext` in new code (use `createContext` 5.40+) · `class:` directive
 
-* SvelteKit 2.x + Svelte 5.x
-* Tailwind CSS v4.x
-* Rust/Axum 0.7 + PostgreSQL
+## CONTEXT FILES (read before changes if they exist)
+`RULES-VERIFICATION.md` · `RULES-SVELTE5.md` · `RULES-PE7-CSS.md` · `RULES-SSR-HYDRATION-SEO.md` · `RULES-BACKEND.md` · `RULES-REMOTE-FUNCTIONS.md` (MANDATORY)
 
-## 📖 REQUIRED CONTEXT REVIEW (IF FILES EXIST)
+## BEFORE ANY CHANGE
+1. Read complete target file(s) — no blind edits
+2. Trace imports/exports/call graph
+3. Map blast radius
+4. Run `pnpm run check`
+5. Choose boundary: internal → Remote Functions · external/webhook → `+server.ts`
 
-Before changes, read:
+## SVELTE 5 RUNES
 
-* `RULES-VERIFICATION.md`
-* `RULES-SVELTE5.md`
-* `RULES-TAILWIND-RESPONSIVE.md`
-* `RULES-SSR-HYDRATION-SEO.md`
-* `RULES-BACKEND.md`
-* `RULES-REMOTE-FUNCTIONS.md` (MANDATORY)
+### $state
+```
+let x = $state(0);              // reactive
+let obj = $state({...});         // deep proxy
+let raw = $state.raw({...});     // no proxy — large objects, API responses
+$state.snapshot(proxy);          // for external APIs (structuredClone etc)
+$state.eager(val);               // immediate UI feedback on user action (sparingly)
+```
+- Only `$state` for values causing UI updates. Use `$state.raw` for reassign-only data. Arrow functions for class methods as handlers. Don't destructure proxies (refs evaluate at destructure time).
 
-## 🎯 BEFORE ANY CHANGE
+### $derived
+```
+let d = $derived(expr);          // simple
+let d = $derived.by(() => {...}); // complex
+let {a,b} = $derived(stuff());   // destructured = reactive
+```
+- ALWAYS use `$derived` not `$effect` for computed values. Writable since 5.25 (optimistic UI). Side-effect free. Push-pull reactivity skips referentially identical values.
 
-1. Read complete target file(s), no blind partial edits.
-2. Trace imports/exports and call graph.
-3. Map blast radius (all affected files/routes/components).
-4. Run baseline validation:
+### $effect
+```
+$effect(() => { /* after mount, re-runs on tracked state */ return () => { /* teardown */ }; });
+$effect.pre(() => { /* before DOM update */ });
+$effect.tracking();    // am I in a tracking context?
+$effect.pending();     // pending async count in boundary
+```
+- ESCAPE HATCH — avoid. Never update `$state` inside. For D3/GSAP/Three.js prefer `{@attach}`. For window/doc events use `<svelte:window>`/`<svelte:document>`. For debug use `$inspect`. Values after `await`/`setTimeout` NOT tracked.
 
-   * `npm run check`
-5. Choose data boundary:
-
-   * Internal app flow => Remote Functions
-   * External/public/webhook => `+server.ts`
-
-## ⚡ SVELTE 5 ONLY (MANDATORY)
-
-Use:
-
+### $props
 ```svelte
-let count = $state(0);
-let doubled = $derived(count * 2);
-let { title, onClose }: Props = $props();
-$effect(() => { /* side effect */ });
+<script lang="ts">
+  interface Props { title: string; onClose: () => void; children?: Snippet; }
+  let { title, onClose, children }: Props = $props();
+  const uid = $props.id();  // unique, SSR-stable (5.20+)
+</script>
+```
+- Always type with interface. Props-dependent values use `$derived`. Don't mutate props. `$props.id()` for label/aria linking.
+
+### Built-ins (no install)
+```ts
+import { SvelteMap, SvelteSet, SvelteURL, SvelteDate, MediaQuery, createSubscriber } from 'svelte/reactivity';
+import { innerWidth, scrollY, online, devicePixelRatio } from 'svelte/reactivity/window';
+import { createContext } from 'svelte';           // 5.40+ — replaces set/getContext
+import { hydratable } from 'svelte';              // 5.36+ — avoid re-fetching on hydration
+import { fork } from 'svelte';                    // 5.42+ — preload async work
+```
+
+### {@attach} (5.29+)
+```svelte
+<div {@attach myAttachment}>
+<button {@attach tooltip(content)}>
+<div {@attach enabled && conditional}>
+<div {@attach fromAction(legacyAction, () => arg)}>  <!-- convert actions -->
+```
+- Fully reactive (re-runs on state change). Prefer over `use:action`. On components → Symbol prop (spread to receive). For expensive setup, pass getter + child `$effect`.
+
+### Async (5.36+, experimental)
+- Enable: `compilerOptions.experimental.async: true`
+- `await` in `<script>`, `$derived`, markup. Wrap in `<svelte:boundary pending={snippet}>`. Updates synchronized. `$effect.pending()` for loading. Stable in Svelte 6.
+
+### Snippets & Events
+```svelte
+{#snippet greeting(name)}<p>hello {name}!</p>{/snippet}
+{@render greeting('world')}
 {@render children?.()}
-<button onclick={handler}>Click</button>
+<button onclick={handler}>   <!-- or {onclick} shorthand -->
+<svelte:window onkeydown={handler} />
 ```
+- Keyed `{#each}` always: `(item.id)`. Never use index as key.
 
-## ❌ BANNED (SVELTE 4 PATTERNS)
+## REMOTE FUNCTIONS (default for internal flows)
+From `$app/server` in `.remote.ts`:
+- `query` → reads (cached, `.refresh()`) · `query.batch` → N+1 solution
+- `form` → submissions (spread onto `<form>`, progressive enhancement) · `command` → mutations (event handlers only, no render)
+- `prerender` → build-time static data (CDN-cached)
 
-* `export let` (use `$props`)
-* `$:` reactive statements (use `$derived` / `$effect`)
-* `<slot />` (use `{@render}`)
-* `on:click` (use `onclick`)
-* `createEventDispatcher` (use callback props)
+Rules: Validate all input w/ Valibot schema · `getRequestEvent()` for cookies · Single-flight: `getPosts().refresh()` inside handlers · `requested()` + `refreshAll()` for client-driven refreshes · `form.fields.x.as('text')` for attrs · `form.validate()` / `form.preflight(schema)` · `invalid(issue.x('msg'))` for server errors · `_` prefix for sensitive fields · `command` can't redirect
 
-## ⚡ REMOTE FUNCTIONS POLICY (DEFAULT FOR INTERNAL FLOWS)
+## +server.ts — only for external APIs, webhooks, versioned contracts
 
-* `query` => read operations
-* `query.batch` => batched reads/list hydration
-* `form` => validated form submissions
-* `command` => mutations/actions
+## IMAGE HANDLING
+`@sveltejs/enhanced-img` (build-time) · `@unpic/svelte` (CDN dynamic) · Required: `alt`, `title`, `width`, `height` · `loading="lazy"` below-fold · `fetchpriority="high"` LCP · avif > webp > jpg · metadata in `media_assets` DB table
 
-Rules:
+## DATA & DASHBOARDS
+LayerChart (D3-based) · D3 direct when needed · @tanstack/svelte-table · @tanstack/svelte-query · Three.js + @threlte
 
-* Validate all input at server boundary
-* Enforce authN/authZ for privileged actions
-* Keep typed request/response contracts
-* Use consistent domain error shapes
-* Do not duplicate business logic across remote/API layers
+## SEO
+`svelte-meta-tags` (OG, Twitter, JSON-LD) · `super-sitemap` · Unique title + description + canonical per page · JSON-LD for articles/products/breadcrumbs · No duplicate `<head>` ownership
 
-## 🌐 API POLICY (`+server.ts`)
+## FORMS
+`sveltekit-superforms` 2.29 (existing) · Remote Functions `form()` (new) · `formsnap` (a11y) · Valibot schemas shared frontend/backend
 
-Use endpoints only when:
+## AUTH & SECURITY
+`better-auth` 1.5 · `altcha` (CAPTCHA) · No secrets in client · No direct DB from client · Validate all input · Rate-limit mutations (governor/tower_governor) · Log failures w/ request IDs · Patch advisories
 
-* Third parties consume the API
-* Webhook receiver is required
-* Raw HTTP semantics or explicit versioned contracts are required
+## MONITORING
+`@sentry/sveltekit` 10.45 · SvelteKit 2.31+ observability for auto-instrumented spans · Core Web Vitals tracking
 
-## 🔒 SECURITY GUARDRAILS
+## BACKEND (RUST/AXUM 0.8)
+Axum 0.8 (native async traits, `{param}` syntax) · Tokio · SQLx 0.8 (`sqlx::query!` compile-time checked) · PostgreSQL · Redis · Tower + tower-http · governor + tower_governor · tracing + tracing-subscriber · serde/serde_json · jsonwebtoken · argon2 · utoipa + utoipa-swagger-ui · tokio-cron-scheduler · reqwest · rust_decimal · uuid + chrono · sqlx-cli · axum-test · Docker (20-50mb images)
 
-* Never expose secrets in client bundle
-* No direct DB access from client code
-* Validate/sanitize all external input
-* Rate-limit sensitive mutation surfaces
-* Log security-relevant failures with request IDs
-* Patch known ecosystem advisories promptly
+Rules: No `#[async_trait]` · `{param}` not `:param` · `sqlx::PgPool` in state · Commit `.sqlx` cache · Structured errors → `IntoResponse` · utoipa annotations on all endpoints
 
-## 🧪 TESTING STANDARD
+## TESTING
+Vitest (unit) · @testing-library/svelte (component — wrapper functions for context 5.49+) · Playwright (E2E) · axum-test (backend) · Auth allow/deny · Integration at remote/API boundary · Regression for touched routes
 
-For every behavior change, include:
-
-* Unit tests (logic + validation)
-* Auth allow/deny tests
-* Integration tests at remote/API boundary
-* Regression tests for touched route/component
-
-## ✅ AFTER EVERY CHANGE (HARD GATE)
-
-Run all:
-
+## HARD GATE — AFTER EVERY CHANGE
 ```bash
-npm run check
-npm run lint
-npm run build
-npm run test
+pnpm run check && pnpm run lint && pnpm run build && pnpm run test
 ```
+ALL must pass. Task is INCOMPLETE until green.
 
-All must pass before completion.
+Output: 1) Changed files + reasons 2) Gate evidence (check/lint/build/test) 3) Regression risk 4) Boundary decision (Remote vs API) 5) CSS compliance (PE7) 6) Status: `COMPLETE` or `INCOMPLETE`
 
-## ENFORCEMENT MODE: HARD GATE
+## PLATFORM NOTES (April 2026)
+1. Svelte 5.55 — {@attach} 5.29, createContext 5.40, hydratable/await/fork 5.36-5.42, writable $derived 5.25, $props.id() 5.20, server error boundaries kit 2.54, type-narrowed params kit 2.55
+2. Axum 0.8 stable (Mar 2026) — Rust 2024 edition, 0.9 in dev
+3. GSAP 3.14 — 100% free including all plugins
+4. TipTap 3.22 — MIT, 10 Pro extensions open-sourced
+5. 5 Svelte CVEs patched Jan 2026 — keep updated
+6. svelte.config.js supports functions for options (5.54+)
+7. Svelte MCP via `sv` CLI + OpenCode
 
-A task is NOT complete unless all 4 commands pass.
-
-Required completion output:
-
-1. Changed files list with reason per file
-2. Verification evidence summary for:
-
-   * `npm run check`
-   * `npm run lint`
-   * `npm run build`
-   * `npm run test`
-3. Regression risk assessment
-4. Boundary decision note (Remote Functions vs `+server.ts`)
-5. Final status: `COMPLETE` or `INCOMPLETE`
-
-If any gate fails:
-
-* Status MUST be `INCOMPLETE`
-* Continue remediation until green
-
-## 2026 PLATFORM NOTES (VERIFIED)
-
-1. Remote Functions are official in SvelteKit (available since 2.27).
-2. Track and patch Svelte/SvelteKit ecosystem security advisories promptly.
-3. SvelteKit SEO requires explicit sitemap strategy.
-4. Use official migration tooling/docs for Svelte 5 + SvelteKit upgrades.
-
-## SEO + REMOTE + SECURITY CHANGE CHECKLIST
-
-* [ ] Svelte 5 runes syntax only
-* [ ] Correct server boundary chosen (Remote vs API)
-* [ ] Input validated on server boundary
-* [ ] Auth enforced for sensitive operations
-* [ ] No duplicate SEO head ownership
-* [ ] Sitemap strategy updated for new indexable routes
-* [ ] check/lint/build/test all green
-* [ ] Changed files + verification evidence included
+## CHECKLIST
+- [ ] Svelte 5 runes only
+- [ ] PE7 CSS (OKLCH, @layer, logical props, nesting)
+- [ ] No banned packages/patterns
+- [ ] Correct boundary (Remote vs API)
+- [ ] Valibot validation at server boundary
+- [ ] Auth enforced for sensitive ops
+- [ ] Images: alt, title, loading strategy
+- [ ] No duplicate `<head>` ownership
+- [ ] Sitemap updated for new routes
+- [ ] Sentry verified for new routes
+- [ ] createContext for shared state (not stores)
+- [ ] {@attach} where appropriate
+- [ ] check/lint/build/test green
+- [ ] Changed files + evidence included
 
 ## 🚨 MANTRA
-
-"Zero errors. Trace dependencies. Use the right server boundary. Verify with evidence."
+"Zero errors. PE7 CSS. Svelte 5 runes. Trace deps. Right boundary. Verify."

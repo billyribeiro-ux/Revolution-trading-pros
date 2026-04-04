@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Wifi, WifiOff, Database } from '@lucide/svelte';
+	import { WifiHigh as Wifi, WifiSlash as WifiOff, Database } from 'phosphor-svelte';
 	import type { MarketDataService } from '../data/market-data-service.svelte.js';
 
 	interface Props {

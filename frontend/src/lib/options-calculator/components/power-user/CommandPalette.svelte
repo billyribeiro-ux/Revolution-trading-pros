@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Search } from '@lucide/svelte';
+	import { MagnifyingGlass as Search } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
 

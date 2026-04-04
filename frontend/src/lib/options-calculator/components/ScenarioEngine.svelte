@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Zap, X, Plus } from '@lucide/svelte';
+	import { Lightning as Zap, X, Plus } from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import { formatCurrency } from '../utils/formatters.js';
 	import type { CalculatorState } from '../state/calculator.svelte.js';

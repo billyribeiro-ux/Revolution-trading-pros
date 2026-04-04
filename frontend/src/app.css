@@ -1,4 +1,5 @@
 @import './pe7-utilities.css';
+@import './pe7-design-system.css';
 
 :root {
 	--radius: 0.625rem;

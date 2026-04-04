@@ -25,7 +25,6 @@ fn hash_token_for_blacklist(token: &str) -> String {
 
 /// Extractor for authenticated users
 /// ICT 7+: Uses Redis cache for user lookups, falls back to database
-#[axum::async_trait]
 impl FromRequestParts<AppState> for User {
     type Rejection = (StatusCode, &'static str);
 
@@ -137,7 +136,6 @@ impl FromRequestParts<AppState> for User {
 /// ICT 7+: Used in public routes that provide enhanced features for authenticated users
 pub struct OptionalUser(pub Option<User>);
 
-#[axum::async_trait]
 impl FromRequestParts<AppState> for OptionalUser {
     type Rejection = (StatusCode, &'static str);
 
