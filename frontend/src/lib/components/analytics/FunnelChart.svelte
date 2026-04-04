@@ -27,15 +27,10 @@
 		return step.overall_conversion_rate ?? 0;
 	}
 
-	// Color gradient for funnel steps
-	const stepColors = [
-		'bg-blue-500',
-		'bg-blue-400',
-		'bg-cyan-400',
-		'bg-teal-400',
-		'bg-green-400',
-		'bg-emerald-500'
-	];
+	// Color step index for data attribute styling
+	function getStepColor(index: number): number {
+		return index % 6;
+	}
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -44,42 +39,38 @@
 	}
 </script>
 
-<div class="bg-white rounded-xl border border-gray-200 p-6">
-	<h3 class="text-lg font-semibold text-gray-900 mb-6">{title}</h3>
+<div class="funnel-container">
+	<h3 class="funnel-title">{title}</h3>
 
-	<div class="space-y-3">
+	<div class="funnel-steps">
 		{#each steps as step, index (step.step_number)}
 			{@const width = getStepWidth(step, index)}
 
-			<div class="relative">
+			<div class="step-row">
 				<!-- Step Bar -->
-				<div class="relative h-12 flex items-center">
+				<div class="step-bar-wrapper">
 					<div
-						class="{stepColors[
-							index % stepColors.length
-						]} h-full rounded-lg relative overflow-hidden
-							{animated ? 'transition-all duration-700 ease-out' : ''}"
+						class="step-bar"
+						data-step={getStepColor(index)}
+						data-animated={animated || undefined}
 						style="width: {width}%"
 					>
 						<!-- Step Label -->
-						<div class="absolute inset-0 flex items-center justify-between px-4">
-							<span class="text-white font-medium text-sm truncate">
+						<div class="step-label">
+							<span class="step-name">
 								{step.name}
 							</span>
-							<span class="text-white/90 font-bold">
+							<span class="step-count">
 								{formatNumber(step.count)}
 							</span>
 						</div>
 					</div>
 
 					<!-- Conversion Rate Badge -->
-					<div class="ml-4 shrink-0">
+					<div class="rate-badge">
 						<span
-							class="text-sm font-semibold {step.conversion_rate >= 80
-								? 'text-green-600'
-								: step.conversion_rate >= 50
-									? 'text-yellow-600'
-									: 'text-red-600'}"
+							class="rate-value"
+							data-level={step.conversion_rate >= 80 ? 'good' : step.conversion_rate >= 50 ? 'mid' : 'poor'}
 						>
 							{step.conversion_rate.toFixed(1)}%
 						</span>
@@ -88,11 +79,11 @@
 
 				<!-- Drop-off Indicator -->
 				{#if showDropOff && index > 0 && (step.drop_off ?? 0) > 0}
-					<div class="absolute -top-1 right-0 transform translate-x-full ml-16">
-						<div class="flex items-center gap-1 text-xs text-red-500">
+					<div class="dropoff">
+						<div class="dropoff-info">
 							<span>↓</span>
 							<span>{formatNumber(step.drop_off ?? 0)}</span>
-							<span class="text-gray-400">({(step.drop_off_rate ?? 0).toFixed(1)}%)</span>
+							<span class="dropoff-rate">({(step.drop_off_rate ?? 0).toFixed(1)}%)</span>
 						</div>
 					</div>
 				{/if}
@@ -104,22 +95,21 @@
 	{#if steps.length > 0}
 		{@const firstStep = steps[0]}
 		{@const lastStep = steps[steps.length - 1]}
-		<div class="mt-6 pt-4 border-t border-gray-100">
-			<div class="flex justify-between text-sm">
+		<div class="funnel-summary">
+			<div class="summary-row">
 				<div>
-					<span class="text-gray-500">Total Entries:</span>
-					<span class="font-semibold ml-1">{formatNumber(firstStep.count)}</span>
+					<span class="summary-label">Total Entries:</span>
+					<span class="summary-value">{formatNumber(firstStep.count)}</span>
 				</div>
 				<div>
-					<span class="text-gray-500">Conversions:</span>
-					<span class="font-semibold ml-1">{formatNumber(lastStep.count)}</span>
+					<span class="summary-label">Conversions:</span>
+					<span class="summary-value">{formatNumber(lastStep.count)}</span>
 				</div>
 				<div>
-					<span class="text-gray-500">Overall Rate:</span>
+					<span class="summary-label">Overall Rate:</span>
 					<span
-						class="font-semibold ml-1 {(lastStep.overall_conversion_rate ?? 0) >= 10
-							? 'text-green-600'
-							: 'text-orange-600'}"
+						class="summary-value"
+						data-level={(lastStep.overall_conversion_rate ?? 0) >= 10 ? 'good' : 'poor'}
 					>
 						{(lastStep.overall_conversion_rate ?? 0).toFixed(2)}%
 					</span>
@@ -128,3 +118,127 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.funnel-container {
+		background-color: oklch(1 0 0);
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.9 0.005 265);
+		padding: var(--space-6);
+	}
+
+	.funnel-title {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.15 0.01 265);
+		margin-block-end: var(--space-6);
+	}
+
+	.funnel-steps {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+	}
+
+	.step-row { position: relative; }
+
+	.step-bar-wrapper {
+		position: relative;
+		block-size: 3rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.step-bar {
+		block-size: 100%;
+		border-radius: var(--radius-lg);
+		position: relative;
+		overflow: hidden;
+
+		&[data-animated] { transition: all 700ms ease-out; }
+
+		&[data-step='0'] { background-color: oklch(0.6 0.2 260); }
+		&[data-step='1'] { background-color: oklch(0.68 0.16 260); }
+		&[data-step='2'] { background-color: oklch(0.7 0.15 200); }
+		&[data-step='3'] { background-color: oklch(0.68 0.14 175); }
+		&[data-step='4'] { background-color: oklch(0.68 0.16 160); }
+		&[data-step='5'] { background-color: oklch(0.6 0.18 160); }
+	}
+
+	.step-label {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-inline: var(--space-4);
+	}
+
+	.step-name {
+		color: oklch(1 0 0);
+		font-weight: var(--weight-medium);
+		font-size: var(--text-sm);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.step-count {
+		color: oklch(1 0 0 / 90%);
+		font-weight: var(--weight-bold);
+	}
+
+	.rate-badge {
+		margin-inline-start: var(--space-4);
+		flex-shrink: 0;
+	}
+
+	.rate-value {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+
+		&[data-level='good'] { color: oklch(0.5 0.18 160); }
+		&[data-level='mid'] { color: oklch(0.6 0.18 90); }
+		&[data-level='poor'] { color: oklch(0.55 0.2 25); }
+	}
+
+	.dropoff {
+		position: absolute;
+		inset-block-start: -0.25rem;
+		inset-inline-end: 0;
+		transform: translateX(100%);
+		margin-inline-start: 4rem;
+	}
+
+	.dropoff-info {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: var(--text-xs);
+		color: oklch(0.6 0.2 25);
+	}
+
+	.dropoff-rate { color: oklch(0.65 0.01 265); }
+
+	.funnel-summary {
+		margin-block-start: var(--space-6);
+		padding-block-start: var(--space-4);
+		border-block-start: 1px solid oklch(0.95 0.002 265);
+	}
+
+	.summary-row {
+		display: flex;
+		justify-content: space-between;
+		font-size: var(--text-sm);
+	}
+
+	.summary-label { color: oklch(0.55 0.01 265); }
+
+	.summary-value {
+		font-weight: var(--weight-semibold);
+		margin-inline-start: var(--space-1);
+
+		&[data-level='good'] { color: oklch(0.5 0.18 160); }
+		&[data-level='poor'] { color: oklch(0.65 0.18 55); }
+	}
+</style>

@@ -32,30 +32,22 @@
 		})
 	);
 
-	let gridCols = $derived(
-		{
-			2: 'grid-cols-1 sm:grid-cols-2',
-			3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-			4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-			5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-		}[columns]
-	);
 
 	// Group KPIs by category
 	let categories = $derived([...new Set(kpis.map((k) => k.category))]);
 </script>
 
-<div class="space-y-6">
+<div class="kpi-grid-wrapper">
 	{#if category === null && !showPrimaryOnly}
 		<!-- Show by category -->
-		{#each categories as cat}
+		{#each categories as cat (cat)}
 			{@const categoryKpis = filteredKpis.filter((k) => k.category === cat)}
 			{#if categoryKpis.length > 0}
 				<div>
-					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 capitalize">
+					<h3 class="category-title">
 						{cat}
 					</h3>
-					<div class="grid {gridCols} gap-4">
+					<div class="kpi-grid" style:--columns={columns}>
 						{#each categoryKpis as kpi (kpi.kpi_key)}
 							<div
 								role="button"
@@ -78,7 +70,7 @@
 		{/each}
 	{:else}
 		<!-- Flat grid -->
-		<div class="grid {gridCols} gap-4">
+		<div class="kpi-grid" style:--columns={columns}>
 			{#each filteredKpis as kpi (kpi.kpi_key)}
 				<div
 					role="button"
@@ -93,8 +85,41 @@
 	{/if}
 
 	{#if filteredKpis.length === 0}
-		<div class="text-center py-12 text-gray-500">
+		<div class="empty-state">
 			<p>No KPIs available</p>
 		</div>
 	{/if}
 </div>
+
+<style>
+	.kpi-grid-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
+	}
+
+	.category-title {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.55 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-block-end: var(--space-3);
+		text-transform: capitalize;
+	}
+
+	.kpi-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-4);
+
+		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(var(--columns, 4), 1fr); }
+	}
+
+	.empty-state {
+		text-align: center;
+		padding-block: var(--space-12);
+		color: oklch(0.55 0.01 265);
+	}
+</style>

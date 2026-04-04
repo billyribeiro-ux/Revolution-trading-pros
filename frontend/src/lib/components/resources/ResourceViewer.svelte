@@ -181,410 +181,211 @@ import { logger } from '$lib/utils/logger';
 </script>
 
 {#if open}
-	<!-- Backdrop -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<div
-		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
-		onclick={handleClose}
-		aria-label="Close viewer"
-	></div>
+	<div class="rv-backdrop" onclick={handleClose} aria-label="Close viewer"></div>
 
-	<!-- Modal -->
-	<div
-		class="fixed inset-4 z-50 flex flex-col overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900 lg:inset-8"
-	>
+	<div class="rv-modal">
 		<!-- Header -->
-		<header
-			class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700"
-		>
-			<div class="flex items-center gap-3">
-				<!-- Resource type icon -->
-				<div
-					class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30"
-				>
+		<header class="rv-header">
+			<div class="rv-header-left">
+				<div class="rv-type-icon" data-type={isVideo ? 'video' : isPdf ? 'pdf' : isImage ? 'image' : 'default'}>
 					{#if isVideo}
-						<svg
-							class="h-5 w-5 text-blue-600 dark:text-blue-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-							/>
+						<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
 						</svg>
 					{:else if isPdf}
-						<svg
-							class="h-5 w-5 text-red-600 dark:text-red-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-							/>
+						<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
 						</svg>
 					{:else if isImage}
-						<svg
-							class="h-5 w-5 text-green-600 dark:text-green-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-							/>
+						<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
 						</svg>
 					{:else}
-						<svg
-							class="h-5 w-5 text-gray-600 dark:text-gray-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-							/>
+						<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
 						</svg>
 					{/if}
 				</div>
 
-				<!-- Title and meta -->
 				<div>
-					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">{resource.title}</h2>
-					<div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+					<h2 class="rv-title">{resource.title}</h2>
+					<div class="rv-meta-row">
 						<span>{resource.formatted_date}</span>
 						{#if resource.formatted_size}
-							<span class="text-gray-300 dark:text-gray-600">|</span>
+							<span class="rv-sep">|</span>
 							<span>{resource.formatted_size}</span>
 						{/if}
 						{#if resource.version && resource.version > 1}
-							<span class="text-gray-300 dark:text-gray-600">|</span>
-							<span class="text-blue-600 dark:text-blue-400">v{resource.version}</span>
+							<span class="rv-sep">|</span>
+							<span class="rv-version">v{resource.version}</span>
 						{/if}
 					</div>
 				</div>
 			</div>
 
-			<!-- Actions -->
-			<div class="flex items-center gap-2">
-				<!-- Access level badge -->
-				<span
-					class="rounded-md px-2 py-1 text-xs font-medium {isPremium
-						? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-						: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'}"
-				>
+			<div class="rv-header-actions">
+				<span class="rv-access-badge" data-premium={isPremium || undefined}>
 					{isPremium ? 'Premium' : 'Free'}
 				</span>
 
-				<!-- Download button -->
-				<button
-					class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-					onclick={handleDownload}
-					disabled={downloading}
-				>
+				<button class="rv-download-btn" onclick={handleDownload} disabled={downloading}>
 					{#if downloading}
-						<svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-							<circle
-								class="opacity-25"
-								cx="12"
-								cy="12"
-								r="10"
-								stroke="currentColor"
-								stroke-width="4"
-							></circle>
-							<path
-								class="opacity-75"
-								fill="currentColor"
-								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-							></path>
+						<svg class="rv-icon-sm rv-spin" fill="none" viewBox="0 0 24 24">
+							<circle class="rv-spinner-track" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+							<path class="rv-spinner-fill" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 						</svg>
 						Downloading...
 					{:else}
-						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-							/>
+						<svg class="rv-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
 						</svg>
 						Download
 					{/if}
 				</button>
 
-				<!-- Close button -->
-				<button
-					class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-					onclick={handleClose}
-					aria-label="Close"
-				>
-					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M6 18L18 6M6 6l12 12"
-						/>
+				<button class="rv-close-btn" onclick={handleClose} aria-label="Close">
+					<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 					</svg>
 				</button>
 			</div>
 		</header>
 
 		<!-- Content -->
-		<div class="flex flex-1 overflow-hidden">
-			<!-- Main preview area -->
-			<div class="flex-1 overflow-auto bg-gray-100 dark:bg-gray-800">
+		<div class="rv-body">
+			<div class="rv-preview">
 				{#if isVideo}
-					<!-- Video player -->
-					<div class="flex h-full w-full items-center justify-center p-4">
-						<div
-							class="aspect-video w-full max-w-5xl overflow-hidden rounded-lg bg-black shadow-lg"
-						>
-							<iframe
-								src={resource.embed_url}
-								class="h-full w-full"
-								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-								allowfullscreen
-								title={resource.title}
-							></iframe>
+					<div class="rv-center-content">
+						<div class="rv-video-container">
+							<iframe src={resource.embed_url} class="rv-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title={resource.title}></iframe>
 						</div>
 					</div>
 				{:else if isPdf}
-					<!-- PDF viewer -->
-					<div class="h-full w-full p-4">
-						<iframe
-							src="{resource.file_url}#view=FitH"
-							class="h-full w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700"
-							title={resource.title}
-						></iframe>
+					<div class="rv-pdf-container">
+						<iframe src="{resource.file_url}#view=FitH" class="rv-pdf-iframe" title={resource.title}></iframe>
 					</div>
 				{:else if isImage}
-					<!-- Image viewer with zoom - using Svelte action for a11y compliance -->
-					<div
-						class="relative flex h-full w-full items-center justify-center overflow-hidden p-4"
-						role="group"
-						aria-label="Image viewer with zoom controls"
-						use:panZoomAction
-					>
+					<div class="rv-image-container" role="group" aria-label="Image viewer with zoom controls" use:panZoomAction>
 						<img
 							src={resource.file_url}
 							alt={resource.title}
-							class="max-h-full max-w-full object-contain transition-transform duration-200"
-							style="transform: scale({imageZoom}) translate({imagePosition.x /
-								imageZoom}px, {imagePosition.y / imageZoom}px); cursor: {imageZoom > 1
-								? dragging
-									? 'grabbing'
-									: 'grab'
-								: 'default'}"
+							class="rv-preview-img"
+							style="transform: scale({imageZoom}) translate({imagePosition.x / imageZoom}px, {imagePosition.y / imageZoom}px); cursor: {imageZoom > 1 ? dragging ? 'grabbing' : 'grab' : 'default'}"
 							draggable="false"
 						/>
 
-						<!-- Zoom controls -->
-						<div
-							class="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-black/70 p-2 backdrop-blur-sm"
-						>
-							<button
-								class="rounded p-1 text-white hover:bg-white/20"
-								onclick={zoomOut}
-								disabled={imageZoom <= 0.5}
-								aria-label="Zoom out"
-							>
-								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M20 12H4"
-									/>
+						<div class="rv-zoom-controls">
+							<button class="rv-zoom-btn" onclick={zoomOut} disabled={imageZoom <= 0.5} aria-label="Zoom out">
+								<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
 								</svg>
 							</button>
-							<span class="min-w-[3rem] text-center text-sm text-white"
-								>{Math.round(imageZoom * 100)}%</span
-							>
-							<button
-								class="rounded p-1 text-white hover:bg-white/20"
-								onclick={zoomIn}
-								disabled={imageZoom >= 3}
-								aria-label="Zoom in"
-							>
-								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M12 4v16m8-8H4"
-									/>
+							<span class="rv-zoom-label">{Math.round(imageZoom * 100)}%</span>
+							<button class="rv-zoom-btn" onclick={zoomIn} disabled={imageZoom >= 3} aria-label="Zoom in">
+								<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 								</svg>
 							</button>
-							<button
-								class="rounded p-1 text-white hover:bg-white/20"
-								onclick={resetZoom}
-								aria-label="Reset zoom"
-							>
-								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-									/>
+							<button class="rv-zoom-btn" onclick={resetZoom} aria-label="Reset zoom">
+								<svg class="rv-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 								</svg>
 							</button>
 						</div>
 					</div>
 				{:else}
-					<!-- Non-previewable content -->
-					<div class="flex h-full w-full flex-col items-center justify-center p-8 text-center">
-						<div
-							class="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700"
-						>
-							<svg
-								class="h-12 w-12 text-gray-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-								/>
+					<div class="rv-no-preview">
+						<div class="rv-no-preview-icon">
+							<svg class="rv-icon-xxl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
 							</svg>
 						</div>
-						<h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-							Preview not available
-						</h3>
-						<p class="mb-6 max-w-md text-gray-600 dark:text-gray-400">
-							This file type cannot be previewed in the browser. Click the download button to save
-							it to your device.
-						</p>
-						<div class="flex flex-col items-center gap-2">
-							<span class="text-sm text-gray-500"
-								>File type: <strong>{resource.mime_type || 'Unknown'}</strong></span
-							>
+						<h3 class="rv-no-preview-title">Preview not available</h3>
+						<p class="rv-no-preview-desc">This file type cannot be previewed in the browser. Click the download button to save it to your device.</p>
+						<div class="rv-file-info">
+							<span>File type: <strong>{resource.mime_type || 'Unknown'}</strong></span>
 							{#if resource.formatted_size}
-								<span class="text-sm text-gray-500"
-									>Size: <strong>{resource.formatted_size}</strong></span
-								>
+								<span>Size: <strong>{resource.formatted_size}</strong></span>
 							{/if}
 						</div>
 					</div>
 				{/if}
 			</div>
 
-			<!-- Sidebar (description & version history) -->
-			<aside
-				class="hidden w-80 shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900 lg:block"
-			>
-				<!-- Description -->
+			<!-- Sidebar -->
+			<aside class="rv-sidebar">
 				{#if resource.description}
-					<div class="mb-6">
-						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</h3>
-						<p class="text-sm text-gray-600 dark:text-gray-400">{resource.description}</p>
+					<div class="rv-sidebar-section">
+						<h3 class="rv-sidebar-heading">Description</h3>
+						<p class="rv-sidebar-text">{resource.description}</p>
 					</div>
 				{/if}
 
-				<!-- Tags -->
 				{#if resource.tags && resource.tags.length > 0}
-					<div class="mb-6">
-						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Tags</h3>
-						<div class="flex flex-wrap gap-1">
-							{#each resource.tags as tag}
-								<span
-									class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-								>
-									{tag}
-								</span>
+					<div class="rv-sidebar-section">
+						<h3 class="rv-sidebar-heading">Tags</h3>
+						<div class="rv-tags">
+							{#each resource.tags as tag (tag)}
+								<span class="rv-tag">{tag}</span>
 							{/each}
 						</div>
 					</div>
 				{/if}
 
-				<!-- Stats -->
-				<div class="mb-6">
-					<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Statistics</h3>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-gray-500 dark:text-gray-400">Views</span>
-							<span class="font-medium text-gray-900 dark:text-white">{resource.views_count}</span>
+				<div class="rv-sidebar-section">
+					<h3 class="rv-sidebar-heading">Statistics</h3>
+					<div class="rv-stat-list">
+						<div class="rv-stat-row">
+							<span class="rv-stat-label">Views</span>
+							<span class="rv-stat-value">{resource.views_count}</span>
 						</div>
-						<div class="flex justify-between">
-							<span class="text-gray-500 dark:text-gray-400">Downloads</span>
-							<span class="font-medium text-gray-900 dark:text-white"
-								>{resource.downloads_count}</span
-							>
+						<div class="rv-stat-row">
+							<span class="rv-stat-label">Downloads</span>
+							<span class="rv-stat-value">{resource.downloads_count}</span>
 						</div>
 						{#if resource.difficulty_level}
-							<div class="flex justify-between">
-								<span class="text-gray-500 dark:text-gray-400">Difficulty</span>
-								<span class="font-medium capitalize text-gray-900 dark:text-white"
-									>{resource.difficulty_level}</span
-								>
+							<div class="rv-stat-row">
+								<span class="rv-stat-label">Difficulty</span>
+								<span class="rv-stat-value rv-capitalize">{resource.difficulty_level}</span>
 							</div>
 						{/if}
 					</div>
 				</div>
 
-				<!-- Version history -->
 				{#if showVersionHistory}
-					<div>
-						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
-							Version History
-						</h3>
+					<div class="rv-sidebar-section">
+						<h3 class="rv-sidebar-heading">Version History</h3>
 						{#if loadingVersions}
-							<div class="space-y-2">
-								{#each [1, 2, 3] as _}
-									<div class="animate-pulse rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
-										<div class="mb-1 h-4 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
-										<div class="h-3 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
+							<div class="rv-ver-list">
+								{#each [1, 2, 3] as _, i (i)}
+									<div class="rv-ver-skel">
+										<div class="rv-skel-line rv-skel-w16"></div>
+										<div class="rv-skel-line rv-skel-w24"></div>
 									</div>
 								{/each}
 							</div>
 						{:else if versions.length > 0}
-							<div class="space-y-2">
-								{#each versions as version}
+							<div class="rv-ver-list">
+								{#each versions as version (version.id)}
 									<button
-										class="w-full rounded-lg border p-3 text-left transition-colors {version.id ===
-										resource.id
-											? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-											: 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'}"
+										class="rv-ver-btn"
+										data-active={version.id === resource.id || undefined}
 										onclick={() => selectVersion(version)}
 									>
-										<div class="flex items-center justify-between">
-											<span class="text-sm font-medium text-gray-900 dark:text-white">
-												Version {version.version}
-											</span>
+										<div class="rv-ver-row">
+											<span class="rv-ver-name">Version {version.version}</span>
 											{#if version.is_latest_version}
-												<span
-													class="rounded bg-green-100 px-1.5 py-0.5 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
-												>
-													Latest
-												</span>
+												<span class="rv-latest-badge">Latest</span>
 											{/if}
 										</div>
-										<span class="text-xs text-gray-500 dark:text-gray-400"
-											>{version.created_at}</span
-										>
+										<span class="rv-ver-date">{version.created_at}</span>
 									</button>
 								{/each}
 							</div>
 						{:else}
-							<p class="text-sm text-gray-500 dark:text-gray-400">No version history available.</p>
+							<p class="rv-sidebar-text">No version history available.</p>
 						{/if}
 					</div>
 				{/if}
@@ -594,8 +395,358 @@ import { logger } from '$lib/utils/logger';
 {/if}
 
 <style>
-	/* Prevent body scroll when modal is open */
-	:global(body:has(.resource-viewer-open)) {
+	.rv-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		background-color: oklch(0 0 0 / 80%);
+		backdrop-filter: blur(4px);
+	}
+
+	.rv-modal {
+		position: fixed;
+		inset: 1rem;
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
 		overflow: hidden;
+		border-radius: var(--radius-xl);
+		background-color: oklch(1 0 0);
+		box-shadow: 0 25px 50px oklch(0 0 0 / 25%);
+
+		@media (min-width: 1024px) { inset: 2rem; }
+	}
+
+	/* ─── Header ─── */
+	.rv-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-block-end: 1px solid oklch(0.9 0.005 265);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+	}
+
+	.rv-header-left { display: flex; align-items: center; gap: var(--space-3); }
+
+	.rv-type-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 2.5rem;
+		block-size: 2.5rem;
+		border-radius: var(--radius-lg);
+
+		&[data-type='video'] { background-color: oklch(0.92 0.06 260); color: oklch(0.5 0.2 260); }
+		&[data-type='pdf'] { background-color: oklch(0.92 0.06 25); color: oklch(0.5 0.2 25); }
+		&[data-type='image'] { background-color: oklch(0.92 0.06 160); color: oklch(0.5 0.18 160); }
+		&[data-type='default'] { background-color: oklch(0.95 0.002 265); color: oklch(0.45 0.01 265); }
+	}
+
+	.rv-icon { inline-size: 1.25rem; block-size: 1.25rem; }
+	.rv-icon-sm { inline-size: 1rem; block-size: 1rem; }
+	.rv-icon-xxl { inline-size: 3rem; block-size: 3rem; color: oklch(0.65 0.01 265); }
+
+	.rv-title { font-size: var(--text-lg); font-weight: var(--weight-semibold); color: oklch(0.15 0.01 265); }
+
+	.rv-meta-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
+
+	.rv-sep { color: oklch(0.82 0.005 265); }
+	.rv-version { color: oklch(0.5 0.2 260); }
+
+	.rv-header-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+	.rv-access-badge {
+		border-radius: var(--radius-md);
+		padding-inline: var(--space-2);
+		padding-block: 0.25rem;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		background-color: oklch(0.92 0.06 160);
+		color: oklch(0.35 0.15 160);
+
+		&[data-premium] {
+			background-color: oklch(0.92 0.08 80);
+			color: oklch(0.45 0.15 80);
+		}
+	}
+
+	.rv-download-btn {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.55 0.2 260);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+		border: none;
+		cursor: pointer;
+		transition: background-color 200ms var(--ease-default);
+
+		&:hover { background-color: oklch(0.48 0.2 260); }
+		&:disabled { opacity: 0.5; cursor: not-allowed; }
+	}
+
+	.rv-close-btn {
+		border-radius: var(--radius-lg);
+		padding: var(--space-2);
+		color: oklch(0.55 0.01 265);
+		background: none;
+		border: none;
+		cursor: pointer;
+		transition: background-color 200ms var(--ease-default);
+
+		&:hover { background-color: oklch(0.95 0.002 265); }
+	}
+
+	/* ─── Body / Preview ─── */
+	.rv-body { display: flex; flex: 1; overflow: hidden; }
+
+	.rv-preview {
+		flex: 1;
+		overflow: auto;
+		background-color: oklch(0.96 0.002 265);
+	}
+
+	.rv-center-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 100%;
+		block-size: 100%;
+		padding: var(--space-4);
+	}
+
+	.rv-video-container {
+		aspect-ratio: 16 / 9;
+		inline-size: 100%;
+		max-inline-size: 80rem;
+		overflow: hidden;
+		border-radius: var(--radius-lg);
+		background-color: oklch(0 0 0);
+		box-shadow: 0 10px 25px oklch(0 0 0 / 15%);
+	}
+
+	.rv-iframe { inline-size: 100%; block-size: 100%; border: none; }
+
+	.rv-pdf-container {
+		inline-size: 100%;
+		block-size: 100%;
+		padding: var(--space-4);
+	}
+
+	.rv-pdf-iframe {
+		inline-size: 100%;
+		block-size: 100%;
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.9 0.005 265);
+		background-color: oklch(1 0 0);
+	}
+
+	.rv-image-container {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 100%;
+		block-size: 100%;
+		overflow: hidden;
+		padding: var(--space-4);
+	}
+
+	.rv-preview-img {
+		max-block-size: 100%;
+		max-inline-size: 100%;
+		object-fit: contain;
+		transition: transform 200ms var(--ease-default);
+	}
+
+	/* ─── Zoom controls ─── */
+	.rv-zoom-controls {
+		position: absolute;
+		inset-block-end: var(--space-4);
+		inset-inline-start: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		border-radius: var(--radius-lg);
+		background-color: oklch(0 0 0 / 70%);
+		padding: var(--space-2);
+		backdrop-filter: blur(4px);
+	}
+
+	.rv-zoom-btn {
+		border-radius: var(--radius-sm);
+		padding: 0.25rem;
+		color: oklch(1 0 0);
+		background: none;
+		border: none;
+		cursor: pointer;
+
+		&:hover { background-color: oklch(1 0 0 / 20%); }
+		&:disabled { opacity: 0.4; cursor: not-allowed; }
+	}
+
+	.rv-zoom-label {
+		min-inline-size: 3rem;
+		text-align: center;
+		font-size: var(--text-sm);
+		color: oklch(1 0 0);
+	}
+
+	/* ─── No-preview fallback ─── */
+	.rv-no-preview {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		inline-size: 100%;
+		block-size: 100%;
+		padding: var(--space-8);
+		text-align: center;
+	}
+
+	.rv-no-preview-icon {
+		margin-block-end: var(--space-6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 6rem;
+		block-size: 6rem;
+		border-radius: 9999px;
+		background-color: oklch(0.9 0.005 265);
+	}
+
+	.rv-no-preview-title {
+		margin-block-end: var(--space-2);
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.15 0.01 265);
+	}
+
+	.rv-no-preview-desc {
+		margin-block-end: var(--space-6);
+		max-inline-size: 28rem;
+		color: oklch(0.45 0.01 265);
+	}
+
+	.rv-file-info {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
+
+	/* ─── Sidebar ─── */
+	.rv-sidebar {
+		display: none;
+		inline-size: 20rem;
+		flex-shrink: 0;
+		overflow-y: auto;
+		border-inline-start: 1px solid oklch(0.9 0.005 265);
+		background-color: oklch(1 0 0);
+		padding: var(--space-4);
+
+		@media (min-width: 1024px) { display: block; }
+	}
+
+	.rv-sidebar-section { margin-block-end: var(--space-6); }
+
+	.rv-sidebar-heading {
+		margin-block-end: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.15 0.01 265);
+	}
+
+	.rv-sidebar-text { font-size: var(--text-sm); color: oklch(0.45 0.01 265); }
+
+	.rv-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+	.rv-tag {
+		border-radius: var(--radius-sm);
+		background-color: oklch(0.95 0.002 265);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		font-size: var(--text-xs);
+		color: oklch(0.45 0.01 265);
+	}
+
+	.rv-stat-list { display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-sm); }
+	.rv-stat-row { display: flex; justify-content: space-between; }
+	.rv-stat-label { color: oklch(0.55 0.01 265); }
+	.rv-stat-value { font-weight: var(--weight-medium); color: oklch(0.15 0.01 265); }
+	.rv-capitalize { text-transform: capitalize; }
+
+	/* ─── Version history ─── */
+	.rv-ver-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+	.rv-ver-btn {
+		inline-size: 100%;
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.9 0.005 265);
+		padding: var(--space-3);
+		text-align: start;
+		background: none;
+		cursor: pointer;
+		transition: background-color 200ms var(--ease-default);
+
+		&:hover { background-color: oklch(0.97 0.002 265); }
+
+		&[data-active] {
+			border-color: oklch(0.6 0.2 260);
+			background-color: oklch(0.96 0.03 260);
+		}
+	}
+
+	.rv-ver-row { display: flex; align-items: center; justify-content: space-between; }
+	.rv-ver-name { font-size: var(--text-sm); font-weight: var(--weight-medium); color: oklch(0.15 0.01 265); }
+	.rv-ver-date { font-size: var(--text-xs); color: oklch(0.55 0.01 265); }
+
+	.rv-latest-badge {
+		border-radius: var(--radius-sm);
+		background-color: oklch(0.92 0.06 160);
+		padding-inline: 0.375rem;
+		padding-block: 0.125rem;
+		font-size: var(--text-xs);
+		color: oklch(0.4 0.15 160);
+	}
+
+	/* ─── Skeleton ─── */
+	.rv-ver-skel {
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.95 0.002 265);
+		padding: var(--space-3);
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	.rv-skel-line { border-radius: var(--radius-sm); background-color: oklch(0.9 0.005 265); }
+	.rv-skel-w16 { block-size: 1rem; inline-size: 4rem; margin-block-end: 0.25rem; }
+	.rv-skel-w24 { block-size: 0.75rem; inline-size: 6rem; }
+
+	.rv-spin { animation: spin 1s linear infinite; }
+	.rv-spinner-track { opacity: 0.25; }
+	.rv-spinner-fill { opacity: 0.75; }
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
+	}
+
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
 	}
 </style>

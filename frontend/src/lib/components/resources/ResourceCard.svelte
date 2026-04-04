@@ -87,97 +87,54 @@
 		return icons[type] || icons.other;
 	}
 
-	// Get access level badge color
-	function getAccessLevelColor(level: string): string {
-		const colors: Record<string, string> = {
-			free: 'bg-emerald-500 text-white',
-			member: 'bg-blue-500 text-white',
-			premium: 'bg-amber-500 text-white',
-			vip: 'bg-purple-500 text-white'
-		};
-		return colors[level] || colors.premium;
+	function getAccessLevel(level: string): string {
+		switch (level) {
+			case 'free': return 'free';
+			case 'member': return 'member';
+			case 'premium': return 'premium';
+			case 'vip': return 'vip';
+			default: return 'premium';
+		}
 	}
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <article
-	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
-	class:compact
+	class="rc-card"
+	data-compact={compact || undefined}
 	onclick={handleCardClick}
 >
 	<!-- Thumbnail / Preview -->
-	<div
-		class="thumbnail-container relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700"
-	>
+	<div class="rc-thumb">
 		{#if resource.thumbnail_url}
-			<img
-				src={resource.thumbnail_url}
-				alt={resource.title}
-				class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-				loading="lazy"
-			/>
+			<img src={resource.thumbnail_url} alt={resource.title} class="rc-thumb-img" loading="lazy" />
 		{:else}
-			<div class="flex h-full w-full items-center justify-center">
-				<svg
-					class="h-16 w-16 text-gray-400 dark:text-gray-500"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="1.5"
-						d={getTypeIcon(resource.resource_type)}
-					/>
+			<div class="rc-thumb-placeholder">
+				<svg class="rc-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d={getTypeIcon(resource.resource_type)} />
 				</svg>
 			</div>
 		{/if}
 
-		<!-- Overlay badges -->
-		<div
-			class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-		></div>
+		<div class="rc-thumb-overlay"></div>
 
-		<!-- Type badge -->
-		<span
-			class="absolute left-2 top-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm"
-		>
-			{displayInfo.typeLabel}
-		</span>
+		<span class="rc-badge rc-type-badge">{displayInfo.typeLabel}</span>
 
-		<!-- Access level badge -->
 		{#if showAccessLevel}
-			<span
-				class="absolute right-2 top-2 rounded-md px-2 py-1 text-xs font-medium {getAccessLevelColor(
-					resource.access_level ?? 'premium'
-				)}"
-			>
+			<span class="rc-badge rc-access-badge" data-level={getAccessLevel(resource.access_level ?? 'premium')}>
 				{resource.access_level === 'free' ? 'Free' : 'Premium'}
 			</span>
 		{/if}
 
-		<!-- Duration for videos -->
 		{#if isVideo && resource.formatted_duration}
-			<span
-				class="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-xs font-medium text-white"
-			>
-				{resource.formatted_duration}
-			</span>
+			<span class="rc-duration">{resource.formatted_duration}</span>
 		{/if}
 
-		<!-- Play button overlay for videos -->
 		{#if isVideo}
-			<div
-				class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-			>
-				<button
-					class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform hover:scale-110"
-					onclick={handlePreview}
-					aria-label="Play video"
-				>
-					<svg class="h-8 w-8 pl-1" fill="currentColor" viewBox="0 0 24 24">
+			<div class="rc-play-overlay">
+				<button class="rc-play-btn" onclick={handlePreview} aria-label="Play video">
+					<svg class="rc-play-icon" fill="currentColor" viewBox="0 0 24 24">
 						<path d="M8 5v14l11-7z" />
 					</svg>
 				</button>
@@ -186,140 +143,293 @@
 	</div>
 
 	<!-- Content -->
-	<div class="content p-4">
-		<!-- Title -->
-		<h3
-			class="mb-1 line-clamp-2 font-semibold text-gray-900 dark:text-white"
-			title={resource.title}
-		>
-			{resource.title}
-		</h3>
+	<div class="rc-content">
+		<h3 class="rc-title" title={resource.title}>{resource.title}</h3>
 
-		<!-- Description -->
 		{#if resource.description && !compact}
-			<p class="mb-3 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
-				{resource.description}
-			</p>
+			<p class="rc-desc">{resource.description}</p>
 		{/if}
 
-		<!-- Meta info -->
-		<div class="mb-3 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-			<!-- Content type -->
-			<span class="rounded bg-gray-100 px-2 py-0.5 dark:bg-gray-700">
-				{displayInfo.contentLabel}
-			</span>
+		<div class="rc-meta">
+			<span class="rc-meta-tag">{displayInfo.contentLabel}</span>
 
-			<!-- File size -->
 			{#if formattedSize}
-				<span class="flex items-center gap-1">
-					<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
-						/>
+				<span class="rc-meta-item">
+					<svg class="rc-icon-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
 					</svg>
 					{formattedSize}
 				</span>
 			{/if}
 
-			<!-- Date -->
-			<span class="flex items-center gap-1">
-				<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-					/>
+			<span class="rc-meta-item">
+				<svg class="rc-icon-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
 				</svg>
 				{resource.formatted_date}
 			</span>
 
-			<!-- Version -->
 			{#if showVersion && hasVersion}
-				<span class="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-					<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-						/>
+				<span class="rc-meta-item rc-version">
+					<svg class="rc-icon-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 					</svg>
 					v{resource.version}
 				</span>
 			{/if}
 		</div>
 
-		<!-- Stats -->
-		<div class="mb-3 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-			<div class="flex items-center gap-4">
-				<span class="flex items-center gap-1">
-					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-						/>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-						/>
+		<div class="rc-stats">
+			<div class="rc-stats-left">
+				<span class="rc-meta-item">
+					<svg class="rc-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
 					</svg>
 					{resource.views_count}
 				</span>
-				<span class="flex items-center gap-1">
-					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-						/>
+				<span class="rc-meta-item">
+					<svg class="rc-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
 					</svg>
 					{resource.downloads_count}
 				</span>
 			</div>
-			<!-- Favorite button -->
 			{#if showFavorite}
 				<FavoriteButton resourceId={resource.id} size="sm" />
 			{/if}
 		</div>
 
-		<!-- Action button -->
-		<button
-			class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-			onclick={isVideo ? handlePreview : handleDownload}
-		>
+		<button class="rc-action-btn" onclick={isVideo ? handlePreview : handleDownload}>
 			{displayInfo.actionLabel}
 		</button>
 	</div>
 
-	<!-- Featured/Pinned indicator -->
 	{#if resource.is_featured || resource.is_pinned}
-		<div
-			class="absolute -right-8 top-3 rotate-45 bg-blue-600 px-8 py-0.5 text-xs font-medium text-white shadow-sm"
-		>
-			{resource.is_pinned ? 'Pinned' : 'Featured'}
-		</div>
+		<div class="rc-ribbon">{resource.is_pinned ? 'Pinned' : 'Featured'}</div>
 	{/if}
 </article>
 
 <style>
-	.resource-card.compact .content {
-		padding: 0.75rem;
+	.rc-card {
+		position: relative;
+		overflow: hidden;
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.9 0.005 265);
+		background-color: oklch(1 0 0);
+		cursor: pointer;
+		transition: all 300ms var(--ease-default);
+
+		&:hover {
+			box-shadow: 0 10px 25px oklch(0 0 0 / 10%);
+			border-color: oklch(0.75 0.12 260);
+		}
+
+		&:hover .rc-thumb-img { transform: scale(1.05); }
+		&:hover .rc-thumb-overlay { opacity: 1; }
+		&:hover .rc-play-overlay { opacity: 1; }
 	}
 
-	.resource-card.compact h3 {
-		font-size: 0.875rem;
+	/* ─── Thumbnail ─── */
+	.rc-thumb {
+		position: relative;
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		background-color: oklch(0.96 0.002 265);
 	}
 
-	.resource-card.compact .thumbnail-container {
-		aspect-ratio: 16 / 10;
+	.rc-thumb-img {
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+		transition: transform 300ms var(--ease-default);
 	}
+
+	.rc-thumb-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 100%;
+		block-size: 100%;
+	}
+
+	.rc-thumb-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, oklch(0 0 0 / 60%), transparent, transparent);
+		opacity: 0;
+		transition: opacity 300ms var(--ease-default);
+	}
+
+	/* ─── Badges ─── */
+	.rc-badge {
+		position: absolute;
+		border-radius: var(--radius-md);
+		padding-inline: var(--space-2);
+		padding-block: 0.25rem;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+	}
+
+	.rc-type-badge {
+		inset-block-start: var(--space-2);
+		inset-inline-start: var(--space-2);
+		background-color: oklch(0 0 0 / 70%);
+		color: oklch(1 0 0);
+		backdrop-filter: blur(4px);
+	}
+
+	.rc-access-badge {
+		inset-block-start: var(--space-2);
+		inset-inline-end: var(--space-2);
+		color: oklch(1 0 0);
+
+		&[data-level='free'] { background-color: oklch(0.6 0.18 160); }
+		&[data-level='member'] { background-color: oklch(0.6 0.2 260); }
+		&[data-level='premium'] { background-color: oklch(0.75 0.18 80); }
+		&[data-level='vip'] { background-color: oklch(0.55 0.2 300); }
+	}
+
+	.rc-duration {
+		position: absolute;
+		inset-block-end: var(--space-2);
+		inset-inline-end: var(--space-2);
+		border-radius: var(--radius-sm);
+		background-color: oklch(0 0 0 / 80%);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+	}
+
+	/* ─── Play overlay ─── */
+	.rc-play-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 300ms var(--ease-default);
+	}
+
+	.rc-play-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 4rem;
+		block-size: 4rem;
+		border-radius: 9999px;
+		background-color: oklch(0.55 0.2 260);
+		color: oklch(1 0 0);
+		border: none;
+		cursor: pointer;
+		box-shadow: 0 4px 12px oklch(0 0 0 / 20%);
+		transition: transform 200ms var(--ease-default);
+
+		&:hover { transform: scale(1.1); }
+	}
+
+	.rc-play-icon { inline-size: 2rem; block-size: 2rem; padding-inline-start: 0.25rem; }
+
+	/* ─── Content ─── */
+	.rc-content { padding: var(--space-4); }
+
+	.rc-title {
+		margin-block-end: 0.25rem;
+		font-weight: var(--weight-semibold);
+		color: oklch(0.15 0.01 265);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.rc-desc {
+		margin-block-end: var(--space-3);
+		font-size: var(--text-sm);
+		color: oklch(0.45 0.01 265);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	/* ─── Meta ─── */
+	.rc-meta {
+		margin-block-end: var(--space-3);
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--space-2);
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+	}
+
+	.rc-meta-tag {
+		border-radius: var(--radius-sm);
+		background-color: oklch(0.95 0.002 265);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+	}
+
+	.rc-meta-item { display: flex; align-items: center; gap: 0.25rem; }
+	.rc-version { color: oklch(0.5 0.2 260); }
+
+	.rc-icon-xs { inline-size: 0.75rem; block-size: 0.75rem; }
+	.rc-icon-sm { inline-size: 1rem; block-size: 1rem; }
+	.rc-icon-xl { inline-size: 4rem; block-size: 4rem; color: oklch(0.65 0.01 265); }
+
+	/* ─── Stats ─── */
+	.rc-stats {
+		margin-block-end: var(--space-3);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+	}
+
+	.rc-stats-left { display: flex; align-items: center; gap: var(--space-4); }
+
+	/* ─── Action button ─── */
+	.rc-action-btn {
+		inline-size: 100%;
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.55 0.2 260);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+		border: none;
+		cursor: pointer;
+		transition: background-color 200ms var(--ease-default);
+
+		&:hover { background-color: oklch(0.48 0.2 260); }
+		&:focus-visible { outline: 2px solid oklch(0.6 0.2 260); outline-offset: 2px; }
+	}
+
+	/* ─── Ribbon ─── */
+	.rc-ribbon {
+		position: absolute;
+		inset-inline-end: -2rem;
+		inset-block-start: 0.75rem;
+		transform: rotate(45deg);
+		background-color: oklch(0.55 0.2 260);
+		padding-inline: 2rem;
+		padding-block: 0.125rem;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+		box-shadow: 0 1px 3px oklch(0 0 0 / 10%);
+	}
+
+	/* ─── Compact variant ─── */
+	.rc-card[data-compact] .rc-content { padding: var(--space-3); }
+	.rc-card[data-compact] .rc-title { font-size: var(--text-sm); }
+	.rc-card[data-compact] .rc-thumb { aspect-ratio: 16 / 10; }
 </style>

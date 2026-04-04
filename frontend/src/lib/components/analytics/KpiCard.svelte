@@ -85,40 +85,7 @@
 		star: '⭐'
 	};
 
-	// Color classes based on KPI color
-	const colorClasses: Record<string, string> = {
-		green: 'bg-green-500/10 text-green-600 border-green-500/20',
-		blue: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-		purple: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-		orange: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-		red: 'bg-red-500/10 text-red-600 border-red-500/20',
-		pink: 'bg-pink-500/10 text-pink-600 border-pink-500/20',
-		cyan: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20',
-		gold: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-		gray: 'bg-gray-500/10 text-gray-600 border-gray-500/20'
-	};
-
-	let trendClass = $derived(
-		kpi.trend === 'up' ? 'text-green-500' : kpi.trend === 'down' ? 'text-red-500' : 'text-gray-500'
-	);
-
 	let trendIcon = $derived(kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→');
-
-	let sizeClasses = $derived(
-		{
-			sm: 'p-3',
-			md: 'p-4',
-			lg: 'p-6'
-		}[size]
-	);
-
-	let valueSizeClasses = $derived(
-		{
-			sm: 'text-xl',
-			md: 'text-2xl',
-			lg: 'text-4xl'
-		}[size]
-	);
 
 	// Simple sparkline SVG
 	function generateSparklinePath(data: number[]): string {
@@ -142,43 +109,44 @@
 
 <div
 	bind:this={cardRef}
-	class="relative rounded-xl border {colorClasses[kpi.color || 'blue']} {sizeClasses}
-		transition-all duration-200 {clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg' : ''}
-		{animateOnMount ? 'opacity-0' : ''}"
-	class:ring-2={kpi.is_anomaly}
-	class:ring-red-500={kpi.is_anomaly}
+	class="kpi-card"
+	data-color={kpi.color || 'blue'}
+	data-size={size}
+	data-clickable={clickable || undefined}
+	data-animate={animateOnMount || undefined}
+	data-anomaly={kpi.is_anomaly || undefined}
 >
 	<!-- Anomaly Badge -->
 	{#if kpi.is_anomaly}
-		<div class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+		<div class="anomaly-badge">
 			Anomaly
 		</div>
 	{/if}
 
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-2">
-		<div class="flex items-center gap-2">
+	<div class="kpi-header">
+		<div class="kpi-name-group">
 			{#if kpi.icon}
-				<span class="text-lg">{iconMap[kpi.icon] || '📊'}</span>
+				<span class="kpi-icon">{iconMap[kpi.icon] || '📊'}</span>
 			{/if}
-			<span class="text-sm font-medium opacity-80">{kpi.name}</span>
+			<span class="kpi-name">{kpi.name}</span>
 		</div>
 
 		{#if kpi.is_primary}
-			<span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Primary</span>
+			<span class="primary-badge">Primary</span>
 		{/if}
 	</div>
 
 	<!-- Value -->
-	<div class="flex items-end gap-3">
-		<span class="{valueSizeClasses} font-bold tracking-tight">
+	<div class="kpi-value-row">
+		<span class="kpi-value">
 			{kpi.formatted_value}
 		</span>
 
 		<!-- Change Indicator -->
-		<div class="flex items-center gap-1 pb-1 {trendClass}">
-			<span class="text-sm font-medium">{trendIcon}</span>
-			<span class="text-sm font-semibold">
+		<div class="kpi-trend" data-trend={kpi.trend}>
+			<span class="trend-icon">{trendIcon}</span>
+			<span class="trend-pct">
 				{Math.abs(kpi.change_percentage).toFixed(1)}%
 			</span>
 		</div>
@@ -186,8 +154,8 @@
 
 	<!-- Sparkline -->
 	{#if showSparkline && sparklineData.length > 1}
-		<div class="mt-3 opacity-60">
-			<svg width="80" height="24" class="overflow-visible">
+		<div class="sparkline">
+			<svg width="80" height="24" style="overflow: visible">
 				<path
 					d={generateSparklinePath(sparklineData)}
 					fill="none"
@@ -202,13 +170,10 @@
 
 	<!-- Target Status -->
 	{#if kpi.target_status}
-		<div class="mt-2">
+		<div class="target-wrapper">
 			<span
-				class="text-xs px-2 py-0.5 rounded-full {kpi.target_status === 'on_track'
-					? 'bg-green-500/20 text-green-600'
-					: kpi.target_status === 'at_risk'
-						? 'bg-yellow-500/20 text-yellow-600'
-						: 'bg-red-500/20 text-red-600'}"
+				class="target-badge"
+				data-status={kpi.target_status}
 			>
 				{kpi.target_status === 'on_track'
 					? 'On Track'
@@ -219,3 +184,105 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.kpi-card {
+		position: relative;
+		border-radius: var(--radius-xl);
+		border: 1px solid;
+		transition: all 200ms var(--ease-default);
+
+		&[data-size='sm'] { padding: var(--space-3); }
+		&[data-size='md'] { padding: var(--space-4); }
+		&[data-size='lg'] { padding: var(--space-6); }
+
+		&[data-clickable] {
+			cursor: pointer;
+			&:hover { transform: scale(1.02); box-shadow: 0 10px 25px oklch(0 0 0 / 10%); }
+		}
+
+		&[data-animate] { opacity: 0; }
+		&[data-anomaly] { box-shadow: 0 0 0 2px oklch(0.6 0.25 25); }
+
+		&[data-color='green'] { background-color: oklch(0.6 0.18 160 / 10%); color: oklch(0.5 0.18 160); border-color: oklch(0.6 0.18 160 / 20%); }
+		&[data-color='blue'] { background-color: oklch(0.6 0.2 260 / 10%); color: oklch(0.5 0.2 260); border-color: oklch(0.6 0.2 260 / 20%); }
+		&[data-color='purple'] { background-color: oklch(0.55 0.2 300 / 10%); color: oklch(0.45 0.2 300); border-color: oklch(0.55 0.2 300 / 20%); }
+		&[data-color='orange'] { background-color: oklch(0.7 0.18 55 / 10%); color: oklch(0.55 0.18 55); border-color: oklch(0.7 0.18 55 / 20%); }
+		&[data-color='red'] { background-color: oklch(0.6 0.25 25 / 10%); color: oklch(0.5 0.25 25); border-color: oklch(0.6 0.25 25 / 20%); }
+		&[data-color='pink'] { background-color: oklch(0.65 0.2 340 / 10%); color: oklch(0.5 0.2 340); border-color: oklch(0.65 0.2 340 / 20%); }
+		&[data-color='cyan'] { background-color: oklch(0.7 0.15 200 / 10%); color: oklch(0.5 0.15 200); border-color: oklch(0.7 0.15 200 / 20%); }
+		&[data-color='gold'] { background-color: oklch(0.8 0.18 90 / 10%); color: oklch(0.6 0.18 90); border-color: oklch(0.8 0.18 90 / 20%); }
+		&[data-color='gray'] { background-color: oklch(0.55 0.01 265 / 10%); color: oklch(0.45 0.01 265); border-color: oklch(0.55 0.01 265 / 20%); }
+	}
+
+	.anomaly-badge {
+		position: absolute;
+		inset-block-start: -0.5rem;
+		inset-inline-end: -0.5rem;
+		background-color: oklch(0.6 0.25 25);
+		color: oklch(1 0 0);
+		font-size: var(--text-xs);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		border-radius: 9999px;
+	}
+
+	.kpi-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-2);
+	}
+
+	.kpi-name-group { display: flex; align-items: center; gap: var(--space-2); }
+	.kpi-icon { font-size: var(--text-lg); }
+	.kpi-name { font-size: var(--text-sm); font-weight: var(--weight-medium); opacity: 0.8; }
+
+	.primary-badge {
+		font-size: var(--text-xs);
+		background-color: oklch(1 0 0 / 20%);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		border-radius: 9999px;
+	}
+
+	.kpi-value-row { display: flex; align-items: flex-end; gap: var(--space-3); }
+
+	.kpi-value {
+		font-weight: var(--weight-bold);
+		letter-spacing: -0.025em;
+
+		.kpi-card[data-size='sm'] & { font-size: var(--text-xl); }
+		.kpi-card[data-size='md'] & { font-size: var(--text-2xl); }
+		.kpi-card[data-size='lg'] & { font-size: var(--text-4xl); }
+	}
+
+	.kpi-trend {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding-block-end: var(--space-1);
+
+		&[data-trend='up'] { color: oklch(0.6 0.18 160); }
+		&[data-trend='down'] { color: oklch(0.6 0.25 25); }
+		&[data-trend='flat'] { color: oklch(0.55 0.01 265); }
+	}
+
+	.trend-icon { font-size: var(--text-sm); font-weight: var(--weight-medium); }
+	.trend-pct { font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+
+	.sparkline { margin-block-start: var(--space-3); opacity: 0.6; }
+
+	.target-wrapper { margin-block-start: var(--space-2); }
+
+	.target-badge {
+		font-size: var(--text-xs);
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		border-radius: 9999px;
+
+		&[data-status='on_track'] { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.5 0.18 160); }
+		&[data-status='at_risk'] { background-color: oklch(0.8 0.18 90 / 20%); color: oklch(0.6 0.18 90); }
+		&[data-status='behind'] { background-color: oklch(0.6 0.25 25 / 20%); color: oklch(0.5 0.25 25); }
+	}
+</style>

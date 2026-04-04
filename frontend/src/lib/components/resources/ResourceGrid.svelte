@@ -212,76 +212,33 @@
 		onPreview?.(resource);
 	}
 
-	// Grid column classes
-	let gridClasses = $derived(
-		{
-			2: 'grid-cols-1 sm:grid-cols-2',
-			3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-			4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-		}[columns]
-	);
 </script>
 
-<div class="resource-grid">
-	<!-- Filters and Search -->
+<div class="rg-root">
 	{#if showSearch || showFilters}
-		<div class="filters mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-			<!-- Search -->
+		<div class="rg-filters">
 			{#if showSearch}
-				<div class="relative flex-1 lg:max-w-md">
-					<input
-						type="search"
-						placeholder="Search resources..."
-						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-						oninput={handleSearch}
-					/>
-					<svg
-						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-						/>
+				<div class="rg-search-wrap">
+					<input type="search" placeholder="Search resources..." class="rg-search-input" oninput={handleSearch} />
+					<svg class="rg-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 					</svg>
 				</div>
 			{/if}
 
-			<!-- Filter dropdowns -->
 			{#if showFilters}
-				<div class="flex flex-wrap gap-2">
-					<!-- Type filter -->
-					<select
-						bind:value={selectedType}
-						onchange={handleFilterChange}
-						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-					>
+				<div class="rg-filter-group">
+					<select bind:value={selectedType} onchange={handleFilterChange} class="rg-select">
 						{#each resourceTypes as type}
 							<option value={type.value}>{type.label}</option>
 						{/each}
 					</select>
-
-					<!-- Section filter -->
-					<select
-						bind:value={selectedSection}
-						onchange={handleFilterChange}
-						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-					>
+					<select bind:value={selectedSection} onchange={handleFilterChange} class="rg-select">
 						{#each sectionOptions as opt}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>
-
-					<!-- Access level filter -->
-					<select
-						bind:value={selectedAccessLevel}
-						onchange={handleFilterChange}
-						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-					>
+					<select bind:value={selectedAccessLevel} onchange={handleFilterChange} class="rg-select">
 						{#each accessLevelOptions as opt}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
@@ -291,80 +248,44 @@
 		</div>
 	{/if}
 
-	<!-- Results count -->
 	{#if total > 0 && !loading}
-		<p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
-			Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, total)} of {total}
-			resources
+		<p class="rg-count">
+			Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, total)} of {total} resources
 		</p>
 	{/if}
 
-	<!-- Loading state -->
 	{#if loading}
-		<div class="grid {gridClasses} gap-6">
-			{#each Array(perPage) as _}
-				<div class="animate-pulse">
-					<div class="aspect-video rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
-					<div class="rounded-b-xl border border-t-0 border-gray-200 p-4 dark:border-gray-700">
-						<div class="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-						<div class="mb-3 h-3 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
-						<div class="flex gap-2">
-							<div class="h-5 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
-							<div class="h-5 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
+		<div class="rg-grid" data-columns={columns}>
+			{#each Array(perPage) as _, i (i)}
+				<div class="rg-skel">
+					<div class="rg-skel-thumb"></div>
+					<div class="rg-skel-body">
+						<div class="rg-skel-line rg-skel-w34"></div>
+						<div class="rg-skel-line rg-skel-wfull"></div>
+						<div class="rg-skel-tags">
+							<div class="rg-skel-tag"></div>
+							<div class="rg-skel-tag"></div>
 						</div>
 					</div>
 				</div>
 			{/each}
 		</div>
 	{:else if error}
-		<!-- Error state -->
-		<div
-			class="rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-900/20"
-		>
-			<svg
-				class="mx-auto h-12 w-12 text-red-400"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-				/>
+		<div class="rg-error">
+			<svg class="rg-state-icon rg-error-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
 			</svg>
-			<h3 class="mt-4 text-lg font-medium text-red-800 dark:text-red-200">
-				Failed to load resources
-			</h3>
-			<p class="mt-2 text-sm text-red-600 dark:text-red-300">{error}</p>
-			<button
-				class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-				onclick={loadResources}
-			>
-				Try Again
-			</button>
+			<h3 class="rg-error-title">Failed to load resources</h3>
+			<p class="rg-error-msg">{error}</p>
+			<button class="rg-error-btn" onclick={loadResources}>Try Again</button>
 		</div>
 	{:else if resources.length === 0}
-		<!-- Empty state -->
-		<div
-			class="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-gray-800"
-		>
-			<svg
-				class="mx-auto h-12 w-12 text-gray-400"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-				/>
+		<div class="rg-empty">
+			<svg class="rg-state-icon rg-muted-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
 			</svg>
-			<h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No resources found</h3>
-			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+			<h3 class="rg-empty-title">No resources found</h3>
+			<p class="rg-empty-text">
 				{#if searchQuery}
 					No resources match your search criteria.
 				{:else}
@@ -372,20 +293,11 @@
 				{/if}
 			</p>
 			{#if searchQuery}
-				<button
-					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-					onclick={() => {
-						searchQuery = '';
-						loadResources();
-					}}
-				>
-					Clear Search
-				</button>
+				<button class="rg-primary-btn" onclick={() => { searchQuery = ''; loadResources(); }}>Clear Search</button>
 			{/if}
 		</div>
 	{:else}
-		<!-- Resource grid -->
-		<div class="grid {gridClasses} gap-6">
+		<div class="rg-grid" data-columns={columns}>
 			{#each resources as resource (resource.id)}
 				<ResourceCard
 					{resource}
@@ -399,42 +311,263 @@
 			{/each}
 		</div>
 
-		<!-- Pagination -->
 		{#if totalPages > 1}
-			<nav class="mt-8 flex items-center justify-center gap-2" aria-label="Pagination">
-				<!-- Previous -->
-				<button
-					class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-					disabled={currentPage === 1}
-					onclick={() => handlePageChange(currentPage - 1)}
-				>
-					Previous
-				</button>
+			<nav class="rg-pagination" aria-label="Pagination">
+				<button class="rg-page-btn" disabled={currentPage === 1} onclick={() => handlePageChange(currentPage - 1)}>Previous</button>
 
-				<!-- Page numbers -->
 				{#each Array(Math.min(5, totalPages)) as _, i}
 					{@const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
-						<button
-							class="rounded-lg px-3 py-2 text-sm font-medium {pageNum === currentPage
-								? 'bg-blue-600 text-white'
-								: 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}"
-							onclick={() => handlePageChange(pageNum)}
-						>
-							{pageNum}
-						</button>
+						<button class="rg-page-btn" data-active={pageNum === currentPage || undefined} onclick={() => handlePageChange(pageNum)}>{pageNum}</button>
 					{/if}
 				{/each}
 
-				<!-- Next -->
-				<button
-					class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-					disabled={currentPage === totalPages}
-					onclick={() => handlePageChange(currentPage + 1)}
-				>
-					Next
-				</button>
+				<button class="rg-page-btn" disabled={currentPage === totalPages} onclick={() => handlePageChange(currentPage + 1)}>Next</button>
 			</nav>
 		{/if}
 	{/if}
 </div>
+
+<style>
+	.rg-root { display: flex; flex-direction: column; }
+
+	/* ─── Filters ─── */
+	.rg-filters {
+		margin-block-end: var(--space-6);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+
+		@media (min-width: 1024px) {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+		}
+	}
+
+	.rg-search-wrap {
+		position: relative;
+		flex: 1;
+
+		@media (min-width: 1024px) { max-inline-size: 28rem; }
+	}
+
+	.rg-search-input {
+		inline-size: 100%;
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.82 0.005 265);
+		background-color: oklch(1 0 0);
+		padding-block: var(--space-2);
+		padding-inline-start: 2.5rem;
+		padding-inline-end: var(--space-4);
+		font-size: var(--text-sm);
+		color: oklch(0.15 0.01 265);
+
+		&:focus {
+			outline: none;
+			border-color: oklch(0.6 0.2 260);
+			box-shadow: 0 0 0 1px oklch(0.6 0.2 260);
+		}
+	}
+
+	.rg-search-icon {
+		position: absolute;
+		inset-inline-start: 0.75rem;
+		inset-block-start: 50%;
+		transform: translateY(-50%);
+		inline-size: 1rem;
+		block-size: 1rem;
+		color: oklch(0.65 0.01 265);
+	}
+
+	.rg-filter-group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+	.rg-select {
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.82 0.005 265);
+		background-color: oklch(1 0 0);
+		padding-inline: var(--space-3);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.15 0.01 265);
+
+		&:focus {
+			outline: none;
+			border-color: oklch(0.6 0.2 260);
+			box-shadow: 0 0 0 1px oklch(0.6 0.2 260);
+		}
+	}
+
+	/* ─── Count ─── */
+	.rg-count {
+		margin-block-end: var(--space-4);
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
+
+	/* ─── Grid ─── */
+	.rg-grid {
+		display: grid;
+		gap: var(--space-6);
+		grid-template-columns: 1fr;
+
+		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+	}
+
+	.rg-grid[data-columns='2'] {
+		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+	}
+
+	.rg-grid[data-columns='3'] {
+		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+	}
+
+	.rg-grid[data-columns='4'] {
+		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 1280px) { grid-template-columns: repeat(4, 1fr); }
+	}
+
+	/* ─── Skeleton ─── */
+	.rg-skel { animation: pulse 2s ease-in-out infinite; }
+
+	.rg-skel-thumb {
+		aspect-ratio: 16 / 9;
+		border-start-start-radius: var(--radius-xl);
+		border-start-end-radius: var(--radius-xl);
+		background-color: oklch(0.9 0.005 265);
+	}
+
+	.rg-skel-body {
+		border-end-start-radius: var(--radius-xl);
+		border-end-end-radius: var(--radius-xl);
+		border: 1px solid oklch(0.9 0.005 265);
+		border-block-start: none;
+		padding: var(--space-4);
+	}
+
+	.rg-skel-line {
+		border-radius: var(--radius-sm);
+		background-color: oklch(0.9 0.005 265);
+	}
+
+	.rg-skel-w34 { block-size: 1rem; inline-size: 75%; margin-block-end: var(--space-2); }
+	.rg-skel-wfull { block-size: 0.75rem; inline-size: 100%; margin-block-end: var(--space-3); }
+
+	.rg-skel-tags { display: flex; gap: var(--space-2); }
+	.rg-skel-tag { block-size: 1.25rem; inline-size: 4rem; border-radius: var(--radius-sm); background-color: oklch(0.9 0.005 265); }
+
+	/* ─── States ─── */
+	.rg-state-icon { margin-inline: auto; inline-size: 3rem; block-size: 3rem; }
+	.rg-error-color { color: oklch(0.65 0.15 25); }
+	.rg-muted-color { color: oklch(0.65 0.01 265); }
+
+	.rg-error {
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.75 0.15 25);
+		background-color: oklch(0.97 0.02 25);
+		padding: var(--space-8);
+		text-align: center;
+	}
+
+	.rg-error-title {
+		margin-block-start: var(--space-4);
+		font-size: var(--text-lg);
+		font-weight: var(--weight-medium);
+		color: oklch(0.4 0.15 25);
+	}
+
+	.rg-error-msg {
+		margin-block-start: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.5 0.2 25);
+	}
+
+	.rg-error-btn {
+		margin-block-start: var(--space-4);
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.5 0.2 25);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+		border: none;
+		cursor: pointer;
+
+		&:hover { background-color: oklch(0.45 0.2 25); }
+	}
+
+	.rg-empty {
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.9 0.005 265);
+		background-color: oklch(0.97 0.002 265);
+		padding: var(--space-8);
+		text-align: center;
+	}
+
+	.rg-empty-title {
+		margin-block-start: var(--space-4);
+		font-size: var(--text-lg);
+		font-weight: var(--weight-medium);
+		color: oklch(0.15 0.01 265);
+	}
+
+	.rg-empty-text {
+		margin-block-start: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
+
+	.rg-primary-btn {
+		margin-block-start: var(--space-4);
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.55 0.2 260);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+		border: none;
+		cursor: pointer;
+
+		&:hover { background-color: oklch(0.48 0.2 260); }
+	}
+
+	/* ─── Pagination ─── */
+	.rg-pagination {
+		margin-block-start: var(--space-8);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+	}
+
+	.rg-page-btn {
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.82 0.005 265);
+		padding-inline: var(--space-3);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(0.35 0.01 265);
+		background: none;
+		cursor: pointer;
+		transition: background-color 200ms var(--ease-default);
+
+		&:hover { background-color: oklch(0.97 0.002 265); }
+		&:disabled { cursor: not-allowed; opacity: 0.5; }
+
+		&[data-active] {
+			background-color: oklch(0.55 0.2 260);
+			color: oklch(1 0 0);
+			border-color: oklch(0.55 0.2 260);
+		}
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
+	}
+</style>

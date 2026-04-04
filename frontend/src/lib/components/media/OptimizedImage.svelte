@@ -145,7 +145,7 @@ import { logger } from '$lib/utils/logger';
 
 <div
 	bind:this={containerRef}
-	class="optimized-image-container relative overflow-hidden {className}"
+	class="oi-container {className}"
 	style={aspectRatioStyle}
 >
 	<!-- BlurHash placeholder canvas -->
@@ -154,8 +154,7 @@ import { logger } from '$lib/utils/logger';
 			use:renderBlurhash
 			width="32"
 			height="32"
-			class="absolute inset-0 w-full h-full blur-xl scale-110 transition-opacity duration-500"
-			class:opacity-0={loaded}
+			class={['oi-placeholder oi-blurhash', loaded && 'oi-hidden']}
 			aria-hidden="true"
 		></canvas>
 	{/if}
@@ -165,8 +164,8 @@ import { logger } from '$lib/utils/logger';
 		<img
 			src={lqip}
 			alt=""
-			class="absolute inset-0 w-full h-full object-{objectFit} blur-lg scale-105 transition-opacity duration-500"
-			class:opacity-0={loaded}
+			class={['oi-placeholder oi-lqip', loaded && 'oi-hidden']}
+			style="object-fit: {objectFit};"
 			aria-hidden="true"
 		/>
 	{/if}
@@ -200,44 +199,97 @@ import { logger } from '$lib/utils/logger';
 				fetchpriority={priority ? 'high' : 'auto'}
 				onload={handleLoad}
 				onerror={handleError}
-				class="w-full h-full object-{objectFit} transition-opacity duration-500"
-				class:opacity-0={!loaded}
-				style="color: transparent;"
+				class={['oi-main', !loaded && 'oi-hidden']}
+				style="object-fit: {objectFit}; color: transparent;"
 			/>
 		</picture>
 	{/if}
 
 	<!-- Error state -->
 	{#if hasError}
-		<div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-			<div class="text-center text-gray-500 dark:text-gray-400">
-				<svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-					/>
+		<div class="oi-error">
+			<div class="oi-error-inner">
+				<svg class="oi-error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
 				</svg>
-				<p class="text-sm">Failed to load image</p>
+				<p class="oi-error-text">Failed to load image</p>
 			</div>
 		</div>
 	{/if}
 
 	<!-- Loading skeleton (if no placeholder available) -->
 	{#if !blurhash && !lqip && !loaded && !hasError && isInView}
-		<div class="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+		<div class="oi-skeleton"></div>
 	{/if}
 </div>
 
 <style>
-	.optimized-image-container {
+	.oi-container {
+		position: relative;
+		overflow: hidden;
 		background-color: transparent;
 	}
 
-	/* Smooth blur-to-sharp transition */
-	canvas {
+	.oi-placeholder {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		transition: opacity 500ms var(--ease-default);
+	}
+
+	.oi-blurhash {
+		filter: blur(20px);
+		transform: scale(1.1);
 		image-rendering: pixelated;
 		image-rendering: crisp-edges;
+	}
+
+	.oi-lqip {
+		filter: blur(12px);
+		transform: scale(1.05);
+	}
+
+	.oi-hidden { opacity: 0; }
+
+	.oi-main {
+		inline-size: 100%;
+		block-size: 100%;
+		transition: opacity 500ms var(--ease-default);
+	}
+
+	.oi-error {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: oklch(0.95 0.002 265);
+	}
+
+	.oi-error-inner {
+		text-align: center;
+		color: oklch(0.55 0.01 265);
+	}
+
+	.oi-error-icon {
+		inline-size: 3rem;
+		block-size: 3rem;
+		margin-inline: auto;
+		margin-block-end: var(--space-2);
+	}
+
+	.oi-error-text { font-size: var(--text-sm); }
+
+	.oi-skeleton {
+		position: absolute;
+		inset: 0;
+		background-color: oklch(0.9 0.005 265);
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
 	}
 </style>

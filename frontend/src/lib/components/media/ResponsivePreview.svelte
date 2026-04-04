@@ -116,27 +116,22 @@
 	}
 </script>
 
-<div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 {className}">
+<div class="rp-container {className}">
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-4">
-		<h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Responsive Variants</h3>
+	<div class="rp-header">
+		<h3 class="rp-title">Responsive Variants</h3>
 		{#if originalSize > 0}
-			<span class="text-xs text-gray-500">
-				Original: {formatBytes(originalSize)}
-			</span>
+			<span class="rp-original">Original: {formatBytes(originalSize)}</span>
 		{/if}
 	</div>
 
 	<!-- Variants grid -->
-	<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+	<div class="rp-grid">
 		{#each sortedVariants as variant (variant.sizeName)}
 			<button
-				class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 transition-all duration-200 {selectedSize ===
-				variant.sizeName
-					? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800'
-					: 'border-transparent'} {interactive
-					? 'cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md'
-					: ''}"
+				class="rp-variant"
+				data-selected={selectedSize === variant.sizeName || undefined}
+				data-interactive={interactive || undefined}
 				onclick={() => handleSelect(variant.sizeName)}
 				onmouseenter={(e: MouseEvent) => handleMouseEnter(e, variant)}
 				onmousemove={handleMouseMove}
@@ -144,39 +139,37 @@
 				transition:scale={{ duration: 200 }}
 			>
 				<!-- Thumbnail -->
-				<div class="aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden">
+				<div class="rp-thumb">
 					<img
 						src={variant.url}
 						alt="{variant.sizeName} preview"
 						loading="lazy"
-						class="w-full h-full object-cover"
+						class="rp-thumb-img"
 					/>
 				</div>
 
 				<!-- Info -->
-				<div class="p-2 text-center">
-					<div class="text-xs font-medium text-gray-700 dark:text-gray-300">
+				<div class="rp-info">
+					<div class="rp-label">
 						{breakpointLabels[variant.sizeName] || variant.sizeName}
 					</div>
-					<div class="text-[10px] text-gray-500 dark:text-gray-400">
+					<div class="rp-dims">
 						{variant.width} x {variant.height}
 					</div>
 					{#if showSizes}
-						<div class="flex items-center justify-center gap-2 mt-1">
-							<span class="text-[10px] text-gray-500">{formatBytes(variant.size)}</span>
+						<div class="rp-sizes">
+							<span class="rp-size-val">{formatBytes(variant.size)}</span>
 							{#if originalSize > 0}
-								<span class="text-[10px] font-medium text-green-500"
-									>-{getSavings(variant.size)}%</span
-								>
+								<span class="rp-savings">-{getSavings(variant.size)}%</span>
 							{/if}
 						</div>
 					{/if}
 				</div>
 
 				<!-- Breakpoint indicator -->
-				<div class="h-1 bg-gray-200 dark:bg-gray-700">
+				<div class="rp-bp-track">
 					<div
-						class="h-full bg-blue-500"
+						class="rp-bp-fill"
 						style="width: {((breakpointWidths[variant.sizeName] ?? 0) / 1920) * 100}%"
 					></div>
 				</div>
@@ -186,26 +179,23 @@
 
 	<!-- Size comparison chart -->
 	{#if showSizes && sortedVariants.length > 0}
-		<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-			<div class="mb-2">
-				<span class="text-xs text-gray-500">Size Comparison</span>
+		<div class="rp-chart-section">
+			<div class="rp-chart-label">
+				<span>Size Comparison</span>
 			</div>
-			<div class="flex items-end justify-center gap-2 h-20">
-				{#each sortedVariants as variant}
-					<div class="flex flex-col items-center gap-1">
+			<div class="rp-chart">
+				{#each sortedVariants as variant (variant.sizeName)}
+					<div class="rp-bar-col">
 						<div
-							class="w-4 bg-blue-500 rounded-t transition-all duration-300"
+							class="rp-bar"
 							style="height: {(variant.size / originalSize) * 100}%"
 						></div>
-						<span class="text-[10px] text-gray-500">{variant.sizeName}</span>
+						<span class="rp-bar-label">{variant.sizeName}</span>
 					</div>
 				{/each}
-				<div class="flex flex-col items-center gap-1">
-					<div
-						class="w-4 bg-gray-400 dark:bg-gray-500 rounded-t transition-all duration-300"
-						style="height: 100%"
-					></div>
-					<span class="text-[10px] text-gray-500">orig</span>
+				<div class="rp-bar-col">
+					<div class="rp-bar rp-bar-orig" style="height: 100%"></div>
+					<span class="rp-bar-label">orig</span>
 				</div>
 			</div>
 		</div>
@@ -214,21 +204,193 @@
 	<!-- Hover preview tooltip -->
 	{#if hoveredVariant}
 		<div
-			class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden pointer-events-none"
+			class="rp-tooltip"
 			style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
 			transition:fade={{ duration: 150 }}
 		>
 			<img
 				src={hoveredVariant.url}
 				alt="Preview"
-				class="max-w-[200px] max-h-[150px] object-contain"
+				class="rp-tooltip-img"
 			/>
-			<div
-				class="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-gray-50 dark:bg-gray-900"
-			>
-				<span class="font-medium">{hoveredVariant.width}x{hoveredVariant.height}</span>
-				<span class="text-gray-500">{formatBytes(hoveredVariant.size)}</span>
+			<div class="rp-tooltip-footer">
+				<span class="rp-tooltip-dim">{hoveredVariant.width}x{hoveredVariant.height}</span>
+				<span class="rp-tooltip-size">{formatBytes(hoveredVariant.size)}</span>
 			</div>
 		</div>
 	{/if}
 </div>
+
+<style>
+	.rp-container {
+		background-color: oklch(0.97 0.002 265);
+		border-radius: var(--radius-xl);
+		padding: var(--space-4);
+	}
+
+	.rp-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-4);
+	}
+
+	.rp-title {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.35 0.01 265);
+	}
+
+	.rp-original { font-size: var(--text-xs); color: oklch(0.55 0.01 265); }
+
+	.rp-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-3);
+
+		@media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 768px) { grid-template-columns: repeat(6, 1fr); }
+	}
+
+	.rp-variant {
+		background-color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+		border: 2px solid transparent;
+		transition: all 200ms var(--ease-default);
+		cursor: default;
+		padding: 0;
+
+		&[data-selected] {
+			border-color: oklch(0.6 0.2 260);
+			box-shadow: 0 0 0 2px oklch(0.8 0.1 260);
+		}
+
+		&[data-interactive] {
+			cursor: pointer;
+
+			&:hover {
+				border-color: oklch(0.75 0.12 260);
+				box-shadow: 0 4px 12px oklch(0 0 0 / 8%);
+			}
+		}
+	}
+
+	.rp-thumb {
+		aspect-ratio: 1 / 1;
+		background-color: oklch(0.95 0.002 265);
+		overflow: hidden;
+	}
+
+	.rp-thumb-img {
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	.rp-info {
+		padding: var(--space-2);
+		text-align: center;
+	}
+
+	.rp-label {
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		color: oklch(0.35 0.01 265);
+	}
+
+	.rp-dims { font-size: 0.625rem; color: oklch(0.55 0.01 265); }
+
+	.rp-sizes {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+		margin-block-start: var(--space-1);
+	}
+
+	.rp-size-val { font-size: 0.625rem; color: oklch(0.55 0.01 265); }
+	.rp-savings { font-size: 0.625rem; font-weight: var(--weight-medium); color: oklch(0.55 0.18 160); }
+
+	.rp-bp-track {
+		block-size: 0.25rem;
+		background-color: oklch(0.9 0.005 265);
+	}
+
+	.rp-bp-fill {
+		block-size: 100%;
+		background-color: oklch(0.6 0.2 260);
+	}
+
+	/* ─── Chart ─── */
+	.rp-chart-section {
+		margin-block-start: var(--space-4);
+		padding-block-start: var(--space-4);
+		border-block-start: 1px solid oklch(0.9 0.005 265);
+	}
+
+	.rp-chart-label {
+		margin-block-end: var(--space-2);
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+	}
+
+	.rp-chart {
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		gap: var(--space-2);
+		block-size: 5rem;
+	}
+
+	.rp-bar-col {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-1);
+	}
+
+	.rp-bar {
+		inline-size: 1rem;
+		background-color: oklch(0.6 0.2 260);
+		border-start-start-radius: var(--radius-sm);
+		border-start-end-radius: var(--radius-sm);
+		transition: all 300ms var(--ease-default);
+
+		&.rp-bar-orig { background-color: oklch(0.65 0.01 265); }
+	}
+
+	.rp-bar-label { font-size: 0.625rem; color: oklch(0.55 0.01 265); }
+
+	/* ─── Tooltip ─── */
+	.rp-tooltip {
+		position: fixed;
+		z-index: 50;
+		background-color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		box-shadow: 0 10px 30px oklch(0 0 0 / 15%);
+		border: 1px solid oklch(0.9 0.005 265);
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.rp-tooltip-img {
+		max-inline-size: 200px;
+		max-block-size: 150px;
+		object-fit: contain;
+	}
+
+	.rp-tooltip-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-2);
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1);
+		font-size: var(--text-xs);
+		background-color: oklch(0.97 0.002 265);
+	}
+
+	.rp-tooltip-dim { font-weight: var(--weight-medium); }
+	.rp-tooltip-size { color: oklch(0.55 0.01 265); }
+</style>

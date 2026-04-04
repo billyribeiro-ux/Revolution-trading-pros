@@ -89,10 +89,10 @@ import { logger } from '$lib/utils/logger';
 	<!-- Header -->
 	<div class="dashboard-header">
 		<div class="header-title">
-			<Icon icon={IconPhoto} size={32} class="text-yellow-400" />
+			<Icon icon={IconPhoto} size={32} />
 			<div>
-				<h1 class="text-3xl font-bold text-white">Media Library</h1>
-				<p class="text-gray-400 mt-1">Manage your files, images, and videos</p>
+				<h1 class="page-heading">Media Library</h1>
+				<p class="page-subheading">Manage your files, images, and videos</p>
 			</div>
 		</div>
 
@@ -202,7 +202,7 @@ import { logger } from '$lib/utils/logger';
 			{#if isLoading}
 				<div class="loading-state">
 					<div class="spinner"></div>
-					<p class="text-gray-400 mt-4">Loading files...</p>
+					<p class="loading-text">Loading files...</p>
 				</div>
 			{:else if currentFiles.length > 0}
 				{#if viewMode === 'grid'}
@@ -224,7 +224,7 @@ import { logger } from '$lib/utils/logger';
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}
 									<div class="file-icon-wrapper">
-										<Icon icon={FileIcon} size={48} class="text-gray-400" />
+										<Icon icon={FileIcon} size={48} />
 									</div>
 								{/if}
 
@@ -252,7 +252,7 @@ import { logger } from '$lib/utils/logger';
 						<table class="files-table">
 							<thead>
 								<tr>
-									<th class="w-12"></th>
+										<th class="col-checkbox"></th>
 									<th>Name</th>
 									<th>Type</th>
 									<th>Size</th>
@@ -326,10 +326,10 @@ import { logger } from '$lib/utils/logger';
 				{/if}
 			{:else}
 				<div class="empty-state">
-					<Icon icon={IconPhoto} size={64} class="text-gray-600" />
-					<h3 class="text-xl font-semibold text-gray-400 mt-4">No files yet</h3>
-					<p class="text-gray-500 mt-2">Upload your first file to get started</p>
-					<button class="btn-primary mt-4" onclick={() => (showUploadModal = true)}>
+					<Icon icon={IconPhoto} size={64} />
+					<h3 class="empty-title">No files yet</h3>
+					<p class="empty-subtitle">Upload your first file to get started</p>
+					<button class="btn-primary empty-action" onclick={() => (showUploadModal = true)}>
 						<Icon icon={IconPhoto} size={18} />
 						Upload Files
 					</button>
@@ -365,214 +365,369 @@ import { logger } from '$lib/utils/logger';
 	}}
 />
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.media-dashboard {
-		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
-		padding: 1.5rem;
+		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		padding: var(--space-6);
 	}
 
 	.dashboard-header {
-		@apply flex items-center justify-between mb-8;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-8);
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		color: oklch(0.8 0.18 90);
 	}
 
-	.header-actions {
-		@apply flex items-center gap-3;
+	.page-heading {
+		font-size: var(--text-3xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
+
+	.page-subheading {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
+	}
+
+	.header-actions { display: flex; align-items: center; gap: var(--space-3); }
 
 	.btn-primary {
-		@apply flex items-center gap-2 px-6 py-3 bg-yellow-500 text-gray-900 font-semibold rounded-lg;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		background-color: oklch(0.8 0.18 90);
+		color: oklch(0.15 0.02 90);
+		font-weight: var(--weight-semibold);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.85 0.16 90); }
 	}
 
 	.dashboard-content {
-		@apply grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-6);
+		@media (min-width: 1024px) { grid-template-columns: 300px 1fr; }
 	}
 
 	.sidebar {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
 	}
 
 	.main-area {
-		@apply space-y-6;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
 	}
 
-	.upload-section {
-		@apply mb-6;
-	}
+	.upload-section { margin-block-end: var(--space-6); }
 
 	.toolbar {
-		@apply flex items-center justify-between gap-4 flex-wrap;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-4);
+		flex-wrap: wrap;
 	}
 
-	.toolbar-left {
-		@apply flex items-center gap-3 flex-1;
-	}
-
-	.toolbar-right {
-		@apply flex items-center gap-3;
-	}
+	.toolbar-left { display: flex; align-items: center; gap: var(--space-3); flex: 1; }
+	.toolbar-right { display: flex; align-items: center; gap: var(--space-3); }
 
 	.search-box {
-		@apply relative flex-1 max-w-md;
+		position: relative;
+		flex: 1;
+		max-inline-size: 28rem;
 	}
 
 	.search-box :global(.search-icon) {
-		@apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400;
+		position: absolute;
+		inset-inline-start: var(--space-3);
+		inset-block-start: 50%;
+		transform: translateY(-50%);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.search-input {
-		@apply w-full pl-10 pr-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		inline-size: 100%;
+		padding-inline-start: 2.5rem;
+		padding-inline-end: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.25 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.38 0.01 250);
+		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
 	}
 
 	.filter-select {
-		@apply px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700;
-		@apply focus:outline-none focus:ring-2 focus:ring-yellow-500;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.25 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.38 0.01 250);
+		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
 	}
 
 	.view-toggle {
-		@apply flex gap-1 bg-gray-800 rounded-lg p-1 border border-gray-700;
+		display: flex;
+		gap: 0.25rem;
+		background-color: oklch(0.25 0.01 250);
+		border-radius: var(--radius-lg);
+		padding: 0.25rem;
+		border: 1px solid oklch(0.38 0.01 250);
 	}
 
 	.view-btn {
-		@apply p-2 text-gray-400 rounded-md transition-colors;
-		@apply hover:text-white hover:bg-gray-700;
-	}
-
-	.view-btn.active {
-		@apply bg-yellow-500 text-gray-900;
+		padding: var(--space-2);
+		color: oklch(0.65 0.01 250);
+		border-radius: var(--radius-md);
+		border: none;
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
+		&:hover { color: oklch(1 0 0); background-color: oklch(0.38 0.01 250); }
+		&.active { background-color: oklch(0.8 0.18 90); color: oklch(0.15 0.02 90); }
 	}
 
 	.bulk-actions {
-		@apply flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg border border-gray-700;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.25 0.01 250);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.38 0.01 250);
 	}
 
-	.selected-count {
-		@apply text-sm text-gray-400;
-	}
+	.selected-count { font-size: var(--text-sm); color: oklch(0.65 0.01 250); }
 
 	.bulk-btn {
-		@apply flex items-center gap-1 px-3 py-1 text-sm text-white bg-gray-700 rounded;
-		@apply hover:bg-gray-600 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding-inline: var(--space-3);
+		padding-block: var(--space-1);
+		font-size: var(--text-sm);
+		color: oklch(1 0 0);
+		background-color: oklch(0.38 0.01 250);
+		border-radius: var(--radius-sm);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.45 0.01 250); }
 	}
 
 	.files-grid {
-		@apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-4);
+		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
+		@media (min-width: 1280px) { grid-template-columns: repeat(5, 1fr); }
 	}
 
 	.file-card {
-		@apply relative bg-gray-800/50 rounded-xl overflow-hidden border-2 border-gray-700/50;
-		@apply cursor-pointer transition-all hover:border-yellow-500/50;
-	}
-
-	.file-card.selected {
-		@apply border-yellow-500 bg-yellow-500/10;
+		position: relative;
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		overflow: hidden;
+		border: 2px solid oklch(0.38 0.01 250 / 50%);
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
+		&:hover { border-color: oklch(0.8 0.18 90 / 50%); }
+		&.selected { border-color: oklch(0.8 0.18 90); background-color: oklch(0.8 0.18 90 / 10%); }
 	}
 
 	.file-thumbnail {
-		@apply aspect-square bg-gray-900 overflow-hidden;
+		aspect-ratio: 1;
+		background-color: oklch(0.15 0.01 250);
+		overflow: hidden;
 	}
 
 	.file-thumbnail img {
-		@apply w-full h-full object-cover;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
 	}
 
 	.file-icon-wrapper {
-		@apply aspect-square flex items-center justify-center bg-gray-900;
+		aspect-ratio: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: oklch(0.15 0.01 250);
+		color: oklch(0.65 0.01 250);
 	}
 
-	.file-info {
-		@apply p-3;
-	}
+	.file-info { padding: var(--space-3); }
 
 	.file-name {
-		@apply text-sm font-medium text-white truncate;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.file-meta {
-		@apply text-xs text-gray-400 mt-1;
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
 	}
 
 	.file-badge {
-		@apply absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded;
-	}
+		position: absolute;
+		inset-block-start: var(--space-2);
+		inset-inline-end: var(--space-2);
+		padding-inline: var(--space-2);
+		padding-block: var(--space-1);
+		font-size: var(--text-xs);
+		font-weight: var(--weight-semibold);
+		border-radius: var(--radius-sm);
 
-	.file-badge.webp {
-		@apply bg-green-500/20 text-green-400;
-	}
-
-	.file-badge.ai {
-		@apply bg-purple-500/20 text-purple-400 flex items-center gap-1;
+		&.webp { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.7 0.18 160); }
+		&.ai {
+			background-color: oklch(0.55 0.2 300 / 20%);
+			color: oklch(0.7 0.18 300);
+			display: flex;
+			align-items: center;
+			gap: 0.25rem;
+		}
 	}
 
 	.files-list {
-		@apply bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden;
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		overflow: hidden;
 	}
 
-	.files-table {
-		@apply w-full;
-	}
+	.files-table { inline-size: 100%; border-collapse: collapse; }
 
-	.files-table thead {
-		@apply bg-gray-900/50;
-	}
+	.files-table thead { background-color: oklch(0.15 0.01 250 / 50%); }
 
 	.files-table th {
-		@apply px-4 py-3 text-left text-sm font-semibold text-gray-400;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+		text-align: start;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.65 0.01 250);
 	}
+
+	.col-checkbox { inline-size: 3rem; }
 
 	.files-table tbody tr {
-		@apply border-t border-gray-700/50 hover:bg-gray-700/30 transition-colors;
-	}
-
-	.files-table tbody tr.selected {
-		@apply bg-yellow-500/10;
+		border-block-start: 1px solid oklch(0.38 0.01 250 / 50%);
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.38 0.01 250 / 30%); }
+		&.selected { background-color: oklch(0.8 0.18 90 / 10%); }
 	}
 
 	.files-table td {
-		@apply px-4 py-3 text-sm text-gray-300;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-3);
+		font-size: var(--text-sm);
+		color: oklch(0.75 0.01 250);
 	}
 
 	.file-name-cell {
-		@apply flex items-center gap-3;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
 	}
 
 	.file-thumb-small {
-		@apply w-10 h-10 object-cover rounded;
+		inline-size: 2.5rem;
+		block-size: 2.5rem;
+		object-fit: cover;
+		border-radius: var(--radius-sm);
 	}
 
-	.tags {
-		@apply flex gap-1 flex-wrap;
-	}
+	.tags { display: flex; gap: 0.25rem; flex-wrap: wrap; }
 
 	.tag {
-		@apply px-2 py-0.5 bg-gray-700 text-gray-300 rounded text-xs;
+		padding-inline: var(--space-2);
+		padding-block: 0.125rem;
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(0.75 0.01 250);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-xs);
 	}
 
 	.pagination {
-		@apply flex items-center justify-center gap-4 mt-6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-4);
+		margin-block-start: var(--space-6);
 	}
 
 	.page-btn {
-		@apply px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700;
-		@apply hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		background-color: oklch(0.25 0.01 250);
+		color: oklch(1 0 0);
+		border-radius: var(--radius-lg);
+		border: 1px solid oklch(0.38 0.01 250);
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.38 0.01 250); }
+		&:disabled { opacity: 0.5; cursor: not-allowed; }
 	}
 
-	.page-info {
-		@apply text-gray-400;
-	}
+	.page-info { color: oklch(0.65 0.01 250); }
 
 	.loading-state,
 	.empty-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+		color: oklch(0.45 0.01 250);
 	}
 
-	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
+
+	.empty-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
 	}
+
+	.empty-subtitle {
+		color: oklch(0.55 0.01 250);
+		margin-block-start: var(--space-2);
+	}
+
+	.empty-action { margin-block-start: var(--space-4); }
+
+	.spinner {
+		inline-size: 3rem;
+		block-size: 3rem;
+		border: 4px solid oklch(0.38 0.01 250);
+		border-block-start-color: oklch(0.8 0.18 90);
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin { to { transform: rotate(360deg); } }
 </style>

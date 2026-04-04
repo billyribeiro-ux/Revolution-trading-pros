@@ -103,16 +103,12 @@
 		onoptimize?.(item);
 	}
 
-	function getStatusColor(status: string): string {
+	function getStatusLevel(status: string): string {
 		switch (status) {
-			case 'completed':
-				return 'var(--success-color, #10b981)';
-			case 'processing':
-				return 'var(--warning-color, #f59e0b)';
-			case 'failed':
-				return 'var(--error-color, #ef4444)';
-			default:
-				return 'var(--text-muted, #9ca3af)';
+			case 'completed': return 'completed';
+			case 'processing': return 'processing';
+			case 'failed': return 'failed';
+			default: return 'pending';
 		}
 	}
 
@@ -156,7 +152,7 @@
 			{@const isSelected = selectedIds.includes(item.id)}
 			<div
 				class="grid-item"
-				class:selected={isSelected}
+				data-selected={isSelected || undefined}
 				role="button"
 				tabindex="0"
 				onclick={(e: MouseEvent) => handleItemClick(item, e)}
@@ -225,7 +221,7 @@
 					{#if showStatus && item.file_type === 'image'}
 						<div
 							class="status-badge"
-							style="background: {getStatusColor(item.processing_status || 'pending')}"
+							data-status={getStatusLevel(item.processing_status || 'pending')}
 						>
 							{#if item.is_optimized}
 								<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -344,152 +340,132 @@
 	.media-grid {
 		display: grid;
 		grid-template-columns: repeat(var(--columns), 1fr);
-		gap: 1rem;
-		padding: 1rem 0;
-	}
+		gap: var(--space-4);
+		padding-block: var(--space-4);
 
-	@media (max-width: 1024px) {
-		.media-grid {
-			--columns: 3 !important;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.media-grid {
-			--columns: 2 !important;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.media-grid {
-			--columns: 1 !important;
-		}
+		@media (max-width: 1024px) { --columns: 3 !important; }
+		@media (max-width: 768px) { --columns: 2 !important; }
+		@media (max-width: 480px) { --columns: 1 !important; }
 	}
 
 	.grid-item {
 		position: relative;
-		background: var(--bg-primary, white);
+		background: oklch(1 0 0);
 		border: 2px solid transparent;
-		border-radius: 8px;
+		border-radius: var(--radius-lg);
 		overflow: hidden;
 		cursor: pointer;
-		transition: all 0.2s ease;
-	}
+		transition: all 200ms var(--ease-default);
 
-	.grid-item:hover {
-		border-color: var(--primary-color, #3b82f6);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
+		&:hover {
+			border-color: oklch(0.6 0.2 260);
+			box-shadow: 0 4px 12px oklch(0 0 0 / 10%);
+		}
 
-	.grid-item.selected {
-		border-color: var(--primary-color, #3b82f6);
-		background: var(--bg-selected, #eff6ff);
+		&[data-selected] {
+			border-color: oklch(0.6 0.2 260);
+			background: oklch(0.96 0.03 260);
+		}
 	}
 
 	.item-checkbox {
 		position: absolute;
-		top: 8px;
-		left: 8px;
+		inset-block-start: 8px;
+		inset-inline-start: 8px;
 		z-index: 10;
 	}
 
 	.item-checkbox input {
-		width: 18px;
-		height: 18px;
+		inline-size: 18px;
+		block-size: 18px;
 		cursor: pointer;
 	}
 
 	.item-thumbnail {
 		position: relative;
 		aspect-ratio: 1;
-		background: var(--bg-secondary, #f3f4f6);
+		background: oklch(0.96 0.002 265);
 		overflow: hidden;
 	}
 
 	.item-thumbnail img {
-		width: 100%;
-		height: 100%;
+		inline-size: 100%;
+		block-size: 100%;
 		object-fit: cover;
 	}
 
 	.type-icon {
-		width: 100%;
-		height: 100%;
+		inline-size: 100%;
+		block-size: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--text-muted, #9ca3af);
+		color: oklch(0.65 0.01 265);
 	}
 
 	.status-badge {
 		position: absolute;
-		top: 8px;
-		right: 8px;
-		width: 20px;
-		height: 20px;
+		inset-block-start: 8px;
+		inset-inline-end: 8px;
+		inline-size: 20px;
+		block-size: 20px;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: oklch(1 0 0);
+
+		&[data-status='completed'] { background-color: oklch(0.6 0.18 160); }
+		&[data-status='processing'] { background-color: oklch(0.8 0.18 90); }
+		&[data-status='failed'] { background-color: oklch(0.6 0.25 25); }
+		&[data-status='pending'] { background-color: oklch(0.65 0.01 265); }
 	}
 
 	.item-actions {
 		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
+		inset-block-end: 0;
+		inset-inline-start: 0;
+		inset-inline-end: 0;
 		display: flex;
 		justify-content: center;
-		gap: 0.5rem;
-		padding: 0.5rem;
-		background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+		gap: var(--space-2);
+		padding: var(--space-2);
+		background: linear-gradient(transparent, oklch(0 0 0 / 70%));
 		opacity: 0;
-		transition: opacity 0.2s ease;
+		transition: opacity 200ms var(--ease-default);
 	}
 
-	.grid-item:hover .item-actions {
-		opacity: 1;
-	}
+	.grid-item:hover .item-actions { opacity: 1; }
 
 	.action-btn {
-		width: 32px;
-		height: 32px;
+		inline-size: 32px;
+		block-size: 32px;
 		border: none;
-		border-radius: 6px;
-		background: rgba(255, 255, 255, 0.9);
-		color: var(--text-primary, #111827);
+		border-radius: var(--radius-md);
+		background: oklch(1 0 0 / 90%);
+		color: oklch(0.15 0.01 265);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: all 0.2s ease;
+		transition: all 200ms var(--ease-default);
+
+		&:hover {
+			background: oklch(1 0 0);
+			transform: scale(1.1);
+		}
+
+		&.optimize:hover { background: oklch(0.6 0.2 260); color: oklch(1 0 0); }
+		&.delete:hover { background: oklch(0.6 0.25 25); color: oklch(1 0 0); }
 	}
 
-	.action-btn:hover {
-		background: white;
-		transform: scale(1.1);
-	}
-
-	.action-btn.optimize:hover {
-		background: var(--primary-color, #3b82f6);
-		color: white;
-	}
-
-	.action-btn.delete:hover {
-		background: var(--error-color, #ef4444);
-		color: white;
-	}
-
-	.item-info {
-		padding: 0.75rem;
-	}
+	.item-info { padding: var(--space-3); }
 
 	.item-name {
 		display: block;
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--text-primary, #111827);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(0.15 0.01 265);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -497,64 +473,53 @@
 
 	.item-meta {
 		display: flex;
-		gap: 0.5rem;
-		margin-top: 0.25rem;
-		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		gap: var(--space-2);
+		margin-block-start: 0.25rem;
+		font-size: var(--text-xs);
+		color: oklch(0.5 0.01 265);
 	}
 
-	/* Skeleton loading */
-	.skeleton {
-		pointer-events: none;
-	}
+	/* ─── Skeleton ─── */
+	.skeleton { pointer-events: none; }
 
 	.skeleton-image {
 		aspect-ratio: 1;
-		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background: linear-gradient(90deg, oklch(0.95 0.002 265) 25%, oklch(0.9 0.005 265) 50%, oklch(0.95 0.002 265) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
 
 	.skeleton-text {
-		height: 40px;
-		margin: 0.75rem;
-		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		block-size: 40px;
+		margin: var(--space-3);
+		background: linear-gradient(90deg, oklch(0.95 0.002 265) 25%, oklch(0.9 0.005 265) 50%, oklch(0.95 0.002 265) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
+		border-radius: var(--radius-sm);
 	}
 
 	@keyframes shimmer {
-		0% {
-			background-position: -200% 0;
-		}
-		100% {
-			background-position: 200% 0;
-		}
+		0% { background-position: -200% 0; }
+		100% { background-position: 200% 0; }
 	}
 
-	/* Empty state */
+	/* ─── Empty state ─── */
 	.empty-state {
 		grid-column: 1 / -1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 1rem;
-		padding: 4rem 2rem;
-		color: var(--text-muted, #9ca3af);
+		gap: var(--space-4);
+		padding-block: var(--space-16);
+		padding-inline: var(--space-8);
+		color: oklch(0.65 0.01 265);
 	}
 
 	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
 	}
 
-	.animate-spin {
-		animation: spin 1s linear infinite;
-	}
+	.animate-spin { animation: spin 1s linear infinite; }
 </style>

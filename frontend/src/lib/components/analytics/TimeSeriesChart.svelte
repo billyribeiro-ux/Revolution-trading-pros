@@ -133,49 +133,48 @@
 	});
 </script>
 
-<div class="bg-white rounded-xl border border-gray-200 p-4">
+<div class="chart-container">
 	{#if title}
-		<h3 class="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+		<h3 class="chart-title">{title}</h3>
 	{/if}
 
 	<div
 		bind:this={containerEl}
-		class="relative"
+		class="chart-area"
 		onmousemove={handleMouseMove}
 		onmouseleave={handleMouseLeave}
 		role="img"
 		aria-label="Time series chart"
 	>
-		<svg {width} {height} class="overflow-visible">
+		<svg {width} {height} style="overflow: visible">
 			<!-- Grid lines -->
-			{#each yTicks as tick}
+			{#each yTicks as tick, i (i)}
 				<line
 					x1={padding.left}
 					y1={tick.y}
 					x2={width - padding.right}
 					y2={tick.y}
-					stroke="#E5E7EB"
-					stroke-dasharray="4 4"
+					class="grid-line"
 				/>
 			{/each}
 
 			<!-- Y-axis labels -->
-			{#each yTicks as tick}
+			{#each yTicks as tick, i (i)}
 				<text
 					x={padding.left - 8}
 					y={tick.y}
 					text-anchor="end"
 					dominant-baseline="middle"
-					class="text-xs fill-gray-500"
+					class="axis-label"
 				>
 					{formatValue(tick.value)}
 				</text>
 			{/each}
 
 			<!-- X-axis labels -->
-			{#each xLabels as item}
+			{#each xLabels as item, i (i)}
 				{@const index = data.indexOf(item)}
-				<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="text-xs fill-gray-500">
+				<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="axis-label">
 					{formatDate(item.date)}
 				</text>
 			{/each}
@@ -199,7 +198,7 @@
 
 			<!-- Points -->
 			{#if showPoints}
-				{#each data as point, i}
+				{#each data as point, i (i)}
 					<circle
 						cx={scaleX(i)}
 						cy={scaleY(point.value)}
@@ -231,12 +230,57 @@
 		{#if hoveredIndex !== null}
 			{@const point = data[hoveredIndex]}
 			<div
-				class="absolute pointer-events-none bg-gray-900 text-white px-3 py-2 rounded-lg text-sm shadow-lg z-10 transform -translate-x-1/2"
+				class="chart-tooltip"
 				style="left: {tooltipX}px; top: {tooltipY - 50}px"
 			>
-				<div class="font-medium">{formatValue(point.value)}</div>
-				<div class="text-gray-400 text-xs">{formatDate(point.date)}</div>
+				<div class="tooltip-value">{formatValue(point.value)}</div>
+				<div class="tooltip-date">{formatDate(point.date)}</div>
 			</div>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.chart-container {
+		background-color: oklch(1 0 0);
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.9 0.005 265);
+		padding: var(--space-4);
+	}
+
+	.chart-title {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.15 0.01 265);
+		margin-block-end: var(--space-4);
+	}
+
+	.chart-area { position: relative; }
+
+	.grid-line {
+		stroke: oklch(0.9 0.005 265);
+		stroke-dasharray: 4 4;
+	}
+
+	.axis-label {
+		font-size: var(--text-xs);
+		fill: oklch(0.55 0.01 265);
+	}
+
+	.chart-tooltip {
+		position: absolute;
+		pointer-events: none;
+		background-color: oklch(0.15 0.01 265);
+		color: oklch(1 0 0);
+		padding-inline: var(--space-3);
+		padding-block: var(--space-2);
+		border-radius: var(--radius-lg);
+		font-size: var(--text-sm);
+		box-shadow: 0 10px 25px oklch(0 0 0 / 15%);
+		z-index: 10;
+		transform: translateX(-50%);
+	}
+
+	.tooltip-value { font-weight: var(--weight-medium); }
+	.tooltip-date { color: oklch(0.65 0.01 250); font-size: var(--text-xs); }
+</style>

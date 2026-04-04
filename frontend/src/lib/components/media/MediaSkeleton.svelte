@@ -31,22 +31,22 @@
 
 {#if type === 'grid'}
 	<!-- Grid skeleton for gallery views -->
-	<div class="media-skeleton-grid gap-4 {className}" style="--columns: {columns};">
-		{#each Array(count) as _, i}
+	<div class="skel-grid {className}" style="--columns: {columns};">
+		{#each Array(count) as _, i (i)}
 			<div
-				class="skeleton-card bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden"
+				class="skel-card"
 				style="animation-delay: {i * 0.05}s;"
 			>
 				<div
-					class="relative bg-gray-200 dark:bg-gray-700 overflow-hidden"
+					class="skel-image"
 					style="aspect-ratio: {aspectRatio};"
 				>
 					<div class="skeleton-shimmer"></div>
 				</div>
 				{#if showText}
-					<div class="p-3 space-y-2">
-						<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-						<div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+					<div class="skel-text-group">
+						<div class="skel-line" style="inline-size: 75%;"></div>
+						<div class="skel-line skel-line-sm" style="inline-size: 50%;"></div>
 					</div>
 				{/if}
 			</div>
@@ -54,86 +54,84 @@
 	</div>
 {:else if type === 'card'}
 	<!-- Single card skeleton -->
-	<div
-		class="skeleton-card-large bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden {className}"
-	>
+	<div class="skel-card skel-card-large {className}">
 		<div
-			class="relative bg-gray-200 dark:bg-gray-700 overflow-hidden"
+			class="skel-image"
 			style="aspect-ratio: {aspectRatio};"
 		>
 			<div class="skeleton-shimmer"></div>
 		</div>
 		{#if showText}
-			<div class="p-6 space-y-4">
-				<div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-				<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-				<div class="flex gap-3 pt-2">
-					<div class="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-					<div class="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+			<div class="skel-text-group skel-text-large">
+				<div class="skel-line skel-line-lg" style="inline-size: 66%;"></div>
+				<div class="skel-line"></div>
+				<div class="skel-line" style="inline-size: 50%;"></div>
+				<div class="skel-actions">
+					<div class="skel-btn"></div>
+					<div class="skel-btn"></div>
 				</div>
 			</div>
 		{/if}
 	</div>
 {:else if type === 'list'}
 	<!-- List/table skeleton -->
-	<div class="space-y-2 {className}">
-		{#each Array(count) as _, i}
+	<div class="skel-list {className}">
+		{#each Array(count) as _, i (i)}
 			<div
-				class="skeleton-row flex items-center gap-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg"
+				class="skel-row"
 				style="animation-delay: {i * 0.05}s;"
 			>
-				<div class="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
+				<div class="skel-checkbox"></div>
+				<div class="skel-thumb">
 					<div class="skeleton-shimmer"></div>
 				</div>
-				<div class="flex-1 space-y-2">
-					<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
-					<div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+				<div class="skel-row-text">
+					<div class="skel-line" style="inline-size: 12rem;"></div>
+					<div class="skel-line skel-line-sm" style="inline-size: 8rem;"></div>
 				</div>
-				<div class="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				<div class="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+				<div class="skel-line" style="inline-size: 4rem; block-size: 1rem;"></div>
+				<div class="skel-line" style="inline-size: 6rem; block-size: 1rem;"></div>
+				<div class="skel-line" style="inline-size: 5rem; block-size: 2rem;"></div>
 			</div>
 		{/each}
 	</div>
 {:else if type === 'upload'}
 	<!-- Upload progress skeleton -->
-	<div class="skeleton-upload bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden {className}">
-		<div class="p-4 border-b border-gray-200 dark:border-gray-700 space-y-2">
-			<div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-			<div class="h-1 bg-gray-200 dark:bg-gray-700 rounded-full relative overflow-hidden">
+	<div class="skel-upload {className}">
+		<div class="skel-upload-header">
+			<div class="skel-line" style="inline-size: 8rem; block-size: 1.25rem;"></div>
+			<div class="skel-progress-track">
 				<div class="skeleton-shimmer"></div>
 			</div>
 		</div>
-		{#each Array(count) as _, i}
+		{#each Array(count) as _, i (i)}
 			<div
-				class="skeleton-upload-item flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 last:border-0"
+				class="skel-upload-item"
 				style="animation-delay: {i * 0.1}s;"
 			>
-				<div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
+				<div class="skel-thumb">
 					<div class="skeleton-shimmer"></div>
 				</div>
-				<div class="flex-1 space-y-2">
-					<div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-					<div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full relative overflow-hidden">
+				<div class="skel-row-text">
+					<div class="skel-line" style="inline-size: 10rem;"></div>
+					<div class="skel-progress-track">
 						<div class="skeleton-shimmer"></div>
 					</div>
 				</div>
-				<div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+				<div class="skel-circle"></div>
 			</div>
 		{/each}
 	</div>
 {:else if type === 'single'}
 	<!-- Single image skeleton -->
 	<div
-		class="skeleton-single relative bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden {className}"
+		class="skel-single {className}"
 		style="aspect-ratio: {aspectRatio};"
 	>
 		<div class="skeleton-shimmer"></div>
-		<div class="absolute inset-0 flex items-center justify-center">
+		<div class="skel-single-icon">
 			<svg
-				class="w-12 h-12 text-gray-300 dark:text-gray-600"
+				class="skel-svg-icon"
 				fill="none"
 				stroke="currentColor"
 				viewBox="0 0 24 24"
@@ -157,82 +155,184 @@
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			rgba(255, 255, 255, 0.4) 50%,
+			oklch(1 0 0 / 40%) 50%,
 			transparent 100%
 		);
 		animation: shimmer 1.5s infinite;
 	}
 
-	:global(.dark) .skeleton-shimmer {
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			rgba(255, 255, 255, 0.1) 50%,
-			transparent 100%
-		);
-	}
-
-	/* Keyframe animations */
 	@keyframes shimmer {
-		0% {
-			transform: translateX(-100%);
-		}
-		100% {
-			transform: translateX(100%);
-		}
+		0% { transform: translateX(-100%); }
+		100% { transform: translateX(100%); }
 	}
 
 	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
 	}
 
-	/* Grid layout with CSS variable */
-	.media-skeleton-grid {
+	/* Shared bone style */
+	.skel-line {
+		block-size: 1rem;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: var(--radius-sm);
+
+		&.skel-line-sm { block-size: 0.75rem; }
+		&.skel-line-lg { block-size: 1.5rem; }
+	}
+
+	.skel-image {
+		position: relative;
+		background-color: oklch(0.9 0.005 265);
+		overflow: hidden;
+	}
+
+	/* ─── Grid ─── */
+	.skel-grid {
 		display: grid;
 		grid-template-columns: repeat(var(--columns), 1fr);
+		gap: var(--space-4);
+
+		@media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (max-width: 480px) { grid-template-columns: 1fr; }
 	}
 
-	/* Pulse animations for skeleton elements */
-	.skeleton-card {
+	.skel-card {
+		background-color: oklch(0.95 0.002 265);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
 		animation: pulse 2s ease-in-out infinite;
 	}
 
-	.skeleton-card-large {
+	.skel-card-large { border-radius: var(--radius-xl); }
+
+	.skel-text-group {
+		padding: var(--space-3);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	.skel-text-large {
+		padding: var(--space-6);
+		gap: var(--space-4);
+	}
+
+	.skel-actions {
+		display: flex;
+		gap: var(--space-3);
+		padding-block-start: var(--space-2);
+	}
+
+	.skel-btn {
+		block-size: 2.5rem;
+		inline-size: 6rem;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: var(--radius-lg);
+	}
+
+	/* ─── List ─── */
+	.skel-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	.skel-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		padding: var(--space-3);
+		background-color: oklch(0.95 0.002 265);
+		border-radius: var(--radius-lg);
 		animation: pulse 2s ease-in-out infinite;
 	}
 
-	.skeleton-row {
+	.skel-checkbox {
+		inline-size: 1.25rem;
+		block-size: 1.25rem;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: var(--radius-sm);
+	}
+
+	.skel-thumb {
+		inline-size: 3rem;
+		block-size: 3rem;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: var(--radius-lg);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.skel-row-text {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	/* ─── Upload ─── */
+	.skel-upload {
+		background-color: oklch(0.95 0.002 265);
+		border-radius: var(--radius-xl);
+		overflow: hidden;
 		animation: pulse 2s ease-in-out infinite;
 	}
 
-	.skeleton-upload {
+	.skel-upload-header {
+		padding: var(--space-4);
+		border-block-end: 1px solid oklch(0.9 0.005 265);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	.skel-progress-track {
+		block-size: 0.25rem;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: 9999px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.skel-upload-item {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		padding: var(--space-4);
+		border-block-end: 1px solid oklch(0.9 0.005 265);
+		animation: pulse 2s ease-in-out infinite;
+
+		&:last-child { border-block-end: none; }
+	}
+
+	.skel-circle {
+		inline-size: 2rem;
+		block-size: 2rem;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: 9999px;
+	}
+
+	/* ─── Single ─── */
+	.skel-single {
+		position: relative;
+		background-color: oklch(0.9 0.005 265);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
 		animation: pulse 2s ease-in-out infinite;
 	}
 
-	.skeleton-upload-item {
-		animation: pulse 2s ease-in-out infinite;
+	.skel-single-icon {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
-	.skeleton-single {
-		animation: pulse 2s ease-in-out infinite;
-	}
-
-	/* Responsive grid adjustments */
-	@media (max-width: 768px) {
-		.media-skeleton-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (max-width: 480px) {
-		.media-skeleton-grid {
-			grid-template-columns: repeat(1, 1fr);
-		}
+	.skel-svg-icon {
+		inline-size: 3rem;
+		block-size: 3rem;
+		color: oklch(0.8 0.005 265);
 	}
 </style>

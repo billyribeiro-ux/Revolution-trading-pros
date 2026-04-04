@@ -172,9 +172,9 @@
 </script>
 
 <div
-	class="dropzone relative {className}"
-	class:dropzone-active={isDragOver}
-	class:dropzone-disabled={disabled}
+	class="dz-zone {className}"
+	data-active={isDragOver || undefined}
+	data-disabled={disabled || undefined}
 	role="button"
 	tabindex={disabled ? -1 : 0}
 	onclick={openFileDialog}
@@ -191,52 +191,30 @@
 		{multiple}
 		{disabled}
 		onchange={handleFileInput}
-		class="hidden"
+		class="dz-input"
 	/>
 
-	<div class="dropzone-content">
+	<div class="dz-content">
 		{#if isDragOver}
 			<!-- Drop active state -->
-			<div class="drop-indicator">
-				<svg
-					class="w-16 h-16 text-blue-500 animate-bounce"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3-3m0 0l3 3m-3-3v12"
-					/>
+			<div class="dz-indicator">
+				<svg class="dz-icon-lg dz-icon-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3-3m0 0l3 3m-3-3v12" />
 				</svg>
-				<p class="text-lg font-medium text-blue-600">Drop files here</p>
+				<p class="dz-drop-text">Drop files here</p>
 			</div>
 		{:else}
 			<!-- Default state -->
 			{#if children}
 				{@render children()}
 			{:else}
-				<div class="default-content">
-					<svg
-						class="w-12 h-12 text-gray-400 mb-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-						/>
+				<div class="dz-default">
+					<svg class="dz-icon-md dz-icon-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
 					</svg>
-					<p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
-						Drag and drop images here
-					</p>
-					<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">or click to browse</p>
-					<div class="text-xs text-gray-400 dark:text-gray-500 space-y-1">
+					<p class="dz-heading">Drag and drop images here</p>
+					<p class="dz-subtext">or click to browse</p>
+					<div class="dz-hints">
 						<p>Supported: JPG, PNG, WebP, GIF, AVIF</p>
 						<p>Max size: {formatBytes(maxSize)} per file</p>
 						{#if multiple}
@@ -250,77 +228,111 @@
 </div>
 
 <style>
-	.dropzone {
-		border: 2px dashed #d1d5db;
-		border-radius: 0.75rem;
-		padding: 2rem;
-		background-color: #f9fafb;
+	.dz-zone {
+		position: relative;
+		border: 2px dashed oklch(0.85 0.005 265);
+		border-radius: var(--radius-xl);
+		padding: var(--space-8);
+		background-color: oklch(0.98 0.002 265);
 		cursor: pointer;
-		transition: all 200ms ease;
+		transition: all 200ms var(--ease-default);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 200px;
+		min-block-size: 200px;
+
+		&:hover:not([data-disabled]) {
+			border-color: oklch(0.7 0.15 260);
+			background-color: oklch(0.97 0.02 260 / 50%);
+		}
+
+		&:focus:not([data-disabled]) {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.6 0.2 260), 0 0 0 4px oklch(1 0 0);
+		}
+
+		&[data-active] {
+			border-color: oklch(0.6 0.2 260);
+			border-style: solid;
+			background-color: oklch(0.96 0.03 260);
+			transform: scale(1.02);
+		}
+
+		&[data-disabled] {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
 	}
 
-	:global(.dark) .dropzone {
-		border-color: #4b5563;
-		background-color: rgba(31, 41, 55, 0.5);
+	.dz-input {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
-	.dropzone:hover:not(.dropzone-disabled) {
-		border-color: #60a5fa;
-		background-color: rgba(239, 246, 255, 0.5);
-	}
+	.dz-content { text-align: center; }
 
-	:global(.dark) .dropzone:hover:not(.dropzone-disabled) {
-		border-color: #3b82f6;
-		background-color: rgba(30, 58, 138, 0.1);
-	}
-
-	.dropzone:focus:not(.dropzone-disabled) {
-		outline: none;
-		box-shadow:
-			0 0 0 2px #3b82f6,
-			0 0 0 4px white;
-	}
-
-	:global(.dark) .dropzone:focus:not(.dropzone-disabled) {
-		box-shadow:
-			0 0 0 2px #3b82f6,
-			0 0 0 4px #111827;
-	}
-
-	.dropzone-active {
-		border-color: #3b82f6;
-		border-style: solid;
-		background-color: #eff6ff;
-		transform: scale(1.02);
-	}
-
-	:global(.dark) .dropzone-active {
-		background-color: rgba(30, 58, 138, 0.2);
-	}
-
-	.dropzone-disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.dropzone-content {
-		text-align: center;
-	}
-
-	.drop-indicator {
+	.dz-indicator {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 	}
 
-	.default-content {
+	.dz-icon-lg {
+		inline-size: 4rem;
+		block-size: 4rem;
+		animation: bounce 1s infinite;
+	}
+
+	.dz-icon-md {
+		inline-size: 3rem;
+		block-size: 3rem;
+		margin-block-end: var(--space-4);
+	}
+
+	.dz-icon-accent { color: oklch(0.6 0.2 260); }
+	.dz-icon-muted { color: oklch(0.65 0.01 265); }
+
+	.dz-drop-text {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-medium);
+		color: oklch(0.5 0.18 260);
+	}
+
+	.dz-default {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	.dz-heading {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-medium);
+		color: oklch(0.35 0.01 265);
+		margin-block-end: var(--space-1);
+	}
+
+	.dz-subtext {
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+		margin-block-end: var(--space-4);
+	}
+
+	.dz-hints {
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 265);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+	}
+
+	@keyframes bounce {
+		0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+		50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
 	}
 </style>

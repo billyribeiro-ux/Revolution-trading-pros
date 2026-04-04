@@ -44,10 +44,10 @@
 	<!-- Header -->
 	<div class="dashboard-header">
 		<div class="header-title">
-			<Icon icon={IconMail} size={32} class="text-yellow-400" />
+			<Icon icon={IconMail} size={32} />
 			<div>
-				<h1 class="text-3xl font-bold text-white">Email Marketing</h1>
-				<p class="text-gray-400 mt-1">Campaigns, sequences, and automation</p>
+				<h1 class="page-heading">Email Marketing</h1>
+				<p class="page-subheading">Campaigns, sequences, and automation</p>
 			</div>
 		</div>
 
@@ -67,8 +67,8 @@
 	{#if emailStore.analytics}
 		<div class="stats-grid">
 			<div class="stat-card">
-				<div class="stat-icon bg-blue-500/20">
-					<Icon icon={IconSend} size={24} class="text-blue-400" />
+				<div class="stat-icon" data-color="blue">
+					<Icon icon={IconSend} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Emails Sent</div>
@@ -78,8 +78,8 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-green-500/20">
-					<Icon icon={IconChartBar} size={24} class="text-green-400" />
+				<div class="stat-icon" data-color="green">
+					<Icon icon={IconChartBar} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Open Rate</div>
@@ -89,8 +89,8 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-purple-500/20">
-					<Icon icon={IconUsers} size={24} class="text-purple-400" />
+				<div class="stat-icon" data-color="purple">
+					<Icon icon={IconUsers} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Avg Click Rate</div>
@@ -100,8 +100,8 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon bg-yellow-500/20">
-					<Icon icon={IconRocket} size={24} class="text-yellow-400" />
+				<div class="stat-icon" data-color="yellow">
+					<Icon icon={IconRocket} size={24} />
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Active Campaigns</div>
@@ -161,12 +161,12 @@
 		{#if getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
-				<p class="text-gray-400 mt-4">Loading...</p>
+				<p class="loading-text">Loading...</p>
 			</div>
 		{:else if selectedTab === 'campaigns'}
 			<div class="campaigns-list">
 				<div class="list-header">
-					<h2 class="text-xl font-bold text-white">Email Campaigns</h2>
+					<h2 class="list-title">Email Campaigns</h2>
 					<button class="btn-primary">
 						<Icon icon={IconPlus} size={18} />
 						Create Campaign
@@ -214,10 +214,10 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<Icon icon={IconMail} size={64} class="text-gray-600" />
-						<h3 class="text-xl font-semibold text-gray-400 mt-4">No campaigns yet</h3>
-						<p class="text-gray-500 mt-2">Create your first email campaign to get started</p>
-						<button class="btn-primary mt-4">
+						<Icon icon={IconMail} size={64} />
+						<h3 class="empty-title">No campaigns yet</h3>
+						<p class="empty-subtitle">Create your first email campaign to get started</p>
+						<button class="btn-primary empty-action">
 							<Icon icon={IconPlus} size={18} />
 							Create Campaign
 						</button>
@@ -227,7 +227,7 @@
 		{:else if selectedTab === 'sequences'}
 			<div class="sequences-list">
 				<div class="list-header">
-					<h2 class="text-xl font-bold text-white">Email Sequences</h2>
+					<h2 class="list-title">Email Sequences</h2>
 					<button class="btn-primary">
 						<Icon icon={IconPlus} size={18} />
 						Create Sequence
@@ -267,10 +267,10 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<Icon icon={IconBolt} size={64} class="text-gray-600" />
-						<h3 class="text-xl font-semibold text-gray-400 mt-4">No sequences yet</h3>
-						<p class="text-gray-500 mt-2">Create automated email sequences</p>
-						<button class="btn-primary mt-4">
+						<Icon icon={IconBolt} size={64} />
+						<h3 class="empty-title">No sequences yet</h3>
+						<p class="empty-subtitle">Create automated email sequences</p>
+						<button class="btn-primary empty-action">
 							<Icon icon={IconPlus} size={18} />
 							Create Sequence
 						</button>
@@ -280,7 +280,7 @@
 		{:else if selectedTab === 'templates'}
 			<div class="templates-list">
 				<div class="list-header">
-					<h2 class="text-xl font-bold text-white">Email Templates</h2>
+					<h2 class="list-title">Email Templates</h2>
 					<button class="btn-primary">
 						<Icon icon={IconPlus} size={18} />
 						Create Template
@@ -295,7 +295,7 @@
 									<img src={template.thumbnail} alt={template.name} class="template-thumbnail" />
 								{:else}
 									<div class="template-placeholder">
-										<Icon icon={IconFileText} size={48} class="text-gray-600" />
+										<Icon icon={IconFileText} size={48} />
 									</div>
 								{/if}
 
@@ -314,10 +314,10 @@
 					</div>
 				{:else}
 					<div class="empty-state">
-						<Icon icon={IconFileText} size={64} class="text-gray-600" />
-						<h3 class="text-xl font-semibold text-gray-400 mt-4">No templates yet</h3>
-						<p class="text-gray-500 mt-2">Create reusable email templates</p>
-						<button class="btn-primary mt-4">
+						<Icon icon={IconFileText} size={64} />
+						<h3 class="empty-title">No templates yet</h3>
+						<p class="empty-subtitle">Create reusable email templates</p>
+						<button class="btn-primary empty-action">
 							<Icon icon={IconPlus} size={18} />
 							Create Template
 						</button>
@@ -326,207 +326,367 @@
 			</div>
 		{:else}
 			<div class="analytics-view">
-				<h2 class="text-xl font-bold text-white mb-6">Email Analytics</h2>
-				<p class="text-gray-400">Detailed analytics coming soon...</p>
+				<h2 class="analytics-title">Email Analytics</h2>
+				<p class="analytics-placeholder">Detailed analytics coming soon...</p>
 			</div>
 		{/if}
 	</div>
 </div>
 
-<style lang="postcss">
-	@reference "../../app.css";
+<style>
 	.email-dashboard {
-		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
-		padding: 1.5rem;
+		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		padding: var(--space-6);
 	}
 
 	.dashboard-header {
-		@apply flex items-center justify-between mb-8;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-8);
 	}
 
 	.header-title {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+		color: oklch(0.8 0.18 90);
 	}
 
-	.header-actions {
-		@apply flex items-center gap-3;
+	.page-heading {
+		font-size: var(--text-3xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
+
+	.page-subheading {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
+	}
+
+	.header-actions { display: flex; align-items: center; gap: var(--space-3); }
 
 	.btn-primary {
-		@apply flex items-center gap-2 px-6 py-3 bg-yellow-500 text-gray-900 font-semibold rounded-lg;
-		@apply hover:bg-yellow-400 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		background-color: oklch(0.8 0.18 90);
+		color: oklch(0.15 0.02 90);
+		font-weight: var(--weight-semibold);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.85 0.16 90); }
 	}
 
 	.btn-secondary {
-		@apply flex items-center gap-2 px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg;
-		@apply hover:bg-gray-600 transition-colors;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(1 0 0);
+		font-weight: var(--weight-semibold);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.45 0.01 250); }
 	}
 
 	.stats-grid {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-6);
+		margin-block-end: var(--space-8);
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
 	}
 
 	.stat-card {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 flex items-start gap-4;
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-4);
 	}
 
 	.stat-icon {
-		@apply w-12 h-12 rounded-lg flex items-center justify-center shrink-0;
+		inline-size: 3rem;
+		block-size: 3rem;
+		border-radius: var(--radius-lg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+
+		&[data-color='blue'] { background-color: oklch(0.6 0.2 260 / 20%); color: oklch(0.7 0.18 260); }
+		&[data-color='green'] { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.7 0.18 160); }
+		&[data-color='purple'] { background-color: oklch(0.55 0.2 300 / 20%); color: oklch(0.7 0.18 300); }
+		&[data-color='yellow'] { background-color: oklch(0.8 0.18 90 / 20%); color: oklch(0.8 0.18 90); }
 	}
 
-	.stat-content {
-		@apply flex-1;
-	}
+	.stat-content { flex: 1; }
 
 	.stat-label {
-		@apply text-sm text-gray-400;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
 	}
 
 	.stat-value {
-		@apply text-2xl font-bold text-white mt-1;
+		font-size: var(--text-2xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		margin-block-start: var(--space-1);
 	}
 
 	.stat-change {
-		@apply text-sm mt-1;
-	}
-
-	.stat-change.positive {
-		@apply text-green-400;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-1);
+		&.positive { color: oklch(0.7 0.18 160); }
 	}
 
 	.tabs {
-		@apply flex gap-2 mb-6 bg-gray-800/50 p-2 rounded-xl border border-gray-700/50;
+		display: flex;
+		gap: var(--space-2);
+		margin-block-end: var(--space-6);
+		background-color: oklch(0.25 0.01 250 / 50%);
+		padding: var(--space-2);
+		border-radius: var(--radius-xl);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.tab {
-		@apply flex items-center gap-2 px-4 py-2 text-gray-400 rounded-lg transition-colors;
-		@apply hover:text-white hover:bg-gray-700/50;
-	}
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		color: oklch(0.65 0.01 250);
+		border-radius: var(--radius-lg);
+		border: none;
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
 
-	.tab.active {
-		@apply bg-yellow-500 text-gray-900 font-semibold;
+		&:hover { color: oklch(1 0 0); background-color: oklch(0.38 0.01 250 / 50%); }
+		&.active { background-color: oklch(0.8 0.18 90); color: oklch(0.15 0.02 90); font-weight: var(--weight-semibold); }
 	}
 
 	.tab-content {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 min-h-[500px];
+		background-color: oklch(0.25 0.01 250 / 50%);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		min-block-size: 500px;
 	}
 
 	.list-header {
-		@apply flex items-center justify-between mb-6;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-6);
+	}
+
+	.list-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
 	}
 
 	.campaigns-grid,
 	.sequences-grid,
 	.templates-grid {
-		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-6);
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
 	}
 
 	.campaign-card,
 	.sequence-card,
 	.template-card {
-		@apply bg-gray-900/50 rounded-lg p-6 border border-gray-700/50;
-		@apply hover:border-yellow-500/50 transition-colors;
+		background-color: oklch(0.15 0.01 250 / 50%);
+		border-radius: var(--radius-lg);
+		padding: var(--space-6);
+		border: 1px solid oklch(0.38 0.01 250 / 50%);
+		transition: border-color var(--duration-fast) var(--ease-default);
+		&:hover { border-color: oklch(0.8 0.18 90 / 50%); }
 	}
 
 	.campaign-header,
 	.sequence-header {
-		@apply flex items-center justify-between mb-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: var(--space-4);
 	}
 
 	.campaign-status,
 	.sequence-status {
-		@apply px-3 py-1 bg-gray-700 text-gray-300 rounded-lg text-sm font-medium;
-	}
+		padding-inline: var(--space-3);
+		padding-block: var(--space-1);
+		background-color: oklch(0.38 0.01 250);
+		color: oklch(0.75 0.01 250);
+		border-radius: var(--radius-lg);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
 
-	.campaign-status.active,
-	.sequence-status.active {
-		@apply bg-green-500/20 text-green-400;
+		&.active { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.7 0.18 160); }
 	}
 
 	.campaign-type {
-		@apply text-sm text-gray-500;
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 250);
 	}
 
 	.campaign-name,
 	.sequence-name,
 	.template-name {
-		@apply text-lg font-semibold text-white mb-2;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-2);
 	}
 
 	.campaign-subject,
 	.sequence-description {
-		@apply text-sm text-gray-400 mb-4;
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+		margin-block-end: var(--space-4);
 	}
 
 	.campaign-stats {
-		@apply grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-700/50;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-4);
+		margin-block-end: var(--space-4);
+		padding-block-end: var(--space-4);
+		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
 	}
 
 	.stat-item {
-		@apply flex flex-col;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.stat-item .stat-label {
-		@apply text-xs text-gray-500;
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 250);
 	}
 
 	.stat-item .stat-value {
-		@apply text-lg font-semibold text-white;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		margin-block-start: 0;
 	}
 
 	.sequence-info {
-		@apply flex gap-4 mb-4;
+		display: flex;
+		gap: var(--space-4);
+		margin-block-end: var(--space-4);
 	}
 
-	.info-item {
-		@apply flex flex-col;
-	}
-
-	.info-label {
-		@apply text-xs text-gray-500;
-	}
-
-	.info-value {
-		@apply text-sm font-semibold text-white;
-	}
+	.info-item { display: flex; flex-direction: column; }
+	.info-label { font-size: var(--text-xs); color: oklch(0.55 0.01 250); }
+	.info-value { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: oklch(1 0 0); }
 
 	.campaign-actions,
 	.sequence-actions,
 	.template-actions {
-		@apply flex gap-2;
+		display: flex;
+		gap: var(--space-2);
 	}
 
 	.action-btn {
-		@apply px-4 py-2 text-sm text-gray-300 bg-gray-700/50 rounded;
-		@apply hover:bg-gray-600 transition-colors;
+		padding-inline: var(--space-4);
+		padding-block: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.75 0.01 250);
+		background-color: oklch(0.38 0.01 250 / 50%);
+		border-radius: var(--radius-sm);
+		border: none;
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-default);
+		&:hover { background-color: oklch(0.45 0.01 250); }
 	}
 
 	.template-thumbnail {
-		@apply w-full h-48 object-cover rounded-lg mb-4;
+		inline-size: 100%;
+		block-size: 12rem;
+		object-fit: cover;
+		border-radius: var(--radius-lg);
+		margin-block-end: var(--space-4);
 	}
 
 	.template-placeholder {
-		@apply w-full h-48 bg-gray-900 rounded-lg mb-4 flex items-center justify-center;
+		inline-size: 100%;
+		block-size: 12rem;
+		background-color: oklch(0.15 0.01 250);
+		border-radius: var(--radius-lg);
+		margin-block-end: var(--space-4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: oklch(0.45 0.01 250);
 	}
 
-	.template-info {
-		@apply mb-4;
-	}
-
-	.template-category {
-		@apply text-sm text-gray-500;
-	}
-
-	.template-usage {
-		@apply text-xs text-gray-600 mt-1;
-	}
+	.template-info { margin-block-end: var(--space-4); }
+	.template-category { font-size: var(--text-sm); color: oklch(0.55 0.01 250); }
+	.template-usage { font-size: var(--text-xs); color: oklch(0.45 0.01 250); margin-block-start: var(--space-1); }
 
 	.empty-state,
 	.loading-state {
-		@apply flex flex-col items-center justify-center py-20 text-center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-block: 5rem;
+		text-align: center;
+		color: oklch(0.45 0.01 250);
 	}
 
-	.spinner {
-		@apply w-12 h-12 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin;
+	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
+
+	.empty-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
 	}
+
+	.empty-subtitle {
+		color: oklch(0.55 0.01 250);
+		margin-block-start: var(--space-2);
+	}
+
+	.empty-action { margin-block-start: var(--space-4); }
+
+	.analytics-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		margin-block-end: var(--space-6);
+	}
+
+	.analytics-placeholder { color: oklch(0.65 0.01 250); }
+
+	.spinner {
+		inline-size: 3rem;
+		block-size: 3rem;
+		border: 4px solid oklch(0.38 0.01 250);
+		border-block-start-color: oklch(0.8 0.18 90);
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin { to { transform: rotate(360deg); } }
 </style>
