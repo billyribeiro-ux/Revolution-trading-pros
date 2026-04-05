@@ -1,9 +1,5 @@
-# Revolution Trading Pros - npm Configuration
+# Revolution Trading Pros - pnpm Configuration
 # ICT 7 Principal Engineer Standards
-
-# Engine strict disabled - camera-controls requires Node 22+ but we use Node 20 LTS
-# The package works fine on Node 20, just has overly strict engine requirement
-engine-strict=false
 
 # Use exact versions for reproducible builds
 save-exact=true
@@ -12,5 +8,8 @@ save-exact=true
 # Required for @fortawesome/svelte-fontawesome and other packages with outdated peer deps
 legacy-peer-deps=true
 
-# Ensure npm uses the correct registry
+# Ensure pnpm uses the correct registry
 registry=https://registry.npmjs.org/
+
+# Strict engine checks (disabled for camera-controls which requires Node 22+)
+engine-strict=false
