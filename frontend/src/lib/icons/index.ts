@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * All icons are string constants for use with the Icon component.
- * Icons use the Phosphor icon set via @iconify/svelte.
+ * Phosphor (`ph:`) is registered from `@iconify-json/ph` in register-bundles (no Iconify API calls).
  *
  * Usage:
  * import { Icon, IconUser, IconSettings } from '$lib/icons';

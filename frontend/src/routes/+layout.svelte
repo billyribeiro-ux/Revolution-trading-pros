@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/icons/register-bundles';
 	import { logger } from '$lib/utils/logger';
 	/**
 	 * Root Layout - Apple Principal Engineer ICT Level 7 Grade
