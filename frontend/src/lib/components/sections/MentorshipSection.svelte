@@ -99,68 +99,48 @@
 	onmousemove={handleMouseMove}
 	role="group"
 	aria-label="Core Infrastructure Features"
-	class="relative py-32 px-6 bg-[#050505] overflow-hidden border-b border-white/5"
+	class="ms-section"
 >
-	<div class="absolute inset-0 pointer-events-none">
-		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
-		></div>
+	<div class="ms-bg">
+		<div class="ms-grid-lines"></div>
 	</div>
 
-	<div class="relative max-w-[1600px] mx-auto z-10">
-		<div class="max-w-3xl mb-24">
+	<div class="ms-container">
+		<div class="ms-header">
 			{#if isVisible}
-				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
-					class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8"
-				>
-					<span class="relative flex h-2 w-2">
-						<span
-							class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"
-						></span>
-						<span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="ms-badge">
+					<span class="ms-ping-wrap">
+						<span class="ms-ping"></span>
+						<span class="ms-ping-dot"></span>
 					</span>
 					System Architecture
 				</div>
 
-				<h2
-					in:heavySlide={{ delay: 100 }}
-					class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight"
-				>
-					Core <span class="text-slate-700">Infrastructure.</span>
+				<h2 in:heavySlide={{ delay: 100 }} class="ms-title">
+					Core <span class="ms-title-muted">Infrastructure.</span>
 				</h2>
 
-				<p
-					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6"
-				>
+				<p in:heavySlide={{ delay: 200 }} class="ms-subtitle">
 					We replaced marketing hype with financial engineering. Our ecosystem combines structured
 					execution frameworks with institutional data tools.
 				</p>
 			{/if}
 		</div>
 
-		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
+		<div class="ms-cards" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each features as feature, i}
 				{@const iconStr = feature.icon}
 				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 300 + i * 150 }}
-						class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
-					>
+					<div in:heavySlide={{ delay: 300 + i * 150 }} class="ms-card">
 						<div
-							class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
-							style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);"
+							class="ms-card-spotlight"
+							style="background: radial-gradient(800px circle at var(--x) var(--y), oklch(1 0 0 / 0.03), transparent 40%);"
 						></div>
 
-						<div
-							class="absolute top-0 right-0 w-40 h-40 opacity-[0.02] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-white"
-						>
+						<div class="ms-card-svg-bg">
 							{#if feature.type === 'grid'}
 								<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
-									<path
-										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
-									/>
+									<path d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90" />
 								</svg>
 							{:else if feature.type === 'radar'}
 								<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
@@ -178,45 +158,25 @@
 							{/if}
 						</div>
 
-						<div class="flex justify-between items-start mb-12 relative z-10">
-							<div
-								class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 text-white group-hover/card:bg-amber-500 group-hover/card:text-black group-hover/card:border-amber-500 transition-all duration-300"
-							>
+						<div class="ms-card-top">
+							<div class="ms-icon-box">
 								<Icon icon={iconStr} size={24} stroke={1.5} />
 							</div>
-							<span class="font-mono text-[10px] text-slate-600 uppercase tracking-widest">
-								{feature.id}
-							</span>
+							<span class="ms-card-id">{feature.id}</span>
 						</div>
 
-						<div class="relative z-10">
-							<div class="text-[10px] font-mono uppercase tracking-widest text-amber-600 mb-3">
-								{feature.subtitle}
-							</div>
+						<div class="ms-card-content">
+							<div class="ms-card-subtitle">{feature.subtitle}</div>
+							<h3 class="ms-card-title">{feature.title}</h3>
+							<p class="ms-card-desc">{feature.description}</p>
 
-							<h3
-								class="text-2xl font-serif text-white mb-6 group-hover/card:text-white transition-colors"
-							>
-								{feature.title}
-							</h3>
-
-							<p class="text-sm text-slate-400 leading-relaxed font-light mb-12 h-16">
-								{feature.description}
-							</p>
-
-							<div class="flex items-center justify-between border-t border-white/10 pt-6">
-								<div class="flex items-center gap-2">
-									<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-									<span
-										class="text-[10px] font-mono text-slate-500 uppercase tracking-widest group-hover/card:text-white transition-colors"
-									>
-										{feature.status}
-									</span>
+							<div class="ms-card-footer">
+								<div class="ms-status">
+									<span class="ms-status-dot"></span>
+									<span class="ms-status-label">{feature.status}</span>
 								</div>
-								<div
-									class="opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 -translate-x-2 group-hover/card:translate-x-0"
-								>
-									<Icon icon={IconArrowRight} size={16} class="text-white" />
+								<div class="ms-arrow-wrap">
+									<Icon icon={IconArrowRight} size={16} class="ms-arrow-icon" />
 								</div>
 							</div>
 						</div>
@@ -226,3 +186,220 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	/* ─── Section ─── */
+	.ms-section {
+		position: relative;
+		padding-block: 8rem;
+		padding-inline: 1.5rem;
+		background-color: oklch(0.08 0 0);
+		overflow: hidden;
+		border-block-end: 1px solid oklch(1 0 0 / 0.05);
+	}
+
+	/* ─── Background ─── */
+	.ms-bg { position: absolute; inset: 0; pointer-events: none; }
+
+	.ms-grid-lines {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(oklch(1 0 0 / 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, oklch(1 0 0 / 0.03) 1px, transparent 1px);
+		background-size: 4rem 4rem;
+		mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, oklch(0 0 0) 70%, transparent 100%);
+	}
+
+	/* ─── Container ─── */
+	.ms-container {
+		position: relative;
+		max-inline-size: 100rem;
+		margin-inline: auto;
+		z-index: 10;
+	}
+
+	.ms-header { max-inline-size: 48rem; margin-block-end: 6rem; }
+
+	.ms-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-inline: 0.75rem;
+		padding-block: 0.25rem;
+		border: 1px solid oklch(0.45 0.12 70 / 0.3);
+		background-color: oklch(0.45 0.12 70 / 0.1);
+		color: oklch(0.75 0.15 85);
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		margin-block-end: 2rem;
+	}
+
+	.ms-ping-wrap { position: relative; display: flex; block-size: 0.5rem; inline-size: 0.5rem; }
+	.ms-ping { position: absolute; display: inline-flex; block-size: 100%; inline-size: 100%; border-radius: 50%; background-color: oklch(0.75 0.15 85); opacity: 0.75; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+	.ms-ping-dot { position: relative; display: inline-flex; border-radius: 50%; block-size: 0.5rem; inline-size: 0.5rem; background-color: oklch(0.75 0.15 85); }
+
+	.ms-title {
+		font-size: clamp(2.25rem, 5vw, 3.75rem);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 2rem;
+		letter-spacing: -0.02em;
+	}
+
+	.ms-title-muted { color: oklch(0.35 0.01 265); }
+
+	.ms-subtitle {
+		font-size: var(--text-lg);
+		color: oklch(0.55 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		max-inline-size: 32rem;
+		border-inline-start: 2px solid oklch(1 0 0 / 0.1);
+		padding-inline-start: 1.5rem;
+	}
+
+	/* ─── Cards ─── */
+	.ms-cards {
+		display: grid;
+		gap: 2rem;
+
+		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+	}
+
+	.ms-card {
+		position: relative;
+		background-color: oklch(0.1 0 0);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		padding: 2.5rem;
+		overflow: hidden;
+		transition: border-color 500ms;
+
+		&:hover { border-color: oklch(0.45 0.12 70 / 0.5); }
+		&:hover .ms-card-spotlight { opacity: 1; }
+		&:hover .ms-card-svg-bg { opacity: 0.1; }
+		&:hover .ms-icon-box { background-color: oklch(0.75 0.15 85); color: oklch(0 0 0); border-color: oklch(0.75 0.15 85); }
+		&:hover .ms-status-label { color: oklch(1 0 0); }
+		&:hover .ms-arrow-wrap { opacity: 1; transform: translateX(0); }
+	}
+
+	.ms-card-spotlight {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		transition: opacity 500ms;
+		pointer-events: none;
+	}
+
+	.ms-card-svg-bg {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		inline-size: 10rem;
+		block-size: 10rem;
+		opacity: 0.02;
+		transition: opacity 500ms;
+		pointer-events: none;
+		color: oklch(1 0 0);
+	}
+
+	/* ─── Card Top ─── */
+	.ms-card-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-block-end: 3rem;
+		position: relative;
+		z-index: 10;
+	}
+
+	.ms-icon-box {
+		inline-size: 3rem;
+		block-size: 3rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: oklch(1 0 0 / 0.05);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		color: oklch(1 0 0);
+		transition: background-color 300ms, color 300ms, border-color 300ms;
+	}
+
+	.ms-card-id {
+		font-family: var(--font-mono, monospace);
+		font-size: 0.625rem;
+		color: oklch(0.4 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	/* ─── Card Content ─── */
+	.ms-card-content { position: relative; z-index: 10; }
+
+	.ms-card-subtitle {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: oklch(0.6 0.15 70);
+		margin-block-end: 0.75rem;
+	}
+
+	.ms-card-title {
+		font-size: 1.5rem;
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 1.5rem;
+		transition: color 200ms;
+	}
+
+	.ms-card-desc {
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+		line-height: 1.7;
+		font-weight: 300;
+		margin-block-end: 3rem;
+		block-size: 4rem;
+	}
+
+	.ms-card-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-block-start: 1px solid oklch(1 0 0 / 0.1);
+		padding-block-start: 1.5rem;
+	}
+
+	.ms-status { display: flex; align-items: center; gap: 0.5rem; }
+
+	.ms-status-dot {
+		inline-size: 0.375rem;
+		block-size: 0.375rem;
+		border-radius: 50%;
+		background-color: oklch(0.7 0.17 160);
+	}
+
+	.ms-status-label {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.55 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		transition: color 200ms;
+	}
+
+	.ms-arrow-wrap {
+		opacity: 0;
+		transform: translateX(-0.5rem);
+		transition: opacity 300ms, transform 300ms;
+	}
+
+	:global(.ms-arrow-icon) { color: oklch(1 0 0); }
+
+	/* ─── Keyframes ─── */
+	@keyframes ping {
+		75%, 100% { transform: scale(2); opacity: 0; }
+	}
+</style>

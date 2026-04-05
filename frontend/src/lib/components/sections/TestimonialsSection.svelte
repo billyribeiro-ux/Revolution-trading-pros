@@ -137,138 +137,94 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-b border-white/5"
+	class="ts-section"
 	aria-label="Client Performance Ledger"
 >
-	<div
-		class="absolute inset-0 pointer-events-none opacity-[0.04] overflow-hidden flex flex-col justify-center gap-24 transform -rotate-6 scale-110"
-	>
-		<div class="flex gap-12 whitespace-nowrap animate-marquee-left text-xs font-mono text-white">
+	<div class="ts-ticker-bg">
+		<div class="ts-ticker-row ts-ticker-left">
 			{#each [...tickerItems, ...tickerItems, ...tickerItems] as item}
-				<div class="flex gap-4">
-					<span class="font-bold">{item.symbol}</span>
+				<div class="ts-ticker-item">
+					<span class="ts-ticker-symbol">{item.symbol}</span>
 					<span>{item.price}</span>
-					<span class={item.change.startsWith('-') ? 'text-red-500' : 'text-emerald-500'}
-						>{item.change}</span
-					>
+					<span class="ts-ticker-change" data-direction={item.change.startsWith('-') ? 'down' : 'up'}>{item.change}</span>
 				</div>
 			{/each}
 		</div>
-		<div class="flex gap-12 whitespace-nowrap animate-marquee-right text-xs font-mono text-white">
+		<div class="ts-ticker-row ts-ticker-right">
 			{#each [...tickerItems, ...tickerItems, ...tickerItems] as item}
-				<div class="flex gap-4">
-					<span class="font-bold">{item.symbol}</span>
+				<div class="ts-ticker-item">
+					<span class="ts-ticker-symbol">{item.symbol}</span>
 					<span>{item.price}</span>
-					<span class={item.change.startsWith('-') ? 'text-red-500' : 'text-emerald-500'}
-						>{item.change}</span
-					>
+					<span class="ts-ticker-change" data-direction={item.change.startsWith('-') ? 'down' : 'up'}>{item.change}</span>
 				</div>
 			{/each}
 		</div>
 	</div>
 
+	<div class="ts-fade-overlay"></div>
 	<div
-		class="absolute inset-0 pointer-events-none bg-linear-to-b from-[#020202] via-transparent to-[#020202]"
-	></div>
-	<div
-		class="absolute inset-0 pointer-events-none opacity-40 transition-opacity duration-300"
-		style="background: radial-gradient(1000px circle at var(--x) var(--y), rgba(16, 185, 129, 0.03), transparent 50%);"
+		class="ts-spotlight"
+		style="background: radial-gradient(1000px circle at var(--x) var(--y), oklch(0.7 0.17 160 / 0.03), transparent 50%);"
 	></div>
 
-	<div class="relative max-w-[1600px] mx-auto z-10">
-		<div class="max-w-4xl mx-auto text-center mb-24">
+	<div class="ts-container">
+		<div class="ts-header">
 			{#if isVisible}
-				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-emerald-900/30 bg-emerald-950/10 text-emerald-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
+				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="ts-badge">
 					<Icon icon={IconShieldCheck} size={14} />
 					Verified Performance
 				</div>
 
-				<h2
-					in:heavySlide={{ delay: 100 }}
-					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
-				>
-					Performance <span class="text-slate-700">Attribution.</span>
+				<h2 in:heavySlide={{ delay: 100 }} class="ts-title">
+					Performance <span class="ts-title-muted">Attribution.</span>
 				</h2>
 
-				<p
-					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
-				>
+				<p in:heavySlide={{ delay: 200 }} class="ts-subtitle">
 					We don't rely on marketing claims. We rely on the PnL of our desk. Verified feedback from
 					funded traders, prop managers, and institutional clients.
 				</p>
 			{/if}
 		</div>
 
-		<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+		<div class="ts-masonry">
 			{#each reviews as review, i}
 				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 300 + i * 100 }}
-						class="break-inside-avoid relative group bg-[#050505] border border-white/10 p-8 hover:bg-[#080808] hover:border-emerald-500/30 transition-all duration-500"
-					>
-						<div class="flex justify-between items-start mb-6 pb-6 border-b border-white/5">
-							<div class="flex items-center gap-3">
-								<div
-									class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-500"
-								>
+					<div in:heavySlide={{ delay: 300 + i * 100 }} class="ts-card">
+						<div class="ts-card-top">
+							<div class="ts-avatar-row">
+								<div class="ts-avatar">
 									<Icon icon={IconUserCircle} size={20} />
 								</div>
 								<div>
-									<div class="text-sm font-medium text-white">{review.name}</div>
-									<div class="text-[10px] font-mono uppercase text-slate-500 tracking-wide">
-										{review.role}
-									</div>
+									<div class="ts-name">{review.name}</div>
+									<div class="ts-role">{review.role}</div>
 								</div>
 							</div>
-							<div
-								class="text-[10px] font-mono text-emerald-500/80 border border-emerald-900/30 px-2 py-1 bg-emerald-950/10 rounded"
-							>
-								{review.id}
-							</div>
+							<div class="ts-id-badge">{review.id}</div>
 						</div>
 
-						<div class="relative mb-8">
-							<Icon icon={IconQuote}
-								size={24}
-								class="absolute -top-2 -left-2 text-white/5 transform -scale-x-100"
-							/>
-							<p class="relative z-10 text-slate-300 font-light leading-relaxed text-sm">
-								"{review.quote}"
-							</p>
+						<div class="ts-quote-wrap">
+							<Icon icon={IconQuote} size={24} class="ts-quote-icon" />
+							<p class="ts-quote">"{review.quote}"</p>
 						</div>
 
-						<div
-							class="flex items-center justify-between bg-white/2 -mx-8 -mb-8 px-8 py-4 border-t border-white/5 group-hover:bg-emerald-950/5 transition-colors duration-500"
-						>
-							<div class="flex flex-col">
-								<span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest mb-1">
-									{review.metric}
-								</span>
-								<div class="flex items-center gap-2">
-									<Icon icon={IconTrendingUp} size={14} class="text-emerald-500" />
-									<span class="text-lg font-serif text-white">{review.value}</span>
+						<div class="ts-card-bottom">
+							<div class="ts-metric">
+								<span class="ts-metric-label">{review.metric}</span>
+								<div class="ts-metric-row">
+									<Icon icon={IconTrendingUp} size={14} class="ts-emerald-icon" />
+									<span class="ts-metric-value">{review.value}</span>
 								</div>
 							</div>
-							<div
-								class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest"
-							>
+							<div class="ts-verified">
 								<Icon icon={IconCircleCheckFilled} size={14} />
 								Verified
 							</div>
 						</div>
 
-						<div class="absolute top-0 right-0 w-8 h-8 pointer-events-none overflow-hidden">
-							<div
-								class="absolute top-0 right-0 w-2 h-2 bg-emerald-500/0 group-hover:bg-emerald-500/50 transition-colors duration-500"
-							></div>
-							<svg
-								class="absolute top-0 right-0 w-full h-full text-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-								viewBox="0 0 24 24"
-							>
+						<div class="ts-corner">
+							<div class="ts-corner-dot"></div>
+							<svg class="ts-corner-svg" viewBox="0 0 24 24">
 								<path d="M24 0 L0 0" stroke="currentColor" stroke-width="1" />
 								<path d="M24 0 L24 24" stroke="currentColor" stroke-width="1" />
 							</svg>
@@ -279,21 +235,18 @@
 		</div>
 
 		{#if isVisible}
-			<div
-				in:heavySlide={{ delay: 600 }}
-				class="mt-20 pt-10 border-t border-white/5 flex flex-wrap justify-center gap-12 lg:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500"
-			>
-				<div class="flex items-center gap-3 text-white/60">
+			<div in:heavySlide={{ delay: 600 }} class="ts-trust-bar">
+				<div class="ts-trust-item">
 					<Icon icon={IconChartDots} size={24} />
-					<span class="text-xs font-mono uppercase tracking-widest">Audited by NinjaTrader</span>
+					<span class="ts-trust-label">Audited by NinjaTrader</span>
 				</div>
-				<div class="flex items-center gap-3 text-white/60">
+				<div class="ts-trust-item">
 					<Icon icon={IconShieldCheck} size={24} />
-					<span class="text-xs font-mono uppercase tracking-widest">MyFxBook Verified</span>
+					<span class="ts-trust-label">MyFxBook Verified</span>
 				</div>
-				<div class="flex items-center gap-3 text-white/60">
+				<div class="ts-trust-item">
 					<Icon icon={IconActivity} size={24} />
-					<span class="text-xs font-mono uppercase tracking-widest">Institutional Data Feed</span>
+					<span class="ts-trust-label">Institutional Data Feed</span>
 				</div>
 			</div>
 		{/if}
@@ -301,28 +254,307 @@
 </section>
 
 <style>
-	/* Marquee Animations for Ticker Tape */
-	@keyframes marquee-left {
-		0% {
-			transform: translateX(0);
-		}
-		100% {
-			transform: translateX(-50%);
-		}
-	}
-	@keyframes marquee-right {
-		0% {
-			transform: translateX(-50%);
-		}
-		100% {
-			transform: translateX(0);
-		}
+	/* ─── Section ─── */
+	.ts-section {
+		position: relative;
+		padding-block: 8rem;
+		padding-inline: 1.5rem;
+		background-color: oklch(0.05 0 0);
+		overflow: hidden;
+		border-block-end: 1px solid oklch(1 0 0 / 0.05);
 	}
 
-	.animate-marquee-left {
-		animation: marquee-left 40s linear infinite;
+	/* ─── Ticker Background ─── */
+	.ts-ticker-bg {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.04;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 6rem;
+		transform: rotate(-6deg) scale(1.1);
 	}
-	.animate-marquee-right {
-		animation: marquee-right 40s linear infinite;
+
+	.ts-ticker-row {
+		display: flex;
+		gap: 3rem;
+		white-space: nowrap;
+		font-size: var(--text-xs);
+		font-family: var(--font-mono, monospace);
+		color: oklch(1 0 0);
+	}
+
+	.ts-ticker-left { animation: marquee-left 40s linear infinite; }
+	.ts-ticker-right { animation: marquee-right 40s linear infinite; }
+
+	.ts-ticker-item { display: flex; gap: 1rem; }
+	.ts-ticker-symbol { font-weight: var(--weight-bold); }
+	.ts-ticker-change[data-direction='up'] { color: oklch(0.7 0.17 160); }
+	.ts-ticker-change[data-direction='down'] { color: oklch(0.6 0.2 25); }
+
+	/* ─── Overlays ─── */
+	.ts-fade-overlay {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(to bottom, oklch(0.05 0 0), transparent, oklch(0.05 0 0));
+	}
+
+	.ts-spotlight {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.4;
+		transition: opacity 300ms;
+	}
+
+	/* ─── Container ─── */
+	.ts-container {
+		position: relative;
+		max-inline-size: 100rem;
+		margin-inline: auto;
+		z-index: 10;
+	}
+
+	.ts-header {
+		max-inline-size: 56rem;
+		margin-inline: auto;
+		text-align: center;
+		margin-block-end: 6rem;
+	}
+
+	.ts-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-inline: 1rem;
+		padding-block: 0.375rem;
+		border: 1px solid oklch(0.3 0.1 160 / 0.3);
+		background-color: oklch(0.15 0.05 160 / 0.1);
+		color: oklch(0.7 0.17 160);
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		margin-block-end: 2rem;
+		border-radius: 2px;
+	}
+
+	.ts-title {
+		font-size: clamp(3rem, 6vw, 4.5rem);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 2rem;
+		letter-spacing: -0.02em;
+	}
+
+	.ts-title-muted { color: oklch(0.35 0.01 265); }
+
+	.ts-subtitle {
+		font-size: var(--text-lg);
+		color: oklch(0.55 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		max-inline-size: 32rem;
+		margin-inline: auto;
+	}
+
+	/* ─── Masonry ─── */
+	.ts-masonry {
+		columns: 1;
+		gap: 1.5rem;
+
+		@media (min-width: 768px) { columns: 2; }
+		@media (min-width: 1024px) { columns: 3; }
+
+		& > * { margin-block-end: 1.5rem; }
+	}
+
+	/* ─── Card ─── */
+	.ts-card {
+		break-inside: avoid;
+		position: relative;
+		background-color: oklch(0.08 0 0);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		padding: 2rem;
+		transition: background-color 500ms, border-color 500ms;
+
+		&:hover {
+			background-color: oklch(0.1 0 0);
+			border-color: oklch(0.7 0.17 160 / 0.3);
+		}
+
+		&:hover .ts-verified { opacity: 1; }
+		&:hover .ts-card-bottom { background-color: oklch(0.15 0.05 160 / 0.05); }
+		&:hover .ts-corner-dot { background-color: oklch(0.7 0.17 160 / 0.5); }
+		&:hover .ts-corner-svg { opacity: 1; }
+	}
+
+	.ts-card-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-block-end: 1.5rem;
+		padding-block-end: 1.5rem;
+		border-block-end: 1px solid oklch(1 0 0 / 0.05);
+	}
+
+	.ts-avatar-row { display: flex; align-items: center; gap: 0.75rem; }
+
+	.ts-avatar {
+		inline-size: 2rem;
+		block-size: 2rem;
+		border-radius: 50%;
+		background-color: oklch(1 0 0 / 0.05);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: oklch(0.55 0.01 265);
+	}
+
+	.ts-name { font-size: var(--text-sm); font-weight: var(--weight-medium); color: oklch(1 0 0); }
+	.ts-role { font-size: 0.625rem; font-family: var(--font-mono, monospace); text-transform: uppercase; color: oklch(0.55 0.01 265); letter-spacing: 0.05em; }
+
+	.ts-id-badge {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.7 0.17 160 / 0.8);
+		border: 1px solid oklch(0.3 0.1 160 / 0.3);
+		padding-inline: 0.5rem;
+		padding-block: 0.25rem;
+		background-color: oklch(0.15 0.05 160 / 0.1);
+		border-radius: var(--radius-sm);
+	}
+
+	/* ─── Quote ─── */
+	.ts-quote-wrap { position: relative; margin-block-end: 2rem; }
+	:global(.ts-quote-icon) { position: absolute; inset-block-start: -0.5rem; inset-inline-start: -0.5rem; color: oklch(1 0 0 / 0.05); transform: scaleX(-1); }
+
+	.ts-quote {
+		position: relative;
+		z-index: 10;
+		color: oklch(0.8 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		font-size: var(--text-sm);
+	}
+
+	/* ─── Card Bottom ─── */
+	.ts-card-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-inline: -2rem;
+		margin-block-end: -2rem;
+		padding-inline: 2rem;
+		padding-block: 1rem;
+		border-block-start: 1px solid oklch(1 0 0 / 0.05);
+		background-color: oklch(1 0 0 / 0.02);
+		transition: background-color 500ms;
+	}
+
+	.ts-metric { display: flex; flex-direction: column; }
+
+	.ts-metric-label {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		color: oklch(0.55 0.01 265);
+		letter-spacing: 0.1em;
+		margin-block-end: 0.25rem;
+	}
+
+	.ts-metric-row { display: flex; align-items: center; gap: 0.5rem; }
+	:global(.ts-emerald-icon) { color: oklch(0.7 0.17 160); }
+	.ts-metric-value { font-size: var(--text-lg); font-family: var(--font-serif, serif); color: oklch(1 0 0); }
+
+	.ts-verified {
+		opacity: 0;
+		transition: opacity 500ms;
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		color: oklch(0.7 0.17 160);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	/* ─── Corner Accent ─── */
+	.ts-corner {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		inline-size: 2rem;
+		block-size: 2rem;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.ts-corner-dot {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		inline-size: 0.5rem;
+		block-size: 0.5rem;
+		background-color: oklch(0.7 0.17 160 / 0);
+		transition: background-color 500ms;
+	}
+
+	.ts-corner-svg {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		color: oklch(0.7 0.17 160 / 0.2);
+		opacity: 0;
+		transition: opacity 500ms;
+	}
+
+	/* ─── Trust Bar ─── */
+	.ts-trust-bar {
+		margin-block-start: 5rem;
+		padding-block-start: 2.5rem;
+		border-block-start: 1px solid oklch(1 0 0 / 0.05);
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 3rem;
+		opacity: 0.5;
+		filter: grayscale(1);
+		transition: filter 500ms, opacity 500ms;
+
+		@media (min-width: 1024px) { gap: 6rem; }
+
+		&:hover { filter: grayscale(0); opacity: 1; }
+	}
+
+	.ts-trust-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: oklch(1 0 0 / 0.6);
+	}
+
+	.ts-trust-label {
+		font-size: var(--text-xs);
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	/* ─── Keyframes ─── */
+	@keyframes marquee-left {
+		0% { transform: translateX(0); }
+		100% { transform: translateX(-50%); }
+	}
+	@keyframes marquee-right {
+		0% { transform: translateX(-50%); }
+		100% { transform: translateX(0); }
 	}
 </style>

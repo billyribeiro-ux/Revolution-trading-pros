@@ -392,122 +392,87 @@ import { logger } from '$lib/utils/logger';
 
 <section
 	bind:this={sectionRef}
-	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
+	class="is-section"
 >
-	<!-- Ambient Background -->
-	<div class="absolute inset-0 pointer-events-none">
-		<!-- Gradient orbs - smaller on mobile -->
-		<div
-			class="absolute top-1/4 -left-16 sm:-left-32 w-48 sm:w-96 h-48 sm:h-96 bg-blue-500/10 rounded-full blur-[80px] sm:blur-[128px] animate-pulse"
-		></div>
-		<div
-			class="absolute bottom-1/4 -right-16 sm:-right-32 w-48 sm:w-96 h-48 sm:h-96 bg-violet-500/10 rounded-full blur-[80px] sm:blur-[128px] animate-pulse"
-			style="animation-delay: 1s;"
-		></div>
-
-		<!-- Grid pattern - larger on mobile for performance -->
-		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[32px_32px] sm:bg-size-[64px_64px]"
-		></div>
-
-		<!-- Radial fade -->
-		<div
-			class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(9,9,11,0.8)_70%)]"
-		></div>
+	<div class="is-bg">
+		<div class="is-orb is-orb-blue"></div>
+		<div class="is-orb is-orb-violet" style="animation-delay: 1s;"></div>
+		<div class="is-grid-lines"></div>
+		<div class="is-radial-fade"></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<!-- Section Header -->
+	<div class="is-container">
 		{#if isVisible}
 			<div
-				class="max-w-4xl mx-auto text-center mb-24"
+				class="is-header"
 				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
 			>
-				<div
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
-					<Icon icon={IconSparkles} class="w-3.5 h-3.5" />
+				<div class="is-badge">
+					<Icon icon={IconSparkles} size={14} />
 					Technical Edge
 				</div>
 
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
-					Indicator <span class="text-slate-700">Suite.</span>
+				<h2 class="is-title">
+					Indicator <span class="is-title-muted">Suite.</span>
 				</h2>
 
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+				<p class="is-subtitle">
 					We don't offer retail indicators. We provide institutional-grade analysis tools. Verified
 					by quantitative funds and professional trading desks.
 				</p>
 			</div>
 		{/if}
 
-		<!-- Main Content Grid - Stack on mobile -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
+		<div class="is-grid">
 			{#if isVisible}
 				<div
 					in:scaleIn={{
 						delay: prefersReducedMotion ? 0 : 200,
 						duration: prefersReducedMotion ? 0 : 600
 					}}
-					class="relative order-2 lg:order-1"
+					class="is-chart-col"
 				>
-					<div
-						class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 shadow-2xl"
-					>
-						<!-- Chart Header -->
-						<div
-							class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50"
-						>
-							<div class="flex items-center gap-2 sm:gap-3">
-								<div class="flex gap-1 sm:gap-1.5">
-									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></div>
-									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/80"></div>
-									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/80"></div>
+					<div class="is-chart-frame">
+						<div class="is-chart-header">
+							<div class="is-chart-header-left">
+								<div class="is-dots">
+									<div class="is-dot is-dot-red"></div>
+									<div class="is-dot is-dot-yellow"></div>
+									<div class="is-dot is-dot-green"></div>
 								</div>
-								<span class="text-xs sm:text-sm font-mono text-zinc-400">SPY • 1D</span>
+								<span class="is-chart-label">SPY • 1D</span>
 							</div>
-							<div class="flex items-center gap-1.5 sm:gap-2">
-								<span class="text-[10px] sm:text-xs font-mono text-emerald-400">+2.34%</span>
-								<div
-									class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"
-								></div>
+							<div class="is-chart-header-right">
+								<span class="is-chart-pct">+2.34%</span>
+								<div class="is-live-dot"></div>
 							</div>
 						</div>
 
-						<!-- Chart Canvas -->
-						<div bind:this={chartRef} class="relative h-56 sm:h-72 lg:h-80">
+						<div bind:this={chartRef} class="is-chart-canvas-wrap">
 							<canvas
 								bind:this={canvasRef}
-								class="absolute inset-0 w-full h-full"
+								class="is-canvas"
 								style="width: 100%; height: 100%;"
 							></canvas>
 
-							<!-- Indicator overlay label -->
-							<div
-								class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50"
-							>
-								<span class="text-[10px] sm:text-xs font-mono text-zinc-300">
+							<div class="is-indicator-label">
+								<span class="is-indicator-text">
 									{indicators[activeIndicator]!.name} Active
 								</span>
 							</div>
 						</div>
 					</div>
 
-					<!-- Floating stats - Hidden on very small screens -->
-					<div
-						class="hidden sm:block absolute -bottom-4 sm:-bottom-6 -right-2 sm:-right-6 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-zinc-800/90 backdrop-blur-xl border border-zinc-700/50 shadow-xl"
-					>
-						<div class="text-[10px] sm:text-xs text-zinc-500 mb-0.5 sm:mb-1">Win Rate</div>
-						<div class="text-xl sm:text-2xl font-bold text-emerald-400">73.2%</div>
+					<div class="is-float-stat">
+						<div class="is-float-label">Win Rate</div>
+						<div class="is-float-value">73.2%</div>
 					</div>
 				</div>
 			{/if}
 
-			<!-- Indicator Cards - Order 1 on mobile, 2 on desktop -->
 			{#if isVisible}
 				<div
-					class="space-y-3 sm:space-y-4 order-1 lg:order-2"
+					class="is-cards-col"
 					in:slideUp={{
 						delay: prefersReducedMotion ? 0 : 300,
 						duration: prefersReducedMotion ? 0 : 600
@@ -517,65 +482,37 @@ import { logger } from '$lib/utils/logger';
 						{@const iconStr = indicator.icon}
 						<a
 							href={indicator.href}
-							class="indicator-card group block relative p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-800/30 transition-all duration-300 active:scale-[0.98] {activeIndicator ===
-							i
-								? 'ring-2 ring-blue-500/30 bg-zinc-800/40'
-								: ''}"
+							class="indicator-card is-card"
+							data-active={activeIndicator === i ? '' : undefined}
+							data-id={indicator.id}
 							onmouseenter={() => (activeIndicator = i)}
 							ontouchstart={() => (activeIndicator = i)}
 						>
-							<div class="flex items-start gap-3 sm:gap-4">
-								<!-- Icon -->
-								<div
-									class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br {indicator.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
-								>
-									<Icon icon={iconStr} class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+							<div class="is-card-row">
+								<div class="is-card-icon">
+									<Icon icon={iconStr} size={24} />
 								</div>
 
-								<!-- Content -->
-								<div class="flex-1 min-w-0">
-									<div class="flex items-center gap-2 mb-0.5 sm:mb-1 flex-wrap">
-										<h3
-											class="text-base sm:text-lg font-semibold text-white group-hover:text-blue-400 transition-colors"
-										>
-											{indicator.name}
-										</h3>
-										<span
-											class="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full bg-zinc-800 text-zinc-400"
-										>
-											{indicator.category}
-										</span>
+								<div class="is-card-content">
+									<div class="is-card-name-row">
+										<h3 class="is-card-name">{indicator.name}</h3>
+										<span class="is-card-cat">{indicator.category}</span>
 									</div>
-									<p class="text-xs sm:text-sm text-zinc-500 mb-1 sm:mb-2 hidden sm:block">
-										{indicator.fullName}
-									</p>
-									<p class="text-xs sm:text-sm text-zinc-400 leading-relaxed line-clamp-2">
-										{indicator.description}
-									</p>
+									<p class="is-card-fullname">{indicator.fullName}</p>
+									<p class="is-card-desc">{indicator.description}</p>
 								</div>
 
-								<!-- Arrow -->
-								<div
-									class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:translate-x-1 transition-all duration-300"
-								>
-									<Icon icon={IconArrowRight}
-										class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 group-hover:text-blue-400"
-									/>
+								<div class="is-card-arrow">
+									<Icon icon={IconArrowRight} size={20} class="is-arrow-icon" />
 								</div>
 							</div>
 						</a>
 					{/each}
 
-					<!-- CTA Button -->
-					<div class="pt-4 sm:pt-6 text-center sm:text-left">
-						<a
-							href="/indicators"
-							class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-linear-to-r from-blue-600 to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
-						>
-							<span class="text-sm sm:text-base">Explore All Indicators</span>
-							<Icon icon={IconArrowRight}
-								class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform"
-							/>
+					<div class="is-cta-wrap">
+						<a href="/indicators" class="is-cta-btn">
+							<span>Explore All Indicators</span>
+							<Icon icon={IconArrowRight} size={20} class="is-cta-arrow" />
 						</a>
 					</div>
 				</div>
@@ -583,3 +520,459 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	</div>
 </section>
+
+<style>
+	/* ─── Section ─── */
+	.is-section {
+		position: relative;
+		padding-block: 4rem;
+		overflow: hidden;
+		background: linear-gradient(to bottom, oklch(0.12 0.005 285), oklch(0.15 0.005 285), oklch(0.12 0.005 285));
+
+		@media (min-width: 640px) { padding-block: 6rem; }
+		@media (min-width: 1024px) { padding-block: 8rem; }
+	}
+
+	/* ─── Background ─── */
+	.is-bg { position: absolute; inset: 0; pointer-events: none; }
+
+	.is-orb {
+		position: absolute;
+		border-radius: 50%;
+		animation: orb-pulse 2s ease-in-out infinite;
+	}
+
+	.is-orb-blue {
+		inset-block-start: 25%;
+		inset-inline-start: -4rem;
+		inline-size: 12rem;
+		block-size: 12rem;
+		background-color: oklch(0.6 0.18 260 / 0.1);
+		filter: blur(80px);
+
+		@media (min-width: 640px) { inset-inline-start: -8rem; inline-size: 24rem; block-size: 24rem; filter: blur(128px); }
+	}
+
+	.is-orb-violet {
+		inset-block-end: 25%;
+		inset-inline-end: -4rem;
+		inline-size: 12rem;
+		block-size: 12rem;
+		background-color: oklch(0.55 0.2 300 / 0.1);
+		filter: blur(80px);
+
+		@media (min-width: 640px) { inset-inline-end: -8rem; inline-size: 24rem; block-size: 24rem; filter: blur(128px); }
+	}
+
+	.is-grid-lines {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(oklch(1 0 0 / 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, oklch(1 0 0 / 0.02) 1px, transparent 1px);
+		background-size: 2rem 2rem;
+
+		@media (min-width: 640px) { background-size: 4rem 4rem; }
+	}
+
+	.is-radial-fade {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at center, transparent 0%, oklch(0.12 0.005 285 / 0.8) 70%);
+	}
+
+	/* ─── Container ─── */
+	.is-container {
+		position: relative;
+		max-inline-size: 80rem;
+		margin-inline: auto;
+		padding-inline: 1rem;
+
+		@media (min-width: 640px) { padding-inline: 1.5rem; }
+		@media (min-width: 1024px) { padding-inline: 2rem; }
+	}
+
+	.is-header {
+		max-inline-size: 56rem;
+		margin-inline: auto;
+		text-align: center;
+		margin-block-end: 6rem;
+	}
+
+	.is-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-inline: 1rem;
+		padding-block: 0.375rem;
+		border: 1px solid oklch(0.3 0.15 260 / 0.3);
+		background-color: oklch(0.15 0.08 260 / 0.1);
+		color: oklch(0.6 0.18 260);
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		margin-block-end: 2rem;
+		border-radius: 2px;
+	}
+
+	.is-title {
+		font-size: clamp(3rem, 6vw, 4.5rem);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 2rem;
+		letter-spacing: -0.02em;
+	}
+
+	.is-title-muted { color: oklch(0.35 0.01 265); }
+
+	.is-subtitle {
+		font-size: var(--text-lg);
+		color: oklch(0.55 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		max-inline-size: 32rem;
+		margin-inline: auto;
+	}
+
+	/* ─── Grid ─── */
+	.is-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+		align-items: center;
+
+		@media (min-width: 1024px) { grid-template-columns: repeat(2, 1fr); gap: 4rem; }
+	}
+
+	/* ─── Chart Column ─── */
+	.is-chart-col {
+		position: relative;
+		order: 2;
+
+		@media (min-width: 1024px) { order: 1; }
+	}
+
+	.is-chart-frame {
+		position: relative;
+		border-radius: var(--radius-xl);
+		overflow: hidden;
+		background-color: oklch(0.15 0.005 285 / 0.5);
+		backdrop-filter: blur(16px);
+		border: 1px solid oklch(0.3 0.005 285 / 0.5);
+		box-shadow: 0 25px 50px oklch(0 0 0 / 0.25);
+
+		@media (min-width: 640px) { border-radius: 1rem; }
+	}
+
+	.is-chart-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-inline: 1rem;
+		padding-block: 0.75rem;
+		border-block-end: 1px solid oklch(0.3 0.005 285 / 0.5);
+
+		@media (min-width: 640px) { padding-inline: 1.5rem; padding-block: 1rem; }
+	}
+
+	.is-chart-header-left { display: flex; align-items: center; gap: 0.5rem; @media (min-width: 640px) { gap: 0.75rem; } }
+	.is-chart-header-right { display: flex; align-items: center; gap: 0.375rem; @media (min-width: 640px) { gap: 0.5rem; } }
+
+	.is-dots { display: flex; gap: 0.25rem; @media (min-width: 640px) { gap: 0.375rem; } }
+
+	.is-dot {
+		inline-size: 0.625rem;
+		block-size: 0.625rem;
+		border-radius: 50%;
+
+		@media (min-width: 640px) { inline-size: 0.75rem; block-size: 0.75rem; }
+	}
+
+	.is-dot-red { background-color: oklch(0.6 0.2 25 / 0.8); }
+	.is-dot-yellow { background-color: oklch(0.8 0.15 85 / 0.8); }
+	.is-dot-green { background-color: oklch(0.7 0.17 160 / 0.8); }
+
+	.is-chart-label {
+		font-size: var(--text-xs);
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.55 0.01 265);
+
+		@media (min-width: 640px) { font-size: var(--text-sm); }
+	}
+
+	.is-chart-pct {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.7 0.17 160);
+
+		@media (min-width: 640px) { font-size: var(--text-xs); }
+	}
+
+	.is-live-dot {
+		inline-size: 0.375rem;
+		block-size: 0.375rem;
+		border-radius: 50%;
+		background-color: oklch(0.7 0.17 160);
+		animation: orb-pulse 2s ease-in-out infinite;
+
+		@media (min-width: 640px) { inline-size: 0.5rem; block-size: 0.5rem; }
+	}
+
+	/* ─── Chart Canvas ─── */
+	.is-chart-canvas-wrap {
+		position: relative;
+		block-size: 14rem;
+
+		@media (min-width: 640px) { block-size: 18rem; }
+		@media (min-width: 1024px) { block-size: 20rem; }
+	}
+
+	.is-canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+
+	.is-indicator-label {
+		position: absolute;
+		inset-block-end: 0.75rem;
+		inset-inline-start: 0.75rem;
+		padding-inline: 0.5rem;
+		padding-block: 0.25rem;
+		border-radius: var(--radius-md);
+		background-color: oklch(0.25 0.005 285 / 0.8);
+		backdrop-filter: blur(4px);
+		border: 1px solid oklch(0.35 0.005 285 / 0.5);
+
+		@media (min-width: 640px) { inset-block-end: 1rem; inset-inline-start: 1rem; padding-inline: 0.75rem; padding-block: 0.375rem; border-radius: var(--radius-lg); }
+	}
+
+	.is-indicator-text {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.8 0.01 265);
+
+		@media (min-width: 640px) { font-size: var(--text-xs); }
+	}
+
+	/* ─── Floating Stat ─── */
+	.is-float-stat {
+		display: none;
+		position: absolute;
+		inset-block-end: -1rem;
+		inset-inline-end: -0.5rem;
+		padding-inline: 0.75rem;
+		padding-block: 0.5rem;
+		border-radius: var(--radius-lg);
+		background-color: oklch(0.25 0.005 285 / 0.9);
+		backdrop-filter: blur(16px);
+		border: 1px solid oklch(0.35 0.005 285 / 0.5);
+		box-shadow: 0 20px 40px oklch(0 0 0 / 0.2);
+
+		@media (min-width: 640px) {
+			display: block;
+			inset-block-end: -1.5rem;
+			inset-inline-end: -1.5rem;
+			padding-inline: 1rem;
+			padding-block: 0.75rem;
+			border-radius: var(--radius-xl);
+		}
+	}
+
+	.is-float-label {
+		font-size: 0.625rem;
+		color: oklch(0.45 0.005 285);
+		margin-block-end: 0.125rem;
+
+		@media (min-width: 640px) { font-size: var(--text-xs); margin-block-end: 0.25rem; }
+	}
+
+	.is-float-value {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-bold);
+		color: oklch(0.7 0.17 160);
+
+		@media (min-width: 640px) { font-size: 1.5rem; }
+	}
+
+	/* ─── Cards Column ─── */
+	.is-cards-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		order: 1;
+
+		@media (min-width: 640px) { gap: 1rem; }
+		@media (min-width: 1024px) { order: 2; }
+	}
+
+	/* ─── Indicator Card ─── */
+	.is-card {
+		display: block;
+		position: relative;
+		padding: 1rem;
+		border-radius: var(--radius-xl);
+		background-color: oklch(0.15 0.005 285 / 0.3);
+		backdrop-filter: blur(4px);
+		border: 1px solid oklch(0.3 0.005 285 / 0.5);
+		transition: border-color 300ms, background-color 300ms, transform 100ms;
+		text-decoration: none;
+
+		@media (min-width: 640px) { padding: 1.25rem; border-radius: 1rem; }
+
+		&:hover { border-color: oklch(0.35 0.005 285 / 0.5); background-color: oklch(0.25 0.005 285 / 0.3); }
+		&:active { transform: scale(0.98); }
+		&:hover .is-card-icon { transform: scale(1.1); }
+		&:hover .is-card-name { color: oklch(0.65 0.15 260); }
+		&:hover .is-card-arrow { background-color: oklch(0.6 0.18 260 / 0.2); transform: translateX(0.25rem); }
+		&:hover :global(.is-arrow-icon) { color: oklch(0.65 0.15 260); }
+	}
+
+	.is-card[data-active] {
+		outline: 2px solid oklch(0.6 0.18 260 / 0.3);
+		outline-offset: -2px;
+		background-color: oklch(0.25 0.005 285 / 0.4);
+	}
+
+	.is-card-row {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+
+		@media (min-width: 640px) { gap: 1rem; }
+	}
+
+	.is-card-icon {
+		flex-shrink: 0;
+		inline-size: 2.5rem;
+		block-size: 2.5rem;
+		border-radius: var(--radius-lg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 10px 15px oklch(0 0 0 / 0.1);
+		color: oklch(1 0 0);
+		transition: transform 300ms;
+
+		@media (min-width: 640px) { inline-size: 3rem; block-size: 3rem; border-radius: var(--radius-xl); }
+	}
+
+	.is-card[data-id='rsi'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.6 0.18 260), oklch(0.65 0.15 195)); }
+	.is-card[data-id='macd'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.65 0.17 160), oklch(0.6 0.15 175)); }
+	.is-card[data-id='bollinger'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.55 0.2 300), oklch(0.5 0.18 310)); }
+	.is-card[data-id='vwap'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.75 0.15 85), oklch(0.65 0.17 55)); }
+
+	.is-card-content { flex: 1; min-inline-size: 0; }
+
+	.is-card-name-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-block-end: 0.125rem;
+
+		@media (min-width: 640px) { margin-block-end: 0.25rem; }
+	}
+
+	.is-card-name {
+		font-size: var(--text-base);
+		font-weight: var(--weight-semibold);
+		color: oklch(1 0 0);
+		transition: color 200ms;
+
+		@media (min-width: 640px) { font-size: var(--text-lg); }
+	}
+
+	.is-card-cat {
+		padding-inline: 0.375rem;
+		padding-block: 0.125rem;
+		font-size: 0.625rem;
+		font-weight: var(--weight-medium);
+		border-radius: 999px;
+		background-color: oklch(0.25 0.005 285);
+		color: oklch(0.55 0.01 265);
+
+		@media (min-width: 640px) { padding-inline: 0.5rem; font-size: var(--text-xs); }
+	}
+
+	.is-card-fullname {
+		font-size: var(--text-xs);
+		color: oklch(0.45 0.005 285);
+		margin-block-end: 0.25rem;
+		display: none;
+
+		@media (min-width: 640px) { display: block; font-size: var(--text-sm); margin-block-end: 0.5rem; }
+	}
+
+	.is-card-desc {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+		line-height: 1.7;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+
+		@media (min-width: 640px) { font-size: var(--text-sm); }
+	}
+
+	.is-card-arrow {
+		flex-shrink: 0;
+		inline-size: 2rem;
+		block-size: 2rem;
+		border-radius: 50%;
+		background-color: oklch(0.25 0.005 285 / 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 300ms, transform 300ms;
+
+		@media (min-width: 640px) { inline-size: 2.5rem; block-size: 2.5rem; }
+	}
+
+	:global(.is-arrow-icon) { color: oklch(0.45 0.005 285); transition: color 200ms; }
+
+	/* ─── CTA ─── */
+	.is-cta-wrap {
+		padding-block-start: 1rem;
+		text-align: center;
+
+		@media (min-width: 640px) { padding-block-start: 1.5rem; text-align: start; }
+	}
+
+	.is-cta-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		inline-size: 100%;
+		padding-inline: 1.5rem;
+		padding-block: 0.875rem;
+		border-radius: 999px;
+		background: linear-gradient(to right, oklch(0.5 0.18 260), oklch(0.55 0.15 195));
+		color: oklch(1 0 0);
+		font-weight: var(--weight-semibold);
+		font-size: var(--text-sm);
+		box-shadow: 0 10px 25px oklch(0.5 0.18 260 / 0.25);
+		transition: box-shadow 300ms, transform 300ms;
+		text-decoration: none;
+
+		@media (min-width: 640px) { inline-size: auto; gap: 0.75rem; padding-inline: 2rem; padding-block: 1rem; font-size: var(--text-base); }
+
+		&:hover { box-shadow: 0 10px 25px oklch(0.5 0.18 260 / 0.4); transform: scale(1.05); }
+		&:active { transform: scale(0.98); }
+	}
+
+	:global(.is-cta-arrow) { transition: transform 200ms; }
+	.is-cta-btn:hover :global(.is-cta-arrow) { transform: translateX(0.25rem); }
+
+	/* ─── Keyframes ─── */
+	@keyframes orb-pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.4; }
+	}
+
+	/* ─── Reduced Motion ─── */
+	@media (prefers-reduced-motion: reduce) {
+		.is-orb, .is-live-dot { animation: none; }
+		.is-card { transition: none; }
+	}
+</style>

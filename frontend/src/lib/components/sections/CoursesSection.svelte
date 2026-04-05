@@ -235,90 +235,47 @@ import { logger } from '$lib/utils/logger';
 
 <svelte:window onmousemove={handleMouseMove} />
 
-<section
-	bind:this={sectionRef}
-	class="relative py-20 sm:py-32 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
->
-	<div class="absolute inset-0 pointer-events-none">
-		<div
-			class="absolute inset-0 opacity-[0.03] mix-blend-overlay"
-			style="background-image: url('/textures/noise.svg');"
-		></div>
-
-		<div
-			class="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-violet-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"
-		></div>
-		<div
-			class="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-cyan-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow delay-1000"
-		></div>
-
-		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[60px_60px] mask-[radial-gradient(ellipse_at_center,black_40%,transparent_80%)]"
-		></div>
+<section bind:this={sectionRef} class="cs-section">
+	<div class="cs-bg">
+		<div class="cs-noise" style="background-image: url('/textures/noise.svg');"></div>
+		<div class="cs-orb cs-orb-violet"></div>
+		<div class="cs-orb cs-orb-cyan"></div>
+		<div class="cs-grid-lines"></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+	<div class="cs-container">
 		{#if isVisible}
-			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
-				<div
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
-					<Icon icon={IconSchool} class="w-4 h-4" />
+			<div class="cs-header" in:slideUp={{ delay: 0, duration: 1000 }}>
+				<div class="cs-badge">
+					<Icon icon={IconSchool} size={16} />
 					Professional Education
 				</div>
 
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
-					Trading <span class="text-slate-700">Curriculum.</span>
+				<h2 class="cs-title">
+					Trading <span class="cs-title-muted">Curriculum.</span>
 				</h2>
 
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+				<p class="cs-subtitle">
 					We don't sell courses. We provide institutional-grade trading education. Verified by
 					funded traders and prop firm graduates worldwide.
 				</p>
 
-				<div
-					class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
-					in:slideUp={{ delay: 200, duration: 800 }}
-				>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							12k+
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Students
-						</div>
+				<div class="cs-stats" in:slideUp={{ delay: 200, duration: 800 }}>
+					<div class="cs-stat">
+						<div class="cs-stat-value">12k+</div>
+						<div class="cs-stat-label">Students</div>
 					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							4.9
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Rating
-						</div>
+					<div class="cs-stat">
+						<div class="cs-stat-value">4.9</div>
+						<div class="cs-stat-label">Rating</div>
 					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							89%
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Completion
-						</div>
+					<div class="cs-stat">
+						<div class="cs-stat-value">89%</div>
+						<div class="cs-stat-label">Completion</div>
 					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							24/7
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Support
-						</div>
+					<div class="cs-stat">
+						<div class="cs-stat-value">24/7</div>
+						<div class="cs-stat-label">Support</div>
 					</div>
 				</div>
 			</div>
@@ -326,127 +283,79 @@ import { logger } from '$lib/utils/logger';
 
 		<div
 			bind:this={cardsRef}
-			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
+			class="cs-cards"
 			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
-			<div
-				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
-				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
-			></div>
+			<div class="cs-cards-spotlight" style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), oklch(0.55 0.2 300 / 0.08), transparent 40%);"></div>
 
 			{#each courses as course}
-				<a
-					href={course.href}
-					class="course-card group relative rounded-[2rem] overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
-				>
-					<div
-						class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"
-						style="background: {course.imagePattern}; filter: blur(40px);"
-					></div>
+				<a href={course.href} class="course-card cs-card">
+					<div class="cs-card-blur" style="background: {course.imagePattern}; filter: blur(40px);"></div>
 
-					<div
-						class="absolute inset-0 bg-linear-to-br {course.bgGradient} opacity-50 group-hover:opacity-60 transition-opacity duration-500"
-					></div>
-
-					<div class="relative p-6 sm:p-8 lg:p-10 h-full flex flex-col">
-						<div class="flex items-start justify-between gap-4 mb-6">
-							<div class="flex items-center gap-4">
-								<div
-									class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ease-out"
-								>
+					<div class="cs-card-inner">
+						<div class="cs-card-top">
+							<div class="cs-card-info">
+								<div class="cs-card-icon">
 									{#if course.icon}
 										{@const iconStr = course.icon}
-										<Icon icon={iconStr}
-											class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-										/>
+										<Icon icon={iconStr} size={28} />
 									{/if}
 								</div>
 								<div>
-									<span
-										class="inline-flex items-center gap-1.5 text-xs font-bold text-violet-300 uppercase tracking-wider mb-1"
-									>
+									<span class="cs-level-badge">
 										{#if course.level === 'Advanced'}
-											<Icon icon={IconFlame} size={12} class="animate-pulse" />
+											<Icon icon={IconFlame} size={12} class="cs-flame" />
 										{:else if course.level === 'Intermediate'}
 											<Icon icon={IconActivity} size={12} />
 										{/if}
 										{course.level}
 									</span>
-									<h3
-										class="text-xl sm:text-2xl font-bold text-white tracking-tight leading-none group-hover:text-violet-200 transition-colors"
-									>
-										{course.title}
-									</h3>
+									<h3 class="cs-card-title">{course.title}</h3>
 								</div>
 							</div>
 
-							<span
-								class="px-3 py-1 text-[10px] sm:text-xs font-bold rounded-full bg-white/10 text-white backdrop-blur-md border border-white/10 shadow-lg group-hover:bg-white/20 transition-colors"
-							>
-								{course.badge}
-							</span>
+							<span class="cs-badge-pill">{course.badge}</span>
 						</div>
 
-						<p
-							class="text-base text-zinc-400 mb-8 leading-relaxed line-clamp-2 group-hover:text-zinc-300 transition-colors duration-300"
-						>
-							{course.description}
-						</p>
+						<p class="cs-card-desc">{course.description}</p>
 
-						<div class="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide snap-x">
+						<div class="cs-features-scroll">
 							{#each course.features as feature}
-								<span
-									class="snap-start shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-300 border border-white/5 whitespace-nowrap group-hover:border-white/20 transition-colors"
-								>
-									{feature}
-								</span>
+								<span class="cs-feature-tag">{feature}</span>
 							{/each}
 						</div>
 
-						<div class="grow"></div>
+						<div class="cs-spacer"></div>
 
-						<div
-							class="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-end justify-between gap-4"
-						>
-							<div class="flex flex-col gap-2">
-								<div class="flex items-center gap-4 text-xs sm:text-sm text-zinc-500 font-medium">
-									<div class="flex items-center gap-1.5">
-										<Icon icon={IconClock} class="w-4 h-4 text-zinc-600" />
+						<div class="cs-card-bottom">
+							<div class="cs-price-col">
+								<div class="cs-meta-row">
+									<div class="cs-meta-item">
+										<Icon icon={IconClock} size={16} class="cs-meta-icon" />
 										<span>{course.duration}</span>
 									</div>
-									<div class="flex items-center gap-1.5">
-										<Icon icon={IconUsers} class="w-4 h-4 text-zinc-600" />
+									<div class="cs-meta-item">
+										<Icon icon={IconUsers} size={16} class="cs-meta-icon" />
 										<span>{course.students}</span>
 									</div>
 								</div>
-								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-2xl font-bold text-white tracking-tight tabular-nums"
-										>{course.price}</span
-									>
-									<span
-										class="text-sm text-zinc-600 line-through decoration-zinc-600/50 tabular-nums"
-										>{course.originalPrice}</span
-									>
+								<div class="cs-price-row">
+									<span class="cs-price">{course.price}</span>
+									<span class="cs-original-price">{course.originalPrice}</span>
 								</div>
 							</div>
 
-							<div
-								class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm shadow-xl shadow-white/5 group-hover:shadow-white/20 transform group-hover:-translate-y-1 transition-all duration-300"
-							>
+							<div class="cs-cta-btn">
 								<span>Start Learning</span>
-								<Icon icon={IconArrowRight} class="w-4 h-4" />
+								<Icon icon={IconArrowRight} size={16} />
 							</div>
 						</div>
 					</div>
 
-					<div
-						class="hidden sm:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20"
-					>
-						<div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-						<div
-							class="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-2xl scale-50 group-hover:scale-100 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)"
-						>
-							<Icon icon={IconPlayerPlay} class="w-8 h-8 text-white ml-1 drop-shadow-lg" />
+					<div class="cs-play-overlay">
+						<div class="cs-play-backdrop"></div>
+						<div class="cs-play-btn">
+							<Icon icon={IconPlayerPlay} size={32} class="cs-play-icon" />
 						</div>
 					</div>
 				</a>
@@ -454,24 +363,15 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		{#if isVisible}
-			<div class="text-center mt-20" in:slideUp={{ delay: 400, duration: 800 }}>
-				<a
-					href="/courses"
-					class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
-				>
-					<span
-						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
-					></span>
-					<span class="text-base relative z-10">View Full Curriculum</span>
-					<Icon icon={IconArrowRight}
-						class="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10"
-					/>
+			<div class="cs-footer" in:slideUp={{ delay: 400, duration: 800 }}>
+				<a href="/courses" class="cs-footer-cta">
+					<span class="cs-footer-shimmer"></span>
+					<span class="cs-footer-text">View Full Curriculum</span>
+					<Icon icon={IconArrowRight} size={20} class="cs-footer-arrow" />
 				</a>
 
-				<p
-					class="mt-6 text-sm text-zinc-500 flex items-center justify-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
-				>
-					<Icon icon={IconCertificate} class="w-4 h-4 text-violet-500" />
+				<p class="cs-cert-note">
+					<Icon icon={IconCertificate} size={16} class="cs-cert-icon" />
 					Official certification included with all pathways
 				</p>
 			</div>
@@ -480,182 +380,524 @@ import { logger } from '$lib/utils/logger';
 </section>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * COURSESSECTION - 2026 Mobile-First Responsive Design
-	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* ─── Section ─── */
+	.cs-section {
+		position: relative;
+		padding-block: 5rem;
+		overflow: hidden;
+		background-color: oklch(0.08 0.02 270);
 
-	/* Utility for hiding scrollbars */
-	.scrollbar-hide {
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
-	.scrollbar-hide::-webkit-scrollbar {
-		display: none;
+		@media (min-width: 640px) { padding-block: 8rem; }
 	}
 
-	/* Custom Pulse for background orbs */
-	@keyframes pulse-slow {
-		0%,
-		100% {
-			opacity: 0.5;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.8;
-			transform: scale(1.1);
-		}
+	/* ─── Background ─── */
+	.cs-bg { position: absolute; inset: 0; pointer-events: none; }
+
+	.cs-noise {
+		position: absolute;
+		inset: 0;
+		opacity: 0.03;
+		mix-blend-mode: overlay;
 	}
-	.animate-pulse-slow {
+
+	.cs-orb {
+		position: absolute;
+		inline-size: 50rem;
+		block-size: 50rem;
+		border-radius: 50%;
+		filter: blur(120px);
+		mix-blend-mode: screen;
 		animation: pulse-slow 8s ease-in-out infinite;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SAFE AREA INSETS - iOS/Android notch & gesture areas
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	section {
-		padding-left: env(safe-area-inset-left);
-		padding-right: env(safe-area-inset-right);
+	.cs-orb-violet {
+		inset-block-start: -10%;
+		inset-inline-start: -10%;
+		background-color: oklch(0.5 0.2 300 / 0.1);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TOUCH TARGETS - Minimum 44x44px for all interactive elements
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (hover: none) and (pointer: coarse) {
-		:global(.course-card),
-		:global(a[href]) {
-			min-height: 44px;
-		}
+	.cs-orb-cyan {
+		inset-block-end: -10%;
+		inset-inline-end: -10%;
+		background-color: oklch(0.6 0.15 195 / 0.1);
+		animation-delay: 1s;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * EXTRA SMALL DEVICES (< 360px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 359px) {
-		section {
-			padding-top: 3rem !important;
-			padding-bottom: 3rem !important;
-		}
-
-		:global(.course-card) {
-			border-radius: 1rem !important;
-		}
-
-		:global(.course-card .p-6),
-		:global(.course-card .p-8),
-		:global(.course-card .p-10) {
-			padding: 1rem !important;
-		}
-
-		:global(.text-5xl),
-		:global(.text-7xl) {
-			font-size: 1.75rem !important;
-		}
+	.cs-grid-lines {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(oklch(1 0 0 / 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, oklch(1 0 0 / 0.02) 1px, transparent 1px);
+		background-size: 3.75rem 3.75rem;
+		mask-image: radial-gradient(ellipse at center, oklch(0 0 0) 40%, transparent 80%);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SMALL MOBILE (360px - 639px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (min-width: 360px) and (max-width: 639px) {
-		section {
-			padding-top: 4rem !important;
-			padding-bottom: 4rem !important;
-		}
+	/* ─── Container ─── */
+	.cs-container {
+		position: relative;
+		max-inline-size: 80rem;
+		margin-inline: auto;
+		padding-inline: 1rem;
+		z-index: 10;
 
-		:global(.course-card .p-6),
-		:global(.course-card .p-8) {
-			padding: 1.25rem !important;
-		}
-
-		:global(.grid-cols-2) {
-			grid-template-columns: 1fr !important;
-		}
-
-		:global(.gap-6),
-		:global(.gap-8) {
-			gap: 1rem !important;
-		}
-
-		:global(.text-5xl),
-		:global(.text-7xl) {
-			font-size: 2rem !important;
-		}
-
-		:global(.text-2xl) {
-			font-size: 1.25rem !important;
-		}
+		@media (min-width: 640px) { padding-inline: 1.5rem; }
+		@media (min-width: 1024px) { padding-inline: 2rem; }
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TABLET (640px - 767px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (min-width: 640px) and (max-width: 767px) {
-		:global(.grid-cols-2) {
-			grid-template-columns: 1fr !important;
-		}
-
-		:global(.gap-6),
-		:global(.gap-8) {
-			gap: 1.25rem !important;
-		}
+	.cs-header {
+		max-inline-size: 56rem;
+		margin-inline: auto;
+		text-align: center;
+		margin-block-end: 6rem;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MEDIUM DEVICES (768px - 1023px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (min-width: 768px) and (max-width: 1023px) {
-		:global(.md\\:grid-cols-2) {
-			grid-template-columns: repeat(2, 1fr) !important;
-		}
+	.cs-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-inline: 1rem;
+		padding-block: 0.375rem;
+		border: 1px solid oklch(0.35 0.15 300 / 0.3);
+		background-color: oklch(0.15 0.08 300 / 0.1);
+		color: oklch(0.6 0.2 300);
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		margin-block-end: 2rem;
+		border-radius: 2px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DYNAMIC VIEWPORT HEIGHT - Use dvh for modern mobile browsers
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@supports (min-height: 100dvh) {
-		section {
-			min-height: auto;
-		}
+	.cs-title {
+		font-size: clamp(3rem, 6vw, 4.5rem);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 2rem;
+		letter-spacing: -0.02em;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * REDUCED MOTION - Accessibility
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (prefers-reduced-motion: reduce) {
-		.animate-pulse-slow {
-			animation: none;
-		}
+	.cs-title-muted { color: oklch(0.35 0.01 265); }
 
-		:global(.course-card) {
-			transition: none !important;
-		}
+	.cs-subtitle {
+		font-size: var(--text-lg);
+		color: oklch(0.55 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		max-inline-size: 32rem;
+		margin-inline: auto;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * LANDSCAPE MOBILE - Optimize for horizontal orientation
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-height: 500px) and (orientation: landscape) {
-		section {
-			padding-top: 2rem !important;
-			padding-bottom: 2rem !important;
-		}
+	/* ─── Stats ─── */
+	.cs-stats {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+		max-inline-size: 56rem;
+		margin-inline: auto;
+		margin-block-start: 3rem;
+		padding-block-start: 2rem;
+		border-block-start: 1px solid oklch(1 0 0 / 0.05);
 
-		:global(.mb-24) {
-			margin-bottom: 2rem !important;
-		}
+		@media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * FEATURE TAGS - Horizontal scroll on mobile
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 767px) {
-		:global(.snap-x) {
+	.cs-stat { text-align: center; cursor: default; }
+
+	.cs-stat-value {
+		font-size: 1.875rem;
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		font-variant-numeric: tabular-nums;
+		transition: transform 300ms;
+	}
+
+	.cs-stat:hover .cs-stat-value { transform: scale(1.1); }
+
+	.cs-stat-label {
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		color: oklch(0.45 0.005 285);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-block-start: 0.25rem;
+	}
+
+	/* ─── Cards Grid ─── */
+	.cs-cards {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+		position: relative;
+
+		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) { gap: 2rem; }
+	}
+
+	.cs-cards-spotlight {
+		pointer-events: none;
+		position: absolute;
+		inset: -1px;
+		opacity: 0;
+		transition: opacity 300ms;
+		z-index: 0;
+		border-radius: 1.5rem;
+
+		@media (min-width: 768px) { opacity: 1; }
+	}
+
+	/* ─── Card ─── */
+	.cs-card {
+		position: relative;
+		border-radius: 2rem;
+		overflow: hidden;
+		background-color: oklch(0.15 0.005 285 / 0.4);
+		border: 1px solid oklch(1 0 0 / 0.05);
+		transition: border-color 500ms, box-shadow 500ms, transform 100ms;
+		z-index: 10;
+		isolation: isolate;
+		text-decoration: none;
+
+		&:hover { border-color: oklch(1 0 0 / 0.1); box-shadow: 0 25px 50px oklch(0.35 0.15 300 / 0.2); }
+		&:active { transform: scale(0.99); }
+		&:hover .cs-card-blur { opacity: 1; }
+		&:hover .cs-card-icon { transform: scale(1.1) rotate(3deg); }
+		&:hover .cs-card-title { color: oklch(0.85 0.1 300); }
+		&:hover .cs-card-desc { color: oklch(0.8 0.01 265); }
+		&:hover .cs-feature-tag { border-color: oklch(1 0 0 / 0.2); }
+		&:hover .cs-badge-pill { background-color: oklch(1 0 0 / 0.2); }
+		&:hover .cs-cta-btn { transform: translateY(-0.25rem); box-shadow: 0 20px 40px oklch(1 0 0 / 0.2); }
+		&:hover .cs-play-overlay { opacity: 1; }
+		&:hover .cs-play-btn { transform: scale(1); }
+	}
+
+	.cs-card-blur {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		transition: opacity 700ms ease-in-out;
+	}
+
+	.cs-card-inner {
+		position: relative;
+		padding: 1.5rem;
+		block-size: 100%;
+		display: flex;
+		flex-direction: column;
+
+		@media (min-width: 640px) { padding: 2rem; }
+		@media (min-width: 1024px) { padding: 2.5rem; }
+	}
+
+	/* ─── Card Top ─── */
+	.cs-card-top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-block-end: 1.5rem;
+	}
+
+	.cs-card-info { display: flex; align-items: center; gap: 1rem; }
+
+	.cs-card-icon {
+		inline-size: 3.5rem;
+		block-size: 3.5rem;
+		border-radius: 1rem;
+		background-color: oklch(1 0 0 / 0.05);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 10px 15px oklch(0 0 0 / 0.1);
+		backdrop-filter: blur(4px);
+		color: oklch(1 0 0);
+		transition: transform 500ms ease-out;
+	}
+
+	.cs-level-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-bold);
+		color: oklch(0.75 0.12 300);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-block-end: 0.25rem;
+	}
+
+	:global(.cs-flame) { animation: pulse 1s ease-in-out infinite; }
+
+	.cs-card-title {
+		font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		letter-spacing: -0.02em;
+		line-height: 1.1;
+		transition: color 200ms;
+	}
+
+	.cs-badge-pill {
+		padding-inline: 0.75rem;
+		padding-block: 0.25rem;
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		border-radius: 999px;
+		background-color: oklch(1 0 0 / 0.1);
+		color: oklch(1 0 0);
+		backdrop-filter: blur(12px);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		box-shadow: 0 10px 15px oklch(0 0 0 / 0.1);
+		transition: background-color 200ms;
+		white-space: nowrap;
+
+		@media (min-width: 640px) { font-size: var(--text-xs); }
+	}
+
+	/* ─── Card Description ─── */
+	.cs-card-desc {
+		font-size: var(--text-base);
+		color: oklch(0.55 0.01 265);
+		margin-block-end: 2rem;
+		line-height: 1.7;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		transition: color 300ms;
+	}
+
+	/* ─── Features Scroll ─── */
+	.cs-features-scroll {
+		display: flex;
+		gap: 0.5rem;
+		margin-block-end: 2rem;
+		overflow-x: auto;
+		padding-block-end: 0.5rem;
+		margin-inline: -0.5rem;
+		padding-inline: 0.5rem;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar { display: none; }
+
+		@media (max-width: 767px) {
 			scroll-snap-type: x mandatory;
 			-webkit-overflow-scrolling: touch;
 		}
+	}
 
-		:global(.snap-start) {
-			scroll-snap-align: start;
-		}
+	.cs-feature-tag {
+		scroll-snap-align: start;
+		flex-shrink: 0;
+		padding-inline: 0.75rem;
+		padding-block: 0.375rem;
+		font-size: var(--text-xs);
+		font-weight: var(--weight-medium);
+		border-radius: var(--radius-lg);
+		background-color: oklch(1 0 0 / 0.05);
+		color: oklch(0.8 0.01 265);
+		border: 1px solid oklch(1 0 0 / 0.05);
+		white-space: nowrap;
+		transition: border-color 200ms;
+	}
+
+	.cs-spacer { flex-grow: 1; }
+
+	/* ─── Card Bottom ─── */
+	.cs-card-bottom {
+		padding-block-start: 1.5rem;
+		border-block-start: 1px solid oklch(1 0 0 / 0.05);
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+
+		@media (min-width: 640px) { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+	}
+
+	.cs-price-col { display: flex; flex-direction: column; gap: 0.5rem; }
+
+	.cs-meta-row {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		font-size: var(--text-xs);
+		color: oklch(0.45 0.005 285);
+		font-weight: var(--weight-medium);
+
+		@media (min-width: 640px) { font-size: var(--text-sm); }
+	}
+
+	.cs-meta-item { display: flex; align-items: center; gap: 0.375rem; }
+	:global(.cs-meta-icon) { color: oklch(0.4 0.005 285); }
+
+	.cs-price-row {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		margin-block-start: 0.25rem;
+	}
+
+	.cs-price {
+		font-size: 1.5rem;
+		font-weight: var(--weight-bold);
+		color: oklch(1 0 0);
+		letter-spacing: -0.02em;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.cs-original-price {
+		font-size: var(--text-sm);
+		color: oklch(0.4 0.005 285);
+		text-decoration: line-through;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.cs-cta-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding-inline: 1.5rem;
+		padding-block: 0.75rem;
+		border-radius: var(--radius-xl);
+		background-color: oklch(1 0 0);
+		color: oklch(0 0 0);
+		font-weight: var(--weight-bold);
+		font-size: var(--text-sm);
+		box-shadow: 0 20px 40px oklch(1 0 0 / 0.05);
+		transition: transform 300ms, box-shadow 300ms;
+	}
+
+	/* ─── Play Overlay ─── */
+	.cs-play-overlay {
+		display: none;
+		position: absolute;
+		inset: 0;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 500ms;
+		pointer-events: none;
+		z-index: 20;
+
+		@media (min-width: 640px) { display: flex; }
+	}
+
+	.cs-play-backdrop {
+		position: absolute;
+		inset: 0;
+		background-color: oklch(0 0 0 / 0.4);
+		backdrop-filter: blur(2px);
+	}
+
+	.cs-play-btn {
+		position: relative;
+		inline-size: 5rem;
+		block-size: 5rem;
+		border-radius: 50%;
+		background-color: oklch(1 0 0 / 0.1);
+		backdrop-filter: blur(16px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid oklch(1 0 0 / 0.2);
+		box-shadow: 0 25px 50px oklch(0 0 0 / 0.25);
+		transform: scale(0.5);
+		transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	:global(.cs-play-icon) { color: oklch(1 0 0); margin-inline-start: 0.25rem; }
+
+	/* ─── Footer ─── */
+	.cs-footer {
+		text-align: center;
+		margin-block-start: 5rem;
+	}
+
+	.cs-footer-cta {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		padding-inline: 2rem;
+		padding-block: 1rem;
+		border-radius: 999px;
+		background: linear-gradient(to right, oklch(0.5 0.2 300), oklch(0.45 0.2 270));
+		color: oklch(1 0 0);
+		font-weight: var(--weight-semibold);
+		box-shadow: 0 10px 25px oklch(0.5 0.2 300 / 0.25);
+		transition: box-shadow 300ms, transform 300ms;
+		position: relative;
+		overflow: hidden;
+		text-decoration: none;
+
+		&:hover { box-shadow: 0 10px 25px oklch(0.5 0.2 300 / 0.5); transform: translateY(-0.25rem); }
+		&:active { transform: scale(0.98); }
+	}
+
+	.cs-footer-shimmer {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to right, transparent, oklch(1 0 0 / 0.2), transparent);
+		transform: translateX(-100%);
+		transition: transform 700ms ease-in-out;
+	}
+
+	.cs-footer-cta:hover .cs-footer-shimmer { transform: translateX(100%); }
+
+	.cs-footer-text { font-size: var(--text-base); position: relative; z-index: 10; }
+	:global(.cs-footer-arrow) { position: relative; z-index: 10; transition: transform 200ms; }
+	.cs-footer-cta:hover :global(.cs-footer-arrow) { transform: translateX(0.25rem); }
+
+	.cs-cert-note {
+		margin-block-start: 1.5rem;
+		font-size: var(--text-sm);
+		color: oklch(0.45 0.005 285);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		opacity: 0.6;
+		transition: opacity 200ms;
+
+		&:hover { opacity: 1; }
+	}
+
+	:global(.cs-cert-icon) { color: oklch(0.6 0.2 300); }
+
+	/* ─── Safe Area Insets ─── */
+	.cs-section {
+		padding-inline-start: env(safe-area-inset-left);
+		padding-inline-end: env(safe-area-inset-right);
+	}
+
+	/* ─── Touch Targets ─── */
+	@media (hover: none) and (pointer: coarse) {
+		.cs-card, .cs-footer-cta { min-block-size: 44px; }
+	}
+
+	/* ─── Reduced Motion ─── */
+	@media (prefers-reduced-motion: reduce) {
+		.cs-orb { animation: none; }
+		.cs-card { transition: none; }
+	}
+
+	/* ─── Landscape Mobile ─── */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.cs-section { padding-block: 2rem; }
+		.cs-header { margin-block-end: 2rem; }
+	}
+
+	/* ─── Keyframes ─── */
+	@keyframes pulse-slow {
+		0%, 100% { opacity: 0.5; transform: scale(1); }
+		50% { opacity: 0.8; transform: scale(1.1); }
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.4; }
 	}
 </style>

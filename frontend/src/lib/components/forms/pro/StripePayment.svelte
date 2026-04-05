@@ -362,31 +362,25 @@
 	});
 </script>
 
-<!-- Responsive Stripe Payment Component - Mobile-first design -->
 <div
-	class="flex flex-col gap-3 sm:gap-4 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
-	class:opacity-60={disabled}
-	class:pointer-events-none={disabled}
+	class="sp-wrap"
+	class:sp-disabled={disabled}
 >
 	{#if label}
-		<span class="text-sm sm:text-base font-medium text-gray-700" id="stripe-label">
+		<span class="sp-label" id="stripe-label">
 			{label}
 		</span>
 	{/if}
 
 	{#if testMode}
-		<div
-			class="p-2 sm:p-3 bg-amber-50 border border-amber-500 rounded-md text-xs sm:text-sm text-amber-800"
-		>
+		<div class="sp-test-notice">
 			<span>Test mode - Use card 4242 4242 4242 4242</span>
 		</div>
 	{/if}
 
 	{#if loading}
-		<div
-			class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm sm:text-base"
-		>
-			<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin shrink-0" viewBox="0 0 24 24">
+		<div class="sp-loading">
+			<svg class="sp-spinner" viewBox="0 0 24 24">
 				<circle
 					cx="12"
 					cy="12"
@@ -403,36 +397,33 @@
 		</div>
 	{:else}
 		{#if paymentRequestAvailable}
-			<!-- Payment Request Button (Apple Pay, Google Pay) - Touch-friendly -->
-			<div bind:this={paymentRequestRef} class="mb-2 sm:mb-3 min-h-[44px] sm:min-h-[48px]"></div>
-			<div class="flex items-center gap-3 sm:gap-4 text-gray-500 text-xs sm:text-sm">
-				<span class="flex-1 h-px bg-gray-200"></span>
+			<div bind:this={paymentRequestRef} class="sp-pr-button"></div>
+			<div class="sp-divider">
+				<span class="sp-divider-line"></span>
 				<span>Or pay with card</span>
-				<span class="flex-1 h-px bg-gray-200"></span>
+				<span class="sp-divider-line"></span>
 			</div>
 		{/if}
 
-		<!-- Card Element Wrapper - Larger touch area on mobile -->
 		<div
-			class="p-3 sm:p-4 border border-gray-300 rounded-lg bg-white transition-all duration-150 min-h-[48px] sm:min-h-[52px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10"
-			class:border-red-300={error || cardError}
+			class="sp-card-wrap"
+			class:sp-card-error={error || cardError}
 		>
-			<div bind:this={cardElementRef} class="min-h-[24px] sm:min-h-[28px]"></div>
+			<div bind:this={cardElementRef} class="sp-card-element"></div>
 		</div>
 
 		{#if cardError}
-			<p class="text-xs sm:text-sm text-red-500 m-0 px-1">{cardError}</p>
+			<p class="sp-error-text">{cardError}</p>
 		{/if}
 
-		<!-- Pay Button - Full width mobile, touch-friendly 44px+ height -->
 		<button
 			type="button"
-			class="flex items-center justify-center gap-2 sm:gap-3 w-full min-h-[48px] sm:min-h-[52px] md:min-h-[56px] px-4 sm:px-6 py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-lg text-base sm:text-lg font-semibold cursor-pointer transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] touch-manipulation"
+			class="sp-pay-btn"
 			onclick={handleSubmit}
 			disabled={disabled || processing || !cardComplete}
 		>
 			{#if processing}
-				<svg class="w-5 h-5 sm:w-6 sm:h-6 animate-spin shrink-0" viewBox="0 0 24 24">
+				<svg class="sp-spinner" viewBox="0 0 24 24">
 					<circle
 						cx="12"
 						cy="12"
@@ -451,17 +442,8 @@
 			{/if}
 		</button>
 
-		<!-- Secure Badge -->
-		<div
-			class="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 py-2"
-		>
-			<svg
-				class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
+		<div class="sp-secure">
+			<svg class="sp-secure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 			</svg>
@@ -470,6 +452,186 @@
 	{/if}
 
 	{#if error}
-		<p class="text-xs sm:text-sm text-red-500 m-0 px-1">{error}</p>
+		<p class="sp-error-text">{error}</p>
 	{/if}
 </div>
+
+<style>
+	.sp-wrap {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		inline-size: 100%;
+		max-inline-size: 100%;
+		margin-inline: auto;
+		padding: 0.75rem;
+		padding-block-end: env(safe-area-inset-bottom);
+
+		@media (min-width: 640px) { gap: 1rem; max-inline-size: 32rem; padding: 1rem; }
+		@media (min-width: 768px) { max-inline-size: 36rem; padding: 1.5rem; }
+		@media (min-width: 1024px) { max-inline-size: 42rem; }
+	}
+
+	.sp-disabled {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	.sp-label {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(0.35 0.01 265);
+
+		@media (min-width: 640px) { font-size: var(--text-base); }
+	}
+
+	.sp-test-notice {
+		padding: 0.5rem 0.75rem;
+		background-color: oklch(0.95 0.03 85);
+		border: 1px solid oklch(0.8 0.08 85);
+		border-radius: var(--radius-md);
+		font-size: var(--text-xs);
+		color: oklch(0.35 0.08 85);
+
+		@media (min-width: 640px) { padding: 0.75rem 1rem; font-size: var(--text-sm); }
+	}
+
+	.sp-loading {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem;
+		background-color: oklch(0.97 0.005 265);
+		border: 1px solid oklch(0.9 0.005 265);
+		border-radius: var(--radius-lg);
+		color: oklch(0.45 0.005 265);
+		font-size: var(--text-sm);
+
+		@media (min-width: 640px) { gap: 1rem; padding: 1.25rem; font-size: var(--text-base); }
+	}
+
+	.sp-spinner {
+		inline-size: 1.25rem;
+		block-size: 1.25rem;
+		flex-shrink: 0;
+		animation: sp-spin 1s linear infinite;
+
+		@media (min-width: 640px) { inline-size: 1.5rem; block-size: 1.5rem; }
+	}
+
+	@keyframes sp-spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+
+	.sp-pr-button {
+		margin-block-end: 0.5rem;
+		min-block-size: 2.75rem;
+
+		@media (min-width: 640px) { min-block-size: 3rem; }
+	}
+
+	.sp-divider {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: oklch(0.45 0.005 265);
+		font-size: var(--text-xs);
+
+		@media (min-width: 640px) { gap: 1rem; font-size: var(--text-sm); }
+	}
+
+	.sp-divider-line {
+		flex: 1;
+		block-size: 1px;
+		background-color: oklch(0.9 0.005 265);
+	}
+
+	.sp-card-wrap {
+		padding: 0.75rem;
+		border: 1px solid oklch(0.75 0.005 265);
+		border-radius: var(--radius-lg);
+		background-color: oklch(1 0 0);
+		transition: border-color 150ms, box-shadow 150ms;
+		min-block-size: 3rem;
+
+		@media (min-width: 640px) { padding: 1rem; min-block-size: 3.25rem; }
+
+		&:focus-within {
+			border-color: oklch(0.5 0.18 260);
+			box-shadow: 0 0 0 3px oklch(0.5 0.18 260 / 0.1);
+		}
+	}
+
+	.sp-card-error {
+		border-color: oklch(0.65 0.15 25);
+	}
+
+	.sp-card-element {
+		min-block-size: 1.5rem;
+
+		@media (min-width: 640px) { min-block-size: 1.75rem; }
+	}
+
+	.sp-error-text {
+		font-size: var(--text-xs);
+		color: oklch(0.5 0.2 25);
+		margin: 0;
+		padding-inline: 0.25rem;
+
+		@media (min-width: 640px) { font-size: var(--text-sm); }
+	}
+
+	.sp-pay-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		inline-size: 100%;
+		min-block-size: 3rem;
+		padding: 0.75rem 1rem;
+		background-color: oklch(0.4 0.15 260);
+		color: oklch(1 0 0);
+		border: none;
+		border-radius: var(--radius-lg);
+		font-size: var(--text-base);
+		font-weight: var(--weight-semibold);
+		cursor: pointer;
+		transition: background-color 150ms, transform 100ms;
+		touch-action: manipulation;
+
+		@media (min-width: 640px) {
+			min-block-size: 3.25rem;
+			padding: 1rem 1.5rem;
+			font-size: var(--text-lg);
+		}
+		@media (min-width: 768px) { min-block-size: 3.5rem; }
+
+		&:hover:not(:disabled) { background-color: oklch(0.35 0.12 260); }
+		&:active:not(:disabled) { transform: scale(0.98); }
+		&:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+	}
+
+	.sp-secure {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
+		font-size: var(--text-xs);
+		color: oklch(0.45 0.005 265);
+		padding-block: 0.5rem;
+
+		@media (min-width: 640px) { font-size: var(--text-sm); gap: 0.5rem; }
+	}
+
+	.sp-secure-icon {
+		inline-size: 0.875rem;
+		block-size: 0.875rem;
+		flex-shrink: 0;
+
+		@media (min-width: 640px) { inline-size: 1rem; block-size: 1rem; }
+	}
+</style>

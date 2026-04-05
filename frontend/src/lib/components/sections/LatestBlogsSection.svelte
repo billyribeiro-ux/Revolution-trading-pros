@@ -84,41 +84,30 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
+	class="lb-section"
 	aria-label="Market Intelligence Wire"
 >
-	<div class="absolute inset-0 pointer-events-none">
+	<div class="lb-bg">
+		<div class="lb-grid-lines"></div>
 		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
-		></div>
-		<div
-			class="absolute inset-0 opacity-20"
-			style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.05), transparent 60%);"
+			class="lb-spotlight"
+			style="background: radial-gradient(800px circle at var(--x) var(--y), oklch(1 0 0 / 0.05), transparent 60%);"
 		></div>
 	</div>
 
-	<div class="relative max-w-[1600px] mx-auto z-10">
-		<div class="max-w-4xl mx-auto text-center mb-24">
+	<div class="lb-container">
+		<div class="lb-header">
 			{#if isVisible}
-				<div
-					in:heavySlide={{ delay: 0, duration: 1000 }}
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
+				<div in:heavySlide={{ delay: 0, duration: 1000 }} class="lb-badge">
 					<Icon icon={IconNews} size={14} />
 					Intelligence Wire
 				</div>
 
-				<h2
-					in:heavySlide={{ delay: 100 }}
-					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
-				>
-					Market <span class="text-slate-700">Analysis.</span>
+				<h2 in:heavySlide={{ delay: 100 }} class="lb-title">
+					Market <span class="lb-title-muted">Analysis.</span>
 				</h2>
 
-				<p
-					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
-				>
+				<p in:heavySlide={{ delay: 200 }} class="lb-subtitle">
 					We don't publish retail content. We deliver institutional-grade market intelligence.
 					Verified by quantitative analysts and professional trading desks worldwide.
 				</p>
@@ -126,71 +115,50 @@
 		</div>
 
 		{#if posts.length > 0}
-			<div class="grid lg:grid-cols-12 gap-12">
+			<div class="lb-layout">
 				{#if leadPost}
-					<div class="lg:col-span-8 h-full">
+					<div class="lb-lead-col">
 						{#if isVisible}
 							<a
 								href="/blog/{leadPost.slug}"
 								in:heavySlide={{ delay: 300 }}
-								class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500"
+								class="lb-lead-card"
 							>
-								<div class="relative h-[400px] overflow-hidden">
+								<div class="lb-lead-image">
 									{#if leadPost.featured_image}
 										<div
-											class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
+											class="lb-lead-bg"
 											style="background-image: url('{leadPost.featured_image}')"
 										></div>
 									{:else}
-										<div
-											class="absolute inset-0 bg-linear-to-br from-slate-900 via-black to-slate-900 opacity-60"
-										></div>
+										<div class="lb-lead-bg-fallback"></div>
 									{/if}
-									<div
-										class="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/50 to-transparent"
-									></div>
+									<div class="lb-lead-overlay"></div>
 
-									<div class="absolute top-6 left-6 flex items-center gap-2">
-										<span
-											class="px-3 py-1 bg-black/80 backdrop-blur border border-white/10 text-[10px] font-mono text-amber-500 uppercase tracking-widest"
-										>
-											Priority Brief
-										</span>
+									<div class="lb-lead-tag-row">
+										<span class="lb-lead-tag">Priority Brief</span>
 									</div>
 								</div>
 
-								<div class="relative -mt-32 p-8 md:p-12 z-10">
-									<div
-										class="flex items-center gap-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4"
-									>
-										<span class="flex items-center gap-2">
+								<div class="lb-lead-content">
+									<div class="lb-lead-meta">
+										<span class="lb-meta-time">
 											<Icon icon={IconClock} size={12} />
 											{getRelativeTime(leadPost.published_at)}
 										</span>
-										<span class="w-px h-3 bg-white/20"></span>
+										<span class="lb-meta-sep"></span>
 										<span>{leadPost.author?.name || 'Desk Analyst'}</span>
 									</div>
 
-									<h3
-										class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight group-hover:text-amber-500 transition-colors"
-									>
-										{leadPost.title}
-									</h3>
+									<h3 class="lb-lead-title">{leadPost.title}</h3>
 
-									<p
-										class="text-base text-slate-400 font-light leading-relaxed max-w-2xl mb-8 border-l-2 border-white/10 pl-6 group-hover:border-amber-500/50 transition-colors"
-									>
+									<p class="lb-lead-excerpt">
 										{leadPost.excerpt || 'Market analysis briefing. Click to access full report.'}
 									</p>
 
-									<div
-										class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white"
-									>
+									<div class="lb-read-row">
 										<span>Read Full Protocol</span>
-										<Icon icon={IconArrowRight}
-											size={14}
-											class="group-hover:translate-x-2 transition-transform duration-300 text-amber-500"
-										/>
+										<Icon icon={IconArrowRight} size={14} class="lb-read-arrow" />
 									</div>
 								</div>
 							</a>
@@ -198,48 +166,26 @@
 					</div>
 				{/if}
 
-				<div class="lg:col-span-4 flex flex-col h-full border-l border-white/5 lg:pl-12">
+				<div class="lb-wire-col">
 					{#if isVisible}
-						<div
-							in:heavySlide={{ delay: 400 }}
-							class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500"
-						>
+						<div in:heavySlide={{ delay: 400 }} class="lb-wire-header">
 							<Icon icon={IconNews} size={14} />
 							<span>Incoming Signals</span>
 						</div>
 
-						<div class="space-y-8">
+						<div class="lb-wire-list">
 							{#each wirePosts as post}
-								<a
-									href="/blog/{post.slug}"
-									class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300"
-								>
-									<div class="flex items-center justify-between mb-2">
-										<span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
-											{getRelativeTime(post.published_at)}
-										</span>
-										<Icon icon={IconChartCandle}
-											size={14}
-											class="text-slate-600 group-hover:text-amber-500 transition-colors"
-										/>
+								<a href="/blog/{post.slug}" class="lb-wire-item">
+									<div class="lb-wire-top">
+										<span class="lb-wire-time">{getRelativeTime(post.published_at)}</span>
+										<Icon icon={IconChartCandle} size={14} class="lb-wire-candle" />
 									</div>
-									<h4
-										class="text-lg font-medium text-slate-300 group-hover:text-white transition-colors mb-2 leading-snug"
-									>
-										{post.title}
-									</h4>
-									<div class="flex items-center justify-between mt-3">
-										<span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
-											{post.author?.name || 'Desk Analyst'}
-										</span>
-										<span
-											class="read-more-link inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-slate-500 group-hover:text-amber-500 transition-all duration-300"
-										>
+									<h4 class="lb-wire-title">{post.title}</h4>
+									<div class="lb-wire-bottom">
+										<span class="lb-wire-author">{post.author?.name || 'Desk Analyst'}</span>
+										<span class="lb-wire-read">
 											<span>Read More</span>
-											<Icon icon={IconArrowRight}
-												size={12}
-												class="transform group-hover:translate-x-1 transition-transform duration-300"
-											/>
+											<Icon icon={IconArrowRight} size={12} class="lb-wire-arrow" />
 										</span>
 									</div>
 								</a>
@@ -249,17 +195,352 @@
 				</div>
 			</div>
 		{:else}
-			<div class="py-24 text-center border border-dashed border-white/10 rounded-sm">
-				<div
-					class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 text-slate-500 mb-4"
-				>
+			<div class="lb-empty">
+				<div class="lb-empty-icon">
 					<Icon icon={IconNews} size={24} />
 				</div>
-				<h3 class="text-lg font-serif text-white mb-2">Wire Silent</h3>
-				<p class="text-sm font-mono text-slate-500 uppercase tracking-widest">
-					No Intelligence Briefs Available
-				</p>
+				<h3 class="lb-empty-title">Wire Silent</h3>
+				<p class="lb-empty-text">No Intelligence Briefs Available</p>
 			</div>
 		{/if}
 	</div>
 </section>
+
+<style>
+	/* ─── Section ─── */
+	.lb-section {
+		position: relative;
+		padding-block: 8rem;
+		padding-inline: 1.5rem;
+		background-color: oklch(0.05 0 0);
+		overflow: hidden;
+		border-block-start: 1px solid oklch(1 0 0 / 0.1);
+	}
+
+	/* ─── Background ─── */
+	.lb-bg { position: absolute; inset: 0; pointer-events: none; }
+
+	.lb-grid-lines {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(oklch(1 0 0 / 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, oklch(1 0 0 / 0.02) 1px, transparent 1px);
+		background-size: 4rem 4rem;
+		mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, oklch(0 0 0) 70%, transparent 100%);
+	}
+
+	.lb-spotlight { position: absolute; inset: 0; opacity: 0.2; }
+
+	/* ─── Container ─── */
+	.lb-container {
+		position: relative;
+		max-inline-size: 100rem;
+		margin-inline: auto;
+		z-index: 10;
+	}
+
+	.lb-header {
+		max-inline-size: 56rem;
+		margin-inline: auto;
+		text-align: center;
+		margin-block-end: 6rem;
+	}
+
+	.lb-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-inline: 1rem;
+		padding-block: 0.375rem;
+		border: 1px solid oklch(0.45 0.12 70 / 0.3);
+		background-color: oklch(0.2 0.06 70 / 0.1);
+		color: oklch(0.75 0.15 85);
+		font-size: 0.625rem;
+		font-weight: var(--weight-bold);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		margin-block-end: 2rem;
+		border-radius: 2px;
+	}
+
+	.lb-title {
+		font-size: clamp(3rem, 6vw, 4.5rem);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 2rem;
+		letter-spacing: -0.02em;
+	}
+
+	.lb-title-muted { color: oklch(0.35 0.01 265); }
+
+	.lb-subtitle {
+		font-size: var(--text-lg);
+		color: oklch(0.55 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		max-inline-size: 32rem;
+		margin-inline: auto;
+	}
+
+	/* ─── Layout ─── */
+	.lb-layout {
+		display: grid;
+		gap: 3rem;
+
+		@media (min-width: 1024px) { grid-template-columns: 8fr 4fr; }
+	}
+
+	/* ─── Lead Card ─── */
+	.lb-lead-col { block-size: 100%; }
+
+	.lb-lead-card {
+		position: relative;
+		display: block;
+		block-size: 100%;
+		background-color: oklch(0.08 0 0);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		overflow: hidden;
+		transition: border-color 500ms;
+		text-decoration: none;
+
+		&:hover { border-color: oklch(0.6 0.15 70 / 0.5); }
+		&:hover .lb-lead-bg { transform: scale(1.05); }
+		&:hover .lb-lead-title { color: oklch(0.75 0.15 85); }
+		&:hover .lb-lead-excerpt { border-inline-start-color: oklch(0.75 0.15 85 / 0.5); }
+	}
+
+	.lb-lead-image { position: relative; block-size: 25rem; overflow: hidden; }
+
+	.lb-lead-bg {
+		position: absolute;
+		inset: 0;
+		background-size: cover;
+		background-position: center;
+		transition: transform 700ms;
+		opacity: 0.6;
+	}
+
+	.lb-lead-bg-fallback {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom right, oklch(0.25 0.01 265), oklch(0 0 0), oklch(0.25 0.01 265));
+		opacity: 0.6;
+	}
+
+	.lb-lead-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, oklch(0.08 0 0), oklch(0.08 0 0 / 0.5), transparent);
+	}
+
+	.lb-lead-tag-row {
+		position: absolute;
+		inset-block-start: 1.5rem;
+		inset-inline-start: 1.5rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.lb-lead-tag {
+		padding-inline: 0.75rem;
+		padding-block: 0.25rem;
+		background-color: oklch(0 0 0 / 0.8);
+		backdrop-filter: blur(8px);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.75 0.15 85);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	.lb-lead-content {
+		position: relative;
+		margin-block-start: -8rem;
+		padding: 2rem;
+		z-index: 10;
+
+		@media (min-width: 768px) { padding: 3rem; }
+	}
+
+	.lb-lead-meta {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.55 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		margin-block-end: 1rem;
+	}
+
+	.lb-meta-time { display: flex; align-items: center; gap: 0.5rem; }
+	.lb-meta-sep { inline-size: 1px; block-size: 0.75rem; background-color: oklch(1 0 0 / 0.2); }
+
+	.lb-lead-title {
+		font-size: clamp(1.875rem, 4vw, 3rem);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 1.5rem;
+		line-height: 1.2;
+		transition: color 300ms;
+	}
+
+	.lb-lead-excerpt {
+		font-size: var(--text-base);
+		color: oklch(0.55 0.01 265);
+		font-weight: 300;
+		line-height: 1.7;
+		max-inline-size: 32rem;
+		margin-block-end: 2rem;
+		border-inline-start: 2px solid oklch(1 0 0 / 0.1);
+		padding-inline-start: 1.5rem;
+		transition: border-color 300ms;
+	}
+
+	.lb-read-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: var(--text-xs);
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: oklch(1 0 0);
+	}
+
+	:global(.lb-read-arrow) { color: oklch(0.75 0.15 85); transition: transform 300ms; }
+	.lb-lead-card:hover :global(.lb-read-arrow) { transform: translateX(0.5rem); }
+
+	/* ─── Wire Column ─── */
+	.lb-wire-col {
+		display: flex;
+		flex-direction: column;
+		block-size: 100%;
+		border-inline-start: 1px solid oklch(1 0 0 / 0.05);
+
+		@media (min-width: 1024px) { padding-inline-start: 3rem; }
+	}
+
+	.lb-wire-header {
+		margin-block-end: 2rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: var(--text-xs);
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: oklch(0.55 0.01 265);
+	}
+
+	.lb-wire-list { display: flex; flex-direction: column; gap: 2rem; }
+
+	.lb-wire-item {
+		display: block;
+		border-block-end: 1px solid oklch(1 0 0 / 0.05);
+		padding-block-end: 2rem;
+		transition: padding-inline-start 300ms;
+		text-decoration: none;
+
+		&:last-child { border-block-end: none; }
+		&:hover { padding-inline-start: 1rem; }
+		&:hover .lb-wire-title { color: oklch(1 0 0); }
+		&:hover .lb-wire-read { color: oklch(0.75 0.15 85); }
+	}
+
+	.lb-wire-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: 0.5rem;
+	}
+
+	.lb-wire-time {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.6 0.15 70);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	:global(.lb-wire-candle) { color: oklch(0.4 0.01 265); transition: color 200ms; }
+	.lb-wire-item:hover :global(.lb-wire-candle) { color: oklch(0.75 0.15 85); }
+
+	.lb-wire-title {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-medium);
+		color: oklch(0.8 0.01 265);
+		transition: color 200ms;
+		margin-block-end: 0.5rem;
+		line-height: 1.4;
+	}
+
+	.lb-wire-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-start: 0.75rem;
+	}
+
+	.lb-wire-author {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.4 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	.lb-wire-read {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: 0.6875rem;
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: oklch(0.55 0.01 265);
+		transition: color 300ms;
+	}
+
+	:global(.lb-wire-arrow) { transition: transform 300ms; }
+	.lb-wire-item:hover :global(.lb-wire-arrow) { transform: translateX(0.25rem); }
+
+	/* ─── Empty ─── */
+	.lb-empty {
+		padding-block: 6rem;
+		text-align: center;
+		border: 1px dashed oklch(1 0 0 / 0.1);
+		border-radius: 2px;
+	}
+
+	.lb-empty-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 3rem;
+		block-size: 3rem;
+		border-radius: 50%;
+		background-color: oklch(1 0 0 / 0.05);
+		color: oklch(0.55 0.01 265);
+		margin-block-end: 1rem;
+	}
+
+	.lb-empty-title {
+		font-size: var(--text-lg);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+		margin-block-end: 0.5rem;
+	}
+
+	.lb-empty-text {
+		font-size: var(--text-sm);
+		font-family: var(--font-mono, monospace);
+		color: oklch(0.55 0.01 265);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+</style>
