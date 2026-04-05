@@ -47,7 +47,7 @@ on:
           - production
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "24.14.1"
   CLOUDFLARE_PROJECT_NAME: "revolution-trading-pros"
   # Default URLs - can be overridden by repository variables
   DEFAULT_API_URL: "https://revolution-trading-pros-api.fly.dev"
@@ -167,7 +167,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -214,7 +214,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

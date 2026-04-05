@@ -48,7 +48,7 @@ env:
   E2E_API_URL: https://revolution-trading-pros-api.fly.dev/api
   VITE_API_URL: https://revolution-trading-pros-api.fly.dev
   PUBLIC_API_URL: https://revolution-trading-pros-api.fly.dev
-  NODE_VERSION: "24"
+  NODE_VERSION: "24.14.1"
 
 jobs:
   # ========================================
@@ -67,7 +67,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -93,7 +93,7 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm run preview -- --host 127.0.0.1 --port 4173 &
+          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
           echo $! > .preview-server.pid
           timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
@@ -153,7 +153,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -179,7 +179,7 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm run preview -- --host 127.0.0.1 --port 4173 &
+          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
           echo $! > .preview-server.pid
           timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
@@ -239,7 +239,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -270,6 +270,7 @@ jobs:
           name: merged-e2e-report
           path: frontend/playwright-report/
           retention-days: 30
+          if-no-files-found: ignore
         continue-on-error: true
 
   # ========================================
@@ -289,7 +290,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -336,7 +337,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.6.5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -362,7 +363,7 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm run preview -- --host 127.0.0.1 --port 4173 &
+          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
           echo $! > .preview-server.pid
           timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
