@@ -310,6 +310,8 @@ jobs:
         working-directory: frontend
         run: pnpm exec playwright test tests/e2e/api --project=api --reporter=list
         env:
+          PLAYWRIGHT_API_ONLY: "1"
+          API_BASE_URL: https://revolution-trading-pros-api.fly.dev
           VITE_API_URL: https://revolution-trading-pros-api.fly.dev
 
       - name: Upload API test results

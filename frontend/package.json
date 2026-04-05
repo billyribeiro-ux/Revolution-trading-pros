@@ -37,7 +37,7 @@
 		"test:e2e:auth": "playwright test tests/e2e/auth --project=chromium",
 		"test:e2e:trading": "playwright test tests/e2e/trading-room --project=chromium",
 		"test:e2e:checkout": "playwright test tests/e2e/checkout --project=chromium",
-		"test:e2e:api": "playwright test tests/e2e/api --project=api",
+		"test:e2e:api": "PLAYWRIGHT_API_ONLY=1 playwright test tests/e2e/api --project=api --reporter=list",
 		"test:e2e:chromium": "playwright test tests/e2e --project=chromium",
 		"test:e2e:firefox": "playwright test tests/e2e --project=firefox",
 		"test:e2e:webkit": "playwright test tests/e2e --project=webkit",

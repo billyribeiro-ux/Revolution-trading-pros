@@ -5,6 +5,14 @@ const isCI = !!process.env.CI;
 /** CI workflows start `vite preview` and set E2E_BASE_URL (e.g. http://localhost:4173) — do not spawn a second dev server */
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:5173';
 const useExternalServer = !!process.env.E2E_BASE_URL;
+/** API-only job hits Fly.io directly; do not start Vite (saves CI time and avoids unused server) */
+const apiOnly =
+	process.env.PLAYWRIGHT_API_ONLY === '1' || process.env.PLAYWRIGHT_API_ONLY === 'true';
+/** Origin only (no `/api` suffix) — health lives at GET /health */
+const apiBaseURL = (process.env.API_BASE_URL || process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev').replace(
+	/\/api\/?$/,
+	''
+);
 
 /** Avoid saturating the Vite dev server with too many concurrent browsers (Playwright runs in Node; keep config free of node:os for editor TS) */
 const localWorkers = (() => {
@@ -21,12 +29,23 @@ const ciBrowserProjects = [
 	{ name: 'webkit', use: { ...devices['Desktop Safari'] } },
 	{ name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
 	{ name: 'Mobile Safari', use: { ...devices['iPhone 12'] } }
-];
+].map((p) => ({ ...p, testIgnore: '**/api/**' as const }));
 const browserProjects = allBrowsers
 	? ciBrowserProjects
 	: isCI
 		? ciBrowserProjects
-		: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }];
+		: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: '**/api/**' as const }];
+
+const projects = [
+	{
+		name: 'api',
+		testDir: './tests/e2e/api',
+		use: {
+			baseURL: apiBaseURL
+		}
+	},
+	...browserProjects
+];
 
 export default defineConfig({
 	testDir: './tests/e2e',
@@ -48,8 +67,8 @@ export default defineConfig({
 		screenshot: 'only-on-failure',
 		video: 'retain-on-failure'
 	},
-	projects: browserProjects,
-	...(useExternalServer
+	projects,
+	...(useExternalServer || apiOnly
 		? {}
 		: {
 				webServer: {
