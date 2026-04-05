@@ -100,16 +100,6 @@ npx prisma migrate dev
 
 ### API Issues
 
-#### "AI generation fails"
-
-**Cause:** Missing or invalid API key
-
-**Solution:** Check `.env` file:
-
-```bash
-VITE_ANTHROPIC_API_KEY=sk-ant-...
-```
-
 #### "Upload fails"
 
 **Cause:** Missing upload handler or storage not configured

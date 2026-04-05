@@ -47,5 +47,20 @@ export default defineConfig({
 	build: {
 		target: 'es2022',
 		chunkSizeWarningLimit: 500
+	},
+	optimizeDeps: {
+		exclude: [
+			'@iconify/svelte',
+			'svelte-inspect-value',
+			'svelte-render-scan',
+			'phosphor-svelte',
+			'bits-ui',
+			'@threlte/extras',
+			'@threlte/core',
+			'@melt-ui/svelte',
+			'formsnap',
+			'sveltekit-superforms',
+			'@sveltejs/enhanced-img'
+		]
 	}
 });

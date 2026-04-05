@@ -312,7 +312,7 @@ $$ LANGUAGE plpgsql;
 -- 8. GRANT PERMISSIONS (Optional - only if 'authenticated' role exists)
 -- ───────────────────────────────────────────────────────────────────────────────────────
 
--- Note: These GRANT statements are for Supabase-style deployments with 'authenticated' role
+-- Note: These GRANT statements are for deployments with 'authenticated' role
 -- They are wrapped in a DO block to gracefully skip if the role doesn't exist
 DO $$
 BEGIN

@@ -55,7 +55,6 @@ npx wrangler login
 3. **Set Environment Variables**
 
 ```bash
-npx wrangler pages secret put VITE_ANTHROPIC_API_KEY
 npx wrangler pages secret put DATABASE_URL
 # ... etc
 ```

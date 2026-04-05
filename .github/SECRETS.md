@@ -24,25 +24,6 @@ This document lists all GitHub secrets required for the CI/CD pipeline. Secrets 
 
 ## Optional Secrets (Features)
 
-### AI Features (Anthropic Claude)
-
-| Secret Name | Required | Used In | Description |
-|------------|----------|---------|-------------|
-| `VITE_ANTHROPIC_API_KEY` | ⚠️ Optional | `build`, `deploy-production` | Anthropic API key for AI writing assistant |
-
-**Impact if missing:** AI writing features disabled, build succeeds  
-**How to get:** [Anthropic Console](https://console.anthropic.com) → API Keys
-
-### Supabase (Legacy - Not Currently Used)
-
-| Secret Name | Required | Used In | Description |
-|------------|----------|---------|-------------|
-| `VITE_PUBLIC_SUPABASE_URL` | ⚠️ Optional | `deploy-production` | Supabase project URL |
-| `VITE_PUBLIC_SUPABASE_ANON_KEY` | ⚠️ Optional | `deploy-production` | Supabase anonymous key |
-
-**Impact if missing:** No impact, Supabase not currently integrated  
-**Status:** Reserved for future use
-
 ## Automatic Secrets (Provided by GitHub)
 
 | Secret Name | Description |

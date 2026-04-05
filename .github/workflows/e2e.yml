@@ -47,7 +47,7 @@ env:
   E2E_API_URL: https://revolution-trading-pros-api.fly.dev/api
   VITE_API_URL: https://revolution-trading-pros-api.fly.dev
   PUBLIC_API_URL: https://revolution-trading-pros-api.fly.dev
-  NODE_VERSION: "20"
+  NODE_VERSION: "24"
 
 jobs:
   # ========================================
@@ -66,7 +66,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -152,7 +152,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -281,7 +281,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -328,7 +328,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

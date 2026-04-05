@@ -28,14 +28,12 @@ cp .env.example .env
 
 **Required Variables:**
 ```bash
-VITE_ANTHROPIC_API_KEY=sk-ant-...  # For AI features
 DATABASE_URL=postgresql://...       # For database
 ```
 
 **Optional Variables:**
 ```bash
 VITE_OPENAI_API_KEY=...            # Alternative AI
-VITE_SENTRY_DSN=...                # Error tracking
 ```
 
 ### Step 3: Initialize Database

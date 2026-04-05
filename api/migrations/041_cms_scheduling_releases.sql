@@ -514,7 +514,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- -------------------------------------------------------------------------------------
--- 10. PERMISSIONS (Optional - for Supabase deployments)
+-- 10. PERMISSIONS (Optional - for deployments with 'authenticated' role)
 -- -------------------------------------------------------------------------------------
 
 DO $$
