@@ -121,7 +121,7 @@
 			<p>Try adjusting your filter or check back later for new content.</p>
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+		<div class="video-grid">
 			{#each videos as video (video.id)}
 				<VideoCard {video} {basePath} {showDate} {showDuration} />
 			{/each}
@@ -177,13 +177,20 @@
 {/if}
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO GRID (Dashboard) - 2026 Mobile-First Responsive Design
-	   ═══════════════════════════════════════════════════════════════════════════
-	   Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
-	   Grid: 1 col (mobile) → 2 cols (sm) → 3 cols (lg) → 4 cols (xl)
-	   Touch targets: 44x44px minimum for pagination buttons
-	   ═══════════════════════════════════════════════════════════════════════════ */
+	/* Video Grid */
+	.video-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
 
 	/* Empty State - Mobile first */
 	.empty-state {

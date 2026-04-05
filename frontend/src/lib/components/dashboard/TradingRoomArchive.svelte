@@ -330,7 +330,7 @@
 			<div id="products-list">
 				{#each paginatedGroups as group (group.date)}
 					<p class="date-heading"><strong>{group.displayDate}</strong></p>
-					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+					<div class="archive-grid">
 						{#each group.sessions as session (session.id)}
 							<article class="archive-card">
 								<div class="card-body">
@@ -769,9 +769,24 @@
 		background: #fff;
 	}
 
-	/* Grid gap override */
-	#products-list {
-		margin-bottom: 20px;
+	/* Archive Grid */
+	.archive-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+		margin-block-end: 1.5rem;
+
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 
 	#products-list > :global(.grid) {

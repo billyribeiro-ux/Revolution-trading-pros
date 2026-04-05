@@ -430,7 +430,7 @@ import { logger } from '$lib/utils/logger';
 				{#if currentPopup.has_form && currentPopup.form_id}
 					<div class="popup-form">
 						<!-- Form will be loaded here -->
-						<p class="text-sm text-gray-500">Form integration coming soon...</p>
+						<p class="popup-form-hint">Form integration coming soon...</p>
 					</div>
 				{/if}
 
@@ -670,6 +670,11 @@ import { logger } from '$lib/utils/logger';
 	/* Form */
 	.popup-form {
 		margin-bottom: 1.5rem;
+	}
+
+	.popup-form-hint {
+		font-size: 0.875rem;
+		color: #6b7280;
 	}
 
 	/* CTA Button */
