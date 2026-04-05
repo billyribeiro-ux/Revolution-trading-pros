@@ -3,6 +3,7 @@ import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { fileURLToPath } from 'node:url';
+import type { PluginOption } from 'vite';
 
 export default defineConfig({
 	plugins: [
@@ -13,7 +14,7 @@ export default defineConfig({
 			toggleButtonPos: 'bottom-right'
 		}),
 		devtoolsJson()
-	],
+	] as PluginOption[],
 	resolve: {
 		// Force Svelte client bundle in tests (default resolves to server bundle
 		// which doesn't have mount/unmount needed by @testing-library/svelte)
