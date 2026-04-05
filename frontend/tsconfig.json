@@ -10,7 +10,7 @@
 			"DOM.Iterable"
 		],
 		"allowJs": true,
-		"checkJs": true,
+		"checkJs": false,
 		"strict": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,

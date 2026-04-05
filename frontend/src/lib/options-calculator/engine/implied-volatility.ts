@@ -20,10 +20,9 @@ export function solveImpliedVolatility(
 	}
 
 	let vol = inputs.volatility > 0 ? inputs.volatility : 0.25;
-	let iterations: number;
 
 	for (let i = 0; i < MATH.NR_MAX_ITERATIONS; i++) {
-		iterations = i + 1;
+		const iterations = i + 1;
 		const testInputs: BSInputs = { ...inputs, volatility: vol };
 		const bsPrice = priceOption(testInputs, type);
 		const diff = bsPrice - marketPrice;
@@ -58,10 +57,9 @@ function bisectionIV(marketPrice: number, inputs: BSInputs, type: OptionType): I
 	let low = 0.001;
 	let high = 5.0;
 	let mid = 0.5;
-	let iterations: number;
 
 	for (let i = 0; i < 200; i++) {
-		iterations = i + 1;
+		const iterations = i + 1;
 		mid = (low + high) / 2;
 		const testInputs: BSInputs = { ...inputs, volatility: mid };
 		const bsPrice = priceOption(testInputs, type);
@@ -85,7 +83,7 @@ function bisectionIV(marketPrice: number, inputs: BSInputs, type: OptionType): I
 
 	return {
 		impliedVolatility: mid,
-		iterations,
+		iterations: 200,
 		converged: false,
 		error: Math.abs(priceOption({ ...inputs, volatility: mid }, type) - marketPrice)
 	};
