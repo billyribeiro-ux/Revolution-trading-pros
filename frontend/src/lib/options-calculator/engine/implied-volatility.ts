@@ -20,7 +20,7 @@ export function solveImpliedVolatility(
 	}
 
 	let vol = inputs.volatility > 0 ? inputs.volatility : 0.25;
-	let iterations = 0;
+	let iterations: number;
 
 	for (let i = 0; i < MATH.NR_MAX_ITERATIONS; i++) {
 		iterations = i + 1;
@@ -58,7 +58,7 @@ function bisectionIV(marketPrice: number, inputs: BSInputs, type: OptionType): I
 	let low = 0.001;
 	let high = 5.0;
 	let mid = 0.5;
-	let iterations = 0;
+	let iterations: number;
 
 	for (let i = 0; i < 200; i++) {
 		iterations = i + 1;

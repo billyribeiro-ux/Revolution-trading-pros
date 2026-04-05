@@ -203,9 +203,9 @@
 			return safeMathEval(expression);
 		} catch (err) {
 			if (err instanceof SafeMathError) {
-				throw new Error(`Invalid expression: ${err.message}`);
+				throw new Error(`Invalid expression: ${err.message}`, { cause: err });
 			}
-			throw new Error('Invalid expression');
+			throw new Error('Invalid expression', { cause: err });
 		}
 	}
 
