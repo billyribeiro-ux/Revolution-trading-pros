@@ -208,7 +208,7 @@ async function setupTradesMocks(
 }
 
 // Test configuration
-const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
+const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5173';
 
 // ===============================================================================
 // TEST SUITE: Trades Page Core Functionality

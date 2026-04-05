@@ -96,7 +96,7 @@ async function setupDashboardMocks(page: Page, scenario = activeDashboardScenari
 }
 
 // Test configuration
-const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
+const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5173';
 
 test.describe('Explosive Swings Dashboard', () => {
 	test.beforeEach(async ({ page }) => {

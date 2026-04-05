@@ -15,7 +15,7 @@
 import { test, expect } from '@playwright/test';
 
 // Test configuration
-const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
+const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5173';
 
 test.describe('Explosive Swings Admin', () => {
 	test.beforeEach(async ({ page }) => {

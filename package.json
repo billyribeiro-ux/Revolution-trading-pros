@@ -21,9 +21,7 @@
       "esbuild"
     ],
     "overrides": {
-      "@tanstack/svelte-table": {
-        "svelte": "^5.55.1"
-      }
+      "@tanstack/svelte-table>svelte": "^5.55.1"
     },
     "peerDependencyRules": {
       "ignoreMissing": ["@sveltejs/vite-plugin-svelte", "vite"],

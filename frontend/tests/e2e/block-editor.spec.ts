@@ -2,11 +2,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('CMS Block Editor', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/cms/editor');
+		await page.goto('/cms/editor', { waitUntil: 'domcontentloaded' });
+		// Default paragraph is added in onMount — wait for hydration before assertions
+		await expect(page.locator('.editor__block')).toHaveCount(1, { timeout: 15_000 });
 	});
 
 	test('loads editor page with default paragraph block', async ({ page }) => {
-		await expect(page.locator('h1')).toContainText('Block Editor');
+		await expect(page.getByRole('heading', { name: 'Block Editor' })).toBeVisible();
 		await expect(page.locator('.editor__block')).toHaveCount(1);
 	});
 
@@ -82,6 +84,7 @@ test.describe('CMS Block Editor', () => {
 
 	test('keyboard navigation works for block selection', async ({ page }) => {
 		const block = page.locator('.editor__block').first();
+		await block.click();
 		await block.focus();
 		await page.keyboard.press('Enter');
 		await expect(block).toHaveClass(/editor__block--selected/);

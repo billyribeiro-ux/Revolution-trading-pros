@@ -41,7 +41,7 @@ const TEST_CREDENTIALS = {
 };
 
 // Base URL from environment
-const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
+const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5173';
 
 /**
  * Custom test fixtures extending Playwright's base test

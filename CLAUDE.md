@@ -17,7 +17,19 @@ After calling the list-sections tool, you MUST analyze the returned documentatio
 Analyzes Svelte code and returns issues and suggestions.
 You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
 
+**Local CLI (same engine as MCP):** from `frontend/`, `pnpm run mcp:svelte-autofixer -- path/to/File.svelte` runs one file. `pnpm run mcp:svelte-autofixer:all` scans every `src/**/*.svelte` (slow); use `node scripts/run-svelte-autofixer.mjs --limit 20` for a quick sample.
+
 ### 4. playground-link
 
 Generates a Svelte Playground link with the provided code.
 After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+
+## PE7 end-to-end verification (this repo)
+
+When “fix everything E2E” is requested, run these in order (Svelte MCP cannot replace static checks):
+
+1. `pnpm run check` — `svelte-check` + Svelte 5 / Kit types (same constraints Svelte MCP autofixer looks for).
+2. `pnpm run test:unit` — Vitest for `src/**/*.test.ts` (pure logic, components).
+3. `pnpm exec playwright test tests/e2e --project=chromium` — browser smoke + route matrix + flows.
+
+Single command: `pnpm run verify` (from `frontend/`). Fix CSP/source issues first, then relax E2E filters only for true infrastructure noise.

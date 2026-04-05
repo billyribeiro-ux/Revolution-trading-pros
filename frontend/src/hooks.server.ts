@@ -30,7 +30,7 @@ const API_BASE_URL = env.API_BASE_URL || 'https://revolution-trading-pros-api.fl
  * Set to false to restore normal site access.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false; // set true to send all traffic to /maintenance
 
 /** Paths that should NOT be redirected during maintenance */
 const MAINTENANCE_BYPASS_PREFIXES = [
