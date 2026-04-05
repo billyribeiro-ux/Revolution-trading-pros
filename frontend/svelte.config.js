@@ -108,6 +108,7 @@ const config = {
 					'https://stats.g.doubleclick.net',
 					'https://www.googletagmanager.com',
 					'https://static.cloudflareinsights.com',
+					'https://cloudflareinsights.com',
 					'https://*.mediadelivery.net',
 					'https://vz-5a23b520-193.b-cdn.net',
 					'https://video.bunnycdn.com',
