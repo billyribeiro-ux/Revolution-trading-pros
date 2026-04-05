@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "dev": "tsup src/index.ts --format esm --dts --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm run build"
   },
   "keywords": ["svelte", "sveltekit", "vite", "developer-tools", "click-to-source"],
   "peerDependencies": {

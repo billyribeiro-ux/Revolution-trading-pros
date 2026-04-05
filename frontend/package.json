@@ -47,7 +47,7 @@
 		"test:e2e:report": "playwright show-report",
 		"test:a11y": "pa11y-ci",
 		"test:visual": "playwright test tests/visual",
-		"test:ci": "npm run test:unit && npm run test:e2e",
+		"test:ci": "pnpm run test:unit && pnpm run test:e2e",
 		"test:blog-editor": "playwright test --project=blog-editor",
 		"test:blog-editor:firefox": "playwright test --project=blog-editor-firefox",
 		"test:blog-editor:mobile": "playwright test --project=blog-editor-mobile",
@@ -55,8 +55,8 @@
 		"test:blog-editor:visual": "playwright test --project=visual-regression",
 		"test:blog-editor:a11y": "playwright test --project=accessibility",
 		"analyze": "vite-bundle-visualizer",
-		"deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare",
-		"deploy:preview": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview"
+		"deploy:cloudflare": "pnpm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare",
+		"deploy:preview": "pnpm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.74.0",
