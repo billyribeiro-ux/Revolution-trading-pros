@@ -229,10 +229,7 @@
 		<!-- Tooltip -->
 		{#if hoveredIndex !== null}
 			{@const point = data[hoveredIndex]}
-			<div
-				class="chart-tooltip"
-				style="left: {tooltipX}px; top: {tooltipY - 50}px"
-			>
+			<div class="chart-tooltip" style="left: {tooltipX}px; top: {tooltipY - 50}px">
 				<div class="tooltip-value">{formatValue(point.value)}</div>
 				<div class="tooltip-date">{formatDate(point.date)}</div>
 			</div>
@@ -255,7 +252,9 @@
 		margin-block-end: var(--space-4);
 	}
 
-	.chart-area { position: relative; }
+	.chart-area {
+		position: relative;
+	}
 
 	.grid-line {
 		stroke: oklch(0.9 0.005 265);
@@ -281,6 +280,11 @@
 		transform: translateX(-50%);
 	}
 
-	.tooltip-value { font-weight: var(--weight-medium); }
-	.tooltip-date { color: oklch(0.65 0.01 250); font-size: var(--text-xs); }
+	.tooltip-value {
+		font-weight: var(--weight-medium);
+	}
+	.tooltip-date {
+		color: oklch(0.65 0.01 250);
+		font-size: var(--text-xs);
+	}
 </style>

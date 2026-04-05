@@ -17,7 +17,26 @@
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconChevronRight, IconCopy, IconDatabase, IconDownload, IconEdit, IconGripVertical, IconLock, IconPlus, IconRefresh, IconSearch, IconTrash, IconUpload, IconWorld, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconCheck,
+		IconChevronRight,
+		IconCopy,
+		IconDatabase,
+		IconDownload,
+		IconEdit,
+		IconGripVertical,
+		IconLock,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash,
+		IconUpload,
+		IconWorld,
+		IconX
+	} from '$lib/icons';
 
 	// Types
 	interface Datasource {
@@ -709,9 +728,17 @@
 							<div class="card-header">
 								<div class="card-icon" style="background-color: {datasource.color || '#6366f1'}20">
 									{#if datasource.is_system}
-										<Icon icon={IconWorld} size={24} style="color: {datasource.color || '#6366f1'}" />
+										<Icon
+											icon={IconWorld}
+											size={24}
+											style="color: {datasource.color || '#6366f1'}"
+										/>
 									{:else}
-										<Icon icon={IconDatabase} size={24} style="color: {datasource.color || '#6366f1'}" />
+										<Icon
+											icon={IconDatabase}
+											size={24}
+											style="color: {datasource.color || '#6366f1'}"
+										/>
 									{/if}
 								</div>
 								<div class="card-badges">
@@ -719,7 +746,8 @@
 										<span class="badge badge-system">System</span>
 									{/if}
 									{#if datasource.is_locked}
-										<span class="badge badge-locked"><Icon icon={IconLock} size={12} /> Locked</span>
+										<span class="badge badge-locked"><Icon icon={IconLock} size={12} /> Locked</span
+										>
 									{/if}
 								</div>
 							</div>
@@ -823,7 +851,11 @@
 						class="header-icon"
 						style="background-color: {selectedDatasource.color || '#6366f1'}20"
 					>
-						<Icon icon={IconDatabase} size={24} style="color: {selectedDatasource.color || '#6366f1'}" />
+						<Icon
+							icon={IconDatabase}
+							size={24}
+							style="color: {selectedDatasource.color || '#6366f1'}"
+						/>
 					</div>
 					{selectedDatasource.name}
 				</h1>

@@ -24,7 +24,21 @@
 	import { api } from '$lib/api/config';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconChartBar, IconCheck, IconClock, IconCopy, IconEdit, IconMail, IconPlus, IconRefresh, IconSearch, IconSend, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCopy,
+		IconEdit,
+		IconMail,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconSend,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

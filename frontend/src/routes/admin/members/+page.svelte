@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
@@ -12,7 +12,36 @@ import { logger } from '$lib/utils/logger';
 	import MemberFormModal from '$lib/components/admin/MemberFormModal.svelte';
 	import MemberDetailDrawer from '$lib/components/admin/MemberDetailDrawer.svelte';
 	import ActionsDropdown from '$lib/components/admin/ActionsDropdown.svelte';
-	import { Icon, IconAlertTriangle, IconBan, IconChartBar, IconChevronLeft, IconChevronRight, IconCreditCard, IconCrown, IconCurrencyDollar, IconDownload, IconEdit, IconExternalLink, IconFileSpreadsheet, IconFilter, IconMail, IconPdf, IconPlayerPlay, IconRefresh, IconSearch, IconSend, IconTrash, IconTrendingDown, IconTrendingUp, IconUpload, IconUserCheck, IconUserPlus, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconBan,
+		IconChartBar,
+		IconChevronLeft,
+		IconChevronRight,
+		IconCreditCard,
+		IconCrown,
+		IconCurrencyDollar,
+		IconDownload,
+		IconEdit,
+		IconExternalLink,
+		IconFileSpreadsheet,
+		IconFilter,
+		IconMail,
+		IconPdf,
+		IconPlayerPlay,
+		IconRefresh,
+		IconSearch,
+		IconSend,
+		IconTrash,
+		IconTrendingDown,
+		IconTrendingUp,
+		IconUpload,
+		IconUserCheck,
+		IconUserPlus,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// Reactive state from stores
 	let members = $derived(membersStore.members);

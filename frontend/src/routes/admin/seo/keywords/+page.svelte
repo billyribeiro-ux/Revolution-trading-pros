@@ -1,8 +1,17 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconMinus, IconPlus, IconRefresh, IconSearch, IconTrash, IconTrendingDown, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconMinus,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash,
+		IconTrendingDown,
+		IconTrendingUp
+	} from '$lib/icons';
 
 	let keywords: any[] = $state([]);
 	let stats: any = $state(null);

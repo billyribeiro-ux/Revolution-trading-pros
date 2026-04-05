@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Indicator Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - February 2026

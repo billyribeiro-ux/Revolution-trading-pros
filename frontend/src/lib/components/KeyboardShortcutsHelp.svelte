@@ -12,7 +12,7 @@
 	import { quintOut } from 'svelte/easing';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
 	import { Icon, IconCommand, IconX } from '$lib/icons';
-		
+
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;

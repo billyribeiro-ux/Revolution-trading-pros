@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Orders Management Page
 	 * ICT 7 Fix: Complete admin orders dashboard
@@ -8,7 +8,22 @@ import { logger } from '$lib/utils/logger';
 
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconAlertTriangle, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCurrencyDollar, IconDownload, IconExternalLink, IconFilter, IconRefresh, IconSearch, IconShoppingCart, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconCheck,
+		IconChevronLeft,
+		IconChevronRight,
+		IconClock,
+		IconCurrencyDollar,
+		IconDownload,
+		IconExternalLink,
+		IconFilter,
+		IconRefresh,
+		IconSearch,
+		IconShoppingCart,
+		IconX
+	} from '$lib/icons';
 
 	// Types
 	interface Order {

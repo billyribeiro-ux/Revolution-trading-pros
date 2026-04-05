@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Lead Detail Page - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -31,7 +31,34 @@ import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api/config';
-	import { Icon, IconActivity, IconArrowLeft, IconArrowRight, IconBriefcase, IconBuilding, IconCalendar, IconChartBar, IconCheck, IconClock, IconEdit, IconFlame, IconMail, IconNote, IconPhone, IconPlus, IconRefresh, IconStar, IconStarFilled, IconTag, IconTarget, IconTrash, IconTrendingUp, IconUserCircle, IconWorld, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowLeft,
+		IconArrowRight,
+		IconBriefcase,
+		IconBuilding,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconEdit,
+		IconFlame,
+		IconMail,
+		IconNote,
+		IconPhone,
+		IconPlus,
+		IconRefresh,
+		IconStar,
+		IconStarFilled,
+		IconTag,
+		IconTarget,
+		IconTrash,
+		IconTrendingUp,
+		IconUserCircle,
+		IconWorld,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

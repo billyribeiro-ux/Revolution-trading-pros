@@ -2,7 +2,16 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconActivity, IconChartDots, IconCircleCheckFilled, IconQuote, IconShieldCheck, IconTrendingUp, IconUserCircle } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconChartDots,
+		IconCircleCheckFilled,
+		IconQuote,
+		IconShieldCheck,
+		IconTrendingUp,
+		IconUserCircle
+	} from '$lib/icons';
 	// --- Institutional Client Data ---
 	const reviews = [
 		{
@@ -146,7 +155,10 @@
 				<div class="ts-ticker-item">
 					<span class="ts-ticker-symbol">{item.symbol}</span>
 					<span>{item.price}</span>
-					<span class="ts-ticker-change" data-direction={item.change.startsWith('-') ? 'down' : 'up'}>{item.change}</span>
+					<span
+						class="ts-ticker-change"
+						data-direction={item.change.startsWith('-') ? 'down' : 'up'}>{item.change}</span
+					>
 				</div>
 			{/each}
 		</div>
@@ -155,7 +167,10 @@
 				<div class="ts-ticker-item">
 					<span class="ts-ticker-symbol">{item.symbol}</span>
 					<span>{item.price}</span>
-					<span class="ts-ticker-change" data-direction={item.change.startsWith('-') ? 'down' : 'up'}>{item.change}</span>
+					<span
+						class="ts-ticker-change"
+						data-direction={item.change.startsWith('-') ? 'down' : 'up'}>{item.change}</span
+					>
 				</div>
 			{/each}
 		</div>
@@ -287,13 +302,26 @@
 		color: oklch(1 0 0);
 	}
 
-	.ts-ticker-left { animation: marquee-left 40s linear infinite; }
-	.ts-ticker-right { animation: marquee-right 40s linear infinite; }
+	.ts-ticker-left {
+		animation: marquee-left 40s linear infinite;
+	}
+	.ts-ticker-right {
+		animation: marquee-right 40s linear infinite;
+	}
 
-	.ts-ticker-item { display: flex; gap: 1rem; }
-	.ts-ticker-symbol { font-weight: var(--weight-bold); }
-	.ts-ticker-change[data-direction='up'] { color: oklch(0.7 0.17 160); }
-	.ts-ticker-change[data-direction='down'] { color: oklch(0.6 0.2 25); }
+	.ts-ticker-item {
+		display: flex;
+		gap: 1rem;
+	}
+	.ts-ticker-symbol {
+		font-weight: var(--weight-bold);
+	}
+	.ts-ticker-change[data-direction='up'] {
+		color: oklch(0.7 0.17 160);
+	}
+	.ts-ticker-change[data-direction='down'] {
+		color: oklch(0.6 0.2 25);
+	}
 
 	/* ─── Overlays ─── */
 	.ts-fade-overlay {
@@ -351,7 +379,9 @@
 		letter-spacing: -0.02em;
 	}
 
-	.ts-title-muted { color: oklch(0.35 0.01 265); }
+	.ts-title-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.ts-subtitle {
 		font-size: var(--text-lg);
@@ -367,10 +397,16 @@
 		columns: 1;
 		gap: 1.5rem;
 
-		@media (min-width: 768px) { columns: 2; }
-		@media (min-width: 1024px) { columns: 3; }
+		@media (min-width: 768px) {
+			columns: 2;
+		}
+		@media (min-width: 1024px) {
+			columns: 3;
+		}
 
-		& > * { margin-block-end: 1.5rem; }
+		& > * {
+			margin-block-end: 1.5rem;
+		}
 	}
 
 	/* ─── Card ─── */
@@ -380,17 +416,27 @@
 		background-color: oklch(0.08 0 0);
 		border: 1px solid oklch(1 0 0 / 0.1);
 		padding: 2rem;
-		transition: background-color 500ms, border-color 500ms;
+		transition:
+			background-color 500ms,
+			border-color 500ms;
 
 		&:hover {
 			background-color: oklch(0.1 0 0);
 			border-color: oklch(0.7 0.17 160 / 0.3);
 		}
 
-		&:hover .ts-verified { opacity: 1; }
-		&:hover .ts-card-bottom { background-color: oklch(0.15 0.05 160 / 0.05); }
-		&:hover .ts-corner-dot { background-color: oklch(0.7 0.17 160 / 0.5); }
-		&:hover .ts-corner-svg { opacity: 1; }
+		&:hover .ts-verified {
+			opacity: 1;
+		}
+		&:hover .ts-card-bottom {
+			background-color: oklch(0.15 0.05 160 / 0.05);
+		}
+		&:hover .ts-corner-dot {
+			background-color: oklch(0.7 0.17 160 / 0.5);
+		}
+		&:hover .ts-corner-svg {
+			opacity: 1;
+		}
 	}
 
 	.ts-card-top {
@@ -402,7 +448,11 @@
 		border-block-end: 1px solid oklch(1 0 0 / 0.05);
 	}
 
-	.ts-avatar-row { display: flex; align-items: center; gap: 0.75rem; }
+	.ts-avatar-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
 
 	.ts-avatar {
 		inline-size: 2rem;
@@ -415,8 +465,18 @@
 		color: oklch(0.55 0.01 265);
 	}
 
-	.ts-name { font-size: var(--text-sm); font-weight: var(--weight-medium); color: oklch(1 0 0); }
-	.ts-role { font-size: 0.625rem; font-family: var(--font-mono, monospace); text-transform: uppercase; color: oklch(0.55 0.01 265); letter-spacing: 0.05em; }
+	.ts-name {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+	}
+	.ts-role {
+		font-size: 0.625rem;
+		font-family: var(--font-mono, monospace);
+		text-transform: uppercase;
+		color: oklch(0.55 0.01 265);
+		letter-spacing: 0.05em;
+	}
 
 	.ts-id-badge {
 		font-size: 0.625rem;
@@ -430,8 +490,17 @@
 	}
 
 	/* ─── Quote ─── */
-	.ts-quote-wrap { position: relative; margin-block-end: 2rem; }
-	:global(.ts-quote-icon) { position: absolute; inset-block-start: -0.5rem; inset-inline-start: -0.5rem; color: oklch(1 0 0 / 0.05); transform: scaleX(-1); }
+	.ts-quote-wrap {
+		position: relative;
+		margin-block-end: 2rem;
+	}
+	:global(.ts-quote-icon) {
+		position: absolute;
+		inset-block-start: -0.5rem;
+		inset-inline-start: -0.5rem;
+		color: oklch(1 0 0 / 0.05);
+		transform: scaleX(-1);
+	}
 
 	.ts-quote {
 		position: relative;
@@ -456,7 +525,10 @@
 		transition: background-color 500ms;
 	}
 
-	.ts-metric { display: flex; flex-direction: column; }
+	.ts-metric {
+		display: flex;
+		flex-direction: column;
+	}
 
 	.ts-metric-label {
 		font-size: 0.625rem;
@@ -467,9 +539,19 @@
 		margin-block-end: 0.25rem;
 	}
 
-	.ts-metric-row { display: flex; align-items: center; gap: 0.5rem; }
-	:global(.ts-emerald-icon) { color: oklch(0.7 0.17 160); }
-	.ts-metric-value { font-size: var(--text-lg); font-family: var(--font-serif, serif); color: oklch(1 0 0); }
+	.ts-metric-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	:global(.ts-emerald-icon) {
+		color: oklch(0.7 0.17 160);
+	}
+	.ts-metric-value {
+		font-size: var(--text-lg);
+		font-family: var(--font-serif, serif);
+		color: oklch(1 0 0);
+	}
 
 	.ts-verified {
 		opacity: 0;
@@ -527,11 +609,18 @@
 		gap: 3rem;
 		opacity: 0.5;
 		filter: grayscale(1);
-		transition: filter 500ms, opacity 500ms;
+		transition:
+			filter 500ms,
+			opacity 500ms;
 
-		@media (min-width: 1024px) { gap: 6rem; }
+		@media (min-width: 1024px) {
+			gap: 6rem;
+		}
 
-		&:hover { filter: grayscale(0); opacity: 1; }
+		&:hover {
+			filter: grayscale(0);
+			opacity: 1;
+		}
 	}
 
 	.ts-trust-item {
@@ -550,11 +639,19 @@
 
 	/* ─── Keyframes ─── */
 	@keyframes marquee-left {
-		0% { transform: translateX(0); }
-		100% { transform: translateX(-50%); }
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
 	}
 	@keyframes marquee-right {
-		0% { transform: translateX(-50%); }
-		100% { transform: translateX(0); }
+		0% {
+			transform: translateX(-50%);
+		}
+		100% {
+			transform: translateX(0);
+		}
 	}
 </style>

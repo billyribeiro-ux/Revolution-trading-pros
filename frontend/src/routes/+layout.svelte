@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Root Layout - Apple Principal Engineer ICT Level 7 Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -147,7 +147,11 @@ import { logger } from '$lib/utils/logger';
 	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 	<link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
 	<link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="192x192" href="/apple-touch-icon-precomposed.png" />
+	<link
+		rel="apple-touch-icon-precomposed"
+		sizes="192x192"
+		href="/apple-touch-icon-precomposed.png"
+	/>
 
 	<!-- PWA Manifest -->
 	<link rel="manifest" href="/manifest.json" />

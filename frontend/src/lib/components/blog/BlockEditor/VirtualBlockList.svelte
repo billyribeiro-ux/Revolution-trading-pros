@@ -18,7 +18,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { tick, onMount, onDestroy } from 'svelte';
 	import BlockRenderer from './BlockRenderer.svelte';
 	import type {
@@ -29,7 +29,14 @@ import { logger } from '$lib/utils/logger';
 	} from './VirtualBlockList.types';
 	import type { Block } from './types';
 	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
-	import { Icon, IconChevronDown, IconChevronUp, IconCopy, IconGripVertical, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconChevronDown,
+		IconChevronUp,
+		IconCopy,
+		IconGripVertical,
+		IconTrash
+	} from '$lib/icons';
 
 	// ==========================================================================
 	// Props

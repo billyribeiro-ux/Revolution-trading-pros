@@ -10,12 +10,7 @@
 	}: WithElementRef<HTMLAttributes<HTMLTableSectionElement>> = $props();
 </script>
 
-<thead
-	bind:this={ref}
-	data-slot="table-header"
-	class={className}
-	{...restProps}
->
+<thead bind:this={ref} data-slot="table-header" class={className} {...restProps}>
 	{@render children?.()}
 </thead>
 

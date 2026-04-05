@@ -9,7 +9,7 @@
 	@version 2.0.0 - Complete CRUD with dark theme
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
 
 	interface Props {

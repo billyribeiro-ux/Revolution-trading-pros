@@ -14,7 +14,19 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { ROOMS, type Room } from '$lib/config/rooms';
-	import { Icon, IconArrowRight, IconBell, IconChartBar, IconChartLine, IconFlame, IconSchool, IconTable, IconTargetArrow, IconTrendingUp, IconVideo } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowRight,
+		IconBell,
+		IconChartBar,
+		IconChartLine,
+		IconFlame,
+		IconSchool,
+		IconTable,
+		IconTargetArrow,
+		IconTrendingUp,
+		IconVideo
+	} from '$lib/icons';
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════════

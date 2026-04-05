@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Member Subscriptions - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -25,7 +25,17 @@ import { logger } from '$lib/utils/logger';
 		exportSubscriptions,
 		type EnhancedSubscription
 	} from '$lib/api/subscriptions';
-	import { Icon, IconCreditCard, IconDownload, IconEdit, IconEye, IconFilter, IconRefresh, IconSearch, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCreditCard,
+		IconDownload,
+		IconEdit,
+		IconEye,
+		IconFilter,
+		IconRefresh,
+		IconSearch,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes

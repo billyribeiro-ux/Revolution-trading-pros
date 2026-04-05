@@ -129,7 +129,11 @@
 			<div
 				class="movement-item"
 				data-variant="net"
-				data-trend={safeData.net_new_mrr > 0 ? 'positive' : safeData.net_new_mrr < 0 ? 'negative' : 'neutral'}
+				data-trend={safeData.net_new_mrr > 0
+					? 'positive'
+					: safeData.net_new_mrr < 0
+						? 'negative'
+						: 'neutral'}
 			>
 				<div class="movement-label">Net New MRR</div>
 				<div class="movement-value">
@@ -258,7 +262,9 @@
 		grid-template-columns: 1fr;
 		gap: var(--space-4);
 		margin-block-end: var(--space-6);
-		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.metric-card {
@@ -285,10 +291,18 @@
 		color: oklch(1 0 0);
 		margin-block-end: var(--space-1);
 
-		&.small { font-size: var(--text-xl); }
-		&[data-trend='positive'] { color: oklch(0.7 0.18 160); }
-		&[data-trend='negative'] { color: oklch(0.7 0.2 25); }
-		&[data-trend='neutral'] { color: oklch(0.65 0.01 250); }
+		&.small {
+			font-size: var(--text-xl);
+		}
+		&[data-trend='positive'] {
+			color: oklch(0.7 0.18 160);
+		}
+		&[data-trend='negative'] {
+			color: oklch(0.7 0.2 25);
+		}
+		&[data-trend='neutral'] {
+			color: oklch(0.65 0.01 250);
+		}
 	}
 
 	.metric-sublabel {
@@ -303,8 +317,12 @@
 		font-size: var(--text-sm);
 		font-weight: var(--weight-medium);
 
-		&.positive { color: oklch(0.7 0.18 160); }
-		&.negative { color: oklch(0.7 0.2 25); }
+		&.positive {
+			color: oklch(0.7 0.18 160);
+		}
+		&.negative {
+			color: oklch(0.7 0.2 25);
+		}
 	}
 
 	.mrr-movement {
@@ -322,7 +340,9 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: var(--space-3);
-		@media (min-width: 768px) { grid-template-columns: repeat(5, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(5, 1fr);
+		}
 	}
 
 	.movement-item {
@@ -331,9 +351,18 @@
 		padding: var(--space-3);
 		border: 1px solid oklch(0.38 0.01 250 / 50%);
 
-		&[data-trend='positive'] { border-color: oklch(0.6 0.18 160 / 30%); background-color: oklch(0.6 0.18 160 / 5%); }
-		&[data-trend='negative'] { border-color: oklch(0.55 0.22 25 / 30%); background-color: oklch(0.55 0.22 25 / 5%); }
-		&[data-variant='net'] { border-color: oklch(0.8 0.18 90 / 30%); background-color: oklch(0.8 0.18 90 / 5%); }
+		&[data-trend='positive'] {
+			border-color: oklch(0.6 0.18 160 / 30%);
+			background-color: oklch(0.6 0.18 160 / 5%);
+		}
+		&[data-trend='negative'] {
+			border-color: oklch(0.55 0.22 25 / 30%);
+			background-color: oklch(0.55 0.22 25 / 5%);
+		}
+		&[data-variant='net'] {
+			border-color: oklch(0.8 0.18 90 / 30%);
+			background-color: oklch(0.8 0.18 90 / 5%);
+		}
 	}
 
 	.movement-label {

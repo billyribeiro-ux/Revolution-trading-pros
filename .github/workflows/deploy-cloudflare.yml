@@ -173,10 +173,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Generate SvelteKit types
@@ -196,9 +196,6 @@ jobs:
       - name: Lint
         working-directory: frontend
         run: pnpm run lint
-        # Allow lint to pass with warnings - pre-existing ESLint issues should not block deployment
-        # TODO: Fix ESLint errors and restore strict linting for production
-        continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
   # BUILD
@@ -223,10 +220,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build for Cloudflare

@@ -20,7 +20,26 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconChartBar, IconCheck, IconClock, IconCopy, IconEdit, IconMail, IconMailForward, IconPlayerPause, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconSend, IconTrash, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCopy,
+		IconEdit,
+		IconMail,
+		IconMailForward,
+		IconPlayerPause,
+		IconPlayerPlay,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconSend,
+		IconTrash,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

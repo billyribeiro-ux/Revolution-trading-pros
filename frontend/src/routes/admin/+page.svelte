@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
@@ -13,7 +13,47 @@ import { logger } from '$lib/utils/logger';
 		getIsSeoConnected
 	} from '$lib/stores/connections.svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
-	import { Icon, IconActivity, IconAlertCircle, IconAlertTriangle, IconArrowUpRight, IconBellRinging, IconBrandGoogle, IconBrowser, IconCalendar, IconChartBar, IconChartLine, IconClick, IconClock, IconDeviceMobile, IconDevices, IconExternalLink, IconEye, IconFilter, IconForms, IconLink, IconMail, IconNews, IconPhoto, IconPlugConnected, IconReceipt, IconRefresh, IconSearch, IconSend, IconSeo, IconSettings, IconShoppingCart, IconTag, IconTarget, IconTicket, IconTrendingUp, IconUserCircle, IconUsers, IconVideo, IconWorld } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconAlertCircle,
+		IconAlertTriangle,
+		IconArrowUpRight,
+		IconBellRinging,
+		IconBrandGoogle,
+		IconBrowser,
+		IconCalendar,
+		IconChartBar,
+		IconChartLine,
+		IconClick,
+		IconClock,
+		IconDeviceMobile,
+		IconDevices,
+		IconExternalLink,
+		IconEye,
+		IconFilter,
+		IconForms,
+		IconLink,
+		IconMail,
+		IconNews,
+		IconPhoto,
+		IconPlugConnected,
+		IconReceipt,
+		IconRefresh,
+		IconSearch,
+		IconSend,
+		IconSeo,
+		IconSettings,
+		IconShoppingCart,
+		IconTag,
+		IconTarget,
+		IconTicket,
+		IconTrendingUp,
+		IconUserCircle,
+		IconUsers,
+		IconVideo,
+		IconWorld
+	} from '$lib/icons';
 
 	// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoints
 	async function localFetch<T = any>(endpoint: string): Promise<T> {

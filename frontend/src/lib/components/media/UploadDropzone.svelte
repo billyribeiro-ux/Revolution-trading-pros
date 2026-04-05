@@ -175,7 +175,9 @@
 		justify-content: center;
 		text-align: center;
 		cursor: pointer;
-		transition: border-color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+		transition:
+			border-color var(--duration-fast) var(--ease-default),
+			background-color var(--duration-fast) var(--ease-default);
 
 		&:hover {
 			border-color: oklch(0.8 0.18 90);
@@ -240,7 +242,9 @@
 		gap: var(--space-3);
 		padding-block: var(--space-2);
 		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
-		&:last-child { border-block-end: none; }
+		&:last-child {
+			border-block-end: none;
+		}
 	}
 
 	.upload-item-info {
@@ -255,7 +259,9 @@
 		flex-shrink: 0;
 		color: oklch(0.7 0.18 160);
 
-		&:has(:global(.text-red-400)) { color: oklch(0.7 0.2 25); }
+		&:has(:global(.text-red-400)) {
+			color: oklch(0.7 0.2 25);
+		}
 	}
 
 	.upload-item-details {
@@ -306,8 +312,12 @@
 	.status-text {
 		font-size: var(--text-xs);
 		font-weight: var(--weight-medium);
-		&.success { color: oklch(0.7 0.18 160); }
-		&.error { color: oklch(0.7 0.2 25); }
+		&.success {
+			color: oklch(0.7 0.18 160);
+		}
+		&.error {
+			color: oklch(0.7 0.2 25);
+		}
 	}
 
 	.remove-btn {
@@ -316,7 +326,9 @@
 		border: none;
 		cursor: pointer;
 		transition: color var(--duration-fast) var(--ease-default);
-		&:hover { color: oklch(1 0 0); }
+		&:hover {
+			color: oklch(1 0 0);
+		}
 	}
 
 	.spinner-small {
@@ -328,5 +340,9 @@
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin { to { transform: rotate(360deg); } }
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 </style>

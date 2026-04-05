@@ -1,10 +1,23 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardTemplate } from '$lib/boards/types';
-	import { Icon, IconArrowLeft, IconBook, IconBriefcase, IconChartBar, IconCode, IconLayoutKanban, IconPlus, IconRocket, IconSearch, IconTemplate, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconBook,
+		IconBriefcase,
+		IconChartBar,
+		IconCode,
+		IconLayoutKanban,
+		IconPlus,
+		IconRocket,
+		IconSearch,
+		IconTemplate,
+		IconUsers
+	} from '$lib/icons';
 
 	// State
 	let templates = $state<BoardTemplate[]>([]);
@@ -275,7 +288,10 @@ import { logger } from '$lib/utils/logger';
 		<!-- Search and Filters -->
 		<div class="flex flex-col md:flex-row gap-4 mb-8">
 			<div class="flex-1 relative">
-				<Icon icon={IconSearch} class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+				<Icon
+					icon={IconSearch}
+					class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+				/>
 				<input
 					id="page-searchquery"
 					name="page-searchquery"

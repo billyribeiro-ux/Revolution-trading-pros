@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * EnterpriseChart Component
 	 * Wrapper for chart libraries with consistent styling

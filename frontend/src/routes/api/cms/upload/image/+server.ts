@@ -20,9 +20,9 @@ interface UploadResponse {
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const token =
-		request.headers.get('Authorization')?.replace('Bearer ', '') ||
-		(locals as any).accessToken;
-	if (!token) return json({ success: false, error: 'Unauthorized' } as UploadResponse, { status: 401 });
+		request.headers.get('Authorization')?.replace('Bearer ', '') || (locals as any).accessToken;
+	if (!token)
+		return json({ success: false, error: 'Unauthorized' } as UploadResponse, { status: 401 });
 	try {
 		const formData = await request.formData();
 		const file = formData.get('file') as File | null;
@@ -89,8 +89,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 // Also support DELETE for cleanup
 export const DELETE: RequestHandler = async ({ url, request, locals }) => {
 	const token =
-		request.headers.get('Authorization')?.replace('Bearer ', '') ||
-		(locals as any).accessToken;
+		request.headers.get('Authorization')?.replace('Bearer ', '') || (locals as any).accessToken;
 	if (!token) return json({ success: false, error: 'Unauthorized' }, { status: 401 });
 	try {
 		const filename = url.searchParams.get('filename');

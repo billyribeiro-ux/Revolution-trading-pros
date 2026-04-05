@@ -2,7 +2,16 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconActivity, IconAntenna, IconArrowUpRight, IconBolt, IconClock, IconTarget, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconAntenna,
+		IconArrowUpRight,
+		IconBolt,
+		IconClock,
+		IconTarget,
+		IconTrendingUp
+	} from '$lib/icons';
 	// --- Data Configuration ---
 	const signals = [
 		{
@@ -129,18 +138,11 @@
 			{/if}
 		</div>
 
-		<div
-			class="as-cards"
-			style="--x: {mouse.x}px; --y: {mouse.y}px;"
-		>
+		<div class="as-cards" style="--x: {mouse.x}px; --y: {mouse.y}px;">
 			{#each signals as item, i}
 				{@const iconStr = item.icon}
 				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 300 + i * 150 }}
-						class="as-card"
-						data-accent={item.accent}
-					>
+					<div in:heavySlide={{ delay: 300 + i * 150 }} class="as-card" data-accent={item.accent}>
 						<div
 							class="as-card-spotlight"
 							style="background: radial-gradient(600px circle at var(--x) var(--y), oklch(1 0 0 / 0.04), transparent 40%);"
@@ -151,11 +153,7 @@
 
 							<div class="as-chart-inner">
 								{#if item.type === 'intraday'}
-									<svg
-										class="as-chart-svg"
-										viewBox="0 0 300 100"
-										preserveAspectRatio="none"
-									>
+									<svg class="as-chart-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
 										<defs>
 											<linearGradient id="grad-spx" x1="0%" y1="0%" x2="100%" y2="0%">
 												<stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1" />
@@ -201,11 +199,7 @@
 										>
 									</svg>
 								{:else}
-									<svg
-										class="as-chart-svg"
-										viewBox="0 0 300 100"
-										preserveAspectRatio="none"
-									>
+									<svg class="as-chart-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
 										<defs>
 											<linearGradient id="grad-swing" x1="0%" y1="0%" x2="100%" y2="0%">
 												<stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1" />
@@ -320,8 +314,13 @@
 		overflow: hidden;
 		border-block-start: 1px solid oklch(0.2 0.005 285);
 
-		@media (min-width: 640px) { padding-inline: 1.5rem; }
-		@media (min-width: 1024px) { padding-block: 8rem; padding-inline: 2rem; }
+		@media (min-width: 640px) {
+			padding-inline: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			padding-block: 8rem;
+			padding-inline: 2rem;
+		}
 	}
 
 	/* ─── Grid Background ─── */
@@ -382,7 +381,9 @@
 		letter-spacing: -0.02em;
 	}
 
-	.as-title-muted { color: oklch(0.35 0.01 265); }
+	.as-title-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.as-subtitle {
 		font-size: var(--text-lg);
@@ -400,7 +401,9 @@
 		max-inline-size: 70rem;
 		margin-inline: auto;
 
-		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	/* ─── Card ─── */
@@ -412,8 +415,12 @@
 		overflow: hidden;
 		transition: border-color 500ms;
 
-		&:hover { border-color: oklch(0.4 0.005 285); }
-		&:hover .as-metric-cell { background-color: oklch(0.15 0.005 285); }
+		&:hover {
+			border-color: oklch(0.4 0.005 285);
+		}
+		&:hover .as-metric-cell {
+			background-color: oklch(0.15 0.005 285);
+		}
 	}
 
 	.as-card-spotlight {
@@ -425,7 +432,9 @@
 		pointer-events: none;
 	}
 
-	.as-cards:hover .as-card-spotlight { opacity: 1; }
+	.as-cards:hover .as-card-spotlight {
+		opacity: 1;
+	}
 
 	/* ─── Chart Area ─── */
 	.as-chart-area {
@@ -479,7 +488,11 @@
 		margin-block-end: 1.5rem;
 	}
 
-	.as-card-info { display: flex; align-items: center; gap: 0.75rem; }
+	.as-card-info {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
 
 	.as-icon-box {
 		padding: 0.5rem;
@@ -488,12 +501,25 @@
 		border: 1px solid oklch(0.3 0.005 285);
 	}
 
-	.as-card[data-accent='amber'] .as-icon-box { color: oklch(0.75 0.15 85); }
-	.as-card[data-accent='orange'] .as-icon-box { color: oklch(0.7 0.16 55); }
+	.as-card[data-accent='amber'] .as-icon-box {
+		color: oklch(0.75 0.15 85);
+	}
+	.as-card[data-accent='orange'] .as-icon-box {
+		color: oklch(0.7 0.16 55);
+	}
 
-	.as-card-title { font-size: var(--text-xl); font-weight: var(--weight-medium); color: oklch(1 0 0); }
+	.as-card-title {
+		font-size: var(--text-xl);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+	}
 
-	.as-badge-row { display: flex; align-items: center; gap: 0.5rem; margin-block-start: 0.25rem; }
+	.as-badge-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-block-start: 0.25rem;
+	}
 
 	.as-pulse-dot {
 		inline-size: 0.375rem;
@@ -502,8 +528,12 @@
 		animation: pulse 1s ease-in-out infinite;
 	}
 
-	.as-card[data-accent='amber'] .as-pulse-dot { background-color: oklch(0.75 0.15 85); }
-	.as-card[data-accent='orange'] .as-pulse-dot { background-color: oklch(0.7 0.16 55); }
+	.as-card[data-accent='amber'] .as-pulse-dot {
+		background-color: oklch(0.75 0.15 85);
+	}
+	.as-card[data-accent='orange'] .as-pulse-dot {
+		background-color: oklch(0.7 0.16 55);
+	}
 
 	.as-badge-label {
 		font-size: 0.625rem;
@@ -512,12 +542,25 @@
 		letter-spacing: 0.05em;
 	}
 
-	.as-card[data-accent='amber'] .as-badge-label { color: oklch(0.75 0.15 85 / 0.8); }
-	.as-card[data-accent='orange'] .as-badge-label { color: oklch(0.7 0.16 55 / 0.8); }
+	.as-card[data-accent='amber'] .as-badge-label {
+		color: oklch(0.75 0.15 85 / 0.8);
+	}
+	.as-card[data-accent='orange'] .as-badge-label {
+		color: oklch(0.7 0.16 55 / 0.8);
+	}
 
-	.as-price-col { text-align: end; }
-	.as-price { font-size: var(--text-lg); font-weight: var(--weight-medium); color: oklch(1 0 0); }
-	.as-price-sub { font-size: var(--text-xs); color: oklch(0.45 0.005 285); }
+	.as-price-col {
+		text-align: end;
+	}
+	.as-price {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-medium);
+		color: oklch(1 0 0);
+	}
+	.as-price-sub {
+		font-size: var(--text-xs);
+		color: oklch(0.45 0.005 285);
+	}
 
 	.as-desc {
 		font-size: var(--text-sm);
@@ -554,7 +597,11 @@
 		margin-block-end: 0.25rem;
 	}
 
-	.as-metric-value { font-size: var(--text-sm); font-weight: var(--weight-medium); color: oklch(0.8 0.01 265); }
+	.as-metric-value {
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: oklch(0.8 0.01 265);
+	}
 
 	/* ─── CTA Link ─── */
 	.as-cta-link {
@@ -571,10 +618,15 @@
 		font-size: var(--text-sm);
 		font-weight: var(--weight-medium);
 		color: oklch(0.8 0.01 265);
-		transition: color 300ms, border-color 300ms, background-color 300ms;
+		transition:
+			color 300ms,
+			border-color 300ms,
+			background-color 300ms;
 		text-decoration: none;
 
-		&:hover { color: oklch(1 0 0); }
+		&:hover {
+			color: oklch(1 0 0);
+		}
 	}
 
 	.as-card[data-accent='amber'] .as-cta-link:hover {
@@ -586,12 +638,28 @@
 		background-color: oklch(0.7 0.16 55 / 0.1);
 	}
 
-	.as-cta-start { display: flex; align-items: center; gap: 0.5rem; }
-	:global(.as-cta-icon) { color: oklch(0.75 0.15 85); }
-	.as-card[data-accent='orange'] :global(.as-cta-icon) { color: oklch(0.7 0.16 55); }
+	.as-cta-start {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	:global(.as-cta-icon) {
+		color: oklch(0.75 0.15 85);
+	}
+	.as-card[data-accent='orange'] :global(.as-cta-icon) {
+		color: oklch(0.7 0.16 55);
+	}
 
-	:global(.as-cta-arrow) { color: oklch(0.45 0.005 285); transition: transform 300ms, color 300ms; }
-	.as-cta-link:hover :global(.as-cta-arrow) { transform: translate(2px, -2px); color: oklch(1 0 0); }
+	:global(.as-cta-arrow) {
+		color: oklch(0.45 0.005 285);
+		transition:
+			transform 300ms,
+			color 300ms;
+	}
+	.as-cta-link:hover :global(.as-cta-arrow) {
+		transform: translate(2px, -2px);
+		color: oklch(1 0 0);
+	}
 
 	/* ─── Footer ─── */
 	.as-footer {
@@ -610,7 +678,11 @@
 		font-family: var(--font-mono, monospace);
 	}
 
-	.as-footer-item { display: flex; align-items: center; gap: 0.5rem; }
+	.as-footer-item {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 
 	.as-footer-sep {
 		inline-size: 1px;
@@ -618,12 +690,19 @@
 		background-color: oklch(0.3 0.005 285);
 		display: none;
 
-		@media (min-width: 640px) { display: inline; }
+		@media (min-width: 640px) {
+			display: inline;
+		}
 	}
 
 	/* ─── Keyframes ─── */
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.4; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.4;
+		}
 	}
 </style>

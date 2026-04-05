@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { Camera, FileXls as FileSpreadsheet, Link as Link2, Code as Code2, CaretDown as ChevronDown } from 'phosphor-svelte';
+	import {
+		Camera,
+		FileXls as FileSpreadsheet,
+		Link as Link2,
+		Code as Code2,
+		CaretDown as ChevronDown
+	} from 'phosphor-svelte';
 	import gsap from 'gsap';
 
 	interface Props {

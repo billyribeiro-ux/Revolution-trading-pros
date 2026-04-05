@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';

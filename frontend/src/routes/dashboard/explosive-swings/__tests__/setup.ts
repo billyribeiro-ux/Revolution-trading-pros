@@ -257,16 +257,31 @@ vi.mock('$lib/observability', () => ({
 	trackConversion: vi.fn(),
 	overrideExperiment: vi.fn(),
 	clearOverrides: vi.fn(),
-	experimentAssignments: { subscribe: vi.fn((fn: (v: unknown) => void) => { fn({}); return () => {}; }) },
+	experimentAssignments: {
+		subscribe: vi.fn((fn: (v: unknown) => void) => {
+			fn({});
+			return () => {};
+		})
+	},
 	EXPERIMENTS: {},
 	FEATURE_FLAGS: {},
 	logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 	track: vi.fn(),
 	trackEvent: vi.fn(),
 	trackPageView: vi.fn(),
-	metrics: { track: vi.fn(), trackPageView: vi.fn(), identify: vi.fn(), initialize: vi.fn(() => Promise.resolve()) },
+	metrics: {
+		track: vi.fn(),
+		trackPageView: vi.fn(),
+		identify: vi.fn(),
+		initialize: vi.fn(() => Promise.resolve())
+	},
 	Events: new Proxy({}, { get: () => 'mock_event' }),
-	getOrchestrator: vi.fn(() => ({ updateConsent: vi.fn(), metrics: {}, flush: vi.fn(() => Promise.resolve()), destroy: vi.fn() })),
+	getOrchestrator: vi.fn(() => ({
+		updateConsent: vi.fn(),
+		metrics: {},
+		flush: vi.fn(() => Promise.resolve()),
+		destroy: vi.fn()
+	})),
 	createOrchestrator: vi.fn(),
 	resetOrchestrator: vi.fn(),
 	initializeAnalytics: vi.fn(() => Promise.resolve()),
@@ -282,7 +297,12 @@ vi.mock('$lib/observability/experiments', () => ({
 	trackConversion: vi.fn(),
 	overrideExperiment: vi.fn(),
 	clearOverrides: vi.fn(),
-	experimentAssignments: { subscribe: vi.fn((fn: (v: unknown) => void) => { fn({}); return () => {}; }) },
+	experimentAssignments: {
+		subscribe: vi.fn((fn: (v: unknown) => void) => {
+			fn({});
+			return () => {};
+		})
+	},
 	EXPERIMENTS: {},
 	FEATURE_FLAGS: {}
 }));

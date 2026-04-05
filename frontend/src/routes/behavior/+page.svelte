@@ -3,11 +3,19 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
 	import { behaviorAPI } from '$lib/api/behavior';
-	import { Icon, IconAlertTriangle, IconBrain, IconChartBar, IconTarget, IconTrendingUp, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconBrain,
+		IconChartBar,
+		IconTarget,
+		IconTrendingUp,
+		IconUsers
+	} from '$lib/icons';
 
 	let selectedPeriod = $state('7d');
 
@@ -212,11 +220,18 @@ import { logger } from '$lib/utils/logger';
 
 <style>
 	.behavior-dashboard {
-		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		background: linear-gradient(
+			to bottom right,
+			oklch(0.13 0.02 260),
+			oklch(0.2 0.02 250),
+			oklch(0.13 0.02 260)
+		);
 		padding: var(--space-6);
 	}
 
-	.dashboard-header { margin-block-end: var(--space-8); }
+	.dashboard-header {
+		margin-block-end: var(--space-8);
+	}
 
 	.header-content {
 		display: flex;
@@ -244,7 +259,10 @@ import { logger } from '$lib/utils/logger';
 		margin-block-start: var(--space-1);
 	}
 
-	.period-selector { display: flex; gap: var(--space-2); }
+	.period-selector {
+		display: flex;
+		gap: var(--space-2);
+	}
 
 	.period-btn {
 		padding-inline: var(--space-4);
@@ -257,8 +275,15 @@ import { logger } from '$lib/utils/logger';
 		cursor: pointer;
 		transition: all var(--duration-fast) var(--ease-default);
 
-		&:hover { background-color: oklch(0.38 0.01 250 / 50%); color: oklch(1 0 0); }
-		&.active { background-color: oklch(0.55 0.2 300 / 20%); color: oklch(0.7 0.18 300); border-color: oklch(0.55 0.2 300 / 50%); }
+		&:hover {
+			background-color: oklch(0.38 0.01 250 / 50%);
+			color: oklch(1 0 0);
+		}
+		&.active {
+			background-color: oklch(0.55 0.2 300 / 20%);
+			color: oklch(0.7 0.18 300);
+			border-color: oklch(0.55 0.2 300 / 50%);
+		}
 	}
 
 	.loading-state {
@@ -269,7 +294,10 @@ import { logger } from '$lib/utils/logger';
 		padding-block: 5rem;
 	}
 
-	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
+	.loading-text {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
+	}
 
 	.spinner {
 		inline-size: 3rem;
@@ -280,15 +308,23 @@ import { logger } from '$lib/utils/logger';
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin { to { transform: rotate(360deg); } }
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 	.kpi-grid {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-4);
 		margin-block-end: var(--space-8);
-		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
-		@media (min-width: 1024px) { grid-template-columns: repeat(5, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(5, 1fr);
+		}
 	}
 
 	.kpi-card {
@@ -300,7 +336,10 @@ import { logger } from '$lib/utils/logger';
 		align-items: center;
 		gap: var(--space-4);
 
-		&[data-variant='critical'] { border-color: oklch(0.55 0.22 25 / 30%); background-color: oklch(0.55 0.22 25 / 5%); }
+		&[data-variant='critical'] {
+			border-color: oklch(0.55 0.22 25 / 30%);
+			background-color: oklch(0.55 0.22 25 / 5%);
+		}
 	}
 
 	.kpi-icon {
@@ -311,14 +350,31 @@ import { logger } from '$lib/utils/logger';
 		align-items: center;
 		justify-content: center;
 
-		&[data-color='blue'] { background-color: oklch(0.6 0.2 260 / 20%); color: oklch(0.7 0.18 260); }
-		&[data-color='green'] { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.7 0.18 160); }
-		&[data-color='yellow'] { background-color: oklch(0.8 0.18 90 / 20%); color: oklch(0.8 0.18 90); }
-		&[data-color='orange'] { background-color: oklch(0.7 0.18 55 / 20%); color: oklch(0.75 0.16 55); }
-		&[data-color='red'] { background-color: oklch(0.55 0.22 25 / 20%); color: oklch(0.7 0.2 25); }
+		&[data-color='blue'] {
+			background-color: oklch(0.6 0.2 260 / 20%);
+			color: oklch(0.7 0.18 260);
+		}
+		&[data-color='green'] {
+			background-color: oklch(0.6 0.18 160 / 20%);
+			color: oklch(0.7 0.18 160);
+		}
+		&[data-color='yellow'] {
+			background-color: oklch(0.8 0.18 90 / 20%);
+			color: oklch(0.8 0.18 90);
+		}
+		&[data-color='orange'] {
+			background-color: oklch(0.7 0.18 55 / 20%);
+			color: oklch(0.75 0.16 55);
+		}
+		&[data-color='red'] {
+			background-color: oklch(0.55 0.22 25 / 20%);
+			color: oklch(0.7 0.2 25);
+		}
 	}
 
-	.kpi-content { flex: 1; }
+	.kpi-content {
+		flex: 1;
+	}
 
 	.kpi-label {
 		font-size: var(--text-sm);
@@ -340,7 +396,9 @@ import { logger } from '$lib/utils/logger';
 		margin-block-end: var(--space-8);
 	}
 
-	.section-header { margin-block-end: var(--space-6); }
+	.section-header {
+		margin-block-end: var(--space-6);
+	}
 
 	.section-title {
 		font-size: var(--text-2xl);
@@ -389,7 +447,9 @@ import { logger } from '$lib/utils/logger';
 		font-size: var(--text-sm);
 	}
 
-	.friction-count { color: oklch(0.65 0.01 250); }
+	.friction-count {
+		color: oklch(0.65 0.01 250);
+	}
 
 	.badge {
 		padding-inline: var(--space-2);
@@ -436,7 +496,9 @@ import { logger } from '$lib/utils/logger';
 		background: linear-gradient(to top, oklch(0.55 0.2 300), oklch(0.65 0.18 300));
 		border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 		transition: background var(--duration-fast) var(--ease-default);
-		&:hover { background: linear-gradient(to top, oklch(0.65 0.18 300), oklch(0.75 0.16 300)); }
+		&:hover {
+			background: linear-gradient(to top, oklch(0.65 0.18 300), oklch(0.75 0.16 300));
+		}
 	}
 
 	.bar-label {

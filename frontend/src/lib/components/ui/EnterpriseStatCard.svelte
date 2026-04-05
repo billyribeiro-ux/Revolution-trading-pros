@@ -136,7 +136,11 @@
 			{/if}
 
 			{#if trend !== null}
-				<div class="stat-trend" data-positive={trendIsPositive || undefined} data-negative={!trendIsPositive || undefined}>
+				<div
+					class="stat-trend"
+					data-positive={trendIsPositive || undefined}
+					data-negative={!trendIsPositive || undefined}
+				>
 					<span class="stat-trend-arrow">{trendIsPositive ? '↑' : '↓'}</span>
 					<span>{Math.abs(trend).toFixed(1)}%</span>
 				</div>
@@ -220,7 +224,9 @@
 			transform: translateY(0) scale(1);
 		}
 
-		&:hover { transform: translateY(-2px); }
+		&:hover {
+			transform: translateY(-2px);
+		}
 
 		&[data-clickable] {
 			cursor: pointer;
@@ -232,49 +238,77 @@
 
 		/* Color variants */
 		&[data-color='blue'] {
-			background: linear-gradient(to bottom right, oklch(0.55 0.2 260 / 20%), oklch(0.5 0.2 260 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.55 0.2 260 / 20%),
+				oklch(0.5 0.2 260 / 10%)
+			);
 			border-color: oklch(0.55 0.2 260 / 30%);
 			--_accent: oklch(0.7 0.18 260);
 			--_accent-bg: oklch(0.55 0.2 260 / 20%);
 			--_gradient: linear-gradient(to right, oklch(0.55 0.2 260), oklch(0.5 0.2 260));
 		}
 		&[data-color='green'] {
-			background: linear-gradient(to bottom right, oklch(0.6 0.18 160 / 20%), oklch(0.55 0.18 160 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.6 0.18 160 / 20%),
+				oklch(0.55 0.18 160 / 10%)
+			);
 			border-color: oklch(0.6 0.18 160 / 30%);
 			--_accent: oklch(0.7 0.18 160);
 			--_accent-bg: oklch(0.6 0.18 160 / 20%);
 			--_gradient: linear-gradient(to right, oklch(0.6 0.18 160), oklch(0.55 0.18 160));
 		}
 		&[data-color='purple'] {
-			background: linear-gradient(to bottom right, oklch(0.55 0.2 300 / 20%), oklch(0.5 0.2 300 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.55 0.2 300 / 20%),
+				oklch(0.5 0.2 300 / 10%)
+			);
 			border-color: oklch(0.55 0.2 300 / 30%);
 			--_accent: oklch(0.7 0.18 300);
 			--_accent-bg: oklch(0.55 0.2 300 / 20%);
 			--_gradient: linear-gradient(to right, oklch(0.55 0.2 300), oklch(0.5 0.2 300));
 		}
 		&[data-color='orange'] {
-			background: linear-gradient(to bottom right, oklch(0.65 0.2 55 / 20%), oklch(0.6 0.2 55 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.65 0.2 55 / 20%),
+				oklch(0.6 0.2 55 / 10%)
+			);
 			border-color: oklch(0.65 0.2 55 / 30%);
 			--_accent: oklch(0.75 0.18 55);
 			--_accent-bg: oklch(0.65 0.2 55 / 20%);
 			--_gradient: linear-gradient(to right, oklch(0.65 0.2 55), oklch(0.6 0.2 55));
 		}
 		&[data-color='pink'] {
-			background: linear-gradient(to bottom right, oklch(0.6 0.2 350 / 20%), oklch(0.55 0.2 350 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.6 0.2 350 / 20%),
+				oklch(0.55 0.2 350 / 10%)
+			);
 			border-color: oklch(0.6 0.2 350 / 30%);
 			--_accent: oklch(0.72 0.18 350);
 			--_accent-bg: oklch(0.6 0.2 350 / 20%);
 			--_gradient: linear-gradient(to right, oklch(0.6 0.2 350), oklch(0.55 0.2 350));
 		}
 		&[data-color='cyan'] {
-			background: linear-gradient(to bottom right, oklch(0.65 0.15 195 / 20%), oklch(0.6 0.15 195 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.65 0.15 195 / 20%),
+				oklch(0.6 0.15 195 / 10%)
+			);
 			border-color: oklch(0.65 0.15 195 / 30%);
 			--_accent: oklch(0.75 0.13 195);
 			--_accent-bg: oklch(0.65 0.15 195 / 20%);
 			--_gradient: linear-gradient(to right, oklch(0.65 0.15 195), oklch(0.6 0.15 195));
 		}
 		&[data-color='red'] {
-			background: linear-gradient(to bottom right, oklch(0.55 0.22 25 / 20%), oklch(0.5 0.22 25 / 10%));
+			background: linear-gradient(
+				to bottom right,
+				oklch(0.55 0.22 25 / 20%),
+				oklch(0.5 0.22 25 / 10%)
+			);
 			border-color: oklch(0.55 0.22 25 / 30%);
 			--_accent: oklch(0.7 0.2 25);
 			--_accent-bg: oklch(0.55 0.22 25 / 20%);
@@ -392,7 +426,11 @@
 	}
 
 	@keyframes esc-icon-pop {
-		0% { transform: scale(0) rotate(-180deg); }
-		100% { transform: scale(1) rotate(0); }
+		0% {
+			transform: scale(0) rotate(-180deg);
+		}
+		100% {
+			transform: scale(1) rotate(0);
+		}
 	}
 </style>

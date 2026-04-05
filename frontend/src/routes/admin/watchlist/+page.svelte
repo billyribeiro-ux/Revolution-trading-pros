@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Content Management
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -27,7 +27,19 @@ import { logger } from '$lib/utils/logger';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
-	import { Icon, IconCalendar, IconCheck, IconDots, IconEdit, IconEye, IconPlus, IconSearch, IconTrash, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCalendar,
+		IconCheck,
+		IconDots,
+		IconEdit,
+		IconEye,
+		IconPlus,
+		IconSearch,
+		IconTrash,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════

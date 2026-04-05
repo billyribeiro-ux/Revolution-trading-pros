@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Campaigns - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -32,7 +32,25 @@ import { logger } from '$lib/utils/logger';
 		type Campaign as APICampaign,
 		type CampaignStats
 	} from '$lib/api/campaigns';
-	import { Icon, IconArrowLeft, IconCalendar, IconChartBar, IconCheck, IconClock, IconCopy, IconEdit, IconEye, IconMail, IconPlus, IconRefresh, IconSend, IconTrash, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCopy,
+		IconEdit,
+		IconEye,
+		IconMail,
+		IconPlus,
+		IconRefresh,
+		IconSend,
+		IconTrash,
+		IconTrendingUp,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types

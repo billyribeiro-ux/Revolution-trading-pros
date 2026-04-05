@@ -33,14 +33,8 @@
 	<!-- Grid skeleton for gallery views -->
 	<div class="skel-grid {className}" style="--columns: {columns};">
 		{#each Array(count) as _, i (i)}
-			<div
-				class="skel-card"
-				style="animation-delay: {i * 0.05}s;"
-			>
-				<div
-					class="skel-image"
-					style="aspect-ratio: {aspectRatio};"
-				>
+			<div class="skel-card" style="animation-delay: {i * 0.05}s;">
+				<div class="skel-image" style="aspect-ratio: {aspectRatio};">
 					<div class="skeleton-shimmer"></div>
 				</div>
 				{#if showText}
@@ -55,10 +49,7 @@
 {:else if type === 'card'}
 	<!-- Single card skeleton -->
 	<div class="skel-card skel-card-large {className}">
-		<div
-			class="skel-image"
-			style="aspect-ratio: {aspectRatio};"
-		>
+		<div class="skel-image" style="aspect-ratio: {aspectRatio};">
 			<div class="skeleton-shimmer"></div>
 		</div>
 		{#if showText}
@@ -77,10 +68,7 @@
 	<!-- List/table skeleton -->
 	<div class="skel-list {className}">
 		{#each Array(count) as _, i (i)}
-			<div
-				class="skel-row"
-				style="animation-delay: {i * 0.05}s;"
-			>
+			<div class="skel-row" style="animation-delay: {i * 0.05}s;">
 				<div class="skel-checkbox"></div>
 				<div class="skel-thumb">
 					<div class="skeleton-shimmer"></div>
@@ -105,10 +93,7 @@
 			</div>
 		</div>
 		{#each Array(count) as _, i (i)}
-			<div
-				class="skel-upload-item"
-				style="animation-delay: {i * 0.1}s;"
-			>
+			<div class="skel-upload-item" style="animation-delay: {i * 0.1}s;">
 				<div class="skel-thumb">
 					<div class="skeleton-shimmer"></div>
 				</div>
@@ -124,18 +109,10 @@
 	</div>
 {:else if type === 'single'}
 	<!-- Single image skeleton -->
-	<div
-		class="skel-single {className}"
-		style="aspect-ratio: {aspectRatio};"
-	>
+	<div class="skel-single {className}" style="aspect-ratio: {aspectRatio};">
 		<div class="skeleton-shimmer"></div>
 		<div class="skel-single-icon">
-			<svg
-				class="skel-svg-icon"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
+			<svg class="skel-svg-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
 					stroke-linecap="round"
 					stroke-linejoin="round"
@@ -152,23 +129,27 @@
 	.skeleton-shimmer {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			oklch(1 0 0 / 40%) 50%,
-			transparent 100%
-		);
+		background: linear-gradient(90deg, transparent 0%, oklch(1 0 0 / 40%) 50%, transparent 100%);
 		animation: shimmer 1.5s infinite;
 	}
 
 	@keyframes shimmer {
-		0% { transform: translateX(-100%); }
-		100% { transform: translateX(100%); }
+		0% {
+			transform: translateX(-100%);
+		}
+		100% {
+			transform: translateX(100%);
+		}
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
 	}
 
 	/* Shared bone style */
@@ -177,8 +158,12 @@
 		background-color: oklch(0.9 0.005 265);
 		border-radius: var(--radius-sm);
 
-		&.skel-line-sm { block-size: 0.75rem; }
-		&.skel-line-lg { block-size: 1.5rem; }
+		&.skel-line-sm {
+			block-size: 0.75rem;
+		}
+		&.skel-line-lg {
+			block-size: 1.5rem;
+		}
 	}
 
 	.skel-image {
@@ -193,8 +178,12 @@
 		grid-template-columns: repeat(var(--columns), 1fr);
 		gap: var(--space-4);
 
-		@media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
-		@media (max-width: 480px) { grid-template-columns: 1fr; }
+		@media (max-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (max-width: 480px) {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.skel-card {
@@ -204,7 +193,9 @@
 		animation: pulse 2s ease-in-out infinite;
 	}
 
-	.skel-card-large { border-radius: var(--radius-xl); }
+	.skel-card-large {
+		border-radius: var(--radius-xl);
+	}
 
 	.skel-text-group {
 		padding: var(--space-3);
@@ -303,7 +294,9 @@
 		border-block-end: 1px solid oklch(0.9 0.005 265);
 		animation: pulse 2s ease-in-out infinite;
 
-		&:last-child { border-block-end: none; }
+		&:last-child {
+			border-block-end: none;
+		}
 	}
 
 	.skel-circle {

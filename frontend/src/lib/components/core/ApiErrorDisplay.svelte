@@ -16,7 +16,14 @@
 		getValidationErrors
 	} from '$lib/api/enterprise/errors';
 	import type { EnterpriseApiError, ErrorSeverity } from '$lib/api/enterprise/types';
-	import { Icon, IconAlertCircle, IconAlertTriangle, IconInfoCircle, IconRefresh, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconAlertTriangle,
+		IconInfoCircle,
+		IconRefresh,
+		IconX
+	} from '$lib/icons';
 
 	// Props
 	interface Props {

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * IndicatorsSection - Apple/Netflix Cinematic Design
 	 * Mobile-First + GSAP Animations Fixed
@@ -14,7 +14,15 @@ import { logger } from '$lib/utils/logger';
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { cubicOut, backOut } from 'svelte/easing';
-	import { Icon, IconActivity, IconArrowRight, IconBolt, IconChartLine, IconSparkles, IconWaveSine } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowRight,
+		IconBolt,
+		IconChartLine,
+		IconSparkles,
+		IconWaveSine
+	} from '$lib/icons';
 	// ============================================================================
 	// INDICATOR DATA
 	// ============================================================================
@@ -390,10 +398,7 @@ import { logger } from '$lib/utils/logger';
 	}
 </script>
 
-<section
-	bind:this={sectionRef}
-	class="is-section"
->
+<section bind:this={sectionRef} class="is-section">
 	<div class="is-bg">
 		<div class="is-orb is-orb-blue"></div>
 		<div class="is-orb is-orb-violet" style="animation-delay: 1s;"></div>
@@ -403,10 +408,7 @@ import { logger } from '$lib/utils/logger';
 
 	<div class="is-container">
 		{#if isVisible}
-			<div
-				class="is-header"
-				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
-			>
+			<div class="is-header" in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}>
 				<div class="is-badge">
 					<Icon icon={IconSparkles} size={14} />
 					Technical Edge
@@ -449,10 +451,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 
 						<div bind:this={chartRef} class="is-chart-canvas-wrap">
-							<canvas
-								bind:this={canvasRef}
-								class="is-canvas"
-								style="width: 100%; height: 100%;"
+							<canvas bind:this={canvasRef} class="is-canvas" style="width: 100%; height: 100%;"
 							></canvas>
 
 							<div class="is-indicator-label">
@@ -527,14 +526,27 @@ import { logger } from '$lib/utils/logger';
 		position: relative;
 		padding-block: 4rem;
 		overflow: hidden;
-		background: linear-gradient(to bottom, oklch(0.12 0.005 285), oklch(0.15 0.005 285), oklch(0.12 0.005 285));
+		background: linear-gradient(
+			to bottom,
+			oklch(0.12 0.005 285),
+			oklch(0.15 0.005 285),
+			oklch(0.12 0.005 285)
+		);
 
-		@media (min-width: 640px) { padding-block: 6rem; }
-		@media (min-width: 1024px) { padding-block: 8rem; }
+		@media (min-width: 640px) {
+			padding-block: 6rem;
+		}
+		@media (min-width: 1024px) {
+			padding-block: 8rem;
+		}
 	}
 
 	/* ─── Background ─── */
-	.is-bg { position: absolute; inset: 0; pointer-events: none; }
+	.is-bg {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
 
 	.is-orb {
 		position: absolute;
@@ -550,7 +562,12 @@ import { logger } from '$lib/utils/logger';
 		background-color: oklch(0.6 0.18 260 / 0.1);
 		filter: blur(80px);
 
-		@media (min-width: 640px) { inset-inline-start: -8rem; inline-size: 24rem; block-size: 24rem; filter: blur(128px); }
+		@media (min-width: 640px) {
+			inset-inline-start: -8rem;
+			inline-size: 24rem;
+			block-size: 24rem;
+			filter: blur(128px);
+		}
 	}
 
 	.is-orb-violet {
@@ -561,7 +578,12 @@ import { logger } from '$lib/utils/logger';
 		background-color: oklch(0.55 0.2 300 / 0.1);
 		filter: blur(80px);
 
-		@media (min-width: 640px) { inset-inline-end: -8rem; inline-size: 24rem; block-size: 24rem; filter: blur(128px); }
+		@media (min-width: 640px) {
+			inset-inline-end: -8rem;
+			inline-size: 24rem;
+			block-size: 24rem;
+			filter: blur(128px);
+		}
 	}
 
 	.is-grid-lines {
@@ -572,7 +594,9 @@ import { logger } from '$lib/utils/logger';
 			linear-gradient(90deg, oklch(1 0 0 / 0.02) 1px, transparent 1px);
 		background-size: 2rem 2rem;
 
-		@media (min-width: 640px) { background-size: 4rem 4rem; }
+		@media (min-width: 640px) {
+			background-size: 4rem 4rem;
+		}
 	}
 
 	.is-radial-fade {
@@ -588,8 +612,12 @@ import { logger } from '$lib/utils/logger';
 		margin-inline: auto;
 		padding-inline: 1rem;
 
-		@media (min-width: 640px) { padding-inline: 1.5rem; }
-		@media (min-width: 1024px) { padding-inline: 2rem; }
+		@media (min-width: 640px) {
+			padding-inline: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			padding-inline: 2rem;
+		}
 	}
 
 	.is-header {
@@ -624,7 +652,9 @@ import { logger } from '$lib/utils/logger';
 		letter-spacing: -0.02em;
 	}
 
-	.is-title-muted { color: oklch(0.35 0.01 265); }
+	.is-title-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.is-subtitle {
 		font-size: var(--text-lg);
@@ -642,7 +672,10 @@ import { logger } from '$lib/utils/logger';
 		gap: 2rem;
 		align-items: center;
 
-		@media (min-width: 1024px) { grid-template-columns: repeat(2, 1fr); gap: 4rem; }
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 4rem;
+		}
 	}
 
 	/* ─── Chart Column ─── */
@@ -650,7 +683,9 @@ import { logger } from '$lib/utils/logger';
 		position: relative;
 		order: 2;
 
-		@media (min-width: 1024px) { order: 1; }
+		@media (min-width: 1024px) {
+			order: 1;
+		}
 	}
 
 	.is-chart-frame {
@@ -662,7 +697,9 @@ import { logger } from '$lib/utils/logger';
 		border: 1px solid oklch(0.3 0.005 285 / 0.5);
 		box-shadow: 0 25px 50px oklch(0 0 0 / 0.25);
 
-		@media (min-width: 640px) { border-radius: 1rem; }
+		@media (min-width: 640px) {
+			border-radius: 1rem;
+		}
 	}
 
 	.is-chart-header {
@@ -673,32 +710,66 @@ import { logger } from '$lib/utils/logger';
 		padding-block: 0.75rem;
 		border-block-end: 1px solid oklch(0.3 0.005 285 / 0.5);
 
-		@media (min-width: 640px) { padding-inline: 1.5rem; padding-block: 1rem; }
+		@media (min-width: 640px) {
+			padding-inline: 1.5rem;
+			padding-block: 1rem;
+		}
 	}
 
-	.is-chart-header-left { display: flex; align-items: center; gap: 0.5rem; @media (min-width: 640px) { gap: 0.75rem; } }
-	.is-chart-header-right { display: flex; align-items: center; gap: 0.375rem; @media (min-width: 640px) { gap: 0.5rem; } }
+	.is-chart-header-left {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		@media (min-width: 640px) {
+			gap: 0.75rem;
+		}
+	}
+	.is-chart-header-right {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		@media (min-width: 640px) {
+			gap: 0.5rem;
+		}
+	}
 
-	.is-dots { display: flex; gap: 0.25rem; @media (min-width: 640px) { gap: 0.375rem; } }
+	.is-dots {
+		display: flex;
+		gap: 0.25rem;
+		@media (min-width: 640px) {
+			gap: 0.375rem;
+		}
+	}
 
 	.is-dot {
 		inline-size: 0.625rem;
 		block-size: 0.625rem;
 		border-radius: 50%;
 
-		@media (min-width: 640px) { inline-size: 0.75rem; block-size: 0.75rem; }
+		@media (min-width: 640px) {
+			inline-size: 0.75rem;
+			block-size: 0.75rem;
+		}
 	}
 
-	.is-dot-red { background-color: oklch(0.6 0.2 25 / 0.8); }
-	.is-dot-yellow { background-color: oklch(0.8 0.15 85 / 0.8); }
-	.is-dot-green { background-color: oklch(0.7 0.17 160 / 0.8); }
+	.is-dot-red {
+		background-color: oklch(0.6 0.2 25 / 0.8);
+	}
+	.is-dot-yellow {
+		background-color: oklch(0.8 0.15 85 / 0.8);
+	}
+	.is-dot-green {
+		background-color: oklch(0.7 0.17 160 / 0.8);
+	}
 
 	.is-chart-label {
 		font-size: var(--text-xs);
 		font-family: var(--font-mono, monospace);
 		color: oklch(0.55 0.01 265);
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.is-chart-pct {
@@ -706,7 +777,9 @@ import { logger } from '$lib/utils/logger';
 		font-family: var(--font-mono, monospace);
 		color: oklch(0.7 0.17 160);
 
-		@media (min-width: 640px) { font-size: var(--text-xs); }
+		@media (min-width: 640px) {
+			font-size: var(--text-xs);
+		}
 	}
 
 	.is-live-dot {
@@ -716,7 +789,10 @@ import { logger } from '$lib/utils/logger';
 		background-color: oklch(0.7 0.17 160);
 		animation: orb-pulse 2s ease-in-out infinite;
 
-		@media (min-width: 640px) { inline-size: 0.5rem; block-size: 0.5rem; }
+		@media (min-width: 640px) {
+			inline-size: 0.5rem;
+			block-size: 0.5rem;
+		}
 	}
 
 	/* ─── Chart Canvas ─── */
@@ -724,11 +800,20 @@ import { logger } from '$lib/utils/logger';
 		position: relative;
 		block-size: 14rem;
 
-		@media (min-width: 640px) { block-size: 18rem; }
-		@media (min-width: 1024px) { block-size: 20rem; }
+		@media (min-width: 640px) {
+			block-size: 18rem;
+		}
+		@media (min-width: 1024px) {
+			block-size: 20rem;
+		}
 	}
 
-	.is-canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+	.is-canvas {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+	}
 
 	.is-indicator-label {
 		position: absolute;
@@ -741,7 +826,13 @@ import { logger } from '$lib/utils/logger';
 		backdrop-filter: blur(4px);
 		border: 1px solid oklch(0.35 0.005 285 / 0.5);
 
-		@media (min-width: 640px) { inset-block-end: 1rem; inset-inline-start: 1rem; padding-inline: 0.75rem; padding-block: 0.375rem; border-radius: var(--radius-lg); }
+		@media (min-width: 640px) {
+			inset-block-end: 1rem;
+			inset-inline-start: 1rem;
+			padding-inline: 0.75rem;
+			padding-block: 0.375rem;
+			border-radius: var(--radius-lg);
+		}
 	}
 
 	.is-indicator-text {
@@ -749,7 +840,9 @@ import { logger } from '$lib/utils/logger';
 		font-family: var(--font-mono, monospace);
 		color: oklch(0.8 0.01 265);
 
-		@media (min-width: 640px) { font-size: var(--text-xs); }
+		@media (min-width: 640px) {
+			font-size: var(--text-xs);
+		}
 	}
 
 	/* ─── Floating Stat ─── */
@@ -781,7 +874,10 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(0.45 0.005 285);
 		margin-block-end: 0.125rem;
 
-		@media (min-width: 640px) { font-size: var(--text-xs); margin-block-end: 0.25rem; }
+		@media (min-width: 640px) {
+			font-size: var(--text-xs);
+			margin-block-end: 0.25rem;
+		}
 	}
 
 	.is-float-value {
@@ -789,7 +885,9 @@ import { logger } from '$lib/utils/logger';
 		font-weight: var(--weight-bold);
 		color: oklch(0.7 0.17 160);
 
-		@media (min-width: 640px) { font-size: 1.5rem; }
+		@media (min-width: 640px) {
+			font-size: 1.5rem;
+		}
 	}
 
 	/* ─── Cards Column ─── */
@@ -799,8 +897,12 @@ import { logger } from '$lib/utils/logger';
 		gap: 0.75rem;
 		order: 1;
 
-		@media (min-width: 640px) { gap: 1rem; }
-		@media (min-width: 1024px) { order: 2; }
+		@media (min-width: 640px) {
+			gap: 1rem;
+		}
+		@media (min-width: 1024px) {
+			order: 2;
+		}
 	}
 
 	/* ─── Indicator Card ─── */
@@ -812,17 +914,37 @@ import { logger } from '$lib/utils/logger';
 		background-color: oklch(0.15 0.005 285 / 0.3);
 		backdrop-filter: blur(4px);
 		border: 1px solid oklch(0.3 0.005 285 / 0.5);
-		transition: border-color 300ms, background-color 300ms, transform 100ms;
+		transition:
+			border-color 300ms,
+			background-color 300ms,
+			transform 100ms;
 		text-decoration: none;
 
-		@media (min-width: 640px) { padding: 1.25rem; border-radius: 1rem; }
+		@media (min-width: 640px) {
+			padding: 1.25rem;
+			border-radius: 1rem;
+		}
 
-		&:hover { border-color: oklch(0.35 0.005 285 / 0.5); background-color: oklch(0.25 0.005 285 / 0.3); }
-		&:active { transform: scale(0.98); }
-		&:hover .is-card-icon { transform: scale(1.1); }
-		&:hover .is-card-name { color: oklch(0.65 0.15 260); }
-		&:hover .is-card-arrow { background-color: oklch(0.6 0.18 260 / 0.2); transform: translateX(0.25rem); }
-		&:hover :global(.is-arrow-icon) { color: oklch(0.65 0.15 260); }
+		&:hover {
+			border-color: oklch(0.35 0.005 285 / 0.5);
+			background-color: oklch(0.25 0.005 285 / 0.3);
+		}
+		&:active {
+			transform: scale(0.98);
+		}
+		&:hover .is-card-icon {
+			transform: scale(1.1);
+		}
+		&:hover .is-card-name {
+			color: oklch(0.65 0.15 260);
+		}
+		&:hover .is-card-arrow {
+			background-color: oklch(0.6 0.18 260 / 0.2);
+			transform: translateX(0.25rem);
+		}
+		&:hover :global(.is-arrow-icon) {
+			color: oklch(0.65 0.15 260);
+		}
 	}
 
 	.is-card[data-active] {
@@ -836,7 +958,9 @@ import { logger } from '$lib/utils/logger';
 		align-items: flex-start;
 		gap: 0.75rem;
 
-		@media (min-width: 640px) { gap: 1rem; }
+		@media (min-width: 640px) {
+			gap: 1rem;
+		}
 	}
 
 	.is-card-icon {
@@ -851,15 +975,30 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		transition: transform 300ms;
 
-		@media (min-width: 640px) { inline-size: 3rem; block-size: 3rem; border-radius: var(--radius-xl); }
+		@media (min-width: 640px) {
+			inline-size: 3rem;
+			block-size: 3rem;
+			border-radius: var(--radius-xl);
+		}
 	}
 
-	.is-card[data-id='rsi'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.6 0.18 260), oklch(0.65 0.15 195)); }
-	.is-card[data-id='macd'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.65 0.17 160), oklch(0.6 0.15 175)); }
-	.is-card[data-id='bollinger'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.55 0.2 300), oklch(0.5 0.18 310)); }
-	.is-card[data-id='vwap'] .is-card-icon { background: linear-gradient(to bottom right, oklch(0.75 0.15 85), oklch(0.65 0.17 55)); }
+	.is-card[data-id='rsi'] .is-card-icon {
+		background: linear-gradient(to bottom right, oklch(0.6 0.18 260), oklch(0.65 0.15 195));
+	}
+	.is-card[data-id='macd'] .is-card-icon {
+		background: linear-gradient(to bottom right, oklch(0.65 0.17 160), oklch(0.6 0.15 175));
+	}
+	.is-card[data-id='bollinger'] .is-card-icon {
+		background: linear-gradient(to bottom right, oklch(0.55 0.2 300), oklch(0.5 0.18 310));
+	}
+	.is-card[data-id='vwap'] .is-card-icon {
+		background: linear-gradient(to bottom right, oklch(0.75 0.15 85), oklch(0.65 0.17 55));
+	}
 
-	.is-card-content { flex: 1; min-inline-size: 0; }
+	.is-card-content {
+		flex: 1;
+		min-inline-size: 0;
+	}
 
 	.is-card-name-row {
 		display: flex;
@@ -868,7 +1007,9 @@ import { logger } from '$lib/utils/logger';
 		flex-wrap: wrap;
 		margin-block-end: 0.125rem;
 
-		@media (min-width: 640px) { margin-block-end: 0.25rem; }
+		@media (min-width: 640px) {
+			margin-block-end: 0.25rem;
+		}
 	}
 
 	.is-card-name {
@@ -877,7 +1018,9 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		transition: color 200ms;
 
-		@media (min-width: 640px) { font-size: var(--text-lg); }
+		@media (min-width: 640px) {
+			font-size: var(--text-lg);
+		}
 	}
 
 	.is-card-cat {
@@ -889,7 +1032,10 @@ import { logger } from '$lib/utils/logger';
 		background-color: oklch(0.25 0.005 285);
 		color: oklch(0.55 0.01 265);
 
-		@media (min-width: 640px) { padding-inline: 0.5rem; font-size: var(--text-xs); }
+		@media (min-width: 640px) {
+			padding-inline: 0.5rem;
+			font-size: var(--text-xs);
+		}
 	}
 
 	.is-card-fullname {
@@ -898,7 +1044,11 @@ import { logger } from '$lib/utils/logger';
 		margin-block-end: 0.25rem;
 		display: none;
 
-		@media (min-width: 640px) { display: block; font-size: var(--text-sm); margin-block-end: 0.5rem; }
+		@media (min-width: 640px) {
+			display: block;
+			font-size: var(--text-sm);
+			margin-block-end: 0.5rem;
+		}
 	}
 
 	.is-card-desc {
@@ -911,7 +1061,9 @@ import { logger } from '$lib/utils/logger';
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.is-card-arrow {
@@ -923,19 +1075,30 @@ import { logger } from '$lib/utils/logger';
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: background-color 300ms, transform 300ms;
+		transition:
+			background-color 300ms,
+			transform 300ms;
 
-		@media (min-width: 640px) { inline-size: 2.5rem; block-size: 2.5rem; }
+		@media (min-width: 640px) {
+			inline-size: 2.5rem;
+			block-size: 2.5rem;
+		}
 	}
 
-	:global(.is-arrow-icon) { color: oklch(0.45 0.005 285); transition: color 200ms; }
+	:global(.is-arrow-icon) {
+		color: oklch(0.45 0.005 285);
+		transition: color 200ms;
+	}
 
 	/* ─── CTA ─── */
 	.is-cta-wrap {
 		padding-block-start: 1rem;
 		text-align: center;
 
-		@media (min-width: 640px) { padding-block-start: 1.5rem; text-align: start; }
+		@media (min-width: 640px) {
+			padding-block-start: 1.5rem;
+			text-align: start;
+		}
 	}
 
 	.is-cta-btn {
@@ -952,27 +1115,54 @@ import { logger } from '$lib/utils/logger';
 		font-weight: var(--weight-semibold);
 		font-size: var(--text-sm);
 		box-shadow: 0 10px 25px oklch(0.5 0.18 260 / 0.25);
-		transition: box-shadow 300ms, transform 300ms;
+		transition:
+			box-shadow 300ms,
+			transform 300ms;
 		text-decoration: none;
 
-		@media (min-width: 640px) { inline-size: auto; gap: 0.75rem; padding-inline: 2rem; padding-block: 1rem; font-size: var(--text-base); }
+		@media (min-width: 640px) {
+			inline-size: auto;
+			gap: 0.75rem;
+			padding-inline: 2rem;
+			padding-block: 1rem;
+			font-size: var(--text-base);
+		}
 
-		&:hover { box-shadow: 0 10px 25px oklch(0.5 0.18 260 / 0.4); transform: scale(1.05); }
-		&:active { transform: scale(0.98); }
+		&:hover {
+			box-shadow: 0 10px 25px oklch(0.5 0.18 260 / 0.4);
+			transform: scale(1.05);
+		}
+		&:active {
+			transform: scale(0.98);
+		}
 	}
 
-	:global(.is-cta-arrow) { transition: transform 200ms; }
-	.is-cta-btn:hover :global(.is-cta-arrow) { transform: translateX(0.25rem); }
+	:global(.is-cta-arrow) {
+		transition: transform 200ms;
+	}
+	.is-cta-btn:hover :global(.is-cta-arrow) {
+		transform: translateX(0.25rem);
+	}
 
 	/* ─── Keyframes ─── */
 	@keyframes orb-pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.4; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.4;
+		}
 	}
 
 	/* ─── Reduced Motion ─── */
 	@media (prefers-reduced-motion: reduce) {
-		.is-orb, .is-live-dot { animation: none; }
-		.is-card { transition: none; }
+		.is-orb,
+		.is-live-dot {
+			animation: none;
+		}
+		.is-card {
+			transition: none;
+		}
 	}
 </style>

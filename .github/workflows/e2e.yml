@@ -42,7 +42,8 @@ on:
 
 env:
   CI: true
-  E2E_BASE_URL: http://localhost:4173
+  # Use 127.0.0.1 so curl/playwright match vite preview binding on Linux CI
+  E2E_BASE_URL: http://127.0.0.1:4173
   # ICT 7: Use production API for E2E tests - no local backend needed
   E2E_API_URL: https://revolution-trading-pros-api.fly.dev/api
   VITE_API_URL: https://revolution-trading-pros-api.fly.dev
@@ -72,10 +73,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build application
@@ -92,10 +93,9 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm run preview &
+          pnpm run preview -- --host 127.0.0.1 --port 4173 &
           echo $! > .preview-server.pid
-          # Wait for server to be ready
-          timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done' || exit 1
+          timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
 
       - name: Run smoke tests
@@ -108,6 +108,7 @@ jobs:
             exit 0
           fi
         env:
+          E2E_BASE_URL: http://127.0.0.1:4173
           E2E_DEBUG: ${{ github.event.inputs.debug || 'false' }}
 
       - name: Stop preview server
@@ -158,10 +159,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build application
@@ -178,9 +179,9 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm run preview &
+          pnpm run preview -- --host 127.0.0.1 --port 4173 &
           echo $! > .preview-server.pid
-          timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done' || exit 1
+          timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
 
       - name: Run E2E tests
@@ -192,6 +193,7 @@ jobs:
             --ignore-snapshots \
             --reporter=list,html,json
         env:
+          E2E_BASE_URL: http://127.0.0.1:4173
           E2E_DEBUG: ${{ github.event.inputs.debug || 'false' }}
 
       - name: Stop preview server
@@ -234,10 +236,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -246,11 +255,10 @@ jobs:
         continue-on-error: true
 
       - name: Merge HTML reports
-        working-directory: frontend
         run: |
           pnpm install --frozen-lockfile
+          cd frontend
           # ICT 7: Playwright merge-reports expects a single blob directory
-          # Skip merge if no blob reports exist (shards use different output)
           if [ -d "../all-results" ]; then
             echo "Skipping merge - sharded reports don't support merge-reports"
           fi
@@ -287,10 +295,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install frontend dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
@@ -334,10 +342,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build application
@@ -354,9 +362,9 @@ jobs:
       - name: Start preview server
         working-directory: frontend
         run: |
-          pnpm run preview &
+          pnpm run preview -- --host 127.0.0.1 --port 4173 &
           echo $! > .preview-server.pid
-          timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done' || exit 1
+          timeout 90 bash -c 'until curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; do sleep 1; done' || exit 1
           echo "Preview server started successfully"
 
       - name: Run mobile tests
@@ -365,6 +373,8 @@ jobs:
           pnpm exec playwright test tests/e2e/smoke \
             "--project=Mobile Chrome" "--project=Mobile Safari" \
             --reporter=list
+        env:
+          E2E_BASE_URL: http://127.0.0.1:4173
 
       - name: Stop preview server
         if: always()

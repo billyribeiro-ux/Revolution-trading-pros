@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Member Segments - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -18,7 +18,27 @@ import { logger } from '$lib/utils/logger';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconArrowLeft, IconCalendar, IconChartBar, IconCheck, IconCopy, IconCurrencyDollar, IconDownload, IconEdit, IconFilter, IconMail, IconPlus, IconRefresh, IconSearch, IconTag, IconTrash, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconCopy,
+		IconCurrencyDollar,
+		IconDownload,
+		IconEdit,
+		IconFilter,
+		IconMail,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTag,
+		IconTrash,
+		IconTrendingUp,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes

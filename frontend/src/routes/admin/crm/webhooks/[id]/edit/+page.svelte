@@ -16,7 +16,19 @@
 	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook, WebhookEvent } from '$lib/crm/types';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconDeviceFloppy, IconKey, IconPlus, IconRefresh, IconTrash, IconWebhook, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconCheck,
+		IconDeviceFloppy,
+		IconKey,
+		IconPlus,
+		IconRefresh,
+		IconTrash,
+		IconWebhook,
+		IconX
+	} from '$lib/icons';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes

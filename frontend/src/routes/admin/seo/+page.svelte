@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * SEO Dashboard - Apple ICT9+ Enterprise Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -18,7 +18,34 @@ import { logger } from '$lib/utils/logger';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
 	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
-	import { Icon, IconArrowForward, IconBrandGoogle, IconChartBar, IconCheck, IconClock, IconCode, IconError404, IconExternalLink, IconFileText, IconKey, IconLink, IconMail, IconMapPin, IconNews, IconPhoto, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconSitemap, IconTarget, IconTrendingDown, IconTrendingUp, IconVideo, IconWorld } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowForward,
+		IconBrandGoogle,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCode,
+		IconError404,
+		IconExternalLink,
+		IconFileText,
+		IconKey,
+		IconLink,
+		IconMail,
+		IconMapPin,
+		IconNews,
+		IconPhoto,
+		IconPlugConnected,
+		IconRefresh,
+		IconSearch,
+		IconSettings,
+		IconSitemap,
+		IconTarget,
+		IconTrendingDown,
+		IconTrendingUp,
+		IconVideo,
+		IconWorld
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State

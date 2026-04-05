@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Templates - Apple ICT7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════

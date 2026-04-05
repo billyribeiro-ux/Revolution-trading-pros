@@ -20,11 +20,7 @@
 	<p class="es-desc">{description}</p>
 
 	{#if actionLabel && onaction}
-		<button
-			type="button"
-			class="es-btn"
-			onclick={onaction}
-		>
+		<button type="button" class="es-btn" onclick={onaction}>
 			<Icon icon={IconPlus} size={18} />
 			{actionLabel}
 		</button>
@@ -83,7 +79,9 @@
 		font-weight: var(--weight-medium);
 		color: oklch(1 0 0);
 		box-shadow: var(--shadow-sm);
-		transition: background-color 200ms, box-shadow 200ms;
+		transition:
+			background-color 200ms,
+			box-shadow 200ms;
 
 		&:hover {
 			background-color: oklch(0.55 0.18 260);

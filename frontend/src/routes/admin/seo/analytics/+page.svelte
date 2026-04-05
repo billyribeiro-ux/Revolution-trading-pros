@@ -1,9 +1,16 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { connections, getIsSeoConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import { Icon, IconCalendar, IconMinus, IconRefresh, IconTrendingDown, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconCalendar,
+		IconMinus,
+		IconRefresh,
+		IconTrendingDown,
+		IconTrendingUp
+	} from '$lib/icons';
 
 	let connectionLoading = $state(true);
 	let stats: any = $state(null);

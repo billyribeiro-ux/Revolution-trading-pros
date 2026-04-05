@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Batch Operations Component - Apple ICT9+ Design
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -11,7 +11,15 @@ import { logger } from '$lib/utils/logger';
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { Icon, IconCheck, IconDownload, IconInbox, IconLoader, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCheck,
+		IconDownload,
+		IconInbox,
+		IconLoader,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	interface BatchAction {
 		id: string;

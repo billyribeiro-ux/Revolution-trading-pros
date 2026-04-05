@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog as DialogPrimitive } from 'bits-ui';
-	
+
 	let props: DialogPrimitive.TitleProps = $props();
 	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
@@ -17,12 +17,7 @@
 	});
 </script>
 
-<DialogPrimitive.Title
-	bind:ref
-	data-slot="dialog-title"
-	class={className}
-	{...restProps}
-/>
+<DialogPrimitive.Title bind:ref data-slot="dialog-title" class={className} {...restProps} />
 
 <style>
 	:global([data-slot='dialog-title']) {

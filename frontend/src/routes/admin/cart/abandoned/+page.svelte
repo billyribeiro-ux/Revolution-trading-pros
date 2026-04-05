@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import abandonedCartsApi, {
@@ -9,7 +9,28 @@ import { logger } from '$lib/utils/logger';
 		STATUS_LABELS
 	} from '$lib/api/abandoned-carts';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconChartBar, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCurrencyDollar, IconExternalLink, IconFilter, IconGift, IconMail, IconPercentage, IconRefresh, IconSearch, IconSend, IconShoppingCart, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconChartBar,
+		IconCheck,
+		IconChevronLeft,
+		IconChevronRight,
+		IconClock,
+		IconCurrencyDollar,
+		IconExternalLink,
+		IconFilter,
+		IconGift,
+		IconMail,
+		IconPercentage,
+		IconRefresh,
+		IconSearch,
+		IconSend,
+		IconShoppingCart,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// State
 	let loading = $state(true);

@@ -23,7 +23,21 @@
 		type CreateIndicatorRequest,
 		validateTradingViewUsername
 	} from '$lib/api/indicators-enhanced';
-	import { Icon, IconBook, IconChartLine, IconCheck, IconDownload, IconEdit, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconUpload, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconBook,
+		IconChartLine,
+		IconCheck,
+		IconDownload,
+		IconEdit,
+		IconGripVertical,
+		IconPlayerPlay,
+		IconPlus,
+		IconTrash,
+		IconUpload,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	interface Props {
 		indicatorId?: number;

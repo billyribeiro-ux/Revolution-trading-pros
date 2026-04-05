@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Membership Plans Management - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -30,7 +30,27 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { Icon, IconChartBar, IconCheck, IconChevronDown, IconCopy, IconCrown, IconCurrencyDollar, IconEdit, IconEye, IconFilter, IconPlus, IconRefresh, IconSearch, IconStar, IconToggleLeft, IconToggleRight, IconTrash, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconChartBar,
+		IconCheck,
+		IconChevronDown,
+		IconCopy,
+		IconCrown,
+		IconCurrencyDollar,
+		IconEdit,
+		IconEye,
+		IconFilter,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconStar,
+		IconToggleLeft,
+		IconToggleRight,
+		IconTrash,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

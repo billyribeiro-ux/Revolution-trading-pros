@@ -19,13 +19,37 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { fade, slide, fly } from 'svelte/transition';
 
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 	import type { Block } from './types';
-	import { Icon, IconAlertCircle, IconCheck, IconClick, IconCopy, IconEdit, IconFilter, IconFlag, IconForms, IconHistory, IconId, IconLayoutDashboard, IconLayoutKanban, IconLayoutRows, IconLink, IconLoader, IconMaximize, IconMenu2, IconPlus, IconRefresh, IconSearch, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconClick,
+		IconCopy,
+		IconEdit,
+		IconFilter,
+		IconFlag,
+		IconForms,
+		IconHistory,
+		IconId,
+		IconLayoutDashboard,
+		IconLayoutKanban,
+		IconLayoutRows,
+		IconLink,
+		IconLoader,
+		IconMaximize,
+		IconMenu2,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// ==========================================================================
 	// Types
@@ -141,21 +165,19 @@ import { logger } from '$lib/utils/logger';
 	// Category Config
 	// ==========================================================================
 
-	const categoryConfig: Record<
-		ComponentCategory,
-		{ label: string; icon: string; color: string }
-	> = {
-		header: { label: 'Headers', icon: IconLayoutRows, color: '#3b82f6' },
-		footer: { label: 'Footers', icon: IconLayoutRows, color: '#10b981' },
-		cta: { label: 'CTAs', icon: IconClick, color: '#f59e0b' },
-		form: { label: 'Forms', icon: IconForms, color: '#8b5cf6' },
-		navigation: { label: 'Navigation', icon: IconMenu2, color: '#ec4899' },
-		sidebar: { label: 'Sidebars', icon: IconLayoutKanban, color: '#06b6d4' },
-		banner: { label: 'Banners', icon: IconFlag, color: '#ef4444' },
-		modal: { label: 'Modals', icon: IconMaximize, color: '#84cc16' },
-		card: { label: 'Cards', icon: IconId, color: '#f97316' },
-		section: { label: 'Sections', icon: IconLayoutDashboard, color: '#64748b' }
-	};
+	const categoryConfig: Record<ComponentCategory, { label: string; icon: string; color: string }> =
+		{
+			header: { label: 'Headers', icon: IconLayoutRows, color: '#3b82f6' },
+			footer: { label: 'Footers', icon: IconLayoutRows, color: '#10b981' },
+			cta: { label: 'CTAs', icon: IconClick, color: '#f59e0b' },
+			form: { label: 'Forms', icon: IconForms, color: '#8b5cf6' },
+			navigation: { label: 'Navigation', icon: IconMenu2, color: '#ec4899' },
+			sidebar: { label: 'Sidebars', icon: IconLayoutKanban, color: '#06b6d4' },
+			banner: { label: 'Banners', icon: IconFlag, color: '#ef4444' },
+			modal: { label: 'Modals', icon: IconMaximize, color: '#84cc16' },
+			card: { label: 'Cards', icon: IconId, color: '#f97316' },
+			section: { label: 'Sections', icon: IconLayoutDashboard, color: '#64748b' }
+		};
 
 	// ==========================================================================
 	// Derived

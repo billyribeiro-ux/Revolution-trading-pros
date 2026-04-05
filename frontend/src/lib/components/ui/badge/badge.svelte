@@ -48,7 +48,8 @@
 		font-size: var(--text-xs);
 		font-weight: var(--weight-medium);
 		white-space: nowrap;
-		transition: color var(--duration-fast) var(--ease-default),
+		transition:
+			color var(--duration-fast) var(--ease-default),
 			box-shadow var(--duration-fast) var(--ease-default);
 
 		&:focus-visible {

@@ -13,13 +13,7 @@
 	}: WithoutChild<SelectPrimitive.ItemProps> = $props();
 </script>
 
-<SelectPrimitive.Item
-	bind:ref
-	{value}
-	data-slot="select-item"
-	class={className}
-	{...restProps}
->
+<SelectPrimitive.Item bind:ref {value} data-slot="select-item" class={className} {...restProps}>
 	{#snippet children({ selected, highlighted })}
 		<span class="select-item-check">
 			{#if selected}

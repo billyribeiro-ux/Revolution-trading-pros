@@ -13,10 +13,21 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
-	import { Icon, IconArchive, IconCalendar, IconCheck, IconCloudUpload, IconLink, IconPlayerPlay, IconUpload, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArchive,
+		IconCalendar,
+		IconCheck,
+		IconCloudUpload,
+		IconLink,
+		IconPlayerPlay,
+		IconUpload,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS

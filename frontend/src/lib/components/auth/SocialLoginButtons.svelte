@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * SocialLoginButtons - OAuth Social Sign-In
 	 * Apple Principal Engineer ICT 11 Grade

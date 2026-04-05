@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { crmAPI } from '$lib/api/crm';
@@ -22,7 +22,28 @@ import { logger } from '$lib/utils/logger';
 		FunnelStats,
 		FunnelStatus
 	} from '$lib/crm/types';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconBolt, IconChartBar, IconCheck, IconClock, IconDownload, IconEdit, IconList, IconLoader2, IconMail, IconPlayerPause, IconPlayerPlay, IconRefresh, IconShare, IconTag, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconArrowRight,
+		IconBolt,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconDownload,
+		IconEdit,
+		IconList,
+		IconLoader2,
+		IconMail,
+		IconPlayerPause,
+		IconPlayerPlay,
+		IconRefresh,
+		IconShare,
+		IconTag,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

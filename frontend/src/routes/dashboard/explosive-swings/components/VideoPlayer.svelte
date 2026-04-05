@@ -2,7 +2,7 @@
 	/**
 	 * VideoPlayer Component - Apple Principal Engineer ICT Level 7
 	 * Extracted from WeeklyHero.svelte for better maintainability
-	 * 
+	 *
 	 * @description Video player with thumbnail, play button, iframe, and controls
 	 * @version 1.0.0 - ICT 7 compliance
 	 */
@@ -32,11 +32,7 @@
 	}: Props = $props();
 </script>
 
-<div
-	class="video-player-container"
-	class:playing={isPlaying}
-	class:expanded={isExpanded}
->
+<div class="video-player-container" class:playing={isPlaying} class:expanded={isExpanded}>
 	{#if isPlaying}
 		<!-- Active Video Player with iframe -->
 		<div class="video-frame">
@@ -115,12 +111,7 @@
 	{:else}
 		<!-- Thumbnail State with Play Button -->
 		<div class="video-thumbnail" style="background-image: url('{thumbnail}')">
-			<button
-				class="play-btn"
-				onclick={onPlay}
-				type="button"
-				aria-label="Play video: {videoTitle}"
-			>
+			<button class="play-btn" onclick={onPlay} type="button" aria-label="Play video: {videoTitle}">
 				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 					<path d="M8 5v14l11-7z" />
 				</svg>
@@ -381,4 +372,3 @@
 		}
 	}
 </style>
-

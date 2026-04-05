@@ -1,12 +1,20 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Bulk Upload Queue - Revolution Trading Pros
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
 	import { bulkUploadApi, type BatchStatus, type UploadQueueItem } from '$lib/api/video-advanced';
-	import { Icon, IconAlertCircle, IconCheck, IconFile, IconLoader2, IconUpload, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconFile,
+		IconLoader2,
+		IconUpload,
+		IconX
+	} from '$lib/icons';
 	interface Props {
 		contentType?: string;
 		traderId?: number | null;
@@ -368,7 +376,11 @@ import { logger } from '$lib/utils/logger';
 							class:failed={item.status === 'failed'}
 						>
 							<div class="item-icon" style="color: {getStatusColor(item.status)}">
-								<Icon icon={StatusIcon} size={20} class={item.status === 'uploading' ? 'spinning' : ''} />
+								<Icon
+									icon={StatusIcon}
+									size={20}
+									class={item.status === 'uploading' ? 'spinning' : ''}
+								/>
 							</div>
 							<div class="item-info">
 								<div class="item-name">{item.filename}</div>

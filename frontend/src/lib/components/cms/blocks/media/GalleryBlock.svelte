@@ -28,7 +28,17 @@
 		type LightboxState
 	} from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
-	import { Icon, IconChevronLeft, IconChevronRight, IconColumns, IconLayoutGrid, IconPhoto, IconPlus, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconChevronLeft,
+		IconChevronRight,
+		IconColumns,
+		IconLayoutGrid,
+		IconPhoto,
+		IconPlus,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// ============================================================================
 	// Types

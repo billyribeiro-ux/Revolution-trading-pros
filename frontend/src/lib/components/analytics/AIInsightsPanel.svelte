@@ -7,7 +7,14 @@
 -->
 
 <script lang="ts">
-	import { Icon, IconAlertTriangle, IconBrain, IconBulb, IconTarget, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconBrain,
+		IconBulb,
+		IconTarget,
+		IconTrendingUp
+	} from '$lib/icons';
 
 	interface Insight {
 		id: string;
@@ -42,7 +49,6 @@
 				return IconBrain;
 		}
 	}
-
 </script>
 
 <div class="insights-panel">
@@ -166,10 +172,21 @@
 		background-color: oklch(0.15 0.01 250 / 50%);
 		transition: border-color var(--duration-fast) var(--ease-default);
 
-		&:hover { border-color: oklch(0.45 0.01 250); }
-		&[data-severity='critical'] { border-color: oklch(0.55 0.22 25 / 50%); background-color: oklch(0.55 0.22 25 / 5%); }
-		&[data-severity='warning'] { border-color: oklch(0.7 0.18 55 / 50%); background-color: oklch(0.7 0.18 55 / 5%); }
-		&[data-severity='info'] { border-color: oklch(0.6 0.2 260 / 50%); background-color: oklch(0.6 0.2 260 / 5%); }
+		&:hover {
+			border-color: oklch(0.45 0.01 250);
+		}
+		&[data-severity='critical'] {
+			border-color: oklch(0.55 0.22 25 / 50%);
+			background-color: oklch(0.55 0.22 25 / 5%);
+		}
+		&[data-severity='warning'] {
+			border-color: oklch(0.7 0.18 55 / 50%);
+			background-color: oklch(0.7 0.18 55 / 5%);
+		}
+		&[data-severity='info'] {
+			border-color: oklch(0.6 0.2 260 / 50%);
+			background-color: oklch(0.6 0.2 260 / 5%);
+		}
 	}
 
 	.insight-icon {
@@ -184,11 +201,22 @@
 		color: oklch(0.7 0.18 300);
 	}
 
-	[data-severity='critical'] .insight-icon { background-color: oklch(0.55 0.22 25 / 20%); color: oklch(0.7 0.2 25); }
-	[data-severity='warning'] .insight-icon { background-color: oklch(0.7 0.18 55 / 20%); color: oklch(0.75 0.16 55); }
-	[data-severity='info'] .insight-icon { background-color: oklch(0.6 0.2 260 / 20%); color: oklch(0.7 0.18 260); }
+	[data-severity='critical'] .insight-icon {
+		background-color: oklch(0.55 0.22 25 / 20%);
+		color: oklch(0.7 0.2 25);
+	}
+	[data-severity='warning'] .insight-icon {
+		background-color: oklch(0.7 0.18 55 / 20%);
+		color: oklch(0.75 0.16 55);
+	}
+	[data-severity='info'] .insight-icon {
+		background-color: oklch(0.6 0.2 260 / 20%);
+		color: oklch(0.7 0.18 260);
+	}
 
-	.insight-content { flex: 1; }
+	.insight-content {
+		flex: 1;
+	}
 
 	.insight-header {
 		display: flex;
@@ -221,7 +249,9 @@
 		margin-block-end: var(--space-3);
 	}
 
-	.insight-metrics { margin-block-end: var(--space-3); }
+	.insight-metrics {
+		margin-block-end: var(--space-3);
+	}
 
 	.metric {
 		display: flex;
@@ -230,13 +260,22 @@
 		font-size: var(--text-sm);
 	}
 
-	.metric-label { color: oklch(0.65 0.01 250); }
-	.metric-value { color: oklch(1 0 0); font-weight: var(--weight-semibold); }
+	.metric-label {
+		color: oklch(0.65 0.01 250);
+	}
+	.metric-value {
+		color: oklch(1 0 0);
+		font-weight: var(--weight-semibold);
+	}
 
 	.metric-change {
 		font-weight: var(--weight-semibold);
-		&.positive { color: oklch(0.7 0.18 160); }
-		&.negative { color: oklch(0.7 0.2 25); }
+		&.positive {
+			color: oklch(0.7 0.18 160);
+		}
+		&.negative {
+			color: oklch(0.7 0.2 25);
+		}
 	}
 
 	.insight-action {
@@ -250,7 +289,9 @@
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.55 0.2 300 / 30%); }
+		&:hover {
+			background-color: oklch(0.55 0.2 300 / 30%);
+		}
 	}
 
 	.insight-footer {

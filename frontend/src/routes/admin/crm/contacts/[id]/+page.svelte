@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Contact Detail Page - FluentCRM Pro Style
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -35,7 +35,35 @@ import { logger } from '$lib/utils/logger';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { api } from '$lib/api/config';
-	import { Icon, IconActivity, IconArrowLeft, IconBriefcase, IconBuilding, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconCursor, IconEdit, IconList, IconMail, IconMailFast, IconMailOpened, IconNotes, IconPhone, IconPlus, IconRefresh, IconSend, IconTag, IconTrash, IconTrendingUp, IconUserCircle, IconWorld, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowLeft,
+		IconBriefcase,
+		IconBuilding,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCurrencyDollar,
+		IconCursor,
+		IconEdit,
+		IconList,
+		IconMail,
+		IconMailFast,
+		IconMailOpened,
+		IconNotes,
+		IconPhone,
+		IconPlus,
+		IconRefresh,
+		IconSend,
+		IconTag,
+		IconTrash,
+		IconTrendingUp,
+		IconUserCircle,
+		IconWorld,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

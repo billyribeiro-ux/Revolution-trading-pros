@@ -20,7 +20,22 @@
 		type CreateSectionRequest,
 		type CreateLessonRequest
 	} from '$lib/api/courses-enhanced';
-	import { Icon, IconCheck, IconChevronDown, IconChevronRight, IconCopy, IconEdit, IconEye, IconFile, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCheck,
+		IconChevronDown,
+		IconChevronRight,
+		IconCopy,
+		IconEdit,
+		IconEye,
+		IconFile,
+		IconGripVertical,
+		IconPlayerPlay,
+		IconPlus,
+		IconTrash,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	interface Props {
 		courseId?: number;

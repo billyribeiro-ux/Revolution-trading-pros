@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Past Members Dashboard - Svelte 5 / SvelteKit Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -28,7 +28,28 @@ import { logger } from '$lib/utils/logger';
 	} from '$lib/api/past-members-dashboard';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { PastMembersPageData } from './+page';
-	import { Icon, IconAlertTriangle, IconArrowLeft, IconCalendar, IconChartPie, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCurrencyDollar, IconFileAnalytics, IconGift, IconMail, IconRefresh, IconSearch, IconSend, IconSparkles, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconArrowLeft,
+		IconCalendar,
+		IconChartPie,
+		IconCheck,
+		IconChevronLeft,
+		IconChevronRight,
+		IconClock,
+		IconCurrencyDollar,
+		IconFileAnalytics,
+		IconGift,
+		IconMail,
+		IconRefresh,
+		IconSearch,
+		IconSend,
+		IconSparkles,
+		IconTrendingUp,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGE DATA

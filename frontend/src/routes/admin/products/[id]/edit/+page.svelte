@@ -4,12 +4,25 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import { Icon, IconArrowLeft, IconBook, IconChartLine, IconCheck, IconCrown, IconPhoto, IconPlus, IconShoppingCart, IconTag, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconBook,
+		IconChartLine,
+		IconCheck,
+		IconCrown,
+		IconPhoto,
+		IconPlus,
+		IconShoppingCart,
+		IconTag,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// Product type definition
 	type ProductType = 'course' | 'indicator' | 'membership' | 'bundle';

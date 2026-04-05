@@ -195,7 +195,9 @@
 		border: none;
 		cursor: pointer;
 		border-radius: var(--radius-lg);
-		transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+		transition:
+			color var(--duration-fast) var(--ease-default),
+			background-color var(--duration-fast) var(--ease-default);
 		&:hover {
 			color: oklch(0.8 0.18 90);
 			background-color: oklch(0.38 0.01 250 / 50%);
@@ -227,7 +229,9 @@
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.38 0.01 250 / 50%); }
+		&:hover {
+			background-color: oklch(0.38 0.01 250 / 50%);
+		}
 
 		&.active {
 			background-color: oklch(0.8 0.18 90 / 20%);
@@ -241,7 +245,9 @@
 		border: none;
 		cursor: pointer;
 		transition: color var(--duration-fast) var(--ease-default);
-		&:hover { color: oklch(1 0 0); }
+		&:hover {
+			color: oklch(1 0 0);
+		}
 	}
 
 	.expand-spacer {

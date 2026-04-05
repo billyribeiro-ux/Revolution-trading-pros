@@ -95,8 +95,7 @@ async function main() {
 		}
 	}
 
-	const totalNote =
-		fileLimit > 0 ? ` (limited to first ${fileLimit} of full tree)` : '';
+	const totalNote = fileLimit > 0 ? ` (limited to first ${fileLimit} of full tree)` : '';
 	console.log(
 		`\nsvelte-autofixer: ${files.length} files${totalNote}, ${issueCount} issue(s), ${suggestionCount} suggestion(s)`
 	);

@@ -18,7 +18,22 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconChartBar, IconCheck, IconClick, IconCopy, IconEdit, IconExternalLink, IconLink, IconPlus, IconRefresh, IconSearch, IconToggleLeft, IconToggleRight, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconChartBar,
+		IconCheck,
+		IconClick,
+		IconCopy,
+		IconEdit,
+		IconExternalLink,
+		IconLink,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconToggleLeft,
+		IconToggleRight,
+		IconTrash
+	} from '$lib/icons';
 
 	// Reactive state using Svelte 5 runes
 	let smartLinks = $state<SmartLink[]>([]);

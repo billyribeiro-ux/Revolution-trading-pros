@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import { Icon, IconDownload, IconFilter, IconRefresh, IconSearch } from '$lib/icons';
@@ -201,7 +201,9 @@ import { logger } from '$lib/utils/logger';
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.45 0.01 250); }
+		&:hover {
+			background-color: oklch(0.45 0.01 250);
+		}
 	}
 
 	.explorer-filters {
@@ -234,7 +236,10 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		border-radius: var(--radius-lg);
 		border: 1px solid oklch(0.45 0.01 250);
-		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.8 0.18 90);
+		}
 	}
 
 	.filter-select {
@@ -244,7 +249,10 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		border-radius: var(--radius-lg);
 		border: 1px solid oklch(0.45 0.01 250);
-		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.8 0.18 90);
+		}
 	}
 
 	.btn-export {
@@ -260,7 +268,9 @@ import { logger } from '$lib/utils/logger';
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.85 0.16 90); }
+		&:hover {
+			background-color: oklch(0.85 0.16 90);
+		}
 	}
 
 	.events-table-container {
@@ -271,7 +281,9 @@ import { logger } from '$lib/utils/logger';
 		inline-size: 100%;
 		font-size: var(--text-sm);
 
-		& thead { background-color: oklch(0.15 0.01 250 / 50%); }
+		& thead {
+			background-color: oklch(0.15 0.01 250 / 50%);
+		}
 
 		& th {
 			padding-inline: var(--space-4);
@@ -284,7 +296,9 @@ import { logger } from '$lib/utils/logger';
 		& tbody tr {
 			border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
 			transition: background-color var(--duration-fast) var(--ease-default);
-			&:hover { background-color: oklch(0.38 0.01 250 / 30%); }
+			&:hover {
+				background-color: oklch(0.38 0.01 250 / 30%);
+			}
 		}
 
 		& td {
@@ -340,11 +354,18 @@ import { logger } from '$lib/utils/logger';
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.45 0.01 250); }
-		&:disabled { opacity: 0.5; cursor: not-allowed; }
+		&:hover {
+			background-color: oklch(0.45 0.01 250);
+		}
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
 	}
 
-	.page-info { color: oklch(0.65 0.01 250); }
+	.page-info {
+		color: oklch(0.65 0.01 250);
+	}
 
 	.loading {
 		display: flex;
@@ -363,7 +384,11 @@ import { logger } from '$lib/utils/logger';
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin { to { transform: rotate(360deg); } }
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 	.empty-state {
 		display: flex;

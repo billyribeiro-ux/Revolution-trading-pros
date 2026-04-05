@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * SegmentDetailDrawer - Segment Analytics & Preview
 	 * Revolution Trading Pros - Apple ICT 11+ Principal Engineer Grade
@@ -9,7 +9,23 @@ import { logger } from '$lib/utils/logger';
 	 */
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { goto } from '$app/navigation';
-	import { Icon, IconCalendar, IconChartBar, IconClock, IconDownload, IconEdit, IconExternalLink, IconFilter, IconMail, IconRefresh, IconTrash, IconTrendingDown, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCalendar,
+		IconChartBar,
+		IconClock,
+		IconDownload,
+		IconEdit,
+		IconExternalLink,
+		IconFilter,
+		IconMail,
+		IconRefresh,
+		IconTrash,
+		IconTrendingDown,
+		IconTrendingUp,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	interface Segment {
 		id: number;

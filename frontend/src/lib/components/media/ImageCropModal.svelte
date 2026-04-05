@@ -408,12 +408,21 @@
 	>
 		<!-- Header -->
 		<div class="modal-header">
-			<h2 id="crop-modal-title" class="modal-title">
-				Crop & Edit Image
-			</h2>
+			<h2 id="crop-modal-title" class="modal-title">Crop & Edit Image</h2>
 			<button class="close-btn" onclick={() => dispatch('cancel')} aria-label="Close modal">
-				<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				<svg
+					class="icon-md"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M6 18L18 6M6 6l12 12"
+					/>
 				</svg>
 			</button>
 		</div>
@@ -442,12 +451,22 @@
 				<div class="transform-buttons">
 					<button class="transform-btn" onclick={() => handleRotate(-90)} title="Rotate left">
 						<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+							/>
 						</svg>
 					</button>
 					<button class="transform-btn" onclick={() => handleRotate(90)} title="Rotate right">
 						<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"
+							/>
 						</svg>
 					</button>
 					<button
@@ -457,7 +476,12 @@
 						title="Flip horizontal"
 					>
 						<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M8 12h12M8 17h12M4 7v10" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M8 7h12M8 12h12M8 17h12M4 7v10"
+							/>
 						</svg>
 					</button>
 					<button
@@ -467,7 +491,12 @@
 						title="Flip vertical"
 					>
 						<svg class="icon-md icon-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M8 12h12M8 17h12M4 7v10" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M8 7h12M8 12h12M8 17h12M4 7v10"
+							/>
 						</svg>
 					</button>
 				</div>
@@ -653,8 +682,13 @@
 		color: oklch(0.15 0.01 265);
 	}
 
-	.icon-md { inline-size: 1.25rem; block-size: 1.25rem; }
-	.icon-rotate { transform: rotate(90deg); }
+	.icon-md {
+		inline-size: 1.25rem;
+		block-size: 1.25rem;
+	}
+	.icon-rotate {
+		transform: rotate(90deg);
+	}
 
 	.close-btn {
 		display: flex;
@@ -674,8 +708,14 @@
 		-webkit-tap-highlight-color: transparent;
 		touch-action: manipulation;
 
-		&:hover { color: oklch(0.4 0.01 265); background-color: oklch(0.96 0.002 265); }
-		&:focus-visible { outline: 2px solid oklch(0.6 0.2 260); outline-offset: 2px; }
+		&:hover {
+			color: oklch(0.4 0.01 265);
+			background-color: oklch(0.96 0.002 265);
+		}
+		&:focus-visible {
+			outline: 2px solid oklch(0.6 0.2 260);
+			outline-offset: 2px;
+		}
 	}
 
 	/* ─── Toolbar ─── */
@@ -690,7 +730,11 @@
 		border-block-end: 1px solid oklch(0.9 0.005 265);
 	}
 
-	.toolbar-group { display: flex; align-items: center; gap: var(--space-2); }
+	.toolbar-group {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
 	.toolbar-label {
 		font-size: var(--text-xs);
@@ -698,7 +742,10 @@
 		color: oklch(0.5 0.01 265);
 	}
 
-	.ratio-buttons { display: flex; gap: 0.25rem; }
+	.ratio-buttons {
+		display: flex;
+		gap: 0.25rem;
+	}
 
 	.ratio-btn {
 		padding-inline: var(--space-2);
@@ -711,11 +758,19 @@
 		cursor: pointer;
 		transition: all 150ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.85 0.005 265); }
-		&[data-active] { background-color: oklch(0.6 0.2 260); color: oklch(1 0 0); }
+		&:hover {
+			background-color: oklch(0.85 0.005 265);
+		}
+		&[data-active] {
+			background-color: oklch(0.6 0.2 260);
+			color: oklch(1 0 0);
+		}
 	}
 
-	.transform-buttons { display: flex; gap: 0.25rem; }
+	.transform-buttons {
+		display: flex;
+		gap: 0.25rem;
+	}
 
 	.transform-btn {
 		padding: 0.375rem;
@@ -726,11 +781,20 @@
 		cursor: pointer;
 		transition: all 150ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.9 0.005 265); }
-		&[data-active] { background-color: oklch(0.92 0.06 260); color: oklch(0.6 0.2 260); }
+		&:hover {
+			background-color: oklch(0.9 0.005 265);
+		}
+		&[data-active] {
+			background-color: oklch(0.92 0.06 260);
+			color: oklch(0.6 0.2 260);
+		}
 	}
 
-	.zoom-controls { display: flex; align-items: center; gap: var(--space-2); }
+	.zoom-controls {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
 	.zoom-btn {
 		inline-size: 1.5rem;
@@ -743,7 +807,9 @@
 		cursor: pointer;
 		transition: all 150ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.85 0.005 265); }
+		&:hover {
+			background-color: oklch(0.85 0.005 265);
+		}
 	}
 
 	.zoom-value {
@@ -765,8 +831,12 @@
 		position: relative;
 	}
 
-	.image-wrapper { position: relative; }
-	.crop-image { display: block; }
+	.image-wrapper {
+		position: relative;
+	}
+	.crop-image {
+		display: block;
+	}
 
 	.crop-overlay {
 		all: unset;
@@ -783,23 +853,33 @@
 		background-color: oklch(1 0 0 / 30%);
 	}
 
-	.grid-line-h1, .grid-line-h2 {
+	.grid-line-h1,
+	.grid-line-h2 {
 		inset-inline-start: 0;
 		inset-inline-end: 0;
 		block-size: 1px;
 	}
 
-	.grid-line-h1 { inset-block-start: 33.33%; }
-	.grid-line-h2 { inset-block-start: 66.66%; }
+	.grid-line-h1 {
+		inset-block-start: 33.33%;
+	}
+	.grid-line-h2 {
+		inset-block-start: 66.66%;
+	}
 
-	.grid-line-v1, .grid-line-v2 {
+	.grid-line-v1,
+	.grid-line-v2 {
 		inset-block-start: 0;
 		inset-block-end: 0;
 		inline-size: 1px;
 	}
 
-	.grid-line-v1 { inset-inline-start: 33.33%; }
-	.grid-line-v2 { inset-inline-start: 66.66%; }
+	.grid-line-v1 {
+		inset-inline-start: 33.33%;
+	}
+	.grid-line-v2 {
+		inset-inline-start: 66.66%;
+	}
 
 	.resize-handle {
 		position: absolute;
@@ -811,14 +891,50 @@
 		box-shadow: 0 10px 15px oklch(0 0 0 / 10%);
 	}
 
-	.resize-nw { inset-block-start: -0.5rem; inset-inline-start: -0.5rem; cursor: nw-resize; }
-	.resize-ne { inset-block-start: -0.5rem; inset-inline-end: -0.5rem; cursor: ne-resize; }
-	.resize-sw { inset-block-end: -0.5rem; inset-inline-start: -0.5rem; cursor: sw-resize; }
-	.resize-se { inset-block-end: -0.5rem; inset-inline-end: -0.5rem; cursor: se-resize; }
-	.resize-n { inset-block-start: -0.5rem; inset-inline-start: 50%; transform: translateX(-50%); cursor: n-resize; }
-	.resize-s { inset-block-end: -0.5rem; inset-inline-start: 50%; transform: translateX(-50%); cursor: s-resize; }
-	.resize-w { inset-block-start: 50%; inset-inline-start: -0.5rem; transform: translateY(-50%); cursor: w-resize; }
-	.resize-e { inset-block-start: 50%; inset-inline-end: -0.5rem; transform: translateY(-50%); cursor: e-resize; }
+	.resize-nw {
+		inset-block-start: -0.5rem;
+		inset-inline-start: -0.5rem;
+		cursor: nw-resize;
+	}
+	.resize-ne {
+		inset-block-start: -0.5rem;
+		inset-inline-end: -0.5rem;
+		cursor: ne-resize;
+	}
+	.resize-sw {
+		inset-block-end: -0.5rem;
+		inset-inline-start: -0.5rem;
+		cursor: sw-resize;
+	}
+	.resize-se {
+		inset-block-end: -0.5rem;
+		inset-inline-end: -0.5rem;
+		cursor: se-resize;
+	}
+	.resize-n {
+		inset-block-start: -0.5rem;
+		inset-inline-start: 50%;
+		transform: translateX(-50%);
+		cursor: n-resize;
+	}
+	.resize-s {
+		inset-block-end: -0.5rem;
+		inset-inline-start: 50%;
+		transform: translateX(-50%);
+		cursor: s-resize;
+	}
+	.resize-w {
+		inset-block-start: 50%;
+		inset-inline-start: -0.5rem;
+		transform: translateY(-50%);
+		cursor: w-resize;
+	}
+	.resize-e {
+		inset-block-start: 50%;
+		inset-inline-end: -0.5rem;
+		transform: translateY(-50%);
+		cursor: e-resize;
+	}
 
 	.loading-state {
 		display: flex;
@@ -852,8 +968,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ─── Footer ─── */
@@ -886,7 +1006,8 @@
 		inline-size: 100%;
 	}
 
-	.btn-cancel, .btn-crop {
+	.btn-cancel,
+	.btn-crop {
 		min-block-size: 44px;
 		padding-block: var(--space-3);
 		padding-inline: var(--space-6);
@@ -904,21 +1025,34 @@
 		color: oklch(0.3 0.01 265);
 		background-color: oklch(0.96 0.002 265);
 
-		&:hover { background-color: oklch(0.9 0.005 265); }
-		&:focus-visible { outline: 2px solid oklch(0.5 0.01 265); outline-offset: 2px; }
+		&:hover {
+			background-color: oklch(0.9 0.005 265);
+		}
+		&:focus-visible {
+			outline: 2px solid oklch(0.5 0.01 265);
+			outline-offset: 2px;
+		}
 	}
 
 	.btn-crop {
 		color: oklch(1 0 0);
 		background-color: oklch(0.6 0.2 260);
 
-		&:hover { background-color: oklch(0.5 0.22 260); }
-		&:focus-visible { outline: 2px solid oklch(0.6 0.2 260); outline-offset: 2px; }
+		&:hover {
+			background-color: oklch(0.5 0.22 260);
+		}
+		&:focus-visible {
+			outline: 2px solid oklch(0.6 0.2 260);
+			outline-offset: 2px;
+		}
 	}
 
 	/* ─── Responsive ─── */
 	@media (min-width: 640px) {
-		.crop-modal-overlay { align-items: center; padding: var(--space-6); }
+		.crop-modal-overlay {
+			align-items: center;
+			padding: var(--space-6);
+		}
 
 		.crop-modal {
 			position: relative;
@@ -930,7 +1064,9 @@
 			padding-block-end: 0;
 		}
 
-		.crop-modal::before { display: none; }
+		.crop-modal::before {
+			display: none;
+		}
 
 		.modal-header {
 			padding: var(--space-4) var(--space-6);
@@ -949,27 +1085,51 @@
 			border-end-end-radius: var(--radius-xl);
 		}
 
-		.crop-info { text-align: start; }
-		.footer-actions { flex-direction: row; inline-size: auto; }
+		.crop-info {
+			text-align: start;
+		}
+		.footer-actions {
+			flex-direction: row;
+			inline-size: auto;
+		}
 	}
 
 	@media (min-width: 768px) {
-		.crop-modal { max-inline-size: 56rem; }
+		.crop-modal {
+			max-inline-size: 56rem;
+		}
 	}
 
 	@media (max-height: 500px) and (orientation: landscape) {
-		.crop-modal { max-block-size: 100dvh; }
-		.modal-header { padding: var(--space-2) var(--space-4); }
-		.toolbar { padding: var(--space-2) var(--space-4); }
-		.modal-footer { padding: var(--space-2) var(--space-4); }
+		.crop-modal {
+			max-block-size: 100dvh;
+		}
+		.modal-header {
+			padding: var(--space-2) var(--space-4);
+		}
+		.toolbar {
+			padding: var(--space-2) var(--space-4);
+		}
+		.modal-footer {
+			padding: var(--space-2) var(--space-4);
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.close-btn, .btn-cancel, .btn-crop { transition: none; }
+		.close-btn,
+		.btn-cancel,
+		.btn-crop {
+			transition: none;
+		}
 	}
 
 	@media (prefers-contrast: high) {
-		.crop-modal { border: 2px solid currentColor; }
-		.btn-cancel, .btn-crop { border: 2px solid currentColor; }
+		.crop-modal {
+			border: 2px solid currentColor;
+		}
+		.btn-cancel,
+		.btn-crop {
+			border: 2px solid currentColor;
+		}
 	}
 </style>

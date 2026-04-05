@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Create Membership Plan - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -28,7 +28,15 @@ import { logger } from '$lib/utils/logger';
 
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { Icon, IconArrowLeft, IconCheck, IconCrown, IconPlus, IconTarget, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconCheck,
+		IconCrown,
+		IconPlus,
+		IconTarget,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

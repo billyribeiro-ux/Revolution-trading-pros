@@ -3,13 +3,20 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, TimelineEvent } from '$lib/crm/types';
-	import { Icon, IconActivity, IconArrowLeft, IconMail, IconPhone, IconUserCircle } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowLeft,
+		IconMail,
+		IconPhone,
+		IconUserCircle
+	} from '$lib/icons';
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);

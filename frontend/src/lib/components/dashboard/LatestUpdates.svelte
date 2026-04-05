@@ -11,7 +11,7 @@
 	@svelte5 Fully compliant with Nov/Dec 2025 best practices
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 
 	/**

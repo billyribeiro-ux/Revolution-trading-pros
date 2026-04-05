@@ -8,12 +8,21 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { useMediaControls } from '../hooks/useMediaControls.svelte';
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { Icon, IconAlertCircle, IconPlayerPause, IconPlayerPlay, IconUpload, IconVolume, IconVolumeOff, IconWaveSine } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconPlayerPause,
+		IconPlayerPlay,
+		IconUpload,
+		IconVolume,
+		IconVolumeOff,
+		IconWaveSine
+	} from '$lib/icons';
 
 	// ==========================================================================
 	// Props
@@ -42,8 +51,12 @@ import { logger } from '$lib/utils/logger';
 	// ==========================================================================
 
 	const controls = useMediaControls({
-		get blockId() { return props.blockId; },
-		get onError() { return props.onError; },
+		get blockId() {
+			return props.blockId;
+		},
+		get onError() {
+			return props.onError;
+		},
 		onEnded: () => {
 			logger.info('Audio playback ended');
 		}

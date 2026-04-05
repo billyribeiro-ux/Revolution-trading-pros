@@ -11,13 +11,7 @@
 		[key: string]: unknown;
 	}
 
-	let {
-		icon = '',
-		width = 24,
-		height = 24,
-		class: className = '',
-		...rest
-	}: Props = $props();
+	let { icon = '', width = 24, height = 24, class: className = '', ...rest }: Props = $props();
 </script>
 
 <svg

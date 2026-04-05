@@ -8,7 +8,35 @@
 	 */
 	import { page } from '$app/state';
 	import { user } from '$lib/stores/auth.svelte';
-	import { Icon, IconBellRinging, IconBook, IconChartBar, IconDashboard, IconEye, IconFileText, IconFilter, IconForms, IconHeartbeat, IconLogout, IconMail, IconNews, IconPhoto, IconPlugConnected, IconReceipt, IconSend, IconSeo, IconSettings, IconShoppingCart, IconTag, IconTicket, IconTrendingUp, IconUserCircle, IconUsers, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconBellRinging,
+		IconBook,
+		IconChartBar,
+		IconDashboard,
+		IconEye,
+		IconFileText,
+		IconFilter,
+		IconForms,
+		IconHeartbeat,
+		IconLogout,
+		IconMail,
+		IconNews,
+		IconPhoto,
+		IconPlugConnected,
+		IconReceipt,
+		IconSend,
+		IconSeo,
+		IconSettings,
+		IconShoppingCart,
+		IconTag,
+		IconTicket,
+		IconTrendingUp,
+		IconUserCircle,
+		IconUsers,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;

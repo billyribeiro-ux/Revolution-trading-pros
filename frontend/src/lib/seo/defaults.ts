@@ -135,8 +135,7 @@ export const seoDefaults: SEODefaults = {
 						itemOffered: {
 							'@type': 'Service',
 							name: 'Live Trading Rooms',
-							description:
-								'Real-time voice-guided trading rooms with professional traders'
+							description: 'Real-time voice-guided trading rooms with professional traders'
 						}
 					},
 					{
@@ -144,8 +143,7 @@ export const seoDefaults: SEODefaults = {
 						itemOffered: {
 							'@type': 'Service',
 							name: 'Trading Alert Services',
-							description:
-								'Swing trading and 0DTE options alerts with precise entries and exits'
+							description: 'Swing trading and 0DTE options alerts with precise entries and exits'
 						}
 					},
 					{
@@ -153,8 +151,7 @@ export const seoDefaults: SEODefaults = {
 						itemOffered: {
 							'@type': 'Service',
 							name: 'Custom Trading Indicators',
-							description:
-								'Institutional-grade indicators for ThinkorSwim and TradeStation'
+							description: 'Institutional-grade indicators for ThinkorSwim and TradeStation'
 						}
 					}
 				]

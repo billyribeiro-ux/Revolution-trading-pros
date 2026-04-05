@@ -11,12 +11,23 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag, Contact } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconArrowLeft, IconChevronLeft, IconChevronRight, IconRefresh, IconSearch, IconTag, IconUser, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconChevronLeft,
+		IconChevronRight,
+		IconRefresh,
+		IconSearch,
+		IconTag,
+		IconUser,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// Get tag ID from route params
 	let tagId = $derived(page.params.id ?? '');

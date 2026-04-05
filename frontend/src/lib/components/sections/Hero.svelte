@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * HeroSection - Netflix L11+ Enhanced Slider Hero
 	 * ══════════════════════════════════════════════════════════════════════════════

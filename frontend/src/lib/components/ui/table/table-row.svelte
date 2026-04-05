@@ -18,19 +18,15 @@
 	});
 </script>
 
-<tr
-	bind:this={ref}
-	data-slot="table-row"
-	class={className}
-	{...restProps}
->
+<tr bind:this={ref} data-slot="table-row" class={className} {...restProps}>
 	{@render props.children?.()}
 </tr>
 
 <style>
 	:global([data-slot='table-row']) {
 		border-block-end: 1px solid var(--border);
-		transition: color var(--duration-fast) var(--ease-default),
+		transition:
+			color var(--duration-fast) var(--ease-default),
 			background-color var(--duration-fast) var(--ease-default);
 
 		&:hover :global(th),

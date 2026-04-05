@@ -15,7 +15,7 @@
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { login, register } from '$lib/api/auth';
 	import { Icon, IconArrowLeft, IconShoppingCart, IconTicket } from '$lib/icons';
-			
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════

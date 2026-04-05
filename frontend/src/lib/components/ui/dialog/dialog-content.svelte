@@ -40,12 +40,7 @@
 
 <DialogPortal {...portalProps}>
 	<Dialog.Overlay />
-	<DialogPrimitive.Content
-		bind:ref
-		data-slot="dialog-content"
-		class={className}
-		{...restProps}
-	>
+	<DialogPrimitive.Content bind:ref data-slot="dialog-content" class={className} {...restProps}>
 		<div class="dialog-swipe-indicator" aria-hidden="true"></div>
 
 		<div class="dialog-body">
@@ -78,12 +73,14 @@
 		transition-duration: var(--duration-normal);
 
 		&[data-state='open'] {
-			animation: fade-in var(--duration-normal) var(--ease-default),
+			animation:
+				fade-in var(--duration-normal) var(--ease-default),
 				slide-in-from-bottom var(--duration-normal) var(--ease-default);
 		}
 
 		&[data-state='closed'] {
-			animation: fade-out var(--duration-normal) var(--ease-default),
+			animation:
+				fade-out var(--duration-normal) var(--ease-default),
 				slide-out-to-bottom var(--duration-normal) var(--ease-default);
 		}
 	}
@@ -101,12 +98,14 @@
 			padding: 0;
 
 			&[data-state='open'] {
-				animation: fade-in var(--duration-normal) var(--ease-default),
+				animation:
+					fade-in var(--duration-normal) var(--ease-default),
 					zoom-in-95 var(--duration-normal) var(--ease-default);
 			}
 
 			&[data-state='closed'] {
-				animation: fade-out var(--duration-normal) var(--ease-default),
+				animation:
+					fade-out var(--duration-normal) var(--ease-default),
 					zoom-out-95 var(--duration-normal) var(--ease-default);
 			}
 		}
@@ -163,7 +162,9 @@
 
 		&:focus {
 			outline: none;
-			box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--background);
+			box-shadow:
+				0 0 0 2px var(--ring),
+				0 0 0 4px var(--background);
 		}
 
 		&:disabled {

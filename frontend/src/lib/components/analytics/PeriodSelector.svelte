@@ -39,10 +39,7 @@
 	{/each}
 
 	{#if showCustom}
-		<button
-			class="period-btn"
-			data-active={!periods.find((p) => p.value === value) || undefined}
-		>
+		<button class="period-btn" data-active={!periods.find((p) => p.value === value) || undefined}>
 			Custom
 		</button>
 	{/if}
@@ -70,7 +67,9 @@
 		border: none;
 		cursor: pointer;
 
-		&:hover { color: oklch(0.15 0.01 265); }
+		&:hover {
+			color: oklch(0.15 0.01 265);
+		}
 
 		&[data-active] {
 			background-color: oklch(1 0 0);

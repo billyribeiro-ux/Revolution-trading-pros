@@ -28,7 +28,31 @@
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
-	import { Icon, IconBook, IconBuilding, IconChartBar, IconCurrencyDollar, IconDotsVertical, IconEdit, IconEye, IconFilter, IconLink, IconListDetails, IconMail, IconMailForward, IconPlayerPlay, IconRefresh, IconRepeat, IconRobot, IconSearch, IconTag, IconTarget, IconTrendingUp, IconUserPlus, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconBook,
+		IconBuilding,
+		IconChartBar,
+		IconCurrencyDollar,
+		IconDotsVertical,
+		IconEdit,
+		IconEye,
+		IconFilter,
+		IconLink,
+		IconListDetails,
+		IconMail,
+		IconMailForward,
+		IconPlayerPlay,
+		IconRefresh,
+		IconRepeat,
+		IconRobot,
+		IconSearch,
+		IconTag,
+		IconTarget,
+		IconTrendingUp,
+		IconUserPlus,
+		IconUsers
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - Apple ICT 7 Standard: No 'any' types

@@ -9,7 +9,22 @@
 	 */
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconArrowRight, IconBolt, IconBuildingBank, IconChartLine, IconCheck, IconCoin, IconCpu, IconExternalLink, IconHeartbeat, IconHome, IconLeaf, IconShoppingCart, IconTools } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowRight,
+		IconBolt,
+		IconBuildingBank,
+		IconChartLine,
+		IconCheck,
+		IconCoin,
+		IconCpu,
+		IconExternalLink,
+		IconHeartbeat,
+		IconHome,
+		IconLeaf,
+		IconShoppingCart,
+		IconTools
+	} from '$lib/icons';
 
 	// Featured ETFs with full descriptions
 	const featuredETFs = [
@@ -441,7 +456,8 @@
 									class:comparison-table__cell--better={row.etfBetter === true}
 								>
 									{#if row.etfBetter === true}
-										<Icon icon={IconCheck}
+										<Icon
+											icon={IconCheck}
 											size={16}
 											class="comparison-table__icon comparison-table__icon--check"
 										/>
@@ -453,7 +469,8 @@
 									class:comparison-table__cell--better={row.etfBetter === false}
 								>
 									{#if row.etfBetter === false}
-										<Icon icon={IconCheck}
+										<Icon
+											icon={IconCheck}
 											size={16}
 											class="comparison-table__icon comparison-table__icon--check"
 										/>

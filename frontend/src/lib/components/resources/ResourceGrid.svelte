@@ -211,7 +211,6 @@
 	function handleResourcePreview(resource: RoomResource) {
 		onPreview?.(resource);
 	}
-
 </script>
 
 <div class="rg-root">
@@ -219,9 +218,19 @@
 		<div class="rg-filters">
 			{#if showSearch}
 				<div class="rg-search-wrap">
-					<input type="search" placeholder="Search resources..." class="rg-search-input" oninput={handleSearch} />
+					<input
+						type="search"
+						placeholder="Search resources..."
+						class="rg-search-input"
+						oninput={handleSearch}
+					/>
 					<svg class="rg-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+						/>
 					</svg>
 				</div>
 			{/if}
@@ -250,7 +259,8 @@
 
 	{#if total > 0 && !loading}
 		<p class="rg-count">
-			Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, total)} of {total} resources
+			Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, total)} of {total}
+			resources
 		</p>
 	{/if}
 
@@ -272,8 +282,18 @@
 		</div>
 	{:else if error}
 		<div class="rg-error">
-			<svg class="rg-state-icon rg-error-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+			<svg
+				class="rg-state-icon rg-error-color"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+				/>
 			</svg>
 			<h3 class="rg-error-title">Failed to load resources</h3>
 			<p class="rg-error-msg">{error}</p>
@@ -281,8 +301,18 @@
 		</div>
 	{:else if resources.length === 0}
 		<div class="rg-empty">
-			<svg class="rg-state-icon rg-muted-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+			<svg
+				class="rg-state-icon rg-muted-color"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+				/>
 			</svg>
 			<h3 class="rg-empty-title">No resources found</h3>
 			<p class="rg-empty-text">
@@ -293,7 +323,13 @@
 				{/if}
 			</p>
 			{#if searchQuery}
-				<button class="rg-primary-btn" onclick={() => { searchQuery = ''; loadResources(); }}>Clear Search</button>
+				<button
+					class="rg-primary-btn"
+					onclick={() => {
+						searchQuery = '';
+						loadResources();
+					}}>Clear Search</button
+				>
 			{/if}
 		</div>
 	{:else}
@@ -313,23 +349,38 @@
 
 		{#if totalPages > 1}
 			<nav class="rg-pagination" aria-label="Pagination">
-				<button class="rg-page-btn" disabled={currentPage === 1} onclick={() => handlePageChange(currentPage - 1)}>Previous</button>
+				<button
+					class="rg-page-btn"
+					disabled={currentPage === 1}
+					onclick={() => handlePageChange(currentPage - 1)}>Previous</button
+				>
 
 				{#each Array(Math.min(5, totalPages)) as _, i}
 					{@const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
-						<button class="rg-page-btn" data-active={pageNum === currentPage || undefined} onclick={() => handlePageChange(pageNum)}>{pageNum}</button>
+						<button
+							class="rg-page-btn"
+							data-active={pageNum === currentPage || undefined}
+							onclick={() => handlePageChange(pageNum)}>{pageNum}</button
+						>
 					{/if}
 				{/each}
 
-				<button class="rg-page-btn" disabled={currentPage === totalPages} onclick={() => handlePageChange(currentPage + 1)}>Next</button>
+				<button
+					class="rg-page-btn"
+					disabled={currentPage === totalPages}
+					onclick={() => handlePageChange(currentPage + 1)}>Next</button
+				>
 			</nav>
 		{/if}
 	{/if}
 </div>
 
 <style>
-	.rg-root { display: flex; flex-direction: column; }
+	.rg-root {
+		display: flex;
+		flex-direction: column;
+	}
 
 	/* ─── Filters ─── */
 	.rg-filters {
@@ -349,7 +400,9 @@
 		position: relative;
 		flex: 1;
 
-		@media (min-width: 1024px) { max-inline-size: 28rem; }
+		@media (min-width: 1024px) {
+			max-inline-size: 28rem;
+		}
 	}
 
 	.rg-search-input {
@@ -380,7 +433,11 @@
 		color: oklch(0.65 0.01 265);
 	}
 
-	.rg-filter-group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+	.rg-filter-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+	}
 
 	.rg-select {
 		border-radius: var(--radius-lg);
@@ -411,26 +468,42 @@
 		gap: var(--space-6);
 		grid-template-columns: 1fr;
 
-		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.rg-grid[data-columns='2'] {
-		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.rg-grid[data-columns='3'] {
-		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-		@media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	.rg-grid[data-columns='4'] {
-		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-		@media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
-		@media (min-width: 1280px) { grid-template-columns: repeat(4, 1fr); }
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		@media (min-width: 1280px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 
 	/* ─── Skeleton ─── */
-	.rg-skel { animation: pulse 2s ease-in-out infinite; }
+	.rg-skel {
+		animation: pulse 2s ease-in-out infinite;
+	}
 
 	.rg-skel-thumb {
 		aspect-ratio: 16 / 9;
@@ -452,16 +525,40 @@
 		background-color: oklch(0.9 0.005 265);
 	}
 
-	.rg-skel-w34 { block-size: 1rem; inline-size: 75%; margin-block-end: var(--space-2); }
-	.rg-skel-wfull { block-size: 0.75rem; inline-size: 100%; margin-block-end: var(--space-3); }
+	.rg-skel-w34 {
+		block-size: 1rem;
+		inline-size: 75%;
+		margin-block-end: var(--space-2);
+	}
+	.rg-skel-wfull {
+		block-size: 0.75rem;
+		inline-size: 100%;
+		margin-block-end: var(--space-3);
+	}
 
-	.rg-skel-tags { display: flex; gap: var(--space-2); }
-	.rg-skel-tag { block-size: 1.25rem; inline-size: 4rem; border-radius: var(--radius-sm); background-color: oklch(0.9 0.005 265); }
+	.rg-skel-tags {
+		display: flex;
+		gap: var(--space-2);
+	}
+	.rg-skel-tag {
+		block-size: 1.25rem;
+		inline-size: 4rem;
+		border-radius: var(--radius-sm);
+		background-color: oklch(0.9 0.005 265);
+	}
 
 	/* ─── States ─── */
-	.rg-state-icon { margin-inline: auto; inline-size: 3rem; block-size: 3rem; }
-	.rg-error-color { color: oklch(0.65 0.15 25); }
-	.rg-muted-color { color: oklch(0.65 0.01 265); }
+	.rg-state-icon {
+		margin-inline: auto;
+		inline-size: 3rem;
+		block-size: 3rem;
+	}
+	.rg-error-color {
+		color: oklch(0.65 0.15 25);
+	}
+	.rg-muted-color {
+		color: oklch(0.65 0.01 265);
+	}
 
 	.rg-error {
 		border-radius: var(--radius-lg);
@@ -496,7 +593,9 @@
 		border: none;
 		cursor: pointer;
 
-		&:hover { background-color: oklch(0.45 0.2 25); }
+		&:hover {
+			background-color: oklch(0.45 0.2 25);
+		}
 	}
 
 	.rg-empty {
@@ -532,7 +631,9 @@
 		border: none;
 		cursor: pointer;
 
-		&:hover { background-color: oklch(0.48 0.2 260); }
+		&:hover {
+			background-color: oklch(0.48 0.2 260);
+		}
 	}
 
 	/* ─── Pagination ─── */
@@ -556,8 +657,13 @@
 		cursor: pointer;
 		transition: background-color 200ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.97 0.002 265); }
-		&:disabled { cursor: not-allowed; opacity: 0.5; }
+		&:hover {
+			background-color: oklch(0.97 0.002 265);
+		}
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
 
 		&[data-active] {
 			background-color: oklch(0.55 0.2 260);
@@ -567,7 +673,12 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
 	}
 </style>

@@ -11,7 +11,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
@@ -40,7 +40,23 @@ import { logger } from '$lib/utils/logger';
 
 	// Icons
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconBell, IconChartLine, IconCheck, IconChevronLeft, IconCurrencyDollar, IconEdit, IconPin, IconPinFilled, IconPlayerPlay, IconPlus, IconTable, IconTrash, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconBell,
+		IconChartLine,
+		IconCheck,
+		IconChevronLeft,
+		IconCurrencyDollar,
+		IconEdit,
+		IconPin,
+		IconPinFilled,
+		IconPlayerPlay,
+		IconPlus,
+		IconTable,
+		IconTrash,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES

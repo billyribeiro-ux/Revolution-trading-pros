@@ -57,7 +57,9 @@
 			{#if indeterminate}
 				<MinusIcon class="ddm-check-icon" />
 			{:else}
-				<CheckIcon class={['ddm-check-icon', !checked && 'ddm-check-hidden'].filter(Boolean).join(' ')} />
+				<CheckIcon
+					class={['ddm-check-icon', !checked && 'ddm-check-hidden'].filter(Boolean).join(' ')}
+				/>
 			{/if}
 		</span>
 		{@render childrenProp?.()}

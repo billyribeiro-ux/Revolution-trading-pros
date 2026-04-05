@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * CRM Leads Management - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -32,7 +32,28 @@ import { logger } from '$lib/utils/logger';
 	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
-	import { Icon, IconArrowRight, IconBuilding, IconChartBar, IconCheck, IconChevronDown, IconEdit, IconEye, IconFilter, IconFlame, IconRefresh, IconSearch, IconStar, IconStarFilled, IconTarget, IconTrash, IconTrendingUp, IconUserPlus, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowRight,
+		IconBuilding,
+		IconChartBar,
+		IconCheck,
+		IconChevronDown,
+		IconEdit,
+		IconEye,
+		IconFilter,
+		IconFlame,
+		IconRefresh,
+		IconSearch,
+		IconStar,
+		IconStarFilled,
+		IconTarget,
+		IconTrash,
+		IconTrendingUp,
+		IconUserPlus,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

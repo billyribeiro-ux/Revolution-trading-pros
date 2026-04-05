@@ -12,11 +12,31 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { TriggerType, FunnelStatus } from '$lib/crm/types';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconArrowRight, IconCalendar, IconCheck, IconCode, IconCreditCard, IconForms, IconLink, IconList, IconLoader2, IconLogin, IconMail, IconShare, IconShoppingCart, IconTag, IconUserPlus, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconArrowRight,
+		IconCalendar,
+		IconCheck,
+		IconCode,
+		IconCreditCard,
+		IconForms,
+		IconLink,
+		IconList,
+		IconLoader2,
+		IconLogin,
+		IconMail,
+		IconShare,
+		IconShoppingCart,
+		IconTag,
+		IconUserPlus,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

@@ -1,8 +1,16 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
-	import { Icon, IconEdit, IconPlus, IconSearch, IconToggleLeft, IconToggleRight, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconEdit,
+		IconPlus,
+		IconSearch,
+		IconToggleLeft,
+		IconToggleRight,
+		IconTrash
+	} from '$lib/icons';
 
 	let redirects: any[] = $state([]);
 	let stats: any = $state(null);

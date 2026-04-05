@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import { Icon, IconArrowLeft, IconUserPlus } from '$lib/icons';

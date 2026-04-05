@@ -11,7 +11,56 @@
 	import type { BlockType, BlockContent, BlockSettings } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
 	import PresetPicker from './PresetPicker.svelte';
-	import { Icon, IconAlertCircle, IconAlertTriangle, IconAlignLeft, IconApps, IconArticle, IconBlockquote, IconBox, IconBrackets, IconBrandYoutube, IconBulb, IconChartCandle, IconChecklist, IconClock, IconCode, IconColumns, IconCursor, IconFileCode, IconFileDescription, IconFileDownload, IconGif, IconH1, IconId, IconInfoCircle, IconLanguage, IconLayoutDistributeHorizontal, IconLayoutNavbarCollapse, IconLayoutRows, IconList, IconListTree, IconMail, IconMessageCircle, IconMinus, IconPhoto, IconPhotoFilled, IconQuote, IconRobot, IconSearch, IconShare, IconSpacingVertical, IconSpeakerphone, IconTemplate, IconToggleLeft, IconTrendingUp, IconUser, IconVideo, IconVolume, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconAlertTriangle,
+		IconAlignLeft,
+		IconApps,
+		IconArticle,
+		IconBlockquote,
+		IconBox,
+		IconBrackets,
+		IconBrandYoutube,
+		IconBulb,
+		IconChartCandle,
+		IconChecklist,
+		IconClock,
+		IconCode,
+		IconColumns,
+		IconCursor,
+		IconFileCode,
+		IconFileDescription,
+		IconFileDownload,
+		IconGif,
+		IconH1,
+		IconId,
+		IconInfoCircle,
+		IconLanguage,
+		IconLayoutDistributeHorizontal,
+		IconLayoutNavbarCollapse,
+		IconLayoutRows,
+		IconList,
+		IconListTree,
+		IconMail,
+		IconMessageCircle,
+		IconMinus,
+		IconPhoto,
+		IconPhotoFilled,
+		IconQuote,
+		IconRobot,
+		IconSearch,
+		IconShare,
+		IconSpacingVertical,
+		IconSpeakerphone,
+		IconTemplate,
+		IconToggleLeft,
+		IconTrendingUp,
+		IconUser,
+		IconVideo,
+		IconVolume,
+		IconX
+	} from '$lib/icons';
 
 	// ==========================================================================
 	// Props

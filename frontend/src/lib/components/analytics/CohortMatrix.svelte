@@ -68,9 +68,7 @@
 		<table class="cohort-table">
 			<thead>
 				<tr>
-					<th class="sticky-col">
-						Cohort
-					</th>
+					<th class="sticky-col"> Cohort </th>
 					<th class="center-col"> Size </th>
 					{#each periodNumbers as period (period)}
 						<th class="period-col">
@@ -114,9 +112,7 @@
 
 				<!-- Averages Row -->
 				<tr class="avg-row">
-					<td class="sticky-col avg-label">
-						Average
-					</td>
+					<td class="sticky-col avg-label"> Average </td>
 					<td class="center-col size-cell">
 						{Math.round(
 							data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length
@@ -125,10 +121,7 @@
 					{#each periodAverages as avg, i (i)}
 						<td class="cell">
 							{#if avg !== null}
-								<div
-									class="heat-cell avg"
-									data-level={getRetentionLevel(avg)}
-								>
+								<div class="heat-cell avg" data-level={getRetentionLevel(avg)}>
 									{avg.toFixed(0)}%
 								</div>
 							{:else}
@@ -194,7 +187,9 @@
 		margin-block-start: var(--space-1);
 	}
 
-	.table-scroll { overflow-x: auto; }
+	.table-scroll {
+		overflow-x: auto;
+	}
 
 	.cohort-table {
 		inline-size: 100%;
@@ -202,7 +197,9 @@
 		border-collapse: collapse;
 	}
 
-	.cohort-table thead tr { background-color: oklch(0.97 0.002 265); }
+	.cohort-table thead tr {
+		background-color: oklch(0.97 0.002 265);
+	}
 
 	.cohort-table th {
 		padding-inline: var(--space-3);
@@ -217,15 +214,25 @@
 		z-index: 10;
 	}
 
-	thead .sticky-col { background-color: oklch(0.97 0.002 265); text-align: start; }
+	thead .sticky-col {
+		background-color: oklch(0.97 0.002 265);
+		text-align: start;
+	}
 
-	.center-col { text-align: center; }
+	.center-col {
+		text-align: center;
+	}
 
-	.period-col { text-align: center; min-inline-size: 60px; }
+	.period-col {
+		text-align: center;
+		min-inline-size: 60px;
+	}
 
 	.data-row {
 		border-block-start: 1px solid oklch(0.95 0.002 265);
-		&:hover { background-color: oklch(0.97 0.002 265 / 50%); }
+		&:hover {
+			background-color: oklch(0.97 0.002 265 / 50%);
+		}
 	}
 
 	.row-label {
@@ -234,7 +241,9 @@
 		background-color: oklch(1 0 0);
 	}
 
-	.size-cell { color: oklch(0.45 0.01 265); }
+	.size-cell {
+		color: oklch(0.45 0.01 265);
+	}
 
 	.cell {
 		padding-inline: 0.25rem;
@@ -251,14 +260,33 @@
 		font-size: var(--text-xs);
 		font-weight: var(--weight-medium);
 
-		&.avg { font-weight: var(--weight-bold); }
+		&.avg {
+			font-weight: var(--weight-bold);
+		}
 
-		&[data-level='high'] { background-color: oklch(0.6 0.18 160); color: oklch(1 0 0); }
-		&[data-level='good'] { background-color: oklch(0.68 0.16 160); color: oklch(1 0 0); }
-		&[data-level='mid'] { background-color: oklch(0.82 0.16 90); color: oklch(1 0 0); }
-		&[data-level='low'] { background-color: oklch(0.75 0.16 55); color: oklch(0.25 0.02 55); }
-		&[data-level='poor'] { background-color: oklch(0.65 0.2 25); color: oklch(0.25 0.02 25); }
-		&[data-level='none'] { background-color: oklch(0.97 0.002 265); }
+		&[data-level='high'] {
+			background-color: oklch(0.6 0.18 160);
+			color: oklch(1 0 0);
+		}
+		&[data-level='good'] {
+			background-color: oklch(0.68 0.16 160);
+			color: oklch(1 0 0);
+		}
+		&[data-level='mid'] {
+			background-color: oklch(0.82 0.16 90);
+			color: oklch(1 0 0);
+		}
+		&[data-level='low'] {
+			background-color: oklch(0.75 0.16 55);
+			color: oklch(0.25 0.02 55);
+		}
+		&[data-level='poor'] {
+			background-color: oklch(0.65 0.2 25);
+			color: oklch(0.25 0.02 25);
+		}
+		&[data-level='none'] {
+			background-color: oklch(0.97 0.002 265);
+		}
 	}
 
 	.avg-row {
@@ -281,21 +309,41 @@
 		font-size: var(--text-xs);
 	}
 
-	.legend-label { color: oklch(0.55 0.01 265); }
+	.legend-label {
+		color: oklch(0.55 0.01 265);
+	}
 
-	.legend-items { display: flex; align-items: center; gap: var(--space-2); }
+	.legend-items {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
-	.legend-item { display: flex; align-items: center; gap: 0.25rem; }
+	.legend-item {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
 
 	.legend-swatch {
 		inline-size: 1rem;
 		block-size: 1rem;
 		border-radius: var(--radius-sm);
 
-		&[data-level='high'] { background-color: oklch(0.6 0.18 160); }
-		&[data-level='good'] { background-color: oklch(0.68 0.16 160); }
-		&[data-level='mid'] { background-color: oklch(0.82 0.16 90); }
-		&[data-level='low'] { background-color: oklch(0.75 0.16 55); }
-		&[data-level='poor'] { background-color: oklch(0.65 0.2 25); }
+		&[data-level='high'] {
+			background-color: oklch(0.6 0.18 160);
+		}
+		&[data-level='good'] {
+			background-color: oklch(0.68 0.16 160);
+		}
+		&[data-level='mid'] {
+			background-color: oklch(0.82 0.16 90);
+		}
+		&[data-level='low'] {
+			background-color: oklch(0.75 0.16 55);
+		}
+		&[data-level='poor'] {
+			background-color: oklch(0.65 0.2 25);
+		}
 	}
 </style>

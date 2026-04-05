@@ -42,8 +42,6 @@
 	let columns = $derived(props.columns ?? 4);
 	let staggerDelay = $derived(props.staggerDelay ?? 0.1);
 	let onStatClick = $derived(props.onStatClick ?? null);
-
-
 </script>
 
 <div class="stats-grid" style:--columns={columns}>

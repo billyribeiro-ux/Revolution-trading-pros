@@ -2,7 +2,17 @@
 	import { page } from '$app/state';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
-	import { Icon, IconDashboard, IconError404, IconForms, IconLink, IconLogout, IconSeo, IconSettings, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconDashboard,
+		IconError404,
+		IconForms,
+		IconLink,
+		IconLogout,
+		IconSeo,
+		IconSettings,
+		IconUsers
+	} from '$lib/icons';
 
 	// Props
 	interface Props {

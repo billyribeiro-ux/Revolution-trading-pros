@@ -19,12 +19,7 @@
 </script>
 
 <div data-slot="table-container">
-	<table
-		bind:this={ref}
-		data-slot="table"
-		class={className}
-		{...restProps}
-	>
+	<table bind:this={ref} data-slot="table" class={className} {...restProps}>
 		{@render props.children?.()}
 	</table>
 </div>

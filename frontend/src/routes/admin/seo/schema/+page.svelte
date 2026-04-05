@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { Icon, IconCode, IconCopy, IconEye, IconPlus, IconTrash } from '$lib/icons';
 

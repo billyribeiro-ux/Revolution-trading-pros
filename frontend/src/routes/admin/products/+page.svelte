@@ -3,12 +3,23 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconBook, IconChartLine, IconCrown, IconEdit, IconPlus, IconRefresh, IconSearch, IconShoppingCart, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconBook,
+		IconChartLine,
+		IconCrown,
+		IconEdit,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconShoppingCart,
+		IconTrash
+	} from '$lib/icons';
 
 	// Svelte 5 state runes
 	let loading = $state(true);

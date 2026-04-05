@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * CoursesSection - Apple/Netflix Cinematic Design
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
@@ -7,7 +7,21 @@ import { logger } from '$lib/utils/logger';
 	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconActivity, IconArrowRight, IconBrain, IconCertificate, IconChartCandle, IconChartLine, IconClock, IconFlame, IconPlayerPlay, IconSchool, IconShield, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowRight,
+		IconBrain,
+		IconCertificate,
+		IconChartCandle,
+		IconChartLine,
+		IconClock,
+		IconFlame,
+		IconPlayerPlay,
+		IconSchool,
+		IconShield,
+		IconUsers
+	} from '$lib/icons';
 
 	// Tabler Icons (Preserving sub-path imports for tree-shaking)
 	// ============================================================================
@@ -286,11 +300,17 @@ import { logger } from '$lib/utils/logger';
 			class="cs-cards"
 			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
-			<div class="cs-cards-spotlight" style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), oklch(0.55 0.2 300 / 0.08), transparent 40%);"></div>
+			<div
+				class="cs-cards-spotlight"
+				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), oklch(0.55 0.2 300 / 0.08), transparent 40%);"
+			></div>
 
 			{#each courses as course}
 				<a href={course.href} class="course-card cs-card">
-					<div class="cs-card-blur" style="background: {course.imagePattern}; filter: blur(40px);"></div>
+					<div
+						class="cs-card-blur"
+						style="background: {course.imagePattern}; filter: blur(40px);"
+					></div>
 
 					<div class="cs-card-inner">
 						<div class="cs-card-top">
@@ -387,11 +407,17 @@ import { logger } from '$lib/utils/logger';
 		overflow: hidden;
 		background-color: oklch(0.08 0.02 270);
 
-		@media (min-width: 640px) { padding-block: 8rem; }
+		@media (min-width: 640px) {
+			padding-block: 8rem;
+		}
 	}
 
 	/* ─── Background ─── */
-	.cs-bg { position: absolute; inset: 0; pointer-events: none; }
+	.cs-bg {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
 
 	.cs-noise {
 		position: absolute;
@@ -441,8 +467,12 @@ import { logger } from '$lib/utils/logger';
 		padding-inline: 1rem;
 		z-index: 10;
 
-		@media (min-width: 640px) { padding-inline: 1.5rem; }
-		@media (min-width: 1024px) { padding-inline: 2rem; }
+		@media (min-width: 640px) {
+			padding-inline: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			padding-inline: 2rem;
+		}
 	}
 
 	.cs-header {
@@ -477,7 +507,9 @@ import { logger } from '$lib/utils/logger';
 		letter-spacing: -0.02em;
 	}
 
-	.cs-title-muted { color: oklch(0.35 0.01 265); }
+	.cs-title-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.cs-subtitle {
 		font-size: var(--text-lg);
@@ -499,10 +531,15 @@ import { logger } from '$lib/utils/logger';
 		padding-block-start: 2rem;
 		border-block-start: 1px solid oklch(1 0 0 / 0.05);
 
-		@media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 
-	.cs-stat { text-align: center; cursor: default; }
+	.cs-stat {
+		text-align: center;
+		cursor: default;
+	}
 
 	.cs-stat-value {
 		font-size: 1.875rem;
@@ -512,7 +549,9 @@ import { logger } from '$lib/utils/logger';
 		transition: transform 300ms;
 	}
 
-	.cs-stat:hover .cs-stat-value { transform: scale(1.1); }
+	.cs-stat:hover .cs-stat-value {
+		transform: scale(1.1);
+	}
 
 	.cs-stat-label {
 		font-size: var(--text-xs);
@@ -530,8 +569,12 @@ import { logger } from '$lib/utils/logger';
 		gap: 1.5rem;
 		position: relative;
 
-		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
-		@media (min-width: 1024px) { gap: 2rem; }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (min-width: 1024px) {
+			gap: 2rem;
+		}
 	}
 
 	.cs-cards-spotlight {
@@ -543,7 +586,9 @@ import { logger } from '$lib/utils/logger';
 		z-index: 0;
 		border-radius: 1.5rem;
 
-		@media (min-width: 768px) { opacity: 1; }
+		@media (min-width: 768px) {
+			opacity: 1;
+		}
 	}
 
 	/* ─── Card ─── */
@@ -553,22 +598,49 @@ import { logger } from '$lib/utils/logger';
 		overflow: hidden;
 		background-color: oklch(0.15 0.005 285 / 0.4);
 		border: 1px solid oklch(1 0 0 / 0.05);
-		transition: border-color 500ms, box-shadow 500ms, transform 100ms;
+		transition:
+			border-color 500ms,
+			box-shadow 500ms,
+			transform 100ms;
 		z-index: 10;
 		isolation: isolate;
 		text-decoration: none;
 
-		&:hover { border-color: oklch(1 0 0 / 0.1); box-shadow: 0 25px 50px oklch(0.35 0.15 300 / 0.2); }
-		&:active { transform: scale(0.99); }
-		&:hover .cs-card-blur { opacity: 1; }
-		&:hover .cs-card-icon { transform: scale(1.1) rotate(3deg); }
-		&:hover .cs-card-title { color: oklch(0.85 0.1 300); }
-		&:hover .cs-card-desc { color: oklch(0.8 0.01 265); }
-		&:hover .cs-feature-tag { border-color: oklch(1 0 0 / 0.2); }
-		&:hover .cs-badge-pill { background-color: oklch(1 0 0 / 0.2); }
-		&:hover .cs-cta-btn { transform: translateY(-0.25rem); box-shadow: 0 20px 40px oklch(1 0 0 / 0.2); }
-		&:hover .cs-play-overlay { opacity: 1; }
-		&:hover .cs-play-btn { transform: scale(1); }
+		&:hover {
+			border-color: oklch(1 0 0 / 0.1);
+			box-shadow: 0 25px 50px oklch(0.35 0.15 300 / 0.2);
+		}
+		&:active {
+			transform: scale(0.99);
+		}
+		&:hover .cs-card-blur {
+			opacity: 1;
+		}
+		&:hover .cs-card-icon {
+			transform: scale(1.1) rotate(3deg);
+		}
+		&:hover .cs-card-title {
+			color: oklch(0.85 0.1 300);
+		}
+		&:hover .cs-card-desc {
+			color: oklch(0.8 0.01 265);
+		}
+		&:hover .cs-feature-tag {
+			border-color: oklch(1 0 0 / 0.2);
+		}
+		&:hover .cs-badge-pill {
+			background-color: oklch(1 0 0 / 0.2);
+		}
+		&:hover .cs-cta-btn {
+			transform: translateY(-0.25rem);
+			box-shadow: 0 20px 40px oklch(1 0 0 / 0.2);
+		}
+		&:hover .cs-play-overlay {
+			opacity: 1;
+		}
+		&:hover .cs-play-btn {
+			transform: scale(1);
+		}
 	}
 
 	.cs-card-blur {
@@ -585,8 +657,12 @@ import { logger } from '$lib/utils/logger';
 		display: flex;
 		flex-direction: column;
 
-		@media (min-width: 640px) { padding: 2rem; }
-		@media (min-width: 1024px) { padding: 2.5rem; }
+		@media (min-width: 640px) {
+			padding: 2rem;
+		}
+		@media (min-width: 1024px) {
+			padding: 2.5rem;
+		}
 	}
 
 	/* ─── Card Top ─── */
@@ -598,7 +674,11 @@ import { logger } from '$lib/utils/logger';
 		margin-block-end: 1.5rem;
 	}
 
-	.cs-card-info { display: flex; align-items: center; gap: 1rem; }
+	.cs-card-info {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
 
 	.cs-card-icon {
 		inline-size: 3.5rem;
@@ -627,7 +707,9 @@ import { logger } from '$lib/utils/logger';
 		margin-block-end: 0.25rem;
 	}
 
-	:global(.cs-flame) { animation: pulse 1s ease-in-out infinite; }
+	:global(.cs-flame) {
+		animation: pulse 1s ease-in-out infinite;
+	}
 
 	.cs-card-title {
 		font-size: clamp(1.25rem, 2.5vw, 1.5rem);
@@ -652,7 +734,9 @@ import { logger } from '$lib/utils/logger';
 		transition: background-color 200ms;
 		white-space: nowrap;
 
-		@media (min-width: 640px) { font-size: var(--text-xs); }
+		@media (min-width: 640px) {
+			font-size: var(--text-xs);
+		}
 	}
 
 	/* ─── Card Description ─── */
@@ -680,7 +764,9 @@ import { logger } from '$lib/utils/logger';
 		padding-inline: 0.5rem;
 		scrollbar-width: none;
 
-		&::-webkit-scrollbar { display: none; }
+		&::-webkit-scrollbar {
+			display: none;
+		}
 
 		@media (max-width: 767px) {
 			scroll-snap-type: x mandatory;
@@ -703,7 +789,9 @@ import { logger } from '$lib/utils/logger';
 		transition: border-color 200ms;
 	}
 
-	.cs-spacer { flex-grow: 1; }
+	.cs-spacer {
+		flex-grow: 1;
+	}
 
 	/* ─── Card Bottom ─── */
 	.cs-card-bottom {
@@ -713,10 +801,18 @@ import { logger } from '$lib/utils/logger';
 		flex-direction: column;
 		gap: 1rem;
 
-		@media (min-width: 640px) { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+		@media (min-width: 640px) {
+			flex-direction: row;
+			align-items: flex-end;
+			justify-content: space-between;
+		}
 	}
 
-	.cs-price-col { display: flex; flex-direction: column; gap: 0.5rem; }
+	.cs-price-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
 
 	.cs-meta-row {
 		display: flex;
@@ -726,11 +822,19 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(0.45 0.005 285);
 		font-weight: var(--weight-medium);
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
-	.cs-meta-item { display: flex; align-items: center; gap: 0.375rem; }
-	:global(.cs-meta-icon) { color: oklch(0.4 0.005 285); }
+	.cs-meta-item {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+	:global(.cs-meta-icon) {
+		color: oklch(0.4 0.005 285);
+	}
 
 	.cs-price-row {
 		display: flex;
@@ -767,7 +871,9 @@ import { logger } from '$lib/utils/logger';
 		font-weight: var(--weight-bold);
 		font-size: var(--text-sm);
 		box-shadow: 0 20px 40px oklch(1 0 0 / 0.05);
-		transition: transform 300ms, box-shadow 300ms;
+		transition:
+			transform 300ms,
+			box-shadow 300ms;
 	}
 
 	/* ─── Play Overlay ─── */
@@ -782,7 +888,9 @@ import { logger } from '$lib/utils/logger';
 		pointer-events: none;
 		z-index: 20;
 
-		@media (min-width: 640px) { display: flex; }
+		@media (min-width: 640px) {
+			display: flex;
+		}
 	}
 
 	.cs-play-backdrop {
@@ -808,7 +916,10 @@ import { logger } from '$lib/utils/logger';
 		transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 
-	:global(.cs-play-icon) { color: oklch(1 0 0); margin-inline-start: 0.25rem; }
+	:global(.cs-play-icon) {
+		color: oklch(1 0 0);
+		margin-inline-start: 0.25rem;
+	}
 
 	/* ─── Footer ─── */
 	.cs-footer {
@@ -828,13 +939,20 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		font-weight: var(--weight-semibold);
 		box-shadow: 0 10px 25px oklch(0.5 0.2 300 / 0.25);
-		transition: box-shadow 300ms, transform 300ms;
+		transition:
+			box-shadow 300ms,
+			transform 300ms;
 		position: relative;
 		overflow: hidden;
 		text-decoration: none;
 
-		&:hover { box-shadow: 0 10px 25px oklch(0.5 0.2 300 / 0.5); transform: translateY(-0.25rem); }
-		&:active { transform: scale(0.98); }
+		&:hover {
+			box-shadow: 0 10px 25px oklch(0.5 0.2 300 / 0.5);
+			transform: translateY(-0.25rem);
+		}
+		&:active {
+			transform: scale(0.98);
+		}
 	}
 
 	.cs-footer-shimmer {
@@ -845,11 +963,23 @@ import { logger } from '$lib/utils/logger';
 		transition: transform 700ms ease-in-out;
 	}
 
-	.cs-footer-cta:hover .cs-footer-shimmer { transform: translateX(100%); }
+	.cs-footer-cta:hover .cs-footer-shimmer {
+		transform: translateX(100%);
+	}
 
-	.cs-footer-text { font-size: var(--text-base); position: relative; z-index: 10; }
-	:global(.cs-footer-arrow) { position: relative; z-index: 10; transition: transform 200ms; }
-	.cs-footer-cta:hover :global(.cs-footer-arrow) { transform: translateX(0.25rem); }
+	.cs-footer-text {
+		font-size: var(--text-base);
+		position: relative;
+		z-index: 10;
+	}
+	:global(.cs-footer-arrow) {
+		position: relative;
+		z-index: 10;
+		transition: transform 200ms;
+	}
+	.cs-footer-cta:hover :global(.cs-footer-arrow) {
+		transform: translateX(0.25rem);
+	}
 
 	.cs-cert-note {
 		margin-block-start: 1.5rem;
@@ -862,10 +992,14 @@ import { logger } from '$lib/utils/logger';
 		opacity: 0.6;
 		transition: opacity 200ms;
 
-		&:hover { opacity: 1; }
+		&:hover {
+			opacity: 1;
+		}
 	}
 
-	:global(.cs-cert-icon) { color: oklch(0.6 0.2 300); }
+	:global(.cs-cert-icon) {
+		color: oklch(0.6 0.2 300);
+	}
 
 	/* ─── Safe Area Insets ─── */
 	.cs-section {
@@ -875,29 +1009,52 @@ import { logger } from '$lib/utils/logger';
 
 	/* ─── Touch Targets ─── */
 	@media (hover: none) and (pointer: coarse) {
-		.cs-card, .cs-footer-cta { min-block-size: 44px; }
+		.cs-card,
+		.cs-footer-cta {
+			min-block-size: 44px;
+		}
 	}
 
 	/* ─── Reduced Motion ─── */
 	@media (prefers-reduced-motion: reduce) {
-		.cs-orb { animation: none; }
-		.cs-card { transition: none; }
+		.cs-orb {
+			animation: none;
+		}
+		.cs-card {
+			transition: none;
+		}
 	}
 
 	/* ─── Landscape Mobile ─── */
 	@media (max-height: 500px) and (orientation: landscape) {
-		.cs-section { padding-block: 2rem; }
-		.cs-header { margin-block-end: 2rem; }
+		.cs-section {
+			padding-block: 2rem;
+		}
+		.cs-header {
+			margin-block-end: 2rem;
+		}
 	}
 
 	/* ─── Keyframes ─── */
 	@keyframes pulse-slow {
-		0%, 100% { opacity: 0.5; transform: scale(1); }
-		50% { opacity: 0.8; transform: scale(1.1); }
+		0%,
+		100% {
+			opacity: 0.5;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.8;
+			transform: scale(1.1);
+		}
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.4; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.4;
+		}
 	}
 </style>

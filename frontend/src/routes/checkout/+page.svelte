@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Checkout Page - WordPress Revolution Trading Style (Multi-Step)
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -19,7 +19,18 @@ import { logger } from '$lib/utils/logger';
 	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import { Icon, IconArrowLeft, IconArrowRight, IconCheck, IconCreditCard, IconLoader, IconLock, IconShieldCheck, IconTicket, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconArrowRight,
+		IconCheck,
+		IconCreditCard,
+		IconLoader,
+		IconLock,
+		IconShieldCheck,
+		IconTicket,
+		IconX
+	} from '$lib/icons';
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════

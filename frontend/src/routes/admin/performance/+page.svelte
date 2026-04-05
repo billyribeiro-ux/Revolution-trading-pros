@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
@@ -8,7 +8,21 @@ import { logger } from '$lib/utils/logger';
 		type CoreWebVitals,
 		type OptimizationRecommendation
 	} from '$lib/api/bing-seo';
-	import { Icon, IconActivity, IconAlertTriangle, IconBolt, IconChartBar, IconCheck, IconClock, IconDatabase, IconFlame, IconGauge, IconRefresh, IconServer, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconAlertTriangle,
+		IconBolt,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconDatabase,
+		IconFlame,
+		IconGauge,
+		IconRefresh,
+		IconServer,
+		IconX
+	} from '$lib/icons';
 
 	// State
 	let loading = $state(true);

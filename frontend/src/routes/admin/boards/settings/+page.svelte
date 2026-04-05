@@ -1,11 +1,24 @@
 <!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
 https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconCheck, IconClock, IconCloud, IconLayoutKanban, IconPalette, IconPlus, IconRefresh, IconSettings, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconCheck,
+		IconClock,
+		IconCloud,
+		IconLayoutKanban,
+		IconPalette,
+		IconPlus,
+		IconRefresh,
+		IconSettings,
+		IconTrash
+	} from '$lib/icons';
 
 	// State
 	let settings = $state<BoardsSettings>({

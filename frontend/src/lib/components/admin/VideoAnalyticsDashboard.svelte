@@ -10,7 +10,19 @@
 		type AnalyticsDashboard,
 		type VideoAnalytics
 	} from '$lib/api/video-advanced';
-	import { Icon, IconChartBar, IconClock, IconDeviceDesktop, IconDeviceMobile, IconDeviceTablet, IconEye, IconRefresh, IconTrendingUp, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconChartBar,
+		IconClock,
+		IconDeviceDesktop,
+		IconDeviceMobile,
+		IconDeviceTablet,
+		IconEye,
+		IconRefresh,
+		IconTrendingUp,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 	interface Props {
 		videoId?: number;
 		onClose?: () => void;

@@ -2,7 +2,14 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconActivity, IconArrowRight, IconCheck, IconLockSquare, IconServer } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowRight,
+		IconCheck,
+		IconLockSquare,
+		IconServer
+	} from '$lib/icons';
 	// --- Interaction Logic ---
 	let containerRef = $state<HTMLElement | null>(null);
 	let mouse = $state({ x: 0, y: 0 });
@@ -248,9 +255,17 @@
 		animation: scroll-down 20s linear infinite;
 	}
 
-	.cta-tick { display: flex; gap: 2rem; margin-block: 0.25rem; }
-	.cta-tick-end { justify-content: flex-end; }
-	.cta-tick-dim { opacity: 0.5; }
+	.cta-tick {
+		display: flex;
+		gap: 2rem;
+		margin-block: 0.25rem;
+	}
+	.cta-tick-end {
+		justify-content: flex-end;
+	}
+	.cta-tick-dim {
+		opacity: 0.5;
+	}
 
 	/* ─── Spotlight ─── */
 	.cta-spotlight {
@@ -268,7 +283,9 @@
 		z-index: 10;
 	}
 
-	.cta-center { text-align: center; }
+	.cta-center {
+		text-align: center;
+	}
 
 	/* ─── Status Row ─── */
 	.cta-status-row {
@@ -279,7 +296,12 @@
 		margin-block-end: 2.5rem;
 	}
 
-	.cta-ping-wrap { position: relative; display: flex; block-size: 0.5rem; inline-size: 0.5rem; }
+	.cta-ping-wrap {
+		position: relative;
+		display: flex;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+	}
 	.cta-ping {
 		position: absolute;
 		display: inline-flex;
@@ -307,7 +329,9 @@
 		color: oklch(0.55 0.01 265);
 	}
 
-	.cta-status-open { color: oklch(0.7 0.17 160); }
+	.cta-status-open {
+		color: oklch(0.7 0.17 160);
+	}
 
 	/* ─── Heading ─── */
 	.cta-heading {
@@ -319,7 +343,9 @@
 		line-height: 0.95;
 	}
 
-	.cta-heading-muted { color: oklch(0.35 0.01 265); }
+	.cta-heading-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.cta-subtext {
 		font-size: var(--text-lg);
@@ -338,7 +364,9 @@
 		margin-inline: auto;
 		perspective: 1000px;
 
-		&:hover .cta-form-glow { opacity: 1; }
+		&:hover .cta-form-glow {
+			opacity: 1;
+		}
 	}
 
 	.cta-form-glow {
@@ -369,7 +397,11 @@
 		border-block-end: 1px solid oklch(1 0 0 / 0.05);
 	}
 
-	.cta-form-bar-start { display: flex; align-items: center; gap: 0.5rem; }
+	.cta-form-bar-start {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 
 	.cta-form-bar-label {
 		font-size: 0.625rem;
@@ -389,10 +421,14 @@
 		padding: 1.5rem;
 		text-align: start;
 
-		@media (min-width: 768px) { padding: 2rem; }
+		@media (min-width: 768px) {
+			padding: 2rem;
+		}
 	}
 
-	.cta-field { margin-block-end: 1.5rem; }
+	.cta-field {
+		margin-block-end: 1.5rem;
+	}
 
 	.cta-label {
 		display: block;
@@ -404,7 +440,9 @@
 		margin-block-end: 0.5rem;
 	}
 
-	.cta-input-wrap { position: relative; }
+	.cta-input-wrap {
+		position: relative;
+	}
 
 	.cta-input {
 		inline-size: 100%;
@@ -415,7 +453,9 @@
 		font-size: var(--text-sm);
 		padding-inline: 1rem;
 		padding-block: 0.75rem;
-		transition: border-color 200ms, box-shadow 200ms;
+		transition:
+			border-color 200ms,
+			box-shadow 200ms;
 
 		&:focus {
 			outline: none;
@@ -423,7 +463,9 @@
 			box-shadow: 0 0 0 1px oklch(0.6 0.15 70);
 		}
 
-		&::placeholder { color: oklch(0.35 0.01 265); }
+		&::placeholder {
+			color: oklch(0.35 0.01 265);
+		}
 	}
 
 	.cta-cursor {
@@ -451,10 +493,15 @@
 		box-shadow: 0 4px 20px oklch(0.45 0.12 70 / 0.2);
 		text-decoration: none;
 
-		&:hover { background-color: oklch(0.52 0.14 70); }
+		&:hover {
+			background-color: oklch(0.52 0.14 70);
+		}
 	}
 
-	.cta-submit-text { display: flex; flex-direction: column; }
+	.cta-submit-text {
+		display: flex;
+		flex-direction: column;
+	}
 
 	.cta-submit-label {
 		font-size: var(--text-xs);
@@ -483,7 +530,11 @@
 		color: oklch(0.4 0.01 265);
 	}
 
-	.cta-route { display: flex; align-items: center; gap: 0.25rem; }
+	.cta-route {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
 
 	.cta-route-dot {
 		inline-size: 0.375rem;
@@ -501,12 +552,16 @@
 		grid-template-columns: repeat(2, 1fr);
 		gap: 2rem;
 
-		@media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 
 	.cta-stat {
 		text-align: center;
-		@media (min-width: 768px) { text-align: start; }
+		@media (min-width: 768px) {
+			text-align: start;
+		}
 	}
 
 	.cta-stat-header {
@@ -517,7 +572,9 @@
 		color: oklch(0.55 0.01 265);
 		margin-block-end: 0.25rem;
 
-		@media (min-width: 768px) { justify-content: flex-start; }
+		@media (min-width: 768px) {
+			justify-content: flex-start;
+		}
 	}
 
 	.cta-stat-label {
@@ -534,24 +591,47 @@
 	}
 
 	/* ─── Icon helpers (child override) ─── */
-	:global(.cta-icon-amber) { color: oklch(0.6 0.15 70); }
-	:global(.cta-submit-arrow) { transition: transform 200ms; }
-	.cta-submit:hover :global(.cta-submit-arrow) { transform: translateX(0.25rem); }
+	:global(.cta-icon-amber) {
+		color: oklch(0.6 0.15 70);
+	}
+	:global(.cta-submit-arrow) {
+		transition: transform 200ms;
+	}
+	.cta-submit:hover :global(.cta-submit-arrow) {
+		transform: translateX(0.25rem);
+	}
 
 	/* ─── Keyframes ─── */
 	@keyframes scroll-up {
-		0% { transform: translateY(0); }
-		100% { transform: translateY(-50%); }
+		0% {
+			transform: translateY(0);
+		}
+		100% {
+			transform: translateY(-50%);
+		}
 	}
 	@keyframes scroll-down {
-		0% { transform: translateY(-50%); }
-		100% { transform: translateY(0); }
+		0% {
+			transform: translateY(-50%);
+		}
+		100% {
+			transform: translateY(0);
+		}
 	}
 	@keyframes ping {
-		75%, 100% { transform: scale(2); opacity: 0; }
+		75%,
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
 	}
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.4; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.4;
+		}
 	}
 </style>

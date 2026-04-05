@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-		import type { ComponentProps } from 'svelte';
+	import type { ComponentProps } from 'svelte';
 
 	type GroupHeadingProps = ComponentProps<typeof DropdownMenuPrimitive.GroupHeading> & {
 		inset?: boolean;

@@ -18,12 +18,7 @@
 	});
 </script>
 
-<span
-	bind:this={ref}
-	data-slot="dropdown-menu-shortcut"
-	class={className}
-	{...restProps}
->
+<span bind:this={ref} data-slot="dropdown-menu-shortcut" class={className} {...restProps}>
 	{@render props.children?.()}
 </span>
 

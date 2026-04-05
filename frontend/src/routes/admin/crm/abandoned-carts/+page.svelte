@@ -16,7 +16,19 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconExternalLink, IconReceipt, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconTrash, IconTrendingDown, IconTrendingUp, IconUser } from '$lib/icons';
+	import {
+		Icon,
+		IconExternalLink,
+		IconReceipt,
+		IconRefresh,
+		IconSearch,
+		IconSettings,
+		IconShoppingCart,
+		IconTrash,
+		IconTrendingDown,
+		IconTrendingUp,
+		IconUser
+	} from '$lib/icons';
 
 	let carts = $state<AbandonedCart[]>([]);
 	let isLoading = $state(true);
@@ -197,7 +209,9 @@
 					<Icon icon={IconTrendingUp} size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html sanitizeHtml(stats.recovered_revenue.value, 'minimal')}</span>
+					<span class="stat-value"
+						>{@html sanitizeHtml(stats.recovered_revenue.value, 'minimal')}</span
+					>
 					<span class="stat-label">{stats.recovered_revenue.title}</span>
 					<span class="stat-count">{stats.recovered_revenue.count} carts</span>
 				</div>
@@ -207,7 +221,9 @@
 					<Icon icon={IconShoppingCart} size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html sanitizeHtml(stats.processing_revenue.value, 'minimal')}</span>
+					<span class="stat-value"
+						>{@html sanitizeHtml(stats.processing_revenue.value, 'minimal')}</span
+					>
 					<span class="stat-label">{stats.processing_revenue.title}</span>
 					<span class="stat-count">{stats.processing_revenue.count} carts</span>
 				</div>

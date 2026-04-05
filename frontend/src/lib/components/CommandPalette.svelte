@@ -18,7 +18,32 @@
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import { Icon, IconActivity, IconArrowDown, IconArrowUp, IconBrandGoogle, IconChartBar, IconCode, IconCreditCard, IconDatabase, IconDownload, IconFileText, IconForms, IconHome, IconLogout, IconMail, IconPhoto, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconUpload, IconUsers, IconVideo } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowDown,
+		IconArrowUp,
+		IconBrandGoogle,
+		IconChartBar,
+		IconCode,
+		IconCreditCard,
+		IconDatabase,
+		IconDownload,
+		IconFileText,
+		IconForms,
+		IconHome,
+		IconLogout,
+		IconMail,
+		IconPhoto,
+		IconPlugConnected,
+		IconRefresh,
+		IconSearch,
+		IconSettings,
+		IconShoppingCart,
+		IconUpload,
+		IconUsers,
+		IconVideo
+	} from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;

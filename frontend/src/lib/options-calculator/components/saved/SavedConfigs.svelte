@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { X, DownloadSimple as Download, UploadSimple as Upload, Trash as Trash2, FolderOpen } from 'phosphor-svelte';
+	import {
+		X,
+		DownloadSimple as Download,
+		UploadSimple as Upload,
+		Trash as Trash2,
+		FolderOpen
+	} from 'phosphor-svelte';
 	import gsap from 'gsap';
 	import ConfigCard from './ConfigCard.svelte';
 	import {

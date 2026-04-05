@@ -8,7 +8,18 @@
 	import { connections, getIsBehaviorConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
-	import { Icon, IconArrowUpRight, IconChartBar, IconClick, IconClock, IconCursor, IconEye, IconPlay, IconPointer, IconRefresh } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowUpRight,
+		IconChartBar,
+		IconClick,
+		IconClock,
+		IconCursor,
+		IconEye,
+		IconPlay,
+		IconPointer,
+		IconRefresh
+	} from '$lib/icons';
 
 	let isLoading = $state(true);
 	let connectionLoading = $state(true);

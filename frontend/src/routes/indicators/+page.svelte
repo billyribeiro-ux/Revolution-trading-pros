@@ -10,8 +10,26 @@
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Data & types extracted for maintainability
-	import { indicators, goldenSetup, faqs, categories, indicatorsSchema as _indicatorsSchema } from './data';
-	import { Icon, IconAlertTriangle, IconArrowRight, IconBolt, IconChartLine, IconCheck, IconChevronDown, IconSchool, IconStar, IconTarget, IconUsers } from '$lib/icons';
+	import {
+		indicators,
+		goldenSetup,
+		faqs,
+		categories,
+		indicatorsSchema as _indicatorsSchema
+	} from './data';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconArrowRight,
+		IconBolt,
+		IconChartLine,
+		IconCheck,
+		IconChevronDown,
+		IconSchool,
+		IconStar,
+		IconTarget,
+		IconUsers
+	} from '$lib/icons';
 
 	// --- State Management (Svelte 5 Runes) ---
 	let heroVisible = $state(false);
@@ -236,7 +254,11 @@
 				<button class="cta-button primary group relative overflow-hidden">
 					<span class="relative z-10 flex items-center gap-2">
 						Join the Live Room
-						<Icon icon={IconArrowRight} size={20} class="transition-transform group-hover:translate-x-1" />
+						<Icon
+							icon={IconArrowRight}
+							size={20}
+							class="transition-transform group-hover:translate-x-1"
+						/>
 					</span>
 					<div
 						class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"
@@ -485,7 +507,8 @@
 
 							<a href="/indicators/{indicator.slug}" class="card-button group/btn">
 								View Strategy Guide
-								<Icon icon={IconArrowRight}
+								<Icon
+									icon={IconArrowRight}
 									size={18}
 									stroke={2}
 									class="transition-transform group-hover/btn:translate-x-1"
@@ -558,7 +581,11 @@
 				<p class="text-slate-400 mb-2">Want to see this confluence strategy in action?</p>
 				<a href="/trading-room" class="text-link inline-flex items-center gap-2 group">
 					Watch us trade this setup live tomorrow morning
-					<Icon icon={IconArrowRight} size={18} class="transition-transform group-hover:translate-x-1" />
+					<Icon
+						icon={IconArrowRight}
+						size={18}
+						class="transition-transform group-hover:translate-x-1"
+					/>
 				</a>
 			</div>
 		</div>

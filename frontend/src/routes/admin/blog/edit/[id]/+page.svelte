@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -8,7 +8,22 @@ import { logger } from '$lib/utils/logger';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { Icon, IconArrowLeft, IconCalendar, IconCheck, IconDeviceFloppy, IconEye, IconKeyboard, IconLoader, IconMaximize, IconMinimize, IconPhoto, IconPlus, IconTags, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconCalendar,
+		IconCheck,
+		IconDeviceFloppy,
+		IconEye,
+		IconKeyboard,
+		IconLoader,
+		IconMaximize,
+		IconMinimize,
+		IconPhoto,
+		IconPlus,
+		IconTags,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PREDEFINED BLOG CATEGORIES (same system as videos)

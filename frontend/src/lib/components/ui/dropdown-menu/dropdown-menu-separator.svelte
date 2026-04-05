@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
-	
+
 	let props: DropdownMenuPrimitive.SeparatorProps = $props();
 	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);

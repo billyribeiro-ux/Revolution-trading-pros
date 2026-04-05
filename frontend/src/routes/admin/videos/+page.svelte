@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Trading Room Video Management - Admin Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -34,8 +34,32 @@ import { logger } from '$lib/utils/logger';
 		type AnalyticsDashboard,
 		type BatchStatus
 	} from '$lib/api/video-advanced';
-						import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconBuilding, IconChartBar, IconCheck, IconCheckbox, IconCloudUpload, IconCode, IconEdit, IconLink, IconPlayerPlay, IconPlus, IconProgressCheck, IconRefresh, IconSearch, IconSquare, IconStar, IconStarOff, IconTags, IconTrash, IconUser, IconVideo, IconX } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconBuilding,
+		IconChartBar,
+		IconCheck,
+		IconCheckbox,
+		IconCloudUpload,
+		IconCode,
+		IconEdit,
+		IconLink,
+		IconPlayerPlay,
+		IconPlus,
+		IconProgressCheck,
+		IconRefresh,
+		IconSearch,
+		IconSquare,
+		IconStar,
+		IconStarOff,
+		IconTags,
+		IconTrash,
+		IconUser,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -1583,7 +1607,8 @@ import { logger } from '$lib/utils/logger';
 				<!-- Categories Section -->
 				<div class="form-group">
 					<label>
-						<Icon icon={IconTags}
+						<Icon
+							icon={IconTags}
 							size={16}
 							style="display: inline; vertical-align: middle; margin-right: 4px;"
 						/>
@@ -1869,7 +1894,10 @@ import { logger } from '$lib/utils/logger';
 						<p class="file-types">Supported: MP4, MOV, WebM</p>
 					{:else}
 						<div class="selected-files">
-							<h4><Icon icon={IconProgressCheck} size={20} /> {bunnyUploadFiles.length} file(s) selected</h4>
+							<h4>
+								<Icon icon={IconProgressCheck} size={20} />
+								{bunnyUploadFiles.length} file(s) selected
+							</h4>
 							<ul class="file-list">
 								{#each bunnyUploadFiles as file, index}
 									<li>
@@ -1976,7 +2004,8 @@ import { logger } from '$lib/utils/logger';
 				<!-- Tags to Add -->
 				<div class="form-group">
 					<label>
-						<Icon icon={IconPlus}
+						<Icon
+							icon={IconPlus}
 							size={16}
 							style="display:inline;vertical-align:middle;color:#22c55e;margin-right:4px;"
 						/>
@@ -2003,7 +2032,8 @@ import { logger } from '$lib/utils/logger';
 				<!-- Tags to Remove -->
 				<div class="form-group">
 					<label>
-						<Icon icon={IconX}
+						<Icon
+							icon={IconX}
 							size={16}
 							style="display:inline;vertical-align:middle;color:#ef4444;margin-right:4px;"
 						/>

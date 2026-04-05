@@ -9,7 +9,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import type { TradeType, OptionType, ContractType, TradeSetup } from '$lib/types/trading';
 
 	interface Props {

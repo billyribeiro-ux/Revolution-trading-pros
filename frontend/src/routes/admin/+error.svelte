@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Error Boundary - Enterprise L8 Pattern
 	 *
@@ -15,7 +15,16 @@ import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
-	import { Icon, IconAlertTriangle, IconArrowLeft, IconHome, IconLock, IconRefresh, IconSearch, IconServer } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconArrowLeft,
+		IconHome,
+		IconLock,
+		IconRefresh,
+		IconSearch,
+		IconServer
+	} from '$lib/icons';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);

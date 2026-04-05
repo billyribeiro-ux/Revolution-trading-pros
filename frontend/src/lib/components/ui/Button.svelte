@@ -62,7 +62,13 @@
 			viewBox="0 0 24 24"
 			aria-hidden="true"
 		>
-			<circle class="standalone-btn-spinner-track" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+			<circle
+				class="standalone-btn-spinner-track"
+				cx="12"
+				cy="12"
+				r="10"
+				stroke="currentColor"
+				stroke-width="4"
 			></circle>
 			<path
 				class="standalone-btn-spinner-head"
@@ -79,7 +85,11 @@
 			<span class="sr-only">Loading, please wait</span>
 		{/if}
 	{/if}
-	<span class="standalone-btn-content" class:standalone-btn-hidden={loading && !loadingText} class:sr-only={loading && loadingText}>
+	<span
+		class="standalone-btn-content"
+		class:standalone-btn-hidden={loading && !loadingText}
+		class:sr-only={loading && loadingText}
+	>
 		{@render props.children?.()}
 	</span>
 	{#if loading && loadingText}
@@ -109,7 +119,8 @@
 		border-radius: var(--radius-md);
 		font-weight: var(--weight-medium);
 		touch-action: manipulation;
-		transition: color var(--duration-fast) var(--ease-default),
+		transition:
+			color var(--duration-fast) var(--ease-default),
 			background-color var(--duration-fast) var(--ease-default);
 		inline-size: 100%;
 
@@ -119,7 +130,9 @@
 
 		&:focus {
 			outline: none;
-			box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+			box-shadow:
+				0 0 0 2px var(--background),
+				0 0 0 4px var(--ring);
 		}
 
 		&:disabled {
@@ -135,46 +148,74 @@
 		&[data-variant='primary'] {
 			background-color: oklch(0.55 0.2 260);
 			color: oklch(1 0 0);
-			&:hover:not(:disabled) { background-color: oklch(0.48 0.2 260); }
-			&:focus { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px oklch(0.55 0.2 260); }
-			&:disabled { background-color: oklch(0.75 0.1 260); }
+			&:hover:not(:disabled) {
+				background-color: oklch(0.48 0.2 260);
+			}
+			&:focus {
+				box-shadow:
+					0 0 0 2px var(--background),
+					0 0 0 4px oklch(0.55 0.2 260);
+			}
+			&:disabled {
+				background-color: oklch(0.75 0.1 260);
+			}
 		}
 
 		&[data-variant='secondary'] {
 			background-color: oklch(0.45 0.015 265);
 			color: oklch(1 0 0);
-			&:hover:not(:disabled) { background-color: oklch(0.4 0.015 265); }
-			&:disabled { background-color: oklch(0.7 0.01 265); }
+			&:hover:not(:disabled) {
+				background-color: oklch(0.4 0.015 265);
+			}
+			&:disabled {
+				background-color: oklch(0.7 0.01 265);
+			}
 		}
 
 		&[data-variant='danger'] {
 			background-color: oklch(0.58 0.24 27);
 			color: oklch(1 0 0);
-			&:hover:not(:disabled) { background-color: oklch(0.5 0.24 27); }
-			&:disabled { background-color: oklch(0.75 0.12 27); }
+			&:hover:not(:disabled) {
+				background-color: oklch(0.5 0.24 27);
+			}
+			&:disabled {
+				background-color: oklch(0.75 0.12 27);
+			}
 		}
 
 		&[data-variant='success'] {
 			background-color: oklch(0.55 0.17 150);
 			color: oklch(1 0 0);
-			&:hover:not(:disabled) { background-color: oklch(0.48 0.17 150); }
-			&:disabled { background-color: oklch(0.75 0.08 150); }
+			&:hover:not(:disabled) {
+				background-color: oklch(0.48 0.17 150);
+			}
+			&:disabled {
+				background-color: oklch(0.75 0.08 150);
+			}
 		}
 
 		&[data-variant='ghost'] {
 			background-color: transparent;
 			color: oklch(0.4 0.01 265);
 			border: 1px solid var(--border);
-			&:hover:not(:disabled) { background-color: oklch(0.97 0.002 265); }
-			&:disabled { color: oklch(0.65 0.01 265); }
+			&:hover:not(:disabled) {
+				background-color: oklch(0.97 0.002 265);
+			}
+			&:disabled {
+				color: oklch(0.65 0.01 265);
+			}
 		}
 
 		&[data-variant='outline'] {
 			background-color: var(--background);
 			color: oklch(0.4 0.01 265);
 			border: 1px solid var(--border);
-			&:hover:not(:disabled) { background-color: oklch(0.98 0.002 265); }
-			&:disabled { color: oklch(0.65 0.01 265); }
+			&:hover:not(:disabled) {
+				background-color: oklch(0.98 0.002 265);
+			}
+			&:disabled {
+				color: oklch(0.65 0.01 265);
+			}
 		}
 
 		/* Size styles */
@@ -219,27 +260,47 @@
 		block-size: 1.25rem;
 	}
 
-	.standalone-btn-spinner-track { opacity: 0.25; }
-	.standalone-btn-spinner-head { opacity: 0.75; }
-	.standalone-btn-hidden { opacity: 0; }
+	.standalone-btn-spinner-track {
+		opacity: 0.25;
+	}
+	.standalone-btn-spinner-head {
+		opacity: 0.75;
+	}
+	.standalone-btn-hidden {
+		opacity: 0;
+	}
 
-	.standalone-btn-dots { display: none; }
+	.standalone-btn-dots {
+		display: none;
+	}
 
 	@media (prefers-reduced-motion: no-preference) {
 		.standalone-btn-spinner {
 			animation: spin 1s linear infinite;
 		}
-		.standalone-btn-dots { display: none; }
+		.standalone-btn-dots {
+			display: none;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.standalone-btn { transition: none; }
-		.standalone-btn-spinner { display: none; }
-		.standalone-btn-dots { display: inline-block; }
+		.standalone-btn {
+			transition: none;
+		}
+		.standalone-btn-spinner {
+			display: none;
+		}
+		.standalone-btn-dots {
+			display: inline-block;
+		}
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

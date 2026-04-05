@@ -21,7 +21,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
@@ -41,7 +41,34 @@ import { logger } from '$lib/utils/logger';
 	import RevisionHistory from './RevisionHistory.svelte';
 	import KeyboardShortcuts from './KeyboardShortcuts.svelte';
 	import SchedulingPanel from './SchedulingPanel.svelte';
-	import { Icon, IconArrowBackUp, IconArrowForwardUp, IconCalendar, IconChevronDown, IconChevronUp, IconCloudUpload, IconCopy, IconDeviceDesktop, IconDeviceFloppy, IconDeviceMobile, IconDeviceTablet, IconEdit, IconEye, IconGripVertical, IconHistory, IconKeyboard, IconMaximize, IconMinimize, IconPlus, IconRobot, IconSearch, IconSeo, IconSettings, IconStack2, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowBackUp,
+		IconArrowForwardUp,
+		IconCalendar,
+		IconChevronDown,
+		IconChevronUp,
+		IconCloudUpload,
+		IconCopy,
+		IconDeviceDesktop,
+		IconDeviceFloppy,
+		IconDeviceMobile,
+		IconDeviceTablet,
+		IconEdit,
+		IconEye,
+		IconGripVertical,
+		IconHistory,
+		IconKeyboard,
+		IconMaximize,
+		IconMinimize,
+		IconPlus,
+		IconRobot,
+		IconSearch,
+		IconSeo,
+		IconSettings,
+		IconStack2,
+		IconTrash
+	} from '$lib/icons';
 
 	// ==========================================================================
 	// Props
@@ -1427,7 +1454,9 @@ import { logger } from '$lib/utils/logger';
 				{#if saveError}
 					<span class="error">{saveError}</span>
 				{:else if isSaving}
-					<span class="saving"><Icon icon={IconCloudUpload} size={16} class="spin" /> Saving...</span>
+					<span class="saving"
+						><Icon icon={IconCloudUpload} size={16} class="spin" /> Saving...</span
+					>
 				{:else if editorState.hasUnsavedChanges}
 					<span class="unsaved">Unsaved changes</span>
 				{:else}

@@ -19,7 +19,28 @@
 	import { browser } from '$app/environment';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
-	import { Icon, IconAlertCircle, IconBolt, IconChartBar, IconCheck, IconCopy, IconDownload, IconEdit, IconEye, IconPlayerPause, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconShare, IconTrash, IconUpload, IconUserPlus, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconBolt,
+		IconChartBar,
+		IconCheck,
+		IconCopy,
+		IconDownload,
+		IconEdit,
+		IconEye,
+		IconPlayerPause,
+		IconPlayerPlay,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconShare,
+		IconTrash,
+		IconUpload,
+		IconUserPlus,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

@@ -13,7 +13,27 @@
 		type CourseModule
 	} from '$lib/api/courses';
 	import ConfirmationModal from './ConfirmationModal.svelte';
-	import { Icon, IconAlertTriangle, IconBook, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconEdit, IconEye, IconEyeOff, IconFile, IconGripVertical, IconPlayerPlay, IconPlus, IconTrash, IconUsers, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconBook,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCurrencyDollar,
+		IconEdit,
+		IconEye,
+		IconEyeOff,
+		IconFile,
+		IconGripVertical,
+		IconPlayerPlay,
+		IconPlus,
+		IconTrash,
+		IconUsers,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;

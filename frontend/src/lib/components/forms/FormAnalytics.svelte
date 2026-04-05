@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import type { Form } from '$lib/api/forms';
 	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';

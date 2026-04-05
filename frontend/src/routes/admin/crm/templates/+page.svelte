@@ -20,7 +20,27 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconCheck, IconChevronLeft, IconChevronRight, IconCopy, IconDownload, IconEdit, IconEye, IconFileExport, IconFolder, IconPlus, IconRefresh, IconSearch, IconSquare, IconSquareCheck, IconTemplate, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconChevronLeft,
+		IconChevronRight,
+		IconCopy,
+		IconDownload,
+		IconEdit,
+		IconEye,
+		IconFileExport,
+		IconFolder,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconSquare,
+		IconSquareCheck,
+		IconTemplate,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes
@@ -771,7 +791,10 @@
 					<div class="preview-content">
 						<h3>Email Content</h3>
 						<div class="preview-frame">
-							{@html sanitizeHtml(previewTemplate.content || '<p class="no-content">No content available</p>', 'rich')}
+							{@html sanitizeHtml(
+								previewTemplate.content || '<p class="no-content">No content available</p>',
+								'rich'
+							)}
 						</div>
 					</div>
 				{/if}

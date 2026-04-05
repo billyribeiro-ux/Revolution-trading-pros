@@ -317,11 +317,13 @@ export function sanitizeText(text: string, maxLength?: number): string {
 	}
 
 	// Strip all HTML tags while keeping content
-	const stripped = String(DOMPurify.sanitize(text, {
-		ALLOWED_TAGS: [],
-		ALLOWED_ATTR: [],
-		KEEP_CONTENT: true
-	}));
+	const stripped = String(
+		DOMPurify.sanitize(text, {
+			ALLOWED_TAGS: [],
+			ALLOWED_ATTR: [],
+			KEEP_CONTENT: true
+		})
+	);
 
 	return maxLength ? stripped.slice(0, maxLength) : stripped;
 }

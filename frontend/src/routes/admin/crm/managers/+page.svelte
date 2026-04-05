@@ -11,10 +11,20 @@
 -->
 
 <script lang="ts">
-									import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { ManagerRole, ManagerUser } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconEdit, IconPlus, IconRefresh, IconSettings, IconShieldLock, IconTrash, IconUser, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconEdit,
+		IconPlus,
+		IconRefresh,
+		IconSettings,
+		IconShieldLock,
+		IconTrash,
+		IconUser,
+		IconUsers
+	} from '$lib/icons';
 
 	let roles = $state<ManagerRole[]>([]);
 	let managers = $state<ManagerUser[]>([]);

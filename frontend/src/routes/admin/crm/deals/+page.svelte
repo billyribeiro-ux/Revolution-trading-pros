@@ -31,7 +31,30 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertTriangle, IconBriefcase, IconCalendar, IconChartBar, IconCheck, IconClock, IconCurrencyDollar, IconEdit, IconEye, IconGripVertical, IconLayoutKanban, IconList, IconPlus, IconRefresh, IconSearch, IconTarget, IconTrash, IconTrendingUp, IconTrophy, IconUser, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconBriefcase,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCurrencyDollar,
+		IconEdit,
+		IconEye,
+		IconGripVertical,
+		IconLayoutKanban,
+		IconList,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTarget,
+		IconTrash,
+		IconTrendingUp,
+		IconTrophy,
+		IconUser,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)

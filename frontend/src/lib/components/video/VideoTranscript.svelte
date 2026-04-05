@@ -17,7 +17,7 @@
  */
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';

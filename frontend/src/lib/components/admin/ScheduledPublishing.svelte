@@ -6,7 +6,16 @@
 
 	import { onMount } from 'svelte';
 	import { scheduledApi, type ScheduledJob } from '$lib/api/video-advanced';
-	import { Icon, IconAlertCircle, IconCalendar, IconCheck, IconClock, IconPlus, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCalendar,
+		IconCheck,
+		IconClock,
+		IconPlus,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 	interface Props {
 		resourceType?: 'video' | 'series';
 		resourceId?: number;

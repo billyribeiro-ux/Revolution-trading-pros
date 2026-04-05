@@ -11,12 +11,7 @@
 	}: WithoutChildren<WithElementRef<HTMLTextareaAttributes>> = $props();
 </script>
 
-<textarea
-	bind:this={ref}
-	data-slot={dataSlot}
-	class={className}
-	bind:value
-	{...restProps}
+<textarea bind:this={ref} data-slot={dataSlot} class={className} bind:value {...restProps}
 ></textarea>
 
 <style>
@@ -34,7 +29,8 @@
 		box-shadow: var(--shadow-xs);
 		outline: none;
 		touch-action: manipulation;
-		transition: color var(--duration-fast) var(--ease-default),
+		transition:
+			color var(--duration-fast) var(--ease-default),
 			box-shadow var(--duration-fast) var(--ease-default);
 
 		&::placeholder {

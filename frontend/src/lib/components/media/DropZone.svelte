@@ -198,8 +198,18 @@
 		{#if isDragOver}
 			<!-- Drop active state -->
 			<div class="dz-indicator">
-				<svg class="dz-icon-lg dz-icon-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3-3m0 0l3 3m-3-3v12" />
+				<svg
+					class="dz-icon-lg dz-icon-accent"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3-3m0 0l3 3m-3-3v12"
+					/>
 				</svg>
 				<p class="dz-drop-text">Drop files here</p>
 			</div>
@@ -209,8 +219,18 @@
 				{@render children()}
 			{:else}
 				<div class="dz-default">
-					<svg class="dz-icon-md dz-icon-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+					<svg
+						class="dz-icon-md dz-icon-muted"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+						/>
 					</svg>
 					<p class="dz-heading">Drag and drop images here</p>
 					<p class="dz-subtext">or click to browse</p>
@@ -248,7 +268,9 @@
 
 		&:focus:not([data-disabled]) {
 			outline: none;
-			box-shadow: 0 0 0 2px oklch(0.6 0.2 260), 0 0 0 4px oklch(1 0 0);
+			box-shadow:
+				0 0 0 2px oklch(0.6 0.2 260),
+				0 0 0 4px oklch(1 0 0);
 		}
 
 		&[data-active] {
@@ -274,7 +296,9 @@
 		border: 0;
 	}
 
-	.dz-content { text-align: center; }
+	.dz-content {
+		text-align: center;
+	}
 
 	.dz-indicator {
 		display: flex;
@@ -295,8 +319,12 @@
 		margin-block-end: var(--space-4);
 	}
 
-	.dz-icon-accent { color: oklch(0.6 0.2 260); }
-	.dz-icon-muted { color: oklch(0.65 0.01 265); }
+	.dz-icon-accent {
+		color: oklch(0.6 0.2 260);
+	}
+	.dz-icon-muted {
+		color: oklch(0.65 0.01 265);
+	}
 
 	.dz-drop-text {
 		font-size: var(--text-lg);
@@ -332,7 +360,14 @@
 	}
 
 	@keyframes bounce {
-		0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
-		50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+		0%,
+		100% {
+			transform: translateY(-25%);
+			animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+		}
+		50% {
+			transform: translateY(0);
+			animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+		}
 	}
 </style>

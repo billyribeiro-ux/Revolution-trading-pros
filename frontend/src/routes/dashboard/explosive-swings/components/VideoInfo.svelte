@@ -2,7 +2,7 @@
 	/**
 	 * VideoInfo Component - Apple Principal Engineer ICT Level 7
 	 * Extracted from WeeklyHero.svelte for better maintainability
-	 * 
+	 *
 	 * @description Video information panel with title, date, and action buttons
 	 * @version 1.0.0 - ICT 7 compliance
 	 */
@@ -180,4 +180,3 @@
 		}
 	}
 </style>
-

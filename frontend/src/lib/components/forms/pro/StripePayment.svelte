@@ -362,10 +362,7 @@
 	});
 </script>
 
-<div
-	class="sp-wrap"
-	class:sp-disabled={disabled}
->
+<div class="sp-wrap" class:sp-disabled={disabled}>
 	{#if label}
 		<span class="sp-label" id="stripe-label">
 			{label}
@@ -405,10 +402,7 @@
 			</div>
 		{/if}
 
-		<div
-			class="sp-card-wrap"
-			class:sp-card-error={error || cardError}
-		>
+		<div class="sp-card-wrap" class:sp-card-error={error || cardError}>
 			<div bind:this={cardElementRef} class="sp-card-element"></div>
 		</div>
 
@@ -443,7 +437,13 @@
 		</button>
 
 		<div class="sp-secure">
-			<svg class="sp-secure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				class="sp-secure-icon"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 			</svg>
@@ -467,9 +467,18 @@
 		padding: 0.75rem;
 		padding-block-end: env(safe-area-inset-bottom);
 
-		@media (min-width: 640px) { gap: 1rem; max-inline-size: 32rem; padding: 1rem; }
-		@media (min-width: 768px) { max-inline-size: 36rem; padding: 1.5rem; }
-		@media (min-width: 1024px) { max-inline-size: 42rem; }
+		@media (min-width: 640px) {
+			gap: 1rem;
+			max-inline-size: 32rem;
+			padding: 1rem;
+		}
+		@media (min-width: 768px) {
+			max-inline-size: 36rem;
+			padding: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			max-inline-size: 42rem;
+		}
 	}
 
 	.sp-disabled {
@@ -482,7 +491,9 @@
 		font-weight: var(--weight-medium);
 		color: oklch(0.35 0.01 265);
 
-		@media (min-width: 640px) { font-size: var(--text-base); }
+		@media (min-width: 640px) {
+			font-size: var(--text-base);
+		}
 	}
 
 	.sp-test-notice {
@@ -493,7 +504,10 @@
 		font-size: var(--text-xs);
 		color: oklch(0.35 0.08 85);
 
-		@media (min-width: 640px) { padding: 0.75rem 1rem; font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			padding: 0.75rem 1rem;
+			font-size: var(--text-sm);
+		}
 	}
 
 	.sp-loading {
@@ -507,7 +521,11 @@
 		color: oklch(0.45 0.005 265);
 		font-size: var(--text-sm);
 
-		@media (min-width: 640px) { gap: 1rem; padding: 1.25rem; font-size: var(--text-base); }
+		@media (min-width: 640px) {
+			gap: 1rem;
+			padding: 1.25rem;
+			font-size: var(--text-base);
+		}
 	}
 
 	.sp-spinner {
@@ -516,19 +534,28 @@
 		flex-shrink: 0;
 		animation: sp-spin 1s linear infinite;
 
-		@media (min-width: 640px) { inline-size: 1.5rem; block-size: 1.5rem; }
+		@media (min-width: 640px) {
+			inline-size: 1.5rem;
+			block-size: 1.5rem;
+		}
 	}
 
 	@keyframes sp-spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.sp-pr-button {
 		margin-block-end: 0.5rem;
 		min-block-size: 2.75rem;
 
-		@media (min-width: 640px) { min-block-size: 3rem; }
+		@media (min-width: 640px) {
+			min-block-size: 3rem;
+		}
 	}
 
 	.sp-divider {
@@ -538,7 +565,10 @@
 		color: oklch(0.45 0.005 265);
 		font-size: var(--text-xs);
 
-		@media (min-width: 640px) { gap: 1rem; font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			gap: 1rem;
+			font-size: var(--text-sm);
+		}
 	}
 
 	.sp-divider-line {
@@ -552,10 +582,15 @@
 		border: 1px solid oklch(0.75 0.005 265);
 		border-radius: var(--radius-lg);
 		background-color: oklch(1 0 0);
-		transition: border-color 150ms, box-shadow 150ms;
+		transition:
+			border-color 150ms,
+			box-shadow 150ms;
 		min-block-size: 3rem;
 
-		@media (min-width: 640px) { padding: 1rem; min-block-size: 3.25rem; }
+		@media (min-width: 640px) {
+			padding: 1rem;
+			min-block-size: 3.25rem;
+		}
 
 		&:focus-within {
 			border-color: oklch(0.5 0.18 260);
@@ -570,7 +605,9 @@
 	.sp-card-element {
 		min-block-size: 1.5rem;
 
-		@media (min-width: 640px) { min-block-size: 1.75rem; }
+		@media (min-width: 640px) {
+			min-block-size: 1.75rem;
+		}
 	}
 
 	.sp-error-text {
@@ -579,7 +616,9 @@
 		margin: 0;
 		padding-inline: 0.25rem;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.sp-pay-btn {
@@ -597,7 +636,9 @@
 		font-size: var(--text-base);
 		font-weight: var(--weight-semibold);
 		cursor: pointer;
-		transition: background-color 150ms, transform 100ms;
+		transition:
+			background-color 150ms,
+			transform 100ms;
 		touch-action: manipulation;
 
 		@media (min-width: 640px) {
@@ -605,10 +646,16 @@
 			padding: 1rem 1.5rem;
 			font-size: var(--text-lg);
 		}
-		@media (min-width: 768px) { min-block-size: 3.5rem; }
+		@media (min-width: 768px) {
+			min-block-size: 3.5rem;
+		}
 
-		&:hover:not(:disabled) { background-color: oklch(0.35 0.12 260); }
-		&:active:not(:disabled) { transform: scale(0.98); }
+		&:hover:not(:disabled) {
+			background-color: oklch(0.35 0.12 260);
+		}
+		&:active:not(:disabled) {
+			transform: scale(0.98);
+		}
 		&:disabled {
 			opacity: 0.6;
 			cursor: not-allowed;
@@ -624,7 +671,10 @@
 		color: oklch(0.45 0.005 265);
 		padding-block: 0.5rem;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); gap: 0.5rem; }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+			gap: 0.5rem;
+		}
 	}
 
 	.sp-secure-icon {
@@ -632,6 +682,9 @@
 		block-size: 0.875rem;
 		flex-shrink: 0;
 
-		@media (min-width: 640px) { inline-size: 1rem; block-size: 1rem; }
+		@media (min-width: 640px) {
+			inline-size: 1rem;
+			block-size: 1rem;
+		}
 	}
 </style>

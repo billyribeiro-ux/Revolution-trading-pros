@@ -35,7 +35,28 @@
 	} from '$lib/api/room-resources';
 	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconCheck, IconEdit, IconEye, IconFile, IconFileText, IconLink, IconPhoto, IconPin, IconPinFilled, IconPlus, IconRefresh, IconSearch, IconStar, IconStarFilled, IconTable, IconTrash, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconEdit,
+		IconEye,
+		IconFile,
+		IconFileText,
+		IconLink,
+		IconPhoto,
+		IconPin,
+		IconPinFilled,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconStar,
+		IconStarFilled,
+		IconTable,
+		IconTrash,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & CONSTANTS

@@ -19,7 +19,13 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconBrandFacebook, IconBrandInstagram, IconBrandTwitter, IconBrandYoutube } from '$lib/icons';
+	import {
+		Icon,
+		IconBrandFacebook,
+		IconBrandInstagram,
+		IconBrandTwitter,
+		IconBrandYoutube
+	} from '$lib/icons';
 
 	// --- State (Svelte 5 Runes) ---
 	let currentYear = $state(new Date().getFullYear());

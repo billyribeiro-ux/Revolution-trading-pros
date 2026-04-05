@@ -16,7 +16,26 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconBolt, IconCheck, IconClock, IconEdit, IconGripVertical, IconList, IconLoader2, IconMail, IconPlayerPlay, IconPlus, IconTag, IconTrash, IconUser, IconWorldWww, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconBolt,
+		IconCheck,
+		IconClock,
+		IconEdit,
+		IconGripVertical,
+		IconList,
+		IconLoader2,
+		IconMail,
+		IconPlayerPlay,
+		IconPlus,
+		IconTag,
+		IconTrash,
+		IconUser,
+		IconWorldWww,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

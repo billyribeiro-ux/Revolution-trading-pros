@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';

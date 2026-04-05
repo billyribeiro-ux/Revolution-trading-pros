@@ -1,11 +1,35 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertTriangle, IconArchive, IconCalendar, IconChartBar, IconChecks, IconClock, IconCopy, IconEye, IconFolder, IconLayoutGrid, IconLayoutKanban, IconList, IconPlus, IconRefresh, IconSearch, IconSettings, IconStar, IconStarFilled, IconTemplate, IconTrash, IconUpload, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconArchive,
+		IconCalendar,
+		IconChartBar,
+		IconChecks,
+		IconClock,
+		IconCopy,
+		IconEye,
+		IconFolder,
+		IconLayoutGrid,
+		IconLayoutKanban,
+		IconList,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconSettings,
+		IconStar,
+		IconStarFilled,
+		IconTemplate,
+		IconTrash,
+		IconUpload,
+		IconUsers
+	} from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);
@@ -493,7 +517,10 @@ import { logger } from '$lib/utils/logger';
 				<!-- Search and Filters -->
 				<div class="flex items-center gap-4 mb-6">
 					<div class="flex-1 relative">
-						<Icon icon={IconSearch} class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+						<Icon
+							icon={IconSearch}
+							class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+						/>
 						<input
 							id="boards-searchquery"
 							name="boards-searchquery"

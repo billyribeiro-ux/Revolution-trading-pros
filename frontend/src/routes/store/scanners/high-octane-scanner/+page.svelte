@@ -11,11 +11,19 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart.svelte';
-	import { Icon, IconBell, IconChartLine, IconCheck, IconClock, IconFilter, IconShoppingCart } from '$lib/icons';
+	import {
+		Icon,
+		IconBell,
+		IconChartLine,
+		IconCheck,
+		IconClock,
+		IconFilter,
+		IconShoppingCart
+	} from '$lib/icons';
 
 	// Product configuration
 	const product = {

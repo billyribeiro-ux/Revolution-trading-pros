@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * LoginForm - Premium Trading-Themed Login Form
 	 * Apple Principal Engineer ICT 11 Grade
@@ -44,7 +44,19 @@ import { logger } from '$lib/utils/logger';
 	// Import new components
 	import TypedHeadline from './TypedHeadline.svelte';
 	import SocialLoginButtons from './SocialLoginButtons.svelte';
-	import { Icon, IconAlertCircle, IconArrowRight, IconChartCandle, IconCheck, IconEye, IconEyeOff, IconLoader, IconLock, IconMail, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowRight,
+		IconChartCandle,
+		IconCheck,
+		IconEye,
+		IconEyeOff,
+		IconLoader,
+		IconLock,
+		IconMail,
+		IconTrendingUp
+	} from '$lib/icons';
 
 	// --- Constants ---
 	const REMEMBERED_EMAIL_KEY = 'rtp_remembered_email';

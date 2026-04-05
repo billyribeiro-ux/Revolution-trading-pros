@@ -1,9 +1,17 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { TimeEntry, Board, TimeTrackingStats } from '$lib/boards/types';
-	import { Icon, IconArrowLeft, IconClock, IconCurrencyDollar, IconDownload, IconLayoutKanban, IconRefresh } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconClock,
+		IconCurrencyDollar,
+		IconDownload,
+		IconLayoutKanban,
+		IconRefresh
+	} from '$lib/icons';
 
 	// State
 	let timeEntries = $state<TimeEntry[]>([]);
@@ -233,7 +241,10 @@ import { logger } from '$lib/utils/logger';
 				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-							<Icon icon={IconCurrencyDollar} class="w-5 h-5 text-purple-600 dark:text-purple-400" />
+							<Icon
+								icon={IconCurrencyDollar}
+								class="w-5 h-5 text-purple-600 dark:text-purple-400"
+							/>
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Cost</span>
 					</div>

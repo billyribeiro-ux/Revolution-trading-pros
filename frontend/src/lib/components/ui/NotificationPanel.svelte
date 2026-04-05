@@ -17,7 +17,16 @@
 		type Notification,
 		type NotificationType
 	} from '$lib/stores/notifications.svelte';
-	import { Icon, IconAlertCircle, IconAlertTriangle, IconBell, IconCircleCheck, IconInfoCircle, IconSettings, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconAlertTriangle,
+		IconBell,
+		IconCircleCheck,
+		IconInfoCircle,
+		IconSettings,
+		IconX
+	} from '$lib/icons';
 
 	interface Props {
 		position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
@@ -43,7 +52,6 @@
 		error: IconAlertCircle,
 		system: IconSettings
 	};
-
 
 	function toggle() {
 		isOpen = !isOpen;
@@ -120,7 +128,6 @@
 		document.removeEventListener('click', handleClickOutside);
 		document.removeEventListener('keydown', handleKeydown);
 	});
-
 </script>
 
 <div class="np-wrapper">
@@ -155,10 +162,7 @@
 				<h3 class="np-header-title">Notifications</h3>
 				<div class="np-header-actions">
 					{#if unreadCount > 0}
-						<button
-							onclick={() => notificationStore.markAllAsRead()}
-							class="np-mark-read"
-						>
+						<button onclick={() => notificationStore.markAllAsRead()} class="np-mark-read">
 							Mark all read
 						</button>
 					{/if}
@@ -307,10 +311,26 @@
 		overflow: hidden;
 		z-index: 50;
 
-		&[data-position='top-right'] { inset-inline-end: 0; inset-block-start: 100%; margin-block-start: var(--space-2); }
-		&[data-position='top-left'] { inset-inline-start: 0; inset-block-start: 100%; margin-block-start: var(--space-2); }
-		&[data-position='bottom-right'] { inset-inline-end: 0; inset-block-end: 100%; margin-block-end: var(--space-2); }
-		&[data-position='bottom-left'] { inset-inline-start: 0; inset-block-end: 100%; margin-block-end: var(--space-2); }
+		&[data-position='top-right'] {
+			inset-inline-end: 0;
+			inset-block-start: 100%;
+			margin-block-start: var(--space-2);
+		}
+		&[data-position='top-left'] {
+			inset-inline-start: 0;
+			inset-block-start: 100%;
+			margin-block-start: var(--space-2);
+		}
+		&[data-position='bottom-right'] {
+			inset-inline-end: 0;
+			inset-block-end: 100%;
+			margin-block-end: var(--space-2);
+		}
+		&[data-position='bottom-left'] {
+			inset-inline-start: 0;
+			inset-block-end: 100%;
+			margin-block-end: var(--space-2);
+		}
 	}
 
 	.np-header {
@@ -341,7 +361,9 @@
 		border: none;
 		cursor: pointer;
 		transition: color var(--duration-fast) var(--ease-default);
-		&:hover { color: oklch(0.72 0.18 260); }
+		&:hover {
+			color: oklch(0.72 0.18 260);
+		}
 	}
 
 	.np-close {
@@ -352,7 +374,9 @@
 		color: oklch(0.65 0.01 250);
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.3 0.01 250 / 50%); }
+		&:hover {
+			background-color: oklch(0.3 0.01 250 / 50%);
+		}
 	}
 
 	.np-list {
@@ -367,8 +391,13 @@
 		justify-content: center;
 		padding-block: var(--space-12);
 		color: oklch(0.55 0.01 250);
-		& :first-child { opacity: 0.5; margin-block-end: var(--space-3); }
-		& p { font-size: var(--text-sm); }
+		& :first-child {
+			opacity: 0.5;
+			margin-block-end: var(--space-3);
+		}
+		& p {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.np-item {
@@ -379,8 +408,12 @@
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
 
-		&:hover { background-color: oklch(0.25 0.01 250 / 50%); }
-		&[data-read] { opacity: 0.7; }
+		&:hover {
+			background-color: oklch(0.25 0.01 250 / 50%);
+		}
+		&[data-read] {
+			opacity: 0.7;
+		}
 	}
 
 	.np-unread-dot {
@@ -409,11 +442,26 @@
 		align-items: center;
 		justify-content: center;
 
-		&[data-type='info'] { color: oklch(0.7 0.18 260); background-color: oklch(0.55 0.2 260 / 20%); }
-		&[data-type='success'] { color: oklch(0.7 0.18 160); background-color: oklch(0.6 0.18 160 / 20%); }
-		&[data-type='warning'] { color: oklch(0.75 0.16 80); background-color: oklch(0.7 0.16 80 / 20%); }
-		&[data-type='error'] { color: oklch(0.7 0.2 25); background-color: oklch(0.55 0.22 25 / 20%); }
-		&[data-type='system'] { color: oklch(0.7 0.18 300); background-color: oklch(0.55 0.2 300 / 20%); }
+		&[data-type='info'] {
+			color: oklch(0.7 0.18 260);
+			background-color: oklch(0.55 0.2 260 / 20%);
+		}
+		&[data-type='success'] {
+			color: oklch(0.7 0.18 160);
+			background-color: oklch(0.6 0.18 160 / 20%);
+		}
+		&[data-type='warning'] {
+			color: oklch(0.75 0.16 80);
+			background-color: oklch(0.7 0.16 80 / 20%);
+		}
+		&[data-type='error'] {
+			color: oklch(0.7 0.2 25);
+			background-color: oklch(0.55 0.22 25 / 20%);
+		}
+		&[data-type='system'] {
+			color: oklch(0.7 0.18 300);
+			background-color: oklch(0.55 0.2 300 / 20%);
+		}
 	}
 
 	.np-item-content {
@@ -462,7 +510,9 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		&:hover { color: oklch(0.72 0.18 260); }
+		&:hover {
+			color: oklch(0.72 0.18 260);
+		}
 	}
 
 	.np-dismiss {
@@ -476,7 +526,9 @@
 		cursor: pointer;
 		transition: all var(--duration-fast) var(--ease-default);
 
-		&:hover { background-color: oklch(0.3 0.01 250 / 50%); }
+		&:hover {
+			background-color: oklch(0.3 0.01 250 / 50%);
+		}
 	}
 
 	.np-item:hover .np-dismiss {
@@ -507,11 +559,18 @@
 		cursor: pointer;
 		padding-block: var(--space-1);
 		transition: color var(--duration-fast) var(--ease-default);
-		&:hover { color: oklch(1 0 0); }
+		&:hover {
+			color: oklch(1 0 0);
+		}
 	}
 
 	@keyframes np-pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.6; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.6;
+		}
 	}
 </style>

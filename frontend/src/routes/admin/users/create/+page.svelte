@@ -50,10 +50,21 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { Icon, IconBuilding, IconChartBar, IconCheck, IconCheckupList, IconSettings, IconShield, IconShieldCheck, IconUser, IconUserCheck } from '$lib/icons';
+	import {
+		Icon,
+		IconBuilding,
+		IconChartBar,
+		IconCheck,
+		IconCheckupList,
+		IconSettings,
+		IconShield,
+		IconShieldCheck,
+		IconUser,
+		IconUserCheck
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions

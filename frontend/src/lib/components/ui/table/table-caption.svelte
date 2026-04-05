@@ -10,12 +10,7 @@
 	}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();
 </script>
 
-<caption
-	bind:this={ref}
-	data-slot="table-caption"
-	class={className}
-	{...restProps}
->
+<caption bind:this={ref} data-slot="table-caption" class={className} {...restProps}>
 	{@render children?.()}
 </caption>
 

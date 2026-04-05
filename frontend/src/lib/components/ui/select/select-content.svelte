@@ -52,19 +52,29 @@
 		transform-origin: var(--bits-select-content-transform-origin);
 
 		&[data-state='open'] {
-			animation: fade-in var(--duration-fast) var(--ease-default),
+			animation:
+				fade-in var(--duration-fast) var(--ease-default),
 				zoom-in-95 var(--duration-fast) var(--ease-default);
 		}
 
 		&[data-state='closed'] {
-			animation: fade-out var(--duration-fast) var(--ease-default),
+			animation:
+				fade-out var(--duration-fast) var(--ease-default),
 				zoom-out-95 var(--duration-fast) var(--ease-default);
 		}
 
-		&[data-side='bottom'] { translate: 0 0.25rem; }
-		&[data-side='top'] { translate: 0 -0.25rem; }
-		&[data-side='left'] { translate: -0.25rem 0; }
-		&[data-side='right'] { translate: 0.25rem 0; }
+		&[data-side='bottom'] {
+			translate: 0 0.25rem;
+		}
+		&[data-side='top'] {
+			translate: 0 -0.25rem;
+		}
+		&[data-side='left'] {
+			translate: -0.25rem 0;
+		}
+		&[data-side='right'] {
+			translate: 0.25rem 0;
+		}
 	}
 
 	:global(.select-viewport) {

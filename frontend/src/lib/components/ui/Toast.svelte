@@ -46,11 +46,7 @@
 			aria-atomic="true"
 		>
 			<!-- Icon -->
-			<span
-				class="toast-icon"
-				class:toast-icon-spin={toast.type === 'loading'}
-				aria-hidden="true"
-			>
+			<span class="toast-icon" class:toast-icon-spin={toast.type === 'loading'} aria-hidden="true">
 				<Icon icon={iconStr} size={20} />
 			</span>
 
@@ -143,7 +139,9 @@
 		padding: var(--space-1);
 		transition: color var(--duration-fast) var(--ease-default);
 
-		&:hover { color: oklch(0.35 0.01 265); }
+		&:hover {
+			color: oklch(0.35 0.01 265);
+		}
 
 		&:focus {
 			outline: none;
@@ -162,12 +160,22 @@
 	}
 
 	@keyframes toast-slide-in {
-		from { transform: translateX(100%); opacity: 0; }
-		to { transform: translateX(0); opacity: 1; }
+		from {
+			transform: translateX(100%);
+			opacity: 0;
+		}
+		to {
+			transform: translateX(0);
+			opacity: 1;
+		}
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

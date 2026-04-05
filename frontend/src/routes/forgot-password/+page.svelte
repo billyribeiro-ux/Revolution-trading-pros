@@ -48,9 +48,7 @@
 	class="forgot-password-page flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 overflow-hidden relative"
 >
 	<!-- Animated gradient background -->
-	<div
-		class="absolute inset-0 bg-linear-to-br from-slate-950 via-amber-950/30 to-slate-950"
-	></div>
+	<div class="absolute inset-0 bg-linear-to-br from-slate-950 via-amber-950/30 to-slate-950"></div>
 
 	<!-- Floating orbs - hidden on small screens to save space -->
 	<div

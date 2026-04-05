@@ -24,7 +24,31 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets.svelte';
-	import { Icon, IconActivity, IconBolt, IconCaretDown, IconCaretUp, IconChartLine, IconCurrencyDollar, IconEye, IconEyeCheck, IconEyeOff, IconFileText, IconGripVertical, IconLayoutGrid, IconList, IconMail, IconPlugConnected, IconRefresh, IconSearch, IconSettings, IconShoppingCart, IconUsers, IconWorld, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconBolt,
+		IconCaretDown,
+		IconCaretUp,
+		IconChartLine,
+		IconCurrencyDollar,
+		IconEye,
+		IconEyeCheck,
+		IconEyeOff,
+		IconFileText,
+		IconGripVertical,
+		IconLayoutGrid,
+		IconList,
+		IconMail,
+		IconPlugConnected,
+		IconRefresh,
+		IconSearch,
+		IconSettings,
+		IconShoppingCart,
+		IconUsers,
+		IconWorld,
+		IconX
+	} from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;

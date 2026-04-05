@@ -9,7 +9,14 @@
 <script lang="ts">
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { Icon, IconChartCandle, IconShieldCheck, IconTarget, IconTrendingDown, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconChartCandle,
+		IconShieldCheck,
+		IconTarget,
+		IconTrendingDown,
+		IconTrendingUp
+	} from '$lib/icons';
 
 	interface Props {
 		block: Block;

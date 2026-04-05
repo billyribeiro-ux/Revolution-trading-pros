@@ -10,7 +10,21 @@
 	// GSAP imported dynamically in onMount to avoid SSR issues
 
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-	import { Icon, IconActivity, IconArrowRight, IconBroadcast, IconBuildingBank, IconCheck, IconChevronDown, IconId, IconMessageCircle, IconScale, IconSchool, IconShieldLock, IconUsersGroup } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowRight,
+		IconBroadcast,
+		IconBuildingBank,
+		IconCheck,
+		IconChevronDown,
+		IconId,
+		IconMessageCircle,
+		IconScale,
+		IconSchool,
+		IconShieldLock,
+		IconUsersGroup
+	} from '$lib/icons';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
 	let containerRef: HTMLElement | undefined = $state();
@@ -391,7 +405,8 @@
 									class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out"
 								></span>
 								<span class="relative z-10">Join The Community</span>
-								<Icon icon={IconArrowRight}
+								<Icon
+									icon={IconArrowRight}
 									size={16}
 									class="relative z-10 group-hover:translate-x-1 transition-transform"
 								/>
@@ -811,7 +826,8 @@
 			></div>
 
 			<div class="relative z-10 px-4">
-				<Icon icon={IconBuildingBank}
+				<Icon
+					icon={IconBuildingBank}
 					size={64}
 					class="mx-auto text-amber-600 mb-8 opacity-80 drop-shadow-[0_0_20px_rgba(217,119,6,0.4)]"
 					stroke={0.8}
@@ -834,7 +850,8 @@
 							class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
 						></span>
 						<span class="relative z-10">Start Your Membership</span>
-						<Icon icon={IconArrowRight}
+						<Icon
+							icon={IconArrowRight}
 							size={18}
 							class="relative z-10 group-hover:translate-x-1 transition-transform"
 						/>

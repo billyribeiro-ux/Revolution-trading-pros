@@ -10,12 +10,7 @@
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {} = $props();
 </script>
 
-<div
-	bind:this={ref}
-	data-slot="select-label"
-	class={className}
-	{...restProps}
->
+<div bind:this={ref} data-slot="select-label" class={className} {...restProps}>
 	{@render children?.()}
 </div>
 

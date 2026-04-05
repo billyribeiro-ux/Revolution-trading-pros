@@ -2,7 +2,7 @@
 	/**
 	 * HeroTabs Component - Apple Principal Engineer ICT Level 7
 	 * Extracted from WeeklyHero.svelte for better maintainability
-	 * 
+	 *
 	 * @description Tab navigation for video breakdown and trade plan
 	 * @version 1.0.0 - ICT 7 compliance
 	 */
@@ -106,4 +106,3 @@
 		}
 	}
 </style>
-

@@ -25,7 +25,14 @@
 	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 	import type { Snippet } from 'svelte';
-	import { Icon, IconBell, IconCommand, IconMenu2, IconPlugConnected, IconSearch } from '$lib/icons';
+	import {
+		Icon,
+		IconBell,
+		IconCommand,
+		IconMenu2,
+		IconPlugConnected,
+		IconSearch
+	} from '$lib/icons';
 
 	// Props (Svelte 5 - no destructuring)
 	interface Props {

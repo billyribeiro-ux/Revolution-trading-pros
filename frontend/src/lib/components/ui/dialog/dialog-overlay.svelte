@@ -17,12 +17,7 @@
 	});
 </script>
 
-<DialogPrimitive.Overlay
-	bind:ref
-	data-slot="dialog-overlay"
-	class={className}
-	{...restProps}
-/>
+<DialogPrimitive.Overlay bind:ref data-slot="dialog-overlay" class={className} {...restProps} />
 
 <style>
 	:global([data-slot='dialog-overlay']) {

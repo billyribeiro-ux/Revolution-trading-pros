@@ -1,8 +1,19 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { ImportJob, ImportSource } from '$lib/boards/types';
-	import { Icon, IconAlertCircle, IconArrowLeft, IconBrandAsana, IconBrandTrello, IconCheck, IconFileSpreadsheet, IconLoader, IconUpload, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowLeft,
+		IconBrandAsana,
+		IconBrandTrello,
+		IconCheck,
+		IconFileSpreadsheet,
+		IconLoader,
+		IconUpload,
+		IconX
+	} from '$lib/icons';
 
 	// State
 	let selectedSource = $state<ImportSource | null>(null);

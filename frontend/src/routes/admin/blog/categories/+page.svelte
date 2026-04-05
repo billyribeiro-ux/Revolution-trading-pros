@@ -7,12 +7,27 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconChartBar, IconCheck, IconCopy, IconEdit, IconEyeOff, IconFolder, IconPlus, IconRefresh, IconSearch, IconTag, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconChartBar,
+		IconCheck,
+		IconCopy,
+		IconEdit,
+		IconEyeOff,
+		IconFolder,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTag,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// State
 	let categories = $state<Category[]>([]);

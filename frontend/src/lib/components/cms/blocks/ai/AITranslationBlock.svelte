@@ -9,7 +9,14 @@
 <script lang="ts">
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
-	import { Icon, IconArrowsLeftRight, IconCheck, IconCopy, IconLanguage, IconLoader2 } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowsLeftRight,
+		IconCheck,
+		IconCopy,
+		IconLanguage,
+		IconLoader2
+	} from '$lib/icons';
 
 	interface Props {
 		block: Block;
@@ -165,13 +172,18 @@
 						onclick={copyTranslation}
 						aria-label="Copy translation"
 					>
-						{#if copied}<Icon icon={IconCheck} size={14} />{:else}<Icon icon={IconCopy} size={14} />{/if}
+						{#if copied}<Icon icon={IconCheck} size={14} />{:else}<Icon
+								icon={IconCopy}
+								size={14}
+							/>{/if}
 					</button>
 				{/if}
 			</div>
 			<div class="panel-content readonly">
 				{#if aiState.loading}
-					<div class="loading"><Icon icon={IconLoader2} size={20} class="spinning" /> Translating...</div>
+					<div class="loading">
+						<Icon icon={IconLoader2} size={20} class="spinning" /> Translating...
+					</div>
 				{:else if translatedText}
 					{translatedText}
 				{:else}

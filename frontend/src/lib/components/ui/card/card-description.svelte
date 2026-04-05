@@ -18,12 +18,7 @@
 	});
 </script>
 
-<p
-	bind:this={ref}
-	data-slot="card-description"
-	class={className}
-	{...restProps}
->
+<p bind:this={ref} data-slot="card-description" class={className} {...restProps}>
 	{@render props.children?.()}
 </p>
 

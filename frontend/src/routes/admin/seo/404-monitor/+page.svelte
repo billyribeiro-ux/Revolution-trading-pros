@@ -1,9 +1,16 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertTriangle, IconArrowForward, IconEyeOff, IconSearch, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconArrowForward,
+		IconEyeOff,
+		IconSearch,
+		IconTrash
+	} from '$lib/icons';
 
 	let logs: any[] = $state([]);
 	let stats: any = $state(null);

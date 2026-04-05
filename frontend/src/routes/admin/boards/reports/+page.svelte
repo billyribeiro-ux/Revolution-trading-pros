@@ -1,9 +1,20 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, BoardReport, ReportPeriod } from '$lib/boards/types';
-	import { Icon, IconArrowLeft, IconCalendar, IconChartBar, IconChecks, IconClock, IconDownload, IconRefresh, IconTrendingDown, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconCalendar,
+		IconChartBar,
+		IconChecks,
+		IconClock,
+		IconDownload,
+		IconRefresh,
+		IconTrendingDown,
+		IconTrendingUp
+	} from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);

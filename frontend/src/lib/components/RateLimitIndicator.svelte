@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * API Rate Limit Indicator - Apple ICT9+ Design
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -12,8 +12,17 @@ import { logger } from '$lib/utils/logger';
 
 	import { onMount, onDestroy } from 'svelte';
 	import { scale } from 'svelte/transition';
-								import { adminFetch } from '$lib/utils/adminFetch';
-	import { Icon, IconAlertTriangle, IconChevronDown, IconCircleCheck, IconClock, IconPlugConnected, IconPlugConnectedX, IconPlugOff } from '$lib/icons';
+	import { adminFetch } from '$lib/utils/adminFetch';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconChevronDown,
+		IconCircleCheck,
+		IconClock,
+		IconPlugConnected,
+		IconPlugConnectedX,
+		IconPlugOff
+	} from '$lib/icons';
 
 	interface RateLimitInfo {
 		service: string;

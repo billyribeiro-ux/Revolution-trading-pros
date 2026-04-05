@@ -10,12 +10,7 @@
 	}: WithElementRef<HTMLThAttributes> = $props();
 </script>
 
-<th
-	bind:this={ref}
-	data-slot="table-head"
-	class={className}
-	{...restProps}
->
+<th bind:this={ref} data-slot="table-head" class={className} {...restProps}>
 	{@render children?.()}
 </th>
 

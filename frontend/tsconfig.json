@@ -4,11 +4,7 @@
 		"target": "ES2022",
 		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"lib": [
-			"ES2022",
-			"DOM",
-			"DOM.Iterable"
-		],
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"allowJs": true,
 		"checkJs": false,
 		"strict": true,
@@ -27,10 +23,5 @@
 		"vite.config.ts",
 		"playwright.config.ts"
 	],
-	"exclude": [
-		"node_modules",
-		".svelte-kit",
-		"build",
-		"src/stories"
-	]
+	"exclude": ["node_modules", ".svelte-kit", "build", "src/stories"]
 }

@@ -14,7 +14,18 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactList } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconEdit, IconList, IconLock, IconPlus, IconRefresh, IconSearch, IconTrash, IconUsers, IconWorld } from '$lib/icons';
+	import {
+		Icon,
+		IconEdit,
+		IconList,
+		IconLock,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash,
+		IconUsers,
+		IconWorld
+	} from '$lib/icons';
 
 	let lists = $state<ContactList[]>([]);
 	let isLoading = $state(true);

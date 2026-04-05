@@ -41,7 +41,6 @@
 	let isOpen = $state(false);
 	let buttonRef: HTMLButtonElement;
 
-
 	function toggle() {
 		if (!disabled && data.length > 0) {
 			isOpen = !isOpen;
@@ -154,9 +153,21 @@
 		color: oklch(0.7 0.01 250);
 		transition: all var(--duration-fast) var(--ease-default);
 
-		&[data-size='sm'] { padding-inline: 0.625rem; padding-block: 0.375rem; font-size: var(--text-xs); }
-		&[data-size='md'] { padding-inline: var(--space-4); padding-block: var(--space-2); font-size: var(--text-sm); }
-		&[data-size='lg'] { padding-inline: 1.25rem; padding-block: 0.625rem; font-size: var(--text-base); }
+		&[data-size='sm'] {
+			padding-inline: 0.625rem;
+			padding-block: 0.375rem;
+			font-size: var(--text-xs);
+		}
+		&[data-size='md'] {
+			padding-inline: var(--space-4);
+			padding-block: var(--space-2);
+			font-size: var(--text-sm);
+		}
+		&[data-size='lg'] {
+			padding-inline: 1.25rem;
+			padding-block: 0.625rem;
+			font-size: var(--text-base);
+		}
 
 		&:hover:not(:disabled) {
 			background-color: oklch(0.3 0.01 250);
@@ -232,7 +243,13 @@
 		}
 	}
 
-	:global(.export-icon-csv) { color: oklch(0.7 0.18 160); }
-	:global(.export-icon-pdf) { color: oklch(0.7 0.18 25); }
-	:global(.export-icon-json) { color: oklch(0.7 0.18 260); }
+	:global(.export-icon-csv) {
+		color: oklch(0.7 0.18 160);
+	}
+	:global(.export-icon-pdf) {
+		color: oklch(0.7 0.18 25);
+	}
+	:global(.export-icon-json) {
+		color: oklch(0.7 0.18 260);
+	}
 </style>

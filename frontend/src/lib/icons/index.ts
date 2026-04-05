@@ -432,4 +432,9 @@ import type { Component } from 'svelte';
  * Type-safe icon component type
  * Use this for props that accept icon components
  */
-export type IconComponent = Component<{ size?: number; color?: string; stroke?: number; class?: string }>;
+export type IconComponent = Component<{
+	size?: number;
+	color?: string;
+	stroke?: number;
+	class?: string;
+}>;

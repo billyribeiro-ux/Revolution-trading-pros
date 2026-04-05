@@ -31,14 +31,7 @@
 		{...restProps}
 	/>
 {:else}
-	<input
-		bind:this={ref}
-		data-slot={dataSlot}
-		class={className}
-		{type}
-		bind:value
-		{...restProps}
-	/>
+	<input bind:this={ref} data-slot={dataSlot} class={className} {type} bind:value {...restProps} />
 {/if}
 
 <style>
@@ -56,7 +49,8 @@
 		box-shadow: var(--shadow-xs);
 		outline: none;
 		touch-action: manipulation;
-		transition: color var(--duration-fast) var(--ease-default),
+		transition:
+			color var(--duration-fast) var(--ease-default),
 			box-shadow var(--duration-fast) var(--ease-default);
 
 		&::placeholder {

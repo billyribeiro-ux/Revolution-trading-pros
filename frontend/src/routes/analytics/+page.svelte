@@ -23,7 +23,17 @@
 		CohortMatrix,
 		AttributionChart
 	} from '$lib/components/analytics';
-	import { Icon, IconAlertTriangle, IconBolt, IconBrain, IconChartBar, IconCurrencyDollar, IconTarget, IconTrendingUp, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconBolt,
+		IconBrain,
+		IconChartBar,
+		IconCurrencyDollar,
+		IconTarget,
+		IconTrendingUp,
+		IconUsers
+	} from '$lib/icons';
 
 	let selectedTab = $state<
 		'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue'
@@ -285,9 +295,7 @@
 						<div class="empty-state">
 							<Icon icon={IconUsers} size={64} />
 							<h3 class="empty-title">No Cohorts Yet</h3>
-							<p class="empty-subtitle">
-								Create cohorts to analyze user retention and behavior
-							</p>
+							<p class="empty-subtitle">Create cohorts to analyze user retention and behavior</p>
 							<button class="btn-primary empty-action">Create Cohort</button>
 						</div>
 					{/if}
@@ -414,11 +422,18 @@
 
 <style>
 	.analytics-dashboard {
-		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		background: linear-gradient(
+			to bottom right,
+			oklch(0.13 0.02 260),
+			oklch(0.2 0.02 250),
+			oklch(0.13 0.02 260)
+		);
 		padding: var(--space-6);
 	}
 
-	.dashboard-header { margin-block-end: var(--space-8); }
+	.dashboard-header {
+		margin-block-end: var(--space-8);
+	}
 
 	.header-content {
 		display: flex;
@@ -446,9 +461,15 @@
 		margin-block-start: var(--space-1);
 	}
 
-	.header-actions { display: flex; align-items: center; gap: var(--space-3); }
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+	}
 
-	.realtime-section { margin-block-end: var(--space-8); }
+	.realtime-section {
+		margin-block-end: var(--space-8);
+	}
 
 	.dashboard-tabs {
 		display: flex;
@@ -474,11 +495,20 @@
 		cursor: pointer;
 		transition: all var(--duration-fast) var(--ease-default);
 
-		&:hover { background-color: oklch(0.38 0.01 250 / 50%); color: oklch(1 0 0); }
-		&.active { background-color: oklch(0.8 0.18 90 / 20%); color: oklch(0.8 0.18 90); border-color: oklch(0.8 0.18 90 / 50%); }
+		&:hover {
+			background-color: oklch(0.38 0.01 250 / 50%);
+			color: oklch(1 0 0);
+		}
+		&.active {
+			background-color: oklch(0.8 0.18 90 / 20%);
+			color: oklch(0.8 0.18 90);
+			border-color: oklch(0.8 0.18 90 / 50%);
+		}
 	}
 
-	.dashboard-content { min-block-size: 400px; }
+	.dashboard-content {
+		min-block-size: 400px;
+	}
 
 	.loading-state {
 		display: flex;
@@ -488,7 +518,10 @@
 		padding-block: 5rem;
 	}
 
-	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
+	.loading-text {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
+	}
 
 	.spinner {
 		inline-size: 3rem;
@@ -499,7 +532,11 @@
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin { to { transform: rotate(360deg); } }
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 	.overview-grid {
 		display: flex;
@@ -543,7 +580,9 @@
 		font-weight: var(--weight-medium);
 		text-decoration: none;
 		transition: color var(--duration-fast) var(--ease-default);
-		&:hover { color: oklch(0.85 0.16 90); }
+		&:hover {
+			color: oklch(0.85 0.16 90);
+		}
 	}
 
 	.anomaly-header-row {
@@ -557,7 +596,9 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-4);
-		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	.anomaly-card {
@@ -579,7 +620,9 @@
 		color: oklch(0.75 0.16 55);
 	}
 
-	[data-variant='critical'] .anomaly-value { color: oklch(0.7 0.2 25); }
+	[data-variant='critical'] .anomaly-value {
+		color: oklch(0.7 0.2 25);
+	}
 
 	.anomaly-label {
 		font-size: var(--text-sm);
@@ -593,7 +636,9 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-6);
-		@media (min-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.funnels-list,
@@ -625,7 +670,9 @@
 		margin-block-start: var(--space-2);
 	}
 
-	.empty-action { margin-block-start: var(--space-4); }
+	.empty-action {
+		margin-block-start: var(--space-4);
+	}
 
 	.btn-primary {
 		display: flex;
@@ -640,7 +687,9 @@
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.85 0.16 90); }
+		&:hover {
+			background-color: oklch(0.85 0.16 90);
+		}
 	}
 
 	.model-selector {
@@ -650,7 +699,10 @@
 		color: oklch(1 0 0);
 		border-radius: var(--radius-lg);
 		border: 1px solid oklch(0.45 0.01 250);
-		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.8 0.18 90);
+		}
 	}
 
 	.behavior-card {
@@ -681,7 +733,9 @@
 		justify-content: space-between;
 		padding-block: var(--space-2);
 		border-block-end: 1px solid oklch(0.38 0.01 250 / 50%);
-		&:last-child { border-block-end: none; }
+		&:last-child {
+			border-block-end: none;
+		}
 	}
 
 	.page-path,
@@ -710,8 +764,12 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-4);
-		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
-		@media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 
 	.revenue-kpi-card {
@@ -737,7 +795,11 @@
 	.kpi-change {
 		font-size: var(--text-sm);
 		font-weight: var(--weight-semibold);
-		&.positive { color: oklch(0.7 0.18 160); }
-		&.negative { color: oklch(0.7 0.2 25); }
+		&.positive {
+			color: oklch(0.7 0.18 160);
+		}
+		&.negative {
+			color: oklch(0.7 0.2 25);
+		}
 	}
 </style>

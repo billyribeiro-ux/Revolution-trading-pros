@@ -186,9 +186,9 @@
 							<VideoInfo
 								videoTitle={weeklyContent.videoTitle}
 								publishedDate={`Published ${weeklyContent.publishedDate}`}
-								watchFullUrl={watchFullUrl}
-								isAdmin={isAdmin}
-								onUploadVideo={onUploadVideo}
+								{watchFullUrl}
+								{isAdmin}
+								{onUploadVideo}
 							/>
 						{/if}
 					</div>
@@ -196,13 +196,7 @@
 			{:else}
 				<!-- ENTRIES TAB - Trade Plan Sheet -->
 				<div class="entries-container">
-					<TradePlanTable
-						tradePlan={tradePlan}
-						sheetUrl={sheetUrl}
-						isAdmin={isAdmin}
-						onAddEntry={onAddEntry}
-						onEditEntry={onEditEntry}
-					/>
+					<TradePlanTable {tradePlan} {sheetUrl} {isAdmin} {onAddEntry} {onEditEntry} />
 				</div>
 			{/if}
 		</div>

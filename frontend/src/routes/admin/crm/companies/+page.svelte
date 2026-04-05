@@ -16,7 +16,21 @@
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconBriefcase, IconBuilding, IconCopy, IconCurrencyDollar, IconEdit, IconEye, IconPlus, IconRefresh, IconSearch, IconTrash, IconUsers, IconWorld } from '$lib/icons';
+	import {
+		Icon,
+		IconBriefcase,
+		IconBuilding,
+		IconCopy,
+		IconCurrencyDollar,
+		IconEdit,
+		IconEye,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash,
+		IconUsers,
+		IconWorld
+	} from '$lib/icons';
 
 	let companies = $state<CrmCompany[]>([]);
 	let isLoading = $state(true);

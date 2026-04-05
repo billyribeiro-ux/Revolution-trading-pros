@@ -60,10 +60,7 @@
 			<div class="channel-row">
 				<div class="channel-meta">
 					<div class="channel-name-group">
-						<div
-							class="channel-dot"
-							data-channel={getChannelKey(channel.channel)}
-						></div>
+						<div class="channel-dot" data-channel={getChannelKey(channel.channel)}></div>
 						<span class="channel-name">{channel.channel}</span>
 					</div>
 					<div class="channel-stats">
@@ -140,9 +137,14 @@
 		color: oklch(0.15 0.01 265);
 	}
 
-	.attr-subtitle { font-size: var(--text-sm); color: oklch(0.55 0.01 265); }
+	.attr-subtitle {
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
 
-	.attr-totals { text-align: end; }
+	.attr-totals {
+		text-align: end;
+	}
 
 	.attr-total-value {
 		font-size: var(--text-2xl);
@@ -150,7 +152,10 @@
 		color: oklch(0.15 0.01 265);
 	}
 
-	.attr-total-label { font-size: var(--text-sm); color: oklch(0.55 0.01 265); }
+	.attr-total-label {
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
 
 	.channel-list {
 		display: flex;
@@ -171,21 +176,41 @@
 		font-size: var(--text-sm);
 	}
 
-	.channel-name-group { display: flex; align-items: center; gap: var(--space-2); }
+	.channel-name-group {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
 	.channel-dot {
 		inline-size: 0.75rem;
 		block-size: 0.75rem;
 		border-radius: 9999px;
 
-		&[data-channel='organic'] { background-color: oklch(0.6 0.18 160); }
-		&[data-channel='paid'] { background-color: oklch(0.6 0.2 260); }
-		&[data-channel='social'] { background-color: oklch(0.55 0.2 300); }
-		&[data-channel='email'] { background-color: oklch(0.7 0.18 55); }
-		&[data-channel='direct'] { background-color: oklch(0.55 0.01 265); }
-		&[data-channel='referral'] { background-color: oklch(0.7 0.15 200); }
-		&[data-channel='affiliate'] { background-color: oklch(0.65 0.2 340); }
-		&[data-channel='default'] { background-color: oklch(0.65 0.01 265); }
+		&[data-channel='organic'] {
+			background-color: oklch(0.6 0.18 160);
+		}
+		&[data-channel='paid'] {
+			background-color: oklch(0.6 0.2 260);
+		}
+		&[data-channel='social'] {
+			background-color: oklch(0.55 0.2 300);
+		}
+		&[data-channel='email'] {
+			background-color: oklch(0.7 0.18 55);
+		}
+		&[data-channel='direct'] {
+			background-color: oklch(0.55 0.01 265);
+		}
+		&[data-channel='referral'] {
+			background-color: oklch(0.7 0.15 200);
+		}
+		&[data-channel='affiliate'] {
+			background-color: oklch(0.65 0.2 340);
+		}
+		&[data-channel='default'] {
+			background-color: oklch(0.65 0.01 265);
+		}
 	}
 
 	.channel-name {
@@ -218,14 +243,30 @@
 		border-radius: 9999px;
 		transition: all 500ms ease-out;
 
-		&[data-channel='organic'] { background-color: oklch(0.6 0.18 160); }
-		&[data-channel='paid'] { background-color: oklch(0.6 0.2 260); }
-		&[data-channel='social'] { background-color: oklch(0.55 0.2 300); }
-		&[data-channel='email'] { background-color: oklch(0.7 0.18 55); }
-		&[data-channel='direct'] { background-color: oklch(0.55 0.01 265); }
-		&[data-channel='referral'] { background-color: oklch(0.7 0.15 200); }
-		&[data-channel='affiliate'] { background-color: oklch(0.65 0.2 340); }
-		&[data-channel='default'] { background-color: oklch(0.65 0.01 265); }
+		&[data-channel='organic'] {
+			background-color: oklch(0.6 0.18 160);
+		}
+		&[data-channel='paid'] {
+			background-color: oklch(0.6 0.2 260);
+		}
+		&[data-channel='social'] {
+			background-color: oklch(0.55 0.2 300);
+		}
+		&[data-channel='email'] {
+			background-color: oklch(0.7 0.18 55);
+		}
+		&[data-channel='direct'] {
+			background-color: oklch(0.55 0.01 265);
+		}
+		&[data-channel='referral'] {
+			background-color: oklch(0.7 0.15 200);
+		}
+		&[data-channel='affiliate'] {
+			background-color: oklch(0.65 0.2 340);
+		}
+		&[data-channel='default'] {
+			background-color: oklch(0.65 0.01 265);
+		}
 	}
 
 	.bar-label-inside {
@@ -264,5 +305,8 @@
 		color: oklch(0.15 0.01 265);
 	}
 
-	.summary-label { font-size: var(--text-xs); color: oklch(0.55 0.01 265); }
+	.summary-label {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+	}
 </style>

@@ -32,7 +32,6 @@
 		})
 	);
 
-
 	// Group KPIs by category
 	let categories = $derived([...new Set(kpis.map((k) => k.category))]);
 </script>
@@ -113,8 +112,12 @@
 		grid-template-columns: 1fr;
 		gap: var(--space-4);
 
-		@media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-		@media (min-width: 1024px) { grid-template-columns: repeat(var(--columns, 4), 1fr); }
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(var(--columns, 4), 1fr);
+		}
 	}
 
 	.empty-state {

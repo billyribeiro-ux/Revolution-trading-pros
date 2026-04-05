@@ -8,12 +8,7 @@
 	}: LabelPrimitive.RootProps = $props();
 </script>
 
-<LabelPrimitive.Root
-	bind:ref
-	data-slot="label"
-	class={className}
-	{...restProps}
-/>
+<LabelPrimitive.Root bind:ref data-slot="label" class={className} {...restProps} />
 
 <style>
 	:global([data-slot='label']) {

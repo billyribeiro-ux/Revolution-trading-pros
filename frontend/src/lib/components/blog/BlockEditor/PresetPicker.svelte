@@ -17,11 +17,25 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import type { Block, BlockContent, BlockSettings, BlockType } from './types';
-	import { Icon, IconBriefcase, IconCalendar, IconChartBar, IconDeviceFloppy, IconPalette, IconPlus, IconSearch, IconSettings, IconStarFilled, IconTag, IconTemplate, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconBriefcase,
+		IconCalendar,
+		IconChartBar,
+		IconDeviceFloppy,
+		IconPalette,
+		IconPlus,
+		IconSearch,
+		IconSettings,
+		IconStarFilled,
+		IconTag,
+		IconTemplate,
+		IconX
+	} from '$lib/icons';
 
 	// ==========================================================================
 	// Types

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { boardsAPI } from '$lib/api/boards';
@@ -15,7 +15,29 @@ import { logger } from '$lib/utils/logger';
 		CustomFieldDefinition
 	} from '$lib/boards/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconArrowLeft, IconCalendar, IconCheck, IconChecklist, IconDots, IconFilter, IconMessage, IconPaperclip, IconPlayerPlay, IconPlayerStop, IconPlus, IconSearch, IconSettings, IconStar, IconStarFilled, IconSubtask, IconTrash, IconUser, IconUsers, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconCalendar,
+		IconCheck,
+		IconChecklist,
+		IconDots,
+		IconFilter,
+		IconMessage,
+		IconPaperclip,
+		IconPlayerPlay,
+		IconPlayerStop,
+		IconPlus,
+		IconSearch,
+		IconSettings,
+		IconStar,
+		IconStarFilled,
+		IconSubtask,
+		IconTrash,
+		IconUser,
+		IconUsers,
+		IconX
+	} from '$lib/icons';
 
 	// Get board ID from URL
 	const boardId = $derived(page.params['id'] ?? '');
@@ -392,9 +414,7 @@ import { logger } from '$lib/utils/logger';
 
 <div class="bg-gray-100 dark:bg-gray-900 flex flex-col">
 	<!-- Header -->
-	<div
-		class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0"
-	>
+	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0">
 		<div class="px-4 py-3">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
@@ -442,7 +462,10 @@ import { logger } from '$lib/utils/logger';
 				<div class="flex items-center gap-3">
 					<!-- Search -->
 					<div class="relative">
-						<Icon icon={IconSearch} class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+						<Icon
+							icon={IconSearch}
+							class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+						/>
 						<input
 							id="page-searchquery"
 							name="page-searchquery"

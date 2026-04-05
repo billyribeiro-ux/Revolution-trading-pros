@@ -15,7 +15,14 @@
 	import { flip } from 'svelte/animate';
 	import { toasts, toastStore } from '$lib/stores/toast.svelte';
 	import type { Toast } from '$lib/stores/toast.svelte';
-	import { Icon, IconAlertTriangle, IconCheck, IconInfoCircle, IconLoader, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconCheck,
+		IconInfoCircle,
+		IconLoader,
+		IconX
+	} from '$lib/icons';
 
 	// Local derived from getter
 	const toastList = $derived(toasts.value);

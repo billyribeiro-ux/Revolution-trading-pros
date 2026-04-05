@@ -11,8 +11,7 @@ import { logger } from '$lib/utils/logger';
 
 function requireAdmin(request: Request, locals: App.Locals): Response | null {
 	const token =
-		request.headers.get('Authorization')?.replace('Bearer ', '') ||
-		(locals as any).accessToken;
+		request.headers.get('Authorization')?.replace('Bearer ', '') || (locals as any).accessToken;
 	if (!token) {
 		return json({ error: 'Unauthorized' }, { status: 401 }) as unknown as Response;
 	}

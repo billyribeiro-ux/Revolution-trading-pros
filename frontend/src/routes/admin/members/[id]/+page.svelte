@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -7,7 +7,31 @@ import { logger } from '$lib/utils/logger';
 	import type { Member, Subscription } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconActivity, IconAlertTriangle, IconArrowLeft, IconCalendar, IconChartBar, IconCheck, IconClock, IconCreditCard, IconDownload, IconEdit, IconExternalLink, IconFileText, IconGift, IconMail, IconPlus, IconReceipt, IconRefresh, IconSend, IconTrash, IconTrendingUp, IconUser, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconAlertTriangle,
+		IconArrowLeft,
+		IconCalendar,
+		IconChartBar,
+		IconCheck,
+		IconClock,
+		IconCreditCard,
+		IconDownload,
+		IconEdit,
+		IconExternalLink,
+		IconFileText,
+		IconGift,
+		IconMail,
+		IconPlus,
+		IconReceipt,
+		IconRefresh,
+		IconSend,
+		IconTrash,
+		IconTrendingUp,
+		IconUser,
+		IconX
+	} from '$lib/icons';
 
 	let memberId = $derived(Number(page.params.id));
 

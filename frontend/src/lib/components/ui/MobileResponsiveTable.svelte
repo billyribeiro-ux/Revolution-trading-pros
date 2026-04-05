@@ -234,10 +234,7 @@
 					{#each visibleColumns as column}
 						<div class="mrt-card-field">
 							<span class="mrt-card-label">{column.label}</span>
-							<span
-								class="mrt-card-value"
-								data-align={column.align ?? 'right'}
-							>
+							<span class="mrt-card-value" data-align={column.align ?? 'right'}>
 								{@html getValue(row, column)}
 							</span>
 						</div>
@@ -253,11 +250,7 @@
 					<tr>
 						{#if selectable}
 							<th class="mrt-th mrt-th-checkbox">
-								<input
-									type="checkbox"
-									checked={isAllSelected}
-									onchange={toggleSelectAll}
-								/>
+								<input type="checkbox" checked={isAllSelected} onchange={toggleSelectAll} />
 							</th>
 						{/if}
 						{#each visibleColumns as column}
@@ -267,10 +260,7 @@
 								style={column.width ? `width: ${column.width}` : ''}
 								onclick={() => handleSort(column)}
 							>
-								<div
-									class="mrt-th-inner"
-									data-align={column.align ?? 'left'}
-								>
+								<div class="mrt-th-inner" data-align={column.align ?? 'left'}>
 									<span>{column.label}</span>
 									{#if column.sortable && sortBy === column.key}
 										<svg
@@ -313,10 +303,7 @@
 								</td>
 							{/if}
 							{#each visibleColumns as column}
-								<td
-									class="mrt-td"
-									data-align={column.align ?? 'left'}
-								>
+								<td class="mrt-td" data-align={column.align ?? 'left'}>
 									{@html getValue(row, column)}
 								</td>
 							{/each}
@@ -366,7 +353,9 @@
 		padding-block: var(--space-12);
 		color: oklch(0.55 0.01 250);
 
-		& p { font-size: var(--text-sm); }
+		& p {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.mrt-empty-icon {
@@ -394,8 +383,13 @@
 		transition: background-color var(--duration-fast) var(--ease-default);
 		cursor: pointer;
 
-		&:hover { background-color: oklch(0.25 0.01 250 / 70%); }
-		&:active { transform: scale(0.98); background-color: oklch(0.25 0.01 250 / 80%); }
+		&:hover {
+			background-color: oklch(0.25 0.01 250 / 70%);
+		}
+		&:active {
+			transform: scale(0.98);
+			background-color: oklch(0.25 0.01 250 / 80%);
+		}
 	}
 
 	.mrt-card-select {
@@ -430,9 +424,15 @@
 		font-weight: var(--weight-medium);
 		flex: 1;
 
-		&[data-align='right'] { text-align: end; }
-		&[data-align='center'] { text-align: center; }
-		&[data-align='left'] { text-align: start; }
+		&[data-align='right'] {
+			text-align: end;
+		}
+		&[data-align='center'] {
+			text-align: center;
+		}
+		&[data-align='left'] {
+			text-align: start;
+		}
 	}
 
 	/* Desktop table */
@@ -464,7 +464,9 @@
 		&[data-sortable] {
 			cursor: pointer;
 			transition: color var(--duration-fast) var(--ease-default);
-			&:hover { color: oklch(1 0 0); }
+			&:hover {
+				color: oklch(1 0 0);
+			}
 		}
 	}
 
@@ -477,8 +479,12 @@
 		align-items: center;
 		gap: var(--space-2);
 
-		&[data-align='center'] { justify-content: center; }
-		&[data-align='right'] { justify-content: flex-end; }
+		&[data-align='center'] {
+			justify-content: center;
+		}
+		&[data-align='right'] {
+			justify-content: flex-end;
+		}
 	}
 
 	.mrt-sort-icon {
@@ -501,8 +507,12 @@
 		transition: background-color var(--duration-fast) var(--ease-default);
 		cursor: pointer;
 
-		&:hover { background-color: oklch(0.25 0.01 250 / 30%); }
-		&[data-selected] { background-color: oklch(0.55 0.2 260 / 10%); }
+		&:hover {
+			background-color: oklch(0.25 0.01 250 / 30%);
+		}
+		&[data-selected] {
+			background-color: oklch(0.55 0.2 260 / 10%);
+		}
 	}
 
 	.mrt-td {
@@ -515,8 +525,12 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 
-		&[data-align='center'] { text-align: center; }
-		&[data-align='right'] { text-align: end; }
+		&[data-align='center'] {
+			text-align: center;
+		}
+		&[data-align='right'] {
+			text-align: end;
+		}
 	}
 
 	/* Selection bar */
@@ -549,7 +563,9 @@
 		color: inherit;
 		cursor: pointer;
 
-		&:hover { text-decoration: none; }
+		&:hover {
+			text-decoration: none;
+		}
 	}
 
 	/* Custom checkbox styling */

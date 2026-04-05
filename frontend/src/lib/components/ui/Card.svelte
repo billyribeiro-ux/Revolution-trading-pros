@@ -14,7 +14,11 @@
 	let className = $derived(props.class ?? '');
 </script>
 
-<div class="standalone-card {className}" data-padding={padding || undefined} data-hover={hover || undefined}>
+<div
+	class="standalone-card {className}"
+	data-padding={padding || undefined}
+	data-hover={hover || undefined}
+>
 	{@render props.children?.()}
 </div>
 

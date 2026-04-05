@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
 	 * ICT11+ Production-Grade with Full Analytics & Engagement Features

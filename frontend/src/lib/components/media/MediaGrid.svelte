@@ -105,10 +105,14 @@
 
 	function getStatusLevel(status: string): string {
 		switch (status) {
-			case 'completed': return 'completed';
-			case 'processing': return 'processing';
-			case 'failed': return 'failed';
-			default: return 'pending';
+			case 'completed':
+				return 'completed';
+			case 'processing':
+				return 'processing';
+			case 'failed':
+				return 'failed';
+			default:
+				return 'pending';
 		}
 	}
 
@@ -343,9 +347,15 @@
 		gap: var(--space-4);
 		padding-block: var(--space-4);
 
-		@media (max-width: 1024px) { --columns: 3 !important; }
-		@media (max-width: 768px) { --columns: 2 !important; }
-		@media (max-width: 480px) { --columns: 1 !important; }
+		@media (max-width: 1024px) {
+			--columns: 3 !important;
+		}
+		@media (max-width: 768px) {
+			--columns: 2 !important;
+		}
+		@media (max-width: 480px) {
+			--columns: 1 !important;
+		}
 	}
 
 	.grid-item {
@@ -415,10 +425,18 @@
 		justify-content: center;
 		color: oklch(1 0 0);
 
-		&[data-status='completed'] { background-color: oklch(0.6 0.18 160); }
-		&[data-status='processing'] { background-color: oklch(0.8 0.18 90); }
-		&[data-status='failed'] { background-color: oklch(0.6 0.25 25); }
-		&[data-status='pending'] { background-color: oklch(0.65 0.01 265); }
+		&[data-status='completed'] {
+			background-color: oklch(0.6 0.18 160);
+		}
+		&[data-status='processing'] {
+			background-color: oklch(0.8 0.18 90);
+		}
+		&[data-status='failed'] {
+			background-color: oklch(0.6 0.25 25);
+		}
+		&[data-status='pending'] {
+			background-color: oklch(0.65 0.01 265);
+		}
 	}
 
 	.item-actions {
@@ -435,7 +453,9 @@
 		transition: opacity 200ms var(--ease-default);
 	}
 
-	.grid-item:hover .item-actions { opacity: 1; }
+	.grid-item:hover .item-actions {
+		opacity: 1;
+	}
 
 	.action-btn {
 		inline-size: 32px;
@@ -455,11 +475,19 @@
 			transform: scale(1.1);
 		}
 
-		&.optimize:hover { background: oklch(0.6 0.2 260); color: oklch(1 0 0); }
-		&.delete:hover { background: oklch(0.6 0.25 25); color: oklch(1 0 0); }
+		&.optimize:hover {
+			background: oklch(0.6 0.2 260);
+			color: oklch(1 0 0);
+		}
+		&.delete:hover {
+			background: oklch(0.6 0.25 25);
+			color: oklch(1 0 0);
+		}
 	}
 
-	.item-info { padding: var(--space-3); }
+	.item-info {
+		padding: var(--space-3);
+	}
 
 	.item-name {
 		display: block;
@@ -480,11 +508,18 @@
 	}
 
 	/* ─── Skeleton ─── */
-	.skeleton { pointer-events: none; }
+	.skeleton {
+		pointer-events: none;
+	}
 
 	.skeleton-image {
 		aspect-ratio: 1;
-		background: linear-gradient(90deg, oklch(0.95 0.002 265) 25%, oklch(0.9 0.005 265) 50%, oklch(0.95 0.002 265) 75%);
+		background: linear-gradient(
+			90deg,
+			oklch(0.95 0.002 265) 25%,
+			oklch(0.9 0.005 265) 50%,
+			oklch(0.95 0.002 265) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 	}
@@ -492,15 +527,24 @@
 	.skeleton-text {
 		block-size: 40px;
 		margin: var(--space-3);
-		background: linear-gradient(90deg, oklch(0.95 0.002 265) 25%, oklch(0.9 0.005 265) 50%, oklch(0.95 0.002 265) 75%);
+		background: linear-gradient(
+			90deg,
+			oklch(0.95 0.002 265) 25%,
+			oklch(0.9 0.005 265) 50%,
+			oklch(0.95 0.002 265) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-sm);
 	}
 
 	@keyframes shimmer {
-		0% { background-position: -200% 0; }
-		100% { background-position: 200% 0; }
+		0% {
+			background-position: -200% 0;
+		}
+		100% {
+			background-position: 200% 0;
+		}
 	}
 
 	/* ─── Empty state ─── */
@@ -517,9 +561,15 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
-	.animate-spin { animation: spin 1s linear infinite; }
+	.animate-spin {
+		animation: spin 1s linear infinite;
+	}
 </style>

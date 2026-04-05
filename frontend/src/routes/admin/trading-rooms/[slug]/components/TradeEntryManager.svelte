@@ -12,13 +12,22 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
 
 	// Icons
-								import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconCheck, IconCopy, IconEdit, IconGripVertical, IconPlus, IconTrash, IconX } from '$lib/icons';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import {
+		Icon,
+		IconCheck,
+		IconCopy,
+		IconEdit,
+		IconGripVertical,
+		IconPlus,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// PROPS

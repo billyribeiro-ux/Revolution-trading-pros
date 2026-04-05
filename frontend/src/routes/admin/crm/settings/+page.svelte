@@ -12,9 +12,17 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-							import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { DoubleOptInSettings, EmailPreferencePage } from '$lib/crm/types';
-	import { Icon, IconCheck, IconMail, IconMailCheck, IconRefresh, IconShoppingCart, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconCheck,
+		IconMail,
+		IconMailCheck,
+		IconRefresh,
+		IconShoppingCart,
+		IconUsers
+	} from '$lib/icons';
 
 	let activeTab = $state('double-optin');
 	let isLoading = $state(true);

@@ -12,7 +12,16 @@
 
 	import { fade, scale } from 'svelte/transition';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconCheck, IconChevronDown, IconCode, IconDownload, IconFileText, IconLoader, IconTable } from '$lib/icons';
+	import {
+		Icon,
+		IconCheck,
+		IconChevronDown,
+		IconCode,
+		IconDownload,
+		IconFileText,
+		IconLoader,
+		IconTable
+	} from '$lib/icons';
 
 	interface Props {
 		/** Data to export (array of objects) */

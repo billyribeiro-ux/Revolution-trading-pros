@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Explosive Swings - Member Dashboard
 	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)

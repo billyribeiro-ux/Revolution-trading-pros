@@ -13,7 +13,20 @@
 		type BusinessType
 	} from '$lib/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconCheck, IconClock, IconDownload, IconEdit, IconExternalLink, IconMail, IconMapPin, IconPhone, IconPlus, IconTrash, IconWorld } from '$lib/icons';
+	import {
+		Icon,
+		IconCheck,
+		IconClock,
+		IconDownload,
+		IconEdit,
+		IconExternalLink,
+		IconMail,
+		IconMapPin,
+		IconPhone,
+		IconPlus,
+		IconTrash,
+		IconWorld
+	} from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let locationList = $state<Location[]>([]);
@@ -272,7 +285,9 @@
 								{#if isLocationOpen(location)}
 									<span class="open"><Icon icon={IconCheck} size={14} /> Open</span>
 								{:else}
-									<span class="closed"><Icon icon={IconClock} size={14} /> {getNextOpenTime(location)}</span>
+									<span class="closed"
+										><Icon icon={IconClock} size={14} /> {getNextOpenTime(location)}</span
+									>
 								{/if}
 							</div>
 						</div>

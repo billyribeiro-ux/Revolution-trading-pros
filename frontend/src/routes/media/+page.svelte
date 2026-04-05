@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		mediaStore,
@@ -19,7 +19,17 @@ import { logger } from '$lib/utils/logger';
 	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
 	import FolderTree from '$lib/components/media/FolderTree.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconFileText, IconList, IconPhoto, IconSearch, IconSparkles, IconTable, IconTrash, IconVideo } from '$lib/icons';
+	import {
+		Icon,
+		IconFileText,
+		IconList,
+		IconPhoto,
+		IconSearch,
+		IconSparkles,
+		IconTable,
+		IconTrash,
+		IconVideo
+	} from '$lib/icons';
 
 	let showUploadModal = $state(false);
 	// TODO: Implement CreateFolderModal component
@@ -252,7 +262,7 @@ import { logger } from '$lib/utils/logger';
 						<table class="files-table">
 							<thead>
 								<tr>
-										<th class="col-checkbox"></th>
+									<th class="col-checkbox"></th>
 									<th>Name</th>
 									<th>Type</th>
 									<th>Size</th>
@@ -367,7 +377,12 @@ import { logger } from '$lib/utils/logger';
 
 <style>
 	.media-dashboard {
-		background: linear-gradient(to bottom right, oklch(0.13 0.02 260), oklch(0.2 0.02 250), oklch(0.13 0.02 260));
+		background: linear-gradient(
+			to bottom right,
+			oklch(0.13 0.02 260),
+			oklch(0.2 0.02 250),
+			oklch(0.13 0.02 260)
+		);
 		padding: var(--space-6);
 	}
 
@@ -396,7 +411,11 @@ import { logger } from '$lib/utils/logger';
 		margin-block-start: var(--space-1);
 	}
 
-	.header-actions { display: flex; align-items: center; gap: var(--space-3); }
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+	}
 
 	.btn-primary {
 		display: flex;
@@ -411,14 +430,18 @@ import { logger } from '$lib/utils/logger';
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.85 0.16 90); }
+		&:hover {
+			background-color: oklch(0.85 0.16 90);
+		}
 	}
 
 	.dashboard-content {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-6);
-		@media (min-width: 1024px) { grid-template-columns: 300px 1fr; }
+		@media (min-width: 1024px) {
+			grid-template-columns: 300px 1fr;
+		}
 	}
 
 	.sidebar {
@@ -433,7 +456,9 @@ import { logger } from '$lib/utils/logger';
 		gap: var(--space-6);
 	}
 
-	.upload-section { margin-block-end: var(--space-6); }
+	.upload-section {
+		margin-block-end: var(--space-6);
+	}
 
 	.toolbar {
 		display: flex;
@@ -443,8 +468,17 @@ import { logger } from '$lib/utils/logger';
 		flex-wrap: wrap;
 	}
 
-	.toolbar-left { display: flex; align-items: center; gap: var(--space-3); flex: 1; }
-	.toolbar-right { display: flex; align-items: center; gap: var(--space-3); }
+	.toolbar-left {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		flex: 1;
+	}
+	.toolbar-right {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+	}
 
 	.search-box {
 		position: relative;
@@ -469,7 +503,10 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		border-radius: var(--radius-lg);
 		border: 1px solid oklch(0.38 0.01 250);
-		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.8 0.18 90);
+		}
 	}
 
 	.filter-select {
@@ -479,7 +516,10 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(1 0 0);
 		border-radius: var(--radius-lg);
 		border: 1px solid oklch(0.38 0.01 250);
-		&:focus { outline: none; box-shadow: 0 0 0 2px oklch(0.8 0.18 90); }
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px oklch(0.8 0.18 90);
+		}
 	}
 
 	.view-toggle {
@@ -498,8 +538,14 @@ import { logger } from '$lib/utils/logger';
 		border: none;
 		cursor: pointer;
 		transition: all var(--duration-fast) var(--ease-default);
-		&:hover { color: oklch(1 0 0); background-color: oklch(0.38 0.01 250); }
-		&.active { background-color: oklch(0.8 0.18 90); color: oklch(0.15 0.02 90); }
+		&:hover {
+			color: oklch(1 0 0);
+			background-color: oklch(0.38 0.01 250);
+		}
+		&.active {
+			background-color: oklch(0.8 0.18 90);
+			color: oklch(0.15 0.02 90);
+		}
 	}
 
 	.bulk-actions {
@@ -513,7 +559,10 @@ import { logger } from '$lib/utils/logger';
 		border: 1px solid oklch(0.38 0.01 250);
 	}
 
-	.selected-count { font-size: var(--text-sm); color: oklch(0.65 0.01 250); }
+	.selected-count {
+		font-size: var(--text-sm);
+		color: oklch(0.65 0.01 250);
+	}
 
 	.bulk-btn {
 		display: flex;
@@ -528,16 +577,24 @@ import { logger } from '$lib/utils/logger';
 		border: none;
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.45 0.01 250); }
+		&:hover {
+			background-color: oklch(0.45 0.01 250);
+		}
 	}
 
 	.files-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: var(--space-4);
-		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
-		@media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
-		@media (min-width: 1280px) { grid-template-columns: repeat(5, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		@media (min-width: 1024px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
+		@media (min-width: 1280px) {
+			grid-template-columns: repeat(5, 1fr);
+		}
 	}
 
 	.file-card {
@@ -548,8 +605,13 @@ import { logger } from '$lib/utils/logger';
 		border: 2px solid oklch(0.38 0.01 250 / 50%);
 		cursor: pointer;
 		transition: all var(--duration-fast) var(--ease-default);
-		&:hover { border-color: oklch(0.8 0.18 90 / 50%); }
-		&.selected { border-color: oklch(0.8 0.18 90); background-color: oklch(0.8 0.18 90 / 10%); }
+		&:hover {
+			border-color: oklch(0.8 0.18 90 / 50%);
+		}
+		&.selected {
+			border-color: oklch(0.8 0.18 90);
+			background-color: oklch(0.8 0.18 90 / 10%);
+		}
 	}
 
 	.file-thumbnail {
@@ -573,7 +635,9 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(0.65 0.01 250);
 	}
 
-	.file-info { padding: var(--space-3); }
+	.file-info {
+		padding: var(--space-3);
+	}
 
 	.file-name {
 		font-size: var(--text-sm);
@@ -600,7 +664,10 @@ import { logger } from '$lib/utils/logger';
 		font-weight: var(--weight-semibold);
 		border-radius: var(--radius-sm);
 
-		&.webp { background-color: oklch(0.6 0.18 160 / 20%); color: oklch(0.7 0.18 160); }
+		&.webp {
+			background-color: oklch(0.6 0.18 160 / 20%);
+			color: oklch(0.7 0.18 160);
+		}
 		&.ai {
 			background-color: oklch(0.55 0.2 300 / 20%);
 			color: oklch(0.7 0.18 300);
@@ -617,9 +684,14 @@ import { logger } from '$lib/utils/logger';
 		overflow: hidden;
 	}
 
-	.files-table { inline-size: 100%; border-collapse: collapse; }
+	.files-table {
+		inline-size: 100%;
+		border-collapse: collapse;
+	}
 
-	.files-table thead { background-color: oklch(0.15 0.01 250 / 50%); }
+	.files-table thead {
+		background-color: oklch(0.15 0.01 250 / 50%);
+	}
 
 	.files-table th {
 		padding-inline: var(--space-4);
@@ -630,13 +702,19 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(0.65 0.01 250);
 	}
 
-	.col-checkbox { inline-size: 3rem; }
+	.col-checkbox {
+		inline-size: 3rem;
+	}
 
 	.files-table tbody tr {
 		border-block-start: 1px solid oklch(0.38 0.01 250 / 50%);
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.38 0.01 250 / 30%); }
-		&.selected { background-color: oklch(0.8 0.18 90 / 10%); }
+		&:hover {
+			background-color: oklch(0.38 0.01 250 / 30%);
+		}
+		&.selected {
+			background-color: oklch(0.8 0.18 90 / 10%);
+		}
 	}
 
 	.files-table td {
@@ -659,7 +737,11 @@ import { logger } from '$lib/utils/logger';
 		border-radius: var(--radius-sm);
 	}
 
-	.tags { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+	.tags {
+		display: flex;
+		gap: 0.25rem;
+		flex-wrap: wrap;
+	}
 
 	.tag {
 		padding-inline: var(--space-2);
@@ -687,11 +769,18 @@ import { logger } from '$lib/utils/logger';
 		border: 1px solid oklch(0.38 0.01 250);
 		cursor: pointer;
 		transition: background-color var(--duration-fast) var(--ease-default);
-		&:hover { background-color: oklch(0.38 0.01 250); }
-		&:disabled { opacity: 0.5; cursor: not-allowed; }
+		&:hover {
+			background-color: oklch(0.38 0.01 250);
+		}
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
 	}
 
-	.page-info { color: oklch(0.65 0.01 250); }
+	.page-info {
+		color: oklch(0.65 0.01 250);
+	}
 
 	.loading-state,
 	.empty-state {
@@ -704,7 +793,10 @@ import { logger } from '$lib/utils/logger';
 		color: oklch(0.45 0.01 250);
 	}
 
-	.loading-text { color: oklch(0.65 0.01 250); margin-block-start: var(--space-4); }
+	.loading-text {
+		color: oklch(0.65 0.01 250);
+		margin-block-start: var(--space-4);
+	}
 
 	.empty-title {
 		font-size: var(--text-xl);
@@ -718,7 +810,9 @@ import { logger } from '$lib/utils/logger';
 		margin-block-start: var(--space-2);
 	}
 
-	.empty-action { margin-block-start: var(--space-4); }
+	.empty-action {
+		margin-block-start: var(--space-4);
+	}
 
 	.spinner {
 		inline-size: 3rem;
@@ -729,5 +823,9 @@ import { logger } from '$lib/utils/logger';
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin { to { transform: rotate(360deg); } }
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 </style>

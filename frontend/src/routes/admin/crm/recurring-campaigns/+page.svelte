@@ -20,7 +20,20 @@
 		RecurringCampaignStatus
 	} from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconCalendarEvent, IconChartBar, IconCopy, IconEdit, IconEye, IconMail, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconCalendarEvent,
+		IconChartBar,
+		IconCopy,
+		IconEdit,
+		IconEye,
+		IconMail,
+		IconPlayerPlay,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash
+	} from '$lib/icons';
 
 	let campaigns = $state<RecurringCampaign[]>([]);
 	let isLoading = $state(true);

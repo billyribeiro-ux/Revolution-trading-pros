@@ -124,11 +124,16 @@
 
 	function getListType(type: string): string {
 		switch (type) {
-			case 'etf': return 'etf';
-			case 'stock': return 'stock';
-			case 'watchlist': return 'watchlist';
-			case 'sector': return 'sector';
-			default: return 'default';
+			case 'etf':
+				return 'etf';
+			case 'stock':
+				return 'stock';
+			case 'watchlist':
+				return 'watchlist';
+			case 'sector':
+				return 'sector';
+			default:
+				return 'default';
 		}
 	}
 </script>
@@ -140,7 +145,9 @@
 				<div>
 					<div class="sl-title-row">
 						<h2 class="sl-title">{stockList.name}</h2>
-						<span class="sl-type-badge" data-type={getListType(stockList.list_type)}>{stockList.list_type}</span>
+						<span class="sl-type-badge" data-type={getListType(stockList.list_type)}
+							>{stockList.list_type}</span
+						>
 						{#if stockList.is_featured}
 							<span class="sl-featured-badge">Featured</span>
 						{/if}
@@ -167,9 +174,19 @@
 
 			{#if symbols.length > 5}
 				<div class="sl-search-wrap">
-					<input type="search" bind:value={searchQuery} placeholder="Search symbols, names, or sectors..." class="sl-search-input" />
+					<input
+						type="search"
+						bind:value={searchQuery}
+						placeholder="Search symbols, names, or sectors..."
+						class="sl-search-input"
+					/>
 					<svg class="sl-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+						/>
 					</svg>
 				</div>
 			{/if}
@@ -185,8 +202,19 @@
 						<button class="sl-sort-btn" onclick={() => handleSort('symbol')}>
 							Symbol
 							{#if sortColumn === 'symbol'}
-								<svg class="sl-sort-icon" data-desc={sortDirection === 'desc' || undefined} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+								<svg
+									class="sl-sort-icon"
+									data-desc={sortDirection === 'desc' || undefined}
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 15l7-7 7 7"
+									/>
 								</svg>
 							{/if}
 						</button>
@@ -195,8 +223,19 @@
 						<button class="sl-sort-btn" onclick={() => handleSort('name')}>
 							Name
 							{#if sortColumn === 'name'}
-								<svg class="sl-sort-icon" data-desc={sortDirection === 'desc' || undefined} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+								<svg
+									class="sl-sort-icon"
+									data-desc={sortDirection === 'desc' || undefined}
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 15l7-7 7 7"
+									/>
 								</svg>
 							{/if}
 						</button>
@@ -222,9 +261,15 @@
 						{#if !compact}
 							<td class="sl-td sl-td-sector sl-td-lg">{symbol.sector || '-'}</td>
 						{/if}
-						<td class="sl-td sl-td-mono sl-td-right">{symbol.entry_price ? `$${symbol.entry_price.toFixed(2)}` : '-'}</td>
-						<td class="sl-td sl-td-mono sl-td-right sl-td-green">{symbol.price_target ? `$${symbol.price_target.toFixed(2)}` : '-'}</td>
-						<td class="sl-td sl-td-mono sl-td-right sl-td-red">{symbol.stop_loss ? `$${symbol.stop_loss.toFixed(2)}` : '-'}</td>
+						<td class="sl-td sl-td-mono sl-td-right"
+							>{symbol.entry_price ? `$${symbol.entry_price.toFixed(2)}` : '-'}</td
+						>
+						<td class="sl-td sl-td-mono sl-td-right sl-td-green"
+							>{symbol.price_target ? `$${symbol.price_target.toFixed(2)}` : '-'}</td
+						>
+						<td class="sl-td sl-td-mono sl-td-right sl-td-red"
+							>{symbol.stop_loss ? `$${symbol.stop_loss.toFixed(2)}` : '-'}</td
+						>
 						{#if !compact}
 							<td class="sl-td sl-td-notes sl-td-md">{symbol.notes || '-'}</td>
 						{/if}
@@ -263,10 +308,14 @@
 		border-block-end: 1px solid oklch(0.9 0.005 265);
 		padding: var(--space-4);
 
-		@media (min-width: 1024px) { padding: var(--space-6); }
+		@media (min-width: 1024px) {
+			padding: var(--space-6);
+		}
 	}
 
-	.sl-root[data-compact] .sl-header { padding: var(--space-3); }
+	.sl-root[data-compact] .sl-header {
+		padding: var(--space-3);
+	}
 
 	.sl-header-top {
 		display: flex;
@@ -276,7 +325,11 @@
 		gap: var(--space-4);
 	}
 
-	.sl-title-row { display: flex; align-items: center; gap: var(--space-2); }
+	.sl-title-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
 	.sl-title {
 		font-size: var(--text-xl);
@@ -284,7 +337,9 @@
 		color: oklch(0.15 0.01 265);
 	}
 
-	.sl-root[data-compact] .sl-title { font-size: var(--text-lg); }
+	.sl-root[data-compact] .sl-title {
+		font-size: var(--text-lg);
+	}
 
 	.sl-type-badge {
 		border-radius: 9999px;
@@ -294,11 +349,26 @@
 		font-weight: var(--weight-medium);
 		text-transform: capitalize;
 
-		&[data-type='etf'] { background-color: oklch(0.92 0.06 300); color: oklch(0.4 0.2 300); }
-		&[data-type='stock'] { background-color: oklch(0.92 0.06 260); color: oklch(0.4 0.2 260); }
-		&[data-type='watchlist'] { background-color: oklch(0.92 0.08 80); color: oklch(0.45 0.15 80); }
-		&[data-type='sector'] { background-color: oklch(0.92 0.06 160); color: oklch(0.4 0.15 160); }
-		&[data-type='default'] { background-color: oklch(0.95 0.002 265); color: oklch(0.4 0.01 265); }
+		&[data-type='etf'] {
+			background-color: oklch(0.92 0.06 300);
+			color: oklch(0.4 0.2 300);
+		}
+		&[data-type='stock'] {
+			background-color: oklch(0.92 0.06 260);
+			color: oklch(0.4 0.2 260);
+		}
+		&[data-type='watchlist'] {
+			background-color: oklch(0.92 0.08 80);
+			color: oklch(0.45 0.15 80);
+		}
+		&[data-type='sector'] {
+			background-color: oklch(0.92 0.06 160);
+			color: oklch(0.4 0.15 160);
+		}
+		&[data-type='default'] {
+			background-color: oklch(0.95 0.002 265);
+			color: oklch(0.4 0.01 265);
+		}
 	}
 
 	.sl-featured-badge {
@@ -327,7 +397,11 @@
 	}
 
 	/* ─── Export ─── */
-	.sl-export-group { display: flex; align-items: center; gap: var(--space-2); }
+	.sl-export-group {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
 	.sl-export-btn {
 		border-radius: var(--radius-lg);
@@ -341,7 +415,9 @@
 		cursor: pointer;
 		transition: background-color 200ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.97 0.002 265); }
+		&:hover {
+			background-color: oklch(0.97 0.002 265);
+		}
 	}
 
 	/* ─── Search ─── */
@@ -367,7 +443,9 @@
 			box-shadow: 0 0 0 1px oklch(0.6 0.2 260);
 		}
 
-		@media (min-width: 1024px) { max-inline-size: 28rem; }
+		@media (min-width: 1024px) {
+			max-inline-size: 28rem;
+		}
 	}
 
 	.sl-search-icon {
@@ -381,7 +459,9 @@
 	}
 
 	/* ─── Table ─── */
-	.sl-table-wrap { overflow-x: auto; }
+	.sl-table-wrap {
+		overflow-x: auto;
+	}
 
 	.sl-table {
 		inline-size: 100%;
@@ -400,9 +480,21 @@
 		padding-block: var(--space-3);
 	}
 
-	.sl-th-right { text-align: end; }
-	.sl-th-lg { display: none; @media (min-width: 1024px) { display: table-cell; } }
-	.sl-th-md { display: none; @media (min-width: 768px) { display: table-cell; } }
+	.sl-th-right {
+		text-align: end;
+	}
+	.sl-th-lg {
+		display: none;
+		@media (min-width: 1024px) {
+			display: table-cell;
+		}
+	}
+	.sl-th-md {
+		display: none;
+		@media (min-width: 768px) {
+			display: table-cell;
+		}
+	}
 
 	.sl-sort-btn {
 		display: flex;
@@ -414,7 +506,9 @@
 		border: none;
 		cursor: pointer;
 
-		&:hover { color: oklch(0.15 0.01 265); }
+		&:hover {
+			color: oklch(0.15 0.01 265);
+		}
 	}
 
 	.sl-sort-icon {
@@ -422,18 +516,24 @@
 		block-size: 1rem;
 		transition: transform 200ms var(--ease-default);
 
-		&[data-desc] { transform: rotate(180deg); }
+		&[data-desc] {
+			transform: rotate(180deg);
+		}
 	}
 
 	.sl-tbody {
-		& > tr + tr { border-block-start: 1px solid oklch(0.9 0.005 265); }
+		& > tr + tr {
+			border-block-start: 1px solid oklch(0.9 0.005 265);
+		}
 	}
 
 	.sl-row {
 		cursor: pointer;
 		transition: background-color 200ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.97 0.002 265); }
+		&:hover {
+			background-color: oklch(0.97 0.002 265);
+		}
 	}
 
 	.sl-td {
@@ -441,14 +541,36 @@
 		padding-block: var(--space-3);
 	}
 
-	.sl-td-right { text-align: end; }
-	.sl-td-mono { font-family: var(--font-mono, monospace); }
-	.sl-td-name { color: oklch(0.35 0.01 265); }
-	.sl-td-sector { color: oklch(0.55 0.01 265); }
-	.sl-td-green { color: oklch(0.5 0.18 160); }
-	.sl-td-red { color: oklch(0.5 0.2 25); }
-	.sl-td-lg { display: none; @media (min-width: 1024px) { display: table-cell; } }
-	.sl-td-md { display: none; @media (min-width: 768px) { display: table-cell; } }
+	.sl-td-right {
+		text-align: end;
+	}
+	.sl-td-mono {
+		font-family: var(--font-mono, monospace);
+	}
+	.sl-td-name {
+		color: oklch(0.35 0.01 265);
+	}
+	.sl-td-sector {
+		color: oklch(0.55 0.01 265);
+	}
+	.sl-td-green {
+		color: oklch(0.5 0.18 160);
+	}
+	.sl-td-red {
+		color: oklch(0.5 0.2 25);
+	}
+	.sl-td-lg {
+		display: none;
+		@media (min-width: 1024px) {
+			display: table-cell;
+		}
+	}
+	.sl-td-md {
+		display: none;
+		@media (min-width: 768px) {
+			display: table-cell;
+		}
+	}
 
 	.sl-td-notes {
 		max-inline-size: 20rem;
@@ -458,7 +580,10 @@
 		color: oklch(0.55 0.01 265);
 	}
 
-	.sl-symbol { font-weight: var(--weight-semibold); color: oklch(0.5 0.2 260); }
+	.sl-symbol {
+		font-weight: var(--weight-semibold);
+		color: oklch(0.5 0.2 260);
+	}
 
 	.sl-empty {
 		padding-block: var(--space-8);

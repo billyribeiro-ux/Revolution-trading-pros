@@ -4,10 +4,22 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import { Icon, IconArrowLeft, IconBook, IconChartLine, IconCheck, IconCrown, IconPhoto, IconPlus, IconShoppingCart, IconTag, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconArrowLeft,
+		IconBook,
+		IconChartLine,
+		IconCheck,
+		IconCrown,
+		IconPhoto,
+		IconPlus,
+		IconShoppingCart,
+		IconTag,
+		IconX
+	} from '$lib/icons';
 
 	// Product type definition for create
 	type ProductType = 'course' | 'indicator' | 'membership' | 'bundle';

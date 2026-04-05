@@ -4,7 +4,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { Icon, IconArrowRight, IconDatabase, IconShieldLock, IconSitemap } from '$lib/icons';
 	// Using the direct path imports as requested in your snippet
-				
+
 	const features = [
 		{
 			id: 'SYS-01',
@@ -140,7 +140,9 @@
 						<div class="ms-card-svg-bg">
 							{#if feature.type === 'grid'}
 								<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
-									<path d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90" />
+									<path
+										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
+									/>
 								</svg>
 							{:else if feature.type === 'radar'}
 								<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
@@ -199,7 +201,11 @@
 	}
 
 	/* ─── Background ─── */
-	.ms-bg { position: absolute; inset: 0; pointer-events: none; }
+	.ms-bg {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
 
 	.ms-grid-lines {
 		position: absolute;
@@ -219,7 +225,10 @@
 		z-index: 10;
 	}
 
-	.ms-header { max-inline-size: 48rem; margin-block-end: 6rem; }
+	.ms-header {
+		max-inline-size: 48rem;
+		margin-block-end: 6rem;
+	}
 
 	.ms-badge {
 		display: inline-flex;
@@ -237,9 +246,30 @@
 		margin-block-end: 2rem;
 	}
 
-	.ms-ping-wrap { position: relative; display: flex; block-size: 0.5rem; inline-size: 0.5rem; }
-	.ms-ping { position: absolute; display: inline-flex; block-size: 100%; inline-size: 100%; border-radius: 50%; background-color: oklch(0.75 0.15 85); opacity: 0.75; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
-	.ms-ping-dot { position: relative; display: inline-flex; border-radius: 50%; block-size: 0.5rem; inline-size: 0.5rem; background-color: oklch(0.75 0.15 85); }
+	.ms-ping-wrap {
+		position: relative;
+		display: flex;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+	}
+	.ms-ping {
+		position: absolute;
+		display: inline-flex;
+		block-size: 100%;
+		inline-size: 100%;
+		border-radius: 50%;
+		background-color: oklch(0.75 0.15 85);
+		opacity: 0.75;
+		animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+	}
+	.ms-ping-dot {
+		position: relative;
+		display: inline-flex;
+		border-radius: 50%;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+		background-color: oklch(0.75 0.15 85);
+	}
 
 	.ms-title {
 		font-size: clamp(2.25rem, 5vw, 3.75rem);
@@ -249,7 +279,9 @@
 		letter-spacing: -0.02em;
 	}
 
-	.ms-title-muted { color: oklch(0.35 0.01 265); }
+	.ms-title-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.ms-subtitle {
 		font-size: var(--text-lg);
@@ -266,7 +298,9 @@
 		display: grid;
 		gap: 2rem;
 
-		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	.ms-card {
@@ -277,12 +311,27 @@
 		overflow: hidden;
 		transition: border-color 500ms;
 
-		&:hover { border-color: oklch(0.45 0.12 70 / 0.5); }
-		&:hover .ms-card-spotlight { opacity: 1; }
-		&:hover .ms-card-svg-bg { opacity: 0.1; }
-		&:hover .ms-icon-box { background-color: oklch(0.75 0.15 85); color: oklch(0 0 0); border-color: oklch(0.75 0.15 85); }
-		&:hover .ms-status-label { color: oklch(1 0 0); }
-		&:hover .ms-arrow-wrap { opacity: 1; transform: translateX(0); }
+		&:hover {
+			border-color: oklch(0.45 0.12 70 / 0.5);
+		}
+		&:hover .ms-card-spotlight {
+			opacity: 1;
+		}
+		&:hover .ms-card-svg-bg {
+			opacity: 0.1;
+		}
+		&:hover .ms-icon-box {
+			background-color: oklch(0.75 0.15 85);
+			color: oklch(0 0 0);
+			border-color: oklch(0.75 0.15 85);
+		}
+		&:hover .ms-status-label {
+			color: oklch(1 0 0);
+		}
+		&:hover .ms-arrow-wrap {
+			opacity: 1;
+			transform: translateX(0);
+		}
 	}
 
 	.ms-card-spotlight {
@@ -324,7 +373,10 @@
 		background-color: oklch(1 0 0 / 0.05);
 		border: 1px solid oklch(1 0 0 / 0.1);
 		color: oklch(1 0 0);
-		transition: background-color 300ms, color 300ms, border-color 300ms;
+		transition:
+			background-color 300ms,
+			color 300ms,
+			border-color 300ms;
 	}
 
 	.ms-card-id {
@@ -336,7 +388,10 @@
 	}
 
 	/* ─── Card Content ─── */
-	.ms-card-content { position: relative; z-index: 10; }
+	.ms-card-content {
+		position: relative;
+		z-index: 10;
+	}
 
 	.ms-card-subtitle {
 		font-size: 0.625rem;
@@ -372,7 +427,11 @@
 		padding-block-start: 1.5rem;
 	}
 
-	.ms-status { display: flex; align-items: center; gap: 0.5rem; }
+	.ms-status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 
 	.ms-status-dot {
 		inline-size: 0.375rem;
@@ -393,13 +452,21 @@
 	.ms-arrow-wrap {
 		opacity: 0;
 		transform: translateX(-0.5rem);
-		transition: opacity 300ms, transform 300ms;
+		transition:
+			opacity 300ms,
+			transform 300ms;
 	}
 
-	:global(.ms-arrow-icon) { color: oklch(1 0 0); }
+	:global(.ms-arrow-icon) {
+		color: oklch(1 0 0);
+	}
 
 	/* ─── Keyframes ─── */
 	@keyframes ping {
-		75%, 100% { transform: scale(2); opacity: 0; }
+		75%,
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
 	}
 </style>

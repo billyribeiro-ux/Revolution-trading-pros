@@ -1,7 +1,23 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Icon, IconBolt, IconCertificate, IconChartLine, IconCheck, IconClock, IconFileText, IconHeadset, IconShield, IconStar, IconTarget, IconTrendingUp, IconTrophy, IconUsers, IconVideo } from '$lib/icons';
+	import {
+		Icon,
+		IconBolt,
+		IconCertificate,
+		IconChartLine,
+		IconCheck,
+		IconClock,
+		IconFileText,
+		IconHeadset,
+		IconShield,
+		IconStar,
+		IconTarget,
+		IconTrendingUp,
+		IconTrophy,
+		IconUsers,
+		IconVideo
+	} from '$lib/icons';
 
 	interface Module {
 		week: number;

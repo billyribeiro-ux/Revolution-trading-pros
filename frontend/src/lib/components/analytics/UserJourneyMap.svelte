@@ -160,7 +160,9 @@
 		padding: var(--space-4);
 		border: 1px solid oklch(0.38 0.01 250 / 50%);
 		transition: border-color var(--duration-fast) var(--ease-default);
-		&:hover { border-color: oklch(0.8 0.18 90 / 30%); }
+		&:hover {
+			border-color: oklch(0.8 0.18 90 / 30%);
+		}
 	}
 
 	.step-header {
@@ -183,7 +185,9 @@
 		flex-shrink: 0;
 	}
 
-	.step-info { flex: 1; }
+	.step-info {
+		flex: 1;
+	}
 
 	.step-name {
 		color: oklch(1 0 0);
@@ -253,7 +257,9 @@
 		font-size: var(--text-sm);
 	}
 
-	.action-name { color: oklch(0.75 0.01 250); }
+	.action-name {
+		color: oklch(0.75 0.01 250);
+	}
 
 	.action-count {
 		color: oklch(0.8 0.18 90);

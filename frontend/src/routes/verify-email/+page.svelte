@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Verification Page - Svelte 5 January 2026
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -25,7 +25,17 @@ import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { verifyEmail, resendVerificationEmail } from '$lib/api/auth';
-	import { Icon, IconAlertTriangle, IconCheck, IconClock, IconLoader, IconLogin, IconMail, IconRefresh, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconCheck,
+		IconClock,
+		IconLoader,
+		IconLogin,
+		IconMail,
+		IconRefresh,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management

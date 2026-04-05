@@ -8,7 +8,15 @@
 		type ImageMetadata,
 		type ProcessedImage
 	} from '$lib/seo';
-	import { Icon, IconAlertTriangle, IconCheck, IconPhoto, IconRefresh, IconSettings, IconSparkles } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconCheck,
+		IconPhoto,
+		IconRefresh,
+		IconSettings,
+		IconSparkles
+	} from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let images = $state<ProcessedImage[]>([]);

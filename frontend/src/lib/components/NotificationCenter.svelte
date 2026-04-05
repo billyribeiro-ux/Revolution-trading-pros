@@ -21,7 +21,19 @@
 		getUnreadCount,
 		type Notification
 	} from '$lib/stores/notifications.svelte';
-	import { Icon, IconAlertCircle, IconAlertTriangle, IconBell, IconCheck, IconChevronRight, IconCircleCheck, IconInfoCircle, IconSettings, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconAlertTriangle,
+		IconBell,
+		IconCheck,
+		IconChevronRight,
+		IconCircleCheck,
+		IconInfoCircle,
+		IconSettings,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;

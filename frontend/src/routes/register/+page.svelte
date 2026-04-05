@@ -5,7 +5,20 @@
 	 */
 	import { register } from '$lib/api/auth';
 	import { browser } from '$app/environment';
-	import { Icon, IconAlertCircle, IconArrowRight, IconCircleCheck, IconEye, IconEyeOff, IconInbox, IconLock, IconMail, IconSparkles, IconUser, IconUserPlus } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconArrowRight,
+		IconCircleCheck,
+		IconEye,
+		IconEyeOff,
+		IconInbox,
+		IconLock,
+		IconMail,
+		IconSparkles,
+		IconUser,
+		IconUserPlus
+	} from '$lib/icons';
 
 	// Svelte 5 state runes
 	let name = $state('');

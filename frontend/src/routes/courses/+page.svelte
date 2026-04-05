@@ -10,7 +10,22 @@
 	// --- ICONS ---
 	// Assumed existing component based on your snippet
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-	import { Icon, IconActivity, IconArrowRight, IconBolt, IconBrain, IconChartCandle, IconChartLine, IconCheck, IconChevronDown, IconRocket, IconSchool, IconShield, IconTrendingUp, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowRight,
+		IconBolt,
+		IconBrain,
+		IconChartCandle,
+		IconChartLine,
+		IconCheck,
+		IconChevronDown,
+		IconRocket,
+		IconSchool,
+		IconShield,
+		IconTrendingUp,
+		IconX
+	} from '$lib/icons';
 
 	// --- TYPES ---
 
@@ -424,7 +439,11 @@
 					></div>
 					<span class="relative flex items-center gap-2">
 						View Curriculum
-						<Icon icon={IconArrowRight} size={20} class="transition-transform group-hover:translate-x-1" />
+						<Icon
+							icon={IconArrowRight}
+							size={20}
+							class="transition-transform group-hover:translate-x-1"
+						/>
 					</span>
 				</a>
 
@@ -632,7 +651,8 @@
 								class="text-lg font-medium text-slate-200 group-hover:text-white transition-colors"
 								>{faq.question}</span
 							>
-							<Icon icon={IconChevronDown}
+							<Icon
+								icon={IconChevronDown}
 								size={20}
 								class={`text-slate-500 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-400' : ''}`}
 							/>
@@ -655,7 +675,12 @@
 		<div class="absolute inset-0 bg-blue-600/5 blur-[100px]"></div>
 
 		<div class="container mx-auto px-6 relative z-10 text-center">
-			<Icon icon={IconRocket} size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
+			<Icon
+				icon={IconRocket}
+				size={48}
+				stroke={1}
+				class="mx-auto text-blue-500 mb-8 animate-bounce"
+			/>
 			<h2 class="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8">
 				Market Opens In... Now.
 			</h2>

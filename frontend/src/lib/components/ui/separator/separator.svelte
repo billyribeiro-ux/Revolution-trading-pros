@@ -9,12 +9,7 @@
 	}: SeparatorPrimitive.RootProps = $props();
 </script>
 
-<SeparatorPrimitive.Root
-	bind:ref
-	data-slot={dataSlot}
-	class={className}
-	{...restProps}
-/>
+<SeparatorPrimitive.Root bind:ref data-slot={dataSlot} class={className} {...restProps} />
 
 <style>
 	:global([data-slot='separator']) {

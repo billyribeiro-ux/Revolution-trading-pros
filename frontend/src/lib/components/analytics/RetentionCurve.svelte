@@ -217,20 +217,26 @@
 
 	.retention-line {
 		transition: stroke-width var(--duration-fast) var(--ease-default);
-		&:hover { stroke-width: 4; }
+		&:hover {
+			stroke-width: 4;
+		}
 	}
 
 	.data-point {
 		cursor: pointer;
 		transition: transform var(--duration-fast) var(--ease-default);
-		&:hover { transform: scale(1.25); }
+		&:hover {
+			transform: scale(1.25);
+		}
 	}
 
 	.curve-insights {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--space-3);
-		@media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.insight-item {

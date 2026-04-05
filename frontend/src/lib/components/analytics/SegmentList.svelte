@@ -63,10 +63,7 @@
 				disabled={!onSelect}
 			>
 				<!-- Icon -->
-				<div
-					class="segment-icon"
-					style:--seg-color={segment.color || '#6B7280'}
-				>
+				<div class="segment-icon" style:--seg-color={segment.color || '#6B7280'}>
 					{iconMap[segment.icon || ''] || '📊'}
 				</div>
 
@@ -100,7 +97,8 @@
 				<div class="progress-track">
 					<div
 						class="progress-fill"
-						style="width: {Math.min(segment.percentage, 100)}%; background-color: {segment.color || '#6B7280'}"
+						style="width: {Math.min(segment.percentage, 100)}%; background-color: {segment.color ||
+							'#6B7280'}"
 					></div>
 				</div>
 			</button>
@@ -155,8 +153,12 @@
 		border: none;
 		transition: background-color var(--duration-fast) var(--ease-default);
 
-		&:hover { background-color: oklch(0.97 0.002 265); }
-		&[data-clickable] { cursor: pointer; }
+		&:hover {
+			background-color: oklch(0.97 0.002 265);
+		}
+		&[data-clickable] {
+			cursor: pointer;
+		}
 	}
 
 	.segment-icon {
@@ -170,9 +172,16 @@
 		background-color: color-mix(in oklch, var(--seg-color) 12%, transparent);
 	}
 
-	.segment-info { flex: 1; min-inline-size: 0; }
+	.segment-info {
+		flex: 1;
+		min-inline-size: 0;
+	}
 
-	.segment-name-row { display: flex; align-items: center; gap: var(--space-2); }
+	.segment-name-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
 
 	.segment-name {
 		font-weight: var(--weight-medium);
@@ -188,7 +197,10 @@
 		border-radius: var(--radius-sm);
 	}
 
-	.segment-type { font-size: var(--text-xs); color: oklch(0.65 0.01 265); }
+	.segment-type {
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 265);
+	}
 
 	.segment-desc {
 		font-size: var(--text-sm);
@@ -198,14 +210,20 @@
 		white-space: nowrap;
 	}
 
-	.segment-stats { text-align: end; flex-shrink: 0; }
+	.segment-stats {
+		text-align: end;
+		flex-shrink: 0;
+	}
 
 	.segment-count {
 		font-weight: var(--weight-semibold);
 		color: oklch(0.15 0.01 265);
 	}
 
-	.segment-pct { font-size: var(--text-xs); color: oklch(0.55 0.01 265); }
+	.segment-pct {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+	}
 
 	.progress-track {
 		inline-size: 6rem;

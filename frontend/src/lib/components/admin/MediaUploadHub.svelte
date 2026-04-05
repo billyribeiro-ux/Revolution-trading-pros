@@ -24,7 +24,18 @@
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
-	import { Icon, IconAlertCircle, IconCheck, IconCloudUpload, IconFile, IconLoader2, IconPhoto, IconUpload, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconCloudUpload,
+		IconFile,
+		IconLoader2,
+		IconPhoto,
+		IconUpload,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES & PROPS
@@ -625,7 +636,8 @@
 
 						<!-- Status -->
 						<div class="item-status" style="color: {getStatusColor(item.status)}">
-							<Icon icon={StatusIcon}
+							<Icon
+								icon={StatusIcon}
 								size={20}
 								class={item.status === 'uploading' || item.status === 'processing'
 									? 'spinning'

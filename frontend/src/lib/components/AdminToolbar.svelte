@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * AdminToolbar Component - Google L7+ Enterprise Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -46,7 +46,20 @@ import { logger } from '$lib/utils/logger';
 	import type { User } from '$lib/stores/auth.svelte';
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
-	import { Icon, IconAlertTriangle, IconChevronDown, IconDashboard, IconEye, IconForms, IconLogout, IconMail, IconRefresh, IconSettings, IconTicket, IconUsers } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconChevronDown,
+		IconDashboard,
+		IconEye,
+		IconForms,
+		IconLogout,
+		IconMail,
+		IconRefresh,
+		IconSettings,
+		IconTicket,
+		IconUsers
+	} from '$lib/icons';
 	// Individual Tabler icon imports (Svelte 5 compatible)
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)
@@ -684,7 +697,12 @@ import { logger } from '$lib/utils/logger';
 						disabled={isLoading}
 					>
 						<span>Quick Access</span>
-						<Icon icon={IconChevronDown} size={16} class={showQuickMenu ? 'rotate' : ''} aria-hidden="true" />
+						<Icon
+							icon={IconChevronDown}
+							size={16}
+							class={showQuickMenu ? 'rotate' : ''}
+							aria-hidden="true"
+						/>
 					</button>
 
 					{#if showQuickMenu}
@@ -753,7 +771,12 @@ import { logger } from '$lib/utils/logger';
 							{userInitial}
 						</div>
 						<span class="user-name">{displayName}</span>
-						<Icon icon={IconChevronDown} size={16} class={showDropdown ? 'rotate' : ''} aria-hidden="true" />
+						<Icon
+							icon={IconChevronDown}
+							size={16}
+							class={showDropdown ? 'rotate' : ''}
+							aria-hidden="true"
+						/>
 					</button>
 
 					{#if showDropdown}

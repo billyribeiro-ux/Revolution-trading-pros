@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Site Health Dashboard - Apple ICT9+ Enterprise Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════
@@ -28,7 +28,35 @@ import { logger } from '$lib/utils/logger';
 		getServicesWithErrors
 	} from '$lib/stores/connections.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Icon, IconAlertTriangle, IconApiApp, IconArrowRight, IconBug, IconCertificate, IconChartLine, IconCheck, IconCircleCheck, IconCircleX, IconClock, IconCloud, IconCode, IconDatabase, IconExternalLink, IconFolder, IconHeartbeat, IconInfoCircle, IconPlayerPlay, IconPlugConnected, IconPlugConnectedX, IconRefresh, IconRocket, IconServer, IconSettings, IconShieldCheck, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconApiApp,
+		IconArrowRight,
+		IconBug,
+		IconCertificate,
+		IconChartLine,
+		IconCheck,
+		IconCircleCheck,
+		IconCircleX,
+		IconClock,
+		IconCloud,
+		IconCode,
+		IconDatabase,
+		IconExternalLink,
+		IconFolder,
+		IconHeartbeat,
+		IconInfoCircle,
+		IconPlayerPlay,
+		IconPlugConnected,
+		IconPlugConnectedX,
+		IconRefresh,
+		IconRocket,
+		IconServer,
+		IconSettings,
+		IconShieldCheck,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types

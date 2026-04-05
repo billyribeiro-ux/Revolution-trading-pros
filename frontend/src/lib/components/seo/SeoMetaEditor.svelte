@@ -1,9 +1,19 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
-	import { Icon, IconBrandFacebook, IconBrandTwitter, IconCode, IconDeviceFloppy, IconEye, IconFileText, IconRefresh, IconRobot } from '$lib/icons';
+	import {
+		Icon,
+		IconBrandFacebook,
+		IconBrandTwitter,
+		IconCode,
+		IconDeviceFloppy,
+		IconEye,
+		IconFileText,
+		IconRefresh,
+		IconRobot
+	} from '$lib/icons';
 
 	interface Props {
 		entity: any;

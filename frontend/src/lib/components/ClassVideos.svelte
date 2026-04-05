@@ -16,7 +16,7 @@
  */
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 

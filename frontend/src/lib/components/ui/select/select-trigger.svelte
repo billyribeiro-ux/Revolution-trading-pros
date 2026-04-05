@@ -54,7 +54,8 @@
 		user-select: none;
 		min-block-size: 44px;
 		touch-action: manipulation;
-		transition: color var(--duration-fast) var(--ease-default),
+		transition:
+			color var(--duration-fast) var(--ease-default),
 			box-shadow var(--duration-fast) var(--ease-default);
 
 		@media (min-width: 640px) {
@@ -110,7 +111,9 @@
 	:global(.dark [data-slot='select-trigger']) {
 		background-color: oklch(from var(--input) l c h / 30%);
 
-		&:hover { background-color: oklch(from var(--input) l c h / 50%); }
+		&:hover {
+			background-color: oklch(from var(--input) l c h / 50%);
+		}
 	}
 
 	:global(.dark [data-slot='select-trigger'][aria-invalid='true']) {

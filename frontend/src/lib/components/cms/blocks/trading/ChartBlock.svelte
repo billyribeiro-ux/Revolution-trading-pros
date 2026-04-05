@@ -14,7 +14,16 @@
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
-	import { Icon, IconAlertCircle, IconChartCandle, IconExternalLink, IconLoader2, IconMaximize, IconPhoto, IconRefresh } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconChartCandle,
+		IconExternalLink,
+		IconLoader2,
+		IconMaximize,
+		IconPhoto,
+		IconRefresh
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props Interface

@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Deal Detail Page - FluentCRM Pro Style
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -32,10 +32,30 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-								import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '$lib/api/crm';
 	import type { Deal, Pipeline, Stage, TimelineEvent } from '$lib/crm/types';
 	import { api } from '$lib/api/config';
-	import { Icon, IconAlertTriangle, IconArrowLeft, IconArrowRight, IconBriefcase, IconCheck, IconEdit, IconFlag, IconHistory, IconMail, IconNotes, IconPhone, IconPlus, IconRefresh, IconTag, IconTrash, IconTrophy, IconUser, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertTriangle,
+		IconArrowLeft,
+		IconArrowRight,
+		IconBriefcase,
+		IconCheck,
+		IconEdit,
+		IconFlag,
+		IconHistory,
+		IconMail,
+		IconNotes,
+		IconPhone,
+		IconPlus,
+		IconRefresh,
+		IconTag,
+		IconTrash,
+		IconTrophy,
+		IconUser,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

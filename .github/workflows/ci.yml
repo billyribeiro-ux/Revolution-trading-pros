@@ -16,9 +16,6 @@ jobs:
   lint:
     name: Lint & Format Check
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,18 +29,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
+        working-directory: frontend
         run: pnpm run lint
 
       - name: Check formatting
+        working-directory: frontend
         run: pnpm run format:check
-        # Repo-wide Prettier drift is tracked separately; do not block merge on format
-        continue-on-error: true
 
   # ============================================================================
   # Type Checking
@@ -51,9 +49,6 @@ jobs:
   typecheck:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,12 +62,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run type check
+        working-directory: frontend
         run: pnpm run check
 
   # ============================================================================
@@ -81,9 +78,6 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -97,22 +91,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run unit tests
+        working-directory: frontend
         run: pnpm run test:unit
-
-      - name: Upload coverage
-        if: hashFiles('frontend/coverage/lcov.info') != ''
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./frontend/coverage/lcov.info
-          flags: unit
-          name: unit-tests
-          fail_ci_if_error: false
 
   # ============================================================================
   # E2E Tests — handled by dedicated e2e.yml workflow
@@ -123,9 +110,6 @@ jobs:
     name: Build Application
     runs-on: ubuntu-latest
     needs: [lint, typecheck, unit-tests]
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -139,12 +123,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        working-directory: frontend
         run: pnpm run build
 
       - name: Upload build artifacts
@@ -158,9 +144,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     if: github.event_name == 'pull_request'
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -174,12 +157,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        working-directory: frontend
         run: pnpm run build
 
       - name: Deploy to Cloudflare Pages
@@ -199,9 +184,6 @@ jobs:
     environment:
       name: production
       url: https://revolutiontradingpros.com
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -215,12 +197,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build production
+        working-directory: frontend
         run: pnpm run build
 
       - name: Deploy to Cloudflare Pages

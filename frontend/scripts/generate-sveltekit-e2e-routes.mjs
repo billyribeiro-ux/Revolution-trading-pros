@@ -38,7 +38,8 @@ function toUrlPath(routeDir) {
 		} else if (seg.startsWith('[') && seg.endsWith(']')) {
 			const inner = seg.slice(1, -1);
 			if (inner === 'hash') urlParts.push('test-verification-hash');
-			else if (inner === 'id' || inner.endsWith('_id')) urlParts.push('00000000-0000-0000-0000-000000000001');
+			else if (inner === 'id' || inner.endsWith('_id'))
+				urlParts.push('00000000-0000-0000-0000-000000000001');
 			else if (inner.includes('slug')) urlParts.push('sample-slug');
 			else if (inner.includes('date')) urlParts.push('2024-01-01');
 			else urlParts.push('param');

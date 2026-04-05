@@ -687,9 +687,7 @@
 							{#each [{ title: 'NVDA Entry Alert...', duration: '0:58' }, { title: 'MSFT Exit...', duration: '0:38' }, { title: 'NVDA Entry Alert...', duration: '0:22' }, { title: 'NVDA Entry Alert...', duration: '0:27' }, { title: 'MSRT Entry Alert...', duration: '0:20' }, { title: 'MSFT Exit...', duration: '0:55' }] as update}
 								<button class="group text-left w-full">
 									<div class="relative bg-slate-900 rounded-lg overflow-hidden aspect-video mb-1.5">
-										<div
-											class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"
-										></div>
+										<div class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
 										<div class="absolute inset-0 flex items-center justify-center">
 											<div
 												class="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform"

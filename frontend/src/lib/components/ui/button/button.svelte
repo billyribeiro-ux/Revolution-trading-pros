@@ -92,7 +92,9 @@
 		color: var(--primary-foreground);
 		box-shadow: var(--shadow-xs);
 
-		&:hover { background-color: oklch(from var(--primary) l c h / 90%); }
+		&:hover {
+			background-color: oklch(from var(--primary) l c h / 90%);
+		}
 	}
 
 	:global([data-slot='button'][data-variant='destructive']) {
@@ -100,14 +102,20 @@
 		color: oklch(1 0 0);
 		box-shadow: var(--shadow-xs);
 
-		&:hover { background-color: oklch(from var(--destructive) l c h / 90%); }
-		&:focus-visible { box-shadow: 0 0 0 3px oklch(from var(--destructive) l c h / 20%); }
+		&:hover {
+			background-color: oklch(from var(--destructive) l c h / 90%);
+		}
+		&:focus-visible {
+			box-shadow: 0 0 0 3px oklch(from var(--destructive) l c h / 20%);
+		}
 	}
 
 	:global(.dark [data-slot='button'][data-variant='destructive']) {
 		background-color: oklch(from var(--destructive) l c h / 60%);
 
-		&:focus-visible { box-shadow: 0 0 0 3px oklch(from var(--destructive) l c h / 40%); }
+		&:focus-visible {
+			box-shadow: 0 0 0 3px oklch(from var(--destructive) l c h / 40%);
+		}
 	}
 
 	:global([data-slot='button'][data-variant='outline']) {
@@ -125,7 +133,9 @@
 		background-color: oklch(from var(--input) l c h / 30%);
 		border-color: var(--input);
 
-		&:hover { background-color: oklch(from var(--input) l c h / 50%); }
+		&:hover {
+			background-color: oklch(from var(--input) l c h / 50%);
+		}
 	}
 
 	:global([data-slot='button'][data-variant='secondary']) {
@@ -133,7 +143,9 @@
 		color: var(--secondary-foreground);
 		box-shadow: var(--shadow-xs);
 
-		&:hover { background-color: oklch(from var(--secondary) l c h / 80%); }
+		&:hover {
+			background-color: oklch(from var(--secondary) l c h / 80%);
+		}
 	}
 
 	:global([data-slot='button'][data-variant='ghost']) {
@@ -144,14 +156,18 @@
 	}
 
 	:global(.dark [data-slot='button'][data-variant='ghost']) {
-		&:hover { background-color: oklch(from var(--accent) l c h / 50%); }
+		&:hover {
+			background-color: oklch(from var(--accent) l c h / 50%);
+		}
 	}
 
 	:global([data-slot='button'][data-variant='link']) {
 		color: var(--primary);
 		text-underline-offset: 4px;
 
-		&:hover { text-decoration: underline; }
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 
 	/* ── Sizes ── */
@@ -160,7 +176,9 @@
 		padding-inline: var(--space-4);
 		padding-block: var(--space-2);
 
-		&:has(> :global(svg)) { padding-inline: var(--space-3); }
+		&:has(> :global(svg)) {
+			padding-inline: var(--space-3);
+		}
 	}
 
 	:global([data-slot='button'][data-size='sm']) {
@@ -169,7 +187,9 @@
 		border-radius: var(--radius-md);
 		padding-inline: var(--space-3);
 
-		&:has(> :global(svg)) { padding-inline: var(--space-2-5); }
+		&:has(> :global(svg)) {
+			padding-inline: var(--space-2-5);
+		}
 	}
 
 	:global([data-slot='button'][data-size='lg']) {
@@ -177,7 +197,9 @@
 		border-radius: var(--radius-md);
 		padding-inline: var(--space-6);
 
-		&:has(> :global(svg)) { padding-inline: var(--space-4); }
+		&:has(> :global(svg)) {
+			padding-inline: var(--space-4);
+		}
 	}
 
 	:global([data-slot='button'][data-size='icon']) {

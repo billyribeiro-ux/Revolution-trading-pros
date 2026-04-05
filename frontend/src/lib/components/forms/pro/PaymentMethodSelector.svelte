@@ -124,7 +124,13 @@
 				</span>
 
 				<span class="pms-icon-wrap">
-					<svg class="pms-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+					<svg
+						class="pms-icon"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+					>
 						<path stroke-linecap="round" stroke-linejoin="round" d={getMethodIcon(method.icon)} />
 					</svg>
 				</span>
@@ -138,7 +144,13 @@
 
 				{#if (props.value ?? '') === method.id}
 					<span class="pms-check">
-						<svg class="pms-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+						<svg
+							class="pms-check-icon"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="3"
+						>
 							<polyline points="20 6 9 17 4 12"></polyline>
 						</svg>
 					</span>
@@ -152,15 +164,31 @@
 			<div class="pms-cards">
 				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType}
 					<span class="pms-card-badge">
-						<svg class="pms-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+						<svg
+							class="pms-card-icon"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+							/>
 						</svg>
 						{cardType}
 					</span>
 				{/each}
 			</div>
 			<p class="pms-security">
-				<svg class="pms-sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="pms-sec-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 					<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 				</svg>
@@ -170,7 +198,13 @@
 	{:else if (props.value ?? '') === 'paypal'}
 		<div class="pms-info pms-info-amber">
 			<p class="pms-security">
-				<svg class="pms-sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="pms-sec-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 				</svg>
 				<span>You will be redirected to PayPal to complete your payment.</span>
@@ -198,9 +232,18 @@
 		padding: 0.75rem;
 		padding-block-end: env(safe-area-inset-bottom);
 
-		@media (min-width: 640px) { gap: 0.75rem; max-inline-size: 32rem; padding: 1rem; }
-		@media (min-width: 768px) { max-inline-size: 36rem; padding: 1.5rem; }
-		@media (min-width: 1024px) { max-inline-size: 42rem; }
+		@media (min-width: 640px) {
+			gap: 0.75rem;
+			max-inline-size: 32rem;
+			padding: 1rem;
+		}
+		@media (min-width: 768px) {
+			max-inline-size: 36rem;
+			padding: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			max-inline-size: 42rem;
+		}
 	}
 
 	.pms-label {
@@ -208,7 +251,9 @@
 		font-weight: var(--weight-medium);
 		color: oklch(0.35 0.01 265);
 
-		@media (min-width: 640px) { font-size: var(--text-base); }
+		@media (min-width: 640px) {
+			font-size: var(--text-base);
+		}
 	}
 
 	.pms-required {
@@ -221,7 +266,9 @@
 		color: oklch(0.45 0.005 265);
 		margin: 0;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.pms-list {
@@ -229,7 +276,9 @@
 		flex-direction: column;
 		gap: 0.5rem;
 
-		@media (min-width: 640px) { gap: 0.75rem; }
+		@media (min-width: 640px) {
+			gap: 0.75rem;
+		}
 	}
 
 	.pms-method {
@@ -243,7 +292,10 @@
 		border-radius: var(--radius-lg);
 		background-color: oklch(1 0 0);
 		cursor: pointer;
-		transition: border-color 200ms, background-color 200ms, transform 100ms;
+		transition:
+			border-color 200ms,
+			background-color 200ms,
+			transform 100ms;
 		text-align: start;
 
 		@media (min-width: 640px) {
@@ -251,11 +303,22 @@
 			min-block-size: 4rem;
 			padding: 1rem;
 		}
-		@media (min-width: 768px) { min-block-size: 4.5rem; }
+		@media (min-width: 768px) {
+			min-block-size: 4.5rem;
+		}
 
-		&:hover { border-color: oklch(0.7 0.005 265); background-color: oklch(0.97 0.005 265); }
-		&:active { transform: scale(0.98); }
-		&:focus-visible { outline: none; border-color: oklch(0.5 0.18 260); box-shadow: 0 0 0 2px oklch(0.5 0.18 260 / 0.2); }
+		&:hover {
+			border-color: oklch(0.7 0.005 265);
+			background-color: oklch(0.97 0.005 265);
+		}
+		&:active {
+			transform: scale(0.98);
+		}
+		&:focus-visible {
+			outline: none;
+			border-color: oklch(0.5 0.18 260);
+			box-shadow: 0 0 0 2px oklch(0.5 0.18 260 / 0.2);
+		}
 	}
 
 	.pms-method[data-selected] {
@@ -272,9 +335,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: border-color 200ms, background-color 200ms;
+		transition:
+			border-color 200ms,
+			background-color 200ms;
 
-		@media (min-width: 640px) { inline-size: 1.5rem; block-size: 1.5rem; }
+		@media (min-width: 640px) {
+			inline-size: 1.5rem;
+			block-size: 1.5rem;
+		}
 	}
 
 	.pms-radio[data-selected] {
@@ -288,7 +356,10 @@
 		background-color: oklch(1 0 0);
 		border-radius: 50%;
 
-		@media (min-width: 640px) { inline-size: 0.625rem; block-size: 0.625rem; }
+		@media (min-width: 640px) {
+			inline-size: 0.625rem;
+			block-size: 0.625rem;
+		}
 	}
 
 	.pms-icon-wrap {
@@ -301,7 +372,10 @@
 		background-color: oklch(0.95 0.005 265);
 		border-radius: var(--radius-lg);
 
-		@media (min-width: 640px) { inline-size: 3rem; block-size: 3rem; }
+		@media (min-width: 640px) {
+			inline-size: 3rem;
+			block-size: 3rem;
+		}
 	}
 
 	.pms-icon {
@@ -309,7 +383,10 @@
 		block-size: 1.25rem;
 		color: oklch(0.45 0.005 265);
 
-		@media (min-width: 640px) { inline-size: 1.5rem; block-size: 1.5rem; }
+		@media (min-width: 640px) {
+			inline-size: 1.5rem;
+			block-size: 1.5rem;
+		}
 	}
 
 	.pms-method-info {
@@ -319,7 +396,9 @@
 		flex-direction: column;
 		gap: 0.125rem;
 
-		@media (min-width: 640px) { gap: 0.25rem; }
+		@media (min-width: 640px) {
+			gap: 0.25rem;
+		}
 	}
 
 	.pms-method-name {
@@ -330,7 +409,9 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 
-		@media (min-width: 640px) { font-size: var(--text-base); }
+		@media (min-width: 640px) {
+			font-size: var(--text-base);
+		}
 	}
 
 	.pms-method-desc {
@@ -340,7 +421,9 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.pms-check {
@@ -353,7 +436,10 @@
 		align-items: center;
 		justify-content: center;
 
-		@media (min-width: 640px) { inline-size: 1.75rem; block-size: 1.75rem; }
+		@media (min-width: 640px) {
+			inline-size: 1.75rem;
+			block-size: 1.75rem;
+		}
 	}
 
 	.pms-check-icon {
@@ -361,7 +447,10 @@
 		block-size: 0.875rem;
 		color: oklch(1 0 0);
 
-		@media (min-width: 640px) { inline-size: 1rem; block-size: 1rem; }
+		@media (min-width: 640px) {
+			inline-size: 1rem;
+			block-size: 1rem;
+		}
 	}
 
 	.pms-info {
@@ -372,11 +461,18 @@
 		border-inline-start-width: 4px;
 		border-inline-start-style: solid;
 
-		@media (min-width: 640px) { margin-block-start: 0.75rem; padding: 1rem; }
+		@media (min-width: 640px) {
+			margin-block-start: 0.75rem;
+			padding: 1rem;
+		}
 	}
 
-	.pms-info-indigo { border-inline-start-color: oklch(0.5 0.15 260); }
-	.pms-info-amber { border-inline-start-color: oklch(0.7 0.12 85); }
+	.pms-info-indigo {
+		border-inline-start-color: oklch(0.5 0.15 260);
+	}
+	.pms-info-amber {
+		border-inline-start-color: oklch(0.7 0.12 85);
+	}
 
 	.pms-cards {
 		display: flex;
@@ -384,7 +480,10 @@
 		gap: 0.5rem;
 		margin-block-end: 0.75rem;
 
-		@media (min-width: 640px) { gap: 0.75rem; margin-block-end: 1rem; }
+		@media (min-width: 640px) {
+			gap: 0.75rem;
+			margin-block-end: 1rem;
+		}
 	}
 
 	.pms-card-badge {
@@ -399,14 +498,21 @@
 		border-radius: var(--radius-sm);
 		border: 1px solid oklch(0.9 0.005 265);
 
-		@media (min-width: 640px) { font-size: var(--text-sm); padding-inline: 0.75rem; padding-block: 0.375rem; }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+			padding-inline: 0.75rem;
+			padding-block: 0.375rem;
+		}
 	}
 
 	.pms-card-icon {
 		inline-size: 0.875rem;
 		block-size: 0.875rem;
 
-		@media (min-width: 640px) { inline-size: 1rem; block-size: 1rem; }
+		@media (min-width: 640px) {
+			inline-size: 1rem;
+			block-size: 1rem;
+		}
 	}
 
 	.pms-security {
@@ -417,7 +523,9 @@
 		color: oklch(0.45 0.005 265);
 		margin: 0;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.pms-sec-icon {
@@ -426,7 +534,10 @@
 		color: oklch(0.45 0.15 160);
 		flex-shrink: 0;
 
-		@media (min-width: 640px) { inline-size: 1.25rem; block-size: 1.25rem; }
+		@media (min-width: 640px) {
+			inline-size: 1.25rem;
+			block-size: 1.25rem;
+		}
 	}
 
 	.pms-error {
@@ -436,7 +547,9 @@
 		border: 1px solid oklch(0.85 0.05 25);
 		border-radius: var(--radius-lg);
 
-		@media (min-width: 640px) { padding: 1rem; }
+		@media (min-width: 640px) {
+			padding: 1rem;
+		}
 	}
 
 	.pms-error-text {
@@ -444,7 +557,9 @@
 		color: oklch(0.5 0.2 25);
 		margin: 0;
 
-		@media (min-width: 640px) { font-size: var(--text-sm); }
+		@media (min-width: 640px) {
+			font-size: var(--text-sm);
+		}
 	}
 
 	.sr-only {

@@ -1,12 +1,46 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconAlertCircle, IconBook, IconBrandFacebook, IconBrandGoogle, IconBulb, IconCalendar, IconCertificate, IconChartBar, IconCheck, IconChevronDown, IconClock, IconCopy, IconCurrencyDollar, IconDownload, IconEye, IconFileText, IconGift, IconGripVertical, IconLock, IconPhoto, IconPlus, IconRefresh, IconRocket, IconSettings, IconSparkles, IconStar, IconTarget, IconTrash, IconTrendingUp, IconUsers, IconVideo, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconBook,
+		IconBrandFacebook,
+		IconBrandGoogle,
+		IconBulb,
+		IconCalendar,
+		IconCertificate,
+		IconChartBar,
+		IconCheck,
+		IconChevronDown,
+		IconClock,
+		IconCopy,
+		IconCurrencyDollar,
+		IconDownload,
+		IconEye,
+		IconFileText,
+		IconGift,
+		IconGripVertical,
+		IconLock,
+		IconPhoto,
+		IconPlus,
+		IconRefresh,
+		IconRocket,
+		IconSettings,
+		IconSparkles,
+		IconStar,
+		IconTarget,
+		IconTrash,
+		IconTrendingUp,
+		IconUsers,
+		IconVideo,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
@@ -2130,7 +2164,8 @@ import { logger } from '$lib/utils/logger';
 									</span>
 									<div class="module-actions">
 										<button class="expand-btn" onclick={() => toggleModuleExpansion(module.id)}>
-											<Icon icon={IconChevronDown}
+											<Icon
+												icon={IconChevronDown}
 												size={18}
 												style="transform: rotate({expandedModules.has(module.id)
 													? 0

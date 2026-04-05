@@ -6,7 +6,15 @@
 	import { goto } from '$app/navigation';
 	import { resetPassword } from '$lib/api/auth';
 	import { browser } from '$app/environment';
-	import { Icon, IconAlertCircle, IconCheck, IconEye, IconEyeOff, IconLock, IconShieldCheck } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconEye,
+		IconEyeOff,
+		IconLock,
+		IconShieldCheck
+	} from '$lib/icons';
 
 	// Svelte 5 state runes
 	let email = $state('');
@@ -65,9 +73,7 @@
 	class="reset-password-page flex items-center justify-center px-4 py-12 overflow-hidden relative"
 >
 	<!-- Animated gradient background -->
-	<div
-		class="absolute inset-0 bg-linear-to-br from-slate-950 via-purple-950/30 to-slate-950"
-	></div>
+	<div class="absolute inset-0 bg-linear-to-br from-slate-950 via-purple-950/30 to-slate-950"></div>
 
 	<!-- Floating orbs -->
 	<div

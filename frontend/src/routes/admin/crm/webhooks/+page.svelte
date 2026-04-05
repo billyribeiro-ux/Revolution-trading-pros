@@ -19,7 +19,23 @@
 	import { crmAPI } from '$lib/api/crm';
 	import type { Webhook } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconActivity, IconAlertCircle, IconAlertTriangle, IconCheck, IconEdit, IconPlayerPlay, IconPlus, IconRefresh, IconSearch, IconToggleLeft, IconToggleRight, IconTrash, IconWebhook, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconAlertCircle,
+		IconAlertTriangle,
+		IconCheck,
+		IconEdit,
+		IconPlayerPlay,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconToggleLeft,
+		IconToggleRight,
+		IconTrash,
+		IconWebhook,
+		IconX
+	} from '$lib/icons';
 
 	// =====================================================
 	// STATE MANAGEMENT - Svelte 5 Runes

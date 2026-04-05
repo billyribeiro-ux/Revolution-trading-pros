@@ -120,7 +120,12 @@
 	{:else if items.length === 0}
 		<div class="ra-empty">
 			<svg class="ra-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+				/>
 			</svg>
 			<p class="ra-empty-text">No recently accessed resources</p>
 			<p class="ra-empty-sub">Resources you view will appear here</p>
@@ -128,14 +133,28 @@
 	{:else}
 		<div class="ra-scroll">
 			{#each items as item (item.id)}
-				<button class="ra-item" data-compact={compact || undefined} onclick={() => handleItemClick(item)}>
+				<button
+					class="ra-item"
+					data-compact={compact || undefined}
+					onclick={() => handleItemClick(item)}
+				>
 					<div class="ra-thumb">
 						{#if item.resource_thumbnail}
-							<img src={item.resource_thumbnail} alt={item.resource_title} class="ra-thumb-img" loading="lazy" />
+							<img
+								src={item.resource_thumbnail}
+								alt={item.resource_title}
+								class="ra-thumb-img"
+								loading="lazy"
+							/>
 						{:else}
 							<div class="ra-thumb-placeholder">
 								<svg class="ra-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={getResourceIcon(item.resource_type)} />
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d={getResourceIcon(item.resource_type)}
+									/>
 								</svg>
 							</div>
 						{/if}
@@ -152,7 +171,10 @@
 </div>
 
 <style>
-	.ra-root { display: flex; flex-direction: column; }
+	.ra-root {
+		display: flex;
+		flex-direction: column;
+	}
 
 	.ra-header {
 		margin-block-end: var(--space-4);
@@ -161,7 +183,11 @@
 		justify-content: space-between;
 	}
 
-	.ra-title { font-size: var(--text-lg); font-weight: var(--weight-semibold); color: oklch(0.15 0.01 265); }
+	.ra-title {
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		color: oklch(0.15 0.01 265);
+	}
 
 	.ra-refresh {
 		background: none;
@@ -171,7 +197,9 @@
 		color: oklch(0.5 0.2 260);
 		transition: color 200ms var(--ease-default);
 
-		&:hover { color: oklch(0.45 0.2 260); }
+		&:hover {
+			color: oklch(0.45 0.2 260);
+		}
 	}
 
 	/* ─── Scroll container ─── */
@@ -181,9 +209,16 @@
 		overflow-x: auto;
 		padding-block-end: var(--space-2);
 
-		&::-webkit-scrollbar { block-size: 6px; }
-		&::-webkit-scrollbar-thumb { background-color: oklch(0.82 0.005 265); border-radius: 3px; }
-		&::-webkit-scrollbar-track { background: transparent; }
+		&::-webkit-scrollbar {
+			block-size: 6px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background-color: oklch(0.82 0.005 265);
+			border-radius: 3px;
+		}
+		&::-webkit-scrollbar-track {
+			background: transparent;
+		}
 	}
 
 	/* ─── Item card ─── */
@@ -196,11 +231,17 @@
 		cursor: pointer;
 		transition: transform 200ms var(--ease-default);
 
-		&:hover { transform: scale(1.02); }
-		&:not([data-compact]) { inline-size: 12rem; }
+		&:hover {
+			transform: scale(1.02);
+		}
+		&:not([data-compact]) {
+			inline-size: 12rem;
+		}
 	}
 
-	.ra-item:not([data-compact]) { inline-size: 12rem; }
+	.ra-item:not([data-compact]) {
+		inline-size: 12rem;
+	}
 
 	/* ─── Thumbnail ─── */
 	.ra-thumb {
@@ -218,7 +259,9 @@
 		transition: transform 200ms var(--ease-default);
 	}
 
-	.ra-item:hover .ra-thumb-img { transform: scale(1.05); }
+	.ra-item:hover .ra-thumb-img {
+		transform: scale(1.05);
+	}
 
 	.ra-thumb-placeholder {
 		display: flex;
@@ -229,7 +272,11 @@
 		background: linear-gradient(to bottom right, oklch(0.95 0.002 265), oklch(0.9 0.005 265));
 	}
 
-	.ra-icon-md { inline-size: 2rem; block-size: 2rem; color: oklch(0.65 0.01 265); }
+	.ra-icon-md {
+		inline-size: 2rem;
+		block-size: 2rem;
+		color: oklch(0.65 0.01 265);
+	}
 
 	.ra-type-badge {
 		position: absolute;
@@ -246,7 +293,9 @@
 	}
 
 	/* ─── Text ─── */
-	.ra-item-text { margin-block-start: var(--space-2); }
+	.ra-item-text {
+		margin-block-start: var(--space-2);
+	}
 
 	.ra-item-title {
 		font-size: var(--text-sm);
@@ -260,7 +309,9 @@
 		transition: color 200ms var(--ease-default);
 	}
 
-	.ra-item:hover .ra-item-title { color: oklch(0.5 0.2 260); }
+	.ra-item:hover .ra-item-title {
+		color: oklch(0.5 0.2 260);
+	}
 
 	.ra-item-time {
 		margin-block-start: 0.125rem;
@@ -277,7 +328,10 @@
 		text-align: center;
 	}
 
-	.ra-error-msg { font-size: var(--text-sm); color: oklch(0.5 0.2 25); }
+	.ra-error-msg {
+		font-size: var(--text-sm);
+		color: oklch(0.5 0.2 25);
+	}
 
 	.ra-error-retry {
 		margin-block-start: var(--space-2);
@@ -288,7 +342,9 @@
 		color: oklch(0.45 0.2 25);
 		text-decoration: underline;
 
-		&:hover { text-decoration: none; }
+		&:hover {
+			text-decoration: none;
+		}
 	}
 
 	/* ─── Empty ─── */
@@ -300,9 +356,21 @@
 		text-align: center;
 	}
 
-	.ra-empty-icon { margin-inline: auto; inline-size: 2.5rem; block-size: 2.5rem; color: oklch(0.65 0.01 265); }
-	.ra-empty-text { margin-block-start: var(--space-2); font-size: var(--text-sm); color: oklch(0.55 0.01 265); }
-	.ra-empty-sub { font-size: var(--text-xs); color: oklch(0.65 0.01 265); }
+	.ra-empty-icon {
+		margin-inline: auto;
+		inline-size: 2.5rem;
+		block-size: 2.5rem;
+		color: oklch(0.65 0.01 265);
+	}
+	.ra-empty-text {
+		margin-block-start: var(--space-2);
+		font-size: var(--text-sm);
+		color: oklch(0.55 0.01 265);
+	}
+	.ra-empty-sub {
+		font-size: var(--text-xs);
+		color: oklch(0.65 0.01 265);
+	}
 
 	/* ─── Skeleton ─── */
 	.ra-item-skel {
@@ -322,11 +390,24 @@
 		background-color: oklch(0.9 0.005 265);
 	}
 
-	.ra-skel-w34 { block-size: 1rem; inline-size: 75%; margin-block-start: var(--space-2); }
-	.ra-skel-w12 { block-size: 0.75rem; inline-size: 50%; margin-block-start: 0.25rem; }
+	.ra-skel-w34 {
+		block-size: 1rem;
+		inline-size: 75%;
+		margin-block-start: var(--space-2);
+	}
+	.ra-skel-w12 {
+		block-size: 0.75rem;
+		inline-size: 50%;
+		margin-block-start: 0.25rem;
+	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
 	}
 </style>

@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconEdit, IconExternalLink, IconPlus, IconRefresh, IconTrash, IconVideo } from '$lib/icons';
+	import {
+		Icon,
+		IconEdit,
+		IconExternalLink,
+		IconPlus,
+		IconRefresh,
+		IconTrash,
+		IconVideo
+	} from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let videos = $state<any[]>([]);

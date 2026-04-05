@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Revolution Trading Pros - Active Sessions Management
 	 * Microsoft-style single-session authentication management

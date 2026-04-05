@@ -1,8 +1,16 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
-	import { Icon, IconEdit, IconFilter, IconPlus, IconRefresh, IconSearch, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconEdit,
+		IconFilter,
+		IconPlus,
+		IconRefresh,
+		IconSearch,
+		IconTrash
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management - Svelte 5 Runes

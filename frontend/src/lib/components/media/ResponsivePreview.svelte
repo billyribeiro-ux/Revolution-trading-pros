@@ -186,10 +186,7 @@
 			<div class="rp-chart">
 				{#each sortedVariants as variant (variant.sizeName)}
 					<div class="rp-bar-col">
-						<div
-							class="rp-bar"
-							style="height: {(variant.size / originalSize) * 100}%"
-						></div>
+						<div class="rp-bar" style="height: {(variant.size / originalSize) * 100}%"></div>
 						<span class="rp-bar-label">{variant.sizeName}</span>
 					</div>
 				{/each}
@@ -208,11 +205,7 @@
 			style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
 			transition:fade={{ duration: 150 }}
 		>
-			<img
-				src={hoveredVariant.url}
-				alt="Preview"
-				class="rp-tooltip-img"
-			/>
+			<img src={hoveredVariant.url} alt="Preview" class="rp-tooltip-img" />
 			<div class="rp-tooltip-footer">
 				<span class="rp-tooltip-dim">{hoveredVariant.width}x{hoveredVariant.height}</span>
 				<span class="rp-tooltip-size">{formatBytes(hoveredVariant.size)}</span>
@@ -241,15 +234,22 @@
 		color: oklch(0.35 0.01 265);
 	}
 
-	.rp-original { font-size: var(--text-xs); color: oklch(0.55 0.01 265); }
+	.rp-original {
+		font-size: var(--text-xs);
+		color: oklch(0.55 0.01 265);
+	}
 
 	.rp-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: var(--space-3);
 
-		@media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
-		@media (min-width: 768px) { grid-template-columns: repeat(6, 1fr); }
+		@media (min-width: 640px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(6, 1fr);
+		}
 	}
 
 	.rp-variant {
@@ -299,7 +299,10 @@
 		color: oklch(0.35 0.01 265);
 	}
 
-	.rp-dims { font-size: 0.625rem; color: oklch(0.55 0.01 265); }
+	.rp-dims {
+		font-size: 0.625rem;
+		color: oklch(0.55 0.01 265);
+	}
 
 	.rp-sizes {
 		display: flex;
@@ -309,8 +312,15 @@
 		margin-block-start: var(--space-1);
 	}
 
-	.rp-size-val { font-size: 0.625rem; color: oklch(0.55 0.01 265); }
-	.rp-savings { font-size: 0.625rem; font-weight: var(--weight-medium); color: oklch(0.55 0.18 160); }
+	.rp-size-val {
+		font-size: 0.625rem;
+		color: oklch(0.55 0.01 265);
+	}
+	.rp-savings {
+		font-size: 0.625rem;
+		font-weight: var(--weight-medium);
+		color: oklch(0.55 0.18 160);
+	}
 
 	.rp-bp-track {
 		block-size: 0.25rem;
@@ -357,10 +367,15 @@
 		border-start-end-radius: var(--radius-sm);
 		transition: all 300ms var(--ease-default);
 
-		&.rp-bar-orig { background-color: oklch(0.65 0.01 265); }
+		&.rp-bar-orig {
+			background-color: oklch(0.65 0.01 265);
+		}
 	}
 
-	.rp-bar-label { font-size: 0.625rem; color: oklch(0.55 0.01 265); }
+	.rp-bar-label {
+		font-size: 0.625rem;
+		color: oklch(0.55 0.01 265);
+	}
 
 	/* ─── Tooltip ─── */
 	.rp-tooltip {
@@ -391,6 +406,10 @@
 		background-color: oklch(0.97 0.002 265);
 	}
 
-	.rp-tooltip-dim { font-weight: var(--weight-medium); }
-	.rp-tooltip-size { color: oklch(0.55 0.01 265); }
+	.rp-tooltip-dim {
+		font-weight: var(--weight-medium);
+	}
+	.rp-tooltip-size {
+		color: oklch(0.55 0.01 265);
+	}
 </style>

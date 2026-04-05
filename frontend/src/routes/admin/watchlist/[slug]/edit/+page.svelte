@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Edit Page
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -28,7 +28,7 @@ import { logger } from '$lib/utils/logger';
 	import { ALL_ROOM_IDS } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
 	import { Icon, IconArrowLeft, IconDeviceFloppy, IconEye, IconTrash } from '$lib/icons';
-				
+
 	// Get slug from URL using Svelte 5 $derived
 	const slug = $derived(page.params.slug ?? '');
 

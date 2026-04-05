@@ -1,9 +1,19 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
-	import { Icon, IconChartBar, IconCopy, IconEdit, IconEye, IconEyeOff, IconPlus, IconSettings, IconTrash } from '$lib/icons';
+	import {
+		Icon,
+		IconChartBar,
+		IconCopy,
+		IconEdit,
+		IconEye,
+		IconEyeOff,
+		IconPlus,
+		IconSettings,
+		IconTrash
+	} from '$lib/icons';
 
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);

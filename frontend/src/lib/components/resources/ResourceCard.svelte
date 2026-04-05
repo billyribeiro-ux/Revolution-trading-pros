@@ -89,22 +89,23 @@
 
 	function getAccessLevel(level: string): string {
 		switch (level) {
-			case 'free': return 'free';
-			case 'member': return 'member';
-			case 'premium': return 'premium';
-			case 'vip': return 'vip';
-			default: return 'premium';
+			case 'free':
+				return 'free';
+			case 'member':
+				return 'member';
+			case 'premium':
+				return 'premium';
+			case 'vip':
+				return 'vip';
+			default:
+				return 'premium';
 		}
 	}
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<article
-	class="rc-card"
-	data-compact={compact || undefined}
-	onclick={handleCardClick}
->
+<article class="rc-card" data-compact={compact || undefined} onclick={handleCardClick}>
 	<!-- Thumbnail / Preview -->
 	<div class="rc-thumb">
 		{#if resource.thumbnail_url}
@@ -112,7 +113,12 @@
 		{:else}
 			<div class="rc-thumb-placeholder">
 				<svg class="rc-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d={getTypeIcon(resource.resource_type)} />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="1.5"
+						d={getTypeIcon(resource.resource_type)}
+					/>
 				</svg>
 			</div>
 		{/if}
@@ -122,7 +128,10 @@
 		<span class="rc-badge rc-type-badge">{displayInfo.typeLabel}</span>
 
 		{#if showAccessLevel}
-			<span class="rc-badge rc-access-badge" data-level={getAccessLevel(resource.access_level ?? 'premium')}>
+			<span
+				class="rc-badge rc-access-badge"
+				data-level={getAccessLevel(resource.access_level ?? 'premium')}
+			>
 				{resource.access_level === 'free' ? 'Free' : 'Premium'}
 			</span>
 		{/if}
@@ -156,7 +165,12 @@
 			{#if formattedSize}
 				<span class="rc-meta-item">
 					<svg class="rc-icon-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+						/>
 					</svg>
 					{formattedSize}
 				</span>
@@ -164,7 +178,12 @@
 
 			<span class="rc-meta-item">
 				<svg class="rc-icon-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+					/>
 				</svg>
 				{resource.formatted_date}
 			</span>
@@ -172,7 +191,12 @@
 			{#if showVersion && hasVersion}
 				<span class="rc-meta-item rc-version">
 					<svg class="rc-icon-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+						/>
 					</svg>
 					v{resource.version}
 				</span>
@@ -183,14 +207,29 @@
 			<div class="rc-stats-left">
 				<span class="rc-meta-item">
 					<svg class="rc-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+						/>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+						/>
 					</svg>
 					{resource.views_count}
 				</span>
 				<span class="rc-meta-item">
 					<svg class="rc-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+						/>
 					</svg>
 					{resource.downloads_count}
 				</span>
@@ -225,9 +264,15 @@
 			border-color: oklch(0.75 0.12 260);
 		}
 
-		&:hover .rc-thumb-img { transform: scale(1.05); }
-		&:hover .rc-thumb-overlay { opacity: 1; }
-		&:hover .rc-play-overlay { opacity: 1; }
+		&:hover .rc-thumb-img {
+			transform: scale(1.05);
+		}
+		&:hover .rc-thumb-overlay {
+			opacity: 1;
+		}
+		&:hover .rc-play-overlay {
+			opacity: 1;
+		}
 	}
 
 	/* ─── Thumbnail ─── */
@@ -284,10 +329,18 @@
 		inset-inline-end: var(--space-2);
 		color: oklch(1 0 0);
 
-		&[data-level='free'] { background-color: oklch(0.6 0.18 160); }
-		&[data-level='member'] { background-color: oklch(0.6 0.2 260); }
-		&[data-level='premium'] { background-color: oklch(0.75 0.18 80); }
-		&[data-level='vip'] { background-color: oklch(0.55 0.2 300); }
+		&[data-level='free'] {
+			background-color: oklch(0.6 0.18 160);
+		}
+		&[data-level='member'] {
+			background-color: oklch(0.6 0.2 260);
+		}
+		&[data-level='premium'] {
+			background-color: oklch(0.75 0.18 80);
+		}
+		&[data-level='vip'] {
+			background-color: oklch(0.55 0.2 300);
+		}
 	}
 
 	.rc-duration {
@@ -328,13 +381,21 @@
 		box-shadow: 0 4px 12px oklch(0 0 0 / 20%);
 		transition: transform 200ms var(--ease-default);
 
-		&:hover { transform: scale(1.1); }
+		&:hover {
+			transform: scale(1.1);
+		}
 	}
 
-	.rc-play-icon { inline-size: 2rem; block-size: 2rem; padding-inline-start: 0.25rem; }
+	.rc-play-icon {
+		inline-size: 2rem;
+		block-size: 2rem;
+		padding-inline-start: 0.25rem;
+	}
 
 	/* ─── Content ─── */
-	.rc-content { padding: var(--space-4); }
+	.rc-content {
+		padding: var(--space-4);
+	}
 
 	.rc-title {
 		margin-block-end: 0.25rem;
@@ -376,12 +437,28 @@
 		padding-block: 0.125rem;
 	}
 
-	.rc-meta-item { display: flex; align-items: center; gap: 0.25rem; }
-	.rc-version { color: oklch(0.5 0.2 260); }
+	.rc-meta-item {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+	.rc-version {
+		color: oklch(0.5 0.2 260);
+	}
 
-	.rc-icon-xs { inline-size: 0.75rem; block-size: 0.75rem; }
-	.rc-icon-sm { inline-size: 1rem; block-size: 1rem; }
-	.rc-icon-xl { inline-size: 4rem; block-size: 4rem; color: oklch(0.65 0.01 265); }
+	.rc-icon-xs {
+		inline-size: 0.75rem;
+		block-size: 0.75rem;
+	}
+	.rc-icon-sm {
+		inline-size: 1rem;
+		block-size: 1rem;
+	}
+	.rc-icon-xl {
+		inline-size: 4rem;
+		block-size: 4rem;
+		color: oklch(0.65 0.01 265);
+	}
 
 	/* ─── Stats ─── */
 	.rc-stats {
@@ -393,7 +470,11 @@
 		color: oklch(0.55 0.01 265);
 	}
 
-	.rc-stats-left { display: flex; align-items: center; gap: var(--space-4); }
+	.rc-stats-left {
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+	}
 
 	/* ─── Action button ─── */
 	.rc-action-btn {
@@ -409,8 +490,13 @@
 		cursor: pointer;
 		transition: background-color 200ms var(--ease-default);
 
-		&:hover { background-color: oklch(0.48 0.2 260); }
-		&:focus-visible { outline: 2px solid oklch(0.6 0.2 260); outline-offset: 2px; }
+		&:hover {
+			background-color: oklch(0.48 0.2 260);
+		}
+		&:focus-visible {
+			outline: 2px solid oklch(0.6 0.2 260);
+			outline-offset: 2px;
+		}
 	}
 
 	/* ─── Ribbon ─── */
@@ -429,7 +515,13 @@
 	}
 
 	/* ─── Compact variant ─── */
-	.rc-card[data-compact] .rc-content { padding: var(--space-3); }
-	.rc-card[data-compact] .rc-title { font-size: var(--text-sm); }
-	.rc-card[data-compact] .rc-thumb { aspect-ratio: 16 / 10; }
+	.rc-card[data-compact] .rc-content {
+		padding: var(--space-3);
+	}
+	.rc-card[data-compact] .rc-title {
+		font-size: var(--text-sm);
+	}
+	.rc-card[data-compact] .rc-thumb {
+		aspect-ratio: 16 / 10;
+	}
 </style>

@@ -9,7 +9,19 @@
 		type ReportFrequency
 	} from '$lib/seo';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { Icon, IconCalendar, IconCheck, IconClock, IconDownload, IconEdit, IconMail, IconPlayerPlay, IconPlus, IconTrash, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconCalendar,
+		IconCheck,
+		IconClock,
+		IconDownload,
+		IconEdit,
+		IconMail,
+		IconPlayerPlay,
+		IconPlus,
+		IconTrash,
+		IconX
+	} from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);

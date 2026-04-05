@@ -23,7 +23,8 @@ export const csr = true;
 export const load: PageLoad = ({ data }) => {
 	const seo: SEOInput = {
 		title: 'Live Trading Rooms | Professional Trading Mentorship | Revolution Trading Pros',
-		description: 'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals with 15+ years experience.',
+		description:
+			'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals with 15+ years experience.',
 		canonical: '/live-trading-rooms',
 		og: {
 			type: 'website',

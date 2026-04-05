@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * My Indicator Downloads Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026

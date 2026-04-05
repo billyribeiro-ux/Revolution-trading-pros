@@ -16,7 +16,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
@@ -27,7 +27,17 @@ import { logger } from '$lib/utils/logger';
 		type Product,
 		type SubscriptionPlan
 	} from '$lib/api/admin';
-	import { Icon, IconAlertCircle, IconCheck, IconCurrencyDollar, IconPercentage, IconRefresh, IconSparkles, IconTag, IconX } from '$lib/icons';
+	import {
+		Icon,
+		IconAlertCircle,
+		IconCheck,
+		IconCurrencyDollar,
+		IconPercentage,
+		IconRefresh,
+		IconSparkles,
+		IconTag,
+		IconX
+	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types

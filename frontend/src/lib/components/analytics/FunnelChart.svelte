@@ -70,7 +70,11 @@
 					<div class="rate-badge">
 						<span
 							class="rate-value"
-							data-level={step.conversion_rate >= 80 ? 'good' : step.conversion_rate >= 50 ? 'mid' : 'poor'}
+							data-level={step.conversion_rate >= 80
+								? 'good'
+								: step.conversion_rate >= 50
+									? 'mid'
+									: 'poor'}
 						>
 							{step.conversion_rate.toFixed(1)}%
 						</span>
@@ -140,7 +144,9 @@
 		gap: var(--space-3);
 	}
 
-	.step-row { position: relative; }
+	.step-row {
+		position: relative;
+	}
 
 	.step-bar-wrapper {
 		position: relative;
@@ -155,14 +161,28 @@
 		position: relative;
 		overflow: hidden;
 
-		&[data-animated] { transition: all 700ms ease-out; }
+		&[data-animated] {
+			transition: all 700ms ease-out;
+		}
 
-		&[data-step='0'] { background-color: oklch(0.6 0.2 260); }
-		&[data-step='1'] { background-color: oklch(0.68 0.16 260); }
-		&[data-step='2'] { background-color: oklch(0.7 0.15 200); }
-		&[data-step='3'] { background-color: oklch(0.68 0.14 175); }
-		&[data-step='4'] { background-color: oklch(0.68 0.16 160); }
-		&[data-step='5'] { background-color: oklch(0.6 0.18 160); }
+		&[data-step='0'] {
+			background-color: oklch(0.6 0.2 260);
+		}
+		&[data-step='1'] {
+			background-color: oklch(0.68 0.16 260);
+		}
+		&[data-step='2'] {
+			background-color: oklch(0.7 0.15 200);
+		}
+		&[data-step='3'] {
+			background-color: oklch(0.68 0.14 175);
+		}
+		&[data-step='4'] {
+			background-color: oklch(0.68 0.16 160);
+		}
+		&[data-step='5'] {
+			background-color: oklch(0.6 0.18 160);
+		}
 	}
 
 	.step-label {
@@ -197,9 +217,15 @@
 		font-size: var(--text-sm);
 		font-weight: var(--weight-semibold);
 
-		&[data-level='good'] { color: oklch(0.5 0.18 160); }
-		&[data-level='mid'] { color: oklch(0.6 0.18 90); }
-		&[data-level='poor'] { color: oklch(0.55 0.2 25); }
+		&[data-level='good'] {
+			color: oklch(0.5 0.18 160);
+		}
+		&[data-level='mid'] {
+			color: oklch(0.6 0.18 90);
+		}
+		&[data-level='poor'] {
+			color: oklch(0.55 0.2 25);
+		}
 	}
 
 	.dropoff {
@@ -218,7 +244,9 @@
 		color: oklch(0.6 0.2 25);
 	}
 
-	.dropoff-rate { color: oklch(0.65 0.01 265); }
+	.dropoff-rate {
+		color: oklch(0.65 0.01 265);
+	}
 
 	.funnel-summary {
 		margin-block-start: var(--space-6);
@@ -232,13 +260,19 @@
 		font-size: var(--text-sm);
 	}
 
-	.summary-label { color: oklch(0.55 0.01 265); }
+	.summary-label {
+		color: oklch(0.55 0.01 265);
+	}
 
 	.summary-value {
 		font-weight: var(--weight-semibold);
 		margin-inline-start: var(--space-1);
 
-		&[data-level='good'] { color: oklch(0.5 0.18 160); }
-		&[data-level='poor'] { color: oklch(0.65 0.18 55); }
+		&[data-level='good'] {
+			color: oklch(0.5 0.18 160);
+		}
+		&[data-level='poor'] {
+			color: oklch(0.65 0.18 55);
+		}
 	}
 </style>

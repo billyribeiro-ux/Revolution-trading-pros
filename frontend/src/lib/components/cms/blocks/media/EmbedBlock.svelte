@@ -10,7 +10,14 @@
 	import { sanitizeURL } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { Icon, IconBrandTwitter, IconBrandVimeo, IconBrandYoutube, IconCode, IconLink } from '$lib/icons';
+	import {
+		Icon,
+		IconBrandTwitter,
+		IconBrandVimeo,
+		IconBrandYoutube,
+		IconCode,
+		IconLink
+	} from '$lib/icons';
 
 	interface Props {
 		block: Block;

@@ -2,7 +2,14 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { cubicOut } from 'svelte/easing';
-	import { Icon, IconActivity, IconArrowUpRight, IconBuilding, IconTerminal, IconTrendingUp } from '$lib/icons';
+	import {
+		Icon,
+		IconActivity,
+		IconArrowUpRight,
+		IconBuilding,
+		IconTerminal,
+		IconTrendingUp
+	} from '$lib/icons';
 	// --- Data Configuration ---
 	const products = [
 		{
@@ -97,10 +104,7 @@
 	});
 </script>
 
-<section
-	bind:this={containerRef}
-	class="tr-section"
->
+<section bind:this={containerRef} class="tr-section">
 	<div class="tr-bg">
 		<div class="tr-grid-lines"></div>
 	</div>
@@ -116,9 +120,7 @@
 					<span class="tr-live-label">Market Access Open</span>
 				</div>
 
-				<h2 in:heavySlide={{ delay: 100 }} class="tr-title">
-					Professional Trading Environments
-				</h2>
+				<h2 in:heavySlide={{ delay: 100 }} class="tr-title">Professional Trading Environments</h2>
 
 				<p in:heavySlide={{ delay: 200 }} class="tr-subtitle">
 					Select an environment tailored to your liquidity requirements.
@@ -131,32 +133,148 @@
 			{#each products as item, i}
 				{@const iconStr = item.icon}
 				{#if isVisible}
-					<div
-						in:heavySlide={{ delay: 300 + i * 100 }}
-						class="tr-card"
-						data-accent={item.accent}
-					>
+					<div in:heavySlide={{ delay: 300 + i * 100 }} class="tr-card" data-accent={item.accent}>
 						{#if item.type === 'candles'}
 							<div class="tr-anim-overlay">
 								<div class="tr-anim-tint" data-accent="blue"></div>
 								<svg class="tr-candle-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
-									<line x1="0" y1="50" x2="400" y2="50" stroke="oklch(0.3 0.15 260)" stroke-width="1" stroke-dasharray="4 4" opacity="0.3" />
-									<line x1="0" y1="100" x2="400" y2="100" stroke="oklch(0.3 0.15 260)" stroke-width="1" stroke-dasharray="4 4" opacity="0.3" />
-									<line x1="0" y1="150" x2="400" y2="150" stroke="oklch(0.3 0.15 260)" stroke-width="1" stroke-dasharray="4 4" opacity="0.3" />
-									<line x1="40" y1="120" x2="40" y2="180" stroke="oklch(0.6 0.18 260)" stroke-width="1" />
-									<rect x="30" y="140" width="20" height="30" fill="oklch(0.6 0.18 260)" opacity="0.8" />
-									<line x1="90" y1="130" x2="90" y2="150" stroke="oklch(0.3 0.15 260)" stroke-width="1" />
-									<rect x="80" y="135" width="20" height="10" fill="none" stroke="oklch(0.6 0.18 260)" stroke-width="2" />
-									<line x1="140" y1="80" x2="140" y2="140" stroke="oklch(0.6 0.18 260)" stroke-width="1" />
-									<rect x="130" y="90" width="20" height="40" fill="oklch(0.6 0.18 260)" opacity="0.9" />
-									<line x1="190" y1="85" x2="190" y2="105" stroke="oklch(0.6 0.18 260)" stroke-width="1" />
-									<rect x="180" y="90" width="20" height="5" fill="oklch(0.6 0.18 260)" opacity="0.8" />
-									<line x1="240" y1="80" x2="240" y2="120" stroke="oklch(0.3 0.15 260)" stroke-width="1" />
-									<rect x="230" y="95" width="20" height="15" fill="none" stroke="oklch(0.6 0.18 260)" stroke-width="2" />
-									<line x1="290" y1="60" x2="290" y2="110" stroke="oklch(0.6 0.18 260)" stroke-width="1" />
-									<rect x="280" y="70" width="20" height="35" fill="oklch(0.6 0.18 260)" opacity="0.9" />
+									<line
+										x1="0"
+										y1="50"
+										x2="400"
+										y2="50"
+										stroke="oklch(0.3 0.15 260)"
+										stroke-width="1"
+										stroke-dasharray="4 4"
+										opacity="0.3"
+									/>
+									<line
+										x1="0"
+										y1="100"
+										x2="400"
+										y2="100"
+										stroke="oklch(0.3 0.15 260)"
+										stroke-width="1"
+										stroke-dasharray="4 4"
+										opacity="0.3"
+									/>
+									<line
+										x1="0"
+										y1="150"
+										x2="400"
+										y2="150"
+										stroke="oklch(0.3 0.15 260)"
+										stroke-width="1"
+										stroke-dasharray="4 4"
+										opacity="0.3"
+									/>
+									<line
+										x1="40"
+										y1="120"
+										x2="40"
+										y2="180"
+										stroke="oklch(0.6 0.18 260)"
+										stroke-width="1"
+									/>
+									<rect
+										x="30"
+										y="140"
+										width="20"
+										height="30"
+										fill="oklch(0.6 0.18 260)"
+										opacity="0.8"
+									/>
+									<line
+										x1="90"
+										y1="130"
+										x2="90"
+										y2="150"
+										stroke="oklch(0.3 0.15 260)"
+										stroke-width="1"
+									/>
+									<rect
+										x="80"
+										y="135"
+										width="20"
+										height="10"
+										fill="none"
+										stroke="oklch(0.6 0.18 260)"
+										stroke-width="2"
+									/>
+									<line
+										x1="140"
+										y1="80"
+										x2="140"
+										y2="140"
+										stroke="oklch(0.6 0.18 260)"
+										stroke-width="1"
+									/>
+									<rect
+										x="130"
+										y="90"
+										width="20"
+										height="40"
+										fill="oklch(0.6 0.18 260)"
+										opacity="0.9"
+									/>
+									<line
+										x1="190"
+										y1="85"
+										x2="190"
+										y2="105"
+										stroke="oklch(0.6 0.18 260)"
+										stroke-width="1"
+									/>
+									<rect
+										x="180"
+										y="90"
+										width="20"
+										height="5"
+										fill="oklch(0.6 0.18 260)"
+										opacity="0.8"
+									/>
+									<line
+										x1="240"
+										y1="80"
+										x2="240"
+										y2="120"
+										stroke="oklch(0.3 0.15 260)"
+										stroke-width="1"
+									/>
+									<rect
+										x="230"
+										y="95"
+										width="20"
+										height="15"
+										fill="none"
+										stroke="oklch(0.6 0.18 260)"
+										stroke-width="2"
+									/>
+									<line
+										x1="290"
+										y1="60"
+										x2="290"
+										y2="110"
+										stroke="oklch(0.6 0.18 260)"
+										stroke-width="1"
+									/>
+									<rect
+										x="280"
+										y="70"
+										width="20"
+										height="35"
+										fill="oklch(0.6 0.18 260)"
+										opacity="0.9"
+									/>
 									<g class="tr-live-candle">
-										<line x1="340" y1="20" x2="340" y2="80" stroke="oklch(0.7 0.15 260)" stroke-width="1" />
+										<line
+											x1="340"
+											y1="20"
+											x2="340"
+											y2="80"
+											stroke="oklch(0.7 0.15 260)"
+											stroke-width="1"
+										/>
 										<rect x="330" y="40" width="20" height="30" fill="oklch(0.7 0.15 260)" />
 									</g>
 								</svg>
@@ -167,8 +285,17 @@
 							<div class="tr-anim-overlay">
 								<div class="tr-anim-tint" data-accent="emerald"></div>
 								<svg class="tr-wave-svg" viewBox="0 0 1000 300" preserveAspectRatio="none">
-									<path d="M0,150 C150,50 350,250 500,150 C650,50 850,250 1000,150 V300 H0 Z" fill="currentColor" />
-									<path d="M0,160 C140,60 360,260 500,160 C640,60 860,260 1000,160" fill="none" stroke="currentColor" stroke-width="2" class="tr-wave-line" />
+									<path
+										d="M0,150 C150,50 350,250 500,150 C650,50 850,250 1000,150 V300 H0 Z"
+										fill="currentColor"
+									/>
+									<path
+										d="M0,160 C140,60 360,260 500,160 C640,60 860,260 1000,160"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										class="tr-wave-line"
+									/>
 								</svg>
 							</div>
 						{/if}
@@ -238,12 +365,20 @@
 		overflow: hidden;
 		border-block-start: 1px solid oklch(0.2 0.005 285);
 
-		@media (min-width: 640px) { padding-inline: 1.5rem; }
-		@media (min-width: 1024px) { padding-inline: 2rem; }
+		@media (min-width: 640px) {
+			padding-inline: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			padding-inline: 2rem;
+		}
 	}
 
 	/* ─── Background ─── */
-	.tr-bg { position: absolute; inset: 0; pointer-events: none; }
+	.tr-bg {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
 
 	.tr-grid-lines {
 		position: absolute;
@@ -279,9 +414,30 @@
 		margin-block-end: 1.5rem;
 	}
 
-	.tr-ping-wrap { position: relative; display: flex; block-size: 0.5rem; inline-size: 0.5rem; }
-	.tr-ping { position: absolute; display: inline-flex; block-size: 100%; inline-size: 100%; border-radius: 50%; background-color: oklch(0.7 0.17 160); opacity: 0.75; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
-	.tr-ping-dot { position: relative; display: inline-flex; border-radius: 50%; block-size: 0.5rem; inline-size: 0.5rem; background-color: oklch(0.7 0.17 160); }
+	.tr-ping-wrap {
+		position: relative;
+		display: flex;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+	}
+	.tr-ping {
+		position: absolute;
+		display: inline-flex;
+		block-size: 100%;
+		inline-size: 100%;
+		border-radius: 50%;
+		background-color: oklch(0.7 0.17 160);
+		opacity: 0.75;
+		animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+	}
+	.tr-ping-dot {
+		position: relative;
+		display: inline-flex;
+		border-radius: 50%;
+		block-size: 0.5rem;
+		inline-size: 0.5rem;
+		background-color: oklch(0.7 0.17 160);
+	}
 
 	.tr-live-label {
 		font-size: var(--text-xs);
@@ -308,7 +464,9 @@
 		margin-inline: auto;
 	}
 
-	.tr-subtitle-light { color: oklch(0.55 0.01 265); }
+	.tr-subtitle-light {
+		color: oklch(0.55 0.01 265);
+	}
 
 	/* ─── Cards Grid ─── */
 	.tr-cards {
@@ -320,7 +478,9 @@
 		overflow: hidden;
 		box-shadow: 0 25px 50px oklch(0 0 0 / 0.5);
 
-		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	/* ─── Card ─── */
@@ -333,25 +493,72 @@
 		block-size: 26.25rem;
 		overflow: hidden;
 
-		@media (min-width: 1024px) { padding: 2.5rem; }
+		@media (min-width: 1024px) {
+			padding: 2.5rem;
+		}
 
-		&:hover .tr-anim-overlay { opacity: 1; }
-		&:hover .tr-card-gradient { opacity: 0.4; }
-		&:hover .tr-icon-box { color: oklch(1 0 0); border-color: oklch(0.4 0.005 285); }
-		&:hover .tr-card-title { transform: scaleX(1.05); }
-		&:hover .tr-desc-fade { opacity: 0; transform: translateY(-0.5rem); filter: blur(4px); }
-		&:hover .tr-cta-link { color: oklch(1 0 0); }
-		&:hover .tr-cta-text { transform: translateX(0.25rem); }
-		&:hover .tr-cta-arrow { color: oklch(1 0 0); }
-		&:hover .tr-step-bar { block-size: calc(20% + var(--h)); }
+		&:hover .tr-anim-overlay {
+			opacity: 1;
+		}
+		&:hover .tr-card-gradient {
+			opacity: 0.4;
+		}
+		&:hover .tr-icon-box {
+			color: oklch(1 0 0);
+			border-color: oklch(0.4 0.005 285);
+		}
+		&:hover .tr-card-title {
+			transform: scaleX(1.05);
+		}
+		&:hover .tr-desc-fade {
+			opacity: 0;
+			transform: translateY(-0.5rem);
+			filter: blur(4px);
+		}
+		&:hover .tr-cta-link {
+			color: oklch(1 0 0);
+		}
+		&:hover .tr-cta-text {
+			transform: translateX(0.25rem);
+		}
+		&:hover .tr-cta-arrow {
+			color: oklch(1 0 0);
+		}
+		&:hover .tr-step-bar {
+			block-size: calc(20% + var(--h));
+		}
 	}
 
-	.tr-card[data-accent='blue'] { &:hover .tr-card-footer { border-color: oklch(0.6 0.18 260 / 0.3); } }
-	.tr-card[data-accent='blue'] { &:hover .tr-cta-arrow { background-color: oklch(0.6 0.18 260); } }
-	.tr-card[data-accent='emerald'] { &:hover .tr-card-footer { border-color: oklch(0.7 0.17 160 / 0.3); } }
-	.tr-card[data-accent='emerald'] { &:hover .tr-cta-arrow { background-color: oklch(0.7 0.17 160); } }
-	.tr-card[data-accent='indigo'] { &:hover .tr-card-footer { border-color: oklch(0.6 0.2 280 / 0.3); } }
-	.tr-card[data-accent='indigo'] { &:hover .tr-cta-arrow { background-color: oklch(0.6 0.2 280); } }
+	.tr-card[data-accent='blue'] {
+		&:hover .tr-card-footer {
+			border-color: oklch(0.6 0.18 260 / 0.3);
+		}
+	}
+	.tr-card[data-accent='blue'] {
+		&:hover .tr-cta-arrow {
+			background-color: oklch(0.6 0.18 260);
+		}
+	}
+	.tr-card[data-accent='emerald'] {
+		&:hover .tr-card-footer {
+			border-color: oklch(0.7 0.17 160 / 0.3);
+		}
+	}
+	.tr-card[data-accent='emerald'] {
+		&:hover .tr-cta-arrow {
+			background-color: oklch(0.7 0.17 160);
+		}
+	}
+	.tr-card[data-accent='indigo'] {
+		&:hover .tr-card-footer {
+			border-color: oklch(0.6 0.2 280 / 0.3);
+		}
+	}
+	.tr-card[data-accent='indigo'] {
+		&:hover .tr-cta-arrow {
+			background-color: oklch(0.6 0.2 280);
+		}
+	}
 
 	/* ─── Animation Overlays ─── */
 	.tr-anim-overlay {
@@ -362,10 +569,19 @@
 		pointer-events: none;
 	}
 
-	.tr-anim-tint { position: absolute; inset: 0; }
-	.tr-anim-tint[data-accent='blue'] { background-color: oklch(0.2 0.1 260 / 0.1); }
-	.tr-anim-tint[data-accent='emerald'] { background-color: oklch(0.2 0.1 160 / 0.1); }
-	.tr-anim-tint[data-accent='indigo'] { background-color: oklch(0.2 0.1 280 / 0.1); }
+	.tr-anim-tint {
+		position: absolute;
+		inset: 0;
+	}
+	.tr-anim-tint[data-accent='blue'] {
+		background-color: oklch(0.2 0.1 260 / 0.1);
+	}
+	.tr-anim-tint[data-accent='emerald'] {
+		background-color: oklch(0.2 0.1 160 / 0.1);
+	}
+	.tr-anim-tint[data-accent='indigo'] {
+		background-color: oklch(0.2 0.1 280 / 0.1);
+	}
 
 	.tr-candle-svg {
 		position: absolute;
@@ -391,7 +607,9 @@
 		animation: wave-slide 10s linear infinite;
 	}
 
-	.tr-wave-line { color: oklch(0.7 0.17 160 / 0.4); }
+	.tr-wave-line {
+		color: oklch(0.7 0.17 160 / 0.4);
+	}
 
 	.tr-step-bars {
 		position: absolute;
@@ -417,7 +635,12 @@
 	.tr-card-gradient {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(to top, oklch(0.12 0.005 285), oklch(0.12 0.005 285 / 0.8), transparent);
+		background: linear-gradient(
+			to top,
+			oklch(0.12 0.005 285),
+			oklch(0.12 0.005 285 / 0.8),
+			transparent
+		);
 		opacity: 0.9;
 		transition: opacity 500ms;
 		pointer-events: none;
@@ -440,7 +663,9 @@
 		border: 1px solid oklch(0.3 0.005 285);
 		border-radius: var(--radius-md);
 		color: oklch(0.55 0.01 265);
-		transition: color 300ms, border-color 300ms;
+		transition:
+			color 300ms,
+			border-color 300ms;
 	}
 
 	.tr-label-badge {
@@ -458,7 +683,11 @@
 	}
 
 	/* ─── Card Body ─── */
-	.tr-card-body { position: relative; z-index: 10; flex-grow: 1; }
+	.tr-card-body {
+		position: relative;
+		z-index: 10;
+		flex-grow: 1;
+	}
 
 	.tr-card-title {
 		font-size: var(--text-xl);
@@ -478,13 +707,26 @@
 		font-family: var(--font-mono, monospace);
 	}
 
-	.tr-card[data-accent='blue'] .tr-metric-row { color: oklch(0.65 0.15 260 / 0.8); }
-	.tr-card[data-accent='emerald'] .tr-metric-row { color: oklch(0.7 0.17 160 / 0.8); }
-	.tr-card[data-accent='indigo'] .tr-metric-row { color: oklch(0.6 0.18 280 / 0.8); }
+	.tr-card[data-accent='blue'] .tr-metric-row {
+		color: oklch(0.65 0.15 260 / 0.8);
+	}
+	.tr-card[data-accent='emerald'] .tr-metric-row {
+		color: oklch(0.7 0.17 160 / 0.8);
+	}
+	.tr-card[data-accent='indigo'] .tr-metric-row {
+		color: oklch(0.6 0.18 280 / 0.8);
+	}
 
-	.tr-desc-wrap { position: relative; }
+	.tr-desc-wrap {
+		position: relative;
+	}
 
-	.tr-desc-fade { transition: opacity 500ms ease-in-out, transform 500ms ease-in-out, filter 500ms ease-in-out; }
+	.tr-desc-fade {
+		transition:
+			opacity 500ms ease-in-out,
+			transform 500ms ease-in-out,
+			filter 500ms ease-in-out;
+	}
 
 	.tr-card-desc {
 		font-size: var(--text-sm);
@@ -502,7 +744,10 @@
 		padding-inline-start: 1rem;
 	}
 
-	.tr-feature { font-size: var(--text-xs); color: oklch(0.45 0.005 285); }
+	.tr-feature {
+		font-size: var(--text-xs);
+		color: oklch(0.45 0.005 285);
+	}
 
 	/* ─── Card Footer ─── */
 	.tr-card-footer {
@@ -528,29 +773,49 @@
 		text-decoration: none;
 	}
 
-	.tr-cta-text { transition: transform 300ms; }
+	.tr-cta-text {
+		transition: transform 300ms;
+	}
 
 	.tr-cta-arrow {
 		padding: 0.375rem;
 		border-radius: var(--radius-sm);
 		background-color: oklch(0.15 0.005 285);
-		transition: background-color 300ms, color 300ms;
+		transition:
+			background-color 300ms,
+			color 300ms;
 	}
 
 	/* ─── Keyframes ─── */
 	@keyframes live-candle {
-		0% { transform: scaleY(1) translateY(0); }
-		50% { transform: scaleY(1.4) translateY(-10px); }
-		70% { transform: scaleY(0.9) translateY(5px); }
-		100% { transform: scaleY(1) translateY(0); }
+		0% {
+			transform: scaleY(1) translateY(0);
+		}
+		50% {
+			transform: scaleY(1.4) translateY(-10px);
+		}
+		70% {
+			transform: scaleY(0.9) translateY(5px);
+		}
+		100% {
+			transform: scaleY(1) translateY(0);
+		}
 	}
 
 	@keyframes wave-slide {
-		0% { transform: translateX(0); }
-		100% { transform: translateX(-50%); }
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
 	}
 
 	@keyframes ping {
-		75%, 100% { transform: scale(2); opacity: 0; }
+		75%,
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
 	}
 </style>

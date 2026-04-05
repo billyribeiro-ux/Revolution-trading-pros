@@ -136,7 +136,9 @@
 						<div class="ws-card-svg-bg">
 							{#if feature.type === 'grid'}
 								<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
-									<path d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90" />
+									<path
+										d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90"
+									/>
 								</svg>
 							{:else if feature.type === 'radar'}
 								<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
@@ -191,12 +193,21 @@
 		overflow: hidden;
 		border-block-start: 1px solid oklch(0.2 0.005 285);
 
-		@media (min-width: 640px) { padding-inline: 1.5rem; }
-		@media (min-width: 1024px) { padding-block: 8rem; padding-inline: 2rem; }
+		@media (min-width: 640px) {
+			padding-inline: 1.5rem;
+		}
+		@media (min-width: 1024px) {
+			padding-block: 8rem;
+			padding-inline: 2rem;
+		}
 	}
 
 	/* ─── Background ─── */
-	.ws-bg { position: absolute; inset: 0; pointer-events: none; }
+	.ws-bg {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
 
 	.ws-grid-lines {
 		position: absolute;
@@ -249,7 +260,9 @@
 		letter-spacing: -0.02em;
 	}
 
-	.ws-title-muted { color: oklch(0.35 0.01 265); }
+	.ws-title-muted {
+		color: oklch(0.35 0.01 265);
+	}
 
 	.ws-subtitle {
 		font-size: var(--text-lg);
@@ -265,7 +278,9 @@
 		display: grid;
 		gap: 2rem;
 
-		@media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+		@media (min-width: 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	.ws-card {
@@ -275,38 +290,108 @@
 		border-radius: var(--radius-xl);
 		padding: 2rem;
 		overflow: hidden;
-		transition: background-color 500ms, border-color 500ms;
+		transition:
+			background-color 500ms,
+			border-color 500ms;
 
-		&:hover { background-color: oklch(0.15 0.005 285 / 0.3); }
-		&:hover .ws-card-spotlight { opacity: 1; }
-		&:hover .ws-card-svg-bg { opacity: 0.1; }
-		&:hover .ws-icon-box { box-shadow: 0 0 20px oklch(0 0 0 / 0.3); transform: translateY(-0.25rem); }
-		&:hover .ws-card-footer { color: oklch(0.55 0.005 285); }
+		&:hover {
+			background-color: oklch(0.15 0.005 285 / 0.3);
+		}
+		&:hover .ws-card-spotlight {
+			opacity: 1;
+		}
+		&:hover .ws-card-svg-bg {
+			opacity: 0.1;
+		}
+		&:hover .ws-icon-box {
+			box-shadow: 0 0 20px oklch(0 0 0 / 0.3);
+			transform: translateY(-0.25rem);
+		}
+		&:hover .ws-card-footer {
+			color: oklch(0.55 0.005 285);
+		}
 	}
 
 	/* accent: cyan */
-	.ws-card[data-accent='cyan'] { &:hover .ws-icon-box { color: oklch(0.7 0.15 195); border-color: oklch(0.7 0.15 195 / 0.3); } }
-	.ws-card[data-accent='cyan'] { &:hover .ws-icon-line { background-color: oklch(0.7 0.15 195 / 0.5); } }
-	.ws-card[data-accent='cyan'] { &:hover .ws-card-title { color: oklch(0.7 0.15 195); } }
-	.ws-card[data-accent='cyan'] .ws-card-svg-bg { color: oklch(0.7 0.15 195); }
-	.ws-card[data-accent='cyan'] .ws-icon-box { color: oklch(0.7 0.15 195); }
-	.ws-card[data-accent='cyan'] :global(.ws-check-icon) { color: oklch(0.7 0.15 195); }
+	.ws-card[data-accent='cyan'] {
+		&:hover .ws-icon-box {
+			color: oklch(0.7 0.15 195);
+			border-color: oklch(0.7 0.15 195 / 0.3);
+		}
+	}
+	.ws-card[data-accent='cyan'] {
+		&:hover .ws-icon-line {
+			background-color: oklch(0.7 0.15 195 / 0.5);
+		}
+	}
+	.ws-card[data-accent='cyan'] {
+		&:hover .ws-card-title {
+			color: oklch(0.7 0.15 195);
+		}
+	}
+	.ws-card[data-accent='cyan'] .ws-card-svg-bg {
+		color: oklch(0.7 0.15 195);
+	}
+	.ws-card[data-accent='cyan'] .ws-icon-box {
+		color: oklch(0.7 0.15 195);
+	}
+	.ws-card[data-accent='cyan'] :global(.ws-check-icon) {
+		color: oklch(0.7 0.15 195);
+	}
 
 	/* accent: emerald */
-	.ws-card[data-accent='emerald'] { &:hover .ws-icon-box { color: oklch(0.7 0.17 160); border-color: oklch(0.7 0.17 160 / 0.3); } }
-	.ws-card[data-accent='emerald'] { &:hover .ws-icon-line { background-color: oklch(0.7 0.17 160 / 0.5); } }
-	.ws-card[data-accent='emerald'] { &:hover .ws-card-title { color: oklch(0.7 0.17 160); } }
-	.ws-card[data-accent='emerald'] .ws-card-svg-bg { color: oklch(0.7 0.17 160); }
-	.ws-card[data-accent='emerald'] .ws-icon-box { color: oklch(0.7 0.17 160); }
-	.ws-card[data-accent='emerald'] :global(.ws-check-icon) { color: oklch(0.7 0.17 160); }
+	.ws-card[data-accent='emerald'] {
+		&:hover .ws-icon-box {
+			color: oklch(0.7 0.17 160);
+			border-color: oklch(0.7 0.17 160 / 0.3);
+		}
+	}
+	.ws-card[data-accent='emerald'] {
+		&:hover .ws-icon-line {
+			background-color: oklch(0.7 0.17 160 / 0.5);
+		}
+	}
+	.ws-card[data-accent='emerald'] {
+		&:hover .ws-card-title {
+			color: oklch(0.7 0.17 160);
+		}
+	}
+	.ws-card[data-accent='emerald'] .ws-card-svg-bg {
+		color: oklch(0.7 0.17 160);
+	}
+	.ws-card[data-accent='emerald'] .ws-icon-box {
+		color: oklch(0.7 0.17 160);
+	}
+	.ws-card[data-accent='emerald'] :global(.ws-check-icon) {
+		color: oklch(0.7 0.17 160);
+	}
 
 	/* accent: indigo */
-	.ws-card[data-accent='indigo'] { &:hover .ws-icon-box { color: oklch(0.6 0.2 280); border-color: oklch(0.6 0.2 280 / 0.3); } }
-	.ws-card[data-accent='indigo'] { &:hover .ws-icon-line { background-color: oklch(0.6 0.2 280 / 0.5); } }
-	.ws-card[data-accent='indigo'] { &:hover .ws-card-title { color: oklch(0.6 0.2 280); } }
-	.ws-card[data-accent='indigo'] .ws-card-svg-bg { color: oklch(0.6 0.2 280); }
-	.ws-card[data-accent='indigo'] .ws-icon-box { color: oklch(0.6 0.2 280); }
-	.ws-card[data-accent='indigo'] :global(.ws-check-icon) { color: oklch(0.6 0.2 280); }
+	.ws-card[data-accent='indigo'] {
+		&:hover .ws-icon-box {
+			color: oklch(0.6 0.2 280);
+			border-color: oklch(0.6 0.2 280 / 0.3);
+		}
+	}
+	.ws-card[data-accent='indigo'] {
+		&:hover .ws-icon-line {
+			background-color: oklch(0.6 0.2 280 / 0.5);
+		}
+	}
+	.ws-card[data-accent='indigo'] {
+		&:hover .ws-card-title {
+			color: oklch(0.6 0.2 280);
+		}
+	}
+	.ws-card[data-accent='indigo'] .ws-card-svg-bg {
+		color: oklch(0.6 0.2 280);
+	}
+	.ws-card[data-accent='indigo'] .ws-icon-box {
+		color: oklch(0.6 0.2 280);
+	}
+	.ws-card[data-accent='indigo'] :global(.ws-check-icon) {
+		color: oklch(0.6 0.2 280);
+	}
 
 	.ws-card-spotlight {
 		position: absolute;
@@ -340,7 +425,11 @@
 		background-color: oklch(0.15 0.005 285);
 		border: 1px solid oklch(0.3 0.005 285);
 		border-radius: var(--radius-lg);
-		transition: box-shadow 300ms, transform 300ms, color 300ms, border-color 300ms;
+		transition:
+			box-shadow 300ms,
+			transform 300ms,
+			color 300ms,
+			border-color 300ms;
 	}
 
 	.ws-icon-line {
@@ -356,9 +445,18 @@
 	}
 
 	/* ─── Content ─── */
-	.ws-card-content { position: relative; z-index: 10; margin-block-start: 1rem; }
+	.ws-card-content {
+		position: relative;
+		z-index: 10;
+		margin-block-start: 1rem;
+	}
 
-	.ws-tag-row { display: flex; align-items: center; gap: 0.75rem; margin-block-end: 0.75rem; }
+	.ws-tag-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-block-end: 0.75rem;
+	}
 
 	.ws-tag {
 		font-size: 0.625rem;
