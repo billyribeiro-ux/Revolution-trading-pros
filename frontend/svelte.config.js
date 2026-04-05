@@ -15,6 +15,9 @@ const config = {
 			remoteFunctions: true
 		},
 		adapter: adapter({
+			platformProxy: {
+				persist: false
+			},
 			routes: {
 				include: ['/*'],
 				exclude: [
@@ -58,7 +61,7 @@ const config = {
 			},
 			handleMissingId: 'ignore',
 			handleUnseenRoutes: 'ignore',
-			concurrency: 8,
+			concurrency: 2,
 			crawl: true,
 			entries: ['*', '/robots.txt']
 		},

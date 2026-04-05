@@ -18,7 +18,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "workerd"
     ],
     "overrides": {
       "@tanstack/svelte-table>svelte": "^5.55.1"

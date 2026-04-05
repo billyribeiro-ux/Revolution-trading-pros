@@ -9,10 +9,11 @@ const useExternalServer = !!process.env.E2E_BASE_URL;
 const apiOnly =
 	process.env.PLAYWRIGHT_API_ONLY === '1' || process.env.PLAYWRIGHT_API_ONLY === 'true';
 /** Origin only (no `/api` suffix) — health lives at GET /health */
-const apiBaseURL = (process.env.API_BASE_URL || process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev').replace(
-	/\/api\/?$/,
-	''
-);
+const apiBaseURL = (
+	process.env.API_BASE_URL ||
+	process.env.VITE_API_URL ||
+	'https://revolution-trading-pros-api.fly.dev'
+).replace(/\/api\/?$/, '');
 
 /** Avoid saturating the Vite dev server with too many concurrent browsers (Playwright runs in Node; keep config free of node:os for editor TS) */
 const localWorkers = (() => {
@@ -34,7 +35,13 @@ const browserProjects = allBrowsers
 	? ciBrowserProjects
 	: isCI
 		? ciBrowserProjects
-		: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: '**/api/**' as const }];
+		: [
+				{
+					name: 'chromium',
+					use: { ...devices['Desktop Chrome'] },
+					testIgnore: '**/api/**' as const
+				}
+			];
 
 const projects = [
 	{
