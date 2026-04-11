@@ -15,18 +15,9 @@
 		phone?: string;
 	}
 
-	interface PageData {
-		address: Address;
-	}
+	import type { PageProps } from './$types';
 
-	interface ActionData {
-		success?: boolean;
-		message?: string;
-	}
-
-	let props: { data: PageData; form?: ActionData } = $props();
-	let data = $derived(props.data);
-	let form = $derived(props.form);
+	let { data, form }: PageProps = $props();
 
 	const address = $derived(data.address || {});
 </script>

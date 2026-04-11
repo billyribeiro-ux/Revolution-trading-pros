@@ -27,11 +27,7 @@
 		variant?: 'default' | 'compact';
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let video = $derived(props.video);
-	let variant = $derived(props.variant ?? 'default');
+	let { video, variant = 'default' }: Props = $props();
 </script>
 
 {#if variant === 'compact'}

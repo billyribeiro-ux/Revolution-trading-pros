@@ -34,12 +34,9 @@
 		subscriptions?: Subscription[];
 	}
 
-	interface PageData {
-		order: Order;
-	}
+	import type { PageProps } from './$types';
 
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	const order = $derived(data.order);
 

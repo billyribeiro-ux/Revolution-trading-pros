@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { domRef } from '$lib/svelte/domAttachment';
 	import { onMount } from 'svelte';
-	import { spring } from 'svelte/motion';
+	import { Spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
 	type GSAPInstance = typeof import('gsap').gsap;
@@ -29,13 +29,22 @@ import { logger } from '$lib/utils/logger';
 
 	/**
 	 * Action: 3D Tilt Effect
+	 *
+	 * Uses the Svelte 5.8+ `Spring` class API. The previous `spring()` factory
+	 * + `.subscribe()` cleanup pattern is replaced with `new Spring(...)` plus
+	 * a tiny `$effect` (inside an `$effect.root` so it's allowed to run inside
+	 * an action) that writes the spring's `.current` to the DOM via CSS vars.
 	 */
 	function tilt(node: HTMLElement) {
-		const x = spring(0, { stiffness: 0.05, damping: 0.25 });
-		const y = spring(0, { stiffness: 0.05, damping: 0.25 });
+		const x = new Spring(0, { stiffness: 0.05, damping: 0.25 });
+		const y = new Spring(0, { stiffness: 0.05, damping: 0.25 });
 
-		const unsubX = x.subscribe((v) => node.style.setProperty('--rotX', `${v}deg`));
-		const unsubY = y.subscribe((v) => node.style.setProperty('--rotY', `${v}deg`));
+		const stopRoot = $effect.root(() => {
+			$effect(() => {
+				node.style.setProperty('--rotX', `${x.current}deg`);
+				node.style.setProperty('--rotY', `${y.current}deg`);
+			});
+		});
 
 		function handleMove(e: MouseEvent) {
 			const rect = node.getBoundingClientRect();
@@ -55,8 +64,7 @@ import { logger } from '$lib/utils/logger';
 			destroy() {
 				node.removeEventListener('mousemove', handleMove);
 				node.removeEventListener('mouseleave', handleLeave);
-				unsubX();
-				unsubY();
+				stopRoot();
 			}
 		};
 	}

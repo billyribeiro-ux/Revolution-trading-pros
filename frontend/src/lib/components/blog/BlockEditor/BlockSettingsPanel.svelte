@@ -25,9 +25,7 @@ import { logger } from '$lib/utils/logger';
 		onupdate: (updates: Partial<Block>) => void;
 	}
 
-	let props: Props = $props();
-	const block = $derived(props.block);
-	const onupdate = $derived(props.onupdate);
+	let { block, onupdate }: Props = $props();
 
 	// Datasource types
 	interface Datasource {

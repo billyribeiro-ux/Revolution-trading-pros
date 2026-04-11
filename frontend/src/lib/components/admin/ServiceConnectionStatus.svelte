@@ -179,18 +179,17 @@
 		onConnected?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const feature = $derived(props.feature);
-	const serviceKey = $derived(props.serviceKey);
-	const serviceName = $derived(props.serviceName);
-	const description = $derived(props.description);
-	const variant = $derived(props.variant ?? 'card');
-	const showFeatures = $derived(props.showFeatures ?? true);
-	const color = $derived(props.color);
-	const icon = $derived(props.icon);
-	const onConnected = $derived(props.onConnected);
+	let {
+		feature,
+		serviceKey,
+		serviceName,
+		description,
+		variant = 'card',
+		showFeatures = true,
+		color,
+		icon,
+		onConnected
+	}: Props = $props();
 
 	// Derive configuration from feature or custom props
 	let config = $derived.by(() => {

@@ -18,11 +18,7 @@
 		onCompare?: (revisionA: Revision, revisionB: Revision) => void;
 	}
 
-	let props: Props = $props();
-	const currentBlocks = $derived(props.currentBlocks);
-	const revisions = $derived(props.revisions);
-	const onRestore = $derived(props.onRestore);
-	const onCompare = $derived(props.onCompare);
+	let { currentBlocks, revisions, onRestore, onCompare }: Props = $props();
 
 	// State
 	let selectedRevision = $state<Revision | null>(null);

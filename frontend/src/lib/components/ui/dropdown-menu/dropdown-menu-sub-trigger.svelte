@@ -7,21 +7,13 @@
 		inset?: boolean;
 	};
 
-	let props: SubTriggerProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-	let inset = $derived(props.inset);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, inset: ___, children: ____, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		inset,
+		children,
+		...restProps
+	}: SubTriggerProps = $props();
 </script>
 
 <DropdownMenuPrimitive.SubTrigger
@@ -34,6 +26,6 @@
 	)}
 	{...restProps}
 >
-	{@render props.children?.()}
+	{@render children?.()}
 	<ChevronRightIcon class="ms-auto size-4" />
 </DropdownMenuPrimitive.SubTrigger>

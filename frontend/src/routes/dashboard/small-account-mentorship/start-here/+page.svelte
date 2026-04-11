@@ -12,15 +12,9 @@
 <script lang="ts">
 	import { IconChevronRight } from '$lib/icons';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
-	import type { PageData } from './$types';
+	import type { PageProps } from './$types';
 
-	// Svelte 5 props with proper typing
-	interface Props {
-		data: PageData;
-	}
-
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = $state<Set<number>>(new Set());

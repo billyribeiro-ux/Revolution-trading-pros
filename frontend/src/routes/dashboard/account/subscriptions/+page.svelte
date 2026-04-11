@@ -1,19 +1,7 @@
 <script lang="ts">
-	interface Subscription {
-		id: number;
-		status: string;
-		startDate: string;
-		nextPayment: string;
-		total: string;
-		items: string[];
-	}
+	import type { PageProps } from './$types';
 
-	interface PageData {
-		subscriptions: Subscription[];
-	}
-
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	const subscriptions = $derived(data.subscriptions || []);
 

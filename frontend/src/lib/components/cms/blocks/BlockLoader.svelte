@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isEditing, isSelected, onUpdate, onError }: Props = $props();
 
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
@@ -79,7 +79,7 @@
 	};
 
 	$effect(() => {
-		loadBlock(props.block.type);
+		loadBlock(block.type);
 	});
 
 	async function loadBlock(type: string): Promise<void> {
@@ -96,7 +96,7 @@
 			Component = module.default;
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Failed to load block';
-			props.onError?.(error instanceof Error ? error : new Error('Failed to load block'));
+			onError?.(error instanceof Error ? error : new Error('Failed to load block'));
 		} finally {
 			isLoading = false;
 		}
@@ -106,22 +106,22 @@
 {#if isLoading}
 	<div class="block-loader" aria-busy="true" aria-label="Loading block">
 		<IconLoader2 size={24} class="spinner" />
-		<span>Loading {props.block.type}...</span>
+		<span>Loading {block.type}...</span>
 	</div>
 {:else if loadError}
 	<div class="block-error" role="alert">
 		<span class="error-icon">⚠️</span>
 		<span class="error-text">{loadError}</span>
-		<button type="button" onclick={() => loadBlock(props.block.type)}>Retry</button>
+		<button type="button" onclick={() => loadBlock(block.type)}>Retry</button>
 	</div>
 {:else if Component}
 	<Component
-		block={props.block}
-		blockId={props.blockId}
-		isEditing={props.isEditing}
-		isSelected={props.isSelected}
-		onUpdate={props.onUpdate}
-		onError={props.onError}
+		{block}
+		{blockId}
+		{isEditing}
+		{isSelected}
+		{onUpdate}
+		{onError}
 	/>
 {/if}
 

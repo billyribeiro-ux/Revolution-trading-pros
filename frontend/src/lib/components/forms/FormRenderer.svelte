@@ -10,7 +10,7 @@
 		onError?: (error: string) => void;
 	}
 
-	let props: Props = $props();
+	let { form, onSuccess, onError }: Props = $props();
 
 	let formData: Record<string, any> = $state({});
 	let errors: Record<string, string[]> = $state({});
@@ -25,8 +25,8 @@
 
 	// Initialize form data with default values and track form view
 	onMount(() => {
-		if (props.form.fields) {
-			props.form.fields.forEach((field) => {
+		if (form.fields) {
+			form.fields.forEach((field) => {
 				if (field.default_value) {
 					formData[field.name] = field.default_value;
 				}
@@ -41,7 +41,7 @@
 	// Track form view for conversion analytics
 	async function trackFormView() {
 		try {
-			await fetch(`/api/forms/${props.form.slug}/view`, { method: 'POST' });
+			await fetch(`/api/forms/${form.slug}/view`, { method: 'POST' });
 		} catch {
 			// Silent fail - analytics shouldn't break the form
 		}
@@ -92,10 +92,10 @@
 
 	// Update which fields are visible
 	function updateVisibleFields() {
-		if (!props.form.fields) return;
+		if (!form.fields) return;
 
 		const newVisibleFields = new Set<number>();
-		props.form.fields.forEach((field) => {
+		form.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
 				newVisibleFields.add(field.id);
 			}
@@ -134,7 +134,7 @@
 				_hp_email: honeypotEmail
 			};
 
-			const result = await submitForm(props.form.slug, submissionData);
+			const result = await submitForm(form.slug, submissionData);
 
 			if (result.success) {
 				submitSuccess = true;
@@ -142,8 +142,8 @@
 
 				// Reset form
 				formData = {};
-				if (props.form.fields) {
-					props.form.fields.forEach((field) => {
+				if (form.fields) {
+					form.fields.forEach((field) => {
 						if (field.default_value) {
 							formData[field.name] = field.default_value;
 						}
@@ -152,8 +152,8 @@
 				updateVisibleFields();
 
 				// Call success callback
-				if (props.onSuccess && result.submission_id) {
-					props.onSuccess(result.submission_id);
+				if (onSuccess && result.submission_id) {
+					onSuccess(result.submission_id);
 				}
 
 				// Redirect if specified
@@ -164,8 +164,8 @@
 				errors = result.errors;
 				submitMessage = 'Please correct the errors below.';
 
-				if (props.onError) {
-					props.onError(submitMessage);
+				if (onError) {
+					onError(submitMessage);
 				}
 			}
 		} catch (error) {
@@ -173,8 +173,8 @@
 				error instanceof Error ? error.message : 'Submission failed. Please try again.';
 			submitMessage = errorMessage;
 
-			if (props.onError) {
-				props.onError(errorMessage);
+			if (onError) {
+				onError(errorMessage);
 			}
 		} finally {
 			isSubmitting = false;
@@ -184,24 +184,24 @@
 	// Get CSS classes for the form
 	function getFormClasses(): string {
 		const baseClasses = 'revolution-form';
-		const customClasses = props.form.styles?.['form_class'] || '';
+		const customClasses = form.styles?.['form_class'] || '';
 		return `${baseClasses} ${customClasses}`.trim();
 	}
 
 	// Get custom styles
 	function getFormStyles(): string {
-		if (!props.form.styles) return '';
+		if (!form.styles) return '';
 
 		const styles: string[] = [];
 
-		if (props.form.styles.background_color) {
-			styles.push(`background-color: ${props.form.styles.background_color}`);
+		if (form.styles.background_color) {
+			styles.push(`background-color: ${form.styles.background_color}`);
 		}
-		if (props.form.styles.padding) {
-			styles.push(`padding: ${props.form.styles.padding}`);
+		if (form.styles.padding) {
+			styles.push(`padding: ${form.styles.padding}`);
 		}
-		if (props.form.styles.border_radius) {
-			styles.push(`border-radius: ${props.form.styles.border_radius}`);
+		if (form.styles.border_radius) {
+			styles.push(`border-radius: ${form.styles.border_radius}`);
 		}
 
 		return styles.join('; ');
@@ -209,9 +209,9 @@
 </script>
 
 <div class={getFormClasses()} style={getFormStyles()}>
-	{#if props.form.description}
+	{#if form.description}
 		<div class="form-description">
-			<p>{props.form.description}</p>
+			<p>{form.description}</p>
 		</div>
 	{/if}
 
@@ -251,8 +251,8 @@
 		</div>
 
 		<div class="fields-container">
-			{#if props.form.fields}
-				{#each props.form.fields.sort((a, b) => a.order - b.order) as field (field.id)}
+			{#if form.fields}
+				{#each form.fields.sort((a, b) => a.order - b.order) as field (field.id)}
 					{#if field.id && visibleFields.has(field.id)}
 						<!-- ICT 7 Fix: Use CSS custom property for proper width inheritance -->
 						<div class="field-wrapper" style="--field-width: {field.width ?? 100}%">
@@ -270,7 +270,7 @@
 
 		<div class="form-actions">
 			<button type="submit" class="btn btn-primary" disabled={isSubmitting}>
-				{isSubmitting ? 'Submitting...' : props.form.settings?.submit_text || 'Submit'}
+				{isSubmitting ? 'Submitting...' : form.settings?.submit_text || 'Submit'}
 			</button>
 		</div>
 	</form>

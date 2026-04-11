@@ -26,11 +26,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const videoId = $derived(props.videoId);
-	const onClose = $derived(props.onClose);
+	let { videoId, onClose }: Props = $props();
 
 	let dashboard = $state<AnalyticsDashboard | null>(null);
 	let videoStats = $state<VideoAnalytics | null>(null);

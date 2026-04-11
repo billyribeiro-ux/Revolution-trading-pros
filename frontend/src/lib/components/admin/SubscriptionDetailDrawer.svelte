@@ -46,14 +46,7 @@
 		onRefresh?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const subscription = $derived(props.subscription);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onRefresh = $derived(props.onRefresh);
+	let { isOpen, subscription, onClose, onEdit, onRefresh }: Props = $props();
 
 	// State
 	let isLoading = $state(false);

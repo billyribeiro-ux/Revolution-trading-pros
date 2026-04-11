@@ -72,10 +72,7 @@ import { logger } from '$lib/utils/logger';
 	// PROPS - Per-room schedule support
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let planSlug = $derived(props.planSlug ?? 'day-trading-room');
+	let { planSlug = 'day-trading-room' }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// CONFIGURATION - ICT 11+ Enterprise Settings

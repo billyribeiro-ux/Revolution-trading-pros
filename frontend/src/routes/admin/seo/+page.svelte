@@ -15,7 +15,7 @@ import { logger } from '$lib/utils/logger';
 
 	import { browser } from '$app/environment';
 	import { fade, fly } from 'svelte/transition';
-	import { spring } from 'svelte/motion';
+	import { Spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
 	import {
 		IconSearch,
@@ -85,8 +85,8 @@ import { logger } from '$lib/utils/logger';
 		};
 	}
 
-	// Spring animation for metrics
-	const metricsSpring = spring(0, { stiffness: 0.1, damping: 0.8 });
+	// Spring animation for metrics — `Spring` class API (Svelte 5.8+); read via `.current`.
+	const metricsSpring = new Spring(0, { stiffness: 0.1, damping: 0.8 });
 
 	// SEO sections for navigation
 	const sections = [

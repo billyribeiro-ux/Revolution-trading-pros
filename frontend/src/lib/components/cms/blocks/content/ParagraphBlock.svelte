@@ -26,13 +26,13 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Derive text alignment from settings
-	const textAlign = $derived(props.block.settings.textAlign || 'left');
+	const textAlign = $derived(block.settings.textAlign || 'left');
 
 	// Derive text color from settings (supports custom colors)
-	const textColor = $derived(props.block.settings.textColor || '');
+	const textColor = $derived(block.settings.textColor || '');
 
 	// Build inline styles for custom settings
 	const inlineStyles = $derived.by(() => {
@@ -50,7 +50,7 @@
 	 * Update block content with partial updates
 	 */
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	/**
@@ -83,11 +83,11 @@
 </script>
 
 <p
-	contenteditable={props.isEditing}
+	contenteditable={isEditing}
 	class="paragraph-block"
-	class:paragraph-block--editing={props.isEditing}
-	class:paragraph-block--selected={props.isSelected}
-	class:paragraph-block--placeholder={!props.block.content.text}
+	class:paragraph-block--editing={isEditing}
+	class:paragraph-block--selected={isSelected}
+	class:paragraph-block--placeholder={!block.content.text}
 	class:paragraph-block--align-center={textAlign === 'center'}
 	class:paragraph-block--align-right={textAlign === 'right'}
 	class:paragraph-block--align-justify={textAlign === 'justify'}
@@ -96,11 +96,11 @@
 	onpaste={handlePaste}
 	onkeydown={handleKeydown}
 	data-placeholder="Type / for commands..."
-	role={props.isEditing ? 'textbox' : undefined}
-	aria-label={props.isEditing ? 'Paragraph text' : undefined}
-	aria-multiline={props.isEditing ? 'true' : undefined}
+	role={isEditing ? 'textbox' : undefined}
+	aria-label={isEditing ? 'Paragraph text' : undefined}
+	aria-multiline={isEditing ? 'true' : undefined}
 >
-	{props.block.content.text || ''}
+	{block.content.text || ''}
 </p>
 
 <style>

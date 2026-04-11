@@ -24,7 +24,7 @@ import { logger } from '$lib/utils/logger';
 		form?: Form;
 	}
 
-	let props: Props = $props();
+	let { formId, form }: Props = $props();
 
 	// Analytics state
 	let stats = $state<{
@@ -70,7 +70,7 @@ import { logger } from '$lib/utils/logger';
 		isLoading = true;
 
 		try {
-			const response = await fetch(`/api/forms/${props.formId}/analytics?range=${dateRange}`, {
+			const response = await fetch(`/api/forms/${formId}/analytics?range=${dateRange}`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('access_token')}`
 				}
@@ -171,7 +171,7 @@ import { logger } from '$lib/utils/logger';
 	async function exportReport(format: 'csv' | 'pdf') {
 		try {
 			const response = await fetch(
-				`/api/forms/${props.formId}/analytics/export?format=${format}&range=${dateRange}`,
+				`/api/forms/${formId}/analytics/export?format=${format}&range=${dateRange}`,
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -185,7 +185,7 @@ import { logger } from '$lib/utils/logger';
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = `form-analytics-${props.formId}-${dateRange}.${format}`;
+			a.download = `form-analytics-${formId}-${dateRange}.${format}`;
 			a.click();
 			URL.revokeObjectURL(url);
 		} catch (err) {
@@ -207,8 +207,8 @@ import { logger } from '$lib/utils/logger';
 	<div class="dashboard-header">
 		<div class="header-left">
 			<h2>Form Analytics</h2>
-			{#if props.form}
-				<span class="form-name">{props.form.title}</span>
+			{#if form}
+				<span class="form-name">{form.title}</span>
 			{/if}
 		</div>
 		<div class="header-right">

@@ -10,12 +10,7 @@ import { logger } from '$lib/utils/logger';
 		onsaved?: (detail: { id: number }) => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const template = $derived(props.template ?? null);
-	const isEdit = $derived(props.isEdit ?? false);
-	const onsaved = $derived(props.onsaved);
+	let { template = null, isEdit = false, onsaved }: Props = $props();
 
 	// Form fields
 	let name = $state('');

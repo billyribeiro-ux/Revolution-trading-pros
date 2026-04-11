@@ -7,9 +7,7 @@
 		children?: Snippet;
 	}
 
-	let props: Props = $props();
-	let variant = $derived(props.variant ?? 'default');
-	let size = $derived(props.size ?? 'sm');
+	let { variant = 'default', size = 'sm', children }: Props = $props();
 
 	const variants = {
 		default: 'bg-gray-100 text-gray-800',
@@ -26,5 +24,5 @@
 </script>
 
 <span class="inline-flex items-center rounded-full font-medium {variants[variant]} {sizes[size]}">
-	{@render props.children?.()}
+	{@render children?.()}
 </span>

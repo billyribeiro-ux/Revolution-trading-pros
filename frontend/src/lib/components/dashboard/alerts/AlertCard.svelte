@@ -28,18 +28,17 @@
 		isCopied?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let alert = $derived(props.alert);
-	let index = $derived(props.index ?? 0);
-	let isAdmin = $derived(props.isAdmin ?? false);
-	let isNotesExpanded = $derived(props.isNotesExpanded ?? false);
-	let onToggleNotes = $derived(props.onToggleNotes);
-	let onCopy = $derived(props.onCopy);
-	let onEdit = $derived(props.onEdit);
-	let onDelete = $derived(props.onDelete);
-	let isCopied = $derived(props.isCopied ?? false);
+	let {
+		alert,
+		index = 0,
+		isAdmin = false,
+		isNotesExpanded = false,
+		onToggleNotes,
+		onCopy,
+		onEdit,
+		onDelete,
+		isCopied = false
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS

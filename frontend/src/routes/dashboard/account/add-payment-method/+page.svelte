@@ -1,20 +1,9 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
+	import type { PageProps } from './$types';
 
-	interface PageData {
-		user: {
-			email: string;
-		};
-	}
-
-	interface ActionData {
-		error?: string;
-	}
-
-	let props: { data: PageData; form?: ActionData } = $props();
-	let data = $derived(props.data);
-	let form = $derived(props.form);
+	let { data, form }: PageProps = $props();
 
 	let stripe: any = $state(null);
 	let elements: any = $state(null);

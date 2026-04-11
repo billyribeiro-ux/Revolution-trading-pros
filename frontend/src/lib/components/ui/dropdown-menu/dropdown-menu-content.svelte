@@ -8,22 +8,13 @@
 		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof DropdownMenuPortal>>;
 	};
 
-	let props: ContentProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let sideOffset = $derived(props.sideOffset ?? 4);
-	let portalProps = $derived(props.portalProps);
-	let className = $derived(props.class);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, sideOffset: __, portalProps: ___, class: ____, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		sideOffset = 4,
+		portalProps,
+		class: className,
+		...restProps
+	}: ContentProps = $props();
 </script>
 
 <DropdownMenuPortal {...portalProps}>

@@ -13,7 +13,7 @@ import { logger } from '$lib/utils/logger';
 		oncancel?: () => void;
 	}
 
-	let props: Props = $props();
+	let { form = null, isEditing = false, onsave, oncancel }: Props = $props();
 
 	let formData: Partial<Form> = $state({
 		title: '',
@@ -35,7 +35,7 @@ import { logger } from '$lib/utils/logger';
 
 	// Sync with prop changes
 	$effect(() => {
-		if (props.form) {
+		if (form) {
 			formData = {
 				title: '',
 				description: '',
@@ -44,14 +44,14 @@ import { logger } from '$lib/utils/logger';
 					submit_text: 'Submit',
 					send_email: false,
 					email_to: '',
-					...props.form.settings
+					...form.settings
 				},
 				styles: {},
 				status: 'draft',
 				fields: [],
-				...props.form
+				...form
 			};
-			fields = props.form.fields || [];
+			fields = form.fields || [];
 		}
 	});
 	let availableFieldTypes: { type: string; label: string; icon?: string }[] = $state([]);
@@ -187,13 +187,13 @@ import { logger } from '$lib/utils/logger';
 				)
 			};
 
-			if (props.isEditing && props.form?.id) {
-				await updateForm(props.form.id, dataToSave);
+			if (isEditing && form?.id) {
+				await updateForm(form.id, dataToSave);
 			} else {
 				await createForm(dataToSave);
 			}
 
-			props.onsave?.();
+			onsave?.();
 		} catch (err) {
 			saveError = err instanceof Error ? err.message : 'Failed to save form';
 		} finally {
@@ -202,14 +202,14 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	function handleCancel() {
-		props.oncancel?.();
+		oncancel?.();
 	}
 </script>
 
 <div class="form-builder">
 	{#if !showFieldEditor}
 		<div class="builder-header">
-			<h2>{props.isEditing ? 'Edit Form' : 'Create New Form'}</h2>
+			<h2>{isEditing ? 'Edit Form' : 'Create New Form'}</h2>
 		</div>
 
 		<div class="form-settings">
@@ -393,7 +393,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="builder-actions">
 			<button class="btn btn-secondary" onclick={handleCancel}> Cancel </button>
 			<button class="btn btn-primary" onclick={handleSaveForm} disabled={isSaving}>
-				{isSaving ? 'Saving...' : props.isEditing ? 'Update Form' : 'Create Form'}
+				{isSaving ? 'Saving...' : isEditing ? 'Update Form' : 'Create Form'}
 			</button>
 		</div>
 	{:else}

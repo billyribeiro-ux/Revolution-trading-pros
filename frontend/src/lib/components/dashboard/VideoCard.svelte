@@ -49,13 +49,12 @@
 		showDuration?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let video = $derived(props.video);
-	let basePath = $derived(props.basePath ?? '/learning-center');
-	let showDate = $derived(props.showDate ?? false);
-	let showDuration = $derived(props.showDuration ?? false);
+	let {
+		video,
+		basePath = '/learning-center',
+		showDate = false,
+		showDuration = false
+	}: Props = $props();
 
 	const defaultThumbnail =
 		'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';

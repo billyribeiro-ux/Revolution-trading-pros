@@ -41,12 +41,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const propsCourseId = $derived(props.courseId);
-	const onSave = $derived(props.onSave);
-	const onClose = $derived(props.onClose);
+	let { courseId: propsCourseId, onSave, onClose }: Props = $props();
 
 	// Local mutable courseId (for newly created courses)
 	let localCourseId = $state<number | undefined>(undefined);

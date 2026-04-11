@@ -21,7 +21,7 @@
 		onchange?: (logic: ConditionalLogic | null) => void;
 	}
 
-	let props: Props = $props();
+	let { fields, currentFieldName, value, onchange }: Props = $props();
 
 	// Default logic structure
 	const defaultLogic: ConditionalLogic = {
@@ -35,8 +35,8 @@
 
 	// Sync with prop changes
 	$effect(() => {
-		if (props.value) {
-			logic = { ...defaultLogic, ...props.value };
+		if (value) {
+			logic = { ...defaultLogic, ...value };
 		}
 	});
 
@@ -69,13 +69,13 @@
 	// Filter fields that can be referenced (exclude current field)
 	$effect(() => {
 		// Update parent when logic changes
-		props.onchange?.(logic.enabled ? logic : null);
+		onchange?.(logic.enabled ? logic : null);
 	});
 
 	// Get available fields for rules
 	function getAvailableFields(): FormField[] {
-		return props.fields.filter(
-			(f) => f.name !== props.currentFieldName && !isLayoutField(f.field_type)
+		return fields.filter(
+			(f) => f.name !== currentFieldName && !isLayoutField(f.field_type)
 		);
 	}
 
@@ -86,7 +86,7 @@
 
 	// Get operators for a field type
 	function getOperatorsForField(fieldName: string): typeof operators {
-		const field = props.fields.find((f) => f.name === fieldName);
+		const field = fields.find((f) => f.name === fieldName);
 		if (!field) return operators.filter((op) => op.types.includes('all'));
 
 		return operators.filter(
@@ -96,7 +96,7 @@
 
 	// Get field options for value dropdown
 	function getFieldOptions(fieldName: string): string[] {
-		const field = props.fields.find((f) => f.name === fieldName);
+		const field = fields.find((f) => f.name === fieldName);
 		if (!field?.options) return [];
 
 		if (Array.isArray(field.options)) {
@@ -169,7 +169,7 @@
 
 		const rulesText = logic.rules
 			.map((rule) => {
-				const field = props.fields.find((f) => f.name === rule.field);
+				const field = fields.find((f) => f.name === rule.field);
 				const fieldLabel = field?.label || rule.field;
 				const operatorLabel =
 					operators.find((op) => op.value === rule.operator)?.label || rule.operator;
