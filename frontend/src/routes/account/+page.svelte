@@ -263,7 +263,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 						{:else}
 							<div class="space-y-4">
-								{#each memberships as membership}
+								{#each memberships as membership (membership.id)}
 									<div class="border border-rtp-border rounded-lg p-4">
 										<div class="flex justify-between items-start">
 											<div>
