@@ -31,3 +31,13 @@ When working in Cursor, ensure **MCP is enabled** and the `svelte` server is loa
 
 - **JavaScript:** Install from repository root with **pnpm** (`pnpm install`). Frontend package name: `revolution-svelte`.
 - **Checks:** `pnpm --filter revolution-svelte run check` (Svelte + TS), `pnpm --filter revolution-svelte run lint`.
+
+### Whole-project check (when MCP tools are not available)
+
+From `frontend/`, `svelte-check` runs the same Svelte compiler diagnostics the **svelte-autofixer** MCP tool is built around. Use it in CI and locally:
+
+```bash
+pnpm --filter revolution-svelte run check
+```
+
+A clean run means **zero errors**; **warnings** (for example `state_referenced_locally` on UI primitives that mirror props into `$state`) may remain until components are refactored to `$bindable()` / `$derived` patterns or reviewed with **svelte-autofixer** in the IDE.

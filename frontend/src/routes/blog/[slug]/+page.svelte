@@ -180,9 +180,6 @@ import { logger } from '$lib/utils/logger';
 	let seoDescription = $derived(post && (post.meta_description || post.excerpt || ''));
 </script>
 
-{#if post}
-	{/if}
-
 <!-- Reading Progress Indicator -->
 <ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />
 

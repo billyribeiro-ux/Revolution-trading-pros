@@ -5,8 +5,11 @@
  * input validation, and Content Security Policy management.
  */
 
-import DOMPurify, { type Config } from 'isomorphic-dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import { logger } from '$lib/utils/logger';
+
+/** DOMPurify sanitize options (types are not re-exported by isomorphic-dompurify) */
+type DOMPurifyConfig = NonNullable<Parameters<typeof DOMPurify.sanitize>[1]>;
 
 // ============================================================================
 // Types
@@ -26,7 +29,7 @@ export interface SanitizeOptions {
 	/**
 	 * Custom DOMPurify config to merge with defaults
 	 */
-	config?: Partial<Config>;
+	config?: Partial<DOMPurifyConfig>;
 
 	/**
 	 * Whether to add noopener/noreferrer to links
@@ -123,7 +126,7 @@ const XSS_PATTERNS = [
 ] as const;
 
 /** Default DOMPurify configuration for standard content */
-const DEFAULT_CONFIG: Config = {
+const DEFAULT_CONFIG: DOMPurifyConfig = {
 	ALLOWED_TAGS: [
 		'p',
 		'br',
@@ -200,7 +203,7 @@ const DEFAULT_CONFIG: Config = {
 };
 
 /** Strict DOMPurify configuration - text only with basic formatting */
-const STRICT_CONFIG: Config = {
+const STRICT_CONFIG: DOMPurifyConfig = {
 	ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 's', 'sub', 'sup'],
 	ALLOWED_ATTR: [],
 	ALLOW_DATA_ATTR: false,
@@ -210,7 +213,7 @@ const STRICT_CONFIG: Config = {
 };
 
 /** Custom HTML configuration - allows embeds with security restrictions */
-const CUSTOM_HTML_CONFIG: Config = {
+const CUSTOM_HTML_CONFIG: DOMPurifyConfig = {
 	...DEFAULT_CONFIG,
 	ALLOWED_TAGS: [
 		...(DEFAULT_CONFIG.ALLOWED_TAGS as string[]),
@@ -273,7 +276,7 @@ export function sanitizeHTML(html: string, options: SanitizeOptions = {}): strin
 	const content = maxLength ? html.slice(0, maxLength) : html;
 
 	// Select base config based on mode
-	let baseConfig: Config;
+	let baseConfig: DOMPurifyConfig;
 	switch (mode) {
 		case 'strict':
 			baseConfig = STRICT_CONFIG;
@@ -286,13 +289,14 @@ export function sanitizeHTML(html: string, options: SanitizeOptions = {}): strin
 	}
 
 	// Merge configs
-	const finalConfig: Config = {
+	const finalConfig: DOMPurifyConfig = {
 		...baseConfig,
 		...config
 	};
 
-	// Sanitize
-	let sanitized = DOMPurify.sanitize(content, finalConfig) as string;
+	// Sanitize (return type may be string or TrustedHTML depending on environment)
+	const raw = DOMPurify.sanitize(content, finalConfig);
+	let sanitized = typeof raw === 'string' ? raw : String(raw);
 
 	// Add security attributes to links
 	if (secureLinks && mode !== 'strict') {
