@@ -23,7 +23,7 @@ Visual debugging tool that highlights component re-renders in real-time.
 Already configured in `vite.config.js`. Just run the dev server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Components will show visual overlays when they re-render. Look for colored borders and render counts.

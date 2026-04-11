@@ -392,7 +392,7 @@ CREATE TRIGGER trg_recalculate_stats
 
 3. **Deploy Frontend:**
    ```bash
-   cd frontend && npm run build && wrangler pages deploy
+   cd frontend && pnpm run build && wrangler pages deploy
    ```
 
 ---

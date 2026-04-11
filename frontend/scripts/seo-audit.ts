@@ -9,7 +9,7 @@
  * - Noindex pages accidentally in sitemap source list
  * - JSON-LD parse failures
  *
- * Usage: npx tsx scripts/seo-audit.ts [build-dir]
+ * Usage: pnpm exec tsx scripts/seo-audit.ts [build-dir]
  * Default build-dir: .svelte-kit/output/prerendered/pages
  *
  * @version 1.0.0

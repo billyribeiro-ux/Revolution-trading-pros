@@ -17,7 +17,7 @@ A **COMPLETE, PRODUCTION-READY CMS** with:
 ```bash
 git clone <repository-url>
 cd revolution-trading-pros/frontend
-npm install
+pnpm install
 ```
 
 ### Step 2: Configure Environment
@@ -40,21 +40,21 @@ VITE_SENTRY_DSN=...                # Error tracking
 
 ### Step 3: Initialize Database
 ```bash
-npx prisma generate
-npx prisma migrate dev
+pnpm dlx prisma generate
+pnpm dlx prisma migrate dev
 ```
 
 ### Step 4: Start Development
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Visit `http://localhost:5173/cms/editor` to see it working!
 
 ### Step 5: Deploy to Production
 ```bash
-npm run build
-npx wrangler pages deploy .svelte-kit/cloudflare
+pnpm run build
+pnpm dlx wrangler pages deploy .svelte-kit/cloudflare
 ```
 
 ## ⚡ Key Features Ready
@@ -111,13 +111,13 @@ All styles are scoped to components. Global styles in `+layout.svelte`.
 ## 🧪 Testing
 ```bash
 # Unit tests
-npm run test:unit
+pnpm run test:unit
 
 # E2E tests
-npm run test:e2e
+pnpm run test:e2e
 
 # Coverage
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 ## 📊 Monitoring
@@ -170,7 +170,7 @@ You'll know it's working when:
 - ✅ State persists across interactions
 - ✅ Images upload successfully
 - ✅ AI generation works (with API key)
-- ✅ Tests pass (`npm run test:unit`)
+- ✅ Tests pass (`pnpm run test:unit`)
 
 ## 🚀 Deployment Ready
 
@@ -209,6 +209,6 @@ Built to handle:
 
 This is **EVERYTHING** you need. No more planning, no more design - just execution.
 
-Run `npm install && npm run dev` and you have a world-class CMS.
+Run `pnpm install && pnpm run dev` and you have a world-class CMS.
 
 **Good luck! 🚀**

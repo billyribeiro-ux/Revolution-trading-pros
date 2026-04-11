@@ -12,7 +12,7 @@
 
 ### Method 2: Direct Browser Access
 
-1. Start dev server: `npm run dev`
+1. Start dev server: `pnpm run dev`
 2. Open: `http://localhost:5174/workbench`
 3. Browse and select components from the sidebar
 
@@ -20,7 +20,7 @@
 
 ```bash
 # Preview a specific component
-npm run preview:component src/lib/components/dashboard/VideoCard.svelte
+pnpm run preview:component src/lib/components/dashboard/VideoCard.svelte
 ```
 
 ## 📦 Features

@@ -7,7 +7,7 @@ Zero-config developer tool for SvelteKit / Svelte 5 projects.
 ## Installation
 
 ```bash
-npm install -D svelte-click-to-source
+pnpm install -D svelte-click-to-source
 ```
 
 ## Setup
@@ -42,7 +42,7 @@ export default {
 
 ### 3. Use it
 
-1. `npm run dev`
+1. `pnpm run dev`
 2. Hold **Alt** + hover (elements highlight)
 3. **Alt+Click** → editor opens at source line
 

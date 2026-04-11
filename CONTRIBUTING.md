@@ -46,7 +46,7 @@ cd revolution-trading-pros
 
 # Install frontend dependencies
 cd frontend
-npm install
+pnpm install
 
 # Install Rust dependencies
 cd ../api
@@ -252,23 +252,23 @@ docs(api): update Stripe webhook documentation
 1. **Pass all existing tests**
 2. **Add tests for new features**
 3. **Maintain or improve coverage**
-4. **Pass type checking** (`npm run check`)
-5. **Pass linting** (`npm run lint`)
+4. **Pass type checking** (`pnpm run check`)
+5. **Pass linting** (`pnpm run lint`)
 
 ### Frontend Testing
 
 ```bash
 # Unit tests
-npm run test
+pnpm run test
 
 # E2E tests
-npm run test:e2e
+pnpm run test:e2e
 
 # Type checking
-npm run check
+pnpm run check
 
 # Linting
-npm run lint
+pnpm run lint
 ```
 
 ### Backend Testing

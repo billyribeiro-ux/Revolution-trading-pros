@@ -164,20 +164,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Generate SvelteKit types
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           # Build to generate .svelte-kit/tsconfig.json for type checking
           VITE_API_URL: ${{ needs.setup.outputs.api-url }}
@@ -185,13 +189,13 @@ jobs:
 
       - name: Type check
         working-directory: frontend
-        run: npm run check
+        run: pnpm run check
         # Production deployments must pass type checks
         continue-on-error: ${{ needs.setup.outputs.environment != 'production' }}
 
       - name: Lint
         working-directory: frontend
-        run: npm run lint
+        run: pnpm run lint
         # Allow lint to pass with warnings - pre-existing ESLint issues should not block deployment
         # TODO: Fix ESLint errors and restore strict linting for production
         continue-on-error: true
@@ -210,20 +214,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build for Cloudflare
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
         env:
           DEPLOY_TARGET: cloudflare
           VITE_SITE_NAME: "Revolution Trading Pros"

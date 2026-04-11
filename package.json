@@ -2,18 +2,14 @@
   "name": "revolution-trading-pros-monorepo",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "npm@10.9.2",
-  "workspaces": [
-    "frontend",
-    "svelte-click-to-source"
-  ],
+  "packageManager": "pnpm@10.8.0",
   "scripts": {
-    "dev": "npm run dev --workspace=frontend",
-    "build": "npm run build --workspace=frontend",
-    "preview": "npm run preview --workspace=frontend",
-    "check": "npm run check --workspace=frontend",
-    "lint": "npm run lint --workspace=frontend",
-    "format": "npm run format --workspace=frontend",
-    "test": "npm run test --workspace=frontend"
+    "dev": "pnpm --filter revolution-svelte dev",
+    "build": "pnpm --filter revolution-svelte build",
+    "preview": "pnpm --filter revolution-svelte preview",
+    "check": "pnpm --filter revolution-svelte check",
+    "lint": "pnpm --filter revolution-svelte lint",
+    "format": "pnpm --filter revolution-svelte format",
+    "test": "pnpm --filter revolution-svelte test"
   }
 }

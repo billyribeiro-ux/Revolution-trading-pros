@@ -4,10 +4,10 @@
 
 ### 1. Code Quality
 
-- [ ] All tests passing (`npm run test:unit && npm run test:e2e`)
-- [ ] No TypeScript errors (`npm run check`)
-- [ ] No linting errors (`npm run lint`)
-- [ ] Code formatted (`npm run format`)
+- [ ] All tests passing (`pnpm run test:unit && pnpm run test:e2e`)
+- [ ] No TypeScript errors (`pnpm run check`)
+- [ ] No linting errors (`pnpm run lint`)
+- [ ] Code formatted (`pnpm run format`)
 
 ### 2. Environment Variables
 
@@ -18,8 +18,8 @@
 
 ### 3. Database
 
-- [ ] Migrations applied (`npx prisma migrate deploy`)
-- [ ] Seeds run if needed (`npx prisma db seed`)
+- [ ] Migrations applied (`pnpm dlx prisma migrate deploy`)
+- [ ] Seeds run if needed (`pnpm dlx prisma db seed`)
 - [ ] Backup created
 
 ### 4. Performance
@@ -44,34 +44,34 @@
 
 ```bash
 # Login to Cloudflare
-npx wrangler login
+pnpm dlx wrangler login
 ```
 
 2. **Configure Build**
-   - Build command: `npm run build`
+   - Build command: `pnpm run build`
    - Output directory: `.svelte-kit/cloudflare`
    - Node version: 20
 
 3. **Set Environment Variables**
 
 ```bash
-npx wrangler pages secret put VITE_ANTHROPIC_API_KEY
-npx wrangler pages secret put DATABASE_URL
+pnpm dlx wrangler pages secret put VITE_ANTHROPIC_API_KEY
+pnpm dlx wrangler pages secret put DATABASE_URL
 # ... etc
 ```
 
 4. **Deploy**
 
 ```bash
-npm run build
-npx wrangler pages deploy .svelte-kit/cloudflare --project-name=revolution-trading-pros
+pnpm run build
+pnpm dlx wrangler pages deploy .svelte-kit/cloudflare --project-name=revolution-trading-pros
 ```
 
 ### Database Migration
 
 ```bash
 # Production migration
-DATABASE_URL="production-url" npx prisma migrate deploy
+DATABASE_URL="production-url" pnpm dlx prisma migrate deploy
 ```
 
 ### Custom Domain

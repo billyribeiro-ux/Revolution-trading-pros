@@ -332,10 +332,10 @@ Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
 
 ## Deployment Checklist
 
-- [ ] `npm run check` — 0 errors, 0 warnings
-- [ ] `npm run test` — all tests pass
-- [ ] `npm run build` — successful build
-- [ ] `npx tsx scripts/seo-audit.ts` — 0 errors in audit
+- [ ] `pnpm run check` — 0 errors, 0 warnings
+- [ ] `pnpm run test` — all tests pass
+- [ ] `pnpm run build` — successful build
+- [ ] `pnpm dlx tsx scripts/seo-audit.ts` — 0 errors in audit
 - [ ] Verify `robots.txt` at `/robots.txt`
 - [ ] Verify `sitemap.xml` at `/sitemap.xml`
 - [ ] Test OG tags with [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
@@ -387,7 +387,7 @@ Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
 
 - [ ] Weekly: Check GSC for crawl errors
 - [ ] Weekly: Monitor Discover traffic (Feb 2026 update context)
-- [ ] Monthly: Run `npx tsx scripts/seo-audit.ts` post-build
+- [ ] Monthly: Run `pnpm dlx tsx scripts/seo-audit.ts` post-build
 - [ ] Monthly: Validate JSON-LD with Rich Results Test
 - [ ] Quarterly: Review and update sitemap exclusion patterns
 - [ ] On deploy: Verify robots.txt and sitemap.xml are accessible
@@ -455,10 +455,10 @@ export const load = async () => {
 
 5. **Run verification:**
    ```bash
-   npm run check          # 0 errors
-   npm run test           # all pass
-   npm run build          # success
-   npx tsx scripts/seo-audit.ts  # 0 errors
+   pnpm run check          # 0 errors
+   pnpm run test           # all pass
+   pnpm run build          # success
+   pnpm dlx tsx scripts/seo-audit.ts  # 0 errors
    ```
 
 ### What to Keep in `app.html`
@@ -492,20 +492,20 @@ These are now exclusively managed by `<Seo>`:
 
 ```bash
 # Typecheck
-npm run check
+pnpm run check
 
 # Run SEO tests
-npx vitest run src/lib/seo/__tests__/
+pnpm dlx vitest run src/lib/seo/__tests__/
 
 # Run all tests
-npm run test
+pnpm run test
 
 # Build
-npm run build
+pnpm run build
 
 # Post-build SEO audit
-npx tsx scripts/seo-audit.ts
+pnpm dlx tsx scripts/seo-audit.ts
 
 # Post-build SEO audit (custom dir)
-npx tsx scripts/seo-audit.ts .svelte-kit/output/prerendered/pages
+pnpm dlx tsx scripts/seo-audit.ts .svelte-kit/output/prerendered/pages
 ```

@@ -37,10 +37,12 @@ Thumbs.db
 *.sqlite
 *.sqlite-journal
 
-# Package locks (optional - uncomment if you want to ignore)
-# package-lock.json
+# Lockfiles — pnpm only (do not commit npm/yarn locks)
+package-lock.json
+**/package-lock.json
+npm-shrinkwrap.json
 # yarn.lock
-# pnpm-lock.yaml
+# pnpm-lock.yaml is committed
 
 # Temporary files
 *.tmp
