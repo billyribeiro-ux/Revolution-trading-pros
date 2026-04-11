@@ -98,7 +98,7 @@
 	{#if isLoading}
 		<div class="skeleton-chart">
 			<div class="skel-bars">
-				{#each Array(6) as _ (_)}
+				{#each Array(6) as _, i (i)}
 					<div class="skel-bar"></div>
 				{/each}
 			</div>

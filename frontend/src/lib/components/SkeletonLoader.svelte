@@ -31,7 +31,7 @@
 	let { variant = 'card', count = 1, height, width, columns = 4 }: Props = $props();
 </script>
 
-{#each Array(count) as _ (_)}
+{#each Array(count) as _, i (i)}
 	{#if variant === 'metric'}
 		<div class="skeleton skeleton-metric" style:height style:width>
 			<div class="skeleton-icon"></div>

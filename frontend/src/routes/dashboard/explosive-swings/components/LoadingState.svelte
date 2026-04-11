@@ -34,7 +34,7 @@
 	aria-label="Loading content"
 	aria-busy="true"
 >
-	{#each Array(count) as _, i (_)}
+	{#each Array(count) as _, i (i)}
 		<div class="skeleton-wrapper" style="animation-delay: {i * 0.1}s">
 			{#if variant === 'stats'}
 				<!-- Stats Card Skeleton -->

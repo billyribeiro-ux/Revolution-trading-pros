@@ -260,7 +260,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="alerts-list">
 				{#if ps.isLoadingAlerts}
-					{#each Array(3) as _ (_)}
+					{#each Array(3) as _, i (i)}
 						<div class="alert-skeleton"></div>
 					{/each}
 				{:else if ps.filteredAlerts.length === 0}

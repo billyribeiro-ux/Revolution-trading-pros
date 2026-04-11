@@ -100,7 +100,7 @@
 	<!-- Alerts List -->
 	<div class="alerts-list" role="feed" aria-busy={isLoading}>
 		{#if isLoading}
-			{#each Array(3) as _ (_)}
+			{#each Array(3) as _, i (i)}
 				<div class="alert-skeleton"></div>
 			{/each}
 		{:else if filteredAlerts.length === 0}

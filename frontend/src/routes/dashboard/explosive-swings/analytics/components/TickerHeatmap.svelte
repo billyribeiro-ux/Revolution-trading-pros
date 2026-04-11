@@ -88,7 +88,7 @@
 
 	{#if isLoading}
 		<div class="skeleton-grid">
-			{#each Array(8) as _ (_)}
+			{#each Array(8) as _, i (i)}
 				<div class="skel-cell"></div>
 			{/each}
 		</div>

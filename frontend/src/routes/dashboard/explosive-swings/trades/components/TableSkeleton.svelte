@@ -35,7 +35,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each Array(rows) as _, i (_)}
+			{#each Array(rows) as _, i (i)}
 				<tr style="animation-delay: {i * 0.05}s">
 					<td><div class="skeleton-cell wide"></div></td>
 					<td><div class="skeleton-cell"></div></td>
