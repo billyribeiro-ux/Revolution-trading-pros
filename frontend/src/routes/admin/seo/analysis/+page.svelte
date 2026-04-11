@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
 	import { getForms, type Form } from '$lib/api/forms';
 	import { IconSearch, IconChartBar } from '$lib/icons';

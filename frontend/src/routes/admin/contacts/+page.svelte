@@ -5,7 +5,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { Card, Badge, Table, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, ContactStatus } from '$lib/crm/types';
 	import { IconPlus, IconMail, IconPhone } from '$lib/icons';

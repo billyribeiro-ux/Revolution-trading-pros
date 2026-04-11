@@ -30,5 +30,5 @@ export { default as OfflineIndicator } from '../OfflineIndicator.svelte';
 export { default as DashboardWidgetManager } from './DashboardWidgetManager.svelte';
 export { default as BatchOperations } from './BatchOperations.svelte';
 
-export { addToast, removeToast, toasts } from '$lib/utils/toast';
+export { addToast, removeToast, toasts, toastStore } from '$lib/stores/toast.svelte';
 export { exportToCSV, exportToPDF, exportToJSON, quickExport, formatters } from '$lib/utils/export';
