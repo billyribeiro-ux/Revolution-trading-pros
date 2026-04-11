@@ -78,6 +78,42 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   GLOBAL FOCUS-VISIBLE BASELINE (WCAG 2.4.7)
+	   Ensures every interactive element has a visible keyboard focus ring even
+	   if a component forgets to opt in. Mouse users (`:focus` without
+	   `:focus-visible`) are unaffected.
+	   ═══════════════════════════════════════════════════════════════════════ */
+	:where(a, button, [role='button'], [role='link'], input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+		outline: 2px solid var(--rtp-primary, #3b82f6);
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+}
+
+@layer utilities {
+	/* Accessible skip-to-content link: visually hidden until focused via Tab */
+	.skip-to-content {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 100;
+		padding: 0.75rem 1rem;
+		background: var(--rtp-primary, #1e3a8a);
+		color: #ffffff;
+		font-weight: 600;
+		text-decoration: none;
+		border-radius: 0 0 0.5rem 0;
+		transform: translateY(-110%);
+		transition: transform 0.15s ease-out;
+	}
+	.skip-to-content:focus,
+	.skip-to-content:focus-visible {
+		transform: translateY(0);
+		outline: 2px solid #ffffff;
+		outline-offset: 2px;
+	}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

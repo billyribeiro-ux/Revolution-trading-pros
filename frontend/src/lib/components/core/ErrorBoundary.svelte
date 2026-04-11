@@ -32,15 +32,14 @@
 		children: import('svelte').Snippet;
 	}
 
-	let props: Props = $props();
-
-	// Computed - props with defaults
-	const fallback = $derived(props.fallback);
-	const onError = $derived(props.onError);
-	const showDetails = $derived(props.showDetails ?? import.meta.env.DEV);
-	const title = $derived(props.title ?? 'Something went wrong');
-	const message = $derived(props.message ?? "We're sorry, but something unexpected happened.");
-	const children = $derived(props.children);
+	let {
+		fallback,
+		onError,
+		showDetails = import.meta.env.DEV,
+		title = 'Something went wrong',
+		message = "We're sorry, but something unexpected happened.",
+		children
+	}: Props = $props();
 
 	// State
 	let hasError = $state(false);

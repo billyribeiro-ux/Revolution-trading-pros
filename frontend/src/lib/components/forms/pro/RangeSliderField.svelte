@@ -123,33 +123,33 @@
 				<div class="range-track" style={`background: ${getFilledPercentage()}`}></div>
 				<input
 					type="range"
-					id={`${props.field.name}-start`}
-					name={`${props.field.name}[start]`}
+					id={`${field.name}-start`}
+					name={`${field.name}[start]`}
 					{min}
 					{max}
 					{step}
 					value={rangeStart}
 					class="range-input range-start"
 					oninput={handleRangeStartChange}
-					aria-label={`${props.field.label} start value`}
+					aria-label={`${field.label} start value`}
 				/>
 				<input
 					type="range"
-					id={`${props.field.name}-end`}
-					name={`${props.field.name}[end]`}
+					id={`${field.name}-end`}
+					name={`${field.name}[end]`}
 					{min}
 					{max}
 					{step}
 					value={rangeEnd}
 					class="range-input range-end"
 					oninput={handleRangeEndChange}
-					aria-label={`${props.field.label} end value`}
+					aria-label={`${field.label} end value`}
 				/>
 			{:else}
 				<input
 					type="range"
-					id={`field-${props.field.name}`}
-					name={props.field.name}
+					id={`field-${field.name}`}
+					name={field.name}
 					{min}
 					{max}
 					{step}
@@ -178,9 +178,9 @@
 		{/if}
 	</div>
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

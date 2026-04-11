@@ -373,7 +373,7 @@
 						</div>
 
 						<h1
-							class="text-6xl sm:text-7xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.9] mb-10 mix-blend-screen drop-shadow-2xl"
+							class="text-4xl xs:text-5xl sm:text-7xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.95] xs:leading-[0.9] mb-8 sm:mb-10 mix-blend-screen drop-shadow-2xl break-words"
 						>
 							Trade Real <span
 								class="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 to-slate-600"
@@ -387,7 +387,7 @@
 						</h1>
 
 						<p
-							class="text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-6 mb-12 bg-gradient-to-r from-white/5 to-transparent py-4 backdrop-blur-sm rounded-r-lg"
+							class="text-base sm:text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-4 sm:pl-6 mb-8 sm:mb-12 bg-gradient-to-r from-white/5 to-transparent py-4 backdrop-blur-sm rounded-r-lg break-words"
 						>
 							Stop guessing. Join a professional trading floor where we share screens, explain the
 							'why' behind every move, and fight for profitability together. No hindsight. No
@@ -397,7 +397,7 @@
 						<div class="flex flex-col sm:flex-row gap-4">
 							<a
 								href="/join"
-								class="group relative inline-flex justify-center items-center gap-3 px-10 py-5 bg-gradient-to-br from-amber-700 to-amber-900 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-400 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
+								class="group relative inline-flex justify-center items-center gap-3 px-6 sm:px-10 py-4 sm:py-5 min-h-11 bg-gradient-to-br from-amber-700 to-amber-900 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-400 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
 							>
 								<span
 									class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out"
@@ -410,7 +410,7 @@
 							</a>
 							<a
 								href="#how-it-works"
-								class="group inline-flex justify-center items-center gap-2 px-10 py-5 border border-white/10 hover:bg-white/5 text-slate-300 font-bold text-xs uppercase tracking-[0.2em] transition-all backdrop-blur-sm"
+								class="group inline-flex justify-center items-center gap-2 px-6 sm:px-10 py-4 sm:py-5 min-h-11 border border-white/10 hover:bg-white/5 text-slate-300 font-bold text-xs uppercase tracking-[0.2em] transition-all backdrop-blur-sm"
 							>
 								<span class="group-hover:text-white transition-colors">See How It Works</span>
 							</a>
@@ -512,7 +512,7 @@
 				</div>
 
 				<div in:heavySlide={{ delay: 300 }} class="order-1 lg:order-2">
-					<h2 class="text-4xl lg:text-5xl font-serif text-white mb-8 tracking-tight">
+					<h2 class="text-3xl xs:text-4xl lg:text-5xl font-serif text-white mb-6 sm:mb-8 tracking-tight break-words">
 						You Shouldn't Have to <br /><span class="text-amber-600 italic">Trade Alone.</span>
 					</h2>
 					<div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
@@ -561,7 +561,7 @@
 							>
 								<span class="w-8 h-[1px] bg-amber-600"></span> The Ecosystem
 							</span>
-							<h2 class="text-4xl md:text-6xl font-serif text-white tracking-tight">
+							<h2 class="text-3xl xs:text-4xl md:text-6xl font-serif text-white tracking-tight break-words">
 								Everything You Need<br />To Succeed.
 							</h2>
 						</div>
