@@ -56,7 +56,7 @@
 
 <div class="grid {gridCols} gap-6">
 	{#if loading}
-		{#each Array(columns) as _}
+		{#each Array(columns) as _, i (i)}
 			<SkeletonLoader variant="stat" />
 		{/each}
 	{:else}

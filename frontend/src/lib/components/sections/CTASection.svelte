@@ -84,7 +84,7 @@
 		class="absolute inset-0 pointer-events-none opacity-[0.03] overflow-hidden flex justify-between px-10"
 	>
 		<div class="flex flex-col text-[10px] font-mono text-emerald-500 animate-scroll-up">
-			{#each [...marketDepth, ...marketDepth] as tick}
+			{#each [...marketDepth, ...marketDepth] as tick, i (i)}
 				<div class="flex gap-8 my-1">
 					<span>{tick.price}</span>
 					<span class="opacity-50">{tick.size}</span>
@@ -92,7 +92,7 @@
 			{/each}
 		</div>
 		<div class="flex flex-col text-[10px] font-mono text-amber-600 animate-scroll-down text-right">
-			{#each [...marketDepth, ...marketDepth] as tick}
+			{#each [...marketDepth, ...marketDepth] as tick, i (i)}
 				<div class="flex gap-8 my-1 justify-end">
 					<span class="opacity-50">{tick.size}</span>
 					<span>{tick.price}</span>

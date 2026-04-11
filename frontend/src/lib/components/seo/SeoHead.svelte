@@ -187,7 +187,7 @@
 		{#if articleSection}
 			<meta property="article:section" content={articleSection} />
 		{/if}
-		{#each articleTags as tag}
+		{#each articleTags as tag (tag)}
 			<meta property="article:tag" content={tag} />
 		{/each}
 	{/if}
@@ -213,7 +213,7 @@
 
 	<!-- Structured Data / JSON-LD -->
 	{#if structuredDataJson}
-		{#each structuredDataJson as jsonLd}
+		{#each structuredDataJson as jsonLd, i (i)}
 			{@html '<scr' + 'ipt type="application/ld+json">' + JSON.stringify(jsonLd) + '</scr' + 'ipt>'}
 		{/each}
 	{/if}

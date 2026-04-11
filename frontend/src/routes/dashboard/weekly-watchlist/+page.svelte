@@ -163,7 +163,10 @@
 											<img
 												src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
 												alt={title}
+												width="325"
+												height="183"
 												loading="lazy"
+												decoding="async"
 											/>
 										</a>
 									</div>

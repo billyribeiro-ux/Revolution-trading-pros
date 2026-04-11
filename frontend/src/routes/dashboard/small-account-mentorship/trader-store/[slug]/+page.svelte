@@ -375,6 +375,9 @@
 															alt={store.name}
 															width="2000"
 															height="2000"
+															loading="eager"
+															fetchpriority="high"
+															decoding="sync"
 														/>
 													</div>
 												</div>
@@ -474,7 +477,7 @@
 												class="card-image"
 												style="background-image: url({product.image});"
 											>
-												<img src="https://placehold.it/540x256" alt={product.name} />
+												<img src="https://placehold.it/540x256" alt={product.name} width="540" height="256" loading="lazy" decoding="async" />
 											</a>
 										</figure>
 										<section class="card-body">

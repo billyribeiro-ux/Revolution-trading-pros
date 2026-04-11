@@ -91,7 +91,7 @@
 
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
-		{#each navigation as item}
+		{#each navigation as item (item.href ?? item.label)}
 			{@const IconComponent = item.icon}
 			<div class="nav-group">
 				<a
@@ -106,7 +106,7 @@
 
 				{#if item.children && isActive(item.href)}
 					<div class="nav-children">
-						{#each item.children as child}
+						{#each item.children as child (child.href ?? child.label)}
 							<a
 								href={child.href}
 								class="nav-child"

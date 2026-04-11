@@ -104,6 +104,7 @@
 
 <section
 	bind:this={containerRef}
+	aria-label="Professional Trading Environments"
 	class="relative py-32 3xl:py-40 5xl:py-48 px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
 	<div class="absolute inset-0 pointer-events-none">

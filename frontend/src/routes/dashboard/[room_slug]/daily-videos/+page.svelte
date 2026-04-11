@@ -252,6 +252,7 @@
 										height="183"
 										alt={video.title}
 										loading="lazy"
+										decoding="async"
 									/>
 								</a>
 							</figure>
