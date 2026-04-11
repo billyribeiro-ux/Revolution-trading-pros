@@ -142,7 +142,7 @@ import { logger } from '$lib/utils/logger';
 			</select>
 
 			<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p}
+				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p (p.value)}
 					<button
 						onclick={() => (period = p.value as ReportPeriod)}
 						class="px-4 py-2 text-sm rounded-md {period === p.value

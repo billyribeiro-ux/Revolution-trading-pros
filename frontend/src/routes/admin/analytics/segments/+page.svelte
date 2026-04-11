@@ -577,7 +577,7 @@
 				<div>
 					<span class="block text-sm font-medium text-slate-300 mb-3">Segment Type</span>
 					<div class="grid grid-cols-3 gap-3">
-						{#each [{ value: 'dynamic', label: 'Dynamic', desc: 'Auto-updates based on rules' }, { value: 'static', label: 'Static', desc: 'Manual user list' }, { value: 'computed', label: 'Computed', desc: 'Based on calculations' }] as type}
+						{#each [{ value: 'dynamic', label: 'Dynamic', desc: 'Auto-updates based on rules' }, { value: 'static', label: 'Static', desc: 'Manual user list' }, { value: 'computed', label: 'Computed', desc: 'Based on calculations' }] as type (type.value)}
 							<button
 								onclick={() => (newSegment.type = type.value as typeof newSegment.type)}
 								class="p-4 rounded-xl border-2 text-left transition-all

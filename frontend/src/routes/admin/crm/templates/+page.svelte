@@ -697,7 +697,7 @@
 					</button>
 
 					<div class="pagination-pages">
-						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
+						{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page (page)}
 							{#if page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)}
 								<button
 									class="pagination-page"
