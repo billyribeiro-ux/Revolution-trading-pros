@@ -1065,6 +1065,39 @@ import { logger } from '$lib/utils/logger';
 		}
 	}
 
+	/* 4K / 5K display scaling — hero content should not look stranded on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.hero-content {
+			max-width: 112.5rem; /* 1800px */
+			padding-inline: 4rem;
+			padding-block: 6rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.hero-content {
+			max-width: 137.5rem; /* 2200px */
+			padding-inline: 5rem;
+			padding-block: 7rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.hero-content {
+			max-width: 162.5rem; /* 2600px */
+			padding-inline: 6rem;
+			padding-block: 8rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.hero-content {
+			max-width: 200rem; /* 3200px */
+			padding-inline: 8rem;
+			padding-block: 10rem;
+		}
+	}
+
 	.hero-slides {
 		position: relative;
 		min-height: 22rem;
@@ -1080,6 +1113,31 @@ import { logger } from '$lib/utils/logger';
 		margin-inline: auto;
 		opacity: 1;
 		transform: translateZ(0);
+	}
+
+	/* 4K / 5K display scaling for slide content width */
+	@media (min-width: 1920px) {
+		.slide {
+			max-width: 72rem; /* 1152px */
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.slide {
+			max-width: 88rem; /* 1408px */
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.slide {
+			max-width: 104rem; /* 1664px */
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.slide {
+			max-width: 120rem; /* 1920px */
+		}
 	}
 
 	.slide--hidden {

@@ -339,7 +339,7 @@
 	<!-- Floating Tickers -->
 	{#if showTickers}
 		<div class="tickers-container" aria-hidden="true">
-			{#each tickers as ticker}
+			{#each tickers as ticker (ticker.symbol)}
 				<div
 					class="ticker-card"
 					class:bullish={ticker.positive}

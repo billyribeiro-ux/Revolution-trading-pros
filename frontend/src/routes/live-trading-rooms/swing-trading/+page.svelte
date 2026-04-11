@@ -682,6 +682,10 @@
 							<img
 								src="/logos/nvda.svg"
 								alt="NVIDIA logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
 								class="w-5 h-5 opacity-70 hidden sm:block"
 							/>
 							NVDA
@@ -695,7 +699,7 @@
 					</div>
 					<div class="grid grid-cols-12 p-5 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 font-bold text-white flex items-center gap-2">
-							<img src="/logos/amd.svg" alt="AMD logo" class="w-5 h-5 opacity-70 hidden sm:block" />
+							<img src="/logos/amd.svg" alt="AMD logo" width="20" height="20" loading="lazy" decoding="async" class="w-5 h-5 opacity-70 hidden sm:block" />
 							AMD
 						</div>
 						<div class="col-span-3 md:col-span-2 text-emerald-400 font-bold">CALLS</div>
@@ -712,6 +716,10 @@
 							<img
 								src="/logos/tsla.svg"
 								alt="Tesla logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
 								class="w-5 h-5 opacity-70 hidden sm:block"
 							/>
 							TSLA
@@ -728,6 +736,10 @@
 							<img
 								src="/logos/meta.svg"
 								alt="Meta logo"
+								width="20"
+								height="20"
+								loading="lazy"
+								decoding="async"
 								class="w-5 h-5 opacity-70 hidden sm:block"
 							/>
 							META
@@ -947,7 +959,7 @@
 				Frequently Asked Questions
 			</h2>
 			<div class="space-y-4">
-				{#each faqList as faq, i}
+				{#each faqList as faq, i (faq.question)}
 					<div
 						class="border border-rtp-border rounded-xl bg-rtp-surface overflow-hidden hover:border-rtp-emerald/30 transition-colors"
 					>

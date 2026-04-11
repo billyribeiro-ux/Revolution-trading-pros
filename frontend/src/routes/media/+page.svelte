@@ -216,7 +216,7 @@ import { logger } from '$lib/utils/logger';
 			{:else if currentFiles.length > 0}
 				{#if viewMode === 'grid'}
 					<div class="files-grid">
-						{#each currentFiles as file}
+						{#each currentFiles as file (file.id)}
 							<div
 								class="file-card"
 								class:selected={mediaStore.selectedFiles.has(file.id)}
@@ -270,7 +270,7 @@ import { logger } from '$lib/utils/logger';
 								</tr>
 							</thead>
 							<tbody>
-								{#each currentFiles as file}
+								{#each currentFiles as file (file.id)}
 									<tr
 										class:selected={mediaStore.selectedFiles.has(file.id)}
 										onclick={() => mediaStore.toggleFileSelection(file.id)}
@@ -299,7 +299,7 @@ import { logger } from '$lib/utils/logger';
 										<td>{formatDate(file.created_at)}</td>
 										<td>
 											<div class="tags">
-												{#each (file.tags || []).slice(0, 3) as tag}
+												{#each (file.tags || []).slice(0, 3) as tag (tag)}
 													<span class="tag">{tag}</span>
 												{/each}
 											</div>
