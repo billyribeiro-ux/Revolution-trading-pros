@@ -317,6 +317,9 @@
 								type="text"
 								bind:value={name}
 								required
+								aria-required="true"
+								aria-invalid={errors.name ? 'true' : 'false'}
+								aria-describedby={errors.name ? 'name-error' : undefined}
 								class="enhanced-input"
 								class:error={errors.name}
 								placeholder="John Doe"
@@ -325,7 +328,7 @@
 							<div class="input-glow"></div>
 						</div>
 						{#if errors.name}
-							<p class="field-error">{errors.name[0]}</p>
+							<p id="name-error" class="field-error">{errors.name[0]}</p>
 						{/if}
 					</div>
 
@@ -342,15 +345,20 @@
 								type="email"
 								bind:value={email}
 								required
+								aria-required="true"
+								aria-invalid={errors.email ? 'true' : 'false'}
+								aria-describedby={errors.email ? 'email-error' : undefined}
 								class="enhanced-input"
 								class:error={errors.email}
 								placeholder="trader@example.com"
 								autocomplete="email"
+								inputmode="email"
+								spellcheck="false"
 							/>
 							<div class="input-glow"></div>
 						</div>
 						{#if errors.email}
-							<p class="field-error">{errors.email[0]}</p>
+							<p id="email-error" class="field-error">{errors.email[0]}</p>
 						{/if}
 					</div>
 
@@ -367,6 +375,10 @@
 								type={showPassword ? 'text' : 'password'}
 								bind:value={password}
 								required
+								aria-required="true"
+								aria-invalid={errors.password ? 'true' : 'false'}
+								aria-describedby={errors.password ? 'password-error' : 'password-hint'}
+								minlength="12"
 								class="enhanced-input has-toggle"
 								class:error={errors.password}
 								placeholder="••••••••"
@@ -388,9 +400,11 @@
 							<div class="input-glow"></div>
 						</div>
 						{#if errors.password}
-							<p class="field-error">{errors.password[0]}</p>
+							<p id="password-error" class="field-error">{errors.password[0]}</p>
 						{:else}
-							<p class="password-hint">Min 12 chars with uppercase, lowercase & number</p>
+							<p id="password-hint" class="password-hint">
+								Min 12 chars with uppercase, lowercase & number
+							</p>
 						{/if}
 					</div>
 
@@ -407,6 +421,8 @@
 								type={showConfirmPassword ? 'text' : 'password'}
 								bind:value={password_confirmation}
 								required
+								aria-required="true"
+								minlength="12"
 								class="enhanced-input has-toggle"
 								placeholder="••••••••"
 								autocomplete="new-password"

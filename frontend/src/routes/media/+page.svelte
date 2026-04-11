@@ -228,7 +228,7 @@ import { logger } from '$lib/utils/logger';
 							>
 								{#if file.file_type === 'image'}
 									<div class="file-thumbnail">
-										<img src={file.thumbnail_url || file.url} alt={file.alt_text || file.title} />
+										<img src={file.thumbnail_url || file.url} alt={file.alt_text || file.title} width="200" height="200" loading="lazy" decoding="async" />
 									</div>
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}
@@ -289,6 +289,10 @@ import { logger } from '$lib/utils/logger';
 												<img
 													src={file.thumbnail_url || file.url}
 													alt={file.alt_text}
+													width="40"
+													height="40"
+													loading="lazy"
+													decoding="async"
 													class="file-thumb-small"
 												/>
 											{/if}

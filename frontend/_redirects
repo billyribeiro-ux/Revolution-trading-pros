@@ -1,8 +1,25 @@
-# Cloudflare Pages Redirects - ICT 7 Configuration
-# 
-# NOTE: Cloudflare Pages does NOT support 200 (proxy) redirects to external URLs
-# API proxying is handled by SvelteKit server routes instead:
-# - /api/auth/login -> frontend/src/routes/api/auth/login/+server.ts
-# - Other API calls use direct cross-origin with proper CORS headers
+# Cloudflare Pages Redirects
 #
-# This file is kept for SPA routing fallbacks only
+# NOTE: Cloudflare Pages does NOT support 200 (proxy) redirects to external URLs.
+# API proxying is handled by SvelteKit server routes instead:
+#   - /api/auth/login -> frontend/src/routes/api/auth/login/+server.ts
+#   - Other API calls use direct cross-origin with proper CORS headers
+#
+# Format: <source> <destination> <status>
+# Docs:   https://developers.cloudflare.com/pages/configuration/redirects/
+
+# ─────────────────────────────────────────────────────────────────────────
+# W3C "A Well-Known URL for Changing Passwords" (https://www.w3.org/TR/change-password-url/)
+# Browser password managers (Chrome, Safari, 1Password, Bitwarden) deep-link
+# to /.well-known/change-password when a saved credential is compromised.
+# Spec says respond with a 302/303 to the actual change-password page.
+# ─────────────────────────────────────────────────────────────────────────
+/.well-known/change-password   /account/security/change-password   303
+
+# ─────────────────────────────────────────────────────────────────────────
+# Common legacy / vanity URL aliases.
+# ─────────────────────────────────────────────────────────────────────────
+/feed       /feed.xml         301
+/rss        /feed.xml         301
+/atom       /atom.xml         301
+/sitemap    /sitemap.xml      301
