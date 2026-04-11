@@ -43,7 +43,7 @@
 <div class="card-block" role="article">
 	<div class="card-image">
 		{#if imageUrl}
-			<img src={sanitizeURL(imageUrl)} alt={title} loading="lazy" />
+			<img src={sanitizeURL(imageUrl)} alt={title} width="400" height="225" loading="lazy" decoding="async" />
 		{:else}
 			<div class="image-placeholder">
 				<IconPhoto size={32} aria-hidden="true" />

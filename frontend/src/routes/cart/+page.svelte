@@ -329,6 +329,7 @@
 												<!-- Coupon Input -->
 												<div class="cart-coupon">
 													<div class="input-group">
+														<label for="coupon_code" class="sr-only">Coupon code</label>
 														<input
 															type="text"
 															name="coupon_code"
@@ -336,6 +337,8 @@
 															id="coupon_code"
 															bind:value={couponCode}
 															placeholder="Coupon code"
+															autocomplete="off"
+															aria-label="Coupon code"
 															disabled={applyingCoupon}
 														/>
 														<span class="input-group-btn">

@@ -210,7 +210,7 @@
 	<div class="author-block__photo-section">
 		{#if sanitizedPhotoURL}
 			<div class="author-block__photo">
-				<img src={sanitizedPhotoURL} alt={name} loading="lazy" />
+				<img src={sanitizedPhotoURL} alt={name} width="120" height="120" loading="lazy" decoding="async" />
 				{#if isEditing && isSelected}
 					<button
 						type="button"

@@ -200,7 +200,7 @@
 
 			<!-- Filters -->
 			<div class="flex items-center gap-2 mb-6">
-				{#each [{ value: 'all', label: 'All Sessions' }, { value: 'with_errors', label: 'With Errors' }, { value: 'rage_clicks', label: 'Rage Clicks' }, { value: 'long', label: 'Long Sessions' }] as filter}
+				{#each [{ value: 'all', label: 'All Sessions' }, { value: 'with_errors', label: 'With Errors' }, { value: 'rage_clicks', label: 'Rage Clicks' }, { value: 'long', label: 'Long Sessions' }] as filter (filter.value)}
 					<button
 						onclick={() => handleFilterChange(filter.value as typeof activeFilter)}
 						class="px-4 py-2 rounded-xl text-sm font-medium transition-all

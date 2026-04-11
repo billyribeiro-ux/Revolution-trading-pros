@@ -170,7 +170,7 @@
 			</div>
 		{/if}
 	{:else if gifUrl}
-		<img src={sanitizeURL(gifUrl)} alt={gifAlt} loading="lazy" />
+		<img src={sanitizeURL(gifUrl)} alt={gifAlt} width="480" height="270" loading="lazy" decoding="async" />
 	{:else}
 		<div class="gif-empty">
 			<IconGif size={48} aria-hidden="true" />
