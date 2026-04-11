@@ -47,7 +47,7 @@
 
 	<nav class="sidebar-nav">
 		<ul>
-			{#each items as item}
+			{#each items as item (item.href ?? item.label)}
 				<li>
 					<a href={item.href} class="nav-item">
 						{#if item.icon}

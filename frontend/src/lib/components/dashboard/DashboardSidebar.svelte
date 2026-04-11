@@ -607,6 +607,36 @@
 		transition: all 0.3s ease-in-out;
 	}
 
+	/* 4K / 5K display scaling — fixed-width sidebar grows so it doesn't look stranded
+	   on ultra-wide monitors. Matches the 3xl/4xl/5xl/6xl Tailwind breakpoints. */
+	@media (min-width: 1920px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 320px;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 360px;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 440px;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.dashboard__sidebar,
+		.dashboard__nav-primary {
+			width: 520px;
+		}
+	}
+
 	/* Scrollbar Styling */
 	.dashboard__sidebar::-webkit-scrollbar {
 		width: 6px;

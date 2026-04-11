@@ -94,7 +94,7 @@ import { logger } from '$lib/utils/logger';
 				<a href="/my/indicators/{indicator.slug}" class="indicator-card">
 					<div class="card-image">
 						{#if indicator.logo_url}
-							<img src={indicator.logo_url} alt={indicator.name} />
+							<img src={indicator.logo_url} alt={indicator.name} width="200" height="200" loading="lazy" decoding="async" />
 						{:else}
 							<div class="placeholder">
 								<svg

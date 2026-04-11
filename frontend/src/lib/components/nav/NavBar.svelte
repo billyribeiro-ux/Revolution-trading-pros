@@ -2241,6 +2241,66 @@ import { logger } from '$lib/utils/logger';
 		}
 	}
 
+	/* 4K / 5K display scaling — navbar grows proportionally on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.navbar {
+			--nav-height: 112px;
+			--nav-padding-inline: 3rem;
+		}
+		.logo {
+			width: 220px;
+			height: 55px;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.navbar {
+			--nav-height: 128px;
+			--nav-padding-inline: 4rem;
+		}
+		.logo {
+			width: 260px;
+			height: 65px;
+		}
+		.nav-link {
+			font-size: 0.9375rem;
+			height: 44px;
+			padding: 0 1rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.navbar {
+			--nav-height: 160px;
+			--nav-padding-inline: 5rem;
+		}
+		.logo {
+			width: 320px;
+			height: 80px;
+		}
+		.nav-link {
+			font-size: 1.125rem;
+			height: 56px;
+			padding: 0 1.25rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.navbar {
+			--nav-height: 200px;
+			--nav-padding-inline: 6rem;
+		}
+		.logo {
+			width: 400px;
+			height: 100px;
+		}
+		.nav-link {
+			font-size: 1.375rem;
+			height: 70px;
+			padding: 0 1.75rem;
+		}
+	}
+
 	/* Tablet/Small laptop: Show mobile menu */
 	@media (max-width: 1023px) {
 		.navbar {
