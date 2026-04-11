@@ -3,8 +3,6 @@
 -->
 
 <script lang="ts">
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// Resources page structured data
 	const resourcesSchema = [
 		{
@@ -561,8 +559,6 @@
 		</a>
 	</div>
 </section>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

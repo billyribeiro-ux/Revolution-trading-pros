@@ -14,6 +14,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	interface DailyVideo {
 		id: number;
@@ -183,7 +184,7 @@
 					<div class="video-container current">
 						<video
 							id="dv-player"
-							bind:this={videoElement}
+							{@attach domRef<HTMLVideoElement>((el) => (videoElement = el))}
 							controls
 							width="100%"
 							poster={currentVideo.thumbnail}

@@ -18,6 +18,7 @@
 		IconEyeOff
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// Svelte 5 state runes
 	let name = $state('');
@@ -259,14 +260,14 @@
 	<div class="radial-glow glow-3"></div>
 
 	<!-- Floating particles container -->
-	<div bind:this={particlesRef} class="particles-container"></div>
+	<div {@attach domRef((el) => (particlesRef = el ?? null))} class="particles-container"></div>
 
 	<!-- Animated grid -->
 	<div class="grid-pattern"></div>
 
 	<!-- Register card -->
 	<div class="register-container">
-		<div bind:this={cardRef} class="register-card">
+		<div {@attach domRef((el) => (cardRef = el ?? null))} class="register-card">
 			<!-- Glass overlay -->
 			<div class="glass-overlay"></div>
 
@@ -276,7 +277,7 @@
 			<!-- Content -->
 			<div
 				class="register-content"
-				bind:this={formRef}
+				{@attach domRef((el) => (formRef = el ?? null))}
 				style:display={registrationSuccess ? 'none' : 'block'}
 			>
 				<!-- Header -->

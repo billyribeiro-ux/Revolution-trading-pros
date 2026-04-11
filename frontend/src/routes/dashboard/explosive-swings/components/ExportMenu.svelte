@@ -18,6 +18,7 @@
 	 */
 
 	import { fly } from 'svelte/transition';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import {
 		downloadAlertsCsv,
 		downloadTradesCsv,
@@ -193,7 +194,7 @@
 <div class="export-menu" class:is-open={isOpen}>
 	<!-- Trigger Button -->
 	<button
-		bind:this={buttonRef}
+		{@attach domRef<HTMLButtonElement>((el) => (buttonRef = el))}
 		onclick={toggle}
 		class="export-trigger {sizeClasses}"
 		disabled={disabled || isExporting}

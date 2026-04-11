@@ -3,6 +3,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// GSAP loaded dynamically for SSR safety
 	let gsapInstance: typeof import('gsap').gsap | null = null;
@@ -23,8 +24,6 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Assumed existing component based on your snippet
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// --- TYPES ---
 
 	interface Course {
@@ -177,7 +176,7 @@
 	let openFaqIndex = $state<number | null>(0);
 
 	// Canvas Ref
-	let canvasRef: HTMLCanvasElement;
+	let canvasRef: HTMLCanvasElement | undefined;
 
 	// --- PARTICLE CLASS (moved to top level to avoid nested class warning) ---
 
@@ -380,7 +379,11 @@
 >
 	<section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
 		<div class="absolute inset-0 z-0 opacity-40">
-			<canvas bind:this={canvasRef} width={innerWidth} height={innerHeight} class="w-full h-full"
+			<canvas
+				{@attach domRef<HTMLCanvasElement>((el) => (canvasRef = el))}
+				width={innerWidth}
+				height={innerHeight}
+				class="w-full h-full"
 			></canvas>
 		</div>
 
@@ -463,7 +466,7 @@
 			class="ticker-bar absolute bottom-0 left-0 w-full border-t border-white/10 bg-black/40 backdrop-blur-md overflow-hidden py-3 z-20"
 		>
 			<div class="flex animate-marquee whitespace-nowrap">
-				{#each Array(8) as _}
+				{#each Array(8) as _, i (i)}
 					<div class="flex items-center gap-8 px-4">
 						<span class="flex items-center gap-2 text-xs font-mono text-emerald-400"
 							><IconTrendingUp size={14} /> SPY $542.30 +1.2%</span
@@ -533,7 +536,7 @@
 								<div class="text-[10px] font-mono text-slate-500 uppercase">System: Active</div>
 							</div>
 							<div class="flex-1 flex items-end gap-1">
-								{#each Array(20) as _, i}
+								{#each Array(20) as _, i (i)}
 									<div
 										class="flex-1 bg-blue-500/50 rounded-t-sm animate-pulse"
 										style="height: {30 + Math.random() * 60}%; animation-delay: {i *
@@ -564,7 +567,7 @@
 			</div>
 
 			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
-				{#each courses as course}
+				{#each courses as course (course.id)}
 					{@const Icon = course.icon}
 					{@const colors = course.colorClasses}
 					<div
@@ -603,7 +606,7 @@
 							<p class="text-slate-400 leading-relaxed mb-8 flex-grow">{course.description}</p>
 
 							<div class="space-y-3 mb-8">
-								{#each course.features as feature}
+								{#each course.features as feature, fi (course.id + '-' + fi)}
 									<div class="flex items-center gap-3 text-sm text-slate-300">
 										<IconCheck size={16} class={colors.icon} />
 										{feature}
@@ -635,7 +638,7 @@
 			<h2 class="text-3xl font-bold text-white mb-12 text-center">Protocol FAQ</h2>
 
 			<div class="space-y-4">
-				{#each faqs as faq, i}
+				{#each faqs as faq, i (i)}
 					<button
 						onclick={() => toggleFaq(i)}
 						class="w-full text-left group bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 rounded-xl transition-all duration-300 overflow-hidden"
@@ -686,8 +689,6 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

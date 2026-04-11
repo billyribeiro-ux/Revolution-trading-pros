@@ -4,6 +4,8 @@
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 
+	import { domRef } from '$lib/svelte/domAttachment';
+
 	interface Props {
 		query: string;
 		suggestions: string[];
@@ -109,7 +111,7 @@
 		<input
 			id="explosive-swings-search"
 			name="explosive-swings-search"
-			bind:this={inputRef}
+			{@attach domRef<HTMLInputElement>((el) => (inputRef = el ?? null))}
 			type="text"
 			class="search-input"
 			placeholder="Search alerts, trades, trade plans..."

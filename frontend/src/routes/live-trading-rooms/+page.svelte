@@ -1,10 +1,9 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import { onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
 	type GSAPInstance = typeof import('gsap').gsap;
 
@@ -72,17 +71,9 @@ import { logger } from '$lib/utils/logger';
 		return `${x},${y}`;
 	}).join(' ');
 
-	/**
-	 * Animation Controller
-	 * ICT 11+: These variables are used in bind:this directives in the template.
-	 * TypeScript doesn't recognize bind:this as a "read" operation, causing false positive lints.
-	 * They are necessary for GSAP ScrollTrigger animations.
-	 */
-	// @ts-ignore - Used in bind:this directive at line 378 (TypeScript limitation with Svelte bindings)
+	/** GSAP ScrollTrigger targets — wired via {@attach domRef(...)} */
 	let _heroContainer: HTMLElement | undefined;
-	// @ts-ignore - Used in bind:this directive at line 441 (TypeScript limitation with Svelte bindings)
 	let _gridRef: HTMLElement | undefined;
-	// @ts-ignore - Used in bind:this directive at line 558 (TypeScript limitation with Svelte bindings)
 	let _benefitsRef: HTMLElement | undefined;
 	let ctaRef: HTMLElement | undefined;
 
@@ -309,7 +300,7 @@ import { logger } from '$lib/utils/logger';
 		class="relative z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden"
 	>
 		<div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
-			{#each tickerItems as item}
+			{#each tickerItems as item, i (item.sym + '-' + i)}
 				<div class="flex items-center gap-3 text-xs font-mono select-none">
 					<span class="font-bold text-zinc-300">{item.sym}</span>
 					<span class="text-zinc-500">{item.price}</span>
@@ -321,7 +312,7 @@ import { logger } from '$lib/utils/logger';
 
 	<div class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
 		<section
-			bind:this={_heroContainer}
+			{@attach domRef((el) => (_heroContainer = el))}
 			class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24"
 		>
 			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-40">
@@ -419,11 +410,11 @@ import { logger } from '$lib/utils/logger';
 		</section>
 
 		<div
-			bind:this={_gridRef}
+			{@attach domRef((el) => (_gridRef = el))}
 			id="rooms-section"
 			class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32"
 		>
-			{#each rooms as room}
+			{#each rooms as room (room.id)}
 				<article
 					use:tilt
 					class="room-card group relative h-full card-3d"
@@ -645,8 +636,8 @@ import { logger } from '$lib/utils/logger';
 					technology, and community.
 				</p>
 			</div>
-			<div bind:this={_benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-				{#each benefits as item}
+			<div {@attach domRef((el) => (_benefitsRef = el))} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+				{#each benefits as item (item.id)}
 					<div
 						class="benefit-card p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
 					>
@@ -714,7 +705,7 @@ import { logger } from '$lib/utils/logger';
 		</section>
 
 		<section
-			bind:this={ctaRef}
+			{@attach domRef((el) => (ctaRef = el))}
 			class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-gradient-to-b from-blue-900/20 to-black border border-white/10"
 		>
 			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
@@ -758,8 +749,6 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* --- Hero Specifics --- */

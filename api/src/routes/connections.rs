@@ -346,22 +346,6 @@ fn get_service_definitions() -> Vec<serde_json::Value> {
                 {"key": "api_key", "label": "API Key", "type": "password", "required": true}
             ]
         }),
-        json!({
-            "key": "sentry",
-            "name": "Sentry",
-            "category": "Monitoring",
-            "description": "Error tracking, performance monitoring, and crash reporting.",
-            "icon": "monitoring",
-            "color": "#362D59",
-            "docs_url": "https://docs.sentry.io",
-            "signup_url": "https://sentry.io/signup",
-            "is_oauth": false,
-            "is_builtin": false,
-            "fields": [
-                {"key": "dsn", "label": "DSN", "type": "text", "required": true},
-                {"key": "environment", "label": "Environment", "type": "text", "required": false}
-            ]
-        }),
     ]
 }
 
@@ -373,7 +357,7 @@ fn get_categories() -> serde_json::Value {
         "Analytics": {"name": "Analytics", "icon": "chart", "services": ["google_analytics"]},
         "AI": {"name": "AI", "icon": "cpu", "services": ["openai"]},
         "Search": {"name": "Search", "icon": "search", "services": ["meilisearch"]},
-        "Monitoring": {"name": "Monitoring", "icon": "activity", "services": ["sentry"]},
+        "Monitoring": {"name": "Monitoring", "icon": "activity", "services": []},
         "CRM": {"name": "CRM", "icon": "users", "services": ["fluent_crm_pro"]},
         "Forms": {"name": "Forms", "icon": "file-text", "services": ["fluent_forms_pro"]}
     })

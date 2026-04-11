@@ -10,6 +10,7 @@
 -->
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import type { TradeType, OptionType, ContractType, TradeSetup } from '$lib/types/trading';
 
 	interface Props {
@@ -142,7 +143,7 @@ import { logger } from '$lib/utils/logger';
 
 {#if isOpen}
 	<div
-		bind:this={modalRef}
+		{@attach domRef<HTMLDivElement>((el) => (modalRef = el ?? null))}
 		class="modal-overlay"
 		role="dialog"
 		aria-modal="true"

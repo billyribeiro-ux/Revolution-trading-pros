@@ -10,6 +10,7 @@
 -->
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import { tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
 
 	interface Props {
@@ -235,7 +236,7 @@ import { logger } from '$lib/utils/logger';
 
 {#if isOpen}
 	<div
-		bind:this={modalRef}
+		{@attach domRef<HTMLDivElement>((el) => (modalRef = el ?? null))}
 		class="modal-overlay"
 		role="dialog"
 		aria-modal="true"
@@ -306,7 +307,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Delete Confirmation Overlay -->
 			{#if showDeleteConfirm}
 				<div
-					bind:this={deleteConfirmRef}
+					{@attach domRef<HTMLDivElement>((el) => (deleteConfirmRef = el ?? null))}
 					class="delete-confirm-overlay"
 					tabindex="-1"
 					role="alertdialog"

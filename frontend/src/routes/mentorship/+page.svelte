@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { revealGsapClassSections } from '$lib/motion/gsapScrollReveal';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// --- ICONS (Inline for Zero-Dependency Safety) ---
 	const Icons = {
@@ -22,7 +22,7 @@
 	let openAccordion = $state<number | null>(0);
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
-	// --- DOM REFS FOR GSAP ---
+	// --- DOM REFS FOR GSAP (Svelte 5.29+ {@attach} — preferred over bind:this for elements) ---
 	let heroBadge: HTMLElement | undefined;
 	let heroTitle: HTMLElement | undefined;
 	let heroDesc: HTMLElement | undefined;
@@ -47,6 +47,7 @@
 
 		(async () => {
 			try {
+				await tick();
 				const { gsap } = await import('gsap');
 				if (cancelled) return;
 
@@ -56,34 +57,39 @@
 					return;
 				}
 
+				/* Hero: set hidden state before timeline so we don’t flash full-opacity then snap to 0 */
+				if (heroBadge) gsap.set(heroBadge, { y: 20, opacity: 0 });
+				if (heroTitle) gsap.set(heroTitle, { y: 40, opacity: 0 });
+				if (heroDesc) gsap.set(heroDesc, { y: 20, opacity: 0 });
+				if (heroMetrics) gsap.set(heroMetrics, { opacity: 0, scale: 0.98 });
+				if (heroGraphic) gsap.set(heroGraphic, { x: 40, opacity: 0 });
+
 				// 1. Hero Sequence (Timeline)
 				const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 				timeline = tl;
 
 				if (heroBadge)
-					tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-				if (heroTitle)
-					tl.fromTo(
-						heroTitle,
-						{ y: 40, opacity: 0 },
-						{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
-						'-=0.8'
-					);
-				if (heroDesc)
-					tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
+					tl.to(heroBadge, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+				if (heroTitle) tl.to(heroTitle, { y: 0, opacity: 1, duration: 1.2 }, '-=0.8');
+				if (heroDesc) tl.to(heroDesc, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
 				if (heroMetrics)
-					tl.fromTo(
-						heroMetrics,
-						{ opacity: 0, scale: 0.98 },
-						{ opacity: 1, scale: 1, duration: 1.2 },
-						'-=0.6'
-					);
-				if (heroGraphic)
-					tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+					tl.to(heroMetrics, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
+				if (heroGraphic) tl.to(heroGraphic, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
 				if (cancelled) return;
 
-				// 2. Scroll Reveal Logic
+				/*
+				 * Scroll: only pre-hide items that start below the fold. Animating from opacity 0
+				 * after they’re already visible makes the page “blink” (same pattern as other marketing routes).
+				 */
+				const viewportCut = window.innerHeight * 0.85;
+				document.querySelectorAll('.gsap-section .gsap-reveal-item').forEach((el) => {
+					const rect = el.getBoundingClientRect();
+					if (rect.top >= viewportCut) {
+						gsap.set(el, { y: 30, opacity: 0 });
+					}
+				});
+
 				observer = new IntersectionObserver(
 					(entries) => {
 						entries.forEach((entry) => {
@@ -92,29 +98,27 @@
 							const children = target.querySelectorAll('.gsap-reveal-item');
 
 							if (children.length > 0) {
-								gsap.fromTo(
-									children,
-									{ y: 30, opacity: 0 },
-									{
-										y: 0,
-										opacity: 1,
-										duration: 0.8,
-										stagger: 0.1,
-										ease: 'power2.out',
-										overwrite: true
-									}
-								);
+								gsap.to(children, {
+									y: 0,
+									opacity: 1,
+									duration: 0.8,
+									stagger: 0.1,
+									ease: 'power2.out',
+									overwrite: true
+								});
 							} else {
-								gsap.fromTo(
-									target,
-									{ y: 30, opacity: 0 },
-									{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
-								);
+								gsap.to(target, {
+									y: 0,
+									opacity: 1,
+									duration: 0.8,
+									ease: 'power2.out',
+									overwrite: true
+								});
 							}
 							observer?.unobserve(target);
 						});
 					},
-					{ threshold: 0.15 }
+					{ threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
 				);
 
 				document.querySelectorAll('.gsap-section').forEach((el) => observer?.observe(el));
@@ -134,26 +138,30 @@
 	// --- DATA ---
 	const sessionBreakdown = [
 		{
+			id: 'phase-microstructure',
 			time: '00:00 - 00:30',
 			phase: 'Phase I: Microstructure Audit',
 			desc: "Forensic analysis of your trade logs (last 1,000 executions). We measure your slippage against ADV, analyze your fill quality across venues, and identify 'Alpha Decay' where execution drag is eroding edge."
 		},
 		{
+			id: 'phase-risk',
 			time: '00:30 - 01:00',
 			phase: 'Phase II: Risk Parameterization',
 			desc: 'Stress-testing your current risk model against 6-sigma events. We reconstruct your position sizing logic using Kelly Criterion modified for fat-tail distribution to optimize Geometric Mean Return.'
 		},
 		{
+			id: 'phase-edge',
 			time: '01:00 - 01:45',
 			phase: 'Phase III: Edge Calibration',
 			desc: "Strategic realignment. We overlay your discretionary edge with institutional data sets (Dark Pool prints, GEX levels, Vanna Flows) to create a 'Confluence Filter' that filters out B-grade setups."
 		},
 		{
+			id: 'phase-neural',
 			time: '01:45 - 02:00',
 			phase: 'Phase IV: Neural Mapping',
 			desc: "Addressing the 'Psychological Ceiling.' We identify the specific cognitive biases (Loss Aversion, Recency Bias) preventing you from scaling size and implement a 'Circuit Breaker' protocol."
 		}
-	];
+	] as const;
 </script>
 
 <div class="bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black">
@@ -190,7 +198,7 @@
 			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-16">
 				<div class="lg:col-span-8">
 					<div
-						bind:this={heroBadge}
+						{@attach domRef((el) => (heroBadge = el))}
 						class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-12"
 					>
 						<span class="w-3 h-3">{@html Icons.Lock}</span>
@@ -198,14 +206,14 @@
 					</div>
 
 					<h1
-						bind:this={heroTitle}
+						{@attach domRef((el) => (heroTitle = el))}
 						class="text-6xl md:text-8xl lg:text-9xl font-serif text-white mb-12 tracking-tight leading-[0.9] origin-left"
 					>
 						Strategic<br />
 						<span class="text-slate-700">Alpha</span> Audit.
 					</h1>
 
-					<div bind:this={heroDesc} class="max-w-2xl border-l-2 border-amber-700 pl-8 py-2">
+					<div {@attach domRef((el) => (heroDesc = el))} class="max-w-2xl border-l-2 border-amber-700 pl-8 py-2">
 						<p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed">
 							A high-velocity, forensic deconstruction of your trading business. Designed strictly
 							for <span class="text-white font-medium">Portfolio Managers</span> and
@@ -213,7 +221,7 @@
 						</p>
 					</div>
 
-					<div bind:this={heroMetrics} class="mt-16 flex flex-wrap gap-12">
+					<div {@attach domRef((el) => (heroMetrics = el))} class="mt-16 flex flex-wrap gap-12">
 						<div>
 							<div class="text-[10px] font-mono uppercase tracking-widest text-slate-600 mb-2">
 								Consultation Fee
@@ -241,7 +249,7 @@
 					</div>
 				</div>
 
-				<div bind:this={heroGraphic} class="lg:col-span-4 flex flex-col justify-end">
+				<div {@attach domRef((el) => (heroGraphic = el))} class="lg:col-span-4 flex flex-col justify-end">
 					<div class="bg-[#080808] border border-white/10 p-8 relative overflow-hidden">
 						<div class="absolute top-0 right-0 p-4 opacity-20 w-12 h-12 text-slate-500">
 							{@html Icons.Globe}
@@ -394,7 +402,7 @@
 				</div>
 
 				<div class="space-y-8">
-					{#each sessionBreakdown as item}
+					{#each sessionBreakdown as item (item.id)}
 						<div class="group gsap-reveal-item">
 							<div
 								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/[0.02] transition-colors border-l-2 border-white/10 hover:border-amber-600"
@@ -586,5 +594,3 @@
 		</section>
 	</div>
 </div>
-
-<MarketingFooter />

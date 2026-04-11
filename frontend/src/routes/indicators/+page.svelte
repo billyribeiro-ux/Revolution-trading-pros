@@ -17,8 +17,6 @@
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconSchool from '@tabler/icons-svelte-runes/icons/school';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// Data & types extracted for maintainability
 	import { indicators, goldenSetup, faqs, categories, indicatorsSchema } from './data';
 
@@ -623,8 +621,6 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* * RESTORED CUSTOM CSS ARCHITECTURE 

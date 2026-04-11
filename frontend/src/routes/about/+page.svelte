@@ -22,8 +22,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { domRef } from '$lib/svelte/domAttachment';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
 	let containerRef: HTMLElement | undefined = $state();
@@ -303,7 +302,7 @@
 </svelte:head>
 
 <div
-	bind:this={containerRef}
+	{@attach domRef((el) => (containerRef = el))}
 	onmousemove={handleMouseMove}
 	role="main"
 	class="relative bg-[#010203] text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white"
@@ -868,5 +867,3 @@
 		</section>
 	</section>
 </div>
-
-<MarketingFooter />

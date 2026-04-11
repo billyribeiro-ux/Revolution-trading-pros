@@ -35,7 +35,7 @@ DATABASE_URL=postgresql://...       # For database
 **Optional Variables:**
 ```bash
 VITE_OPENAI_API_KEY=...            # Alternative AI
-VITE_SENTRY_DSN=...                # Error tracking
+# VITE_ERROR_TRACKING_URL=...      # Optional client error ingest
 ```
 
 ### Step 3: Initialize Database
@@ -123,7 +123,7 @@ pnpm run test:coverage
 ## 📊 Monitoring
 
 After deployment:
-- Errors tracked in Sentry
+- Optional client errors via `VITE_ERROR_TRACKING_URL` (see `hooks.client.ts`)
 - Analytics via Google Analytics/Plausible
 - Performance via Lighthouse CI
 

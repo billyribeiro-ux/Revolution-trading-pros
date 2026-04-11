@@ -14,8 +14,6 @@
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// Svelte 5 props with SvelteKit typing
 	interface Props {
 		data: PageData;
@@ -183,8 +181,6 @@
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

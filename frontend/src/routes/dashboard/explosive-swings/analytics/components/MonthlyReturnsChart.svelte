@@ -9,6 +9,7 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
 	import { onMount, onDestroy } from 'svelte';
+	import { domRef } from '$lib/svelte/domAttachment';
 	import type { MonthlyPerformance } from '../analytics.state.svelte';
 
 	interface Props {
@@ -20,7 +21,7 @@
 
 	// DOM reference for responsive width measurement (not reactive)
 	// svelte-ignore non_reactive_update
-	let containerEl: HTMLDivElement;
+	let containerEl: HTMLDivElement | undefined;
 	let width = $state(400);
 	let hoveredIndex: number | null = $state(null);
 
@@ -107,7 +108,7 @@
 			<p>No monthly data available</p>
 		</div>
 	{:else}
-		<div bind:this={containerEl} class="chart-container">
+		<div {@attach domRef<HTMLDivElement>((el) => (containerEl = el))} class="chart-container">
 			<svg {width} {height} class="chart-svg">
 				<!-- Grid lines -->
 				{#each [-1, -0.5, 0, 0.5, 1] as tick}

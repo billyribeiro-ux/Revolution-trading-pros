@@ -11,7 +11,6 @@
 
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
@@ -297,8 +296,6 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />
 
 <style>
 	.alerts-page {

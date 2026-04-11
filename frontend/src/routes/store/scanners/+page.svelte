@@ -28,8 +28,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import type { PageData } from './+page';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() rune with explicit typing
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -235,8 +233,6 @@
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

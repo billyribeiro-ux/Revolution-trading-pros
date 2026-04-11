@@ -76,21 +76,25 @@ const tradingRoomsData = [
 
 const benefitsData = [
 	{
+		id: 'institutional-mentorship',
 		iconType: 'analysis',
 		title: 'Institutional Mentorship',
 		desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.'
 	},
 	{
+		id: 'sub-second-alerts',
 		iconType: 'radar',
 		title: 'Sub-Second Alerts',
 		desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.'
 	},
 	{
+		id: 'continuous-education',
 		iconType: 'strategy',
 		title: 'Continuous Education',
 		desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.'
 	},
 	{
+		id: 'elite-community',
 		iconType: 'network',
 		title: 'Elite Community',
 		desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.'

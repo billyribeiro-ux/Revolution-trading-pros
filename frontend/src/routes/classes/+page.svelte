@@ -8,8 +8,6 @@ import { logger } from '$lib/utils/logger';
 
 	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	interface Course {
 		id: string;
 		title: string;
@@ -137,8 +135,6 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{/if}
 </div>
-
-<MarketingFooter />
 
 <style>
 	.courses-page {

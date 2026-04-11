@@ -3,7 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { revealAllDataGsapTargets } from '$lib/motion/gsapScrollReveal';
 
 	// --- Pricing State (Svelte 5 Runes) ---
@@ -1009,5 +1008,3 @@
 		</div>
 	</section>
 </div>
-
-<MarketingFooter />

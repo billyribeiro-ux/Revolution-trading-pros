@@ -2,8 +2,6 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
 	onMount(() => {
 		if (!browser) return;
@@ -1078,8 +1076,6 @@
 		</section>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* --- Custom Styles for Specific Effects --- */

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { logger } from '$lib/utils/logger';
+	import { domRef } from '$lib/svelte/domAttachment';
 	/**
 	 * Admin Course Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -701,7 +702,7 @@ import { logger } from '$lib/utils/logger';
 							id="page-file"
 							name="page-file"
 							type="file"
-							bind:this={fileInput}
+							{@attach domRef<HTMLInputElement>((el) => (fileInput = el ?? null))}
 							onchange={handleFileUpload}
 							style="display: none;"
 						/>

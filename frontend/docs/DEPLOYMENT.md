@@ -92,7 +92,7 @@ DATABASE_URL="production-url" pnpm dlx prisma migrate deploy
 
 ### 2. Monitoring
 
-- [ ] Sentry receiving errors
+- [ ] Error reporting endpoint reachable (if `VITE_ERROR_TRACKING_URL` is set)
 - [ ] Analytics tracking
 - [ ] Performance monitoring
 - [ ] Uptime monitoring

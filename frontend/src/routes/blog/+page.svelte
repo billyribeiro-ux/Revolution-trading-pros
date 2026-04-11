@@ -11,8 +11,6 @@ import { logger } from '$lib/utils/logger';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// ============================================================================
 	// TypeScript Interfaces
 	// ============================================================================
@@ -433,8 +431,6 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 	{/if}
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */

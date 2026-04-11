@@ -17,7 +17,6 @@ import { logger } from '$lib/utils/logger';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import {
 		initReadingAnalytics,
 		calculateReadingTime,
@@ -424,8 +423,6 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 	{/if}
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* 2026 CSS Standards: CSS Layers, oklch colors, container queries, color-mix */

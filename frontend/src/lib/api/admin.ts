@@ -701,14 +701,6 @@ function trackApiPerformance(
 function logApiError(endpoint: string, error: any): void {
 	logger.error(`[API] Error for ${endpoint}:`, error);
 
-	// Send to error tracking service
-	if (typeof window !== 'undefined' && 'Sentry' in window) {
-		(window as any).Sentry.captureException(error, {
-			tags: {
-				api_endpoint: endpoint
-			}
-		});
-	}
 }
 
 /**

@@ -417,28 +417,6 @@ import { logger } from '$lib/utils/logger';
 				],
 				is_connected: false,
 				status: 'disconnected'
-			},
-			// Monitoring
-			{
-				key: 'sentry',
-				name: 'Sentry',
-				category: 'monitoring',
-				description: 'Error tracking and performance monitoring',
-				icon: 'sentry',
-				color: '#362D59',
-				docs_url: 'https://docs.sentry.io',
-				is_oauth: false,
-				fields: [
-					{
-						key: 'dsn',
-						label: 'DSN',
-						type: 'text',
-						required: true,
-						placeholder: 'https://xxx@xxx.ingest.sentry.io/xxx'
-					}
-				],
-				is_connected: false,
-				status: 'disconnected'
 			}
 		];
 

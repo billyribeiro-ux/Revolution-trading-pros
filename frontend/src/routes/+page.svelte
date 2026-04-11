@@ -20,8 +20,6 @@
 	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
 	// ICT 11+ CORB Fix: Use same-origin endpoints
 	const API_URL = '';
 
@@ -81,5 +79,3 @@
 <LatestBlogsSection {posts} />
 <CTASection />
 <SocialMediaSection />
-
-<MarketingFooter />
