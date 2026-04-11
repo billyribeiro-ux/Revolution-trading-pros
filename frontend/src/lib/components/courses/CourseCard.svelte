@@ -72,7 +72,7 @@
 			}
 		}}
 	>
-		<img src={imageUrl} alt={course.title} class="thumb" loading="lazy" />
+		<img src={imageUrl} alt={course.title} width="120" height="120" loading="lazy" decoding="async" class="thumb" />
 		<div class="info">
 			<h4 class="title">{course.title}</h4>
 			<div class="meta">
@@ -115,7 +115,7 @@
 		}}
 	>
 		<div class="image-wrap">
-			<img src={imageUrl} alt={course.title} loading="lazy" />
+			<img src={imageUrl} alt={course.title} width="400" height="225" loading="lazy" decoding="async" />
 			{#if course.card_badge}
 				<span class="badge" style="background-color: {course.card_badge_color || '#10b981'}"
 					>{course.card_badge}</span

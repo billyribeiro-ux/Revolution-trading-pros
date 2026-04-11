@@ -519,6 +519,10 @@
 				<img
 					src={imageUrl}
 					alt={imageAlt}
+					width="1200"
+					height="675"
+					loading="lazy"
+					decoding="async"
 					class="chart-image"
 					class:loading={!imageLoaded}
 					onload={handleImageLoad}

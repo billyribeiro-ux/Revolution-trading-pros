@@ -32,7 +32,7 @@
 					aria-label="Select thumbnail {i + 1}"
 					aria-pressed={selected === i}
 				>
-					<img src={thumb} alt="Thumbnail option {i + 1}" loading="lazy" />
+					<img src={thumb} alt="Thumbnail option {i + 1}" width="200" height="112" loading="lazy" decoding="async" />
 					{#if selected === i}
 						<div class="thumb-check">
 							<svg

@@ -1293,7 +1293,7 @@ import { logger } from '$lib/utils/logger';
 		{#if showThumbnail && thumbnailUrl && !hasInteracted && lazyLoad}
 			<div class="thumbnail-container" transition:fade={{ duration: 300 }}>
 				{#if thumbnailLoaded}
-					<img src={thumbnailUrl} alt={title} class="thumbnail-image" />
+					<img src={thumbnailUrl} alt={title} width="1280" height="720" loading="lazy" decoding="async" class="thumbnail-image" />
 				{/if}
 				<button
 					class="play-overlay"
