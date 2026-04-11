@@ -37,19 +37,12 @@ import { logger } from '$lib/utils/logger';
 
 	// Types
 	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
-	import type { WatchlistData } from '$lib/server/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
+	import type { PageProps } from './$types';
 
-	// Props from +page.server.ts - ICT 7 Fix: Proper type definitions (no any)
-	interface PageData {
-		watchlist: WatchlistData | null;
-		tutorialVideo: RoomResource | null;
-		latestUpdates: RoomResource[];
-		documents: RoomResource[];
-		roomId: number;
-	}
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	// Destructured `$props()` typed via SvelteKit-generated `PageProps`.
+	// The local `interface PageData` is gone — `+page.server.ts` is the
+	// single source of truth for the load return shape.
+	let { data }: PageProps = $props();
 
 	// ICT 7: Local error state for user feedback
 	let saveAlertError = $state<string | null>(null);

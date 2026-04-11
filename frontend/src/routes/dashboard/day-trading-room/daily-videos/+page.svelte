@@ -14,17 +14,10 @@
 	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
-	import type { DailyVideo } from './+page.server';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { PageProps } from './$types';
 
-	// Svelte 5 props with SvelteKit typing
-	interface Props {
-		data: PageData;
-	}
-
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Derived state for reactive computed values
 	let videos = $derived(data.videos ?? []);

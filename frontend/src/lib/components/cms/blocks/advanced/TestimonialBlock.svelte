@@ -26,7 +26,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ==========================================================================
 	// Local State
@@ -43,14 +43,14 @@
 	// ==========================================================================
 
 	const quote = $derived(
-		props.block.content.testimonialQuote || 'This is an amazing product that changed my life!'
+		block.content.testimonialQuote || 'This is an amazing product that changed my life!'
 	);
-	const authorName = $derived(props.block.content.testimonialAuthor || 'John Doe');
-	const authorTitle = $derived(props.block.content.testimonialTitle || 'CEO');
-	const authorCompany = $derived(props.block.content.testimonialCompany || 'Acme Corp');
-	const authorPhoto = $derived(props.block.content.testimonialPhoto || '');
-	const rating = $derived(props.block.content.testimonialRating || 5);
-	const showPhoto = $derived(props.block.settings?.showPhoto !== false);
+	const authorName = $derived(block.content.testimonialAuthor || 'John Doe');
+	const authorTitle = $derived(block.content.testimonialTitle || 'CEO');
+	const authorCompany = $derived(block.content.testimonialCompany || 'Acme Corp');
+	const authorPhoto = $derived(block.content.testimonialPhoto || '');
+	const rating = $derived(block.content.testimonialRating || 5);
+	const showPhoto = $derived(block.settings?.showPhoto !== false);
 	const sanitizedPhotoURL = $derived(authorPhoto ? sanitizeURL(authorPhoto) : '');
 
 	// ==========================================================================
@@ -67,14 +67,14 @@
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({
-			content: { ...props.block.content, ...updates }
+		onUpdate({
+			content: { ...block.content, ...updates }
 		});
 	}
 
 	function updateSettings(updates: Partial<Block['settings']>): void {
-		props.onUpdate({
-			settings: { ...props.block.settings, ...updates }
+		onUpdate({
+			settings: { ...block.settings, ...updates }
 		});
 	}
 
@@ -113,13 +113,13 @@
 	// ==========================================================================
 
 	function handleStarClick(starValue: number): void {
-		if (props.isEditing) {
+		if (isEditing) {
 			updateContent({ testimonialRating: starValue });
 		}
 	}
 
 	function handleStarHover(starValue: number): void {
-		if (props.isEditing) {
+		if (isEditing) {
 			hoverRating = starValue;
 		}
 	}
@@ -129,7 +129,7 @@
 	}
 
 	function handleStarKeyDown(e: KeyboardEvent, starValue: number): void {
-		if (props.isEditing && (e.key === 'Enter' || e.key === ' ')) {
+		if (isEditing && (e.key === 'Enter' || e.key === ' ')) {
 			e.preventDefault();
 			handleStarClick(starValue);
 		}
@@ -171,7 +171,7 @@
 
 		if (!validation.valid) {
 			uploadError = validation.error || 'Invalid file';
-			props.onError?.(new Error(uploadError));
+			onError?.(new Error(uploadError));
 			return;
 		}
 
@@ -186,7 +186,7 @@
 		} catch (err) {
 			const error = err instanceof Error ? err.message : 'Failed to upload photo';
 			uploadError = error;
-			props.onError?.(new Error(error));
+			onError?.(new Error(error));
 		} finally {
 			isUploading = false;
 		}
@@ -237,14 +237,14 @@
 	<!-- Star Rating -->
 	<div
 		class="testimonial-block__rating"
-		class:testimonial-block__rating--editable={props.isEditing}
+		class:testimonial-block__rating--editable={isEditing}
 		role="group"
 		aria-label="Rating: {rating} out of {MAX_RATING} stars"
 	>
 		{#each Array(MAX_RATING) as _, index (index)}
 			{@const starValue = index + 1}
 			{@const isFilled = starValue <= (hoverRating || rating)}
-			{#if props.isEditing}
+			{#if isEditing}
 				<button
 					type="button"
 					class="testimonial-block__star"
@@ -272,7 +272,7 @@
 
 	<!-- Quote Text -->
 	<blockquote class="testimonial-block__quote">
-		{#if props.isEditing}
+		{#if isEditing}
 			<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 			<p
 				contenteditable="true"
@@ -297,7 +297,7 @@
 			<div class="testimonial-block__photo">
 				{#if sanitizedPhotoURL}
 					<img src={sanitizedPhotoURL} alt={authorName} class="testimonial-block__photo-img" />
-					{#if props.isEditing && props.isSelected}
+					{#if isEditing && isSelected}
 						<button
 							type="button"
 							class="testimonial-block__photo-remove"
@@ -317,7 +317,7 @@
 
 		<!-- Author Info -->
 		<div class="testimonial-block__info">
-			{#if props.isEditing}
+			{#if isEditing}
 				<span
 					contenteditable="true"
 					class="testimonial-block__name"
@@ -358,7 +358,7 @@
 </figure>
 
 <!-- Settings Panel (Edit Mode) - Outside figure to fix figcaption position -->
-{#if props.isEditing && props.isSelected}
+{#if isEditing && isSelected}
 	<div class="testimonial-block__settings">
 		<!-- Show Photo Toggle -->
 		<label class="testimonial-block__setting">

@@ -22,19 +22,19 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Get centralized state manager
 	const stateManager = getBlockStateManager();
 
 	// Get newsletter state from BlockStateManager
-	let newsletterState = $derived(stateManager.getNewsletterState(props.blockId));
+	let newsletterState = $derived(stateManager.getNewsletterState(blockId));
 
 	// Content fields with defaults
 	let placeholder = $derived(
-		props.block.content.newsletterPlaceholder || 'Enter your email address'
+		block.content.newsletterPlaceholder || 'Enter your email address'
 	);
-	let buttonText = $derived(props.block.content.newsletterButtonText || 'Subscribe');
+	let buttonText = $derived(block.content.newsletterButtonText || 'Subscribe');
 
 	// Local state for input binding
 	let emailInput = $state('');
@@ -48,7 +48,7 @@
 	 * Update block content
 	 */
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	/**
@@ -57,7 +57,7 @@
 	function handleEmailInput(e: Event): void {
 		const value = (e.target as HTMLInputElement).value;
 		emailInput = value;
-		stateManager.setNewsletterState(props.blockId, { email: value, error: null });
+		stateManager.setNewsletterState(blockId, { email: value, error: null });
 	}
 
 	/**
@@ -67,36 +67,36 @@
 		e.preventDefault();
 
 		// Don't submit while editing
-		if (props.isEditing) return;
+		if (isEditing) return;
 
 		// Clear previous error
-		stateManager.setNewsletterState(props.blockId, { error: null });
+		stateManager.setNewsletterState(blockId, { error: null });
 
 		// Validate email
 		const email = emailInput.trim();
 		if (!email) {
-			stateManager.setNewsletterState(props.blockId, {
+			stateManager.setNewsletterState(blockId, {
 				error: 'Please enter your email address'
 			});
 			return;
 		}
 
 		if (!isValidEmail(email)) {
-			stateManager.setNewsletterState(props.blockId, {
+			stateManager.setNewsletterState(blockId, {
 				error: 'Please enter a valid email address'
 			});
 			return;
 		}
 
 		// Start submission
-		stateManager.setNewsletterState(props.blockId, { submitting: true });
+		stateManager.setNewsletterState(blockId, { submitting: true });
 
 		try {
 			// Simulate API call - replace with actual newsletter service
 			await new Promise((resolve) => setTimeout(resolve, 1500));
 
 			// Success
-			stateManager.setNewsletterState(props.blockId, {
+			stateManager.setNewsletterState(blockId, {
 				submitting: false,
 				success: true,
 				email: ''
@@ -105,13 +105,13 @@
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : 'Failed to subscribe. Please try again.';
-			stateManager.setNewsletterState(props.blockId, {
+			stateManager.setNewsletterState(blockId, {
 				submitting: false,
 				error: errorMessage
 			});
 
-			if (props.onError && error instanceof Error) {
-				props.onError(error);
+			if (onError && error instanceof Error) {
+				onError(error);
 			}
 		}
 	}
@@ -120,7 +120,7 @@
 	 * Reset success state to allow re-subscription
 	 */
 	function handleReset(): void {
-		stateManager.setNewsletterState(props.blockId, {
+		stateManager.setNewsletterState(blockId, {
 			success: false,
 			email: '',
 			error: null
@@ -131,7 +131,7 @@
 
 <div
 	class="newsletter-block"
-	class:is-editing={props.isEditing}
+	class:is-editing={isEditing}
 	role="region"
 	aria-label="Newsletter signup"
 >
@@ -151,7 +151,7 @@
 			</div>
 			<p class="success-message">Thanks for subscribing!</p>
 			<p class="success-subtext">Check your inbox for a confirmation email.</p>
-			{#if props.isEditing}
+			{#if isEditing}
 				<button type="button" class="reset-button" onclick={handleReset}> Reset Form </button>
 			{/if}
 		</div>
@@ -164,7 +164,7 @@
 					value={emailInput}
 					oninput={handleEmailInput}
 					{placeholder}
-					disabled={newsletterState.submitting || props.isEditing}
+					disabled={newsletterState.submitting || isEditing}
 					aria-label="Email address"
 					aria-invalid={newsletterState.error ? 'true' : undefined}
 					aria-describedby={newsletterState.error ? 'newsletter-error' : undefined}
@@ -172,7 +172,7 @@
 				/>
 				<button
 					type="submit"
-					disabled={newsletterState.submitting || props.isEditing}
+					disabled={newsletterState.submitting || isEditing}
 					aria-busy={newsletterState.submitting}
 				>
 					{#if newsletterState.submitting}
@@ -196,7 +196,7 @@
 	{/if}
 
 	<!-- Settings Panel (visible when editing and selected) -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="newsletter-settings">
 			<h4 class="settings-title">Newsletter Settings</h4>
 			<div class="settings-grid">

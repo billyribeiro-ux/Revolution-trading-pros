@@ -21,17 +21,17 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
-	let imageUrl = $derived(props.block.content.cardImage || '');
-	let title = $derived(props.block.content.cardTitle || 'Card Title');
-	let description = $derived(props.block.content.cardDescription || '');
-	let buttonText = $derived(props.block.content.cardButtonText || 'Learn More');
-	let buttonUrl = $derived(props.block.content.cardButtonUrl || '#');
-	let newTab = $derived(props.block.settings.cardNewTab || false);
+	let imageUrl = $derived(block.content.cardImage || '');
+	let title = $derived(block.content.cardTitle || 'Card Title');
+	let description = $derived(block.content.cardDescription || '');
+	let buttonText = $derived(block.content.cardButtonText || 'Learn More');
+	let buttonUrl = $derived(block.content.cardButtonUrl || '#');
+	let newTab = $derived(block.settings.cardNewTab || false);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function handlePaste(e: ClipboardEvent): void {
@@ -49,7 +49,7 @@
 				<IconPhoto size={32} aria-hidden="true" />
 			</div>
 		{/if}
-		{#if props.isEditing}
+		{#if isEditing}
 			<input
 				type="url"
 				class="image-input"
@@ -61,7 +61,7 @@
 	</div>
 
 	<div class="card-content">
-		{#if props.isEditing}
+		{#if isEditing}
 			<h3
 				contenteditable="true"
 				class="card-title"
@@ -87,7 +87,7 @@
 			{/if}
 		{/if}
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<div class="button-edit">
 				<input
 					type="text"
@@ -106,9 +106,9 @@
 						type="checkbox"
 						checked={newTab}
 						onchange={(e) =>
-							props.onUpdate({
+							onUpdate({
 								settings: {
-									...props.block.settings,
+									...block.settings,
 									cardNewTab: (e.target as HTMLInputElement).checked
 								}
 							})}

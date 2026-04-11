@@ -102,12 +102,17 @@ import { logger } from '$lib/utils/logger';
 		onsaveaspreset?: (data: { block: Block }) => void;
 	}
 
-	let props: Props = $props();
-	const blockType = $derived(props.blockType);
-	const currentBlock = $derived(props.currentBlock ?? null);
-	const isModal = $derived(props.isModal ?? false);
-	const position = $derived(props.position ?? null);
-	const showSaveOption = $derived(props.showSaveOption ?? true);
+	let {
+		blockType,
+		currentBlock = null,
+		isModal = false,
+		position = null,
+		showSaveOption = true,
+		onselect,
+		onapply,
+		onclose,
+		onsaveaspreset: _onsaveaspreset
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -235,8 +240,8 @@ import { logger } from '$lib/utils/logger';
 			credentials: 'include'
 		}).catch(console.error);
 
-		props.onselect?.({ preset: fullPreset });
-		props.onapply?.({
+		onselect?.({ preset: fullPreset });
+		onapply?.({
 			content: fullPreset.preset_data.content,
 			settings: fullPreset.preset_data.settings
 		});
@@ -297,13 +302,13 @@ import { logger } from '$lib/utils/logger';
 			if (showSaveModal) {
 				showSaveModal = false;
 			} else {
-				props.onclose?.();
+				onclose?.();
 			}
 		}
 	}
 
 	function handleBlankOption() {
-		props.onapply?.({ content: {}, settings: {} });
+		onapply?.({ content: {}, settings: {} });
 	}
 
 	function handleSaveAsPreset() {
@@ -334,7 +339,7 @@ import { logger } from '$lib/utils/logger';
 	<!-- Modal Overlay -->
 	<div
 		class="preset-overlay"
-		onclick={() => props.onclose?.()}
+		onclick={() => onclose?.()}
 		onkeydown={handleKeydown}
 		role="button"
 		tabindex="0"
@@ -358,7 +363,7 @@ import { logger } from '$lib/utils/logger';
 					<IconTemplate size={20} />
 					<span>Presets for <strong>{blockType}</strong></span>
 				</div>
-				<button type="button" class="close-btn" onclick={() => props.onclose?.()}>
+				<button type="button" class="close-btn" onclick={() => onclose?.()}>
 					<IconX size={20} />
 				</button>
 			</div>

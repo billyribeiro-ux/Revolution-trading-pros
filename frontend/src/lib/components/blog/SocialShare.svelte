@@ -30,19 +30,18 @@
 		onShare?: (platform: string) => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for local use
-	const url = $derived(props.url ?? (typeof window !== 'undefined' ? window.location.href : ''));
-	const title = $derived(props.title);
-	const description = $derived(props.description ?? '');
-	const _image = $derived(props.image ?? '');
-	const hashtags = $derived(props.hashtags ?? '');
-	const via = $derived(props.via ?? 'RevTradingPros');
-	const layout = $derived(props.layout ?? 'horizontal');
-	const size = $derived(props.size ?? 'medium');
-	const showCount = $derived(props.showCount ?? false);
-	const onShare = $derived(props.onShare);
+	let {
+		url = typeof window !== 'undefined' ? window.location.href : '',
+		title,
+		description = '',
+		image: _image = '',
+		hashtags = '',
+		via = 'RevTradingPros',
+		layout = 'horizontal',
+		size = 'medium',
+		showCount = false,
+		onShare
+	}: Props = $props();
 
 	// Encode values for URLs
 	let encodedUrl = $derived(encodeURIComponent(url));

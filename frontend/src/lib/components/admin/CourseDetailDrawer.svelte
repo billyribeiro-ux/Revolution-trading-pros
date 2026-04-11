@@ -44,16 +44,15 @@
 		onRefresh?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const courseId = $derived(props.courseId);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onEditModule = $derived(props.onEditModule);
-	const onAddModule = $derived(props.onAddModule);
-	const onRefresh = $derived(props.onRefresh);
+	let {
+		isOpen,
+		courseId,
+		onClose,
+		onEdit,
+		onEditModule,
+		onAddModule,
+		onRefresh
+	}: Props = $props();
 
 	// State
 	let courseData = $state<CourseWithContent | null>(null);

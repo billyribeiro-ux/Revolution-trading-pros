@@ -42,16 +42,15 @@
 		variant?: 'inline' | 'banner' | 'toast';
 	}
 
-	let props: Props = $props();
-
-	// Computed - props with defaults
-	const error = $derived(props.error);
-	const showRetry = $derived(props.showRetry ?? false);
-	const dismissible = $derived(props.dismissible ?? true);
-	const onRetry = $derived(props.onRetry);
-	const onDismiss = $derived(props.onDismiss);
-	const title = $derived(props.title);
-	const variant = $derived(props.variant ?? 'inline');
+	let {
+		error,
+		showRetry = false,
+		dismissible = true,
+		onRetry,
+		onDismiss,
+		title,
+		variant = 'inline'
+	}: Props = $props();
 
 	// Computed
 	const severity = $derived<ErrorSeverity>(isApiError(error) ? error.severity : 'error');

@@ -11,12 +11,10 @@
 -->
 <script lang="ts">
 	import { sanitizeHtml } from '$lib/utils/sanitize';
-	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import type { PageProps } from './$types';
 
-	// Server-loaded data with Previous/Next navigation
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive video data from server
 	const video = $derived(data.video);

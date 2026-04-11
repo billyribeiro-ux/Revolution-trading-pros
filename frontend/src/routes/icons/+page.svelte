@@ -437,7 +437,7 @@
 </script>
 
 <div class="bg-slate-950 text-white p-4 md:p-8">
-	<div class="max-w-7xl mx-auto">
+	<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto">
 		<div class="mb-12 text-center">
 			<h1
 				class="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"

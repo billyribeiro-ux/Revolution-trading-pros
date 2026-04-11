@@ -9,40 +9,14 @@
 		children?: Snippet;
 	};
 
-	let props: CheckboxItemProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let checked = $state(false);
-	let indeterminate = $state(false);
-	let className = $derived(props.class);
-	let childrenProp = $derived(props.children);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-	$effect(() => {
-		if (props.checked !== undefined && props.checked !== checked) {
-			checked = props.checked;
-		}
-	});
-	$effect(() => {
-		if (props.indeterminate !== undefined && props.indeterminate !== indeterminate) {
-			indeterminate = props.indeterminate;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const {
-			ref: _,
-			checked: __,
-			indeterminate: ___,
-			class: ____,
-			children: _____,
-			...rest
-		} = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		checked = $bindable(false),
+		indeterminate = $bindable(false),
+		class: className,
+		children: childrenProp,
+		...restProps
+	}: CheckboxItemProps = $props();
 </script>
 
 <DropdownMenuPrimitive.CheckboxItem

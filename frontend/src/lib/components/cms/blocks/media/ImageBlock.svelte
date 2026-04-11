@@ -27,7 +27,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ==========================================================================
 	// State Manager
@@ -51,11 +51,11 @@
 	// Derived Values
 	// ==========================================================================
 
-	const imageUrl = $derived(props.block.content.mediaUrl || '');
-	const imageAlt = $derived(props.block.content.mediaAlt || '');
-	const caption = $derived(props.block.content.mediaCaption || '');
+	const imageUrl = $derived(block.content.mediaUrl || '');
+	const imageAlt = $derived(block.content.mediaAlt || '');
+	const caption = $derived(block.content.mediaCaption || '');
 	const objectFit = $derived(
-		(props.block.settings?.objectFit as 'cover' | 'contain' | 'fill') || 'cover'
+		(block.settings?.objectFit as 'cover' | 'contain' | 'fill') || 'cover'
 	);
 	const hasImage = $derived(!!imageUrl);
 	const sanitizedURL = $derived(imageUrl ? sanitizeURL(imageUrl) : '');
@@ -72,11 +72,11 @@
 
 	// Lightbox state from manager
 	const lightboxState = $derived(stateManager.getLightboxState());
-	const isLightboxOpen = $derived(lightboxState.open && lightboxState.blockId === props.blockId);
+	const isLightboxOpen = $derived(lightboxState.open && lightboxState.blockId === blockId);
 
 	// Unique IDs for ARIA
-	const captionId = $derived(`image-caption-${props.blockId}`);
-	const descriptionId = $derived(`image-desc-${props.blockId}`);
+	const captionId = $derived(`image-caption-${blockId}`);
+	const descriptionId = $derived(`image-desc-${blockId}`);
 
 	// ==========================================================================
 	// Constants
@@ -94,14 +94,14 @@
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({
-			content: { ...props.block.content, ...updates }
+		onUpdate({
+			content: { ...block.content, ...updates }
 		});
 	}
 
 	function updateSettings(updates: Partial<Block['settings']>): void {
-		props.onUpdate({
-			settings: { ...props.block.settings, ...updates }
+		onUpdate({
+			settings: { ...block.settings, ...updates }
 		});
 	}
 
@@ -117,7 +117,7 @@
 	function handleImageError(): void {
 		imageLoaded = false;
 		imageError = true;
-		props.onError?.(new Error(`Failed to load image: ${sanitizedURL}`));
+		onError?.(new Error(`Failed to load image: ${sanitizedURL}`));
 	}
 
 	// Reset loading state when URL changes
@@ -165,7 +165,7 @@
 
 		if (!validation.valid) {
 			uploadError = validation.error || 'Invalid file';
-			props.onError?.(new Error(uploadError));
+			onError?.(new Error(uploadError));
 			return;
 		}
 
@@ -189,7 +189,7 @@
 		} catch (err) {
 			const error = err instanceof Error ? err.message : 'Failed to upload image';
 			uploadError = error;
-			props.onError?.(new Error(error));
+			onError?.(new Error(error));
 		} finally {
 			isUploading = false;
 		}
@@ -250,8 +250,8 @@
 	// ==========================================================================
 
 	function openLightbox(): void {
-		if (!props.isEditing && hasImage && !imageError) {
-			stateManager.openLightbox(props.blockId, 0, 1);
+		if (!isEditing && hasImage && !imageError) {
+			stateManager.openLightbox(blockId, 0, 1);
 		}
 	}
 
@@ -264,7 +264,7 @@
 	}
 
 	function handleImageKeyDown(e: KeyboardEvent): void {
-		if ((e.key === 'Enter' || e.key === ' ') && !props.isEditing && hasImage) {
+		if ((e.key === 'Enter' || e.key === ' ') && !isEditing && hasImage) {
 			e.preventDefault();
 			openLightbox();
 		}
@@ -306,8 +306,8 @@
 
 <div
 	class="image-block"
-	class:image-block--selected={props.isSelected}
-	class:image-block--editing={props.isEditing}
+	class:image-block--selected={isSelected}
+	class:image-block--editing={isEditing}
 	role="figure"
 	aria-label={imageAlt || 'Image block'}
 >
@@ -338,7 +338,7 @@
 			{/if}
 
 			<!-- Edit Mode Overlay -->
-			{#if props.isEditing && props.isSelected}
+			{#if isEditing && isSelected}
 				<div class="image-block__edit-overlay">
 					<button
 						type="button"
@@ -387,14 +387,14 @@
 			{/if}
 
 			<!-- View Mode Hover Overlay -->
-			{#if !props.isEditing && imageLoaded && !imageError}
+			{#if !isEditing && imageLoaded && !imageError}
 				<div class="image-block__hover-overlay" aria-hidden="true">
 					<IconMaximize size={32} />
 				</div>
 			{/if}
 
 			<!-- Responsive Image -->
-			{#if props.isEditing}
+			{#if isEditing}
 				<img
 					src={sanitizedURL}
 					{srcset}
@@ -438,7 +438,7 @@
 		</div>
 
 		<!-- Alt Text Editor (Edit Mode & Selected) -->
-		{#if props.isEditing && props.isSelected}
+		{#if isEditing && isSelected}
 			<div class="image-block__alt-editor">
 				<label class="image-block__alt-label" for={descriptionId}> Alt text (accessibility) </label>
 				<input
@@ -455,23 +455,23 @@
 
 		<!-- Caption -->
 		<!-- svelte-ignore a11y_figcaption_parent -->
-		{#if caption || props.isEditing}
+		{#if caption || isEditing}
 			<figcaption
 				id={captionId}
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="image-block__caption"
-				class:image-block__caption--empty={!caption && props.isEditing}
-				oninput={props.isEditing ? handleCaptionInput : undefined}
-				onpaste={props.isEditing ? handlePaste : undefined}
+				class:image-block__caption--empty={!caption && isEditing}
+				oninput={isEditing ? handleCaptionInput : undefined}
+				onpaste={isEditing ? handlePaste : undefined}
 				data-placeholder="Add a caption..."
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Image caption' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Image caption' : undefined}
 				aria-multiline="false"
 			>
 				{caption}
 			</figcaption>
 		{/if}
-	{:else if props.isEditing}
+	{:else if isEditing}
 		<!-- Upload Placeholder -->
 		<div
 			class="image-block__placeholder"

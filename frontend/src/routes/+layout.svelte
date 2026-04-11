@@ -179,10 +179,12 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 {#if isAdminArea || isEmbedArea}
 	<!-- Admin/Embed: Own layouts, no shared chrome -->
+	<a href="#main-content" class="skip-to-content">Skip to main content</a>
 	{@render children()}
 {:else}
 	<!-- Dashboard + Marketing: Shared layout with NavBar + MarketingFooter -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
+	<a href="#main-content" class="skip-to-content">Skip to main content</a>
 	<div class="min-h-screen flex flex-col min-w-0" class:has-admin-toolbar={showAdminToolbar}>
 		<!-- ICT Level 7: ClientOnly prevents hydration mismatch for auth-dependent AdminToolbar -->
 		<ClientOnly>

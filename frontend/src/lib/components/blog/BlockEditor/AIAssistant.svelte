@@ -94,11 +94,7 @@ import { logger } from '$lib/utils/logger';
 		onapply: (content: string) => void;
 	}
 
-	let props: Props = $props();
-	const editorState = $derived(props.editorState);
-	const blockId = $derived(props.blockId);
-	const contentId = $derived(props.contentId);
-	const onapply = $derived(props.onapply);
+	let { editorState, blockId, contentId, onapply }: Props = $props();
 
 	// ==========================================================================
 	// State - Svelte 5 Runes

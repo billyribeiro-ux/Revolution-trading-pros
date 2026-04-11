@@ -36,14 +36,7 @@
 		onRefresh?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const isOpen = $derived(props.isOpen);
-	const memberId = $derived(props.memberId);
-	const onClose = $derived(props.onClose);
-	const onEdit = $derived(props.onEdit);
-	const onRefresh = $derived(props.onRefresh);
+	let { isOpen, memberId, onClose, onEdit, onEmail, onRefresh }: Props = $props();
 
 	// State
 	let data = $state<MemberFullDetails | null>(null);

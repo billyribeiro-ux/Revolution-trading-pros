@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	let copied = $state(false);
 	let copyTimeout: ReturnType<typeof setTimeout> | null = $state(null);
@@ -44,11 +44,11 @@
 	];
 
 	const currentLanguage = $derived(
-		languages.find((l) => l.value === props.block.content.language)?.label || 'JavaScript'
+		languages.find((l) => l.value === block.content.language)?.label || 'JavaScript'
 	);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function handleCodeInput(e: Event): void {
@@ -77,7 +77,7 @@
 
 	async function copyCode(): Promise<void> {
 		try {
-			await navigator.clipboard.writeText(props.block.content.code || '');
+			await navigator.clipboard.writeText(block.content.code || '');
 			copied = true;
 
 			// Clear any existing timeout
@@ -90,7 +90,7 @@
 				copyTimeout = null;
 			}, 2000);
 		} catch (error) {
-			props.onError?.(error instanceof Error ? error : new Error('Failed to copy code'));
+			onError?.(error instanceof Error ? error : new Error('Failed to copy code'));
 		}
 	}
 </script>
@@ -102,9 +102,9 @@
 				<IconCode size={16} />
 			</span>
 			<select
-				value={props.block.content.language || 'javascript'}
+				value={block.content.language || 'javascript'}
 				onchange={handleLanguageChange}
-				disabled={!props.isEditing}
+				disabled={!isEditing}
 				aria-label="Select programming language"
 				class="code-block__language-select"
 			>
@@ -115,7 +115,7 @@
 		</div>
 
 		<div class="code-block__header-right">
-			{#if !props.isEditing && props.block.content.code}
+			{#if !isEditing && block.content.code}
 				<span class="code-block__language-badge">{currentLanguage}</span>
 			{/if}
 			<button
@@ -124,7 +124,7 @@
 				class:code-block__copy-btn--copied={copied}
 				onclick={copyCode}
 				aria-label={copied ? 'Copied!' : 'Copy code'}
-				disabled={!props.block.content.code}
+				disabled={!block.content.code}
 			>
 				{#if copied}
 					<IconCheck size={16} aria-hidden="true" />
@@ -139,22 +139,22 @@
 
 	<div class="code-block__content">
 		<pre class="code-block__pre"><code
-				contenteditable={props.isEditing}
-				class="code-block__code language-{props.block.content.language || 'javascript'}"
-				class:code-block__code--placeholder={!props.block.content.code}
-				class:code-block__code--editable={props.isEditing}
+				contenteditable={isEditing}
+				class="code-block__code language-{block.content.language || 'javascript'}"
+				class:code-block__code--placeholder={!block.content.code}
+				class:code-block__code--editable={isEditing}
 				oninput={handleCodeInput}
 				onpaste={handlePaste}
 				onkeydown={handleKeyDown}
 				data-placeholder="// Enter your code here..."
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Code editor' : 'Code content'}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Code editor' : 'Code content'}
 				aria-multiline="true"
-				spellcheck="false">{props.block.content.code || ''}</code
+				spellcheck="false">{block.content.code || ''}</code
 			></pre>
 	</div>
 
-	{#if props.isEditing}
+	{#if isEditing}
 		<footer class="code-block__footer">
 			<span class="code-block__hint"> Press Tab for indentation. Paste code directly. </span>
 		</footer>

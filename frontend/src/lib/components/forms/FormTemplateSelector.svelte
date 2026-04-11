@@ -13,7 +13,7 @@
 		onCancel?: () => void;
 	}
 
-	let props: Props = $props();
+	let { onSelect, onCancel }: Props = $props();
 
 	// Svelte 5: Reactive state using $state() rune
 	let selectedCategory: string = $state('all');
@@ -42,11 +42,11 @@
 	);
 
 	function handleSelect(template: FormTemplate) {
-		props.onSelect?.(template);
+		onSelect?.(template);
 	}
 
 	function handleStartFromScratch() {
-		props.onCancel?.();
+		onCancel?.();
 	}
 </script>
 

@@ -23,17 +23,25 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let {
+		blocks,
+		containerHeight,
+		isEditing,
+		selectedBlockId,
+		onUpdate,
+		onSelect,
+		onError
+	}: Props = $props();
 
 	let scrollElement = $state<HTMLElement | null>(null);
 
 	let virtualizerStore = $derived(
 		scrollElement
 			? createVirtualizer({
-					count: props.blocks.length,
+					count: blocks.length,
 					getScrollElement: () => scrollElement,
 					estimateSize: (index) => {
-						const block = props.blocks[index];
+						const block = blocks[index];
 						return getEstimatedHeight(block);
 					},
 					overscan: 5
@@ -66,21 +74,21 @@
 	}
 
 	function _handleBlockUpdate(blockId: string, updates: Partial<Block>): void {
-		props.onUpdate(blockId, updates);
+		onUpdate(blockId, updates);
 	}
 </script>
 
 <div
 	bind:this={scrollElement}
 	class="block-virtualizer"
-	style="height: {props.containerHeight}px;"
+	style="height: {containerHeight}px;"
 	role="list"
 	aria-label="Document blocks"
 >
 	<div class="virtual-container" style="height: {totalSize}px;">
 		{#each virtualItems as virtualRow (virtualRow.key)}
-			{@const block = props.blocks[virtualRow.index]}
-			{@const isSelected = props.selectedBlockId === block.id}
+			{@const block = blocks[virtualRow.index]}
+			{@const isSelected = selectedBlockId === block.id}
 			<div
 				data-index={virtualRow.index}
 				class="virtual-item"
@@ -91,11 +99,11 @@
 				<button
 					type="button"
 					class="block-wrapper"
-					onclick={() => props.onSelect(block.id)}
+					onclick={() => onSelect(block.id)}
 					onkeydown={(e) => {
 						if (e.key === 'Enter' || e.key === ' ') {
 							e.preventDefault();
-							props.onSelect(block.id);
+							onSelect(block.id);
 						}
 					}}
 				>

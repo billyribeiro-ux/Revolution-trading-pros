@@ -25,9 +25,7 @@
 		onClose: () => void;
 	}
 
-	let props: Props = $props();
-	const isOpen = $derived(props.isOpen);
-	const onClose = $derived(props.onClose);
+	let { isOpen, onClose }: Props = $props();
 
 	// Detect platform
 	const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);

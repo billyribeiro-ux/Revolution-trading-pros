@@ -1450,8 +1450,10 @@
 				{#each faqList as faq, i}
 					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors"
+							type="button"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:bg-white/5 transition-colors"
 							onclick={() => toggleFaq(i)}
+							aria-expanded={openFaq === i}
 						>
 							<span class="pr-8">{faq.q}</span>
 							<svg

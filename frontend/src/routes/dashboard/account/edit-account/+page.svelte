@@ -8,19 +8,9 @@
 		email: string;
 	}
 
-	interface PageData {
-		profile: Profile;
-	}
+	import type { PageProps } from './$types';
 
-	interface ActionData {
-		success?: boolean;
-		message?: string;
-		error?: string;
-	}
-
-	let props: { data: PageData; form?: ActionData } = $props();
-	let data = $derived(props.data);
-	let form = $derived(props.form);
+	let { data, form }: PageProps = $props();
 
 	let isSubmitting = $state(false);
 	let profile = $derived(data.profile);

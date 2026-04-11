@@ -123,11 +123,7 @@ import { logger } from '$lib/utils/logger';
 		onclose: () => void;
 	}
 
-	let props: Props = $props();
-	const isOpen = $derived(props.isOpen);
-	const contentId = $derived(props.contentId);
-	const oninsert = $derived(props.oninsert);
-	const onclose = $derived(props.onclose);
+	let { isOpen, contentId, oninsert, onclose }: Props = $props();
 
 	// ==========================================================================
 	// State

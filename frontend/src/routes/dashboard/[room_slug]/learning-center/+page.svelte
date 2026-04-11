@@ -15,11 +15,9 @@
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import LearningCenterFilter from '$lib/components/dashboard/LearningCenterFilter.svelte';
 	import VideoGrid from '$lib/components/dashboard/VideoGrid.svelte';
-	import type { PageData } from './$types';
+	import type { PageProps } from './$types';
 
-	// Server-side data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive state from server data
 	let videos = $derived(data.videos || []);

@@ -8,7 +8,7 @@ import { logger } from '$lib/utils/logger';
 		form: Form;
 	}
 
-	let props: Props = $props();
+	let { form }: Props = $props();
 
 	let stats: any = $state(null);
 	let loading = $state(true);
@@ -23,12 +23,12 @@ import { logger } from '$lib/utils/logger';
 		loading = true;
 
 		try {
-			if (props.form.id) {
+			if (form.id) {
 				// Load basic stats
-				stats = await getSubmissionStats(props.form.id);
+				stats = await getSubmissionStats(form.id);
 
 				// Load recent submissions for trend analysis
-				const submissions = await getSubmissions(props.form.id, 1, 100);
+				const submissions = await getSubmissions(form.id, 1, 100);
 
 				// Calculate submission trend (last 30 days)
 				submissionTrend = calculateSubmissionTrend(submissions.submissions);
@@ -77,12 +77,12 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	function analyzeFieldCompletion(submissions: any[]) {
-		if (!props.form.fields || submissions.length === 0) return [];
+		if (!form.fields || submissions.length === 0) return [];
 
 		const fieldStats: Record<string, { filled: number; total: number; field: any }> = {};
 
 		// Initialize field stats
-		props.form.fields.forEach((field) => {
+		form.fields.forEach((field) => {
 			fieldStats[field.name] = {
 				filled: 0,
 				total: submissions.length,

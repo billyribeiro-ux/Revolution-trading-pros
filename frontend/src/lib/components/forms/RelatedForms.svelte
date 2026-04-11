@@ -31,7 +31,7 @@ import { logger } from '$lib/utils/logger';
 		relation_type?: string;
 	}
 
-	let props: Props = $props();
+	let { formId, limit = 5, showTrending = false }: Props = $props();
 
 	// State
 	let relatedForms = $state<RelatedForm[]>([]);
@@ -43,7 +43,7 @@ import { logger } from '$lib/utils/logger';
 	async function fetchRelatedForms() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/${props.formId}/related?limit=${props.limit ?? 5}`, {
+			const response = await fetch(`/api/forms/${formId}/related?limit=${limit}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -59,7 +59,7 @@ import { logger } from '$lib/utils/logger';
 	async function fetchTrendingForms() {
 		try {
 			const token = getAuthToken();
-			const response = await fetch(`/api/forms/trending?limit=${props.limit ?? 5}`, {
+			const response = await fetch(`/api/forms/trending?limit=${limit}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
 
@@ -104,7 +104,7 @@ import { logger } from '$lib/utils/logger';
 		loading = true;
 		await Promise.all([
 			fetchRelatedForms(),
-			props.showTrending ? fetchTrendingForms() : Promise.resolve()
+			showTrending ? fetchTrendingForms() : Promise.resolve()
 		]);
 		loading = false;
 	});
@@ -115,7 +115,7 @@ import { logger } from '$lib/utils/logger';
 		<h3>Discover More</h3>
 	</div>
 
-	{#if props.showTrending}
+	{#if showTrending}
 		<div class="tabs">
 			<button
 				class="tab"

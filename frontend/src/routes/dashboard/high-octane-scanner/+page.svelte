@@ -85,9 +85,10 @@
 		roomId?: number;
 	}
 
-	// Svelte 5 $props() rune - the official way to receive page data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	// Svelte 5 destructured `$props()` typed via SvelteKit-generated `PageProps`.
+	// (`PageData` is still imported from local types because it's referenced
+	// elsewhere in the file for narrower casts.)
+	let { data }: PageProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes

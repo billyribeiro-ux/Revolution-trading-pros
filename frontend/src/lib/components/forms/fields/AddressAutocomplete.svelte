@@ -37,10 +37,10 @@
 		onchange?: (value: AddressComponents) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, error, onchange }: Props = $props();
 
 	// Configuration from field attributes
-	const allowManual = $derived(props.field.attributes?.['allow_manual'] ?? true);
+	const allowManual = $derived(field.attributes?.['allow_manual'] ?? true);
 
 	// State
 	let searchInput = $state('');
@@ -66,8 +66,8 @@
 
 	// Sync address with value prop changes
 	$effect(() => {
-		if (props.value && JSON.stringify(props.value) !== JSON.stringify(address)) {
-			address = props.value;
+		if (value && JSON.stringify(value) !== JSON.stringify(address)) {
+			address = value;
 		}
 	});
 
@@ -138,12 +138,12 @@
 
 			if (data.result) {
 				address = parseAddressComponents(data.result);
-				props.onchange?.(address);
+				onchange?.(address);
 			}
 		} catch (_err) {
 			// Parse from description for demo
 			address = parseFromDescription(suggestion.description);
-			props.onchange?.(address);
+			onchange?.(address);
 		} finally {
 			isLoading = false;
 		}
@@ -238,10 +238,10 @@
 	}
 
 	// Update manual field
-	function updateField(fieldName: keyof AddressComponents, value: string) {
-		address = { ...address, [fieldName]: value };
+	function updateField(fieldName: keyof AddressComponents, newValue: string) {
+		address = { ...address, [fieldName]: newValue };
 		address.formatted_address = buildFormattedAddress();
-		props.onchange?.(address);
+		onchange?.(address);
 	}
 
 	// Build formatted address from components
@@ -273,15 +273,15 @@
 </script>
 
 <div class="address-field">
-	<label class="field-label" for={props.field.name}>
-		{props.field.label}
-		{#if props.field.required}
+	<label class="field-label" for={field.name}>
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	{#if !manualMode}
@@ -294,9 +294,9 @@
 					oninput={handleInput}
 					onkeydown={handleKeydown}
 					onfocus={() => (showSuggestions = suggestions.length > 0)}
-					placeholder={props.field.placeholder || 'Start typing an address...'}
+					placeholder={field.placeholder || 'Start typing an address...'}
 					class="search-input"
-					class:has-error={props.error && props.error.length > 0}
+					class:has-error={error && error.length > 0}
 					autocomplete="off"
 				/>
 				{#if isLoading}
@@ -342,7 +342,7 @@
 		<div class="address-fields">
 			<div class="field-row">
 				<div class="field-col full">
-					<label class="sub-label" for={props.field.name + '_address_line1'}>Address Line 1</label>
+					<label class="sub-label" for={field.name + '_address_line1'}>Address Line 1</label>
 					<input
 						type="text"
 						value={address.address_line1}
@@ -357,7 +357,7 @@
 
 			<div class="field-row">
 				<div class="field-col full">
-					<label class="sub-label" for={props.field.name + '_address_line2'}>Address Line 2</label>
+					<label class="sub-label" for={field.name + '_address_line2'}>Address Line 2</label>
 					<input
 						type="text"
 						value={address.address_line2}
@@ -372,7 +372,7 @@
 
 			<div class="field-row">
 				<div class="field-col half">
-					<label class="sub-label" for={props.field.name + '_city'}>City</label>
+					<label class="sub-label" for={field.name + '_city'}>City</label>
 					<input
 						type="text"
 						value={address.city}
@@ -383,7 +383,7 @@
 					/>
 				</div>
 				<div class="field-col quarter">
-					<label class="sub-label" for={props.field.name + '_state'}>State/Province</label>
+					<label class="sub-label" for={field.name + '_state'}>State/Province</label>
 					<input
 						type="text"
 						value={address.state}
@@ -395,7 +395,7 @@
 					/>
 				</div>
 				<div class="field-col quarter">
-					<label class="sub-label" for={props.field.name + '_postal_code'}>ZIP/Postal Code</label>
+					<label class="sub-label" for={field.name + '_postal_code'}>ZIP/Postal Code</label>
 					<input
 						type="text"
 						value={address.postal_code}
@@ -410,7 +410,7 @@
 
 			<div class="field-row">
 				<div class="field-col full">
-					<label class="sub-label" for={props.field.name + '_country'}>Country</label>
+					<label class="sub-label" for={field.name + '_country'}>Country</label>
 					<input
 						type="text"
 						value={address.country}
@@ -438,24 +438,24 @@
 		</div>
 	{/if}
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-errors">
-			{#each props.error as err}
+			{#each error as err}
 				<p>{err}</p>
 			{/each}
 		</div>
 	{/if}
 
 	<!-- Hidden inputs for form submission -->
-	<input type="hidden" name="{props.field.name}[address_line1]" value={address.address_line1} />
-	<input type="hidden" name="{props.field.name}[address_line2]" value={address.address_line2} />
-	<input type="hidden" name="{props.field.name}[city]" value={address.city} />
-	<input type="hidden" name="{props.field.name}[state]" value={address.state} />
-	<input type="hidden" name="{props.field.name}[postal_code]" value={address.postal_code} />
-	<input type="hidden" name="{props.field.name}[country]" value={address.country} />
+	<input type="hidden" name="{field.name}[address_line1]" value={address.address_line1} />
+	<input type="hidden" name="{field.name}[address_line2]" value={address.address_line2} />
+	<input type="hidden" name="{field.name}[city]" value={address.city} />
+	<input type="hidden" name="{field.name}[state]" value={address.state} />
+	<input type="hidden" name="{field.name}[postal_code]" value={address.postal_code} />
+	<input type="hidden" name="{field.name}[country]" value={address.country} />
 	<input
 		type="hidden"
-		name="{props.field.name}[formatted_address]"
+		name="{field.name}[formatted_address]"
 		value={address.formatted_address}
 	/>
 </div>

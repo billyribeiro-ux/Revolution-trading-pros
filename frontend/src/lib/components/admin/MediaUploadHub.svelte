@@ -22,7 +22,7 @@
 
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
@@ -64,18 +64,17 @@
 		compact?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const accept = $derived(props.accept ?? 'any');
-	const multiple = $derived(props.multiple ?? true);
-	const maxFiles = $derived(props.maxFiles ?? 20);
-	const maxSize = $derived(props.maxSize ?? 500 * 1024 * 1024); // 500MB for videos
-	const collection = $derived(props.collection ?? 'uploads');
-	const roomId = $derived(props.roomId);
-	const onUploadComplete = $derived(props.onUploadComplete);
-	const onClose = $derived(props.onClose);
-	const compact = $derived(props.compact ?? false);
+	let {
+		accept = 'any',
+		multiple = true,
+		maxFiles = 20,
+		maxSize = 500 * 1024 * 1024, // 500MB for videos
+		collection = 'uploads',
+		roomId,
+		onUploadComplete,
+		onClose,
+		compact = false
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -87,8 +86,8 @@
 	let isUploading = $state(false);
 	let fileInput = $state<HTMLInputElement | null>(null);
 
-	// Animated progress
-	const totalProgress = tweened(0, { duration: 300, easing: cubicOut });
+	// Animated progress — `Tween` class API (Svelte 5.8+); read via `.current`.
+	const totalProgress = new Tween(0, { duration: 300, easing: cubicOut });
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FILE TYPE HELPERS
@@ -580,7 +579,7 @@
 			<!-- Progress Bar -->
 			<div class="total-progress">
 				<div class="progress-bar">
-					<div class="progress-fill" style="width: {$totalProgress}%"></div>
+					<div class="progress-fill" style="width: {totalProgress.current}%"></div>
 				</div>
 				<div class="progress-stats">
 					<span class="stat completed"><IconCheck size={14} /> {completedCount}</span>

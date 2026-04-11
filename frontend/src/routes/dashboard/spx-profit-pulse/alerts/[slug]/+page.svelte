@@ -10,10 +10,9 @@
 	 */
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import type { PageProps } from './$types';
 
-	// SSR data from +page.server.ts
-	let props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	const alert = $derived(data.alert);
 

@@ -16,23 +16,9 @@ import { logger } from '$lib/utils/logger';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
-	import type { WatchlistResponse } from '$lib/types/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
+	import type { PageProps } from './$types';
 
-	// Props interface for SSR data - Svelte 5 best practice
-	interface Props {
-		data: {
-			watchlist?: WatchlistResponse;
-			tutorialVideo?: RoomResource | null;
-			latestUpdates?: RoomResource[];
-			documents?: RoomResource[];
-			roomId?: number;
-		};
-	}
-
-	// SSR data from +page.server.ts
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Fallback article data - used when API returns empty (declared before $derived that uses it)
 	const fallbackArticles = [

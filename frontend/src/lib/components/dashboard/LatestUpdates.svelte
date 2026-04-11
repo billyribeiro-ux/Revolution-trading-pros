@@ -43,15 +43,14 @@ import { logger } from '$lib/utils/logger';
 		maxItems?: number;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let items = $derived(props.items ?? []);
-	let apiEndpoint = $derived(props.apiEndpoint);
-	let roomSlug = $derived(props.roomSlug ?? '');
-	let title = $derived(props.title ?? 'Latest Updates');
-	let buttonText = $derived(props.buttonText ?? 'Watch Now');
-	let maxItems = $derived(props.maxItems ?? 6);
+	let {
+		items = [],
+		apiEndpoint,
+		roomSlug = '',
+		title = 'Latest Updates',
+		buttonText = 'Watch Now',
+		maxItems = 6
+	}: Props = $props();
 
 	// Svelte 5 $state for dynamic data
 	let dynamicItems = $state<UpdateItem[]>([]);

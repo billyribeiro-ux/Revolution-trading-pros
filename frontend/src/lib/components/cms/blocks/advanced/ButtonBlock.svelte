@@ -35,17 +35,17 @@
 	// Props
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// =========================================================================
 	// Derived Values
 	// =========================================================================
 
-	let buttonText = $derived(props.block.content.buttonText || 'Click Here');
-	let buttonUrl = $derived(props.block.content.buttonUrl || '#');
-	let buttonStyle = $derived((props.block.content.buttonStyle as ButtonStyle) || 'primary');
-	let buttonSize = $derived((props.block.content.buttonSize as ButtonSize) || 'medium');
-	let fullWidth = $derived(props.block.settings.fullWidth || false);
+	let buttonText = $derived(block.content.buttonText || 'Click Here');
+	let buttonUrl = $derived(block.content.buttonUrl || '#');
+	let buttonStyle = $derived((block.content.buttonStyle as ButtonStyle) || 'primary');
+	let buttonSize = $derived((block.content.buttonSize as ButtonSize) || 'medium');
+	let fullWidth = $derived(block.settings.fullWidth || false);
 
 	let sanitizedUrl = $derived(sanitizeURL(buttonUrl) || '#');
 
@@ -54,11 +54,11 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function handlePaste(e: ClipboardEvent): void {
@@ -68,7 +68,7 @@
 	}
 
 	function handleClick(e: MouseEvent): void {
-		if (props.isEditing) {
+		if (isEditing) {
 			e.preventDefault();
 		}
 	}
@@ -80,7 +80,7 @@
 	role="navigation"
 	aria-label="Call to action"
 >
-	{#if props.isEditing}
+	{#if isEditing}
 		<!-- Edit Mode: Inline Editing with contenteditable span -->
 		<a
 			href={sanitizedUrl}
@@ -109,7 +109,7 @@
 </div>
 
 <!-- Settings Panel (Edit Mode) -->
-{#if props.isEditing && props.isSelected}
+{#if isEditing && isSelected}
 	<div class="button-settings">
 		<div class="settings-row">
 			<label class="setting-field">

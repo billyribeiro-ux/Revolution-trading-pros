@@ -9,41 +9,41 @@
 		onchange?: (value: boolean) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, error, onchange }: Props = $props();
 
 	const consentText = $derived(
-		props.field.attributes?.consent_text ||
+		field.attributes?.consent_text ||
 			'I agree to the processing of my personal data in accordance with the Privacy Policy.'
 	);
-	const privacyUrl = $derived(props.field.attributes?.privacy_url || '/privacy-policy');
-	const termsUrl = $derived(props.field.attributes?.terms_url || '/terms-of-service');
-	const showPrivacyLink = $derived(props.field.attributes?.show_privacy_link !== false);
-	const showTermsLink = $derived(props.field.attributes?.show_terms_link !== false);
-	const fieldType = $derived<'gdpr' | 'terms'>(props.field.attributes?.field_type || 'gdpr');
+	const privacyUrl = $derived(field.attributes?.privacy_url || '/privacy-policy');
+	const termsUrl = $derived(field.attributes?.terms_url || '/terms-of-service');
+	const showPrivacyLink = $derived(field.attributes?.show_privacy_link !== false);
+	const showTermsLink = $derived(field.attributes?.show_terms_link !== false);
+	const fieldType = $derived<'gdpr' | 'terms'>(field.attributes?.field_type || 'gdpr');
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLInputElement;
-		props.onchange?.(target.checked);
+		onchange?.(target.checked);
 	}
 </script>
 
 <div class="gdpr-field">
-	{#if props.field.label}
+	{#if field.label}
 		<span class="field-label">
-			{props.field.label}
-			{#if props.field.required}
+			{field.label}
+			{#if field.required}
 				<span class="required">*</span>
 			{/if}
 		</span>
 	{/if}
 
-	<div class="consent-wrapper" class:has-error={props.error && props.error.length > 0}>
+	<div class="consent-wrapper" class:has-error={error && error.length > 0}>
 		<label class="consent-label">
 			<input
 				type="checkbox"
-				name={props.field.name}
-				checked={props.value ?? false}
-				required={props.field.required}
+				name={field.name}
+				checked={value ?? false}
+				required={field.required}
 				class="consent-checkbox"
 				onchange={handleChange}
 			/>
@@ -111,13 +111,13 @@
 		{/if}
 	</div>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

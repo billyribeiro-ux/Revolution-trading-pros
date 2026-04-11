@@ -41,7 +41,7 @@
 		onclose?: () => void;
 	}
 
-	let props: Props = $props();
+	let { isOpen = false, onclose }: Props = $props();
 
 	const menuSections = [
 		{
@@ -102,13 +102,13 @@
 	];
 
 	function closeSidebar() {
-		props.onclose?.();
+		onclose?.();
 	}
 
 	let currentPath = $derived(page.url.pathname);
 </script>
 
-<aside class="admin-sidebar" class:open={props.isOpen}>
+<aside class="admin-sidebar" class:open={isOpen}>
 	<!-- Header -->
 	<div class="sidebar-header">
 		<a href="/admin" class="sidebar-logo">
@@ -159,7 +159,7 @@
 </aside>
 
 <!-- Mobile Overlay -->
-{#if props.isOpen}
+{#if isOpen}
 	<button class="sidebar-overlay" onclick={closeSidebar} aria-label="Close sidebar"></button>
 {/if}
 

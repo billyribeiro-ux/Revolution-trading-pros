@@ -2,20 +2,12 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
-	let props: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
-	let ref = $state<HTMLSpanElement | null>(null);
-	let className = $derived(props.class);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, children: ___, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
 </script>
 
 <span
@@ -24,5 +16,5 @@
 	class={cn('text-muted-foreground ms-auto text-xs tracking-widest', className)}
 	{...restProps}
 >
-	{@render props.children?.()}
+	{@render children?.()}
 </span>

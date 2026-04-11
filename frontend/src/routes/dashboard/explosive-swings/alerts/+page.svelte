@@ -10,19 +10,9 @@
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import { IconSearch } from '$lib/icons';
-	import type { RoomAlert } from '$lib/types/trading';
+	import type { PageProps } from './$types';
 
-	// Props interface for SSR data - Svelte 5 best practice
-	interface Props {
-		data: {
-			alerts: RoomAlert[];
-			total: number;
-			error?: string;
-		};
-	}
-
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Svelte 5 $state for filter state
 	let selectedFilter = $state('all');

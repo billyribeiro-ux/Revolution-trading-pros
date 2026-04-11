@@ -192,26 +192,25 @@ import { logger } from '$lib/utils/logger';
 		onlogout?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults (Svelte 5 January 2026 pattern)
-	const items = $derived(props.items ?? DEFAULT_NAV_ITEMS);
-	const dashboardItems = $derived(props.dashboardItems ?? DEFAULT_DASHBOARD_ITEMS);
-	const logoSrc = $derived(props.logoSrc ?? '/revolution-trading-pros.png');
-	const logoAlt = $derived(props.logoAlt ?? 'Revolution Trading Pros');
-	const logoHref = $derived(props.logoHref ?? '/');
-	const theme = $derived(props.theme ?? {});
-	const sticky = $derived(props.sticky ?? true);
-	const logo = $derived(props.logo);
-	const actions = $derived(props.actions);
-	const announcement = $derived(props.announcement ?? '');
-	const disableTransitions = $derived(props.disableTransitions ?? false);
-	const onnavclick = $derived(props.onnavclick);
-	const ondropdownopen = $derived(props.ondropdownopen);
-	const ondropdownclose = $derived(props.ondropdownclose);
-	const onmobileopen = $derived(props.onmobileopen);
-	const onmobileclose = $derived(props.onmobileclose);
-	const onlogout = $derived(props.onlogout);
+	let {
+		items = DEFAULT_NAV_ITEMS,
+		dashboardItems = DEFAULT_DASHBOARD_ITEMS,
+		logoSrc = '/revolution-trading-pros.png',
+		logoAlt = 'Revolution Trading Pros',
+		logoHref = '/',
+		theme = {},
+		sticky = true,
+		logo,
+		actions,
+		announcement = '',
+		disableTransitions = false,
+		onnavclick,
+		ondropdownopen,
+		ondropdownclose,
+		onmobileopen,
+		onmobileclose,
+		onlogout
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EVENT HELPERS (Svelte 5 callback pattern)

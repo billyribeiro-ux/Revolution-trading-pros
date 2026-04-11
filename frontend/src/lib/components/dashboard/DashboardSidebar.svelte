@@ -72,13 +72,13 @@
 		secondarySidebarTitle?: string; // Title for secondary sidebar
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	let user = $derived(props.user);
-	let collapsed = $derived(props.collapsed ?? false);
-	let secondaryNavItems = $derived(props.secondaryNavItems ?? []);
-	let secondarySidebarTitle = $derived(props.secondarySidebarTitle ?? '');
+	let {
+		user,
+		collapsed = false,
+		onToggle: _onToggle,
+		secondaryNavItems = [],
+		secondarySidebarTitle = ''
+	}: Props = $props();
 
 	// State for expanded submenus in secondary nav
 	let expandedSubmenus = $state<Set<string>>(new Set());

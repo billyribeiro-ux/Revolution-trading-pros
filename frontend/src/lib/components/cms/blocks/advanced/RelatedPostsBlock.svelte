@@ -44,7 +44,7 @@
 	// Props
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// =========================================================================
 	// Mock Data (API integration placeholder)
@@ -93,11 +93,11 @@
 	// Derived Values
 	// =========================================================================
 
-	let title = $derived(props.block.content.relatedPostsTitle || 'Related Articles');
-	let layout = $derived((props.block.content.relatedPostsLayout as LayoutMode) || 'grid');
-	let postCount = $derived(props.block.content.relatedPostsCount || 3);
-	let showExcerpt = $derived(props.block.settings.relatedPostsShowExcerpt !== false);
-	let showCategory = $derived(props.block.settings.relatedPostsShowCategory !== false);
+	let title = $derived(block.content.relatedPostsTitle || 'Related Articles');
+	let layout = $derived((block.content.relatedPostsLayout as LayoutMode) || 'grid');
+	let postCount = $derived(block.content.relatedPostsCount || 3);
+	let showExcerpt = $derived(block.settings.relatedPostsShowExcerpt !== false);
+	let showCategory = $derived(block.settings.relatedPostsShowCategory !== false);
 
 	let displayPosts = $derived(MOCK_POSTS.slice(0, Math.min(Math.max(postCount, 2), 4)));
 
@@ -106,11 +106,11 @@
 	// =========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function handlePaste(e: ClipboardEvent): void {
@@ -120,14 +120,14 @@
 	}
 
 	function handleCardClick(e: MouseEvent, _post: RelatedPost): void {
-		if (props.isEditing) {
+		if (isEditing) {
 			e.preventDefault();
 		}
 	}
 
 	function handleKeyDown(e: KeyboardEvent, post: RelatedPost): void {
 		if (e.key === 'Enter' || e.key === ' ') {
-			if (!props.isEditing) {
+			if (!isEditing) {
 				window.location.href = post.url;
 			}
 		}
@@ -137,7 +137,7 @@
 <section class="related-posts-block" aria-label="Related articles">
 	<!-- Section Header -->
 	<header class="related-posts-header">
-		{#if props.isEditing}
+		{#if isEditing}
 			<h3
 				contenteditable="true"
 				class="related-posts-title"
@@ -151,7 +151,7 @@
 			<h3 class="related-posts-title">{title}</h3>
 		{/if}
 
-		{#if props.isEditing && props.isSelected}
+		{#if isEditing && isSelected}
 			<div class="layout-toggle">
 				<button
 					type="button"
@@ -186,7 +186,7 @@
 	>
 		{#each displayPosts as post (post.id)}
 			<article class="post-card" role="listitem">
-				{#if props.isEditing}
+				{#if isEditing}
 					<!-- Edit Mode: Placeholder Card -->
 					<div class="post-card-inner">
 						<div class="post-image">
@@ -247,7 +247,7 @@
 </section>
 
 <!-- Settings Panel (Edit Mode) -->
-{#if props.isEditing && props.isSelected}
+{#if isEditing && isSelected}
 	<div class="related-posts-settings">
 		<label class="setting-field">
 			<span>Number of Posts:</span>

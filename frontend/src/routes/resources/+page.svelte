@@ -58,7 +58,7 @@
 	class="resources-hero relative bg-gradient-to-br from-rtp-blue via-rtp-primary to-rtp-emerald text-white"
 >
 	<div class="absolute inset-0 bg-black/20"></div>
-	<div class="resources-hero__content relative max-w-7xl mx-auto text-center">
+	<div class="resources-hero__content relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto text-center">
 		<h1 class="resources-hero__title font-heading font-bold">Free Trading Resources</h1>
 		<p class="resources-hero__subtitle text-white/90 max-w-3xl mx-auto">
 			Everything you need to start your trading journey. Guides, tools, and educational content.
@@ -68,7 +68,7 @@
 
 <!-- Resource Categories - 2026 Mobile-First Responsive -->
 <section class="resources-section bg-rtp-bg">
-	<div class="resources-container max-w-7xl mx-auto">
+	<div class="resources-container max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto">
 		<div class="resources-grid">
 			<!-- Beginner Guides -->
 			<div

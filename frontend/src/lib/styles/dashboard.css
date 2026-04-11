@@ -338,6 +338,72 @@ header[class*='dashboard__header'] {
 	}
 }
 
+/* QHD / 2K (2560px+) */
+@media (min-width: 2560px) {
+	.dashboard__header {
+		padding: 48px 80px;
+	}
+
+	.dashboard__content-section,
+	.dashboard__content-section-member {
+		padding: 60px 80px;
+		max-width: 2200px;
+	}
+
+	.dashboard__page-title {
+		font-size: 32px;
+	}
+
+	.section-title,
+	.section-title-alt {
+		font-size: 32px;
+	}
+}
+
+/* 4K UHD (3840px+) */
+@media (min-width: 3840px) {
+	.dashboard__header {
+		padding: 64px 120px;
+	}
+
+	.dashboard__content-section,
+	.dashboard__content-section-member {
+		padding: 80px 120px;
+		max-width: 2800px;
+	}
+
+	.dashboard__page-title {
+		font-size: 40px;
+	}
+
+	.section-title,
+	.section-title-alt {
+		font-size: 40px;
+	}
+}
+
+/* 5K (5120px+) */
+@media (min-width: 5120px) {
+	.dashboard__header {
+		padding: 80px 160px;
+	}
+
+	.dashboard__content-section,
+	.dashboard__content-section-member {
+		padding: 100px 160px;
+		max-width: 3400px;
+	}
+
+	.dashboard__page-title {
+		font-size: 48px;
+	}
+
+	.section-title,
+	.section-title-alt {
+		font-size: 48px;
+	}
+}
+
 /* Desktop (1280px - 1439px) */
 @media (min-width: 1280px) and (max-width: 1439px) {
 	.dashboard__header {

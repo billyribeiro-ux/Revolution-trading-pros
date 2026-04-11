@@ -18,21 +18,20 @@
 		hint?: string;
 	}
 
-	let props: Props = $props();
-	let accept = $derived(
-		props.accept ?? [
+	let {
+		accept = [
 			'video/mp4',
 			'video/webm',
 			'video/quicktime',
 			'video/x-msvideo',
 			'video/x-matroska'
-		]
-	);
-	let maxSizeBytes = $derived(props.maxSizeBytes ?? 5 * 1024 * 1024 * 1024);
-	let onfile = $derived(props.onfile);
-	let onerror = $derived(props.onerror);
-	let disabled = $derived(props.disabled ?? false);
-	let hint = $derived(props.hint ?? 'or use the button below');
+		],
+		maxSizeBytes = 5 * 1024 * 1024 * 1024,
+		onfile,
+		onerror,
+		disabled = false,
+		hint = 'or use the button below'
+	}: Props = $props();
 
 	// Local state
 	let isDragOver = $state(false);

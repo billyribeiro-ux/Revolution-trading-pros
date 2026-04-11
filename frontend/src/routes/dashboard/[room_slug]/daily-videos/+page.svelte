@@ -13,12 +13,10 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import type { PageProps } from './$types';
 
-	// Server-loaded data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive state from server data
 	const displayedVideos = $derived(data.videos || []);

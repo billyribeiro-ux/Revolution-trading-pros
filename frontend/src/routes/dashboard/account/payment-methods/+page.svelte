@@ -13,19 +13,9 @@
 		subscriptions?: string[];
 	}
 
-	interface PageData {
-		paymentMethods: PaymentMethod[];
-	}
+	import type { PageProps } from './$types';
 
-	interface ActionData {
-		success?: boolean;
-		message?: string;
-		error?: string;
-	}
-
-	let props: { data: PageData; form?: ActionData } = $props();
-	let data = $derived(props.data);
-	let form = $derived(props.form);
+	let { data, form }: PageProps = $props();
 
 	const paymentMethods = $derived(data.paymentMethods || []);
 	let isSubmitting = $state(false);

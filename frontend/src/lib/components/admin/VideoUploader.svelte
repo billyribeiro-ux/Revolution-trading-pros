@@ -22,12 +22,7 @@ import { logger } from '$lib/utils/logger';
 		onCancel?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const membershipId = $derived(props.membershipId ?? '');
-	const onUploadComplete = $derived(props.onUploadComplete);
-	const onCancel = $derived(props.onCancel);
+	let { membershipId = '', onUploadComplete, onCancel }: Props = $props();
 
 	// Types
 	interface UploadedVideo {

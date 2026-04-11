@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Column presets
 	type ColumnPreset = '50/50' | '33/33/33' | '66/34' | '34/66' | '25/25/25/25' | 'custom';
@@ -44,10 +44,10 @@
 	];
 
 	// Derived state
-	const columnCount = $derived((props.block.content.columnCount || 2) as number);
-	const columnLayout = $derived((props.block.content.columnLayout || '50/50') as ColumnPreset);
-	const gap = $derived((props.block.settings.gap || '2rem') as string);
-	const children = $derived((props.block.content.children || []) as Block[]);
+	const columnCount = $derived((block.content.columnCount || 2) as number);
+	const columnLayout = $derived((block.content.columnLayout || '50/50') as ColumnPreset);
+	const gap = $derived((block.settings.gap || '2rem') as string);
+	const children = $derived((block.content.children || []) as Block[]);
 
 	// Compute grid template from preset
 	const gridTemplate = $derived.by(() => {
@@ -69,11 +69,11 @@
 	});
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function setPreset(preset: ColumnPreset): void {
@@ -99,12 +99,12 @@
 
 <div
 	class="columns-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
+	class:editing={isEditing}
+	class:selected={isSelected}
 	role="group"
 	aria-label="Column layout with {columns.length} columns"
 >
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="columns-toolbar" role="toolbar" aria-label="Column settings">
 			<div class="toolbar-group">
 				<span class="toolbar-label">Layout:</span>
@@ -166,7 +166,7 @@
 				aria-label="Column {column.index + 1}"
 			>
 				<div class="column-content">
-					{#if props.isEditing}
+					{#if isEditing}
 						<div class="nested-placeholder">
 							<span class="placeholder-text">Column {column.index + 1} content</span>
 							<span class="placeholder-hint">Drop blocks here</span>

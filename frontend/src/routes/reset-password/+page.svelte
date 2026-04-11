@@ -95,7 +95,7 @@
 		></div>
 
 		<div
-			class="relative bg-slate-900/90 backdrop-blur-xl border border-purple-500/20 rounded-3xl p-10 shadow-2xl"
+			class="relative bg-slate-900/90 backdrop-blur-xl border border-purple-500/20 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl"
 		>
 			<!-- Header -->
 			<div class="text-center mb-8">
@@ -107,7 +107,7 @@
 					</div>
 				</div>
 				<h1
-					class="text-4xl font-heading font-bold mb-3 bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
+					class="text-2xl sm:text-4xl font-heading font-bold mb-2 sm:mb-3 bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
 				>
 					Reset Password
 				</h1>

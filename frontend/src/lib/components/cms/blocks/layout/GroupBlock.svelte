@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Padding presets
 	type PaddingSize = 'none' | 'small' | 'medium' | 'large';
@@ -54,12 +54,12 @@
 	type Alignment = 'left' | 'center' | 'right';
 
 	// Derived state
-	const backgroundColor = $derived((props.block.settings.backgroundColor || '') as string);
-	const paddingSize = $derived((props.block.settings.padding || 'medium') as PaddingSize);
-	const borderRadius = $derived((props.block.settings.borderRadius || '8px') as string);
-	const maxWidthSize = $derived((props.block.settings.maxWidth || 'full') as MaxWidthSize);
-	const alignment = $derived((props.block.settings.textAlign || 'left') as Alignment);
-	const children = $derived((props.block.content.children || []) as Block[]);
+	const backgroundColor = $derived((block.settings.backgroundColor || '') as string);
+	const paddingSize = $derived((block.settings.padding || 'medium') as PaddingSize);
+	const borderRadius = $derived((block.settings.borderRadius || '8px') as string);
+	const maxWidthSize = $derived((block.settings.maxWidth || 'full') as MaxWidthSize);
+	const alignment = $derived((block.settings.textAlign || 'left') as Alignment);
+	const children = $derived((block.content.children || []) as Block[]);
 
 	// Computed styles
 	const paddingValue = $derived(PADDING_VALUES[paddingSize] || paddingSize);
@@ -78,7 +78,7 @@
 	});
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function setBackgroundColor(color: string): void {
@@ -106,8 +106,8 @@
 	}
 </script>
 
-<div class="group-block-wrapper" class:editing={props.isEditing} class:selected={props.isSelected}>
-	{#if props.isEditing && props.isSelected}
+<div class="group-block-wrapper" class:editing={isEditing} class:selected={isSelected}>
+	{#if isEditing && isSelected}
 		<div class="group-toolbar" role="toolbar" aria-label="Group settings">
 			<div class="toolbar-row">
 				<div class="toolbar-group">
@@ -282,7 +282,7 @@
 		aria-label="Content group"
 	>
 		<div class="group-content">
-			{#if props.isEditing}
+			{#if isEditing}
 				<div class="nested-placeholder">
 					{#if children.length === 0}
 						<div class="placeholder-icon">

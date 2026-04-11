@@ -11,10 +11,9 @@
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import type { PageProps } from './$types';
 
-	// SSR data from +page.server.ts
-	let props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Transform SSR alerts to LatestUpdates format
 	const latestUpdatesItems = $derived(

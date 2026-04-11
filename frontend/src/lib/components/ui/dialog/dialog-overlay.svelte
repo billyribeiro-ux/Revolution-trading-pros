@@ -2,20 +2,11 @@
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 	import { cn } from '$lib/utils.js';
 
-	let props: DialogPrimitive.OverlayProps = $props();
-	let ref = $state<HTMLElement | null>(null);
-	let className = $derived(props.class);
-
-	$effect(() => {
-		if (props.ref !== undefined && props.ref !== ref) {
-			ref = props.ref;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { ref: _, class: __, ...rest } = props;
-		return rest;
-	});
+	let {
+		ref = $bindable(null),
+		class: className,
+		...restProps
+	}: DialogPrimitive.OverlayProps = $props();
 </script>
 
 <DialogPrimitive.Overlay

@@ -49,16 +49,15 @@
 		children?: Snippet;
 	}
 
-	let props: Props = $props();
-
-	// Destructure with defaults for internal use
-	const feature = $derived(props.feature);
-	const serviceKey = $derived(props.serviceKey);
-	const variant = $derived(props.variant ?? 'card');
-	const showFeatures = $derived(props.showFeatures ?? true);
-	const connected = $derived(props.connected);
-	const disconnected = $derived(props.disconnected);
-	const children = $derived(props.children);
+	let {
+		feature,
+		serviceKey,
+		variant = 'card',
+		showFeatures = true,
+		connected,
+		disconnected,
+		children
+	}: Props = $props();
 
 	// Check connection status
 	let isConnected = $derived.by(() => {

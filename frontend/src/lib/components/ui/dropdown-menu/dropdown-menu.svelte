@@ -1,19 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
-	let props: DropdownMenuPrimitive.RootProps = $props();
-	let open = $state(false);
-
-	$effect(() => {
-		if (props.open !== undefined && props.open !== open) {
-			open = props.open;
-		}
-	});
-
-	let restProps = $derived.by(() => {
-		const { open: _, ...rest } = props;
-		return rest;
-	});
+	let { open = $bindable(false), ...restProps }: DropdownMenuPrimitive.RootProps = $props();
 </script>
 
 <DropdownMenuPrimitive.Root bind:open {...restProps} />

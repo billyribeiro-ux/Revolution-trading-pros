@@ -15,23 +15,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import type { VideoResponse } from './+page.server';
+	import type { PageProps } from './$types';
 
-	interface PageData {
-		videos: VideoResponse[];
-		meta: {
-			current_page: number;
-			per_page: number;
-			total: number;
-			last_page: number;
-		};
-		activeFilter: string;
-		error: string | null;
-	}
-
-	// Server-side data
-	let props: { data: PageData } = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	// Reactive state from server data
 	let videos = $derived(data.videos || []);

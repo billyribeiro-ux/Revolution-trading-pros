@@ -43,12 +43,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
-
-	// Destructure for internal use
-	const propsIndicatorId = $derived(props.indicatorId);
-	const onSave = $derived(props.onSave);
-	const onClose = $derived(props.onClose);
+	let { indicatorId: propsIndicatorId, onSave, onClose }: Props = $props();
 
 	// Local mutable indicatorId (for newly created indicators)
 	let localIndicatorId = $state<number | undefined>(undefined);

@@ -47,14 +47,13 @@ import { logger } from '$lib/utils/logger';
 		class?: string;
 	}
 
-	let props: Props = $props();
-
-	// Derived props with defaults
-	let userId = $derived(props.userId);
-	let limit = $derived(props.limit ?? 6);
-	let title = $derived(props.title ?? 'Continue Watching');
-	let showViewAll = $derived(props.showViewAll ?? true);
-	let className = $derived(props.class ?? '');
+	let {
+		userId,
+		limit = 6,
+		title = 'Continue Watching',
+		showViewAll = true,
+		class: className = ''
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// STATE

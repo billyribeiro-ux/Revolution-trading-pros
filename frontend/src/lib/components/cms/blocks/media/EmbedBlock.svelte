@@ -27,13 +27,13 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
-	let embedUrl = $derived(props.block.content.embedUrl || '');
-	let embedType = $derived(props.block.content.embedType || 'custom');
+	let embedUrl = $derived(block.content.embedUrl || '');
+	let embedType = $derived(block.content.embedType || 'custom');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function detectEmbedType(url: string): string {
@@ -97,7 +97,7 @@
 </script>
 
 <div class="embed-block" role="region" aria-label="Embedded content">
-	{#if props.isEditing}
+	{#if isEditing}
 		<div class="embed-editor">
 			<div class="embed-header">
 				<TypeIcon size={20} aria-hidden="true" />
