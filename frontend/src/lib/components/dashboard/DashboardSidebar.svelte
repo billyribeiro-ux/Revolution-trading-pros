@@ -299,7 +299,7 @@
 					<p class="dashboard__nav-category">memberships</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each tradingRoomLinks as link}
+					{#each tradingRoomLinks as link (link.href)}
 						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
@@ -330,7 +330,7 @@
 					<p class="dashboard__nav-category">mentorship</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each mentorshipLinks as link}
+					{#each mentorshipLinks as link (link.href)}
 						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
@@ -361,7 +361,7 @@
 					<p class="dashboard__nav-category">scanners</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each scannerLinks as link}
+					{#each scannerLinks as link (link.href)}
 						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
@@ -391,7 +391,7 @@
 				<p class="dashboard__nav-category">tools</p>
 			</li>
 			<ul class="dash_main_links">
-				{#each toolsLinks as link}
+				{#each toolsLinks as link (link.href)}
 					<li class:is-active={isActive(link.href)}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
@@ -428,7 +428,7 @@
 				<p class="dashboard__nav-category">account</p>
 			</li>
 			<ul class="dash_main_links">
-				{#each accountLinks as link}
+				{#each accountLinks as link (link.href)}
 					<li class:is-active={isActive(link.href)}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
@@ -456,7 +456,7 @@
 	{#if showSecondaryNav}
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
-				{#each secondaryNavItems as item}
+				{#each secondaryNavItems as item (item.text)}
 					<li
 						class:has-submenu={item.submenu && item.submenu.length > 0}
 						onmouseenter={() =>

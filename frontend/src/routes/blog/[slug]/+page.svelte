@@ -190,7 +190,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else if error}
 		<div class="error" role="alert" aria-live="assertive">
-			<h2>Oops!</h2>
+			<h1>Oops!</h1>
 			<p>{error}</p>
 			<button class="btn-back" onclick={goBack} aria-label="Go back to blog listing">
 				<svg
@@ -375,7 +375,7 @@ import { logger } from '$lib/utils/logger';
 
 				{#if post.tags && post.tags.length > 0}
 					<div class="tags-section">
-						<h3>Tags</h3>
+						<h2>Tags</h2>
 						<div class="tags">
 							{#each post.tags as tag}
 								<span class="tag">{tag.name}</span>

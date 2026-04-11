@@ -24,7 +24,7 @@
 	>
 		<header class="mb-10">
 			<h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">Privacy Policy</h1>
-			<p class="mt-3 text-sm text-gray-500">
+			<p class="mt-3 text-sm text-gray-600">
 				Last updated: <time datetime={lastUpdated}>{lastUpdated}</time>
 			</p>
 		</header>

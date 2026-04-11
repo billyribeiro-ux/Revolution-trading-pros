@@ -101,7 +101,11 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a
+										href={tutorial.url}
+										title="Read More..."
+										aria-label="Read more about {tutorial.title}">Read More...</a
+									>
 								</div>
 							</div>
 						</div>
@@ -166,7 +170,11 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a
+										href={tutorial.url}
+										title="Read More..."
+										aria-label="Read more about {tutorial.title}">Read More...</a
+									>
 								</div>
 							</div>
 						</div>
