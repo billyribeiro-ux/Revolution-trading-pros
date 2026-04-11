@@ -2,8 +2,8 @@
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 
 	let props: DropdownMenuPrimitive.CheckboxGroupProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
-	let value = $state<string[]>(props.value ?? []);
+	let ref = $state<HTMLElement | null>(null);
+	let value = $state<string[]>([]);
 
 	$effect(() => {
 		if (props.ref !== undefined && props.ref !== ref) {

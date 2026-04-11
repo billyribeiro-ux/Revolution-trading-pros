@@ -2,7 +2,7 @@
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 
 	let props: DialogPrimitive.RootProps = $props();
-	let open = $state(props.open ?? false);
+	let open = $state(false);
 
 	$effect(() => {
 		if (props.open !== undefined && props.open !== open) {

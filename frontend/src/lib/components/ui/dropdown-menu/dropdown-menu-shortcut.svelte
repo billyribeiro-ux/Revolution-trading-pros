@@ -3,7 +3,7 @@
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
 	let props: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
-	let ref = $state<HTMLSpanElement | null>(props.ref ?? null);
+	let ref = $state<HTMLSpanElement | null>(null);
 	let className = $derived(props.class);
 
 	$effect(() => {

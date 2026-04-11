@@ -8,7 +8,7 @@
 	};
 
 	let props: TriggerProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let className = $derived(props.class);
 	let size = $derived(props.size ?? 'default');
 

@@ -36,7 +36,7 @@ import { logger } from '$lib/utils/logger';
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected: _isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ==========================================================================
 	// Local State
@@ -49,9 +49,11 @@ import { logger } from '$lib/utils/logger';
 	// Media Controls Hook
 	// ==========================================================================
 
+	// Hook reads options once at creation; blockId/onError match this CMS block for its lifetime.
+	// svelte-ignore state_referenced_locally
 	const controls = useMediaControls({
-		blockId: props.blockId,
-		onError: props.onError,
+		blockId,
+		onError,
 		onEnded: () => {
 			logger.info('Audio playback ended');
 		}
@@ -85,8 +87,8 @@ import { logger } from '$lib/utils/logger';
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({
-			content: { ...props.block.content, ...updates }
+		onUpdate({
+			content: { ...block.content, ...updates }
 		});
 	}
 
@@ -111,7 +113,7 @@ import { logger } from '$lib/utils/logger';
 			updateContent({ mediaUrl: sanitized });
 			urlInputValue = '';
 		} else if (urlInputValue.trim()) {
-			props.onError?.(new Error('Invalid URL format. Please enter a valid audio URL.'));
+			onError?.(new Error('Invalid URL format. Please enter a valid audio URL.'));
 		}
 	}
 
@@ -134,7 +136,7 @@ import { logger } from '$lib/utils/logger';
 		});
 
 		if (!validation.valid) {
-			props.onError?.(new Error(validation.error || 'Invalid audio file'));
+			onError?.(new Error(validation.error || 'Invalid audio file'));
 			return;
 		}
 
@@ -176,9 +178,9 @@ import { logger } from '$lib/utils/logger';
 	// Derived State
 	// ==========================================================================
 
-	const hasAudio = $derived(!!props.block.content.mediaUrl);
+	const hasAudio = $derived(!!block.content.mediaUrl);
 	const sanitizedURL = $derived(
-		props.block.content.mediaUrl ? sanitizeURL(props.block.content.mediaUrl) : ''
+		block.content.mediaUrl ? sanitizeURL(block.content.mediaUrl) : ''
 	);
 </script>
 
@@ -276,22 +278,22 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		<!-- Caption -->
-		{#if props.block.content.mediaCaption || props.isEditing}
+		{#if block.content.mediaCaption || isEditing}
 			<p
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="audio-caption editable-content"
-				class:placeholder={!props.block.content.mediaCaption}
+				class:placeholder={!block.content.mediaCaption}
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Audio caption' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Audio caption' : undefined}
 				aria-multiline="false"
 			>
-				{props.block.content.mediaCaption || ''}
+				{block.content.mediaCaption || ''}
 			</p>
 		{/if}
-	{:else if props.isEditing}
+	{:else if isEditing}
 		<!-- Placeholder (Edit Mode) -->
 		<div class="audio-placeholder">
 			<IconWaveSine size={48} aria-hidden="true" />

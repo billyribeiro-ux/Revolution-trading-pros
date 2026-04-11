@@ -2,7 +2,7 @@
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 
 	let props: DialogPrimitive.TriggerProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (props.ref !== undefined && props.ref !== ref) {

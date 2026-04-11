@@ -9,7 +9,7 @@
 	};
 
 	let props: ContentProps = $props();
-	let ref = $state<HTMLElement | null>(props.ref ?? null);
+	let ref = $state<HTMLElement | null>(null);
 	let sideOffset = $derived(props.sideOffset ?? 4);
 	let portalProps = $derived(props.portalProps);
 	let className = $derived(props.class);
