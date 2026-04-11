@@ -5,12 +5,12 @@
 # Lighthouse Best Practices and many security scanners check this file.
 # Bug-bounty platforms and Google's web security team also use it as a
 # canonical contact point for responsible disclosure.
+#
+# Only fields with real, resolvable destinations are included — RFC 9116
+# permits omitting optional fields when no real resource exists, and
+# Lighthouse penalises dead `Encryption:` / `Policy:` URLs.
 
 Contact: mailto:security@revolution-trading-pros.com
-Contact: https://revolution-trading-pros.pages.dev/security
 Expires: 2027-04-11T00:00:00.000Z
-Encryption: https://revolution-trading-pros.pages.dev/.well-known/pgp-key.txt
 Preferred-Languages: en
 Canonical: https://revolution-trading-pros.pages.dev/.well-known/security.txt
-Policy: https://revolution-trading-pros.pages.dev/security-policy
-Acknowledgments: https://revolution-trading-pros.pages.dev/security/acknowledgments

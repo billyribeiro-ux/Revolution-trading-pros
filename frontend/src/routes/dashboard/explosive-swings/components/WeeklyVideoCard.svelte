@@ -39,8 +39,11 @@
 			<img
 				src={video.thumbnailUrl}
 				alt="Thumbnail for {video.title}"
-				class="video-thumbnail"
+				width="400"
+				height="225"
 				loading="lazy"
+				decoding="async"
+				class="video-thumbnail"
 			/>
 			<button class="play-overlay" onclick={onPlay} aria-label="Play {video.title}">
 				<div class="play-button">

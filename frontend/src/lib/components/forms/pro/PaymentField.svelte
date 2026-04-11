@@ -126,7 +126,7 @@
 				{/if}
 
 				{#if item.image}
-					<img src={item.image} alt={item.label} class="item-image" />
+					<img src={item.image} alt={item.label} width="80" height="80" loading="lazy" decoding="async" class="item-image" />
 				{/if}
 
 				<div class="item-details">
