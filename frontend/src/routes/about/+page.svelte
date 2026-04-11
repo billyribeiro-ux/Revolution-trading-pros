@@ -341,7 +341,7 @@
 		</div>
 	</div>
 
-	<section id="about-content" class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
+	<section id="about-content" class="relative z-10 pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
 		<section class="max-w-[1600px] mx-auto mb-32 lg:mb-48 relative">
 			<div
 				class="absolute top-20 -left-[20%] -right-[20%] h-[500px] grid-floor pointer-events-none parallax-layer z-0"
@@ -576,7 +576,7 @@
 						{#each features as feat, i}
 							{@const Icon = feat.icon}
 							<div
-								class="group interactive-card bg-[#050505] border border-white/10 p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
+								class="group interactive-card bg-[#050505] border border-white/10 p-6 sm:p-10 hover:border-amber-600/40 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-xl"
 							>
 								<div
 									class="absolute -top-6 -right-6 text-white opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-700 pointer-events-none transform group-hover:scale-110 group-hover:-rotate-12 transition-transform"
@@ -621,7 +621,7 @@
 				<div in:heavySlide={{ delay: 500 }} class="border-t border-white/10 pt-20">
 					<div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
 						<div>
-							<h2 class="text-4xl font-serif text-white mb-4">Meet Your Mentors.</h2>
+							<h2 class="text-3xl xs:text-4xl font-serif text-white mb-4 break-words">Meet Your Mentors.</h2>
 							<p class="text-slate-400 max-w-2xl font-light text-lg">
 								We aren't anonymous admins hiding behind screens. We're real traders in the chat
 								with you every single day—calling moves, answering questions, and helping you grow.
@@ -637,7 +637,7 @@
 					<div class="grid gap-px bg-white/5 border border-white/10 overflow-hidden rounded-lg">
 						{#each team as member}
 							<div
-								class="group bg-[#050505] p-8 md:p-12 grid md:grid-cols-12 gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative overflow-hidden interactive-card"
+								class="group bg-[#050505] p-5 sm:p-8 md:p-12 grid md:grid-cols-12 gap-6 sm:gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative overflow-hidden interactive-card"
 							>
 								<div
 									class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"
@@ -707,7 +707,7 @@
 
 				<div in:heavySlide={{ delay: 700 }} class="grid md:grid-cols-2 gap-8">
 					<div
-						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
+						class="bg-[#080808]/80 backdrop-blur-xl p-6 sm:p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
 							<IconMessageCircle size={80} />
@@ -739,7 +739,7 @@
 					</div>
 
 					<div
-						class="bg-[#080808]/80 backdrop-blur-xl p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
+						class="bg-[#080808]/80 backdrop-blur-xl p-6 sm:p-10 border border-white/5 rounded-xl relative hover:border-amber-600/30 transition-colors duration-500 interactive-card"
 					>
 						<div class="absolute -top-4 -left-4 text-amber-900/20">
 							<IconMessageCircle size={80} />
@@ -777,7 +777,7 @@
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 800 }} class="border-t border-white/10 pt-20">
 					<div class="text-center mb-16">
-						<h2 class="text-4xl font-serif text-white mb-2">Frequently Asked Questions</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">Frequently Asked Questions</h2>
 						<div
 							class="h-1 w-20 bg-amber-600 mx-auto rounded-full mt-6 shadow-[0_0_15px_rgba(217,119,6,0.5)]"
 						></div>
@@ -828,19 +828,19 @@
 					class="mx-auto text-amber-600 mb-8 opacity-80 drop-shadow-[0_0_20px_rgba(217,119,6,0.4)]"
 					stroke={0.8}
 				/>
-				<h2 class="text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter">
+				<h2 class="text-4xl xs:text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter break-words">
 					Ready to <span
 						class="italic text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-700"
 						>Turn Pro?</span
 					>
 				</h2>
-				<p class="text-slate-400 text-xl mb-12 max-w-xl mx-auto font-light leading-relaxed">
+				<p class="text-base sm:text-xl text-slate-400 mb-10 sm:mb-12 max-w-xl mx-auto font-light leading-relaxed">
 					The market is open. The team is ready. <br />The only thing missing is you.
 				</p>
-				<div class="flex flex-col sm:flex-row justify-center gap-6">
+				<div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
 					<a
 						href="/join"
-						class="group relative flex justify-center items-center gap-4 px-12 py-6 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden rounded-sm border border-amber-700/50"
+						class="group relative flex justify-center items-center gap-4 px-8 sm:px-12 py-4 sm:py-6 min-h-11 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden rounded-sm border border-amber-700/50"
 					>
 						<span
 							class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"

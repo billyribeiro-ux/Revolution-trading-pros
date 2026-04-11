@@ -900,7 +900,7 @@
 						class="border border-rtp-border rounded-xl bg-rtp-bg overflow-hidden hover:border-rtp-primary/30 transition-colors"
 					>
 						<button
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-rtp-text"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rtp-primary focus-visible:ring-offset-2 focus-visible:ring-offset-rtp-bg hover:bg-white/5 transition-colors text-rtp-text"
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>

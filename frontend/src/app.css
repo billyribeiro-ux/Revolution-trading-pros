@@ -12,8 +12,27 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-	/* Custom breakpoint for very small phones (320-480px) */
+	/*
+	 * Responsive breakpoint scale (Tailwind 4 @theme tokens).
+	 * Defaults xs/sm/md/lg/xl/2xl ship with Tailwind; 3xl..6xl added for
+	 * HD / QHD / 4K / 5K large-display scaling. Keep this scale additive —
+	 * only upper tiers should grow, never shrink lower ones.
+	 *   xs   360px   very small phones
+	 *   sm   640px   Tailwind default
+	 *   md   768px   Tailwind default
+	 *   lg   1024px  Tailwind default
+	 *   xl   1280px  Tailwind default
+	 *   2xl  1536px  Tailwind default
+	 *   3xl  1920px  HD desktop
+	 *   4xl  2560px  QHD / 2K
+	 *   5xl  3840px  4K UHD
+	 *   6xl  5120px  5K (Apple Studio Display, iMac 5K)
+	 */
 	--breakpoint-xs: 360px;
+	--breakpoint-3xl: 1920px;
+	--breakpoint-4xl: 2560px;
+	--breakpoint-5xl: 3840px;
+	--breakpoint-6xl: 5120px;
 
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
@@ -403,5 +422,64 @@
 	/* Large viewport height (when browser UI is hidden) */
 	.min-h-screen-large {
 		min-height: 100lvh;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LARGE-DISPLAY SCALING (1920px → 5120px)
+   Additive scaling for HD / QHD / 4K / 5K displays. These utilities are
+   opt-in and never affect mobile / laptop layouts.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+	/* Fluid content container — scales smoothly from laptop to 5K.
+	   Use instead of hard `max-w-7xl` on major content wrappers. */
+	.container-fluid-wide {
+		width: 100%;
+		max-width: min(100% - 2rem, clamp(80rem, 88vw, 150rem));
+		margin-inline: auto;
+	}
+
+	/* Fluid headline type — clamps between the current laptop size and a
+	   larger ceiling on 5K. Replaces manual `text-4xl 3xl:text-5xl ...`. */
+	.text-fluid-display {
+		font-size: clamp(2rem, 1.5rem + 1.8vw, 4rem);
+		line-height: 1.05;
+	}
+	.text-fluid-h1 {
+		font-size: clamp(1.75rem, 1.25rem + 1.3vw, 3rem);
+		line-height: 1.1;
+	}
+	.text-fluid-h2 {
+		font-size: clamp(1.375rem, 1rem + 0.9vw, 2.25rem);
+		line-height: 1.2;
+	}
+	.text-fluid-body {
+		font-size: clamp(1rem, 0.9rem + 0.25vw, 1.25rem);
+		line-height: 1.55;
+	}
+}
+
+/* Root font-size nudge for very large displays so rem-based spacing scales
+   without touching every utility class. Thresholds match the breakpoint
+   tokens above. */
+@media (min-width: 1920px) {
+	:root {
+		font-size: 17px;
+	}
+}
+@media (min-width: 2560px) {
+	:root {
+		font-size: 18px;
+	}
+}
+@media (min-width: 3840px) {
+	:root {
+		font-size: 20px;
+	}
+}
+@media (min-width: 5120px) {
+	:root {
+		font-size: 22px;
 	}
 }

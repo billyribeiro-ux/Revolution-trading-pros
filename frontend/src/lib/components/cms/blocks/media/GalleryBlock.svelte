@@ -65,7 +65,7 @@
 	// Props and State
 	// ============================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	// Local state for URL input when adding new images
@@ -86,7 +86,7 @@
 	// ============================================================================
 
 	let images = $derived<GalleryImage[]>(
-		props.block.content.galleryImages?.map((img, idx) => ({
+		block.content.galleryImages?.map((img, idx) => ({
 			id: img.id || `img_${idx}_${Date.now()}`,
 			url: img.url || '',
 			alt: img.alt || '',
@@ -95,16 +95,16 @@
 	);
 
 	let layout = $derived<GalleryLayout>(
-		(props.block.settings.galleryLayout as GalleryLayout) || 'grid'
+		(block.settings.galleryLayout as GalleryLayout) || 'grid'
 	);
 
-	let columns = $derived(Math.min(4, Math.max(2, props.block.settings.galleryColumns || 3)));
+	let columns = $derived(Math.min(4, Math.max(2, block.settings.galleryColumns || 3)));
 
-	let gap = $derived(props.block.settings.gap || '1rem');
+	let gap = $derived(block.settings.gap || '1rem');
 
 	let lightboxState = $derived<LightboxState>(stateManager.getLightboxState());
 
-	let isLightboxOpen = $derived(lightboxState.open && lightboxState.blockId === props.blockId);
+	let isLightboxOpen = $derived(lightboxState.open && lightboxState.blockId === blockId);
 
 	let currentIndex = $derived(lightboxState.index);
 
@@ -122,11 +122,11 @@
 	// ============================================================================
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<Block['settings']>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	// ============================================================================
@@ -286,10 +286,10 @@
 	// ============================================================================
 
 	function openLightbox(index: number): void {
-		if (props.isEditing) return;
+		if (isEditing) return;
 		if (images.length === 0) return;
 
-		stateManager.openLightbox(props.blockId, index, images.length);
+		stateManager.openLightbox(blockId, index, images.length);
 	}
 
 	function closeLightbox(): void {
@@ -352,7 +352,7 @@
 	// ============================================================================
 
 	function handleImageClick(index: number): void {
-		if (!props.isEditing) {
+		if (!isEditing) {
 			openLightbox(index);
 		}
 	}
@@ -398,8 +398,8 @@
 
 <div
 	class="gallery-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
+	class:editing={isEditing}
+	class:selected={isSelected}
 	class:layout-grid={layout === 'grid'}
 	class:layout-masonry={layout === 'masonry'}
 	class:layout-carousel={layout === 'carousel'}
@@ -416,14 +416,14 @@
 						class:dragging={draggedIndex === index}
 						class:drag-over={dragOverIndex === index}
 						role="listitem"
-						draggable={props.isEditing}
+						draggable={isEditing}
 						ondragstart={(e) => handleDragStart(e, index)}
 						ondragover={(e) => handleDragOver(e, index)}
 						ondragleave={handleDragLeave}
 						ondrop={(e) => handleDrop(e, index)}
 						ondragend={handleDragEnd}
 					>
-						{#if props.isEditing}
+						{#if isEditing}
 							<div class="gallery-item-edit">
 								<img
 									src={sanitizeURL(image.url)}
@@ -558,7 +558,7 @@
 		<div class="gallery-empty">
 			<IconLayoutGrid size={48} aria-hidden="true" />
 			<p>No images in gallery</p>
-			{#if props.isEditing}
+			{#if isEditing}
 				<button type="button" class="gallery-add-btn-empty" onclick={() => (showAddForm = true)}>
 					<IconPlus size={16} />
 					Add Images
@@ -568,7 +568,7 @@
 	{/if}
 
 	<!-- Edit Mode Controls -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="gallery-controls">
 			<!-- Add Image Form -->
 			{#if showAddForm}
@@ -635,9 +635,9 @@
 			<!-- Gallery Settings -->
 			<div class="gallery-settings">
 				<div class="setting-group">
-					<label class="setting-label" for="layout-{props.blockId}">Layout</label>
+					<label class="setting-label" for="layout-{blockId}">Layout</label>
 					<select
-						id="layout-{props.blockId}"
+						id="layout-{blockId}"
 						class="setting-select"
 						value={layout}
 						onchange={(e) => updateLayout((e.target as HTMLSelectElement).value as GalleryLayout)}
@@ -649,9 +649,9 @@
 				</div>
 				{#if layout !== 'carousel'}
 					<div class="setting-group">
-						<label class="setting-label" for="columns-{props.blockId}">Columns</label>
+						<label class="setting-label" for="columns-{blockId}">Columns</label>
 						<select
-							id="columns-{props.blockId}"
+							id="columns-{blockId}"
 							class="setting-select"
 							value={columns}
 							onchange={(e) => handleColumnsChange(parseInt((e.target as HTMLSelectElement).value))}
@@ -662,9 +662,9 @@
 						</select>
 					</div>
 					<div class="setting-group">
-						<label class="setting-label" for="gap-{props.blockId}">Gap</label>
+						<label class="setting-label" for="gap-{blockId}">Gap</label>
 						<select
-							id="gap-{props.blockId}"
+							id="gap-{blockId}"
 							class="setting-select"
 							value={gap}
 							onchange={(e) => handleGapChange((e.target as HTMLSelectElement).value)}

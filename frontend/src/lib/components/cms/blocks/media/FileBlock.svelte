@@ -28,14 +28,14 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
-	let fileUrl = $derived(props.block.content.fileUrl || '');
-	let fileName = $derived(props.block.content.fileName || 'Document');
-	let fileSize = $derived(props.block.content.fileSize || 0);
+	let fileUrl = $derived(block.content.fileUrl || '');
+	let fileName = $derived(block.content.fileName || 'Document');
+	let fileSize = $derived(block.content.fileSize || 0);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		props.onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function getFileIcon(name: string) {

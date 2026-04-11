@@ -1058,7 +1058,7 @@
 					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
 							type="button"
-							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-slate-200"
+							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:bg-white/5 transition-colors text-slate-200"
 							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>

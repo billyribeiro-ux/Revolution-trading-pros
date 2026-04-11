@@ -213,6 +213,36 @@
 	}
 }
 
+/* Large-display tiers — grow the admin content column so huge monitors
+   don't leave the page as a narrow strip in the middle. */
+@media (min-width: 1920px) {
+	.admin-page-container {
+		max-width: min(1800px, calc(100vw - var(--space-8)));
+		padding: var(--space-10, 2.5rem);
+	}
+}
+
+@media (min-width: 2560px) {
+	.admin-page-container {
+		max-width: min(2200px, calc(100vw - var(--space-10, 2.5rem)));
+		padding: var(--space-12, 3rem);
+	}
+}
+
+@media (min-width: 3840px) {
+	.admin-page-container {
+		max-width: min(2800px, calc(100vw - 4rem));
+		padding: 4rem;
+	}
+}
+
+@media (min-width: 5120px) {
+	.admin-page-container {
+		max-width: min(3400px, calc(100vw - 6rem));
+		padding: 5rem;
+	}
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE GRID UTILITIES
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -243,6 +273,44 @@
 
 	.business-grid {
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	}
+}
+
+@media (min-width: 1920px) {
+	.metrics-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	.stats-grid {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
+
+@media (min-width: 2560px) {
+	.metrics-grid {
+		grid-template-columns: repeat(5, 1fr);
+	}
+
+	.stats-grid {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+	.business-grid {
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	}
+}
+
+@media (min-width: 3840px) {
+	.metrics-grid {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+	.stats-grid {
+		grid-template-columns: repeat(8, 1fr);
+	}
+
+	.business-grid {
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 	}
 }
 
