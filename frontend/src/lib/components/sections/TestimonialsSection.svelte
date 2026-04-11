@@ -151,7 +151,7 @@
 		class="absolute inset-0 pointer-events-none opacity-[0.04] overflow-hidden flex flex-col justify-center gap-24 transform -rotate-6 scale-110"
 	>
 		<div class="flex gap-12 whitespace-nowrap animate-marquee-left text-xs font-mono text-white">
-			{#each [...tickerItems, ...tickerItems, ...tickerItems] as item}
+			{#each [...tickerItems, ...tickerItems, ...tickerItems] as item, idx (idx)}
 				<div class="flex gap-4">
 					<span class="font-bold">{item.symbol}</span>
 					<span>{item.price}</span>
@@ -162,7 +162,7 @@
 			{/each}
 		</div>
 		<div class="flex gap-12 whitespace-nowrap animate-marquee-right text-xs font-mono text-white">
-			{#each [...tickerItems, ...tickerItems, ...tickerItems] as item}
+			{#each [...tickerItems, ...tickerItems, ...tickerItems] as item, idx (idx)}
 				<div class="flex gap-4">
 					<span class="font-bold">{item.symbol}</span>
 					<span>{item.price}</span>
@@ -217,7 +217,7 @@
 		<div
 			class="columns-1 md:columns-2 lg:columns-3 3xl:columns-4 5xl:columns-5 gap-6 3xl:gap-8 5xl:gap-12 space-y-6 3xl:space-y-8 5xl:space-y-12"
 		>
-			{#each reviews as review, i}
+			{#each reviews as review, i (review.id ?? i)}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 100 }}
