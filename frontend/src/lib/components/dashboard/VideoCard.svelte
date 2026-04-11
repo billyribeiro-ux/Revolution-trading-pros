@@ -65,14 +65,14 @@
 		class="article-card__image"
 		style="background-image: url({video.thumbnail_url || defaultThumbnail});"
 	>
-		<img src={defaultThumbnail} alt={video.title} loading="lazy" />
+		<img src={defaultThumbnail} alt={video.title} width="325" height="183" loading="lazy" decoding="async" />
 		{#if showDuration && video.formatted_duration}
 			<span class="article-card__duration">{video.formatted_duration}</span>
 		{/if}
 	</figure>
 
 	<div class="article-card__type">
-		{#each video.tag_details || [] as tag}
+		{#each video.tag_details || [] as tag (tag.name)}
 			<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
 		{/each}
 	</div>

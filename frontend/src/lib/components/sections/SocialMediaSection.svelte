@@ -201,4 +201,77 @@
 			height: 20px;
 		}
 	}
+
+	/* 4K / 5K display scaling — stretch container so it doesn't look stranded */
+	@media (min-width: 1920px) {
+		.social-section {
+			padding: 4rem 3rem;
+		}
+		.social-container {
+			max-width: 1800px;
+			gap: 4rem;
+		}
+		.social-link {
+			padding: 0.875rem 1.5rem;
+			font-size: 1rem;
+		}
+		.social-icon {
+			width: 22px;
+			height: 22px;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.social-section {
+			padding: 5rem 4rem;
+		}
+		.social-container {
+			max-width: 2200px;
+			gap: 5rem;
+		}
+		.social-link {
+			padding: 1rem 1.75rem;
+			font-size: 1.125rem;
+		}
+		.social-icon {
+			width: 26px;
+			height: 26px;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.social-section {
+			padding: 6rem 5rem;
+		}
+		.social-container {
+			max-width: 2600px;
+			gap: 6rem;
+		}
+		.social-link {
+			padding: 1.25rem 2rem;
+			font-size: 1.375rem;
+		}
+		.social-icon {
+			width: 32px;
+			height: 32px;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.social-section {
+			padding: 8rem 6rem;
+		}
+		.social-container {
+			max-width: 3200px;
+			gap: 8rem;
+		}
+		.social-link {
+			padding: 1.5rem 2.5rem;
+			font-size: 1.625rem;
+		}
+		.social-icon {
+			width: 40px;
+			height: 40px;
+		}
+	}
 </style>

@@ -243,6 +243,63 @@
 		min-width: 0;
 	}
 
+	/* 4K / 5K display scaling — footer should not look stranded on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.marketing-footer {
+			padding: 6rem 0 3rem;
+		}
+		.footer-container {
+			max-width: 1800px;
+			padding: 0 3rem;
+		}
+		.footer-grid {
+			gap: 4rem;
+			margin-bottom: 4rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.marketing-footer {
+			padding: 8rem 0 4rem;
+		}
+		.footer-container {
+			max-width: 2200px;
+			padding: 0 4rem;
+		}
+		.footer-grid {
+			gap: 5rem;
+			margin-bottom: 5rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.marketing-footer {
+			padding: 10rem 0 5rem;
+		}
+		.footer-container {
+			max-width: 2600px;
+			padding: 0 5rem;
+		}
+		.footer-grid {
+			gap: 6rem;
+			margin-bottom: 6rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.marketing-footer {
+			padding: 12rem 0 6rem;
+		}
+		.footer-container {
+			max-width: 3200px;
+			padding: 0 6rem;
+		}
+		.footer-grid {
+			gap: 8rem;
+			margin-bottom: 8rem;
+		}
+	}
+
 	.footer-grid {
 		display: grid;
 		grid-template-columns: 2fr 1fr 1fr 1fr;

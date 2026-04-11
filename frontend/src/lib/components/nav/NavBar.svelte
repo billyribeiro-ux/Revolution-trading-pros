@@ -1120,6 +1120,35 @@ import { logger } from '$lib/utils/logger';
 		padding-inline: var(--nav-padding-inline);
 	}
 
+	/* 4K / 5K display scaling — nav gets a max-width so content doesn't stretch edge-to-edge */
+	@media (min-width: 1920px) {
+		.navbar-container {
+			max-width: 1800px;
+			padding-inline: 3rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.navbar-container {
+			max-width: 2200px;
+			padding-inline: 4rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.navbar-container {
+			max-width: 2600px;
+			padding-inline: 5rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.navbar-container {
+			max-width: 3200px;
+			padding-inline: 6rem;
+		}
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   LOGO
 	   ICT11+ Fix: Responsive logo sizing for 11-13" laptops

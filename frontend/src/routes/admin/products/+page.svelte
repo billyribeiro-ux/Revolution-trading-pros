@@ -290,7 +290,7 @@ import { logger } from '$lib/utils/logger';
 
 						{#if product.thumbnail}
 							<div class="product-thumbnail">
-								<img src={product.thumbnail} alt={product.name} />
+								<img src={product.thumbnail} alt={product.name} width="300" height="300" loading="lazy" decoding="async" />
 							</div>
 						{/if}
 
