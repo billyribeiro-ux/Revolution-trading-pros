@@ -25,7 +25,7 @@
 	</h2>
 	<table>
 		<tbody>
-			{#each docs as doc}
+			{#each docs as doc (doc.url ?? doc.title)}
 				<tr>
 					<td>{doc.title}</td>
 					<td class="text-right">

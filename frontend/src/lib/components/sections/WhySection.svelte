@@ -146,7 +146,7 @@
 			class="group/grid grid md:grid-cols-3 gap-8 3xl:gap-12 5xl:gap-16"
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
-			{#each features as feature, i}
+			{#each features as feature, i (feature.title ?? i)}
 				{@const IconComponent = feature.icon}
 				{#if isVisible}
 					<div

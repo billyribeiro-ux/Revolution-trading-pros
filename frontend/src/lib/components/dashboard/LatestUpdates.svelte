@@ -106,7 +106,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="updates-grid__item">
 					<article class="article-card">
 						<figure class="article-card__image" style="background-image: url({item.image});">
-							<img src={item.image} alt={item.title} loading="lazy" />
+							<img src={item.image} alt={item.title} width="325" height="183" loading="lazy" decoding="async" />
 						</figure>
 
 						{#if item.isVideo && item.type}

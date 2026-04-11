@@ -1,0 +1,102 @@
+# Cloudflare Pages — Custom HTTP Headers
+# ═══════════════════════════════════════════════════════════════════════════
+# This file is served by Cloudflare Pages on every matching response and adds
+# the headers below. Format docs: https://developers.cloudflare.com/pages/configuration/headers/
+#
+# The CWV agent flagged this as the single highest-impact repeat-visit TTFB
+# fix because SvelteKit's `_app/immutable/*` bundle filenames are content-
+# hashed (`_app/immutable/chunks/CXXXXXX.js`) and never change once shipped,
+# but Cloudflare Pages serves them with default 4-hour browser cache. With
+# `immutable` + 1 year max-age, repeat visits skip the network entirely.
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SvelteKit immutable build artifacts — content-hashed, safe to cache forever
+# ═══════════════════════════════════════════════════════════════════════════
+/_app/immutable/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Service worker — must NOT be long-cached (it controls update cycle)
+/service-worker.js
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+
+# Manifest + browserconfig — daily refresh is fine
+/manifest.json
+  Cache-Control: public, max-age=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/browserconfig.xml
+  Cache-Control: public, max-age=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+
+# Favicons / app icons — long cache, occasionally updated
+/favicon.ico
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/favicon.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/apple-touch-icon-precomposed.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/icon-192.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/icon-512.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# robots.txt + sitemaps — short cache so changes propagate quickly
+/robots.txt
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+
+/sitemap-*.xml
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+
+/news-sitemap.xml
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+
+/video-sitemap.xml
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+
+# RSS / Atom feeds — short cache so subscribers see fresh content
+/feed.xml
+  Cache-Control: public, max-age=600, s-maxage=3600, stale-while-revalidate=86400
+
+/atom.xml
+  Cache-Control: public, max-age=600, s-maxage=3600, stale-while-revalidate=86400
+
+# Static images directory — moderate cache
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/avatars/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/logos/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/textures/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+# Fonts — long cache (rarely change)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Global security headers (apply to every response from this origin).
+# Some of these are also set per-request by `hooks.server.ts`; declaring them
+# here gives a Cloudflare-edge fallback for static asset responses that
+# bypass the SvelteKit handler chain.
+# ═══════════════════════════════════════════════════════════════════════════
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()

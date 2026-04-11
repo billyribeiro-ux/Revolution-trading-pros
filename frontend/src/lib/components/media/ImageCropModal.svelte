@@ -435,7 +435,7 @@
 			<div class="toolbar-group">
 				<span class="toolbar-label">Aspect Ratio</span>
 				<div class="ratio-buttons">
-					{#each Object.keys(aspectRatios) as ratio}
+					{#each Object.keys(aspectRatios) as ratio (ratio)}
 						<button
 							class="ratio-btn"
 							class:active={selectedRatio === ratio}

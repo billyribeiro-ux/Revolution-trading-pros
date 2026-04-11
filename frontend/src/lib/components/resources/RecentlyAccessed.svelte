@@ -109,7 +109,7 @@
 
 	{#if loading}
 		<div class="flex gap-4 overflow-x-auto pb-2">
-			{#each Array(4) as _}
+			{#each Array(4) as _, i (i)}
 				<div class="w-40 flex-shrink-0 animate-pulse {compact ? '' : 'w-48'}">
 					<div class="aspect-video rounded-lg bg-gray-200 dark:bg-gray-700"></div>
 					<div class="mt-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>

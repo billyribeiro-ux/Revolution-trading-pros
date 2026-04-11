@@ -12,19 +12,18 @@ import { logger } from '$lib/utils/logger';
 	 */
 	interface Props {
 		data: {
-			rooms: any[];
-			benefits: any[];
-			symbols: any[];
-			seo: any;
+			rooms: unknown[];
+			benefits: unknown[];
+			symbols: unknown[];
 		};
 	}
 	let { data }: Props = $props();
 
-	// Use server-loaded data for SSR/SSG
+	// Use server-loaded data for SSR/SSG. SEO is owned by the unified <Seo> layer
+	// in +layout.svelte via `page.data.seo` returned from +page.server.ts.
 	let rooms = $derived(data.rooms);
 	let benefits = $derived(data.benefits);
 	let symbols = $derived(data.symbols);
-	let seo = $derived(data.seo);
 	let tickerItems = $derived([...symbols, ...symbols, ...symbols, ...symbols]);
 
 	/**

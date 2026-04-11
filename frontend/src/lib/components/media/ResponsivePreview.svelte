@@ -191,7 +191,7 @@
 				<span class="text-xs text-gray-500">Size Comparison</span>
 			</div>
 			<div class="flex items-end justify-center gap-2 h-20">
-				{#each sortedVariants as variant}
+				{#each sortedVariants as variant (variant.sizeName)}
 					<div class="flex flex-col items-center gap-1">
 						<div
 							class="w-4 bg-blue-500 rounded-t transition-all duration-300"

@@ -131,8 +131,12 @@ import { logger } from '$lib/utils/logger';
 						<img
 							src={displayImage}
 							alt="Weekly Watchlist"
-							class="u--border-radius"
+							width="640"
+							height="360"
 							loading="eager"
+							fetchpriority="high"
+							decoding="sync"
+							class="u--border-radius"
 						/>
 					</a>
 				</div>
@@ -144,7 +148,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 			<div class="col-right desktop-only">
 				<a href={displayHref}>
-					<img src={displayImage} alt="Weekly Watchlist" class="u--border-radius" loading="eager" />
+					<img src={displayImage} alt="Weekly Watchlist" width="640" height="360" loading="eager" fetchpriority="high" decoding="sync" class="u--border-radius" />
 				</a>
 			</div>
 		</div>
