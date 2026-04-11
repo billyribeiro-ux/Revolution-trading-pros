@@ -204,7 +204,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
 		>
 			<div class="text-center lg:text-left space-y-8">
 				<div
@@ -224,7 +224,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1]"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1] break-words"
 				>
 					Conquer Volatility with
 					<span
@@ -389,7 +389,7 @@
 	</section>
 
 	<section class="bg-slate-900 border-y border-slate-800 relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group">
 					<div
@@ -439,7 +439,7 @@
 	     MEMBER DASHBOARD PREVIEW - Sidebar Layout
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<section class="py-16 bg-slate-950">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="grid lg:grid-cols-[1fr_380px] gap-8">
 				<!-- Main Content Area -->
 				<div class="space-y-8">
@@ -724,7 +724,7 @@
 	</section>
 
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center max-w-3xl mx-auto mb-16">
 				<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm">Why SPX?</span>
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6">
@@ -772,7 +772,7 @@
 	</section>
 
 	<section class="py-24 bg-slate-900 border-y border-slate-800">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="grid lg:grid-cols-2 gap-16 items-center">
 				<div>
 					<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm"
@@ -828,7 +828,7 @@
 	<section class="py-32 bg-slate-950 relative overflow-hidden">
 		<div class="absolute inset-0 opacity-[0.02] bg-[url('/grid-pattern.svg')]"></div>
 
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 			<div class="text-center max-w-3xl mx-auto mb-20">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-6">
 					Institutional Edge, Retail Accessible.
@@ -998,7 +998,7 @@
 	</section>
 
 	<section class="py-24 bg-slate-900 border-y border-slate-800">
-		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Crystal Clear Execution
@@ -1123,7 +1123,7 @@
 	</section>
 
 	<section id="performance" class="py-24 bg-slate-950 relative">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 				<div>
 					<h2 class="text-3xl md:text-4xl font-heading font-bold text-slate-200 mb-2">
@@ -1200,7 +1200,7 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Simple, Flat Pricing
@@ -1243,7 +1243,7 @@
 				</div>
 			</div>
 
-			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
+			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center overflow-visible">
 				<div
 					class="order-2 lg:order-1 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan ===
 					'monthly'

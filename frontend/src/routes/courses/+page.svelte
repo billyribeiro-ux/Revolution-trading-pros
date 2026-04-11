@@ -487,11 +487,11 @@
 		</div>
 	</section>
 
-	<section class="py-32 relative z-10">
-		<div class="container mx-auto px-6">
-			<div class="grid lg:grid-cols-2 gap-16 items-center">
-				<div class="space-y-8">
-					<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
+	<section class="py-20 sm:py-32 relative z-10">
+		<div class="container mx-auto px-4 sm:px-6">
+			<div class="grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
+				<div class="space-y-6 sm:space-y-8">
+					<h2 class="text-3xl xs:text-4xl md:text-5xl font-bold tracking-tight text-white break-words">
 						The <span class="text-blue-500">Retail</span> Trap.
 					</h2>
 					<p class="text-xl text-slate-400 leading-relaxed">
@@ -557,7 +557,7 @@
 				<span class="text-blue-500 font-mono text-xs uppercase tracking-[0.3em] mb-4 block"
 					>Classified Intel</span
 				>
-				<h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-6">
+				<h2 class="text-3xl xs:text-4xl md:text-6xl font-bold tracking-tighter text-white mb-6 break-words">
 					Master The Setup.
 				</h2>
 				<p class="text-slate-400 text-lg">
@@ -566,7 +566,7 @@
 				</p>
 			</div>
 
-			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
+			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto">
 				{#each courses as course (course.id)}
 					{@const Icon = course.icon}
 					{@const colors = course.colorClasses}
@@ -581,7 +581,7 @@
 						></div>
 
 						<div
-							class="relative z-10 p-8 md:p-10 flex flex-col h-full bg-black/40 backdrop-blur-sm"
+							class="relative z-10 p-6 sm:p-8 md:p-10 flex flex-col h-full bg-black/40 backdrop-blur-sm"
 						>
 							<div class="flex justify-between items-start mb-8">
 								<div class={`p-3 rounded-2xl ${colors.bg} ${colors.border} border ${colors.text}`}>
@@ -672,7 +672,7 @@
 
 		<div class="container mx-auto px-6 relative z-10 text-center">
 			<IconRocket size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
-			<h2 class="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8">
+			<h2 class="text-4xl xs:text-5xl md:text-7xl font-black tracking-tighter text-white mb-8 break-words">
 				Market Opens In... Now.
 			</h2>
 			<p class="text-xl text-slate-400 mb-12 max-w-xl mx-auto">
@@ -681,7 +681,7 @@
 
 			<a
 				href="#curriculum"
-				class="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]"
+				class="inline-flex items-center gap-3 px-6 sm:px-10 py-4 sm:py-5 min-h-11 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-base sm:text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]"
 			>
 				<IconSchool size={24} />
 				Enroll Now

@@ -88,7 +88,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	</div>
 {:else if popup && analytics}
-	<div class="max-w-7xl mx-auto">
+	<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto">
 		<!-- Header -->
 		<div class="mb-6">
 			<Button variant="ghost" onclick={() => goto('/admin/popups')} class="mb-4">

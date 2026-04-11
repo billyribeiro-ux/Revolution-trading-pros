@@ -46,7 +46,7 @@ import { logger } from '$lib/utils/logger';
 </svelte:head>
 
 <div class="bg-slate-950/95 text-slate-50">
-	<div class="mx-auto max-w-6xl px-6 py-6">
+	<div class="mx-auto max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] px-6 py-6">
 		<button
 			class="mb-4 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200"
 			onclick={goBack}

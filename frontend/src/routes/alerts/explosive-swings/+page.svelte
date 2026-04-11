@@ -215,7 +215,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -235,7 +235,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white break-words"
 				>
 					Catch the <br />
 					<span
@@ -403,7 +403,7 @@
 	</section>
 
 	<section class="bg-slate-900 border-y border-slate-800 relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<dl class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center">
 					<dt class="text-slate-500 font-medium text-xs uppercase tracking-wider mb-2">
@@ -436,7 +436,7 @@
 	</section>
 
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
 					Choose Your Trading Lifestyle
@@ -579,7 +579,7 @@
 	</section>
 
 	<section id="methodology" class="py-24 bg-slate-900 border-t border-slate-800">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="mb-16 md:text-center max-w-3xl mx-auto">
 				<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">The Strategy</span
 				>
@@ -714,7 +714,7 @@
 	</section>
 
 	<section class="py-24 bg-slate-950">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
 				<div>
 					<h2 class="text-3xl font-heading font-bold text-white mb-2">Recent Swing Performance</h2>
@@ -864,7 +864,7 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">Simple Pricing</h2>
 				<p class="text-xl text-slate-400 max-w-3xl mx-auto">
@@ -912,7 +912,7 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center overflow-visible">
 				<div
 					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'monthly'
 						? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'

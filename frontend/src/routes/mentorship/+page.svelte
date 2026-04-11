@@ -173,7 +173,7 @@
 	<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
 	<div class="relative z-10">
 		<nav class="w-full border-b border-white/10 bg-[#020202]/80 backdrop-blur-sm fixed top-0 z-50">
-			<div class="max-w-[1600px] mx-auto px-6 h-16 flex justify-between items-center">
+			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-6 h-16 flex justify-between items-center">
 				<div
 					class="text-xs font-mono uppercase tracking-[0.2em] text-white hover:text-amber-500 transition-colors cursor-default"
 				>
@@ -195,7 +195,7 @@
 		</nav>
 
 		<section class="pt-48 pb-32 px-6 border-b border-white/10">
-			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-16">
+			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto grid lg:grid-cols-12 gap-16">
 				<div class="lg:col-span-8">
 					<div
 						{@attach domRef((el) => (heroBadge = el))}
@@ -207,14 +207,14 @@
 
 					<h1
 						{@attach domRef((el) => (heroTitle = el))}
-						class="text-6xl md:text-8xl lg:text-9xl font-serif text-white mb-12 tracking-tight leading-[0.9] origin-left"
+						class="text-4xl xs:text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-serif text-white mb-8 sm:mb-12 tracking-tight leading-[0.95] xs:leading-[0.9] origin-left break-words"
 					>
 						Strategic<br />
 						<span class="text-slate-700">Alpha</span> Audit.
 					</h1>
 
-					<div {@attach domRef((el) => (heroDesc = el))} class="max-w-2xl border-l-2 border-amber-700 pl-8 py-2">
-						<p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed">
+					<div {@attach domRef((el) => (heroDesc = el))} class="max-w-2xl border-l-2 border-amber-700 pl-4 sm:pl-8 py-2">
+						<p class="text-base sm:text-xl md:text-2xl text-slate-300 font-light leading-relaxed break-words">
 							A high-velocity, forensic deconstruction of your trading business. Designed strictly
 							for <span class="text-white font-medium">Portfolio Managers</span> and
 							<span class="text-white font-medium">Proprietary Traders</span> deploying 7-8 figure capital.
@@ -302,10 +302,10 @@
 		</section>
 
 		<section class="py-32 px-6 bg-[#050505] border-b border-white/5 gsap-section">
-			<div class="max-w-[1600px] mx-auto">
+			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto">
 				<div class="grid lg:grid-cols-2 gap-24">
 					<div class="gsap-reveal-item">
-						<h2 class="text-4xl font-serif text-white mb-8">The Liquidity Ceiling.</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-6 sm:mb-8 break-words">The Liquidity Ceiling.</h2>
 						<div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
 							<p>
 								Scaling a portfolio from $100,000 to $1,000,000 is a math problem. Scaling from
@@ -390,7 +390,7 @@
 					class="flex items-end justify-between mb-20 border-b border-white/10 pb-8 gsap-reveal-item"
 				>
 					<div>
-						<h2 class="text-4xl font-serif text-white mb-2">The 120-Minute Protocol</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">The 120-Minute Protocol</h2>
 						<p class="text-sm font-mono text-slate-500 uppercase tracking-widest">
 							Session Agenda // Confidential
 						</p>
@@ -405,7 +405,7 @@
 					{#each sessionBreakdown as item (item.id)}
 						<div class="group gsap-reveal-item">
 							<div
-								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/[0.02] transition-colors border-l-2 border-white/10 hover:border-amber-600"
+								class="flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-16 p-5 sm:p-8 hover:bg-white/[0.02] transition-colors border-l-2 border-white/10 hover:border-amber-600"
 							>
 								<div class="w-32 shrink-0 pt-1">
 									<span class="font-mono text-amber-600 text-sm">{item.time}</span>
@@ -422,7 +422,7 @@
 		</section>
 
 		<section class="py-32 px-6 bg-[#080808] border-b border-white/5 gsap-section">
-			<div class="max-w-[1600px] mx-auto grid lg:grid-cols-2 gap-24">
+			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto grid lg:grid-cols-2 gap-24">
 				<div class="gsap-reveal-item">
 					<div class="flex items-center gap-4 mb-10">
 						<div class="w-10 h-10 flex items-center justify-center rounded bg-white/5 text-white">
@@ -430,7 +430,7 @@
 						</div>
 						<h3 class="text-2xl font-serif text-white">Technical Prerequisites</h3>
 					</div>
-					<div class="bg-[#020202] border border-white/10 p-10">
+					<div class="bg-[#020202] border border-white/10 p-5 sm:p-10">
 						<p class="text-sm text-slate-500 mb-8 leading-relaxed">
 							To ensure maximum utility of the 120-minute window, we require the following data
 							points to be uploaded to our encrypted portal 48 hours prior to the session.
@@ -554,20 +554,20 @@
 			<div
 				class="max-w-4xl mx-auto relative z-10 bg-[#020202] border border-white/10 p-1 gsap-reveal-item"
 			>
-				<div class="border border-white/5 p-12 md:p-20 text-center relative overflow-hidden group">
+				<div class="border border-white/5 p-6 sm:p-12 md:p-20 text-center relative overflow-hidden group">
 					<div
 						class="absolute inset-0 bg-amber-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
 					></div>
 
 					<div class="mb-10">
 						<div class="text-amber-600 mx-auto w-12 h-12 mb-6">{@html Icons.Check}</div>
-						<h2 class="text-4xl md:text-5xl font-serif text-white mb-4">Initiate Application</h2>
+						<h2 class="text-3xl xs:text-4xl md:text-5xl font-serif text-white mb-4 break-words">Initiate Application</h2>
 						<p class="text-slate-500 font-mono text-xs uppercase tracking-[0.2em]">
 							Reference: Q4-INST-AUDIT
 						</p>
 					</div>
 
-					<div class="grid grid-cols-2 gap-8 max-w-lg mx-auto mb-12 text-left">
+					<div class="grid grid-cols-1 xs:grid-cols-2 gap-6 sm:gap-8 max-w-lg mx-auto mb-10 sm:mb-12 text-left">
 						<div class="border-l border-amber-800/50 pl-4">
 							<div class="text-[10px] font-mono uppercase text-slate-500 mb-1">Wire Amount</div>
 							<div class="text-xl text-white font-serif">$25,000.00</div>

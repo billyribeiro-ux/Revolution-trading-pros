@@ -241,7 +241,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	</div>
 {:else}
-	<div class="max-w-5xl mx-auto">
+	<div class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto">
 		<!-- Header -->
 		<div class="mb-6">
 			<h1 class="text-3xl font-bold text-gray-900">Edit Popup</h1>

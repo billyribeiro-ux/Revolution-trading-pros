@@ -109,6 +109,20 @@
 		outline-offset: 2px;
 		border-radius: 2px;
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   SMALL-VIEWPORT SAFETY NETS (320px+)
+	   Prevent media and long words from forcing horizontal scroll on very
+	   narrow phones. Scoped so page-level utilities can still opt out.
+	   ═══════════════════════════════════════════════════════════════════════ */
+	:where(img, video, svg, canvas, iframe) {
+		max-width: 100%;
+		height: auto;
+	}
+
+	:where(p, h1, h2, h3, h4, h5, h6, li, dt, dd, blockquote) {
+		overflow-wrap: anywhere;
+	}
 }
 
 @layer utilities {

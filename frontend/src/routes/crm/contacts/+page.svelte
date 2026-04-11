@@ -88,7 +88,7 @@ import { logger } from '$lib/utils/logger';
 </svelte:head>
 
 <div class="bg-slate-950/95 text-slate-50">
-	<div class="mx-auto max-w-7xl px-6 py-8">
+	<div class="mx-auto max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] px-6 py-8">
 		<!-- Header -->
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
 			<div class="flex items-center gap-3">
@@ -137,7 +137,7 @@ import { logger } from '$lib/utils/logger';
 					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
 					bind:value={localStatus}
 				>
-					{#each statusOptions as opt}
+					{#each statusOptions as opt (opt.value)}
 						<option value={opt.value}>{opt.label}</option>
 					{/each}
 				</select>
@@ -145,7 +145,7 @@ import { logger } from '$lib/utils/logger';
 					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
 					bind:value={localStage}
 				>
-					{#each stageOptions as opt}
+					{#each stageOptions as opt (opt.value)}
 						<option value={opt.value}>{opt.label}</option>
 					{/each}
 				</select>
