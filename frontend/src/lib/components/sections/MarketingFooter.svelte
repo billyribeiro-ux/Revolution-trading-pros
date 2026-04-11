@@ -92,10 +92,10 @@
 			{ href: '/careers', label: 'Careers' }
 		],
 		legal: [
-			{ href: '/terms', label: 'Terms of Service' },
-			{ href: '/privacy', label: 'Privacy Policy' },
-			{ href: '/disclaimer', label: 'Risk Disclaimer' },
-			{ href: '/refund', label: 'Refund Policy' }
+			{ href: '/terms-of-service', label: 'Terms of Service' },
+			{ href: '/privacy-policy', label: 'Privacy Policy' },
+			{ href: '/cookie-policy', label: 'Cookie Policy' },
+			{ href: '/terms-of-service#risk-disclaimer', label: 'Risk Disclaimer' }
 		]
 	};
 

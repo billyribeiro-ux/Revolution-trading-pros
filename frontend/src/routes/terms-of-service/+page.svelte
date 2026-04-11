@@ -38,7 +38,7 @@
 				By accessing the Services you agree to be bound by these Terms.
 			</p>
 
-			<h2 class="risk-heading">Risk Disclaimer</h2>
+			<h2 id="risk-disclaimer" class="risk-heading">Risk Disclaimer</h2>
 			<div class="risk-box" role="note" aria-label="Financial risk disclaimer">
 				<p>
 					<strong>Trading and investing carry a high level of risk.</strong> The
