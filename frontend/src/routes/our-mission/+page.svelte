@@ -343,7 +343,7 @@
 
 			<h1
 				data-gsap
-				class="text-6xl md:text-8xl lg:text-9xl font-heading font-extrabold text-white tracking-tight mb-10 leading-[0.95]"
+				class="text-4xl xs:text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-heading font-extrabold text-white tracking-tight mb-8 sm:mb-10 leading-[0.95] break-words"
 			>
 				We Don't Sell Dreams.<br />
 				We Build
@@ -401,7 +401,7 @@
 							>
 						</div>
 
-						<h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-8 leading-tight">
+						<h2 class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 sm:mb-8 leading-tight break-words">
 							The "90/90/90" Rule is Real.
 						</h2>
 
@@ -503,7 +503,7 @@
 
 			<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 				<div class="text-center mb-16">
-					<h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
+					<h2 class="text-2xl xs:text-3xl md:text-4xl font-heading font-bold text-white mb-4 break-words">
 						The Mathematics of Edge
 					</h2>
 					<p class="text-slate-400 max-w-2xl mx-auto">
@@ -513,7 +513,7 @@
 				</div>
 
 				<div
-					class="grid md:grid-cols-12 gap-8 bg-[#050505] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl"
+					class="grid md:grid-cols-12 gap-6 sm:gap-8 bg-[#050505] border border-white/10 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 shadow-2xl"
 				>
 					<div class="md:col-span-4 space-y-8">
 						<div>
@@ -665,7 +665,7 @@
 							>The Ecosystem</span
 						>
 					</div>
-					<h2 data-gsap class="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+					<h2 data-gsap class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 break-words">
 						Institutional Grade.<br />Retail Accessible.
 					</h2>
 					<p data-gsap class="text-slate-400 max-w-2xl mx-auto text-lg">

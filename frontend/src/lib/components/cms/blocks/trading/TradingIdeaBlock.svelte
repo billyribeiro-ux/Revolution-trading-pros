@@ -26,17 +26,17 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
-	let symbol = $derived(props.block.content.tradeSymbol || 'AAPL');
-	let direction = $derived((props.block.content.tradeDirection as 'long' | 'short') || 'long');
-	let entry = $derived(props.block.content.tradeEntry || 185.0);
-	let stopLoss = $derived(props.block.content.tradeStop || 180.0);
-	let target1 = $derived(props.block.content.tradeTarget1 || 195.0);
-	let target2 = $derived(props.block.content.tradeTarget2 || 205.0);
-	let confidence = $derived(props.block.content.tradeConfidence || 75);
-	let thesis = $derived(props.block.content.tradeThesis || '');
-	let timeframe = $derived(props.block.content.tradeTimeframe || 'Swing (1-2 weeks)');
+	let symbol = $derived(block.content.tradeSymbol || 'AAPL');
+	let direction = $derived((block.content.tradeDirection as 'long' | 'short') || 'long');
+	let entry = $derived(block.content.tradeEntry || 185.0);
+	let stopLoss = $derived(block.content.tradeStop || 180.0);
+	let target1 = $derived(block.content.tradeTarget1 || 195.0);
+	let target2 = $derived(block.content.tradeTarget2 || 205.0);
+	let confidence = $derived(block.content.tradeConfidence || 75);
+	let thesis = $derived(block.content.tradeThesis || '');
+	let timeframe = $derived(block.content.tradeTimeframe || 'Swing (1-2 weeks)');
 
 	let isLong = $derived(direction === 'long');
 	let risk = $derived(Math.abs(entry - stopLoss));
@@ -46,7 +46,7 @@
 	let rr2 = $derived(risk > 0 ? (reward2 / risk).toFixed(1) : '0');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 </script>
 

@@ -35,7 +35,7 @@
 	let fileSize = $derived(block.content.fileSize || 0);
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function getFileIcon(name: string) {
@@ -75,7 +75,7 @@
 </script>
 
 <div class="file-block" role="article" aria-label="File download">
-	{#if props.isEditing}
+	{#if isEditing}
 		<div class="file-edit">
 			<div class="file-icon-wrapper">
 				<FileIcon size={28} aria-hidden="true" />
