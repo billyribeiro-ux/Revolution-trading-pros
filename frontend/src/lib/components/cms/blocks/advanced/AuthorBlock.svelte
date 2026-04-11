@@ -61,8 +61,7 @@
 	const name = $derived(block.content.authorName || 'Author Name');
 	const title = $derived(block.content.authorTitle || '');
 	const bio = $derived(
-		block.content.authorBio ||
-			'Author bio goes here. Share a brief description about the author.'
+		block.content.authorBio || 'Author bio goes here. Share a brief description about the author.'
 	);
 	const photo = $derived(block.content.authorPhoto || '');
 	const socials = $derived<Array<{ platform: string; url: string }>>(
@@ -210,7 +209,14 @@
 	<div class="author-block__photo-section">
 		{#if sanitizedPhotoURL}
 			<div class="author-block__photo">
-				<img src={sanitizedPhotoURL} alt={name} width="120" height="120" loading="lazy" decoding="async" />
+				<img
+					src={sanitizedPhotoURL}
+					alt={name}
+					width="120"
+					height="120"
+					loading="lazy"
+					decoding="async"
+				/>
 				{#if isEditing && isSelected}
 					<button
 						type="button"

@@ -36,9 +36,7 @@
 	// reactivity to `invalidate()` / `invalidateAll()` against the server load.
 	let clientFallbackPosts = $state<typeof data.posts>([]);
 
-	const posts = $derived(
-		data.posts && data.posts.length > 0 ? data.posts : clientFallbackPosts
-	);
+	const posts = $derived(data.posts && data.posts.length > 0 ? data.posts : clientFallbackPosts);
 
 	// Client-side fallback fetch if SSR returned empty (production safety net).
 	onMount(async () => {
@@ -64,8 +62,8 @@
 <!-- SEO: Visually-hidden canonical H1 guarantees exactly one h1 per page
 	 (the Hero component uses marketing typography and does not own the h1). -->
 <h1 class="sr-only">
-	Revolution Trading Pros — Professional Trading Education, Live Trading Rooms,
-	and Institutional-Grade Indicators
+	Revolution Trading Pros — Professional Trading Education, Live Trading Rooms, and
+	Institutional-Grade Indicators
 </h1>
 
 <Hero />

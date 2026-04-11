@@ -55,9 +55,7 @@
 
 	let calloutType = $derived((block.settings.type as CalloutType) || 'info');
 	let title = $derived(block.content.title || '');
-	let description = $derived(
-		block.content.description || 'Enter your callout message here...'
-	);
+	let description = $derived(block.content.description || 'Enter your callout message here...');
 	let dismissible = $derived(block.settings.dismissible || false);
 
 	// =========================================================================

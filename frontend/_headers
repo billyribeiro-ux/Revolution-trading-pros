@@ -1,7 +1,8 @@
 # Cloudflare Pages — Custom HTTP Headers
 # ═══════════════════════════════════════════════════════════════════════════
-# This file is served by Cloudflare Pages on every matching response and adds
-# the headers below. Format docs: https://developers.cloudflare.com/pages/configuration/headers/
+# Must live at the SvelteKit project root (not `static/`) for
+# `@sveltejs/adapter-cloudflare`. Served by Cloudflare Pages on matching responses.
+# Format: https://developers.cloudflare.com/pages/configuration/headers/
 #
 # The CWV agent flagged this as the single highest-impact repeat-visit TTFB
 # fix because SvelteKit's `_app/immutable/*` bundle filenames are content-

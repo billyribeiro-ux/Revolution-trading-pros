@@ -52,7 +52,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -1293,7 +1293,15 @@ import { logger } from '$lib/utils/logger';
 		{#if showThumbnail && thumbnailUrl && !hasInteracted && lazyLoad}
 			<div class="thumbnail-container" transition:fade={{ duration: 300 }}>
 				{#if thumbnailLoaded}
-					<img src={thumbnailUrl} alt={title} width="1280" height="720" loading="lazy" decoding="async" class="thumbnail-image" />
+					<img
+						src={thumbnailUrl}
+						alt={title}
+						width="1280"
+						height="720"
+						loading="lazy"
+						decoding="async"
+						class="thumbnail-image"
+					/>
 				{/if}
 				<button
 					class="play-overlay"

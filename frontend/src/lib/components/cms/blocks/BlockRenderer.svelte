@@ -127,14 +127,7 @@
 </script>
 
 {#if BlockComponent}
-	<BlockComponent
-		{block}
-		{blockId}
-		{isSelected}
-		{isEditing}
-		{onUpdate}
-		{onError}
-	/>
+	<BlockComponent {block} {blockId} {isSelected} {isEditing} {onUpdate} {onError} />
 {:else}
 	<div class="block-renderer__unknown">
 		<span class="block-renderer__unknown-icon">?</span>

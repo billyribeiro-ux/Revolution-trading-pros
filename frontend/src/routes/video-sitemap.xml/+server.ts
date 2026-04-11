@@ -21,10 +21,7 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import {
-	fetchVideoResources,
-	type VideoResourceEntry
-} from '$lib/seo/dynamic-routes';
+import { fetchVideoResources, type VideoResourceEntry } from '$lib/seo/dynamic-routes';
 
 // Use environment variable - configure VITE_SITE_URL for your domain
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
@@ -336,10 +333,7 @@ function generateVideoEntry(video: VideoEntry): string {
  * the fallback entry when the same `pageUrl` appears in both (editorial copy
  * typically has richer metadata than a raw video row).
  */
-function mergeVideoEntries(
-	fallback: VideoEntry[],
-	apiEntries: VideoEntry[]
-): VideoEntry[] {
+function mergeVideoEntries(fallback: VideoEntry[], apiEntries: VideoEntry[]): VideoEntry[] {
 	const seen = new Set<string>();
 	const merged: VideoEntry[] = [];
 	for (const v of fallback) {
@@ -415,8 +409,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 	return new Response(sitemap, {
 		headers: {
 			'Content-Type': 'application/xml; charset=utf-8',
-			'Cache-Control':
-				'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+			'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
 			'X-Content-Type-Options': 'nosniff'
 		}
 	});

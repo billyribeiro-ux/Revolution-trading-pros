@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
@@ -121,7 +121,7 @@ import { logger } from '$lib/utils/logger';
 					</tr>
 				</thead>
 				<tbody>
-					{#each events as event (event.id ?? event.event_name + event.timestamp)}
+					{#each events as event (event.id ?? event.event_name + event.created_at)}
 						<tr>
 							<td class="event-name">{event.event_name}</td>
 							<td><span class="badge">{event.event_type}</span></td>

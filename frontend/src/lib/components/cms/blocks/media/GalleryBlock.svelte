@@ -94,9 +94,7 @@
 		})) || []
 	);
 
-	let layout = $derived<GalleryLayout>(
-		(block.settings.galleryLayout as GalleryLayout) || 'grid'
-	);
+	let layout = $derived<GalleryLayout>((block.settings.galleryLayout as GalleryLayout) || 'grid');
 
 	let columns = $derived(Math.min(4, Math.max(2, block.settings.galleryColumns || 3)));
 
@@ -728,7 +726,15 @@
 
 			<!-- Image Container -->
 			<div class="lightbox-image-container">
-				<img src={sanitizeURL(currentImage.url)} alt={currentImage.alt} width="1600" height="900" loading="lazy" decoding="async" class="lightbox-image" />
+				<img
+					src={sanitizeURL(currentImage.url)}
+					alt={currentImage.alt}
+					width="1600"
+					height="900"
+					loading="lazy"
+					decoding="async"
+					class="lightbox-image"
+				/>
 			</div>
 
 			<!-- Navigation: Next -->

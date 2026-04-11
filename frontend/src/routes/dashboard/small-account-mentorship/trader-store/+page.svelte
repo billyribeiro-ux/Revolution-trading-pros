@@ -128,7 +128,14 @@
 			{#each traderStores as store (store.id)}
 				<a href="/dashboard/small-account-mentorship/trader-store/{store.slug}" class="store-card">
 					<figure class="store-card__image">
-						<img src={store.image} alt={store.name} width="400" height="400" loading="lazy" decoding="async" />
+						<img
+							src={store.image}
+							alt={store.name}
+							width="400"
+							height="400"
+							loading="lazy"
+							decoding="async"
+						/>
 					</figure>
 
 					<div class="store-card__content">

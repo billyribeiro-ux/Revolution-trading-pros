@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';

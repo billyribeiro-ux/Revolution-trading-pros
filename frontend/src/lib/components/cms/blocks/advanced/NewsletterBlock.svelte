@@ -31,9 +31,7 @@
 	let newsletterState = $derived(stateManager.getNewsletterState(blockId));
 
 	// Content fields with defaults
-	let placeholder = $derived(
-		block.content.newsletterPlaceholder || 'Enter your email address'
-	);
+	let placeholder = $derived(block.content.newsletterPlaceholder || 'Enter your email address');
 	let buttonText = $derived(block.content.newsletterButtonText || 'Subscribe');
 
 	// Local state for input binding

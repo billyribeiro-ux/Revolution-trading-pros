@@ -72,11 +72,7 @@ function dedupe<T extends string>(values: T[]): T[] {
 	return Array.from(new Set(values.filter(Boolean)));
 }
 
-async function safeJson<T>(
-	fetchFn: FetchLike,
-	url: string,
-	timeoutMs = 8000
-): Promise<T | null> {
+async function safeJson<T>(fetchFn: FetchLike, url: string, timeoutMs = 8000): Promise<T | null> {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), timeoutMs);
 	try {
@@ -114,10 +110,7 @@ interface PaginatedPostsShape {
 
 async function fetchAllPosts(fetchFn: FetchLike): Promise<PostShape[]> {
 	// Rust API default per_page is small; request the max to minimise requests.
-	const json = await safeJson<PaginatedPostsShape>(
-		fetchFn,
-		`${API_URL}/api/posts?per_page=1000`
-	);
+	const json = await safeJson<PaginatedPostsShape>(fetchFn, `${API_URL}/api/posts?per_page=1000`);
 	const posts = json?.data ?? [];
 	// Drop any post flagged as not indexable.
 	return posts.filter((p) => p?.slug && p.indexable !== false);
@@ -128,9 +121,7 @@ export async function fetchBlogSlugs(fetchFn: FetchLike): Promise<string[]> {
 	return dedupe(posts.map((p) => p.slug!));
 }
 
-export async function fetchBlogSlugsWithLastmod(
-	fetchFn: FetchLike
-): Promise<SlugWithLastmod[]> {
+export async function fetchBlogSlugsWithLastmod(fetchFn: FetchLike): Promise<SlugWithLastmod[]> {
 	const posts = await fetchAllPosts(fetchFn);
 	const seen = new Set<string>();
 	const out: SlugWithLastmod[] = [];
@@ -187,14 +178,9 @@ interface CoursesListShape {
 }
 
 async function fetchAllCourses(fetchFn: FetchLike): Promise<CourseListItemShape[]> {
-	const json = await safeJson<CoursesListShape>(
-		fetchFn,
-		`${API_URL}/api/courses?per_page=1000`
-	);
+	const json = await safeJson<CoursesListShape>(fetchFn, `${API_URL}/api/courses?per_page=1000`);
 	const list = json?.courses ?? json?.data ?? [];
-	return list.filter(
-		(c) => c?.slug && c.is_published !== false && c.status !== 'draft'
-	);
+	return list.filter((c) => c?.slug && c.is_published !== false && c.status !== 'draft');
 }
 
 export async function fetchClassSlugs(fetchFn: FetchLike): Promise<string[]> {
@@ -202,9 +188,7 @@ export async function fetchClassSlugs(fetchFn: FetchLike): Promise<string[]> {
 	return dedupe(list.map((c) => c.slug!));
 }
 
-export async function fetchClassSlugsWithLastmod(
-	fetchFn: FetchLike
-): Promise<SlugWithLastmod[]> {
+export async function fetchClassSlugsWithLastmod(fetchFn: FetchLike): Promise<SlugWithLastmod[]> {
 	const list = await fetchAllCourses(fetchFn);
 	const seen = new Set<string>();
 	const out: SlugWithLastmod[] = [];
@@ -239,9 +223,7 @@ async function fetchAllIndicators(fetchFn: FetchLike): Promise<IndicatorShape[]>
 		`${API_URL}/api/indicators?per_page=1000`
 	);
 	const list = json?.data ?? json?.indicators ?? [];
-	return list.filter(
-		(i) => i?.slug && i.is_published !== false && i.status !== 'draft'
-	);
+	return list.filter((i) => i?.slug && i.is_published !== false && i.status !== 'draft');
 }
 
 export async function fetchIndicatorSlugs(fetchFn: FetchLike): Promise<string[]> {
@@ -264,17 +246,13 @@ interface LearningListShape {
 	resources?: LearningResourceShape[];
 }
 
-export async function fetchLearningCenterSlugs(
-	fetchFn: FetchLike
-): Promise<string[]> {
+export async function fetchLearningCenterSlugs(fetchFn: FetchLike): Promise<string[]> {
 	const json = await safeJson<LearningListShape>(
 		fetchFn,
 		`${API_URL}/api/learning-center?per_page=1000`
 	);
 	const list = json?.data ?? json?.resources ?? [];
-	return dedupe(
-		list.map((r) => r?.slug).filter((s): s is string => typeof s === 'string')
-	);
+	return dedupe(list.map((r) => r?.slug).filter((s): s is string => typeof s === 'string'));
 }
 
 // ─── Posts legacy ──────────────────────────────────────────────────────────────
@@ -306,13 +284,8 @@ interface VideoListShape {
 	videos?: VideoShape[];
 }
 
-export async function fetchVideoResources(
-	fetchFn: FetchLike
-): Promise<VideoResourceEntry[]> {
-	const json = await safeJson<VideoListShape>(
-		fetchFn,
-		`${API_URL}/api/videos?per_page=500`
-	);
+export async function fetchVideoResources(fetchFn: FetchLike): Promise<VideoResourceEntry[]> {
+	const json = await safeJson<VideoListShape>(fetchFn, `${API_URL}/api/videos?per_page=500`);
 	const list = json?.data ?? json?.videos ?? [];
 
 	return list
@@ -345,9 +318,7 @@ export interface DynamicSitemapParams {
 	posts: string[];
 }
 
-export async function resolveAllDynamicRoutes(
-	fetchFn: FetchLike
-): Promise<DynamicSitemapParams> {
+export async function resolveAllDynamicRoutes(fetchFn: FetchLike): Promise<DynamicSitemapParams> {
 	const [blog, classes, indicators, learningCenter, posts] = await Promise.all([
 		fetchBlogSlugs(fetchFn),
 		fetchClassSlugs(fetchFn),

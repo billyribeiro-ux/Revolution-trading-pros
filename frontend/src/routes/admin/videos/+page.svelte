@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Trading Room Video Management - Admin Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -1384,7 +1384,14 @@ import { logger } from '$lib/utils/logger';
 								<td class="video-cell">
 									<div class="video-thumbnail-small">
 										{#if video.thumbnail_url}
-											<img src={video.thumbnail_url} alt="" width="120" height="68" loading="lazy" decoding="async" />
+											<img
+												src={video.thumbnail_url}
+												alt=""
+												width="120"
+												height="68"
+												loading="lazy"
+												decoding="async"
+											/>
 										{:else}
 											<div class="thumbnail-placeholder-small">
 												<IconVideo size={20} />
@@ -1417,7 +1424,15 @@ import { logger } from '$lib/utils/logger';
 								<td>
 									<div class="trader-cell">
 										{#if video.trader?.photo_url}
-											<img src={video.trader.photo_url} alt="" width="32" height="32" loading="lazy" decoding="async" class="trader-avatar" />
+											<img
+												src={video.trader.photo_url}
+												alt=""
+												width="32"
+												height="32"
+												loading="lazy"
+												decoding="async"
+												class="trader-avatar"
+											/>
 										{:else}
 											<div class="trader-avatar-placeholder">
 												<IconUser size={16} />

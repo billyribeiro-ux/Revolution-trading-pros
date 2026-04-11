@@ -219,7 +219,14 @@
 					>
 						<div class="post-image">
 							{#if post.image}
-								<img src={sanitizeURL(post.image)} alt={post.title} width="400" height="225" loading="lazy" decoding="async" />
+								<img
+									src={sanitizeURL(post.image)}
+									alt={post.title}
+									width="400"
+									height="225"
+									loading="lazy"
+									decoding="async"
+								/>
 							{:else}
 								<div class="image-placeholder">
 									<IconPhoto size={32} aria-hidden="true" />

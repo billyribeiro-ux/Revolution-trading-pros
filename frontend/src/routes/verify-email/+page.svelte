@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Email Verification Page - Svelte 5 January 2026
 	 * ═══════════════════════════════════════════════════════════════════════════

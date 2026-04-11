@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Revolution Trading Pros - Active Sessions Management
 	 * Microsoft-style single-session authentication management
@@ -158,7 +158,9 @@ import { logger } from '$lib/utils/logger';
 
 {#if $authStore.user}
 	<div class="min-h-[calc(100vh-120px)] bg-gray-50 py-12 px-4">
-		<div class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto">
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto"
+		>
 			<!-- Header -->
 			<div class="mb-8">
 				<nav class="text-sm mb-4">

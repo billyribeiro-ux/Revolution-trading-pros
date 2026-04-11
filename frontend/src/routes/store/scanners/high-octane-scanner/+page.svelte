@@ -11,7 +11,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart.svelte';

@@ -151,7 +151,14 @@
 						<!-- Image preview -->
 						<div class="preview-image">
 							{#if item.file_type === 'image'}
-								<img src={selectedVariant?.url || item.url} alt={item.alt_text || item.filename} width="1200" height="800" loading="eager" decoding="async" />
+								<img
+									src={selectedVariant?.url || item.url}
+									alt={item.alt_text || item.filename}
+									width="1200"
+									height="800"
+									loading="eager"
+									decoding="async"
+								/>
 							{:else if item.file_type === 'video'}
 								<video controls src={item.url}>
 									<track kind="captions" />
@@ -300,7 +307,14 @@
 								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (selectedVariant = variant)}
 							>
 								<div class="variant-preview">
-									<img src={variant.url} alt="{variant.type} variant" width="120" height="120" loading="lazy" decoding="async" />
+									<img
+										src={variant.url}
+										alt="{variant.type} variant"
+										width="120"
+										height="120"
+										loading="lazy"
+										decoding="async"
+									/>
 								</div>
 								<div class="variant-info">
 									<span class="variant-type">

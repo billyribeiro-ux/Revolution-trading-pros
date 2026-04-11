@@ -12,7 +12,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
 

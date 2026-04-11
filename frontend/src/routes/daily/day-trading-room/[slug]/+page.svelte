@@ -218,7 +218,14 @@
 									class="card-image"
 									style="background-image: url({video.thumbnail});"
 								>
-									<img src="https://placehold.it/325x183" alt={video.title} width="325" height="183" loading="lazy" decoding="async" />
+									<img
+										src="https://placehold.it/325x183"
+										alt={video.title}
+										width="325"
+										height="183"
+										loading="lazy"
+										decoding="async"
+									/>
 								</a>
 							</figure>
 							<section class="card-body">

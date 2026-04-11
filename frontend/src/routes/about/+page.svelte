@@ -341,8 +341,13 @@
 		</div>
 	</div>
 
-	<section id="about-content" class="relative z-10 pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
-		<section class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48 relative">
+	<section
+		id="about-content"
+		class="relative z-10 pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8"
+	>
+		<section
+			class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48 relative"
+		>
 			<div
 				class="absolute top-20 -left-[20%] -right-[20%] h-[500px] grid-floor pointer-events-none parallax-layer z-0"
 			></div>
@@ -449,7 +454,9 @@
 			{/if}
 		</section>
 
-		<section class="max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center">
+		<section
+			class="max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 200 }}
@@ -512,7 +519,9 @@
 				</div>
 
 				<div in:heavySlide={{ delay: 300 }} class="order-1 lg:order-2">
-					<h2 class="text-3xl xs:text-4xl lg:text-5xl font-serif text-white mb-6 sm:mb-8 tracking-tight break-words">
+					<h2
+						class="text-3xl xs:text-4xl lg:text-5xl font-serif text-white mb-6 sm:mb-8 tracking-tight break-words"
+					>
 						You Shouldn't Have to <br /><span class="text-amber-600 italic">Trade Alone.</span>
 					</h2>
 					<div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
@@ -551,7 +560,10 @@
 			{/if}
 		</section>
 
-		<section id="how-it-works" class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48">
+		<section
+			id="how-it-works"
+			class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 400 }} class="border-t border-white/10 pt-20">
 					<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
@@ -561,7 +573,9 @@
 							>
 								<span class="w-8 h-[1px] bg-amber-600"></span> The Ecosystem
 							</span>
-							<h2 class="text-3xl xs:text-4xl md:text-6xl font-serif text-white tracking-tight break-words">
+							<h2
+								class="text-3xl xs:text-4xl md:text-6xl font-serif text-white tracking-tight break-words"
+							>
 								Everything You Need<br />To Succeed.
 							</h2>
 						</div>
@@ -616,12 +630,16 @@
 			{/if}
 		</section>
 
-		<section class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48">
+		<section
+			class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48"
+		>
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 500 }} class="border-t border-white/10 pt-20">
 					<div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
 						<div>
-							<h2 class="text-3xl xs:text-4xl font-serif text-white mb-4 break-words">Meet Your Mentors.</h2>
+							<h2 class="text-3xl xs:text-4xl font-serif text-white mb-4 break-words">
+								Meet Your Mentors.
+							</h2>
 							<p class="text-slate-400 max-w-2xl font-light text-lg">
 								We aren't anonymous admins hiding behind screens. We're real traders in the chat
 								with you every single day—calling moves, answering questions, and helping you grow.
@@ -777,7 +795,9 @@
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 800 }} class="border-t border-white/10 pt-20">
 					<div class="text-center mb-16">
-						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">Frequently Asked Questions</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">
+							Frequently Asked Questions
+						</h2>
 						<div
 							class="h-1 w-20 bg-amber-600 mx-auto rounded-full mt-6 shadow-[0_0_15px_rgba(217,119,6,0.5)]"
 						></div>
@@ -828,13 +848,17 @@
 					class="mx-auto text-amber-600 mb-8 opacity-80 drop-shadow-[0_0_20px_rgba(217,119,6,0.4)]"
 					stroke={0.8}
 				/>
-				<h2 class="text-4xl xs:text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter break-words">
+				<h2
+					class="text-4xl xs:text-5xl md:text-8xl font-serif text-white mb-8 tracking-tighter break-words"
+				>
 					Ready to <span
 						class="italic text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-700"
 						>Turn Pro?</span
 					>
 				</h2>
-				<p class="text-base sm:text-xl text-slate-400 mb-10 sm:mb-12 max-w-xl mx-auto font-light leading-relaxed">
+				<p
+					class="text-base sm:text-xl text-slate-400 mb-10 sm:mb-12 max-w-xl mx-auto font-light leading-relaxed"
+				>
 					The market is open. The team is ready. <br />The only thing missing is you.
 				</p>
 				<div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">

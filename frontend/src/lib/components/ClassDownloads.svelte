@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * ClassDownloads Component - Box.com Identical UI

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Component - FluentForm-Style Form Embedding
 	 *
@@ -150,7 +150,7 @@ import { logger } from '$lib/utils/logger';
 
 		logic.rules?.forEach((rule: any) => {
 			const fieldValue = formData[rule.field];
-			let result = false;
+			let result: boolean;
 
 			switch (rule.operator) {
 				case 'equals':

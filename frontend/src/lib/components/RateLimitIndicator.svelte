@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * API Rate Limit Indicator - Apple ICT9+ Design
 	 * ═══════════════════════════════════════════════════════════════════════════════

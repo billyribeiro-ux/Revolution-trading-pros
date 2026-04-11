@@ -11,7 +11,7 @@
   - Access control indication
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { trackDownload } from '$lib/api/room-resources';
 

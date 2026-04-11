@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError, type Coupon } from '$lib/api/admin';
 	import { IconEdit, IconTrash, IconPlus, IconRefresh, IconSearch, IconFilter } from '$lib/icons';

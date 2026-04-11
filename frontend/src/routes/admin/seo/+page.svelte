@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * SEO Dashboard - Apple ICT9+ Enterprise Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════

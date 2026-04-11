@@ -700,7 +700,6 @@ function trackApiPerformance(
  */
 function logApiError(endpoint: string, error: any): void {
 	logger.error(`[API] Error for ${endpoint}:`, error);
-
 }
 
 /**

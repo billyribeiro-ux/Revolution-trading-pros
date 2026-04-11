@@ -23,15 +23,8 @@
 		onError?: (error: Error) => void;
 	}
 
-	let {
-		blocks,
-		containerHeight,
-		isEditing,
-		selectedBlockId,
-		onUpdate,
-		onSelect,
-		onError
-	}: Props = $props();
+	let { blocks, containerHeight, isEditing, selectedBlockId, onUpdate, onSelect, onError }: Props =
+		$props();
 
 	let scrollElement = $state<HTMLElement | null>(null);
 

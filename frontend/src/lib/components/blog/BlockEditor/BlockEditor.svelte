@@ -21,7 +21,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
@@ -815,15 +815,12 @@ import { logger } from '$lib/utils/logger';
 		const index = editorState.blocks.findIndex((b) => b.id === blockId);
 		if (index === -1) return;
 
-		let newIndex = index;
-		let direction = '';
+		let newIndex: number;
 
 		if (e.key === 'ArrowUp' && index > 0) {
 			newIndex = index - 1;
-			direction = 'up';
 		} else if (e.key === 'ArrowDown' && index < editorState.blocks.length - 1) {
 			newIndex = index + 1;
-			direction = 'down';
 		} else {
 			return;
 		}
@@ -840,7 +837,8 @@ import { logger } from '$lib/utils/logger';
 
 			// Announce for screen readers
 			const blockName = BLOCK_DEFINITIONS[blockA.type]?.name || blockA.type;
-			announce(`${blockName} moved ${direction} to position ${newIndex + 1}`, 'polite');
+			const dir = newIndex < index ? 'up' : 'down';
+			announce(`${blockName} moved ${dir} to position ${newIndex + 1}`, 'polite');
 
 			// Focus the moved block
 			tick().then(() => {

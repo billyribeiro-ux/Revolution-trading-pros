@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Form Embed Generator - Generate embed codes for forms
 	 *
@@ -293,7 +293,15 @@ import { logger } from '$lib/utils/logger';
 			<div class="section">
 				<h3 class="section-label">QR Code</h3>
 				<div class="qr-container">
-					<img src={qrCodeUrl} alt="QR Code for {formTitle}" width="200" height="200" loading="lazy" decoding="async" class="qr-code" />
+					<img
+						src={qrCodeUrl}
+						alt="QR Code for {formTitle}"
+						width="200"
+						height="200"
+						loading="lazy"
+						decoding="async"
+						class="qr-code"
+					/>
 					<a href={qrCodeUrl} download="form-qr-{formSlug}.png" class="btn-download">
 						Download QR Code
 					</a>
@@ -332,9 +340,7 @@ import { logger } from '$lib/utils/logger';
 					LinkedIn
 				</a>
 				<a
-					href="mailto:?subject={encodeURIComponent(formTitle)}&body={encodeURIComponent(
-						shareUrl
-					)}"
+					href="mailto:?subject={encodeURIComponent(formTitle)}&body={encodeURIComponent(shareUrl)}"
 					class="social-btn email"
 				>
 					Email

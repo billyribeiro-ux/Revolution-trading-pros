@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Indicator Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - February 2026
@@ -614,7 +614,15 @@ import { logger } from '$lib/utils/logger';
 							{#each videos as video (video.id)}
 								<div class="video-card">
 									{#if video.thumbnail_url}
-										<img src={video.thumbnail_url} alt={video.title} width="320" height="180" loading="lazy" decoding="async" class="thumbnail" />
+										<img
+											src={video.thumbnail_url}
+											alt={video.title}
+											width="320"
+											height="180"
+											loading="lazy"
+											decoding="async"
+											class="thumbnail"
+										/>
 									{:else}
 										<div class="thumbnail-placeholder">No Thumbnail</div>
 									{/if}

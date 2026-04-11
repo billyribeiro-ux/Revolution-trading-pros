@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog List Page - Svelte 5 Runes Implementation
 	 * @version 4.0.0 - January 2026
@@ -7,6 +7,7 @@ import { logger } from '$lib/utils/logger';
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
 	import { preloadData } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
@@ -114,7 +115,9 @@ import { logger } from '$lib/utils/logger';
 						await new Promise((resolve) => setTimeout(resolve, delay));
 						return loadPosts(page, retry + 1);
 					} else {
-						throw new Error('Request timed out. Please check your connection and try again.');
+						throw new Error('Request timed out. Please check your connection and try again.', {
+							cause: fetchError
+						});
 					}
 				}
 
@@ -180,7 +183,7 @@ import { logger } from '$lib/utils/logger';
 		prefetchedSlugs = new Set([...prefetchedSlugs, slug]);
 
 		// Use SvelteKit's preloadData for route prefetching
-		preloadData(`/blog/${slug}`).catch(() => {
+		preloadData(resolve('/blog/[slug]', { slug })).catch(() => {
 			// Silently fail - prefetching is optional
 		});
 	}
@@ -224,7 +227,7 @@ import { logger } from '$lib/utils/logger';
 <svelte:head>
 	<!-- Prefetch hints for common blog posts -->
 	{#each posts.slice(0, 3) as post (post.slug)}
-		<link rel="prefetch" href="/blog/{post.slug}" />
+		<link rel="prefetch" href={resolve('/blog/[slug]', { slug: post.slug })} />
 	{/each}
 </svelte:head>
 
@@ -286,7 +289,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="posts-grid">
 			{#each posts as post (post.id)}
 				<a
-					href="/blog/{post.slug}"
+					href={resolve('/blog/[slug]', { slug: post.slug })}
 					class="post-card"
 					onmouseenter={() => prefetchPost(post.slug)}
 					onfocus={() => prefetchPost(post.slug)}
@@ -780,7 +783,7 @@ import { logger } from '$lib/utils/logger';
 			margin-bottom: 1.5rem;
 		}
 
-		.error h3 {
+		.error h2 {
 			color: var(--error-color-light);
 			font-size: 1.5rem;
 			font-weight: 700;

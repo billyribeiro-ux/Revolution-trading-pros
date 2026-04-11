@@ -11,7 +11,7 @@
 	@svelte5 Fully compliant with Nov/Dec 2025 best practices
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 
 	/**
@@ -106,7 +106,14 @@ import { logger } from '$lib/utils/logger';
 				<div class="updates-grid__item">
 					<article class="article-card">
 						<figure class="article-card__image" style="background-image: url({item.image});">
-							<img src={item.image} alt={item.title} width="325" height="183" loading="lazy" decoding="async" />
+							<img
+								src={item.image}
+								alt={item.title}
+								width="325"
+								height="183"
+								loading="lazy"
+								decoding="async"
+							/>
 						</figure>
 
 						{#if item.isVideo && item.type}

@@ -25,14 +25,7 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		subscription = null,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let { isOpen, mode: modeProp, subscription = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props
 	let mode = $derived(modeProp ?? (subscription ? 'edit' : 'create'));

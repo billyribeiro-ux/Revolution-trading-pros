@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { authStore, isAuthenticated } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -54,7 +54,9 @@ import { logger } from '$lib/utils/logger';
 {#if $authStore.isInitializing || $authStore.isLoading}
 	<!-- Loading skeleton for consistent SSR/CSR output -->
 	<div class="bg-rtp-bg py-12 px-4">
-		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+		>
 			<div
 				class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8 animate-pulse"
 			>
@@ -66,7 +68,9 @@ import { logger } from '$lib/utils/logger';
 {:else if $authStore.user}
 	<!-- ICT11+ Fix: Removed min-h-[calc(100vh-120px)] - let parent flex container handle height -->
 	<div class="bg-rtp-bg py-12 px-4">
-		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto"
+		>
 			<!-- Header -->
 			<div class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8">
 				<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

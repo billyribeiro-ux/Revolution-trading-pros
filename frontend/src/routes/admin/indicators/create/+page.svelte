@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
@@ -1269,7 +1269,14 @@ import { logger } from '$lib/utils/logger';
 					<div class="preview-card">
 						<div class="preview-image">
 							{#if indicator.thumbnail_url}
-								<img src={indicator.thumbnail_url} alt="Preview" width="400" height="300" loading="lazy" decoding="async" />
+								<img
+									src={indicator.thumbnail_url}
+									alt="Preview"
+									width="400"
+									height="300"
+									loading="lazy"
+									decoding="async"
+								/>
 							{:else}
 								<div class="preview-placeholder">
 									<svg

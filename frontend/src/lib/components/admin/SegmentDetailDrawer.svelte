@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * SegmentDetailDrawer - Segment Analytics & Preview
 	 * Revolution Trading Pros - Apple ICT 11+ Principal Engineer Grade

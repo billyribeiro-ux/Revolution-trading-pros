@@ -509,7 +509,7 @@
 									<td>
 										{#if contact.tags && contact.tags.length > 0}
 											<div class="tags-preview">
-												{#each contact.tags.slice(0, 2) as tag (tag.name)}
+												{#each contact.tags.slice(0, 2) as tag (typeof tag === 'string' ? tag : tag.name)}
 													<span class="tag-pill">{typeof tag === 'string' ? tag : tag.name}</span>
 												{/each}
 												{#if contact.tags.length > 2}

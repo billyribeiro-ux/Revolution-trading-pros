@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import IconShare from '@tabler/icons-svelte-runes/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';

@@ -37,7 +37,7 @@
 -->
 
 <script lang="ts" module>
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MODULE CONTEXT - Shared across all instances
 	// ═══════════════════════════════════════════════════════════════════════════

@@ -30,14 +30,7 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		course = null,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let { isOpen, mode: modeProp, course = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props
 	let mode = $derived(modeProp ?? (course ? 'edit' : 'create'));

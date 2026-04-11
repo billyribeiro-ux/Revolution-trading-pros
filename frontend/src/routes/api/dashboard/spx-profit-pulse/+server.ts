@@ -188,8 +188,7 @@ function getTradingRooms() {
 
 export const GET: RequestHandler = async ({ request, locals }) => {
 	const token =
-		request.headers.get('Authorization')?.replace('Bearer ', '') ||
-		(locals as any).accessToken;
+		request.headers.get('Authorization')?.replace('Bearer ', '') || (locals as any).accessToken;
 	if (!token) return json({ success: false, error: 'Unauthorized' }, { status: 401 });
 	try {
 		// Build full dashboard response

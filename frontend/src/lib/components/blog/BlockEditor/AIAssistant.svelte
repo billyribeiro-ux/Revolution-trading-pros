@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { fade, slide } from 'svelte/transition';
 	import {
 		IconRobot,

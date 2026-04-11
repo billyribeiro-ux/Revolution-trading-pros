@@ -11,7 +11,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';

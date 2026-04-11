@@ -1,30 +1,17 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { domRef } from '$lib/svelte/domAttachment';
 	import { onMount } from 'svelte';
 	import { Spring } from 'svelte/motion';
 	import { browser } from '$app/environment';
+	import type { PageProps } from './$types';
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
 	type GSAPInstance = typeof import('gsap').gsap;
 
 	/**
 	 * Svelte 5 Runes & SSR/SSG Pattern
 	 */
-	interface Symbol {
-		sym: string;
-		price: string;
-		change: string;
-		up: boolean;
-	}
-
-	interface Props {
-		data: {
-			rooms: Array<Record<string, unknown>>;
-			benefits: Array<Record<string, unknown>>;
-			symbols: Symbol[];
-		};
-	}
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	// Use server-loaded data for SSR/SSG. SEO is owned by the unified <Seo> layer
 	// in +layout.svelte via `page.data.seo` returned from +page.server.ts.
@@ -301,7 +288,6 @@ import { logger } from '$lib/utils/logger';
 		};
 	});
 </script>
-
 
 <div class="bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative">
 	<div class="fixed inset-0 pointer-events-none z-0">
@@ -650,7 +636,10 @@ import { logger } from '$lib/utils/logger';
 					technology, and community.
 				</p>
 			</div>
-			<div {@attach domRef((el) => (_benefitsRef = el))} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+			<div
+				{@attach domRef((el) => (_benefitsRef = el))}
+				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+			>
 				{#each benefits as item (item.id)}
 					<div
 						class="benefit-card p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
@@ -724,7 +713,9 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 			<div class="relative z-10 max-w-3xl mx-auto px-4">
-				<h2 class="text-3xl xs:text-4xl md:text-5xl font-bold text-white mb-6 break-words">Ready to Level Up?</h2>
+				<h2 class="text-3xl xs:text-4xl md:text-5xl font-bold text-white mb-6 break-words">
+					Ready to Level Up?
+				</h2>
 				<p class="text-base sm:text-xl text-zinc-400 mb-8 sm:mb-10">
 					Join thousands of traders who have transformed their results. <br
 						class="hidden md:block"

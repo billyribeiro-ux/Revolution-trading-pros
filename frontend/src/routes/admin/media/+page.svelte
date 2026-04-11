@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Media Library - Apple ICT 7 Grade Enterprise Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════

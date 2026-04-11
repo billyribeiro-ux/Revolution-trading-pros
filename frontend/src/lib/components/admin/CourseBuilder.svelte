@@ -407,7 +407,15 @@
 							disabled={!editMode && !!courseId}
 						/>
 						{#if formData.thumbnail_url}
-							<img src={formData.thumbnail_url} alt="Thumbnail preview" width="400" height="225" loading="lazy" decoding="async" class="thumbnail-preview" />
+							<img
+								src={formData.thumbnail_url}
+								alt="Thumbnail preview"
+								width="400"
+								height="225"
+								loading="lazy"
+								decoding="async"
+								class="thumbnail-preview"
+							/>
 						{/if}
 					</div>
 

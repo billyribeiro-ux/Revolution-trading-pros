@@ -206,7 +206,14 @@
 					<div class="manager-card">
 						<div class="manager-avatar">
 							{#if manager.avatar}
-								<img src={manager.avatar} alt={manager.name} width="48" height="48" loading="lazy" decoding="async" />
+								<img
+									src={manager.avatar}
+									alt={manager.name}
+									width="48"
+									height="48"
+									loading="lazy"
+									decoding="async"
+								/>
 							{:else}
 								<IconUser size={24} />
 							{/if}

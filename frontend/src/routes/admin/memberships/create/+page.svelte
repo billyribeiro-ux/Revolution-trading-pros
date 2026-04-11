@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Create Membership Plan - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════

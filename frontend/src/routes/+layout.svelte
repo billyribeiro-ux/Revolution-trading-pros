@@ -67,11 +67,7 @@
 	// `App.PageData` declares `seo?: SEOInput` (see `src/app.d.ts`).
 	// ═══════════════════════════════════════════════════════════════════════════
 	const resolvedSeo = $derived(
-		resolveSEO(
-			{ ...data.seoContext, pathname: page.url.pathname },
-			data.seoDefaults,
-			page.data.seo
-		)
+		resolveSEO({ ...data.seoContext, pathname: page.url.pathname }, data.seoDefaults, page.data.seo)
 	);
 
 	// ICT Level 7: Hydration-safe — mounted guard prevents class mismatch on SSR
@@ -146,7 +142,11 @@
 	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 	<link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
 	<link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="192x192" href="/apple-touch-icon-precomposed.png" />
+	<link
+		rel="apple-touch-icon-precomposed"
+		sizes="192x192"
+		href="/apple-touch-icon-precomposed.png"
+	/>
 
 	<!-- PWA Manifest -->
 	<link rel="manifest" href="/manifest.json" />

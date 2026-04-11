@@ -139,8 +139,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		headers: {
 			// Cloudflare edge caches for 24h, SWR for 7d → the Rust API sees at
 			// most one sitemap render per hour per edge POP even under bot load.
-			'Cache-Control':
-				'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+			'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
 			'X-Content-Type-Options': 'nosniff'
 		}
 	});

@@ -64,12 +64,7 @@
 		{/if}
 	</div>
 
-	<input
-		id="toggle-{field.name}"
-		type="hidden"
-		name={field.name}
-		value={value ? '1' : '0'}
-	/>
+	<input id="toggle-{field.name}" type="hidden" name={field.name} value={value ? '1' : '0'} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

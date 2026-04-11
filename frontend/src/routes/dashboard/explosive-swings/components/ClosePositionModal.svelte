@@ -9,7 +9,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { domRef } from '$lib/svelte/domAttachment';
 	import type { ActivePosition } from '../types';
 	import { formatPrice, formatPercent } from '../utils/formatters';
@@ -170,7 +170,11 @@ import { logger } from '$lib/utils/logger';
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<div class="modal-container" {@attach domRef<HTMLDivElement>((el) => (modalRef = el ?? null))} tabindex="-1">
+		<div
+			class="modal-container"
+			{@attach domRef<HTMLDivElement>((el) => (modalRef = el ?? null))}
+			tabindex="-1"
+		>
 			<!-- Header -->
 			<div class="modal-header">
 				<div class="header-content">

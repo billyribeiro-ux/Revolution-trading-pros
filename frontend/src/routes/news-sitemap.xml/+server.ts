@@ -18,10 +18,7 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import {
-	fetchRecentNewsArticles,
-	type NewsArticleEntry
-} from '$lib/seo/dynamic-routes';
+import { fetchRecentNewsArticles, type NewsArticleEntry } from '$lib/seo/dynamic-routes';
 
 // Use environment variable - configure VITE_SITE_URL for your domain
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';

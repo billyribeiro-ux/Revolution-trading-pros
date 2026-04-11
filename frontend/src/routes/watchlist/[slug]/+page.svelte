@@ -15,7 +15,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 
 	// Mock data for weekly watchlist entries - in production this would come from API

@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import {
@@ -462,7 +462,14 @@ import { logger } from '$lib/utils/logger';
 			<div class="product-preview-card">
 				{#if formData.thumbnail}
 					<div class="preview-thumbnail">
-						<img src={formData.thumbnail} alt={formData.name || 'Product'} width="400" height="400" loading="lazy" decoding="async" />
+						<img
+							src={formData.thumbnail}
+							alt={formData.name || 'Product'}
+							width="400"
+							height="400"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				{:else}
 					{@const SvelteComponent = previewTypeIcon}

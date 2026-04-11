@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Content Management
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -348,7 +348,14 @@ import { logger } from '$lib/utils/logger';
 									<div class="item-cell">
 										<div class="item-thumb">
 											{#if item.video.poster}
-												<img src={item.video.poster} alt="" width="120" height="68" loading="lazy" decoding="async" />
+												<img
+													src={item.video.poster}
+													alt=""
+													width="120"
+													height="68"
+													loading="lazy"
+													decoding="async"
+												/>
 											{:else}
 												<div class="thumb-placeholder">
 													<IconVideo size={20} />
@@ -364,7 +371,15 @@ import { logger } from '$lib/utils/logger';
 								<td class="col-trader">
 									<div class="trader-cell">
 										{#if item.traderImage}
-											<img src={item.traderImage} alt="" width="32" height="32" loading="lazy" decoding="async" class="trader-avatar" />
+											<img
+												src={item.traderImage}
+												alt=""
+												width="32"
+												height="32"
+												loading="lazy"
+												decoding="async"
+												class="trader-avatar"
+											/>
 										{/if}
 										<span>{item.trader}</span>
 									</div>

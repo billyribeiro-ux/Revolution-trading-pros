@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Block Settings Panel - Enterprise-Grade Settings Editor
 	 * ========================================================

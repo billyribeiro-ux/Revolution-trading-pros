@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import {
 		IconPlayerPlay,
 		IconPlayerPause,
@@ -179,9 +179,7 @@ import { logger } from '$lib/utils/logger';
 	// ==========================================================================
 
 	const hasAudio = $derived(!!block.content.mediaUrl);
-	const sanitizedURL = $derived(
-		block.content.mediaUrl ? sanitizeURL(block.content.mediaUrl) : ''
-	);
+	const sanitizedURL = $derived(block.content.mediaUrl ? sanitizeURL(block.content.mediaUrl) : '');
 </script>
 
 <div class="audio-block" role="region" aria-label="Audio player">

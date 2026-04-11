@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { boardsAPI } from '$lib/api/boards';

@@ -206,7 +206,9 @@
 					<IconTrendingUp size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html sanitizeHtml(stats.recovered_revenue.value, 'minimal')}</span>
+					<span class="stat-value"
+						>{@html sanitizeHtml(stats.recovered_revenue.value, 'minimal')}</span
+					>
 					<span class="stat-label">{stats.recovered_revenue.title}</span>
 					<span class="stat-count">{stats.recovered_revenue.count} carts</span>
 				</div>
@@ -216,7 +218,9 @@
 					<IconShoppingCart size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{@html sanitizeHtml(stats.processing_revenue.value, 'minimal')}</span>
+					<span class="stat-value"
+						>{@html sanitizeHtml(stats.processing_revenue.value, 'minimal')}</span
+					>
 					<span class="stat-label">{stats.processing_revenue.title}</span>
 					<span class="stat-count">{stats.processing_revenue.count} carts</span>
 				</div>
@@ -338,7 +342,15 @@
 							<td>
 								<div class="customer-cell">
 									{#if cart.customer_avatar}
-										<img src={cart.customer_avatar} alt="" width="32" height="32" loading="lazy" decoding="async" class="customer-avatar" />
+										<img
+											src={cart.customer_avatar}
+											alt=""
+											width="32"
+											height="32"
+											loading="lazy"
+											decoding="async"
+											class="customer-avatar"
+										/>
 									{:else}
 										<div class="customer-avatar-placeholder">
 											<IconUser size={16} />

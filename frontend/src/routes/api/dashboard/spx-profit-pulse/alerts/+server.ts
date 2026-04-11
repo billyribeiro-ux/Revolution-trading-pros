@@ -150,8 +150,7 @@ function getAlerts(): SPXAlert[] {
 
 export const GET: RequestHandler = async ({ url, request, locals }) => {
 	const token =
-		request.headers.get('Authorization')?.replace('Bearer ', '') ||
-		(locals as any).accessToken;
+		request.headers.get('Authorization')?.replace('Bearer ', '') || (locals as any).accessToken;
 	if (!token) return json({ success: false, error: 'Unauthorized' }, { status: 401 });
 	try {
 		const page = parseInt(url.searchParams.get('page') || '1');

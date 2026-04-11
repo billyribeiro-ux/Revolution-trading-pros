@@ -32,46 +32,44 @@
 
 		<div class="prose prose-lg max-w-none">
 			<p>
-				These Terms of Service (&ldquo;Terms&rdquo;) govern your use of the Revolution
-				Trading Pros website, trading education products, live trading rooms, software
-				indicators, and any other services we offer (collectively, the &ldquo;Services&rdquo;).
-				By accessing the Services you agree to be bound by these Terms.
+				These Terms of Service (&ldquo;Terms&rdquo;) govern your use of the Revolution Trading Pros
+				website, trading education products, live trading rooms, software indicators, and any other
+				services we offer (collectively, the &ldquo;Services&rdquo;). By accessing the Services you
+				agree to be bound by these Terms.
 			</p>
 
 			<h2 id="risk-disclaimer" class="risk-heading">Risk Disclaimer</h2>
 			<div class="risk-box" role="note" aria-label="Financial risk disclaimer">
 				<p>
-					<strong>Trading and investing carry a high level of risk.</strong> The
-					information, education, signals, alerts, and tools provided by Revolution Trading
-					Pros are for educational and informational purposes only and do not constitute
-					financial, investment, legal, or tax advice. Past performance is not indicative of
-					future results. You may lose some or all of your investment. You are solely
-					responsible for your trading decisions and should consult a qualified financial
-					advisor before acting on any information you receive from us.
+					<strong>Trading and investing carry a high level of risk.</strong> The information, education,
+					signals, alerts, and tools provided by Revolution Trading Pros are for educational and informational
+					purposes only and do not constitute financial, investment, legal, or tax advice. Past performance
+					is not indicative of future results. You may lose some or all of your investment. You are solely
+					responsible for your trading decisions and should consult a qualified financial advisor before
+					acting on any information you receive from us.
 				</p>
 			</div>
 
 			<h2>1. Eligibility</h2>
 			<p>
-				You must be at least 18 years old and legally able to enter into contracts to use
-				the Services. By creating an account you represent that you meet these
-				requirements.
+				You must be at least 18 years old and legally able to enter into contracts to use the
+				Services. By creating an account you represent that you meet these requirements.
 			</p>
 
 			<h2>2. Account &amp; Security</h2>
 			<p>
-				You are responsible for maintaining the confidentiality of your account credentials
-				and for all activity that occurs under your account. Notify us immediately at
-				<a href="mailto:security@revolution-trading-pros.com">security@revolution-trading-pros.com</a
+				You are responsible for maintaining the confidentiality of your account credentials and for
+				all activity that occurs under your account. Notify us immediately at
+				<a href="mailto:security@revolution-trading-pros.com"
+					>security@revolution-trading-pros.com</a
 				> if you suspect unauthorized access.
 			</p>
 
 			<h2>3. Subscriptions, Billing, and Refunds</h2>
 			<p>
-				Subscriptions renew automatically at the end of each billing period unless you
-				cancel beforehand. All fees are non-refundable except where required by law or
-				explicitly offered in writing. You may cancel at any time from your account
-				dashboard.
+				Subscriptions renew automatically at the end of each billing period unless you cancel
+				beforehand. All fees are non-refundable except where required by law or explicitly offered
+				in writing. You may cancel at any time from your account dashboard.
 			</p>
 
 			<h2>4. Acceptable Use</h2>
@@ -86,69 +84,67 @@
 
 			<h2>5. Intellectual Property</h2>
 			<p>
-				All content provided through the Services &mdash; including videos, indicators,
-				course materials, software, and written content &mdash; is the property of
-				Revolution Trading Pros or its licensors and is protected by copyright, trademark,
-				and other intellectual property laws. We grant you a limited, non-exclusive,
-				non-transferable license to access the content for personal, non-commercial use.
+				All content provided through the Services &mdash; including videos, indicators, course
+				materials, software, and written content &mdash; is the property of Revolution Trading Pros
+				or its licensors and is protected by copyright, trademark, and other intellectual property
+				laws. We grant you a limited, non-exclusive, non-transferable license to access the content
+				for personal, non-commercial use.
 			</p>
 
 			<h2>6. User Content</h2>
 			<p>
-				You retain ownership of any content you submit to the Services (e.g., chat
-				messages, forum posts) but grant us a worldwide, royalty-free license to use, host,
-				display, and adapt it as necessary to operate the Services.
+				You retain ownership of any content you submit to the Services (e.g., chat messages, forum
+				posts) but grant us a worldwide, royalty-free license to use, host, display, and adapt it as
+				necessary to operate the Services.
 			</p>
 
 			<h2>7. No Investment Advice</h2>
 			<p>
-				The Services do not provide personalized investment advice. We are not a
-				registered investment advisor, broker-dealer, or financial planner. Nothing we
-				publish should be construed as a recommendation to buy or sell any security.
+				The Services do not provide personalized investment advice. We are not a registered
+				investment advisor, broker-dealer, or financial planner. Nothing we publish should be
+				construed as a recommendation to buy or sell any security.
 			</p>
 
 			<h2>8. Disclaimer of Warranties</h2>
 			<p>
 				THE SERVICES ARE PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; WITHOUT
 				WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
-				WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
-				NON-INFRINGEMENT.
+				WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
 			</p>
 
 			<h2>9. Limitation of Liability</h2>
 			<p>
-				TO THE MAXIMUM EXTENT PERMITTED BY LAW, REVOLUTION TRADING PROS AND ITS OFFICERS,
-				DIRECTORS, EMPLOYEES, AND AGENTS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
-				CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, ARISING
-				FROM YOUR USE OF THE SERVICES.
+				TO THE MAXIMUM EXTENT PERMITTED BY LAW, REVOLUTION TRADING PROS AND ITS OFFICERS, DIRECTORS,
+				EMPLOYEES, AND AGENTS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL,
+				SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, ARISING FROM YOUR USE OF THE
+				SERVICES.
 			</p>
 
 			<h2>10. Indemnification</h2>
 			<p>
-				You agree to indemnify and hold Revolution Trading Pros harmless from any claims,
-				losses, or expenses (including reasonable attorneys&rsquo; fees) arising out of
-				your breach of these Terms or your use of the Services.
+				You agree to indemnify and hold Revolution Trading Pros harmless from any claims, losses, or
+				expenses (including reasonable attorneys&rsquo; fees) arising out of your breach of these
+				Terms or your use of the Services.
 			</p>
 
 			<h2>11. Termination</h2>
 			<p>
-				We may suspend or terminate your access to the Services at any time, with or
-				without notice, for any reason, including violation of these Terms.
+				We may suspend or terminate your access to the Services at any time, with or without notice,
+				for any reason, including violation of these Terms.
 			</p>
 
 			<h2>12. Governing Law</h2>
 			<p>
-				These Terms are governed by the laws of the United States and the state in which
-				Revolution Trading Pros is incorporated, without regard to conflict of laws
-				principles. Any disputes will be resolved exclusively in the state or federal
-				courts located in that jurisdiction.
+				These Terms are governed by the laws of the United States and the state in which Revolution
+				Trading Pros is incorporated, without regard to conflict of laws principles. Any disputes
+				will be resolved exclusively in the state or federal courts located in that jurisdiction.
 			</p>
 
 			<h2>13. Changes to These Terms</h2>
 			<p>
-				We may modify these Terms at any time. Material changes will be announced on this
-				page with a new &ldquo;Last updated&rdquo; date. Your continued use of the Services
-				after such changes constitutes acceptance.
+				We may modify these Terms at any time. Material changes will be announced on this page with
+				a new &ldquo;Last updated&rdquo; date. Your continued use of the Services after such changes
+				constitutes acceptance.
 			</p>
 
 			<h2>14. Contact</h2>

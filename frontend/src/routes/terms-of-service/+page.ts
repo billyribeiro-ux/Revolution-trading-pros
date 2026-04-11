@@ -15,7 +15,7 @@ export const load: PageLoad = () => {
 			description:
 				'The legal agreement between you and Revolution Trading Pros covering use of our website, trading education, and live trading rooms.'
 		},
-		schema: [
+		jsonld: [
 			{
 				'@context': 'https://schema.org',
 				'@type': 'WebPage',

@@ -77,14 +77,10 @@
 	// Derived State
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let mode = $derived<'embed' | 'image'>(
-		(block.content.chartMode as 'embed' | 'image') || 'embed'
-	);
+	let mode = $derived<'embed' | 'image'>((block.content.chartMode as 'embed' | 'image') || 'embed');
 	let symbol = $derived(block.content.chartSymbol || 'NASDAQ:AAPL');
 	let interval = $derived((block.content.chartInterval as ChartContent['interval']) || '1D');
-	let themePreference = $derived(
-		(block.content.chartTheme as ChartContent['theme']) || 'auto'
-	);
+	let themePreference = $derived((block.content.chartTheme as ChartContent['theme']) || 'auto');
 	let imageUrl = $derived(block.content.chartImageUrl || '');
 	let imageAlt = $derived(block.content.chartImageAlt || 'Trading chart');
 	let imageCaption = $derived(block.content.chartImageCaption || '');

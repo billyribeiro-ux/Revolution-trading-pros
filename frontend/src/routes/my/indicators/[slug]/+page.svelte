@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * My Indicator Downloads Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -166,7 +166,16 @@ import { logger } from '$lib/utils/logger';
 			<a href="/my/indicators" class="back-link">← My Indicators</a>
 			<div class="indicator-info">
 				{#if indicator.logo_url}
-					<img src={indicator.logo_url} alt="" width="80" height="80" loading="eager" fetchpriority="high" decoding="sync" class="logo" />
+					<img
+						src={indicator.logo_url}
+						alt=""
+						width="80"
+						height="80"
+						loading="eager"
+						fetchpriority="high"
+						decoding="sync"
+						class="logo"
+					/>
 				{/if}
 				<div>
 					<h1>{indicator.name}</h1>
@@ -304,7 +313,14 @@ import { logger } from '$lib/utils/logger';
 									allowfullscreen
 								></iframe>
 							{:else if video.thumbnail_url}
-								<img src={video.thumbnail_url} alt={video.title} width="400" height="225" loading="lazy" decoding="async" />
+								<img
+									src={video.thumbnail_url}
+									alt={video.title}
+									width="400"
+									height="225"
+									loading="lazy"
+									decoding="async"
+								/>
 							{/if}
 							<h4>{video.title}</h4>
 						</div>

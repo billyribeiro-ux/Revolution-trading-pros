@@ -72,7 +72,15 @@
 			}
 		}}
 	>
-		<img src={imageUrl} alt={course.title} width="120" height="120" loading="lazy" decoding="async" class="thumb" />
+		<img
+			src={imageUrl}
+			alt={course.title}
+			width="120"
+			height="120"
+			loading="lazy"
+			decoding="async"
+			class="thumb"
+		/>
 		<div class="info">
 			<h4 class="title">{course.title}</h4>
 			<div class="meta">
@@ -115,7 +123,14 @@
 		}}
 	>
 		<div class="image-wrap">
-			<img src={imageUrl} alt={course.title} width="400" height="225" loading="lazy" decoding="async" />
+			<img
+				src={imageUrl}
+				alt={course.title}
+				width="400"
+				height="225"
+				loading="lazy"
+				decoding="async"
+			/>
 			{#if course.card_badge}
 				<span class="badge" style="background-color: {course.card_badge_color || '#10b981'}"
 					>{course.card_badge}</span
@@ -131,9 +146,7 @@
 				<p class="desc">{course.card_description}</p>
 			{/if}
 			<div class="meta">
-				{#if course.instructor_name}<span class="instructor"
-						>{course.instructor_name}</span
-					>{/if}
+				{#if course.instructor_name}<span class="instructor">{course.instructor_name}</span>{/if}
 				<div class="stats">
 					{#if course.lesson_count}<span>{course.lesson_count} lessons</span>{/if}
 					{#if course.total_duration_minutes}<span
@@ -155,8 +168,7 @@
 							/></svg
 						>
 						<span>{course.avg_rating.toFixed(1)}</span>
-						{#if course.review_count}<span class="count">({course.review_count})</span
-							>{/if}
+						{#if course.review_count}<span class="count">({course.review_count})</span>{/if}
 					</div>
 				{/if}
 				<span class="price">{formatPrice(course.price_cents, course.is_free)}</span>

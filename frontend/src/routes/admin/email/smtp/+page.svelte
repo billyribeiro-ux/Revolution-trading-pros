@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';

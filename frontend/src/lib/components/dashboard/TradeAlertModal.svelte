@@ -40,14 +40,7 @@
 		onSave: (alert: AlertCreateInput | AlertUpdateInput, isEdit: boolean) => Promise<void>;
 	}
 
-	let {
-		isOpen,
-		roomSlug,
-		editAlert = null,
-		entryAlerts = [],
-		onClose,
-		onSave
-	}: Props = $props();
+	let { isOpen, roomSlug, editAlert = null, entryAlerts = [], onClose, onSave }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

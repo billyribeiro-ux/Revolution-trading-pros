@@ -19,14 +19,7 @@
 		color?: 'blue' | 'green' | 'purple' | 'amber';
 	}
 
-	let {
-		title,
-		value,
-		icon: Icon,
-		trend = '',
-		trendUp = true,
-		color = 'blue'
-	}: Props = $props();
+	let { title, value, icon: Icon, trend = '', trendUp = true, color = 'blue' }: Props = $props();
 </script>
 
 <div class="stat-card">

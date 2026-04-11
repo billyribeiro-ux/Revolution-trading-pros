@@ -397,7 +397,8 @@ describe('GroupBlock - Border Radius', () => {
 		});
 
 		const groupContainer = container.querySelector('.group-container');
-		expect(groupContainer).toHaveStyle({ borderRadius: '12px' });
+		// jsdom + `toHaveStyle` are unreliable for `border-radius`; assert on the inline style string
+		expect(groupContainer?.getAttribute('style')).toMatch(/border-radius:\s*12px/);
 	});
 
 	it('should apply no border radius when set to 0', () => {
@@ -415,7 +416,7 @@ describe('GroupBlock - Border Radius', () => {
 		});
 
 		const groupContainer = container.querySelector('.group-container');
-		expect(groupContainer).toHaveStyle({ borderRadius: '0' });
+		expect(groupContainer?.getAttribute('style')).toMatch(/border-radius:\s*0(?:px)?/);
 	});
 
 	it('should show border radius select in toolbar', () => {

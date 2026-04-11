@@ -51,7 +51,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { Spring, Tween } from 'svelte/motion';
@@ -1017,7 +1017,8 @@ import { logger } from '$lib/utils/logger';
 		bind:this={modalElement}
 		class="popup-container {deviceType}"
 		class:shake={shakeAnimation.current > 0}
-		style="transform: translate(-50%, -50%) scale({modalScale.current}) translateX({contentOffset.current.x}px) translateY({contentOffset.current.y}px);"
+		style="transform: translate(-50%, -50%) scale({modalScale.current}) translateX({contentOffset
+			.current.x}px) translateY({contentOffset.current.y}px);"
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="popup-title"
@@ -1154,7 +1155,7 @@ import { logger } from '$lib/utils/logger';
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 									>
 										<option value="">{field.placeholder}</option>
-										{#each field.options || [] as option (option.value)}
+										{#each field.options || [] as option (typeof option === 'string' ? option : (option.value ?? option.label ?? ''))}
 											{#if typeof option === 'string'}
 												<option value={option}>{option}</option>
 											{:else}

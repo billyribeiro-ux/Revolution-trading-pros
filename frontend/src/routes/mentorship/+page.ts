@@ -21,8 +21,7 @@ export const load: PageLoad = () => {
 				'@id': `${SITE_URL}/mentorship#service`,
 				name: '1-on-1 Trading Mentorship',
 				serviceType: 'Trading Mentorship',
-				description:
-					'Private, personalized trading mentorship with senior institutional traders.',
+				description: 'Private, personalized trading mentorship with senior institutional traders.',
 				url: `${SITE_URL}/mentorship`,
 				provider: {
 					'@type': 'Organization',

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/stores/toast.svelte';

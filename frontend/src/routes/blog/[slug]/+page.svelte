@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
 	 * ICT11+ Production-Grade with Full Analytics & Engagement Features
@@ -8,6 +8,7 @@ import { logger } from '$lib/utils/logger';
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { browser } from '$app/environment';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
@@ -88,7 +89,7 @@ import { logger } from '$lib/utils/logger';
 	}
 
 	function goBack() {
-		goto('/blog');
+		goto(`${base}/blog`);
 	}
 
 	interface ContentBlock {
@@ -765,7 +766,7 @@ import { logger } from '$lib/utils/logger';
 			border-top: 1px solid var(--post-border);
 		}
 
-		.tags-section h3 {
+		.tags-section h2 {
 			color: var(--post-text-primary);
 			font-size: 1.25rem;
 			font-weight: 700;
@@ -827,7 +828,7 @@ import { logger } from '$lib/utils/logger';
 			color: var(--error-color);
 		}
 
-		.error h2 {
+		.error h1 {
 			font-size: 2rem;
 			margin-bottom: 1rem;
 		}

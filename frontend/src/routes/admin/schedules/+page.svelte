@@ -15,7 +15,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { ROOMS } from '$lib/config/rooms';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';

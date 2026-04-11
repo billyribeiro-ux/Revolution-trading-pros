@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Deal Detail Page - FluentCRM Pro Style
 	 * ═══════════════════════════════════════════════════════════════════════════

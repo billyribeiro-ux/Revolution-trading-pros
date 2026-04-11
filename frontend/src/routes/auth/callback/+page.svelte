@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * OAuth Callback Page - ICT Level 7 Principal Engineer Grade
 	 *

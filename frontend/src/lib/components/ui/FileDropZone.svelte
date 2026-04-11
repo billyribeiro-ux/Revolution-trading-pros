@@ -19,13 +19,7 @@
 	}
 
 	let {
-		accept = [
-			'video/mp4',
-			'video/webm',
-			'video/quicktime',
-			'video/x-msvideo',
-			'video/x-matroska'
-		],
+		accept = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'],
 		maxSizeBytes = 5 * 1024 * 1024 * 1024,
 		onfile,
 		onerror,

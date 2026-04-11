@@ -20,7 +20,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 */
 
-	import type { PageData } from './$types';
+	import type { PageProps } from './$types';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';

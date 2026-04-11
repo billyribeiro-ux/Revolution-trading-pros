@@ -16,7 +16,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';

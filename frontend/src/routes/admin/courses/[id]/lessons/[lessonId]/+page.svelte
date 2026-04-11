@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Lesson Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -431,7 +431,14 @@ import { logger } from '$lib/utils/logger';
 					<h3>Thumbnail</h3>
 					<div class="thumbnail-preview">
 						{#if lesson.thumbnail_url}
-							<img src={lesson.thumbnail_url} alt="Thumbnail" width="400" height="225" loading="lazy" decoding="async" />
+							<img
+								src={lesson.thumbnail_url}
+								alt="Thumbnail"
+								width="400"
+								height="225"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="no-thumb">No thumbnail</div>
 						{/if}

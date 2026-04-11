@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Checkout Page - WordPress Revolution Trading Style (Multi-Step)
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -395,7 +395,8 @@ import { logger } from '$lib/utils/logger';
 											class:error={billingErrors.email}
 										/>
 										{#if billingErrors.email}
-											<span id="billing_email-error" class="field-error">{billingErrors.email}</span>
+											<span id="billing_email-error" class="field-error">{billingErrors.email}</span
+											>
 										{/if}
 									</div>
 
@@ -491,7 +492,8 @@ import { logger } from '$lib/utils/logger';
 											class:error={billingErrors.state}
 										/>
 										{#if billingErrors.state}
-											<span id="billing_state-error" class="field-error">{billingErrors.state}</span>
+											<span id="billing_state-error" class="field-error">{billingErrors.state}</span
+											>
 										{/if}
 									</div>
 

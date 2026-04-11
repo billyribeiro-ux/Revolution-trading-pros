@@ -15,7 +15,7 @@ export const load: PageLoad = () => {
 			description:
 				'How Revolution Trading Pros collects, uses, and protects your personal information.'
 		},
-		schema: [
+		jsonld: [
 			{
 				'@context': 'https://schema.org',
 				'@type': 'WebPage',

@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * API Settings & Integrations - Apple ICT9+ Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════════

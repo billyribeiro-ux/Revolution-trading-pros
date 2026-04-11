@@ -23,6 +23,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			currency: 'USD',
 			startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
 			nextPaymentDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+			trialEndDate: undefined as string | undefined,
 			lastPaymentDate: new Date().toISOString(),
 			totalPaid: 247,
 			failedPayments: 0,
@@ -63,7 +64,8 @@ export const actions: Actions = {
 
 		return {
 			success: true,
-			message: 'Subscription cancellation requested. You will receive a confirmation email.'
+			message: 'Subscription cancellation requested. You will receive a confirmation email.',
+			error: undefined as string | undefined
 		};
 	},
 
@@ -76,7 +78,8 @@ export const actions: Actions = {
 
 		return {
 			success: true,
-			message: 'Subscription paused successfully.'
+			message: 'Subscription paused successfully.',
+			error: undefined as string | undefined
 		};
 	}
 };

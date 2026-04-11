@@ -19,7 +19,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { fade, slide, fly } from 'svelte/transition';
 	import {
 		IconLayoutRows,
@@ -661,7 +661,14 @@ import { logger } from '$lib/utils/logger';
 								>
 									<div class="card-thumbnail">
 										{#if component.thumbnail_url}
-											<img src={component.thumbnail_url} alt={component.name} width="200" height="200" loading="lazy" decoding="async" />
+											<img
+												src={component.thumbnail_url}
+												alt={component.name}
+												width="200"
+												height="200"
+												loading="lazy"
+												decoding="async"
+											/>
 										{:else}
 											<div class="thumbnail-placeholder" style="background-color: {config.color}20">
 												<Icon size={32} />

@@ -50,7 +50,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import {
@@ -1079,7 +1079,9 @@ import { logger } from '$lib/utils/logger';
 </svelte:head>
 
 <div class="min-h-screen bg-zinc-950 text-white p-6">
-	<div class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto">
+	<div
+		class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto"
+	>
 		<h1 class="text-3xl font-bold mb-2">Create User</h1>
 		<p class="text-zinc-400 mb-6">
 			Enterprise user provisioning • {completionPercentage}% complete

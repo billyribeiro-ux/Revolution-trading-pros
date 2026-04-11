@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Weekly Watchlist - Create Entry
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -324,7 +324,14 @@ import { logger } from '$lib/utils/logger';
 				{#if posterUrl}
 					<div class="media-preview">
 						<p class="preview-label">Video Poster Preview</p>
-						<img src={posterUrl} alt="Video poster preview" width="640" height="360" loading="lazy" decoding="async" />
+						<img
+							src={posterUrl}
+							alt="Video poster preview"
+							width="640"
+							height="360"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				{/if}
 			</section>

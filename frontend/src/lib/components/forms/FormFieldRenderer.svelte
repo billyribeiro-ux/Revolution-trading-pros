@@ -194,7 +194,7 @@
 				{...(field.attributes as Record<string, any>) || {}}
 			>
 				<option value="">-- Select --</option>
-				{#each selectOptions as option (option.value)}
+				{#each selectOptions as option (typeof option === 'string' ? option : option.value)}
 					<option value={typeof option === 'string' ? option : option.value}>
 						{typeof option === 'string' ? option : option.label}
 					</option>
@@ -205,7 +205,7 @@
 		{:else if field.field_type === 'radio'}
 			{@const radioOptions = Array.isArray(field.options) ? field.options : []}
 			<div class="radio-group">
-				{#each radioOptions as option (option.value)}
+				{#each radioOptions as option (typeof option === 'string' ? option : option.value)}
 					{@const optionValue = typeof option === 'string' ? option : option.value}
 					{@const optionLabel = typeof option === 'string' ? option : option.label}
 					<label class="radio-label">
@@ -227,7 +227,7 @@
 		{:else if field.field_type === 'checkbox'}
 			{@const checkboxOptions = Array.isArray(field.options) ? field.options : []}
 			<div class="checkbox-group">
-				{#each checkboxOptions as option (option.value)}
+				{#each checkboxOptions as option (typeof option === 'string' ? option : option.value)}
 					{@const optionValue = typeof option === 'string' ? option : option.value}
 					{@const optionLabel = typeof option === 'string' ? option : option.label}
 					<label class="checkbox-label">
@@ -402,7 +402,7 @@
 		{:else if field.field_type === 'newsletter_categories'}
 			<div class="newsletter-categories-wrapper">
 				{#if field.options && Array.isArray(field.options)}
-					{#each field.options as option (option.value)}
+					{#each field.options as option (typeof option === 'string' ? option : option.value)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						{@const optionDescription = typeof option === 'object' ? option.description : ''}
@@ -460,7 +460,7 @@
 				{...(field.attributes as Record<string, any>) || {}}
 			>
 				{#if field.options && Array.isArray(field.options)}
-					{#each field.options as option (option.value)}
+					{#each field.options as option (typeof option === 'string' ? option : option.value)}
 						{@const optionValue = typeof option === 'string' ? option : option.value}
 						{@const optionLabel = typeof option === 'string' ? option : option.label}
 						<option value={optionValue}>{optionLabel}</option>

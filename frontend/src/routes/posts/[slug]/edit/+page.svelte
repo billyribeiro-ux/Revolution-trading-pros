@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
@@ -258,7 +258,9 @@ import { logger } from '$lib/utils/logger';
 <div class="bg-gray-50 dark:bg-gray-900">
 	<!-- Header -->
 	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+		<div
+			class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
 					<a
@@ -283,7 +285,9 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	</div>
 
-	<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div
+		class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		<!-- Search and Filters -->
 		<div class="flex flex-col md:flex-row gap-4 mb-8">
 			<div class="flex-1 relative">

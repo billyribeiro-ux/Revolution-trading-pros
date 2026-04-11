@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * LoginForm - Premium Trading-Themed Login Form
 	 * Apple Principal Engineer ICT 11 Grade

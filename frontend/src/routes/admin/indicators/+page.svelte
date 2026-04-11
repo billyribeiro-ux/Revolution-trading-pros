@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Admin Indicator List Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -232,7 +232,15 @@ import { logger } from '$lib/utils/logger';
 							<tr>
 								<td class="indicator-cell">
 									{#if indicator.thumbnail}
-										<img src={indicator.thumbnail} alt="" width="48" height="48" loading="lazy" decoding="async" class="logo" />
+										<img
+											src={indicator.thumbnail}
+											alt=""
+											width="48"
+											height="48"
+											loading="lazy"
+											decoding="async"
+											class="logo"
+										/>
 									{:else}
 										<div class="logo-placeholder">
 											<svg

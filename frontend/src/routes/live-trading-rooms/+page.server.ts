@@ -14,8 +14,7 @@ import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
 import { breadcrumbSchema, faqSchema } from '$lib/seo/jsonld';
 
-const SITE_URL =
-	import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 // Static data that can be generated at build time
 const tradingRoomsData = [

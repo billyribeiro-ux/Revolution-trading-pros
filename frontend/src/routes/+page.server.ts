@@ -3,8 +3,7 @@ import type { SEOInput } from '$lib/seo/types';
 import { breadcrumbSchema } from '$lib/seo/jsonld';
 import { logger } from '$lib/utils/logger';
 
-const SITE_URL =
-	import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 // ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
 // Cloudflare Pages secrets not available via import.meta.env on server
@@ -26,12 +25,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		og: {
 			type: 'website'
 		},
-		jsonld: [
-			breadcrumbSchema(
-				[{ name: 'Home', url: SITE_URL }],
-				`${SITE_URL}/#breadcrumb`
-			)
-		]
+		jsonld: [breadcrumbSchema([{ name: 'Home', url: SITE_URL }], `${SITE_URL}/#breadcrumb`)]
 	};
 
 	return {

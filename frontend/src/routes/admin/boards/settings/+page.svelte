@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
 https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
@@ -141,7 +141,9 @@ import { logger } from '$lib/utils/logger';
 <div class="bg-gray-50 dark:bg-gray-900">
 	<!-- Header -->
 	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-		<div class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+		<div
+			class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+		>
 			<div class="flex items-center gap-4">
 				<a
 					href="/admin/boards"
@@ -164,7 +166,9 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	</div>
 
-	<div class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+	<div
+		class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+	>
 		{#if loading}
 			<div class="flex items-center justify-center py-12">
 				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>

@@ -2,7 +2,7 @@
 	/**
 	 * TradePlanTable Component - Apple Principal Engineer ICT Level 7
 	 * Extracted from WeeklyHero.svelte for better maintainability
-	 * 
+	 *
 	 * @description Trade plan table with expandable notes
 	 * @version 1.0.0 - ICT 7 compliance
 	 */
@@ -485,4 +485,3 @@
 		}
 	}
 </style>
-

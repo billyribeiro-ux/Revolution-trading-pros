@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -554,7 +554,14 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else if post.featured_image}
 						<div class="featured-image-preview">
-							<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} width="1200" height="630" loading="lazy" decoding="async" />
+							<img
+								src={post.featured_image}
+								alt={post.featured_image_alt || 'Featured'}
+								width="1200"
+								height="630"
+								loading="lazy"
+								decoding="async"
+							/>
 							<button type="button" class="remove-image" onclick={removeFeaturedImage}>
 								<IconX size={16} />
 							</button>

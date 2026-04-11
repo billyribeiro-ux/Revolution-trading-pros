@@ -47,10 +47,26 @@
 	};
 
 	const COLORS: Record<ToastType, { bg: string; border: string; icon: string }> = {
-		success: { bg: 'var(--color-success-bg)', border: 'var(--color-success-border)', icon: 'var(--color-success)' },
-		error: { bg: 'var(--color-loss-bg)', border: 'var(--color-loss-border)', icon: 'var(--color-loss)' },
-		info: { bg: 'var(--color-brand-primary-bg)', border: 'var(--color-brand-primary-border)', icon: 'var(--color-brand-primary)' },
-		warning: { bg: 'var(--color-warning-bg)', border: 'var(--color-warning-border)', icon: 'var(--color-warning)' }
+		success: {
+			bg: 'var(--color-success-bg)',
+			border: 'var(--color-success-border)',
+			icon: 'var(--color-success)'
+		},
+		error: {
+			bg: 'var(--color-loss-bg)',
+			border: 'var(--color-loss-border)',
+			icon: 'var(--color-loss)'
+		},
+		info: {
+			bg: 'var(--color-brand-primary-bg)',
+			border: 'var(--color-brand-primary-border)',
+			icon: 'var(--color-brand-primary)'
+		},
+		warning: {
+			bg: 'var(--color-warning-bg)',
+			border: 'var(--color-warning-border)',
+			icon: 'var(--color-warning)'
+		}
 	};
 
 	function handleDismiss(id: string, el: HTMLElement) {

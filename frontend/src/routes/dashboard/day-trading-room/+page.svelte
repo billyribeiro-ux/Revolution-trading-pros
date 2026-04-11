@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Day Trading Room Dashboard - Pixel-Perfect WordPress Match
 	 * ═══════════════════════════════════════════════════════════════════════════

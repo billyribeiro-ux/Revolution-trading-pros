@@ -217,7 +217,14 @@
 					{#each images as image, i (i)}
 						<div class="image-item">
 							<div class="image-preview">
-								<img src={image.src} alt={image.generatedAlt || 'Image preview'} width="200" height="150" loading="lazy" decoding="async" />
+								<img
+									src={image.src}
+									alt={image.generatedAlt || 'Image preview'}
+									width="200"
+									height="150"
+									loading="lazy"
+									decoding="async"
+								/>
 								<div class="score-badge" style="background: {getScoreColor(image.seoScore)}">
 									{image.seoScore}
 								</div>

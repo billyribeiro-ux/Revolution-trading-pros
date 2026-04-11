@@ -614,7 +614,14 @@
 
 						<div class="template-thumbnail">
 							{#if template.thumbnail}
-								<img src={template.thumbnail} alt={`${template.title} preview`} width="300" height="200" loading="lazy" decoding="async" />
+								<img
+									src={template.thumbnail}
+									alt={`${template.title} preview`}
+									width="300"
+									height="200"
+									loading="lazy"
+									decoding="async"
+								/>
 							{:else}
 								<div class="thumbnail-placeholder">
 									<IconTemplate size={32} />
@@ -788,7 +795,10 @@
 					<div class="preview-content">
 						<h3>Email Content</h3>
 						<div class="preview-frame">
-							{@html sanitizeHtml(previewTemplate.content || '<p class="no-content">No content available</p>', 'rich')}
+							{@html sanitizeHtml(
+								previewTemplate.content || '<p class="no-content">No content available</p>',
+								'rich'
+							)}
 						</div>
 					</div>
 				{/if}

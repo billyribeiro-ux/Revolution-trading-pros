@@ -22,13 +22,7 @@
 		onClose?: () => void;
 	}
 
-	let {
-		resourceType = 'video',
-		resourceId,
-		resourceTitle,
-		onScheduled,
-		onClose
-	}: Props = $props();
+	let { resourceType = 'video', resourceId, resourceTitle, onScheduled, onClose }: Props = $props();
 
 	let jobs = $state<ScheduledJob[]>([]);
 	let isLoading = $state(true);

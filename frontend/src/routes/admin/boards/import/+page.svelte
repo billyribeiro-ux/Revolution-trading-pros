@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { ImportJob, ImportSource } from '$lib/boards/types';
 	import {

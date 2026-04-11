@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * CoursesSection - Apple/Netflix Cinematic Design
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics

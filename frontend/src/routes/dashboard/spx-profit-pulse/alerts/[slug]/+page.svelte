@@ -78,7 +78,14 @@
 				<div class="trader-card">
 					<div class="trader-photo">
 						{#if alert.trader.photo_url}
-							<img src={alert.trader.photo_url} alt={alert.trader.name} width="80" height="80" loading="lazy" decoding="async" />
+							<img
+								src={alert.trader.photo_url}
+								alt={alert.trader.name}
+								width="80"
+								height="80"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="trader-avatar">
 								{alert.trader.name[0]}

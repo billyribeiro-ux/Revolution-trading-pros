@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';

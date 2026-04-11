@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
 	import { behaviorAPI } from '$lib/api/behavior';

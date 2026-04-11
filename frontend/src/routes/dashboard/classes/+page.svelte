@@ -12,7 +12,7 @@
 	@version 2.0.0 - February 2026
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	interface EnrolledCourse {
 		id: number;

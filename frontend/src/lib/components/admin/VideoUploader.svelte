@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * VideoUploader - Real Video Upload Component
 	 *
@@ -414,7 +414,14 @@ import { logger } from '$lib/utils/logger';
 					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && thumbnailInput?.click()}
 				>
 					{#if thumbnailFile}
-						<img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview" width="320" height="180" loading="lazy" decoding="async" />
+						<img
+							src={URL.createObjectURL(thumbnailFile)}
+							alt="Thumbnail preview"
+							width="320"
+							height="180"
+							loading="lazy"
+							decoding="async"
+						/>
 						<button
 							type="button"
 							class="remove-thumbnail"

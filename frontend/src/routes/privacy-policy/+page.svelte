@@ -32,25 +32,25 @@
 		<div class="prose prose-lg max-w-none">
 			<p>
 				This Privacy Policy explains how Revolution Trading Pros (&ldquo;we,&rdquo;
-				&ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses, discloses, and protects
-				information about you when you visit our website, create an account, or use any of our
-				trading education services.
+				&ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses, discloses, and protects information
+				about you when you visit our website, create an account, or use any of our trading education
+				services.
 			</p>
 
 			<h2>1. Information We Collect</h2>
 			<p>We collect the following categories of personal information:</p>
 			<ul>
 				<li>
-					<strong>Account information:</strong> name, email address, password hash, and any
-					profile details you provide.
+					<strong>Account information:</strong> name, email address, password hash, and any profile details
+					you provide.
 				</li>
 				<li>
-					<strong>Billing information:</strong> processed by our payment provider (Stripe).
-					We never receive or store full card numbers.
+					<strong>Billing information:</strong> processed by our payment provider (Stripe). We never receive
+					or store full card numbers.
 				</li>
 				<li>
-					<strong>Usage data:</strong> pages visited, features used, device, browser, IP
-					address, and approximate location, collected only with your consent.
+					<strong>Usage data:</strong> pages visited, features used, device, browser, IP address, and
+					approximate location, collected only with your consent.
 				</li>
 				<li>
 					<strong>Cookies and similar technologies:</strong> see our
@@ -71,55 +71,54 @@
 			<h2>3. Legal Bases (GDPR)</h2>
 			<p>
 				If you are in the European Economic Area or the United Kingdom, our legal bases for
-				processing are: contract performance (Article 6(1)(b)), legitimate interest
-				(6(1)(f)), legal obligation (6(1)(c)), and consent (6(1)(a)) for analytics and
-				marketing.
+				processing are: contract performance (Article 6(1)(b)), legitimate interest (6(1)(f)), legal
+				obligation (6(1)(c)), and consent (6(1)(a)) for analytics and marketing.
 			</p>
 
 			<h2>4. Sharing Your Information</h2>
 			<p>
-				We do not sell personal information. We share it only with: payment processors
-				(Stripe), email/notification providers, hosting and analytics providers under data
-				processing agreements, and with law enforcement when legally compelled.
+				We do not sell personal information. We share it only with: payment processors (Stripe),
+				email/notification providers, hosting and analytics providers under data processing
+				agreements, and with law enforcement when legally compelled.
 			</p>
 
 			<h2>5. Your Rights</h2>
 			<p>
-				Depending on your jurisdiction, you may have the right to access, rectify, erase,
-				restrict, port, or object to processing of your personal data, and to withdraw
-				consent at any time. To exercise any of these rights, contact
+				Depending on your jurisdiction, you may have the right to access, rectify, erase, restrict,
+				port, or object to processing of your personal data, and to withdraw consent at any time. To
+				exercise any of these rights, contact
 				<a href="mailto:privacy@revolution-trading-pros.com">privacy@revolution-trading-pros.com</a
 				>.
 			</p>
 
 			<h2>6. International Data Transfers</h2>
 			<p>
-				Your information may be processed in countries other than your own, including the
-				United States. We rely on Standard Contractual Clauses where required.
+				Your information may be processed in countries other than your own, including the United
+				States. We rely on Standard Contractual Clauses where required.
 			</p>
 
 			<h2>7. Data Retention</h2>
 			<p>
-				We retain personal information for as long as your account is active and for a
-				reasonable period thereafter to comply with legal obligations and resolve disputes.
+				We retain personal information for as long as your account is active and for a reasonable
+				period thereafter to comply with legal obligations and resolve disputes.
 			</p>
 
 			<h2>8. Security</h2>
 			<p>
-				We use industry-standard safeguards including TLS encryption in transit, encryption
-				at rest, hashed passwords, and least-privilege access controls.
+				We use industry-standard safeguards including TLS encryption in transit, encryption at rest,
+				hashed passwords, and least-privilege access controls.
 			</p>
 
 			<h2>9. Children</h2>
 			<p>
-				Our services are not directed at children under 16. We do not knowingly collect
-				personal information from children.
+				Our services are not directed at children under 16. We do not knowingly collect personal
+				information from children.
 			</p>
 
 			<h2>10. Changes to This Policy</h2>
 			<p>
-				We may update this Privacy Policy from time to time. Material changes will be
-				announced on this page with a new &ldquo;Last updated&rdquo; date.
+				We may update this Privacy Policy from time to time. Material changes will be announced on
+				this page with a new &ldquo;Last updated&rdquo; date.
 			</p>
 
 			<h2>11. Contact Us</h2>

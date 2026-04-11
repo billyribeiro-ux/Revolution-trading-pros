@@ -44,15 +44,7 @@
 		onRefresh?: () => void;
 	}
 
-	let {
-		isOpen,
-		courseId,
-		onClose,
-		onEdit,
-		onEditModule,
-		onAddModule,
-		onRefresh
-	}: Props = $props();
+	let { isOpen, courseId, onClose, onEdit, onEditModule, onAddModule, onRefresh }: Props = $props();
 
 	// State
 	let courseData = $state<CourseWithContent | null>(null);
@@ -233,7 +225,14 @@
 				<header class="drawer-header">
 					<div class="course-thumbnail">
 						{#if courseData.card_image_url}
-							<img src={courseData.card_image_url} alt={courseData.title} width="120" height="68" loading="lazy" decoding="async" />
+							<img
+								src={courseData.card_image_url}
+								alt={courseData.title}
+								width="120"
+								height="68"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<IconBook size={32} />
 						{/if}

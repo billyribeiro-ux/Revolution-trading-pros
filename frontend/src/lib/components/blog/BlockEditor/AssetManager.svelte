@@ -18,7 +18,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onDestroy } from 'svelte';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -1298,7 +1298,14 @@ import { logger } from '$lib/utils/logger';
 													>
 														<td class="td-preview">
 															{#if getAssetType(asset.mime_type) === 'image'}
-																<img src={asset.thumbnail_url || asset.cdn_url} alt="" width="80" height="80" loading="lazy" decoding="async" />
+																<img
+																	src={asset.thumbnail_url || asset.cdn_url}
+																	alt=""
+																	width="80"
+																	height="80"
+																	loading="lazy"
+																	decoding="async"
+																/>
 															{:else}
 																<div class="type-icon {getAssetType(asset.mime_type)}">
 																	<svg
@@ -1662,7 +1669,14 @@ import { logger } from '$lib/utils/logger';
 										>
 											<div class="item-preview">
 												{#if item.previewUrl}
-													<img src={item.previewUrl} alt="" width="60" height="60" loading="lazy" decoding="async" />
+													<img
+														src={item.previewUrl}
+														alt=""
+														width="60"
+														height="60"
+														loading="lazy"
+														decoding="async"
+													/>
 												{:else}
 													<div class="file-icon">
 														<svg

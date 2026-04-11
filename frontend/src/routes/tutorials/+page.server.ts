@@ -205,7 +205,8 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	const seo: SEOInput = {
 		title: 'Platform Tutorials - ThinkorSwim & TradeStation',
-		description: 'Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels.',
+		description:
+			'Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels.',
 		canonical: '/tutorials',
 		og: { type: 'website' }
 	};

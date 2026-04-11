@@ -65,9 +65,7 @@
 
 	let { field, value, error, availableMethods, onchange }: Props = $props();
 
-	const enabledMethods = $derived(
-		(availableMethods ?? defaultMethods).filter((m) => m.enabled)
-	);
+	const enabledMethods = $derived((availableMethods ?? defaultMethods).filter((m) => m.enabled));
 
 	function handleSelect(methodId: string) {
 		onchange?.(methodId);
@@ -91,10 +89,7 @@
 <div
 	class="flex flex-col gap-2 sm:gap-3 w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-3 sm:p-4 md:p-6 pb-[env(safe-area-inset-bottom)]"
 >
-	<label
-		class="text-sm sm:text-base font-medium text-gray-700"
-		for="payment-method-{field.name}"
-	>
+	<label class="text-sm sm:text-base font-medium text-gray-700" for="payment-method-{field.name}">
 		{field.label || 'Payment Method'}
 		{#if field.required}
 			<span class="text-red-600 ml-1">*</span>

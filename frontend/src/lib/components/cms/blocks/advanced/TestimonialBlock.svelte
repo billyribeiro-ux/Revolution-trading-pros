@@ -296,7 +296,15 @@
 		{#if showPhoto}
 			<div class="testimonial-block__photo">
 				{#if sanitizedPhotoURL}
-					<img src={sanitizedPhotoURL} alt={authorName} width="80" height="80" loading="lazy" decoding="async" class="testimonial-block__photo-img" />
+					<img
+						src={sanitizedPhotoURL}
+						alt={authorName}
+						width="80"
+						height="80"
+						loading="lazy"
+						decoding="async"
+						class="testimonial-block__photo-img"
+					/>
 					{#if isEditing && isSelected}
 						<button
 							type="button"

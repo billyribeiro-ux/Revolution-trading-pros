@@ -20,10 +20,9 @@ export function solveImpliedVolatility(
 	}
 
 	let vol = inputs.volatility > 0 ? inputs.volatility : 0.25;
-	let iterations = 0;
 
 	for (let i = 0; i < MATH.NR_MAX_ITERATIONS; i++) {
-		iterations = i + 1;
+		const iterations = i + 1;
 		const testInputs: BSInputs = { ...inputs, volatility: vol };
 		const bsPrice = priceOption(testInputs, type);
 		const diff = bsPrice - marketPrice;

@@ -53,10 +53,11 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	// TODO: Implement new video fetching approach
 	// Returning empty data until new implementation is ready
+	const videos: VideoResponse[] = [];
 	return {
-		videos: [],
+		videos,
 		meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
 		activeFilter: category || 'all',
-		error: null
+		error: null as string | null
 	};
 };

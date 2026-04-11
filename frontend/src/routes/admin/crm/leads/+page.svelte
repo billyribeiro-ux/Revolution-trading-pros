@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * CRM Leads Management - Apple ICT 7 Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════

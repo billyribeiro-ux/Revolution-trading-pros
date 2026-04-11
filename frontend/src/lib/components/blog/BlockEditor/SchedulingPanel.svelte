@@ -18,7 +18,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 
@@ -31,13 +31,7 @@ import { logger } from '$lib/utils/logger';
 		onScheduleCreated?: (schedule: Schedule) => void;
 	}
 
-	let {
-		contentId,
-		contentTitle = 'Content',
-		isOpen,
-		onClose,
-		onScheduleCreated
-	}: Props = $props();
+	let { contentId, contentTitle = 'Content', isOpen, onClose, onScheduleCreated }: Props = $props();
 
 	// Types
 	interface Schedule {
@@ -815,7 +809,7 @@ import { logger } from '$lib/utils/logger';
 								{/each}
 							</div>
 							<div class="calendar-days">
-								{#each getCalendarDays() as day (day.toDateString)}
+								{#each getCalendarDays() as day (day === null ? 'empty' : day.toDateString())}
 									{#if day === null}
 										<div class="calendar-day empty"></div>
 									{:else}

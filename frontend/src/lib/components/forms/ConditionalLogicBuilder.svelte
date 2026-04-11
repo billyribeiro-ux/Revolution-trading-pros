@@ -74,9 +74,7 @@
 
 	// Get available fields for rules
 	function getAvailableFields(): FormField[] {
-		return fields.filter(
-			(f) => f.name !== currentFieldName && !isLayoutField(f.field_type)
-		);
+		return fields.filter((f) => f.name !== currentFieldName && !isLayoutField(f.field_type));
 	}
 
 	// Check if field type is layout-only

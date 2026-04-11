@@ -28,8 +28,7 @@ const blogListingSeo: SEOInput = {
 			'@id': `${SITE_URL}/blog#blog`,
 			name: 'Revolution Trading Pros Blog',
 			url: `${SITE_URL}/blog`,
-			description:
-				'Professional trading strategies, market analysis, and educational articles.',
+			description: 'Professional trading strategies, market analysis, and educational articles.',
 			inLanguage: 'en-US',
 			publisher: {
 				'@type': 'Organization',

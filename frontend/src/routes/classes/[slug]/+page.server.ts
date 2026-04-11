@@ -19,8 +19,7 @@ import { breadcrumbSchema } from '$lib/seo/jsonld';
 import { logger } from '$lib/utils/logger';
 
 const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
-const SITE_URL =
-	import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
 interface Lesson {
 	id: string;

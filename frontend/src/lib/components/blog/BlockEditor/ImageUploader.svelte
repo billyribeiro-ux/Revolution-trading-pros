@@ -23,7 +23,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
@@ -587,7 +587,14 @@ import { logger } from '$lib/utils/logger';
 						onclick={() => handleRecentAssetClick(asset)}
 						title={asset.filename}
 					>
-						<img src={asset.thumbnail_url || asset.cdn_url} alt={asset.filename} width="80" height="80" loading="lazy" decoding="async" />
+						<img
+							src={asset.thumbnail_url || asset.cdn_url}
+							alt={asset.filename}
+							width="80"
+							height="80"
+							loading="lazy"
+							decoding="async"
+						/>
 					</button>
 				{/each}
 			</div>
@@ -698,7 +705,14 @@ import { logger } from '$lib/utils/logger';
 								<div class="spinner"></div>
 							</div>
 						{:else if item.previewUrl}
-							<img src={item.previewUrl} alt={item.file.name} width="200" height="200" loading="lazy" decoding="async" />
+							<img
+								src={item.previewUrl}
+								alt={item.file.name}
+								width="200"
+								height="200"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />

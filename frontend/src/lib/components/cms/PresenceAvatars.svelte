@@ -16,12 +16,7 @@
 		size?: 'sm' | 'md' | 'lg';
 	}
 
-	let {
-		collaborators,
-		maxVisible = 5,
-		showNames = false,
-		size = 'md'
-	}: Props = $props();
+	let { collaborators, maxVisible = 5, showNames = false, size = 'md' }: Props = $props();
 
 	let visibleCollaborators = $derived(collaborators.slice(0, maxVisible));
 	let hiddenCount = $derived(Math.max(0, collaborators.length - maxVisible));

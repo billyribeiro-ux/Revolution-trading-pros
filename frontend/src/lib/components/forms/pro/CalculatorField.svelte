@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import type { FormField } from '$lib/api/forms';
 	import { tryMathEval } from '$lib/utils/safe-math-parser';
 
@@ -122,12 +122,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{/if}
 
-	<input
-		id="calculator-{field.name}"
-		type="hidden"
-		name={field.name}
-		value={calculatedValue}
-	/>
+	<input id="calculator-{field.name}" type="hidden" name={field.name} value={calculatedValue} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * IndicatorsSection - Apple/Netflix Cinematic Design
 	 * Mobile-First + GSAP Animations Fixed
@@ -455,9 +455,7 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 
 		<!-- Main Content Grid - Stack on mobile -->
-		<div
-			class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 3xl:gap-20 5xl:gap-24 items-center"
-		>
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 3xl:gap-20 5xl:gap-24 items-center">
 			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
 			{#if isVisible}
 				<div

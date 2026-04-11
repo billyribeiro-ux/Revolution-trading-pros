@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconX } from '$lib/icons';

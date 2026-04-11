@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';

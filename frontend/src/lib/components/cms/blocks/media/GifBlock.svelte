@@ -102,7 +102,14 @@
 	{#if isEditing}
 		{#if gifUrl}
 			<div class="gif-preview">
-				<img src={sanitizeURL(gifUrl)} alt={gifAlt} width="480" height="270" loading="lazy" decoding="async" />
+				<img
+					src={sanitizeURL(gifUrl)}
+					alt={gifAlt}
+					width="480"
+					height="270"
+					loading="lazy"
+					decoding="async"
+				/>
 				<button type="button" class="gif-remove" onclick={clearGif} aria-label="Remove GIF">
 					<IconX size={16} />
 				</button>
@@ -170,7 +177,14 @@
 			</div>
 		{/if}
 	{:else if gifUrl}
-		<img src={sanitizeURL(gifUrl)} alt={gifAlt} width="480" height="270" loading="lazy" decoding="async" />
+		<img
+			src={sanitizeURL(gifUrl)}
+			alt={gifAlt}
+			width="480"
+			height="270"
+			loading="lazy"
+			decoding="async"
+		/>
 	{:else}
 		<div class="gif-empty">
 			<IconGif size={48} aria-hidden="true" />

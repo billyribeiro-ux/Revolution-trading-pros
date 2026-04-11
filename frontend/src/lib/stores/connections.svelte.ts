@@ -230,7 +230,7 @@ async function fetchConnectionStatus(): Promise<Record<string, ConnectionStatus>
 	} catch (error) {
 		clearTimeout(timeoutId);
 		if (error instanceof Error && error.name === 'AbortError') {
-			throw new Error('Connection check timed out');
+			throw new Error('Connection check timed out', { cause: error });
 		}
 		throw error;
 	}

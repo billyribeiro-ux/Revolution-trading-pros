@@ -97,7 +97,16 @@
 							<div class="trader-header__col trader-header__col--photo">
 								<div class="trader-photo">
 									<div class="trader-photo__frame">
-										<img class="trader-photo__img" src={trader.image} alt={trader.name} width="400" height="400" loading="eager" fetchpriority="high" decoding="sync" />
+										<img
+											class="trader-photo__img"
+											src={trader.image}
+											alt={trader.name}
+											width="400"
+											height="400"
+											loading="eager"
+											fetchpriority="high"
+											decoding="sync"
+										/>
 									</div>
 								</div>
 							</div>
@@ -133,7 +142,14 @@
 					{#each products as product (product.name)}
 						<div class="product-card">
 							<figure class="product-card__image">
-								<img src={product.image} alt={product.name} width="400" height="225" loading="lazy" decoding="async" />
+								<img
+									src={product.image}
+									alt={product.name}
+									width="400"
+									height="225"
+									loading="lazy"
+									decoding="async"
+								/>
 							</figure>
 							<div class="product-card__body">
 								<h4 class="product-card__name">{product.name}</h4>

@@ -317,7 +317,7 @@
 										>
 											<option value="">Select...</option>
 											{#if Array.isArray(subField.options)}
-												{#each subField.options as opt (opt.value)}
+												{#each subField.options as opt (typeof opt === 'string' ? opt : opt.value)}
 													<option value={typeof opt === 'string' ? opt : opt.value}>
 														{typeof opt === 'string' ? opt : opt.label}
 													</option>

@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
@@ -595,7 +595,14 @@ import { logger } from '$lib/utils/logger';
 				<div class="product-preview-card">
 					{#if formData.thumbnail}
 						<div class="preview-thumbnail">
-							<img src={formData.thumbnail} alt={formData.name || 'Product'} width="400" height="400" loading="lazy" decoding="async" />
+							<img
+								src={formData.thumbnail}
+								alt={formData.name || 'Product'}
+								width="400"
+								height="400"
+								loading="lazy"
+								decoding="async"
+							/>
 						</div>
 					{:else}
 						{@const SvelteComponent = previewTypeIcon}

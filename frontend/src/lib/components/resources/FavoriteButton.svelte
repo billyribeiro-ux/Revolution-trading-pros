@@ -9,7 +9,7 @@
   - Accessible design
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { addFavorite, removeFavorite, checkFavorite } from '$lib/api/room-resources';
 
 	interface Props {

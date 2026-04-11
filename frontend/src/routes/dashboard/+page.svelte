@@ -19,7 +19,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';

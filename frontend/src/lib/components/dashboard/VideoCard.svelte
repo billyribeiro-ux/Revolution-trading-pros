@@ -65,7 +65,14 @@
 		class="article-card__image"
 		style="background-image: url({video.thumbnail_url || defaultThumbnail});"
 	>
-		<img src={defaultThumbnail} alt={video.title} width="325" height="183" loading="lazy" decoding="async" />
+		<img
+			src={defaultThumbnail}
+			alt={video.title}
+			width="325"
+			height="183"
+			loading="lazy"
+			decoding="async"
+		/>
 		{#if showDuration && video.formatted_duration}
 			<span class="article-card__duration">{video.formatted_duration}</span>
 		{/if}

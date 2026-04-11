@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * My Indicators Dashboard
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
@@ -94,7 +94,14 @@ import { logger } from '$lib/utils/logger';
 				<a href="/my/indicators/{indicator.slug}" class="indicator-card">
 					<div class="card-image">
 						{#if indicator.logo_url}
-							<img src={indicator.logo_url} alt={indicator.name} width="200" height="200" loading="lazy" decoding="async" />
+							<img
+								src={indicator.logo_url}
+								alt={indicator.name}
+								width="200"
+								height="200"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="placeholder">
 								<svg

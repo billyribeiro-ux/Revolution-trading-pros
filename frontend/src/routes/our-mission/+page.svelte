@@ -329,7 +329,9 @@
 			</div>
 		</div>
 
-		<section class="relative pt-32 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto text-center">
+		<section
+			class="relative pt-32 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto text-center"
+		>
 			<div
 				data-gsap
 				class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-12 shadow-lg shadow-rtp-primary/5 group hover:border-rtp-primary/30 transition-all duration-300 cursor-default"
@@ -389,7 +391,9 @@
 		</section>
 
 		<section class="py-32 border-y border-white/5 bg-white/[0.01]">
-			<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
+			<div
+				class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+			>
 				<div class="grid lg:grid-cols-12 gap-16 items-center">
 					<div class="lg:col-span-5" data-gsap>
 						<div class="flex items-center gap-3 mb-8">
@@ -401,7 +405,9 @@
 							>
 						</div>
 
-						<h2 class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 sm:mb-8 leading-tight break-words">
+						<h2
+							class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 sm:mb-8 leading-tight break-words"
+						>
 							The "90/90/90" Rule is Real.
 						</h2>
 
@@ -501,9 +507,13 @@
 				class="absolute -left-40 top-20 w-96 h-96 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none"
 			></div>
 
-			<div class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+			<div
+				class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+			>
 				<div class="text-center mb-16">
-					<h2 class="text-2xl xs:text-3xl md:text-4xl font-heading font-bold text-white mb-4 break-words">
+					<h2
+						class="text-2xl xs:text-3xl md:text-4xl font-heading font-bold text-white mb-4 break-words"
+					>
 						The Mathematics of Edge
 					</h2>
 					<p class="text-slate-400 max-w-2xl mx-auto">
@@ -658,14 +668,19 @@
 				class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-indigo-500/5 blur-[150px] rounded-full pointer-events-none"
 			></div>
 
-			<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+			<div
+				class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+			>
 				<div class="text-center mb-20">
 					<div data-gsap class="inline-block mb-4">
 						<span class="text-rtp-primary font-bold tracking-widest uppercase text-sm"
 							>The Ecosystem</span
 						>
 					</div>
-					<h2 data-gsap class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 break-words">
+					<h2
+						data-gsap
+						class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 break-words"
+					>
 						Institutional Grade.<br />Retail Accessible.
 					</h2>
 					<p data-gsap class="text-slate-400 max-w-2xl mx-auto text-lg">
@@ -758,7 +773,9 @@
 		</section>
 
 		<section class="py-32 bg-[#020202] border-t border-white/5">
-			<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
+			<div
+				class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+			>
 				<div class="grid lg:grid-cols-12 gap-20">
 					<div data-gsap class="lg:col-span-5 sticky top-32 h-fit">
 						<div class="flex items-center gap-3 mb-6">
@@ -769,7 +786,9 @@
 								>The Syllabus</span
 							>
 						</div>
-						<h2 class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 sm:mb-8 break-words">
+						<h2
+							class="text-3xl xs:text-4xl md:text-5xl font-heading font-bold text-white mb-6 sm:mb-8 break-words"
+						>
 							From Subjective to <br />
 							<span class="text-white border-b-4 border-rtp-primary">Objective.</span>
 						</h2>
@@ -866,7 +885,9 @@
 		</section>
 
 		<section class="py-24 bg-white/[0.01] border-y border-white/5">
-			<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
+			<div
+				class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8"
+			>
 				<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 					<div>
 						<h2 class="text-3xl font-heading font-bold text-white mb-2">
@@ -907,7 +928,9 @@
 		</section>
 
 		<section class="py-32 px-4 sm:px-6 lg:px-8">
-			<div class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto">
+			<div
+				class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto"
+			>
 				<div
 					data-gsap
 					class="relative bg-gradient-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-16 overflow-hidden shadow-2xl"
@@ -918,7 +941,9 @@
 
 					<div class="relative z-10">
 						<div class="text-center mb-12">
-							<h2 class="text-2xl xs:text-3xl md:text-4xl font-heading font-bold text-white mb-4 break-words">
+							<h2
+								class="text-2xl xs:text-3xl md:text-4xl font-heading font-bold text-white mb-4 break-words"
+							>
 								The Operator's Manifesto
 							</h2>
 							<div class="h-1 w-20 bg-rtp-primary mx-auto rounded-full"></div>
@@ -1041,7 +1066,9 @@
 					<div class="w-12 h-12 text-rtp-primary">{@html Icons.Brain}</div>
 				</div>
 
-				<h2 class="text-4xl xs:text-5xl md:text-6xl font-heading font-extrabold text-white mb-8 tracking-tight break-words">
+				<h2
+					class="text-4xl xs:text-5xl md:text-6xl font-heading font-extrabold text-white mb-8 tracking-tight break-words"
+				>
 					Stop Gambling. <br />
 					Start <span class="text-rtp-primary">Operating.</span>
 				</h2>

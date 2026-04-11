@@ -13,7 +13,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 
@@ -314,7 +314,14 @@ import { logger } from '$lib/utils/logger';
 		<div class="current-video-card">
 			<div class="video-preview">
 				{#if currentVideo.thumbnail_url}
-					<img src={currentVideo.thumbnail_url} alt={currentVideo.video_title} width="400" height="225" loading="lazy" decoding="async" />
+					<img
+						src={currentVideo.thumbnail_url}
+						alt={currentVideo.video_title}
+						width="400"
+						height="225"
+						loading="lazy"
+						decoding="async"
+					/>
 				{:else}
 					<div class="video-placeholder">
 						<IconVideo size={48} />

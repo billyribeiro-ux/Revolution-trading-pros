@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import {

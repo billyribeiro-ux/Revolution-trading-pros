@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import {
 		mediaStore,
@@ -228,7 +228,14 @@ import { logger } from '$lib/utils/logger';
 							>
 								{#if file.file_type === 'image'}
 									<div class="file-thumbnail">
-										<img src={file.thumbnail_url || file.url} alt={file.alt_text || file.title} width="200" height="200" loading="lazy" decoding="async" />
+										<img
+											src={file.thumbnail_url || file.url}
+											alt={file.alt_text || file.title}
+											width="200"
+											height="200"
+											loading="lazy"
+											decoding="async"
+										/>
 									</div>
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}

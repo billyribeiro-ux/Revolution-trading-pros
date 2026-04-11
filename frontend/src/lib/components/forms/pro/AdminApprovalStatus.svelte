@@ -324,7 +324,7 @@
 		<div class="approval-history">
 			<h4 class="history-title">Approval History</h4>
 			<div class="history-timeline">
-				{#each logs as log (log.id ?? log.timestamp)}
+				{#each logs as log (log.id ?? log.created_at)}
 					{@const logConfig = statusConfig[log.status]}
 					<div class="history-item">
 						<div class="timeline-dot" style="background-color: {logConfig.color}"></div>

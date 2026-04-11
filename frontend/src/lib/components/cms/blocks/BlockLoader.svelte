@@ -115,14 +115,7 @@
 		<button type="button" onclick={() => loadBlock(block.type)}>Retry</button>
 	</div>
 {:else if Component}
-	<Component
-		{block}
-		{blockId}
-		{isEditing}
-		{isSelected}
-		{onUpdate}
-		{onError}
-	/>
+	<Component {block} {blockId} {isEditing} {isSelected} {onUpdate} {onError} />
 {/if}
 
 <style>

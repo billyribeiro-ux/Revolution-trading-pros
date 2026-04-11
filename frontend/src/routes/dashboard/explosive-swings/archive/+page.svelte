@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * Weekly Archive - Browse Past Weeks
 	 * @version 1.0.0
@@ -215,7 +215,14 @@ import { logger } from '$lib/utils/logger';
 								<!-- Thumbnail -->
 								<div class="card-thumbnail">
 									{#if week.thumbnailUrl}
-										<img src={week.thumbnailUrl} alt="{week.weekTitle} thumbnail" width="400" height="225" loading="lazy" decoding="async" />
+										<img
+											src={week.thumbnailUrl}
+											alt="{week.weekTitle} thumbnail"
+											width="400"
+											height="225"
+											loading="lazy"
+											decoding="async"
+										/>
 									{:else}
 										<div class="thumbnail-placeholder">
 											<svg

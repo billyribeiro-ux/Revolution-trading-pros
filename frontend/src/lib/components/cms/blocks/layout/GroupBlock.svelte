@@ -77,6 +77,17 @@
 		}
 	});
 
+	/** Single `style` string — reliable in tests + avoids Svelte 5 multi `style:` edge cases in jsdom */
+	const groupContainerStyle = $derived.by(() => {
+		const parts: string[] = [];
+		if (backgroundColor) parts.push(`background-color: ${backgroundColor}`);
+		parts.push(`padding: ${paddingValue}`);
+		parts.push(`border-radius: ${borderRadius}`);
+		parts.push(`max-width: ${maxWidthValue}`);
+		parts.push(`margin: ${marginStyle}`);
+		return parts.join('; ');
+	});
+
 	function updateSettings(updates: Partial<BlockSettings>): void {
 		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
@@ -273,11 +284,7 @@
 
 	<div
 		class="group-container"
-		style:background-color={backgroundColor || undefined}
-		style:padding={paddingValue}
-		style:border-radius={borderRadius}
-		style:max-width={maxWidthValue}
-		style:margin={marginStyle}
+		style={groupContainerStyle}
 		role="group"
 		aria-label="Content group"
 	>

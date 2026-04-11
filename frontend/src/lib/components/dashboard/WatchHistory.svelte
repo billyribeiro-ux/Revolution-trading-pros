@@ -15,7 +15,7 @@
  */
 -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -140,7 +140,14 @@ import { logger } from '$lib/utils/logger';
 					<!-- Thumbnail -->
 					<div class="watch-card__thumbnail">
 						{#if item.thumbnail_url}
-							<img src={item.thumbnail_url} alt={item.title} width="320" height="180" loading="lazy" decoding="async" />
+							<img
+								src={item.thumbnail_url}
+								alt={item.title}
+								width="320"
+								height="180"
+								loading="lazy"
+								decoding="async"
+							/>
 						{:else}
 							<div class="watch-card__placeholder">
 								<svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">

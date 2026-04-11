@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { domRef } from '$lib/svelte/domAttachment';
 	/**
 	 * Admin Course Editor Page

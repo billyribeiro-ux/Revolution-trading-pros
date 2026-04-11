@@ -1,5 +1,5 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	/**
 	 * SEO Analyzer - Enterprise-Grade SEO Analysis
 	 * ==============================================
@@ -341,7 +341,7 @@ import { logger } from '$lib/utils/logger';
 
 		const issues: SEOAnalysis['issues'] = [];
 		const suggestions: string[] = [];
-		let overallScore = 100;
+		let overallScore: number;
 
 		// Extract plain text from content
 		const plainText = stripHtml(content);

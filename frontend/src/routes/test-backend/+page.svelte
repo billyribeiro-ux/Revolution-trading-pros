@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { onMount } from 'svelte';
 	import { submitForm } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression } from '$lib/api/popups';

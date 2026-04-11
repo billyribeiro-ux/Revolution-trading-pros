@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
@@ -290,7 +290,14 @@ import { logger } from '$lib/utils/logger';
 
 						{#if product.thumbnail}
 							<div class="product-thumbnail">
-								<img src={product.thumbnail} alt={product.name} width="300" height="300" loading="lazy" decoding="async" />
+								<img
+									src={product.thumbnail}
+									alt={product.name}
+									width="300"
+									height="300"
+									loading="lazy"
+									decoding="async"
+								/>
 							</div>
 						{/if}
 

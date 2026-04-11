@@ -89,8 +89,7 @@
 
 	$effect(() => {
 		selectedCountry =
-			countries.find((c) => c.code === (value?.country_code || defaultCountry)) ||
-			countries[0];
+			countries.find((c) => c.code === (value?.country_code || defaultCountry)) || countries[0];
 	});
 
 	$effect(() => {

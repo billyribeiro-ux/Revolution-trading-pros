@@ -18,15 +18,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		title,
-		description,
-		icon,
-		actionLabel,
-		size = 'md',
-		onaction,
-		children
-	}: Props = $props();
+	let { title, description, icon, actionLabel, size = 'md', onaction, children }: Props = $props();
 
 	function handleAction() {
 		onaction?.();

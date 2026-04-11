@@ -72,22 +72,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPONENT PROPS - Server data with types
 	// ═══════════════════════════════════════════════════════════════════════════
-	import type { WatchlistResponse } from '$lib/types/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
-
-	// SvelteKit 2.0+ / Svelte 5: Use PageProps from generated types for full type safety
-	// Falls back to inline interface when types not yet generated
-	interface PageData {
-		watchlist?: WatchlistResponse;
-		tutorialVideo?: RoomResource | null;
-		latestUpdates?: RoomResource[];
-		documents?: RoomResource[];
-		roomId?: number;
-	}
+	import type { PageProps } from './$types';
 
 	// Svelte 5 destructured `$props()` typed via SvelteKit-generated `PageProps`.
-	// (`PageData` is still imported from local types because it's referenced
-	// elsewhere in the file for narrower casts.)
 	let { data }: PageProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -207,14 +194,14 @@
 	const weeklyContent = $derived<WeeklyContent>(
 		data.watchlist?.video
 			? {
-					title: data.watchlist.week_title || 'This Week',
+					title: data.watchlist.title || 'This Week',
 					videoTitle: data.watchlist.video.title,
-					videoUrl: data.watchlist.video.video_url,
+					videoUrl: data.watchlist.video.src,
 					thumbnail:
-						data.watchlist.video.thumbnail_url ||
+						data.watchlist.video.poster ||
 						'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-					duration: data.watchlist.video.formatted_duration || '',
-					publishedDate: data.watchlist.video.formatted_date || ''
+					duration: '',
+					publishedDate: data.watchlist.weekOf || ''
 				}
 			: fallbackWeeklyContent
 	);

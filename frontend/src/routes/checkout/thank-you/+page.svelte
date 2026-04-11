@@ -224,7 +224,14 @@
 							<div class="typ-order-item">
 								<div class="typ-order-item__image">
 									{#if item.thumbnail}
-										<img src={item.thumbnail} alt={item.name} width="80" height="80" loading="lazy" decoding="async" />
+										<img
+											src={item.thumbnail}
+											alt={item.name}
+											width="80"
+											height="80"
+											loading="lazy"
+											decoding="async"
+										/>
 									{:else}
 										<div class="typ-order-item__placeholder">
 											<svg
@@ -284,7 +291,15 @@
 				</p>
 			</div>
 			<div class="typ-welcome__image">
-				<img src="/images/welcome-trading.jpg" alt="Welcome to Revolution Trading Pros" width="800" height="600" loading="eager" fetchpriority="high" decoding="sync" />
+				<img
+					src="/images/welcome-trading.jpg"
+					alt="Welcome to Revolution Trading Pros"
+					width="800"
+					height="600"
+					loading="eager"
+					fetchpriority="high"
+					decoding="sync"
+				/>
 			</div>
 		</section>
 
@@ -440,7 +455,14 @@
 								<span class="typ-upsell-card__badge">{product.badge}</span>
 							{/if}
 							<div class="typ-upsell-card__image">
-								<img src={product.image} alt={product.name} width="400" height="300" loading="lazy" decoding="async" />
+								<img
+									src={product.image}
+									alt={product.name}
+									width="400"
+									height="300"
+									loading="lazy"
+									decoding="async"
+								/>
 							</div>
 							<div class="typ-upsell-card__content">
 								<h3 class="typ-upsell-card__title">{product.name}</h3>

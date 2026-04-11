@@ -68,12 +68,10 @@
 				const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 				timeline = tl;
 
-				if (heroBadge)
-					tl.to(heroBadge, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+				if (heroBadge) tl.to(heroBadge, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
 				if (heroTitle) tl.to(heroTitle, { y: 0, opacity: 1, duration: 1.2 }, '-=0.8');
 				if (heroDesc) tl.to(heroDesc, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-				if (heroMetrics)
-					tl.to(heroMetrics, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
+				if (heroMetrics) tl.to(heroMetrics, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
 				if (heroGraphic) tl.to(heroGraphic, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
 				if (cancelled) return;
@@ -173,7 +171,9 @@
 	<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
 	<div class="relative z-10">
 		<nav class="w-full border-b border-white/10 bg-[#020202]/80 backdrop-blur-sm fixed top-0 z-50">
-			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-6 h-16 flex justify-between items-center">
+			<div
+				class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-6 h-16 flex justify-between items-center"
+			>
 				<div
 					class="text-xs font-mono uppercase tracking-[0.2em] text-white hover:text-amber-500 transition-colors cursor-default"
 				>
@@ -195,7 +195,9 @@
 		</nav>
 
 		<section class="pt-48 pb-32 px-6 border-b border-white/10">
-			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto grid lg:grid-cols-12 gap-16">
+			<div
+				class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto grid lg:grid-cols-12 gap-16"
+			>
 				<div class="lg:col-span-8">
 					<div
 						{@attach domRef((el) => (heroBadge = el))}
@@ -213,8 +215,13 @@
 						<span class="text-slate-700">Alpha</span> Audit.
 					</h1>
 
-					<div {@attach domRef((el) => (heroDesc = el))} class="max-w-2xl border-l-2 border-amber-700 pl-4 sm:pl-8 py-2">
-						<p class="text-base sm:text-xl md:text-2xl text-slate-300 font-light leading-relaxed break-words">
+					<div
+						{@attach domRef((el) => (heroDesc = el))}
+						class="max-w-2xl border-l-2 border-amber-700 pl-4 sm:pl-8 py-2"
+					>
+						<p
+							class="text-base sm:text-xl md:text-2xl text-slate-300 font-light leading-relaxed break-words"
+						>
 							A high-velocity, forensic deconstruction of your trading business. Designed strictly
 							for <span class="text-white font-medium">Portfolio Managers</span> and
 							<span class="text-white font-medium">Proprietary Traders</span> deploying 7-8 figure capital.
@@ -249,7 +256,10 @@
 					</div>
 				</div>
 
-				<div {@attach domRef((el) => (heroGraphic = el))} class="lg:col-span-4 flex flex-col justify-end">
+				<div
+					{@attach domRef((el) => (heroGraphic = el))}
+					class="lg:col-span-4 flex flex-col justify-end"
+				>
 					<div class="bg-[#080808] border border-white/10 p-8 relative overflow-hidden">
 						<div class="absolute top-0 right-0 p-4 opacity-20 w-12 h-12 text-slate-500">
 							{@html Icons.Globe}
@@ -305,7 +315,9 @@
 			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto">
 				<div class="grid lg:grid-cols-2 gap-24">
 					<div class="gsap-reveal-item">
-						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-6 sm:mb-8 break-words">The Liquidity Ceiling.</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-6 sm:mb-8 break-words">
+							The Liquidity Ceiling.
+						</h2>
 						<div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
 							<p>
 								Scaling a portfolio from $100,000 to $1,000,000 is a math problem. Scaling from
@@ -324,7 +336,9 @@
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 min-[480px]:grid-cols-2 gap-px bg-white/10 border border-white/10">
+					<div
+						class="grid grid-cols-1 min-[480px]:grid-cols-2 gap-px bg-white/10 border border-white/10"
+					>
 						<div
 							class="bg-[#080808] p-6 sm:p-8 flex flex-col gap-5 min-h-0 gsap-reveal-item overflow-visible"
 						>
@@ -390,7 +404,9 @@
 					class="flex items-end justify-between mb-20 border-b border-white/10 pb-8 gsap-reveal-item"
 				>
 					<div>
-						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">The 120-Minute Protocol</h2>
+						<h2 class="text-3xl xs:text-4xl font-serif text-white mb-2 break-words">
+							The 120-Minute Protocol
+						</h2>
 						<p class="text-sm font-mono text-slate-500 uppercase tracking-widest">
 							Session Agenda // Confidential
 						</p>
@@ -422,7 +438,9 @@
 		</section>
 
 		<section class="py-32 px-6 bg-[#080808] border-b border-white/5 gsap-section">
-			<div class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto grid lg:grid-cols-2 gap-24">
+			<div
+				class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto grid lg:grid-cols-2 gap-24"
+			>
 				<div class="gsap-reveal-item">
 					<div class="flex items-center gap-4 mb-10">
 						<div class="w-10 h-10 flex items-center justify-center rounded bg-white/5 text-white">
@@ -554,20 +572,26 @@
 			<div
 				class="max-w-4xl mx-auto relative z-10 bg-[#020202] border border-white/10 p-1 gsap-reveal-item"
 			>
-				<div class="border border-white/5 p-6 sm:p-12 md:p-20 text-center relative overflow-hidden group">
+				<div
+					class="border border-white/5 p-6 sm:p-12 md:p-20 text-center relative overflow-hidden group"
+				>
 					<div
 						class="absolute inset-0 bg-amber-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
 					></div>
 
 					<div class="mb-10">
 						<div class="text-amber-600 mx-auto w-12 h-12 mb-6">{@html Icons.Check}</div>
-						<h2 class="text-3xl xs:text-4xl md:text-5xl font-serif text-white mb-4 break-words">Initiate Application</h2>
+						<h2 class="text-3xl xs:text-4xl md:text-5xl font-serif text-white mb-4 break-words">
+							Initiate Application
+						</h2>
 						<p class="text-slate-500 font-mono text-xs uppercase tracking-[0.2em]">
 							Reference: Q4-INST-AUDIT
 						</p>
 					</div>
 
-					<div class="grid grid-cols-1 xs:grid-cols-2 gap-6 sm:gap-8 max-w-lg mx-auto mb-10 sm:mb-12 text-left">
+					<div
+						class="grid grid-cols-1 xs:grid-cols-2 gap-6 sm:gap-8 max-w-lg mx-auto mb-10 sm:mb-12 text-left"
+					>
 						<div class="border-l border-amber-800/50 pl-4">
 							<div class="text-[10px] font-mono uppercase text-slate-500 mb-1">Wire Amount</div>
 							<div class="text-xl text-white font-serif">$25,000.00</div>

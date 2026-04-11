@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Can only bind to an Identifier or MemberExpression or a `{get, set}` pair
 https://svelte.dev/e/bind_invalid_expression -->
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
+	import { logger } from '$lib/utils/logger';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { getFieldTypes, createForm, updateForm } from '$lib/api/forms';
 	import FieldEditor from './FieldEditor.svelte';

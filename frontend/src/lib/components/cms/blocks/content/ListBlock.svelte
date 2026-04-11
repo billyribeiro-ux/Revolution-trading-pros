@@ -119,8 +119,7 @@
 
 	function updateCheckItemText(itemId: string, text: string): void {
 		const items =
-			block.content.items?.map((item) => (item.id === itemId ? { ...item, text } : item)) ||
-			[];
+			block.content.items?.map((item) => (item.id === itemId ? { ...item, text } : item)) || [];
 		updateContent({ items });
 	}
 

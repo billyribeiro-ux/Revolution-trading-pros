@@ -31,14 +31,7 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		member = null,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let { isOpen, mode: modeProp, member = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props - if member provided, default to edit
 	let mode = $derived(modeProp ?? (member ? 'edit' : 'create'));
