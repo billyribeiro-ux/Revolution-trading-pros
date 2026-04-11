@@ -46,10 +46,10 @@
 	// Props & State
 	// =========================================================================
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Derived content values with defaults
-	const content = $derived(props.block.content as ChecklistContent);
+	const content = $derived(block.content as ChecklistContent);
 	const items = $derived(content.items || []);
 	const showProgress = $derived(content.showProgress ?? true);
 	const strikethrough = $derived(content.strikethrough ?? true);
