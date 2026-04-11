@@ -191,7 +191,7 @@
 		<div class="mt-2 sm:mt-3 p-3 sm:p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-500">
 			<!-- Card Icons - Responsive grid -->
 			<div class="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
-				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType}
+				{#each ['Visa', 'Mastercard', 'Amex', 'Discover'] as cardType (cardType)}
 					<span
 						class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded border border-gray-200"
 					>
@@ -247,7 +247,7 @@
 	<!-- Error Messages -->
 	{#if error && error.length > 0}
 		<div class="mt-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
-			{#each error as err}
+			{#each error as err (err)}
 				<p class="text-xs sm:text-sm text-red-600 m-0">{err}</p>
 			{/each}
 		</div>

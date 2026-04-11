@@ -231,7 +231,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="chart-card">
 				<h3>Submission Trend (Last 30 Days)</h3>
 				<div class="trend-chart">
-					{#each submissionTrend.slice(-7) as day}
+					{#each submissionTrend.slice(-7) as day (day)}
 						<div class="trend-bar">
 							<div
 								class="bar"
@@ -258,7 +258,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="chart-card">
 				<h3>Field Completion Rates</h3>
 				<div class="field-completion">
-					{#each fieldAnalytics.filter((f) => f.completionRate > 0).slice(0, 10) as field}
+					{#each fieldAnalytics.filter((f) => f.completionRate > 0).slice(0, 10) as field (field.label)}
 						<div class="completion-row">
 							<div class="field-name">{field.label}</div>
 							<div class="completion-bar">

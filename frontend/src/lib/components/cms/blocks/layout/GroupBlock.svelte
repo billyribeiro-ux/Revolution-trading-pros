@@ -148,7 +148,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Padding:</span>
 					<div class="button-group">
-						{#each ['none', 'small', 'medium', 'large'] as size}
+						{#each ['none', 'small', 'medium', 'large'] as size (size)}
 							<button
 								type="button"
 								class="size-btn"
@@ -171,7 +171,7 @@
 						onchange={(e) => setBorderRadius((e.target as HTMLSelectElement).value)}
 						aria-label="Border radius"
 					>
-						{#each BORDER_RADIUS_OPTIONS as option}
+						{#each BORDER_RADIUS_OPTIONS as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -182,7 +182,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Max Width:</span>
 					<div class="button-group">
-						{#each ['full', 'large', 'medium', 'small'] as size}
+						{#each ['full', 'large', 'medium', 'small'] as size (size)}
 							<button
 								type="button"
 								class="size-btn"

@@ -295,7 +295,7 @@
 			</div>
 
 			<div class="setup-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				{#each goldenSetup as item}
+				{#each goldenSetup as item (item.value)}
 					{@const Icon = item.icon}
 					<div
 						class="setup-item bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300 group"
@@ -418,7 +418,7 @@
 				These are the exact tools active in our trading room charts right now.
 			</p>
 			<div class="filter-buttons">
-				{#each categories as category}
+				{#each categories as category (category)}
 					<button
 						class="filter-button"
 						class:active={selectedCategory === category}
@@ -434,7 +434,7 @@
 	<section class="indicators-section">
 		<div class="section-container">
 			<div class="indicators-grid">
-				{#each filteredIndicators as indicator, index}
+				{#each filteredIndicators as indicator, index (indicator.slug)}
 					{@const Icon = indicator.icon}
 					<article
 						class="indicator-card group relative"
@@ -482,7 +482,7 @@
 							</div>
 
 							<ul class="card-features">
-								{#each indicator.features as feature}
+								{#each indicator.features as feature (feature)}
 									<li class="group-hover:pl-1 transition-all duration-300">
 										<IconCheck size={16} stroke={2} />
 										<span>{feature}</span>
@@ -575,7 +575,7 @@
 		<div class="section-container">
 			<h2 class="section-title tracking-tight">Common Questions</h2>
 			<div class="faq-list">
-				{#each faqs as faq, i}
+				{#each faqs as faq, i (faq.question)}
 					<div class="faq-item transition-all duration-300" class:open={openFaq === i}>
 						<button
 							class="faq-question hover:text-blue-400 transition-colors"

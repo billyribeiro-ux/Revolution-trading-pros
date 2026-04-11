@@ -548,7 +548,7 @@
 						<IconChevronRight size={24} />
 					</button>
 					<div class="carousel-dots">
-						{#each images as _, dotIndex}
+						{#each images as _, dotIndex (dotIndex)}
 							<button
 								type="button"
 								class="carousel-dot"
@@ -666,7 +666,7 @@
 							value={columns}
 							onchange={(e) => handleColumnsChange(parseInt((e.target as HTMLSelectElement).value))}
 						>
-							{#each [2, 3, 4] as col}
+							{#each [2, 3, 4] as col (col)}
 								<option value={col}>{col}</option>
 							{/each}
 						</select>

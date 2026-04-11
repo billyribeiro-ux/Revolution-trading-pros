@@ -1034,7 +1034,7 @@ import { logger } from '$lib/utils/logger';
 									</svg>
 									<span>All Assets</span>
 								</button>
-								{#each folders.filter((f) => f.parent_id === null) as folder}
+								{#each folders.filter((f) => f.parent_id === null) as folder (folder.id)}
 									<button
 										class="folder-item"
 										class:active={currentFolderId === folder.id}
@@ -1065,7 +1065,7 @@ import { logger } from '$lib/utils/logger';
 							{#if folderStack.length > 0}
 								<div class="breadcrumb" transition:slide={{ duration: 200 }}>
 									<button onclick={() => navigateToFolder(null)}>All Assets</button>
-									{#each folderStack as folder, i}
+									{#each folderStack as folder, i (folder.id)}
 										<svg
 											width="12"
 											height="12"
@@ -1533,7 +1533,7 @@ import { logger } from '$lib/utils/logger';
 												<dt>Tags</dt>
 												<dd>
 													<div class="tags">
-														{#each selectedAsset.tags as tag}
+														{#each selectedAsset.tags as tag (tag)}
 															<span class="tag">{tag}</span>
 														{/each}
 													</div>
@@ -1552,7 +1552,7 @@ import { logger } from '$lib/utils/logger';
 										<p class="no-usage">Not used in any content</p>
 									{:else}
 										<ul class="usage-list">
-											{#each assetUsage as usage}
+											{#each assetUsage as usage (usage.content_type)}
 												<li>
 													<span class="usage-type">{usage.content_type}</span>
 													<span class="usage-title">{usage.content_title || usage.content_id}</span>

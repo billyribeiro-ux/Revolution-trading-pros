@@ -129,7 +129,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="courses-grid">
-			{#each courses as course}
+			{#each courses as course (course)}
 				<CourseCard {course} />
 			{/each}
 		</div>

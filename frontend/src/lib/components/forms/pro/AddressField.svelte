@@ -189,7 +189,7 @@
 							handleFieldChange('country', (e.currentTarget as HTMLInputElement).value)}
 					>
 						<option value="">Select country</option>
-						{#each countries as country}
+						{#each countries as country (country.name)}
 							<option value={country.code}>{country.name}</option>
 						{/each}
 					</select>
@@ -200,7 +200,7 @@
 
 	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>

@@ -412,7 +412,7 @@ import { logger } from '$lib/utils/logger';
 							<small>⚠️ Showing cached schedule (updating in background)</small>
 						</div>
 					{/if}
-					{#each scheduleEvents as event}
+					{#each scheduleEvents as event (event.title)}
 						<div class="schedule-event">
 							<h4>{event.title}</h4>
 							<span>{formatEventDate(event.date_time)}</span>
@@ -430,7 +430,7 @@ import { logger } from '$lib/utils/logger';
 	<section class="content-sidebar__section">
 		<h4 class="content-sidebar__heading">Quick Links</h4>
 		<ul class="link-list">
-			{#each quickLinks as link}
+			{#each quickLinks as link (link.href)}
 				<li>
 					<a
 						href={link.href}

@@ -173,7 +173,7 @@
 					>
 				</button>
 				<div class="room-list">
-					{#each liveTradingRooms as room}
+					{#each liveTradingRooms as room (room.id)}
 						<button
 							type="button"
 							class="room-item"
@@ -234,7 +234,7 @@
 					>
 				</button>
 				<div class="room-list">
-					{#each alertsOnlyServices as room}
+					{#each alertsOnlyServices as room (room.id)}
 						<button
 							type="button"
 							class="room-item"
@@ -272,7 +272,7 @@
 	<!-- Selected Tags (visible when collapsed) -->
 	{#if !isExpanded && selectedRooms.length > 0 && selectedRooms.length <= 4 && !allSelected}
 		<div class="selected-tags">
-			{#each selectedRooms as roomId}
+			{#each selectedRooms as roomId (roomId)}
 				{@const room = ROOMS.find((r) => r.id === roomId)}
 				{#if room}
 					<span

@@ -403,7 +403,7 @@ import { logger } from '$lib/utils/logger';
 					>
 						All
 					</button>
-					{#each allCategories as cat}
+					{#each allCategories as cat (cat)}
 						{@const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.custom}
 						{@const Icon = config.icon}
 						<button
@@ -451,7 +451,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 
 					<!-- Presets by Category -->
-					{#each filteredCategories as category}
+					{#each filteredCategories as category (category.category)}
 						{@const config = CATEGORY_CONFIG[category.category] || CATEGORY_CONFIG.custom}
 						{@const Icon = config.icon}
 						<div class="category-section" transition:fly={{ y: -10, duration: 200 }}>
@@ -463,7 +463,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 
 							<div class="presets-grid">
-								{#each category.presets as preset}
+								{#each category.presets as preset (preset.name)}
 									<button
 										type="button"
 										class="preset-card"
@@ -517,7 +517,7 @@ import { logger } from '$lib/utils/logger';
 					{/if}
 					{#if hoveredPreset.tags && hoveredPreset.tags.length > 0}
 						<div class="preview-tags">
-							{#each hoveredPreset.tags.slice(0, 5) as tag}
+							{#each hoveredPreset.tags.slice(0, 5) as tag (tag)}
 								<span class="tag">
 									<IconTag size={10} />
 									{tag}
@@ -546,8 +546,8 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else if groupedPresets && groupedPresets.total_count > 0}
 			<div class="inline-presets">
-				{#each groupedPresets.categories.slice(0, 2) as category}
-					{#each category.presets.slice(0, 4) as preset}
+				{#each groupedPresets.categories.slice(0, 2) as category (category.presets)}
+					{#each category.presets.slice(0, 4) as preset (preset.name)}
 						<button
 							type="button"
 							class="inline-preset-btn"
@@ -620,7 +620,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="form-field">
 					<label for="preset-category">Category</label>
 					<select id="preset-category" bind:value={savePresetCategory}>
-						{#each Object.entries(CATEGORY_CONFIG) as [key, config]}
+						{#each Object.entries(CATEGORY_CONFIG) as [key, config] (key)}
 							<option value={key}>{config.name}</option>
 						{/each}
 					</select>

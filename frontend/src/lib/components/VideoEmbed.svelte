@@ -1331,7 +1331,7 @@ import { logger } from '$lib/utils/logger';
 				{preload}
 				class="video-element"
 			>
-				{#each subtitles as track}
+				{#each subtitles as track (track.label)}
 					<track
 						kind="subtitles"
 						label={track.label}
@@ -1356,7 +1356,7 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 
 		<!-- Interactive Overlays -->
-		{#each activeOverlays as overlay}
+		{#each activeOverlays as overlay (overlay.action)}
 			<button
 				class="video-overlay overlay-{overlay.type}"
 				style="
@@ -1501,7 +1501,7 @@ import { logger } from '$lib/utils/logger';
 						{#if showQualitySelector && availableQualities.length > 0}
 							<div class="settings-section">
 								<h4>Quality</h4>
-								{#each availableQualities as quality}
+								{#each availableQualities as quality (quality)}
 									<button
 										class="settings-option"
 										class:active={currentQuality === quality}
@@ -1519,7 +1519,7 @@ import { logger } from '$lib/utils/logger';
 						{#if showSpeedControl}
 							<div class="settings-section">
 								<h4>Speed</h4>
-								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed}
+								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as speed (speed)}
 									<button
 										class="settings-option"
 										class:active={playbackRate === speed}

@@ -224,7 +224,7 @@
 				{#if !isMultiple && placeholder}
 					<option value="" disabled selected={!selectedValues.length}>{placeholder}</option>
 				{/if}
-				{#each filteredOptions as option}
+				{#each filteredOptions as option (option.value)}
 					<option value={option.value} selected={selectedValues.includes(option.value)}>
 						{option.label}
 					</option>
@@ -233,7 +233,7 @@
 		</div>
 	{:else if fieldType === 'radio'}
 		<div class="radio-group">
-			{#each filteredOptions as option}
+			{#each filteredOptions as option (option.value)}
 				<label class="radio-option">
 					<input
 						type="radio"
@@ -249,7 +249,7 @@
 		</div>
 	{:else if fieldType === 'checkbox'}
 		<div class="checkbox-group">
-			{#each filteredOptions as option}
+			{#each filteredOptions as option (option.value)}
 				<label class="checkbox-option">
 					<input
 						type="checkbox"
@@ -279,7 +279,7 @@
 	{/if}
 
 	<!-- Hidden inputs for form submission -->
-	{#each selectedValues as val}
+	{#each selectedValues as val (val)}
 		<input type="hidden" name={isMultiple ? `${name}[]` : name} value={val} />
 	{/each}
 </div>

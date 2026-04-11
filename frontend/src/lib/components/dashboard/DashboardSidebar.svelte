@@ -491,7 +491,7 @@
 
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
-									{#each item.submenu as subitem}
+									{#each item.submenu as subitem (subitem.href)}
 										<li class:is-active={isActive(subitem.href)}>
 											<a href={subitem.href}>{subitem.text}</a>
 										</li>

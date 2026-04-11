@@ -164,7 +164,7 @@
 			<!-- Viewport Controls -->
 			<div class="toolbar-group">
 				<span class="toolbar-label">Viewport:</span>
-				{#each viewportPresets as preset}
+				{#each viewportPresets as preset (preset.name)}
 					<button
 						class="toolbar-btn"
 						class:active={viewportWidth === preset.width}
@@ -187,7 +187,7 @@
 			<div class="toolbar-group">
 				<span class="toolbar-label">Zoom:</span>
 				<select class="toolbar-select" bind:value={zoom}>
-					{#each zoomLevels as level}
+					{#each zoomLevels as level (level)}
 						<option value={level}>{level}%</option>
 					{/each}
 				</select>
@@ -196,7 +196,7 @@
 			<!-- Background Controls -->
 			<div class="toolbar-group">
 				<span class="toolbar-label">Background:</span>
-				{#each backgroundPresets as preset}
+				{#each backgroundPresets as preset (preset.value)}
 					<button
 						class="bg-btn"
 						class:active={background === preset.value}

@@ -163,7 +163,7 @@
 				Favorites
 			</h3>
 			<ul class="component-list">
-				{#each favoriteComponents as component}
+				{#each favoriteComponents as component (component.name)}
 					<li>
 						<button
 							class="component-item"
@@ -187,7 +187,7 @@
 				Recent
 			</h3>
 			<ul class="component-list">
-				{#each recentComponentsInfo as component}
+				{#each recentComponentsInfo as component (component.name)}
 					<li>
 						<button
 							class="component-item"
@@ -210,7 +210,7 @@
 			Components
 		</h3>
 
-		{#each Object.entries(filteredTree) as [folder, components]}
+		{#each Object.entries(filteredTree) as [folder, components] (folder)}
 			<div class="folder">
 				<button class="folder-header" onclick={() => toggleFolder(folder)}>
 					<span class="folder-icon">
@@ -222,7 +222,7 @@
 
 				{#if expandedFolders.has(folder)}
 					<ul class="component-list">
-						{#each components as component}
+						{#each components as component (component.name)}
 							<li>
 								<button
 									class="component-item"

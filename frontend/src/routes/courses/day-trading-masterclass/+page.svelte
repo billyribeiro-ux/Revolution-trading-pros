@@ -346,7 +346,7 @@
 			</p>
 
 			<div class="modules-grid">
-				{#each modules as module, index}
+				{#each modules as module, index (module.title)}
 					<div
 						class="module-card"
 						class:visible={modulesVisible[index]}
@@ -364,7 +364,7 @@
 						<h3 class="module-title">{module.title}</h3>
 
 						<ul class="module-topics">
-							{#each module.topics as topic}
+							{#each module.topics as topic (topic)}
 								<li>
 									<IconCheck size={18} stroke={2} />
 									<span>{topic}</span>
@@ -383,7 +383,7 @@
 			<h2 class="section-title">What's Included</h2>
 
 			<div class="features-grid">
-				{#each features as feature}
+				{#each features as feature (feature.title)}
 					{@const FeatureIcon = feature.icon}
 					<div class="feature-card">
 						<div class="feature-icon">
@@ -415,7 +415,7 @@
 					<p class="instructor-experience">{instructor.experience}</p>
 
 					<ul class="instructor-achievements">
-						{#each instructor.achievements as achievement}
+						{#each instructor.achievements as achievement (achievement)}
 							<li>
 								<IconTrophy size={18} stroke={2} />
 								<span>{achievement}</span>

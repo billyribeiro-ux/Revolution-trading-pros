@@ -31,7 +31,7 @@
 	let { variant = 'card', count = 1, height, width, columns = 4 }: Props = $props();
 </script>
 
-{#each Array(count) as _}
+{#each Array(count) as _ (_)}
 	{#if variant === 'metric'}
 		<div class="skeleton skeleton-metric" style:height style:width>
 			<div class="skeleton-icon"></div>
@@ -86,7 +86,7 @@
 				<div class="skeleton-line medium"></div>
 			</div>
 			<div class="skeleton-chart-bars">
-				{#each Array(7) as _}
+				{#each Array(7) as _, i (i)}
 					<div class="skeleton-bar" style:height="{30 + Math.random() * 60}%"></div>
 				{/each}
 			</div>
@@ -94,7 +94,7 @@
 	{:else if variant === 'dashboard'}
 		<div class="skeleton-dashboard" style="--columns: {columns}">
 			<div class="skeleton-grid">
-				{#each Array(columns) as _}
+				{#each Array(columns) as _, i (i)}
 					<div class="skeleton skeleton-metric">
 						<div class="skeleton-icon"></div>
 						<div class="skeleton-content">
@@ -110,7 +110,7 @@
 						<div class="skeleton-line medium"></div>
 					</div>
 					<div class="skeleton-chart-bars">
-						{#each Array(10) as _}
+						{#each Array(10) as _, i (i)}
 							<div class="skeleton-bar" style:height="{30 + Math.random() * 60}%"></div>
 						{/each}
 					</div>

@@ -207,7 +207,7 @@
 		<div class="multi-select-wrapper">
 			{#if selectedTerms.length > 0}
 				<div class="selected-tags">
-					{#each selectedTerms as term}
+					{#each selectedTerms as term (term.id)}
 						<span class="tag">
 							{term.name}
 							<button
@@ -239,7 +239,7 @@
 			{#if showDropdown}
 				<div class="dropdown">
 					{#if searchQuery && filteredTerms.length > 0}
-						{#each filteredTerms as term}
+						{#each filteredTerms as term (term.id)}
 							<label class="term-option">
 								<input
 									type="checkbox"
@@ -254,7 +254,7 @@
 							</label>
 						{/each}
 					{:else if !searchQuery}
-						{#each termTree as term}
+						{#each termTree as term (term)}
 							{@render termCheckbox(term, 0)}
 						{/each}
 					{:else}
@@ -289,7 +289,7 @@
 			class="select-input"
 		>
 			<option value="">{placeholder}</option>
-			{#each termTree as term}
+			{#each termTree as term (term)}
 				{@render termOption(term, 0)}
 			{/each}
 		</select>
@@ -310,7 +310,7 @@
 	{/if}
 
 	<!-- Hidden inputs for form submission -->
-	{#each selectedIds as id}
+	{#each selectedIds as id (id)}
 		<input type="hidden" name={multiple ? `${name}[]` : name} value={id} />
 	{/each}
 </div>
@@ -329,7 +329,7 @@
 		{/if}
 	</label>
 	{#if term.children && term.children.length > 0}
-		{#each term.children as child}
+		{#each term.children as child (child)}
 			{@render termCheckbox(child, depth + 1)}
 		{/each}
 	{/if}
@@ -340,7 +340,7 @@
 		{renderTermOption(term, depth)}
 	</option>
 	{#if term.children && term.children.length > 0}
-		{#each term.children as child}
+		{#each term.children as child (child)}
 			{@render termOption(child, depth + 1)}
 		{/each}
 	{/if}

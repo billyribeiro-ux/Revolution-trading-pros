@@ -59,7 +59,7 @@
 		<section class="class-section cpost-section" id="class-recordings">
 			<div class="section-inner">
 				<div class="class-content-block cpost-content-block">
-					{#each videos as video, index}
+					{#each videos as video, index (video.title)}
 						<div class="current-vid" class:first-video={index === 0}>
 							{#if index === 0}
 								<h2 class="class-player-header">{video.title}</h2>

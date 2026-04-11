@@ -1054,7 +1054,7 @@
 			</p>
 
 			<div class="space-y-4">
-				{#each faqData as item, i}
+				{#each faqData as item, i (item.q)}
 					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
 							type="button"

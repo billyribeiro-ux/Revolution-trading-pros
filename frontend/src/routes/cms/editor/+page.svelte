@@ -109,7 +109,7 @@
 	</header>
 
 	<div class="editor__toolbar">
-		{#each blockTypes as { type, label, icon }}
+		{#each blockTypes as { type, label, icon } (label)}
 			<button class="editor__add-btn" onclick={() => addBlock(type)} title={`Add ${label}`}>
 				<span class="editor__add-icon">{icon}</span>
 				<span class="editor__add-label">{label}</span>

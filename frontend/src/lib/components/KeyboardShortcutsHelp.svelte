@@ -87,15 +87,15 @@
 
 			<!-- Content -->
 			<div class="modal-content">
-				{#each Object.entries(groupedShortcuts) as [category, shortcuts]}
+				{#each Object.entries(groupedShortcuts) as [category, shortcuts] (category)}
 					<div class="shortcut-group">
 						<h3 class="group-title">{category}</h3>
 						<div class="shortcuts-list">
-							{#each shortcuts as shortcut}
+							{#each shortcuts as shortcut (shortcut.keys)}
 								<div class="shortcut-item">
 									<span class="shortcut-description">{shortcut.description}</span>
 									<div class="shortcut-keys">
-										{#each shortcut.keys as key, keyIndex}
+										{#each shortcut.keys as key, keyIndex (key)}
 											{#if keyIndex > 0}
 												<span class="key-separator">+</span>
 											{/if}

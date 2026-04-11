@@ -287,7 +287,7 @@
 				{:else if activeTab === 'variants'}
 					<!-- Variants comparison -->
 					<div class="variants-grid">
-						{#each item.variants || [] as variant}
+						{#each item.variants || [] as variant (variant.url)}
 							<div
 								class="variant-card"
 								class:selected={selectedVariant === variant}
@@ -327,7 +327,7 @@
 							<div class="metadata-section">
 								<h3>EXIF Data</h3>
 								<dl class="metadata-list">
-									{#each Object.entries(item.exif) as [key, value]}
+									{#each Object.entries(item.exif) as [key, value] (key)}
 										{#if value}
 											<dt>{key}</dt>
 											<dd>{value}</dd>
@@ -348,7 +348,7 @@
 							<div class="metadata-section">
 								<h3>Tags</h3>
 								<div class="tags-list">
-									{#each item.tags as tag}
+									{#each item.tags as tag (tag)}
 										<span class="tag">{tag}</span>
 									{/each}
 								</div>

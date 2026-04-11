@@ -223,7 +223,7 @@ import { logger } from '$lib/utils/logger';
 
 <svelte:head>
 	<!-- Prefetch hints for common blog posts -->
-	{#each posts.slice(0, 3) as post}
+	{#each posts.slice(0, 3) as post (post.slug)}
 		<link rel="prefetch" href="/blog/{post.slug}" />
 	{/each}
 </svelte:head>
