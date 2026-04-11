@@ -258,7 +258,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="flex flex-wrap items-center gap-4">
 				<!-- Date Presets -->
 				<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset}
+					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset (preset.value)}
 						<button
 							onclick={() => setDatePreset(preset.value)}
 							class="px-3 py-1.5 text-sm rounded-md {datePreset === preset.value

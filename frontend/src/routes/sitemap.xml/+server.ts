@@ -95,8 +95,9 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			'.*\\[page\\].*',
 			'.*\\[room_slug\\].*',
 			'.*\\[date_slug\\].*',
-			// /posts/[slug] currently has no public +page.svelte (edit-only).
-			'^/posts/\\[slug\\].*'
+			// /posts/[slug] currently has no public +page.svelte (edit-only)
+			// and /posts/[slug]/edit is author-only. Exclude the whole subtree.
+			'^/posts.*'
 		],
 		paramValues: {
 			'/blog/[slug]': dynamic.blog,

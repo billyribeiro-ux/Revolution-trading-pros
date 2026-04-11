@@ -215,7 +215,7 @@
 		{:else}
 			<!-- Filters -->
 			<div class="flex items-center gap-2 mb-6">
-				{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter}
+				{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter (filter.value)}
 					<button
 						onclick={() => (activeFilter = filter.value as typeof activeFilter)}
 						class="px-4 py-2 rounded-lg text-sm font-medium transition-all
