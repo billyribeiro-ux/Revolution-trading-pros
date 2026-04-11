@@ -44,11 +44,7 @@ import { logger } from '$lib/utils/logger';
 		allowSubmit?: boolean;
 	}
 
-	let props: Props = $props();
-
-	// Props with defaults
-	const isEnrolled = $derived(props.isEnrolled ?? false);
-	const allowSubmit = $derived(props.allowSubmit ?? true);
+	let { courseSlug, isEnrolled = false, allowSubmit = true }: Props = $props();
 
 	let reviews: Review[] = $state([]);
 	let summary: ReviewSummary | null = $state(null);
@@ -68,7 +64,7 @@ import { logger } from '$lib/utils/logger';
 	async function loadReviews() {
 		try {
 			isLoading = true;
-			const res = await apiFetch<ReviewsResponse>(`/courses/${props.courseSlug}/reviews`);
+			const res = await apiFetch<ReviewsResponse>(`/courses/${courseSlug}/reviews`);
 			if (res.success && res.data) {
 				reviews = res.data.reviews || [];
 				summary = res.data.summary || null;
@@ -86,7 +82,7 @@ import { logger } from '$lib/utils/logger';
 			error = '';
 			successMessage = '';
 
-			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, {
+			const res = await apiFetch<ApiResponse>(`/member/courses/${courseSlug}/reviews`, {
 				method: 'POST',
 				body: JSON.stringify({ rating, title, content })
 			});
@@ -112,7 +108,7 @@ import { logger } from '$lib/utils/logger';
 		if (!confirm('Are you sure you want to delete your review?')) return;
 
 		try {
-			const res = await apiFetch<ApiResponse>(`/member/courses/${props.courseSlug}/reviews`, {
+			const res = await apiFetch<ApiResponse>(`/member/courses/${courseSlug}/reviews`, {
 				method: 'DELETE'
 			});
 			if (res.success) {

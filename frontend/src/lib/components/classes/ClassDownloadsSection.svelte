@@ -26,7 +26,7 @@
 		title?: string;
 	}
 
-	let props: Props = $props();
+	let { courseSlug, title }: Props = $props();
 
 	let downloads = $state<Download[]>([]);
 	let isLoading = $state(true);
@@ -37,7 +37,7 @@
 	$effect(() => {
 		async function loadDownloads() {
 			try {
-				const response = await fetch(`/api/my/courses/${props.courseSlug}/downloads`, {
+				const response = await fetch(`/api/my/courses/${courseSlug}/downloads`, {
 					credentials: 'include'
 				});
 
@@ -110,7 +110,7 @@
 <section class="class-section cpost-section" id="dl-rp-row">
 	<div class="section-inner">
 		<section class="class-subsection" id="class-downloads">
-			<h2>{props.title ?? 'Class Downloads'}</h2>
+			<h2>{title ?? 'Class Downloads'}</h2>
 			<div class="class-downloads-container">
 				{#if isLoading}
 					<div class="file-browser-loading">
