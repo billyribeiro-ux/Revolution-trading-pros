@@ -383,6 +383,11 @@ import { logger } from '$lib/utils/logger';
 						<img
 							src={resource.file_url}
 							alt={resource.title}
+							width="1600"
+							height="1200"
+							loading="eager"
+							fetchpriority="high"
+							decoding="sync"
 							class="max-h-full max-w-full object-contain transition-transform duration-200"
 							style="transform: scale({imageZoom}) translate({imagePosition.x /
 								imageZoom}px, {imagePosition.y / imageZoom}px); cursor: {imageZoom > 1

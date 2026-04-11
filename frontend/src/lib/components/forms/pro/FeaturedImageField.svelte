@@ -156,7 +156,7 @@
 
 	{#if imageUrl}
 		<div class="image-preview {aspectRatioClass}">
-			<img src={imageUrl} alt="Featured preview" />
+			<img src={imageUrl} alt="Featured preview" width="800" height="450" loading="lazy" decoding="async" />
 			<div class="preview-overlay">
 				<button type="button" class="change-btn" onclick={openFilePicker} {disabled}>
 					Change
