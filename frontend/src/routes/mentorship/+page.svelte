@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import { revealGsapClassSections } from '$lib/motion/gsapScrollReveal';
 
 	// --- ICONS (Inline for Zero-Dependency Safety) ---
 	const Icons = {
@@ -29,72 +30,105 @@
 	let heroGraphic: HTMLElement | undefined;
 
 	// --- MOTION ENGINE ---
-	onMount(async () => {
+	function revealHeroNodes(): void {
+		for (const el of [heroBadge, heroTitle, heroDesc, heroMetrics, heroGraphic]) {
+			if (!el) continue;
+			el.style.opacity = '1';
+			el.style.transform = 'none';
+		}
+	}
+
+	onMount(() => {
 		if (!browser) return;
 
-		// Dynamic GSAP import for SSR safety
-		const { gsap } = await import('gsap');
+		let cancelled = false;
+		let observer: IntersectionObserver | null = null;
+		let timeline: { kill: () => void } | null = null;
 
-		// 1. Hero Sequence (Timeline)
-		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+		(async () => {
+			try {
+				const { gsap } = await import('gsap');
+				if (cancelled) return;
 
-		if (heroBadge)
-			tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-		if (heroTitle)
-			tl.fromTo(
-				heroTitle,
-				{ y: 40, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
-				'-=0.8'
-			);
-		if (heroDesc)
-			tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-		if (heroMetrics)
-			tl.fromTo(
-				heroMetrics,
-				{ opacity: 0, scale: 0.98 },
-				{ opacity: 1, scale: 1, duration: 1.2 },
-				'-=0.6'
-			);
-		if (heroGraphic)
-			tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+				if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+					revealHeroNodes();
+					revealGsapClassSections();
+					return;
+				}
 
-		// 2. Scroll Reveal Logic
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						const target = entry.target as HTMLElement;
-						const children = target.querySelectorAll('.gsap-reveal-item');
+				// 1. Hero Sequence (Timeline)
+				const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+				timeline = tl;
 
-						if (children.length > 0) {
-							gsap.fromTo(
-								children,
-								{ y: 30, opacity: 0 },
-								{
-									y: 0,
-									opacity: 1,
-									duration: 0.8,
-									stagger: 0.1,
-									ease: 'power2.out',
-									overwrite: true
-								}
-							);
-						} else {
-							gsap.fromTo(
-								target,
-								{ y: 30, opacity: 0 },
-								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
-							);
-						}
-						observer.unobserve(target);
-					}
-				});
-			},
-			{ threshold: 0.15 }
-		);
+				if (heroBadge)
+					tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+				if (heroTitle)
+					tl.fromTo(
+						heroTitle,
+						{ y: 40, opacity: 0 },
+						{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
+						'-=0.8'
+					);
+				if (heroDesc)
+					tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
+				if (heroMetrics)
+					tl.fromTo(
+						heroMetrics,
+						{ opacity: 0, scale: 0.98 },
+						{ opacity: 1, scale: 1, duration: 1.2 },
+						'-=0.6'
+					);
+				if (heroGraphic)
+					tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
-		document.querySelectorAll('.gsap-section').forEach((el) => observer.observe(el));
+				if (cancelled) return;
+
+				// 2. Scroll Reveal Logic
+				observer = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (!entry.isIntersecting) return;
+							const target = entry.target as HTMLElement;
+							const children = target.querySelectorAll('.gsap-reveal-item');
+
+							if (children.length > 0) {
+								gsap.fromTo(
+									children,
+									{ y: 30, opacity: 0 },
+									{
+										y: 0,
+										opacity: 1,
+										duration: 0.8,
+										stagger: 0.1,
+										ease: 'power2.out',
+										overwrite: true
+									}
+								);
+							} else {
+								gsap.fromTo(
+									target,
+									{ y: 30, opacity: 0 },
+									{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
+								);
+							}
+							observer?.unobserve(target);
+						});
+					},
+					{ threshold: 0.15 }
+				);
+
+				document.querySelectorAll('.gsap-section').forEach((el) => observer?.observe(el));
+			} catch {
+				revealHeroNodes();
+				revealGsapClassSections();
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+			observer?.disconnect();
+			timeline?.kill();
+		};
 	});
 
 	// --- DATA ---
@@ -282,41 +316,57 @@
 						</div>
 					</div>
 
-					<div class="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Activity}</div>
-							<div>
-								<div class="text-3xl font-serif text-white mb-2">
+					<div class="grid grid-cols-1 min-[480px]:grid-cols-2 gap-px bg-white/10 border border-white/10">
+						<div
+							class="bg-[#080808] p-6 sm:p-8 flex flex-col gap-5 min-h-0 gsap-reveal-item overflow-visible"
+						>
+							<div class="text-amber-600 w-8 h-8 shrink-0">{@html Icons.Activity}</div>
+							<div class="min-w-0">
+								<div class="text-3xl font-serif text-white mb-2 break-words">
 									-18<span class="text-lg">%</span>
 								</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+								<div
+									class="text-[10px] font-mono uppercase tracking-widest text-slate-500 leading-relaxed"
+								>
 									Avg. Execution Drag
 								</div>
 							</div>
 						</div>
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Brain}</div>
-							<div>
-								<div class="text-3xl font-serif text-white mb-2">Bias</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+						<div
+							class="bg-[#080808] p-6 sm:p-8 flex flex-col gap-5 min-h-0 gsap-reveal-item overflow-visible"
+						>
+							<div class="text-amber-600 w-8 h-8 shrink-0">{@html Icons.Brain}</div>
+							<div class="min-w-0">
+								<div class="text-3xl font-serif text-white mb-2 break-words">Bias</div>
+								<div
+									class="text-[10px] font-mono uppercase tracking-widest text-slate-500 leading-relaxed"
+								>
 									Primary Bottleneck
 								</div>
 							</div>
 						</div>
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Terminal}</div>
-							<div>
-								<div class="text-3xl font-serif text-white mb-2">Zero</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+						<div
+							class="bg-[#080808] p-6 sm:p-8 flex flex-col gap-5 min-h-0 gsap-reveal-item overflow-visible"
+						>
+							<div class="text-amber-600 w-8 h-8 shrink-0">{@html Icons.Terminal}</div>
+							<div class="min-w-0">
+								<div class="text-3xl font-serif text-white mb-2 break-words">Zero</div>
+								<div
+									class="text-[10px] font-mono uppercase tracking-widest text-slate-500 leading-relaxed"
+								>
 									Latency Tolerance
 								</div>
 							</div>
 						</div>
-						<div class="bg-[#080808] p-10 flex flex-col justify-between h-64 gsap-reveal-item">
-							<div class="text-amber-600 w-8 h-8">{@html Icons.Shield}</div>
-							<div>
-								<div class="text-3xl font-serif text-white mb-2">MNDA</div>
-								<div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+						<div
+							class="bg-[#080808] p-6 sm:p-8 flex flex-col gap-5 min-h-0 gsap-reveal-item overflow-visible"
+						>
+							<div class="text-amber-600 w-8 h-8 shrink-0">{@html Icons.Shield}</div>
+							<div class="min-w-0">
+								<div class="text-3xl font-serif text-white mb-2 break-words">MNDA</div>
+								<div
+									class="text-[10px] font-mono uppercase tracking-widest text-slate-500 leading-relaxed"
+								>
 									Legal Protection
 								</div>
 							</div>
