@@ -527,7 +527,7 @@ import { logger } from '$lib/utils/logger';
 						duration: prefersReducedMotion ? 0 : 600
 					}}
 				>
-					{#each indicators as indicator, i}
+					{#each indicators as indicator, i (indicator.href ?? i)}
 						{@const IconComponent = indicator.icon}
 						<a
 							href={indicator.href}
