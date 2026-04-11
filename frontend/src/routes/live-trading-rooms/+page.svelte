@@ -271,6 +271,16 @@ import { logger } from '$lib/utils/logger';
 				}); // End of GSAP context
 			} catch (error) {
 				logger.warn('[Live Trading Rooms] GSAP initialization failed:', error);
+				// Ensure content stays visible if GSAP/ScrollTrigger never runs (bad selectors, load failure)
+				document.querySelectorAll('.hero-grid-plane').forEach((el) => {
+					(el as HTMLElement).style.opacity = '0.4';
+				});
+				document
+					.querySelectorAll('.hero-title, .hero-subtitle, .hero-chart, .room-card, .benefit-card')
+					.forEach((el) => {
+						(el as HTMLElement).style.opacity = '1';
+						(el as HTMLElement).style.transform = 'none';
+					});
 			}
 		})();
 
@@ -314,7 +324,7 @@ import { logger } from '$lib/utils/logger';
 			bind:this={_heroContainer}
 			class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24"
 		>
-			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
+			<div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-40">
 				<div
 					class="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] z-10"
 				></div>
@@ -322,7 +332,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 
 			<div
-				class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0 overflow-hidden"
+				class="hero-chart absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0 overflow-hidden"
 			>
 				<svg
 					class="w-[120%] h-[600px] transform translate-y-20 blur-[1px]"
@@ -382,7 +392,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 
 				<h1
-					class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] mb-10 text-white"
+					class="hero-title text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] mb-10 text-white"
 				>
 					<div class="hero-title-line overflow-hidden">
 						<span class="block">Market</span>
@@ -396,7 +406,7 @@ import { logger } from '$lib/utils/logger';
 				</h1>
 
 				<p
-					class="hero-desc text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light"
+					class="hero-subtitle hero-desc text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light"
 				>
 					Step inside the <span class="text-white font-medium">Command Center</span>. Real-time
 					data, institutional signals, and a community of professional traders.
@@ -416,7 +426,7 @@ import { logger } from '$lib/utils/logger';
 			{#each rooms as room}
 				<article
 					use:tilt
-					class="group relative h-full card-3d"
+					class="room-card group relative h-full card-3d"
 					role="region"
 					aria-label={room.name}
 				>
@@ -638,7 +648,7 @@ import { logger } from '$lib/utils/logger';
 			<div bind:this={_benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 				{#each benefits as item}
 					<div
-						class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
+						class="benefit-card p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default"
 					>
 						<div
 							class="mx-auto w-12 h-12 mb-6 text-zinc-400 group-hover:text-blue-400 transition-colors duration-300"
