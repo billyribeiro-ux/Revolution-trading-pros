@@ -448,8 +448,12 @@ import { logger } from '$lib/utils/logger';
 									id="email"
 									name="email"
 									autocomplete="email"
+									inputmode="email"
+									spellcheck="false"
 									type="email"
 									bind:value={userEmail}
+									required
+									aria-required="true"
 									placeholder="Enter your email address"
 									class="w-full rounded-xl bg-white/5 border {emailError
 										? 'border-red-500'

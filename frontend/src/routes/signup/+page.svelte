@@ -203,6 +203,7 @@
 							id="terms-agreement"
 							name="terms-agreement"
 							required
+							aria-required="true"
 							class="w-5 h-5 mt-0.5 text-rtp-primary border-rtp-border rounded focus:ring-rtp-primary min-w-[20px]"
 						/>
 						<span class="ml-3 text-sm text-rtp-muted">

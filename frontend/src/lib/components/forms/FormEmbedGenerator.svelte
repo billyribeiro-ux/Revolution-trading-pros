@@ -293,7 +293,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="section">
 				<h3 class="section-label">QR Code</h3>
 				<div class="qr-container">
-					<img src={qrCodeUrl} alt="QR Code for {formTitle}" class="qr-code" />
+					<img src={qrCodeUrl} alt="QR Code for {formTitle}" width="200" height="200" loading="lazy" decoding="async" class="qr-code" />
 					<a href={qrCodeUrl} download="form-qr-{formSlug}.png" class="btn-download">
 						Download QR Code
 					</a>

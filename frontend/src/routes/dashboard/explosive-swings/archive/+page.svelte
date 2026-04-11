@@ -215,7 +215,7 @@ import { logger } from '$lib/utils/logger';
 								<!-- Thumbnail -->
 								<div class="card-thumbnail">
 									{#if week.thumbnailUrl}
-										<img src={week.thumbnailUrl} alt="{week.weekTitle} thumbnail" loading="lazy" />
+										<img src={week.thumbnailUrl} alt="{week.weekTitle} thumbnail" width="400" height="225" loading="lazy" decoding="async" />
 									{:else}
 										<div class="thumbnail-placeholder">
 											<svg
