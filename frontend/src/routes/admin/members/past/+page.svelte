@@ -420,7 +420,7 @@ import { logger } from '$lib/utils/logger';
 	{:else}
 		<!-- Period Selector Cards -->
 		<div class="period-selector">
-			{#each Object.entries(TIME_PERIOD_LABELS) as [period, label]}
+			{#each Object.entries(TIME_PERIOD_LABELS) as [period, label] (period)}
 				{@const stats = overview?.periods[period as TimePeriod]}
 				<button
 					class="period-card"

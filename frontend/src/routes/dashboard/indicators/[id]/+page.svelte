@@ -328,7 +328,8 @@
 					{/if}
 
 					<!-- Download Sections by Platform - ICT 7: From real API -->
-					{#each downloadsByPlatform as platformDownload}
+					<!-- key (i): items lack stable id -->
+					{#each downloadsByPlatform as platformDownload, i (i)}
 						<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
 							<div class="platform-header">
 								<img
@@ -354,7 +355,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										{#each platformDownload.files as file}
+										{#each platformDownload.files as file (file.id)}
 											<tr>
 												<td>{file.name}</td>
 												<td class="text-right">
@@ -468,7 +469,8 @@
 						<section class="st_box">
 							<h2><strong>Installation Guides</strong></h2>
 							<div class="install-guide-buttons">
-								{#each downloadsByPlatform as platformDownload}
+								<!-- key (i): items lack stable id -->
+								{#each downloadsByPlatform as platformDownload, i (i)}
 									<button
 										class="btn btn-outline"
 										onclick={() => fetchInstallGuide(platformDownload.platform)}

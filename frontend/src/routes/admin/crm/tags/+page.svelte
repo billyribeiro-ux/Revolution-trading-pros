@@ -279,7 +279,7 @@
 		</div>
 	{:else}
 		<div class="tags-grid">
-			{#each filteredTags as tag}
+			{#each filteredTags as tag (tag.id)}
 				<div class="tag-card">
 					<div class="tag-header">
 						<div class="tag-color" style="background-color: {tag.color || '#E6B800'}"></div>
@@ -379,7 +379,7 @@
 					<div class="color-picker">
 						<div class="color-preview" style="background-color: {formData.color}"></div>
 						<div class="color-palette">
-							{#each colorPalette as color}
+							{#each colorPalette as color (color)}
 								<button
 									type="button"
 									class="color-swatch"

@@ -273,7 +273,7 @@
 			</div>
 		{:else}
 			<div class="locations-list">
-				{#each locationList as location}
+				{#each locationList as location (location.id)}
 					<div class="location-card" class:inactive={!location.isActive}>
 						{#if location.isPrimary}
 							<span class="primary-badge">Primary</span>
@@ -381,7 +381,7 @@
 				<div class="form-group">
 					<label for="businessType">Business Type</label>
 					<select id="businessType" bind:value={formData.businessType}>
-						{#each businessTypes as type}
+						{#each businessTypes as type (type.value)}
 							<option value={type.value}>{type.label}</option>
 						{/each}
 					</select>

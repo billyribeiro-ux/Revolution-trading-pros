@@ -248,7 +248,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each importJobs as job}
+							<!-- key (i): items lack stable id -->
+							{#each importJobs as job, i (i)}
 								{@const StatusIcon = getStatusIcon(job.status)}
 								<tr>
 									<td>
@@ -318,7 +319,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each exportJobs as job}
+							{#each exportJobs as job (job.id)}
 								{@const ExportStatusIcon = getStatusIcon(job.status)}
 								<tr>
 									<td>

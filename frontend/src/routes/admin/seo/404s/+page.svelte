@@ -128,7 +128,8 @@ import { logger } from '$lib/utils/logger';
 	{:else}
 		<Card padding={false}>
 			<Table headers={['URL', 'Hit Count', 'Status', 'First Seen', 'Last Seen']}>
-				{#each errors as error}
+				<!-- key (i): items lack stable id -->
+				{#each errors as error, i (i)}
 					<tr>
 						<td class="font-mono text-sm max-w-md truncate">{error.url}</td>
 						<td>

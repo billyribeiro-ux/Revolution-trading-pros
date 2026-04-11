@@ -376,7 +376,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each members as member}
+					{#each members as member (member.id)}
 						<tr class:selected={selectedMembers.has(member.id)}>
 							<td class="checkbox-col">
 								<input

@@ -268,7 +268,7 @@ import { logger } from '$lib/utils/logger';
 							<label for="module">Module</label>
 							<select id="module" bind:value={lesson.module_id}>
 								<option value={null}>No Module</option>
-								{#each modules as mod}
+								{#each modules as mod (mod.id)}
 									<option value={mod.id}>{mod.title}</option>
 								{/each}
 							</select>
@@ -451,7 +451,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="empty-text">No downloads attached</p>
 					{:else}
 						<ul class="downloads-list">
-							{#each downloads as dl}
+							{#each downloads as dl (dl.id)}
 								<li class="download-item">
 									<span class="download-title">{dl.title}</span>
 									<button

@@ -632,7 +632,7 @@ import { logger } from '$lib/utils/logger';
 								Tags
 							</h3>
 							<div class="tags-list">
-								{#each deal.tags as tag}
+								{#each deal.tags as tag (tag)}
 									<span class="tag-pill">{tag}</span>
 								{/each}
 							</div>

@@ -371,7 +371,8 @@ import { logger } from '$lib/utils/logger';
 				<span>Archived Videos ({archivedVideos.length})</span>
 			</div>
 			<div class="archived-list">
-				{#each archivedVideos.slice(0, 5) as video}
+				<!-- key (i): items lack stable id -->
+				{#each archivedVideos.slice(0, 5) as video, i (i)}
 					<div class="archived-item">
 						<span class="archived-title">{video.video_title}</span>
 						<span class="archived-date">{formatDate(video.week_of)}</span>

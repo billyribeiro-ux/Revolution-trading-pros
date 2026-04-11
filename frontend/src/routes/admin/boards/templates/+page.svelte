@@ -307,7 +307,7 @@ import { logger } from '$lib/utils/logger';
 				>
 					All
 				</button>
-				{#each categories as category}
+				{#each categories as category (category.id)}
 					<button
 						onclick={() => (selectedCategory = category.id)}
 						class="px-4 py-2 text-sm whitespace-nowrap rounded-lg flex items-center gap-2 {selectedCategory ===
@@ -337,7 +337,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else}
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{#each filteredTemplates as template}
+				{#each filteredTemplates as template (template.id)}
 					{@const CategoryIcon = getCategoryIcon(template.category)}
 					<div
 						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
@@ -345,7 +345,8 @@ import { logger } from '$lib/utils/logger';
 						<!-- Preview Header -->
 						<div class="h-32 bg-gradient-to-br from-[#E6B800] to-[#B38F00] p-4 flex items-end">
 							<div class="flex gap-2">
-								{#each template.stages.slice(0, 4) as stage}
+								<!-- key (i): items lack stable id -->
+								{#each template.stages.slice(0, 4) as stage, i (i)}
 									<div
 										class="w-16 h-20 rounded-t-lg opacity-90"
 										style="background-color: {stage.color}"
@@ -401,7 +402,8 @@ import { logger } from '$lib/utils/logger';
 
 							<!-- Labels Preview -->
 							<div class="flex flex-wrap gap-1 mb-4">
-								{#each template.labels.slice(0, 4) as label}
+								<!-- key (i): items lack stable id -->
+								{#each template.labels.slice(0, 4) as label, i (i)}
 									<span
 										class="px-2 py-0.5 text-xs text-white rounded"
 										style="background-color: {label.color}"

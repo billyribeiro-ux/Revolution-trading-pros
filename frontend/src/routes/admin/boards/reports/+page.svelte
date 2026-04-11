@@ -136,7 +136,7 @@ import { logger } from '$lib/utils/logger';
 				bind:value={selectedBoardId}
 				class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
 			>
-				{#each boards as board}
+				{#each boards as board (board.id)}
 					<option value={board.id}>{board.title}</option>
 				{/each}
 			</select>
@@ -258,7 +258,8 @@ import { logger } from '$lib/utils/logger';
 				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tasks by Stage</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_stage as stage}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_stage as stage, i (i)}
 							<div>
 								<div class="flex items-center justify-between mb-1">
 									<span class="text-sm text-gray-700 dark:text-gray-300">{stage.stage_title}</span>
@@ -285,7 +286,8 @@ import { logger } from '$lib/utils/logger';
 						Tasks by Priority
 					</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_priority as priority}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_priority as priority, i (i)}
 							{@const colors = {
 								urgent: 'bg-red-500',
 								high: 'bg-orange-500',
@@ -321,7 +323,8 @@ import { logger } from '$lib/utils/logger';
 				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Team Performance</h3>
 					<div class="space-y-4">
-						{#each report.tasks_by_assignee as assignee}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_assignee as assignee, i (i)}
 							<div
 								class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
 							>
@@ -359,7 +362,8 @@ import { logger } from '$lib/utils/logger';
 						Labels Distribution
 					</h3>
 					<div class="flex flex-wrap gap-3">
-						{#each report.tasks_by_label as label}
+						<!-- key (i): items lack stable id -->
+						{#each report.tasks_by_label as label, i (i)}
 							<div
 								class="px-3 py-2 rounded-lg text-white text-sm"
 								style="background-color: {label.label_color}"

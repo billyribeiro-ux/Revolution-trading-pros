@@ -318,7 +318,7 @@
 			{:else}
 				<!-- Goals Grid -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{#each filteredGoals as goal}
+					{#each filteredGoals as goal (goal.name)}
 						<div
 							class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all"
 						>
@@ -456,7 +456,7 @@
 				<div>
 					<span class="block text-sm font-medium text-slate-300 mb-3">Goal Type</span>
 					<div class="grid grid-cols-2 gap-3">
-						{#each goalTypes as type}
+						{#each goalTypes as type (type.value)}
 							<button
 								onclick={() => (newGoal.type = type.value as typeof newGoal.type)}
 								class="p-4 rounded-xl border-2 text-left transition-all

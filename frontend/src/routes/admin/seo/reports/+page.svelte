@@ -267,7 +267,7 @@
 			</div>
 		{:else}
 			<div class="templates-list">
-				{#each templates as template}
+				{#each templates as template (template.id)}
 					<div class="template-card" class:inactive={!template.isActive}>
 						<div class="template-header">
 							<h3>{template.name}</h3>
@@ -344,7 +344,8 @@
 			</div>
 		{:else}
 			<div class="reports-list">
-				{#each reports as report}
+				<!-- key (i): items lack stable id -->
+				{#each reports as report, i (i)}
 					<div class="report-row">
 						<div class="report-info">
 							<span class="report-name">{report.templateName}</span>
@@ -399,7 +400,7 @@
 			<div class="form-group">
 				<label for="frequency">Frequency</label>
 				<select id="frequency" bind:value={formData.frequency}>
-					{#each frequencyOptions as opt}
+					{#each frequencyOptions as opt (opt.value)}
 						<option value={opt.value}>{opt.label}</option>
 					{/each}
 				</select>
@@ -409,7 +410,7 @@
 				<div class="form-group">
 					<label for="dayOfWeek">Day of Week</label>
 					<select id="dayOfWeek" bind:value={formData.dayOfWeek}>
-						{#each dayOptions as day}
+						{#each dayOptions as day (day.value)}
 							<option value={day.value}>{day.label}</option>
 						{/each}
 					</select>

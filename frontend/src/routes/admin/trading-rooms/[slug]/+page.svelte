@@ -993,7 +993,8 @@ import { logger } from '$lib/utils/logger';
 							</tr>
 						</thead>
 						<tbody>
-							{#each tradePlanEntries as entry}
+							<!-- key (i): items lack stable id -->
+							{#each tradePlanEntries as entry, i (i)}
 								<tr>
 									<td class="ticker-cell"><strong>{entry.ticker}</strong></td>
 									<td>
@@ -1101,7 +1102,8 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else}
 				<div class="alerts-list">
-					{#each filteredAlerts as alert}
+					<!-- key (i): items lack stable id -->
+					{#each filteredAlerts as alert, i (i)}
 						<div class="alert-card" class:is-new={alert.is_new} class:is-pinned={alert.is_pinned}>
 							<div class="alert-header">
 								<div class="alert-meta">
@@ -1219,7 +1221,8 @@ import { logger } from '$lib/utils/logger';
 					<div class="archived-section">
 						<h3>Archive</h3>
 						<div class="archived-list">
-							{#each archivedVideos as video}
+							<!-- key (i): items lack stable id -->
+							{#each archivedVideos as video, i (i)}
 								<div class="archived-video">
 									<span class="archived-week">{video.week_title}</span>
 									<span class="archived-title">{video.video_title}</span>
@@ -1290,7 +1293,8 @@ import { logger } from '$lib/utils/logger';
 							</tr>
 						</thead>
 						<tbody>
-							{#each filteredTrades as trade}
+							<!-- key (i): items lack stable id -->
+							{#each filteredTrades as trade, i (i)}
 								<tr class:is-open={trade.status === 'open'}>
 									<td class="ticker-cell"><strong>{trade.ticker}</strong></td>
 									<td>
@@ -1430,7 +1434,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 			{:else}
 				<div class="video-grid">
-					{#each filteredVideos as video}
+					{#each filteredVideos as video (video.id)}
 						<div class="video-card">
 							<div
 								class="video-card-thumbnail"

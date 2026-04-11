@@ -153,7 +153,7 @@
 						<div class="recent-searches">
 							<span class="recent-label">Recent searches:</span>
 							<div class="recent-list">
-								{#each search.searchHistory.slice(0, 5) as historyItem}
+								{#each search.searchHistory.slice(0, 5) as historyItem (historyItem)}
 									<button
 										class="history-chip"
 										onclick={() => search.selectFromHistory(historyItem)}

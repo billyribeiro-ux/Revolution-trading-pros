@@ -312,7 +312,7 @@
 		</div>
 	{:else}
 		<div class="segments-grid">
-			{#each filteredSegments as segment}
+			{#each filteredSegments as segment (segment.id)}
 				<div class="segment-card">
 					<div class="segment-header">
 						<div class="segment-icon">

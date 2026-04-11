@@ -156,7 +156,7 @@
 						class="px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-xl text-sm text-white focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all"
 					>
 						<option value="">All Event Types</option>
-						{#each eventTypes as type}
+						{#each eventTypes as type (type.name)}
 							<option value={type.name}>{type.name} ({type.count})</option>
 						{/each}
 					</select>
@@ -202,7 +202,7 @@
 				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-6">
 					<h3 class="text-lg font-semibold text-white mb-4">Event Distribution</h3>
 					<div class="flex flex-wrap gap-2">
-						{#each eventTypes.slice(0, 12) as type}
+						{#each eventTypes.slice(0, 12) as type (type.name)}
 							<button
 								onclick={() => {
 									selectedEventType = type.name;
@@ -328,7 +328,8 @@
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-white/5">
-								{#each events as event}
+								<!-- key (i): items lack stable id -->
+								{#each events as event, i (i)}
 									<tr class="hover:bg-white/5 cursor-pointer transition-colors">
 										<td class="py-4 px-5">
 											<span

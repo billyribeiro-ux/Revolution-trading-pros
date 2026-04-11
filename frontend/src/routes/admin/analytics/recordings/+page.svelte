@@ -325,7 +325,8 @@
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-white/5">
-								{#each recordings as recording}
+								<!-- key (i): items lack stable id -->
+								{#each recordings as recording, i (i)}
 									<tr class="hover:bg-white/5 transition-colors">
 										<td class="py-4 px-5">
 											<span class="font-mono text-xs text-slate-400">

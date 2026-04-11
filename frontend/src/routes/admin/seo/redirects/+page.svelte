@@ -176,7 +176,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		<div class="filter-tabs">
-			{#each filterTypes as type}
+			{#each filterTypes as type (type)}
 				<button
 					class="filter-tab"
 					class:active={activeFilter === type}
@@ -223,7 +223,7 @@ import { logger } from '$lib/utils/logger';
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredRedirects as redirect}
+					{#each filteredRedirects as redirect (redirect.id)}
 						<tr>
 							<td>
 								<input

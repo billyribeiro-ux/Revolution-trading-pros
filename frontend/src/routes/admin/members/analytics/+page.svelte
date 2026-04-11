@@ -228,7 +228,7 @@ import { logger } from '$lib/utils/logger';
 
 	{#if loading}
 		<div class="loading-grid">
-			{#each [1, 2, 3, 4] as _}
+			{#each [1, 2, 3, 4] as _ (_)}
 				<div class="skeleton skeleton-metric"></div>
 			{/each}
 		</div>
@@ -357,7 +357,8 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="chart-body">
 					<div class="bar-chart">
-						{#each growthData as data}
+						<!-- key (i): items lack stable id -->
+						{#each growthData as data, i (i)}
 							<div class="bar-group">
 								<div class="bar-container">
 									<div
@@ -396,7 +397,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="line-chart">
 						<svg viewBox="0 0 600 200" class="line-chart-svg">
 							<!-- Grid lines -->
-							{#each [0, 1, 2, 3, 4] as i}
+							{#each [0, 1, 2, 3, 4] as i (i)}
 								<line
 									x1="0"
 									y1={i * 50}
@@ -437,7 +438,7 @@ import { logger } from '$lib/utils/logger';
 							/>
 
 							<!-- Points -->
-							{#each revenueData as d, i}
+							{#each revenueData as d, i (i)}
 								<circle
 									cx={(i / (revenueData.length - 1)) * 600}
 									cy={200 - (d.mrr / 100000) * 180}
@@ -455,7 +456,8 @@ import { logger } from '$lib/utils/logger';
 							</defs>
 						</svg>
 						<div class="line-chart-labels">
-							{#each revenueData as d}
+							<!-- key (i): items lack stable id -->
+							{#each revenueData as d, i (i)}
 								<span>{d.month}</span>
 							{/each}
 						</div>
@@ -485,7 +487,8 @@ import { logger } from '$lib/utils/logger';
 							</tr>
 						</thead>
 						<tbody>
-							{#each cohortData as row}
+							<!-- key (i): items lack stable id -->
+							{#each cohortData as row, i (i)}
 								<tr>
 									<td class="cohort-name">{row.cohort}</td>
 									<td class={getRetentionColor(row.m0)}>{row.m0}%</td>
@@ -511,7 +514,8 @@ import { logger } from '$lib/utils/logger';
 				</div>
 				<div class="chart-body">
 					<div class="reasons-list">
-						{#each churnReasons as reason}
+						<!-- key (i): items lack stable id -->
+						{#each churnReasons as reason, i (i)}
 							<div class="reason-item">
 								<div class="reason-info">
 									<span class="reason-name">{reason.reason}</span>
@@ -544,7 +548,8 @@ import { logger } from '$lib/utils/logger';
 								</tr>
 							</thead>
 							<tbody>
-								{#each segmentData as segment}
+								<!-- key (i): items lack stable id -->
+								{#each segmentData as segment, i (i)}
 									<tr>
 										<td class="segment-name">{segment.segment}</td>
 										<td>{formatNumber(segment.count)}</td>

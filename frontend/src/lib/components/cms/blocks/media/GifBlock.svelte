@@ -102,7 +102,7 @@
 	{#if isEditing}
 		{#if gifUrl}
 			<div class="gif-preview">
-				<img src={sanitizeURL(gifUrl)} alt={gifAlt} />
+				<img src={sanitizeURL(gifUrl)} alt={gifAlt} width="480" height="270" loading="lazy" decoding="async" />
 				<button type="button" class="gif-remove" onclick={clearGif} aria-label="Remove GIF">
 					<IconX size={16} />
 				</button>

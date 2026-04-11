@@ -535,7 +535,7 @@ import { logger } from '$lib/utils/logger';
 						</tr>
 					</thead>
 					<tbody>
-						{#each carts as cart}
+						{#each carts as cart (cart.id)}
 							<tr class:selected={selectedCarts.has(cart.id)}>
 								<td class="checkbox-col">
 									<input

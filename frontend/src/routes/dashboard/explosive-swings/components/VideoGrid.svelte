@@ -55,7 +55,7 @@
 				<div class="skeleton-play"></div>
 			</div>
 			<div class="skeleton-grid">
-				{#each [1, 2, 3] as _, i}
+				{#each [1, 2, 3] as _, i (_)}
 					<div class="skeleton-card" style="animation-delay: {i * 0.1}s">
 						<div class="skeleton-thumb"></div>
 						<div class="skeleton-info">

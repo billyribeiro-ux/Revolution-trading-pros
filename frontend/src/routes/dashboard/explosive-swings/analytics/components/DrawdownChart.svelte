@@ -177,7 +177,7 @@
 				</defs>
 
 				<!-- Y-axis labels -->
-				{#each yTicks as tick}
+				{#each yTicks as tick (tick.value)}
 					<line
 						x1={padding.left}
 						y1={tick.y}

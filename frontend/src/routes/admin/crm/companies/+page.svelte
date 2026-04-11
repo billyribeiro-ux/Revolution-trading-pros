@@ -242,12 +242,12 @@
 				/>
 			</div>
 			<select class="filter-select" bind:value={selectedIndustry}>
-				{#each industryOptions as option}
+				{#each industryOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
 			<select class="filter-select" bind:value={selectedSize}>
-				{#each sizeOptions as option}
+				{#each sizeOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
@@ -289,7 +289,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filteredCompanies as company}
+						{#each filteredCompanies as company (company.id)}
 							<tr>
 								<td>
 									<div class="company-cell">

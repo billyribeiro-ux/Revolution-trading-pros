@@ -213,7 +213,8 @@
 				</div>
 			{:else}
 				<div class="images-list">
-					{#each images as image}
+					<!-- key (i): items lack stable id -->
+					{#each images as image, i (i)}
 						<div class="image-item">
 							<div class="image-preview">
 								<img src={image.src} alt={image.generatedAlt || 'Image preview'} width="200" height="150" loading="lazy" decoding="async" />
@@ -247,7 +248,7 @@
 
 								{#if image.issues.length > 0}
 									<div class="issues">
-										{#each image.issues as issue}
+										{#each image.issues as issue (issue)}
 											<div class="issue error">
 												<IconAlertTriangle size={14} />
 												{issue}
@@ -258,7 +259,7 @@
 
 								{#if image.recommendations.length > 0}
 									<div class="recommendations">
-										{#each image.recommendations as rec}
+										{#each image.recommendations as rec (rec)}
 											<div class="recommendation">
 												<IconCheck size={14} />
 												{rec}
@@ -301,7 +302,7 @@
 				<div class="setting-row">
 					<label for="altCase">Case Transformation</label>
 					<select id="altCase" bind:value={settings.altTextCase}>
-						{#each caseOptions as opt}
+						{#each caseOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>
@@ -376,7 +377,7 @@
 				<div class="setting-row">
 					<label for="titleCase">Case Transformation</label>
 					<select id="titleCase" bind:value={settings.titleCase}>
-						{#each caseOptions as opt}
+						{#each caseOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>

@@ -331,7 +331,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredLinks as link}
+					{#each filteredLinks as link (link.id)}
 						<tr>
 							<td>
 								<div class="link-cell">

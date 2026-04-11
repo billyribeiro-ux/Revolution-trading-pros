@@ -208,7 +208,7 @@ import { logger } from '$lib/utils/logger';
 		<!-- Type Filter Bar -->
 		<div class="filter-bar">
 			<div class="type-filter">
-				{#each productTypes as type}
+				{#each productTypes as type (type.value)}
 					{@const Icon = type.icon}
 					<button
 						class="type-btn"

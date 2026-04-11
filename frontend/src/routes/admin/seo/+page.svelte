@@ -454,7 +454,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="connected-services" in:fly={{ y: 20, duration: 500, delay: 200 }}>
 					<h3>Connected Services</h3>
 					<div class="connected-services-list">
-						{#each seoServices as service}
+						{#each seoServices as service (service.key)}
 							{@const status = getConnectionStatus(service.key)}
 							{#if status?.isConnected}
 								<div class="connected-service">
@@ -477,7 +477,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="sections-wrapper" in:fly={{ y: 20, duration: 500, delay: 300 }}>
 			<h2 class="sections-title">SEO Tools</h2>
 			<div class="sections-grid">
-				{#each sections as section, i}
+				{#each sections as section, i (section.href)}
 					{@const SectionIcon = section.icon}
 					<a
 						href={section.href}

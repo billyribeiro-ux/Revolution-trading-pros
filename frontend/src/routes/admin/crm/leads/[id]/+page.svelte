@@ -636,7 +636,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 						<div class="tags-list">
 							{#if lead.tags && lead.tags.length > 0}
-								{#each lead.tags as tag}
+								{#each lead.tags as tag (tag.name)}
 									<span
 										class="tag-pill"
 										style="background-color: {tag.color || '#f97316'}20; color: {tag.color ||
@@ -684,7 +684,8 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else}
 						<div class="timeline">
-							{#each timeline as event}
+							<!-- key (i): items lack stable id -->
+							{#each timeline as event, i (i)}
 								<div class="timeline-item">
 									<div class="timeline-dot {event.type}"></div>
 									<div class="timeline-content">
@@ -731,7 +732,8 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else}
 						<div class="notes-list">
-							{#each notes as note}
+							<!-- key (i): items lack stable id -->
+							{#each notes as note, i (i)}
 								<div class="note-item">
 									<div class="note-header">
 										<span class="note-author">

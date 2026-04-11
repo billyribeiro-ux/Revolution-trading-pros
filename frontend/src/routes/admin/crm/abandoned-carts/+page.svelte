@@ -324,7 +324,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredCarts as cart}
+					{#each filteredCarts as cart (cart.id)}
 						<tr>
 							<td class="checkbox-col">
 								<input

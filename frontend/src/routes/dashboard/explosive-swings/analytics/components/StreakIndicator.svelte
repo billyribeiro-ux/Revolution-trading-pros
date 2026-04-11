@@ -173,7 +173,7 @@
 		<!-- Streak Visual -->
 		{#if streak.current_streak > 0}
 			<div class="streak-visual">
-				{#each Array(Math.min(streak.current_streak, 10)) as _, i}
+				{#each Array(Math.min(streak.current_streak, 10)) as _, i (_)}
 					<div class="streak-dot {streakColor}" style="animation-delay: {i * 0.05}s"></div>
 				{/each}
 				{#if streak.current_streak > 10}

@@ -166,7 +166,7 @@
 				<Table
 					headers={['Name', 'Email', 'Phone', 'Job Title', 'Status', 'Lead Score', 'Last Activity']}
 				>
-					{#each contacts as contact}
+					{#each contacts as contact (contact.id)}
 						<tr>
 							<td>
 								<a href="/admin/contacts/{contact.id}" class="contact-name-link">

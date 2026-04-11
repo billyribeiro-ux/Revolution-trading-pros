@@ -686,7 +686,7 @@ import { logger } from '$lib/utils/logger';
 							<label for="category">Category</label>
 							<select id="category" bind:value={indicator.category}>
 								<option value="">Select Category</option>
-								{#each CATEGORIES as cat}
+								{#each CATEGORIES as cat (cat)}
 									<option value={cat}>{cat}</option>
 								{/each}
 							</select>
@@ -728,7 +728,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="form-group">
 						<label for="tags-input">Tags</label>
 						<div class="tags-container">
-							{#each indicator.tags as tag}
+							{#each indicator.tags as tag (tag)}
 								<span class="tag">
 									{tag}
 									<button type="button" class="tag-remove" onclick={() => removeTag(tag)}>×</button>
@@ -758,7 +758,7 @@ import { logger } from '$lib/utils/logger';
 					<p class="card-description">Select all platforms this indicator supports.</p>
 
 					<div class="platforms-toggle-list">
-						{#each PLATFORMS as platform}
+						{#each PLATFORMS as platform (platform.id)}
 							<label class="platform-toggle">
 								<input
 									id="page-checkbox"
@@ -801,7 +801,7 @@ import { logger } from '$lib/utils/logger';
 						</p>
 
 						<div class="platform-files-list">
-							{#each platformFiles as pf, index}
+							{#each platformFiles as pf, index (index)}
 								{@const platform = getPlatformById(pf.platform_id)}
 								{#if platform}
 									<div class="platform-file-item">
@@ -930,11 +930,11 @@ import { logger } from '$lib/utils/logger';
 
 					{#if documentationFiles.length > 0}
 						<div class="documentation-list">
-							{#each documentationFiles as doc, index}
+							{#each documentationFiles as doc, index (index)}
 								<div class="doc-item">
 									<div class="doc-header">
 										<select bind:value={doc.doc_type} class="doc-type-select">
-											{#each DOC_TYPES as dt}
+											{#each DOC_TYPES as dt (dt.id)}
 												<option value={dt.id}>{dt.name}</option>
 											{/each}
 										</select>
@@ -1312,7 +1312,7 @@ import { logger } from '$lib/utils/logger';
 								{#if indicator.category}
 									<span class="meta-tag">{indicator.category}</span>
 								{/if}
-								{#each indicator.platforms.slice(0, 3) as pid}
+								{#each indicator.platforms.slice(0, 3) as pid (pid)}
 									{@const p = getPlatformById(pid)}
 									{#if p}
 										<span class="meta-platform">{p.icon}</span>
