@@ -111,13 +111,13 @@
 		{/if}
 	</div>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err}
 				<p>{err}</p>
 			{/each}
 		</div>

@@ -24,17 +24,18 @@
 		easing?: string;
 	}
 
-	let props: Props = $props();
-	let value = $derived(props.value);
-	let duration = $derived(props.duration ?? 1.5);
-	let format = $derived(props.format ?? 'number');
-	let decimals = $derived(props.decimals ?? 0);
-	let prefix = $derived(props.prefix ?? '');
-	let suffix = $derived(props.suffix ?? '');
-	let locale = $derived(props.locale ?? 'en-US');
-	let currency = $derived(props.currency ?? 'USD');
-	let delay = $derived(props.delay ?? 0);
-	let easing = $derived(props.easing ?? 'power2.out');
+	let {
+		value,
+		duration = 1.5,
+		format = 'number',
+		decimals = 0,
+		prefix = '',
+		suffix = '',
+		locale = 'en-US',
+		currency = 'USD',
+		delay = 0,
+		easing = 'power2.out'
+	}: Props = $props();
 
 	let displayValue = $state(0);
 	let tween: gsap.core.Tween | null = null;

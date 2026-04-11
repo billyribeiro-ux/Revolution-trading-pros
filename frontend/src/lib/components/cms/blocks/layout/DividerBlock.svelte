@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// Style options
 	type DividerStyle = 'solid' | 'dashed' | 'dotted' | 'double';
@@ -63,18 +63,18 @@
 	];
 
 	// Derived state
-	const dividerStyle = $derived((props.block.settings.borderStyle || 'solid') as DividerStyle);
-	const dividerWidth = $derived((props.block.settings.width || 'full') as DividerWidth);
-	const dividerColor = $derived((props.block.settings.borderColor || '#e2e8f0') as string);
-	const spacing = $derived((props.block.settings.margin || 'medium') as SpacingSize);
-	const thickness = $derived((props.block.settings.borderWidth || '1px') as string);
+	const dividerStyle = $derived((block.settings.borderStyle || 'solid') as DividerStyle);
+	const dividerWidth = $derived((block.settings.width || 'full') as DividerWidth);
+	const dividerColor = $derived((block.settings.borderColor || '#e2e8f0') as string);
+	const spacing = $derived((block.settings.margin || 'medium') as SpacingSize);
+	const thickness = $derived((block.settings.borderWidth || '1px') as string);
 
 	// Computed values
 	const marginValue = $derived(SPACING_VALUES[spacing] || spacing);
 	const widthValue = $derived(WIDTH_VALUES[dividerWidth] || dividerWidth);
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function setStyle(style: DividerStyle): void {
@@ -98,8 +98,8 @@
 	}
 </script>
 
-<div class="divider-block" class:editing={props.isEditing} class:selected={props.isSelected}>
-	{#if props.isEditing && props.isSelected}
+<div class="divider-block" class:editing={isEditing} class:selected={isSelected}>
+	{#if isEditing && isSelected}
 		<div class="divider-toolbar" role="toolbar" aria-label="Divider settings">
 			<div class="toolbar-row">
 				<div class="toolbar-group">

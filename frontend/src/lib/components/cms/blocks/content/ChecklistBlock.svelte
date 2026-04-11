@@ -63,9 +63,9 @@
 	);
 
 	// Generate unique IDs for ARIA
-	const listId = $derived(`checklist-${props.blockId}`);
-	const titleId = $derived(`checklist-title-${props.blockId}`);
-	const progressId = $derived(`checklist-progress-${props.blockId}`);
+	const listId = $derived(`checklist-${blockId}`);
+	const titleId = $derived(`checklist-title-${blockId}`);
+	const progressId = $derived(`checklist-progress-${blockId}`);
 
 	// Track which item is being focused for keyboard navigation
 	let focusedItemIndex = $state<number | null>(null);
@@ -79,7 +79,7 @@
 	 */
 	function updateContent(updates: Partial<ChecklistContent>): void {
 		// Cast to handle custom ChecklistContent type alongside BlockContent
-		props.onUpdate({ content: { ...props.block.content, ...updates } as BlockContent });
+		onUpdate({ content: { ...block.content, ...updates } as BlockContent });
 	}
 
 	/**
@@ -266,7 +266,7 @@
 	 */
 	function focusItemInput(index: number): void {
 		const input = document.querySelector(
-			`[data-item-index="${index}"][data-block="${props.blockId}"]`
+			`[data-item-index="${index}"][data-block="${blockId}"]`
 		) as HTMLElement;
 		if (input) {
 			input.focus();
@@ -303,18 +303,18 @@
 	aria-labelledby={title ? titleId : undefined}
 >
 	<!-- Optional Title -->
-	{#if title || props.isEditing}
+	{#if title || isEditing}
 		<div class="checklist-header">
 			<h4
 				id={titleId}
-				contenteditable={props.isEditing}
+				contenteditable={isEditing}
 				class="checklist-title editable-content"
 				class:placeholder={!title}
 				oninput={handleTitleInput}
 				onpaste={handlePaste}
 				data-placeholder="Checklist title (optional)"
-				role={props.isEditing ? 'textbox' : undefined}
-				aria-label={props.isEditing ? 'Checklist title' : undefined}
+				role={isEditing ? 'textbox' : undefined}
+				aria-label={isEditing ? 'Checklist title' : undefined}
 			>
 				{title}
 			</h4>
@@ -370,11 +370,11 @@
 					class:checked={item.checked}
 					onclick={() => toggleItem(item.id)}
 					onkeydown={(e) => handleCheckboxKeyDown(e, item.id)}
-					disabled={!props.isEditing}
+					disabled={!isEditing}
 					role="checkbox"
 					aria-checked={item.checked}
 					aria-label={item.checked ? 'Mark as incomplete' : 'Mark as complete'}
-					tabindex={props.isEditing ? 0 : -1}
+					tabindex={isEditing ? 0 : -1}
 				>
 					{#if item.checked}
 						<IconCheck size={14} aria-hidden="true" />
@@ -383,7 +383,7 @@
 
 				<!-- Item Text -->
 				<span
-					contenteditable={props.isEditing}
+					contenteditable={isEditing}
 					class="item-text editable-content"
 					class:placeholder={!item.text}
 					oninput={(e) => handleItemInput(e, item.id)}
@@ -393,15 +393,15 @@
 					onblur={handleItemBlur}
 					data-placeholder="New item..."
 					data-item-index={index}
-					data-block={props.blockId}
-					role={props.isEditing ? 'textbox' : undefined}
-					aria-label={props.isEditing ? `Item ${index + 1} text` : undefined}
+					data-block={blockId}
+					role={isEditing ? 'textbox' : undefined}
+					aria-label={isEditing ? `Item ${index + 1} text` : undefined}
 				>
 					{item.text}
 				</span>
 
 				<!-- Remove Button -->
-				{#if props.isEditing}
+				{#if isEditing}
 					<button
 						type="button"
 						class="remove-btn"
@@ -417,7 +417,7 @@
 	</ul>
 
 	<!-- Add Item Button -->
-	{#if props.isEditing}
+	{#if isEditing}
 		<button
 			type="button"
 			class="add-item-btn"
@@ -430,7 +430,7 @@
 	{/if}
 
 	<!-- Empty State -->
-	{#if items.length === 0 && !props.isEditing}
+	{#if items.length === 0 && !isEditing}
 		<div class="empty-state" role="status">
 			<IconCircleCheck size={32} aria-hidden="true" />
 			<p>No items in this checklist</p>
@@ -439,7 +439,7 @@
 </div>
 
 <!-- Style Controls (visible when editing and selected) -->
-{#if props.isEditing && props.isSelected}
+{#if isEditing && isSelected}
 	<div class="checklist-controls" role="toolbar" aria-label="Checklist options">
 		<label class="control-toggle">
 			<input

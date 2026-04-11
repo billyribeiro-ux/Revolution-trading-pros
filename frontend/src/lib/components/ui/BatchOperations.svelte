@@ -24,13 +24,14 @@
 		onClearSelection?: () => void;
 	}
 
-	let props: Props = $props();
-	let selectedCount = $derived(props.selectedCount);
-	let totalCount = $derived(props.totalCount);
-	let actions = $derived(props.actions ?? []);
-	let onAction = $derived(props.onAction);
-	let onSelectAll = $derived(props.onSelectAll);
-	let onClearSelection = $derived(props.onClearSelection);
+	let {
+		selectedCount,
+		totalCount,
+		actions = [],
+		onAction,
+		onSelectAll,
+		onClearSelection
+	}: Props = $props();
 
 	let isVisible = $derived(selectedCount > 0);
 </script>

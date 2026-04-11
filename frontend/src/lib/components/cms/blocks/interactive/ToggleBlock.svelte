@@ -20,7 +20,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 	const stateManager = getBlockStateManager();
 
 	let defaultOpen = $derived(props.block.settings.defaultOpen || false);

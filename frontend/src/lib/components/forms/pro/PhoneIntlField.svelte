@@ -22,7 +22,7 @@
 		onchange?: (value: PhoneValue) => void;
 	}
 
-	let props: Props = $props();
+	let { field, value, error, onchange }: Props = $props();
 
 	const countries: Country[] = [
 		{ code: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
@@ -84,17 +84,17 @@
 	let searchQuery = $state('');
 
 	$effect(() => {
-		defaultCountry = props.field.attributes?.default_country || 'US';
+		defaultCountry = field.attributes?.default_country || 'US';
 	});
 
 	$effect(() => {
 		selectedCountry =
-			countries.find((c) => c.code === (props.value?.country_code || defaultCountry)) ||
+			countries.find((c) => c.code === (value?.country_code || defaultCountry)) ||
 			countries[0];
 	});
 
 	$effect(() => {
-		phoneNumber = props.value?.number || '';
+		phoneNumber = value?.number || '';
 	});
 
 	const filteredCountries = $derived(
@@ -124,7 +124,7 @@
 
 	function emitChange() {
 		const fullNumber = `${selectedCountry.dialCode}${phoneNumber.replace(/\D/g, '')}`;
-		props.onchange?.({
+		onchange?.({
 			country_code: selectedCountry.code,
 			dial_code: selectedCountry.dialCode,
 			number: phoneNumber,
@@ -156,15 +156,15 @@
 </script>
 
 <div class="phone-intl-field">
-	<label class="field-label" for={`field-${props.field.name}`}>
-		{props.field.label}
-		{#if props.field.required}
+	<label class="field-label" for={`field-${field.name}`}>
+		{field.label}
+		{#if field.required}
 			<span class="required">*</span>
 		{/if}
 	</label>
 
-	{#if props.field.help_text}
-		<p class="field-help">{props.field.help_text}</p>
+	{#if field.help_text}
+		<p class="field-help">{field.help_text}</p>
 	{/if}
 
 	<div class="phone-input-wrapper">
@@ -221,27 +221,27 @@
 
 		<input
 			type="tel"
-			id={`field-${props.field.name}`}
-			name={props.field.name}
-			placeholder={props.field.placeholder || 'Phone number'}
+			id={`field-${field.name}`}
+			name={field.name}
+			placeholder={field.placeholder || 'Phone number'}
 			value={phoneNumber}
-			required={props.field.required}
+			required={field.required}
 			class="phone-input"
-			class:input-error={props.error && props.error.length > 0}
+			class:input-error={error && error.length > 0}
 			oninput={handlePhoneInput}
 		/>
 	</div>
 
 	<input
 		type="hidden"
-		name={`${props.field.name}_full`}
+		name={`${field.name}_full`}
 		value={`${selectedCountry.dialCode}${phoneNumber.replace(/\D/g, '')}`}
 	/>
-	<input type="hidden" name={`${props.field.name}_country`} value={selectedCountry.code} />
+	<input type="hidden" name={`${field.name}_country`} value={selectedCountry.code} />
 
-	{#if props.error && props.error.length > 0}
+	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each props.error as err}
+			{#each error as err}
 				<p>{err}</p>
 			{/each}
 		</div>
