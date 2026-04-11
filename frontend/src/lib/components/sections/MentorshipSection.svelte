@@ -102,7 +102,7 @@
 	onmousemove={handleMouseMove}
 	role="group"
 	aria-label="Core Infrastructure Features"
-	class="relative py-32 px-6 bg-[#050505] overflow-hidden border-b border-white/5"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-6 3xl:px-12 5xl:px-16 6xl:px-20 bg-[#050505] overflow-hidden border-b border-white/5"
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
@@ -110,8 +110,12 @@
 		></div>
 	</div>
 
-	<div class="relative max-w-[1600px] mx-auto z-10">
-		<div class="max-w-3xl mb-24">
+	<div
+		class="relative max-w-[1600px] 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-3xl 3xl:max-w-4xl 4xl:max-w-5xl 5xl:max-w-6xl 6xl:max-w-7xl mb-24 3xl:mb-32 5xl:mb-40"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 0, duration: 1000 }}
@@ -128,14 +132,14 @@
 
 				<h2
 					in:heavySlide={{ delay: 100 }}
-					class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight"
+					class="text-3xl xs:text-4xl sm:text-4xl md:text-6xl 3xl:text-7xl 4xl:text-8xl 5xl:text-9xl font-serif text-white mb-8 tracking-tight"
 				>
 					Core <span class="text-slate-700">Infrastructure.</span>
 				</h2>
 
 				<p
 					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6"
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl border-l-2 border-white/10 pl-6"
 				>
 					We replaced marketing hype with financial engineering. Our ecosystem combines structured
 					execution frameworks with institutional data tools.
@@ -143,7 +147,10 @@
 			{/if}
 		</div>
 
-		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
+		<div
+			class="group/grid grid md:grid-cols-3 gap-8 3xl:gap-12 5xl:gap-16"
+			style="--x: {mouse.x}px; --y: {mouse.y}px;"
+		>
 			{#each features as feature, i}
 				{@const IconComponent = feature.icon}
 				{#if isVisible}

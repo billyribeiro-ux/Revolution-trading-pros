@@ -943,7 +943,7 @@
 						<!-- Thumbnail -->
 						<div class="resource-thumbnail">
 							{#if resource.thumbnail_url}
-								<img src={resource.thumbnail_url} alt={resource.title} />
+								<img src={resource.thumbnail_url} alt={resource.title} width="400" height="225" loading="lazy" decoding="async" />
 							{:else}
 								{@const SvelteComponent = getResourceIcon(resource.resource_type)}
 								<div class="thumbnail-placeholder">

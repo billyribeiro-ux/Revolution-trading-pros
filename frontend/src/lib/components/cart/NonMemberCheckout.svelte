@@ -428,7 +428,7 @@
 														<tr class="rtp-recurring-totals">
 															<th colspan="2">Recurring Totals</th>
 														</tr>
-														{#each cartStore.items.filter((i) => i.interval) as item}
+														{#each cartStore.items.filter((i) => i.interval) as item (item.id)}
 															<tr class="rtp-cart-subtotal rtp-recurring-total">
 																<td colspan="2">
 																	<span class="rtp-price-amount amount">

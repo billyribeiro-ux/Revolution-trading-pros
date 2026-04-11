@@ -165,7 +165,7 @@
 <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb">
 	<div class="container-fluid">
 		<ul>
-			{#each breadcrumbs as item, index}
+			{#each breadcrumbs as item, index (item.label ?? index)}
 				{#if index > 0}
 					<li class="separator{index === 1 ? ' separator-home' : ''}" aria-hidden="true">/</li>
 				{/if}

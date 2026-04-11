@@ -111,7 +111,7 @@
 	onmousemove={handleMouseMove}
 	role="group"
 	aria-label="Alert Services"
-	class="relative py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
+	class="relative py-24 lg:py-32 3xl:py-40 5xl:py-48 px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
@@ -119,8 +119,12 @@
 		></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto z-10">
-		<div class="max-w-4xl mx-auto text-center mb-24">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 0, duration: 1000 }}
@@ -132,14 +136,14 @@
 
 				<h2
 					in:heavySlide={{ delay: 100 }}
-					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
 				>
 					Alert <span class="text-slate-700">Systems.</span>
 				</h2>
 
 				<p
 					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
 				>
 					We don't send generic alerts. We deliver institutional-grade signal intelligence. Verified
 					by quantitative analysts and professional traders worldwide.
@@ -148,7 +152,7 @@
 		</div>
 
 		<div
-			class="group/grid grid md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+			class="group/grid grid md:grid-cols-2 gap-8 3xl:gap-12 5xl:gap-16 max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto"
 			style="--x: {mouse.x}px; --y: {mouse.y}px;"
 		>
 			{#each signals as item, i}

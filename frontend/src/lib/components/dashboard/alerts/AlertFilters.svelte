@@ -48,7 +48,7 @@
 </script>
 
 <div class="filter-pills" role="tablist" aria-label="Filter alerts by type">
-	{#each filters as filter}
+	{#each filters as filter (filter.value)}
 		<button
 			class="pill"
 			class:active={selected === filter.value}

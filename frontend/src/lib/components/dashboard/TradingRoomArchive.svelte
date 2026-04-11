@@ -352,7 +352,7 @@
 			{#if totalPages > 1}
 				<div class="fl-builder-pagination">
 					<ul class="page-numbers">
-						{#each getPageNumbers() as page}
+						{#each getPageNumbers() as page, i (i)}
 							{#if typeof page === 'number'}
 								<li>
 									<button

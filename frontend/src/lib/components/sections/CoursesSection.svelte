@@ -249,7 +249,7 @@ import { logger } from '$lib/utils/logger';
 
 <section
 	bind:this={sectionRef}
-	class="relative py-20 sm:py-32 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
+	class="relative py-20 sm:py-32 3xl:py-40 5xl:py-48 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
@@ -269,9 +269,14 @@ import { logger } from '$lib/utils/logger';
 		></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 z-10"
+	>
 		{#if isVisible}
-			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
+			<div
+				class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+				in:slideUp={{ delay: 0, duration: 1000 }}
+			>
 				<div
 					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
 				>
@@ -279,17 +284,21 @@ import { logger } from '$lib/utils/logger';
 					Professional Education
 				</div>
 
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+				<h2
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
+				>
 					Trading <span class="text-slate-700">Curriculum.</span>
 				</h2>
 
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+				<p
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					We don't sell courses. We provide institutional-grade trading education. Verified by
 					funded traders and prop firm graduates worldwide.
 				</p>
 
 				<div
-					class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
+					class="grid grid-cols-2 md:grid-cols-4 gap-6 3xl:gap-8 5xl:gap-12 max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto mt-12 pt-8 border-t border-white/5"
 					in:slideUp={{ delay: 200, duration: 800 }}
 				>
 					<div class="text-center group cursor-default">
@@ -338,7 +347,7 @@ import { logger } from '$lib/utils/logger';
 
 		<div
 			bind:this={cardsRef}
-			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
+			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 3xl:gap-12 5xl:gap-16 relative"
 			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
 			<div

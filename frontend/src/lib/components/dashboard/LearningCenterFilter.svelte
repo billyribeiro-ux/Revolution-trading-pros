@@ -66,7 +66,7 @@
 			</svg>
 		</label>
 	</div>
-	{#each categories as category}
+	{#each categories as category (category.id)}
 		<div class="filter_btn">
 			<input
 				type="radio"

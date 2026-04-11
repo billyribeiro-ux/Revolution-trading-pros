@@ -237,7 +237,7 @@
 				</p>
 
 				<div class="categories-list">
-					{#each categories as category}
+					{#each categories as category (category.id)}
 						{@const vendors = getVendorsForCategory(category.id)}
 						{@const isEnabled =
 							category.id === 'necessary'

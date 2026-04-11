@@ -251,6 +251,10 @@ import { logger } from '$lib/utils/logger';
 							<img
 								src={post.author_image}
 								alt={post.author?.name ?? 'Author'}
+								width="56"
+								height="56"
+								loading="lazy"
+								decoding="async"
 								class="author-avatar"
 							/>
 						{:else if post.author}
@@ -318,7 +322,8 @@ import { logger } from '$lib/utils/logger';
 								<p>{@html sanitizeBlogContent(block.data?.text || '')}</p>
 							{:else if block.type === 'heading'}
 								{#if block.data?.level === 1}
-									<h1>{@html sanitizeBlogContent(block.data?.text || '')}</h1>
+									<!-- SEO: demote in-content H1 to H2; the post title <h1> above is the page's canonical H1 -->
+									<h2>{@html sanitizeBlogContent(block.data?.text || '')}</h2>
 								{:else if block.data?.level === 2}
 									<h2>{@html sanitizeBlogContent(block.data?.text || '')}</h2>
 								{:else if block.data?.level === 3}

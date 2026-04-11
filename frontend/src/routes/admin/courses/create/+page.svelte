@@ -2613,7 +2613,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="media-upload">
 							{#if course.thumbnail}
 								<div class="image-preview large">
-									<img src={course.thumbnail} alt="Thumbnail" />
+									<img src={course.thumbnail} alt="Thumbnail" width="1280" height="720" loading="lazy" decoding="async" />
 									<button
 										class="remove-btn"
 										onclick={() => {
@@ -2710,7 +2710,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="gallery-grid">
 							{#each course.gallery as image, i}
 								<div class="gallery-item">
-									<img src={image} alt="Gallery {i + 1}" />
+									<img src={image} alt="Gallery {i + 1}" width="400" height="300" loading="lazy" decoding="async" />
 									<button class="remove-btn" onclick={() => removeFromGallery(i)}>
 										<IconX size={16} />
 									</button>
@@ -2804,7 +2804,7 @@ import { logger } from '$lib/utils/logger';
 							<label for="og-image">Social Share Image</label>
 							{#if course.og_image}
 								<div class="image-preview">
-									<img src={course.og_image} alt="Social share preview" />
+									<img src={course.og_image} alt="Social share preview" width="1200" height="630" loading="lazy" decoding="async" />
 									<button
 										class="remove-btn"
 										onclick={() => {

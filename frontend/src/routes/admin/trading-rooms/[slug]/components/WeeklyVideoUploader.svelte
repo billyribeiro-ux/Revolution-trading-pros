@@ -314,7 +314,7 @@ import { logger } from '$lib/utils/logger';
 		<div class="current-video-card">
 			<div class="video-preview">
 				{#if currentVideo.thumbnail_url}
-					<img src={currentVideo.thumbnail_url} alt={currentVideo.video_title} />
+					<img src={currentVideo.thumbnail_url} alt={currentVideo.video_title} width="400" height="225" loading="lazy" decoding="async" />
 				{:else}
 					<div class="video-placeholder">
 						<IconVideo size={48} />

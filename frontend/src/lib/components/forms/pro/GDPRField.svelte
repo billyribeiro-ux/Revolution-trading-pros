@@ -117,7 +117,7 @@
 
 	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each error as err, i (i)}
 				<p>{err}</p>
 			{/each}
 		</div>

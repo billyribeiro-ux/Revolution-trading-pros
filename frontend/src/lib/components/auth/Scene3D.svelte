@@ -106,7 +106,7 @@
 <T.GridHelper args={[100, 40, gridColor, new THREE.Color('#1e1b4b')]} position.y={-20} />
 
 <!-- Candlesticks -->
-{#each candles as candle, i}
+{#each candles as candle, i (i)}
 	{@const bodyHeight = Math.abs(candle.close - candle.open)}
 	{@const bodyCenter = (candle.open + candle.close) / 2 - 50}
 	{@const wickHeight = candle.high - candle.low}

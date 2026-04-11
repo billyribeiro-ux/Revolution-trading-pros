@@ -301,7 +301,7 @@
 						{#each emailStore.templates as template}
 							<div class="template-card">
 								{#if template.thumbnail}
-									<img src={template.thumbnail} alt={template.name} class="template-thumbnail" />
+									<img src={template.thumbnail} alt={template.name} width="300" height="200" loading="lazy" decoding="async" class="template-thumbnail" />
 								{:else}
 									<div class="template-placeholder">
 										<IconFileText size={48} class="text-gray-600" />

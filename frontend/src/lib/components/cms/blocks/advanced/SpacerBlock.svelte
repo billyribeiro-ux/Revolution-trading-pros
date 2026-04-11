@@ -83,7 +83,7 @@
 
 		{#if isSelected}
 			<div class="size-selector" role="toolbar" aria-label="Spacer size options">
-				{#each Object.keys(HEIGHT_PRESETS) as size}
+				{#each Object.keys(HEIGHT_PRESETS) as size (size)}
 					<button
 						type="button"
 						class="size-btn"

@@ -475,7 +475,7 @@
 				<div class="control-group">
 					<label class="control-label" for="font-family">Font Family</label>
 					<select id="font-family" class="select" bind:value={config.font_family}>
-						{#each fontOptions as font}
+						{#each fontOptions as font (font.value)}
 							<option value={font.value}>{font.label}</option>
 						{/each}
 					</select>
@@ -498,7 +498,7 @@
 						<div class="control-group">
 							<label class="control-label" for="title-font-weight">Weight</label>
 							<select id="title-font-weight" class="select" bind:value={config.title_font_weight}>
-								{#each weightOptions as weight}
+								{#each weightOptions as weight (weight)}
 									<option value={weight}>{weight}</option>
 								{/each}
 							</select>
@@ -523,7 +523,7 @@
 						<div class="control-group">
 							<label class="control-label" for="body-font-weight">Weight</label>
 							<select id="body-font-weight" class="select" bind:value={config.body_font_weight}>
-								{#each weightOptions as weight}
+								{#each weightOptions as weight (weight)}
 									<option value={weight}>{weight}</option>
 								{/each}
 							</select>
@@ -548,7 +548,7 @@
 						<div class="control-group">
 							<label class="control-label" for="btn-font-weight">Weight</label>
 							<select id="btn-font-weight" class="select" bind:value={config.btn_font_weight}>
-								{#each weightOptions as weight}
+								{#each weightOptions as weight (weight)}
 									<option value={weight}>{weight}</option>
 								{/each}
 							</select>

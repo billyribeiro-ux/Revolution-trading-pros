@@ -347,6 +347,10 @@ import { logger } from '$lib/utils/logger';
 												<img
 													src={logoUrl}
 													alt="Logo"
+													width="160"
+													height="96"
+													loading="lazy"
+													decoding="async"
 													class="max-w-full max-h-full object-contain"
 												/>
 											{:else}
@@ -905,7 +909,7 @@ import { logger } from '$lib/utils/logger';
 									>
 										<div>
 											{#if settings.show_logo && logoUrl}
-												<img src={logoUrl} alt="Logo" class="h-6 object-contain" />
+												<img src={logoUrl} alt="Logo" width="96" height="24" loading="lazy" decoding="async" class="h-6 object-contain" />
 											{:else}
 												<div class="font-bold text-[8px]" style="color: {settings.primary_color};">
 													{settings.company_name || 'Company'}

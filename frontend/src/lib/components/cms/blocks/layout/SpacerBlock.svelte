@@ -127,7 +127,7 @@
 					<div class="toolbar-group">
 						<span class="toolbar-label">Height:</span>
 						<div class="preset-buttons">
-							{#each HEIGHT_PRESETS as preset}
+							{#each HEIGHT_PRESETS as preset (preset.value)}
 								<button
 									type="button"
 									class="preset-btn"

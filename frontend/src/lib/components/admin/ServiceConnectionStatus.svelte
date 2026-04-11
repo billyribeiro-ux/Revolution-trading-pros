@@ -307,7 +307,7 @@
 					<div class="features-section" in:slide={{ duration: 300, delay: 100 }}>
 						<p class="features-label">This connection enables:</p>
 						<ul class="features-list">
-							{#each config.features as featureItem, i}
+							{#each config.features as featureItem, i (featureItem)}
 								<li in:fly={{ x: -10, duration: 200, delay: 150 + i * 50 }}>
 									<span class="check-icon" style="color: {config.color}">✓</span>
 									{featureItem}

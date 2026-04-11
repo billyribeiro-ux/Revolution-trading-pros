@@ -145,7 +145,7 @@
 				</li>
 			{/if}
 
-			{#each getPaginationRange() as pageNum}
+			{#each getPaginationRange() as pageNum, i (i)}
 				<li>
 					{#if pageNum === '...'}
 						<span class="page-numbers dots">…</span>

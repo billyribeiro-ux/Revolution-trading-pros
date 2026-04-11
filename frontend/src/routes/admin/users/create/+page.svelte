@@ -1208,6 +1208,10 @@ import { logger } from '$lib/utils/logger';
 						<img
 							src={profilePhotoPreview}
 							alt="Preview"
+							width="64"
+							height="64"
+							loading="lazy"
+							decoding="async"
 							class="mt-2 w-16 h-16 rounded-full object-cover"
 						/>
 					{/if}

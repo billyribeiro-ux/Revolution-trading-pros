@@ -87,7 +87,7 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-6 3xl:px-12 5xl:px-16 6xl:px-20 bg-[#020202] overflow-hidden border-t border-white/10"
 	aria-label="Market Intelligence Wire"
 >
 	<div class="absolute inset-0 pointer-events-none">
@@ -100,8 +100,12 @@
 		></div>
 	</div>
 
-	<div class="relative max-w-[1600px] mx-auto z-10">
-		<div class="max-w-4xl mx-auto text-center mb-24">
+	<div
+		class="relative max-w-[1600px] 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 0, duration: 1000 }}
@@ -113,14 +117,14 @@
 
 				<h2
 					in:heavySlide={{ delay: 100 }}
-					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
 				>
 					Market <span class="text-slate-700">Analysis.</span>
 				</h2>
 
 				<p
 					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
 				>
 					We don't publish retail content. We deliver institutional-grade market intelligence.
 					Verified by quantitative analysts and professional trading desks worldwide.
@@ -129,7 +133,7 @@
 		</div>
 
 		{#if posts.length > 0}
-			<div class="grid lg:grid-cols-12 gap-12">
+			<div class="grid lg:grid-cols-12 gap-12 3xl:gap-16 5xl:gap-20">
 				{#if leadPost}
 					<div class="lg:col-span-8 h-full">
 						{#if isVisible}

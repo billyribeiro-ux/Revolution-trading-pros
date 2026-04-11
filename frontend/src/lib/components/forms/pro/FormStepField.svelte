@@ -123,7 +123,7 @@
 
 	<!-- Step Indicators -->
 	<div class="step-indicators">
-		{#each steps as step, index}
+		{#each steps as step, index (step.id ?? index)}
 			<button
 				type="button"
 				class="step-indicator {getStepStatus(index)}"

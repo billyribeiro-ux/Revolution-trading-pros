@@ -139,7 +139,7 @@ import { logger } from '$lib/utils/logger';
 
 			<!-- Actions -->
 			<div class="batch-actions">
-				{#each effectiveActions as action}
+				{#each effectiveActions as action (action.id)}
 					{@const ActionIcon = action.icon}
 					<button
 						class="action-btn {getVariantClass(action.variant)}"

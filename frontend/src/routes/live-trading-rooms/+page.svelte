@@ -576,7 +576,7 @@ import { logger } from '$lib/utils/logger';
 								{room.description}
 							</p>
 							<ul class="space-y-3 mb-8 flex-1">
-								{#each room.features as feature}
+								{#each room.features as feature (feature)}
 									<li class="flex items-start gap-3 text-sm text-zinc-300">
 										<svg
 											class={`w-4 h-4 shrink-0 mt-[3px] 

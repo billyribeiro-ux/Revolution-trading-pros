@@ -67,7 +67,12 @@ const config = {
 			crawl: true,
 			entries: ['*', '/robots.txt']
 		},
-		inlineStyleThreshold: 0,
+		// Inline component styles smaller than this size (bytes) directly into
+		// the HTML instead of emitting a separate render-blocking <link>. This
+		// significantly improves FCP / LCP on slow networks because small per-
+		// component CSS (most of our marketing sections) ships with the document.
+		// 5 KB is the industry-standard sweet spot (PageSpeed / web.dev).
+		inlineStyleThreshold: 5120,
 		csp: {
 			mode: 'auto',
 			directives: {

@@ -348,7 +348,7 @@
 				class:full-width={isMobile && template.mobile.fullWidthButtons}
 				style="gap: {template.spacing.gap}"
 			>
-				{#each getButtons(template) as button}
+				{#each getButtons(template) as button (button.type)}
 					<button class="btn btn-{button.type}" style={button.style} onclick={button.onClick}>
 						{button.text}
 					</button>

@@ -48,7 +48,7 @@
 <div class="space-y-6">
 	{#if category === null && !showPrimaryOnly}
 		<!-- Show by category -->
-		{#each categories as cat}
+		{#each categories as cat (cat)}
 			{@const categoryKpis = filteredKpis.filter((k) => k.category === cat)}
 			{#if categoryKpis.length > 0}
 				<div>

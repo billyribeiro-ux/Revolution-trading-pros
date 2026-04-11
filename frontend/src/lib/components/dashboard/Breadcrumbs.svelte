@@ -79,7 +79,7 @@
 <!-- Breadcrumbs Navigation -->
 <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb navigation">
 	<ul>
-		{#each breadcrumbItems as item}
+		{#each breadcrumbItems as item (item.name)}
 			{#if item.href}
 				<!-- Linked breadcrumb item -->
 				<li class="item-home">

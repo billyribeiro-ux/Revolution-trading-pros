@@ -398,7 +398,7 @@ import { logger } from '$lib/utils/logger';
 
 <section
 	bind:this={sectionRef}
-	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
+	class="relative py-16 sm:py-24 lg:py-32 3xl:py-40 5xl:py-48 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
 >
 	<!-- Ambient Background -->
 	<div class="absolute inset-0 pointer-events-none">
@@ -422,11 +422,13 @@ import { logger } from '$lib/utils/logger';
 		></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20"
+	>
 		<!-- Section Header -->
 		{#if isVisible}
 			<div
-				class="max-w-4xl mx-auto text-center mb-24"
+				class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
 				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
 			>
 				<div
@@ -436,11 +438,15 @@ import { logger } from '$lib/utils/logger';
 					Technical Edge
 				</div>
 
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+				<h2
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
+				>
 					Indicator <span class="text-slate-700">Suite.</span>
 				</h2>
 
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+				<p
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
+				>
 					We don't offer retail indicators. We provide institutional-grade analysis tools. Verified
 					by quantitative funds and professional trading desks.
 				</p>
@@ -448,7 +454,9 @@ import { logger } from '$lib/utils/logger';
 		{/if}
 
 		<!-- Main Content Grid - Stack on mobile -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+		<div
+			class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 3xl:gap-20 5xl:gap-24 items-center"
+		>
 			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
 			{#if isVisible}
 				<div

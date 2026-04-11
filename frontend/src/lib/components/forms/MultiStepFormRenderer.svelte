@@ -502,7 +502,7 @@ import { logger } from '$lib/utils/logger';
 			<!-- Step Indicators -->
 			{#if showStepNumbers}
 				<div class="steps-indicator">
-					{#each steps as step, index}
+					{#each steps as step, index (step.id ?? index)}
 						<button
 							type="button"
 							class="step-dot"
