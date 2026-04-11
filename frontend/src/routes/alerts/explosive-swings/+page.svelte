@@ -347,7 +347,7 @@
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>
-							<h3 class="text-2xl font-bold text-white">Swing Alert 🚀</h3>
+							<h2 class="text-2xl font-bold text-white">Swing Alert 🚀</h2>
 							<p class="text-emerald-500 text-sm font-bold">Confirmed Breakout Setup</p>
 						</div>
 						<div
@@ -810,7 +810,7 @@
 						1
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Professionals with Day Jobs</h4>
+						<h3 class="text-white font-bold mb-1">Professionals with Day Jobs</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You can't watch the screen from 9:30 to 4:00. You need a strategy that lets you enter
 							trades on your lunch break or from your phone without panic.
@@ -824,7 +824,7 @@
 						2
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Small Account Builders</h4>
+						<h3 class="text-white font-bold mb-1">Small Account Builders</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You want to grow a $2k - $10k account aggressively but safely, avoiding the "PDT Rule"
 							that restricts day traders.
@@ -838,7 +838,7 @@
 						3
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Failed Day Traders</h4>
+						<h3 class="text-white font-bold mb-1">Failed Day Traders</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You've tried scalping and lost money to churn and fees. You're ready for a calmer,
 							more statistical approach to the markets.
@@ -852,7 +852,7 @@
 						4
 					</div>
 					<div>
-						<h4 class="text-white font-bold mb-1">Options Buyers</h4>
+						<h3 class="text-white font-bold mb-1">Options Buyers</h3>
 						<p class="text-slate-400 text-sm leading-relaxed">
 							You understand the power of leverage. You want to turn a 5% stock move into a 50%
 							option gain using safe, defined-risk structures.

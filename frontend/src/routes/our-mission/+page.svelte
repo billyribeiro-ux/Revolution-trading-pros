@@ -417,11 +417,11 @@
 								framework to survive variance.
 							</p>
 							<div class="p-6 border border-red-500/20 bg-red-900/5 rounded-xl">
-								<h4
+								<h3
 									class="text-red-400 font-bold mb-2 text-sm uppercase tracking-wider flex items-center gap-2"
 								>
 									{@html Icons.Brain} The Cognitive Gap
-								</h4>
+								</h3>
 								<p class="text-sm text-red-200/60">
 									Retail traders seek dopamine hits (action). Institutional traders seek boredom
 									(execution). The market is designed to transfer wealth from the impatient to the
@@ -894,11 +894,11 @@
 						<div
 							class="p-6 bg-[#0a0a0a] border border-white/10 rounded-xl hover:border-white/30 transition-colors group"
 						>
-							<h4
+							<h3
 								class="text-rtp-primary font-bold mb-2 font-mono uppercase tracking-wide text-sm group-hover:text-white transition-colors"
 							>
 								{item.term}
-							</h4>
+							</h3>
 							<p class="text-sm text-slate-400 leading-relaxed">{item.def}</p>
 						</div>
 					{/each}

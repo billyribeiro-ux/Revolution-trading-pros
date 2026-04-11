@@ -91,7 +91,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title font-heading font-bold text-rtp-text">Beginner Guides</h3>
+				<h2 class="resource-card__title font-heading font-bold text-rtp-text">Beginner Guides</h2>
 				<ul class="resource-card__list text-rtp-muted">
 					<li class="resource-card__item flex items-start gap-2">
 						<svg
@@ -173,7 +173,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Free Tools</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Free Tools</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -251,7 +251,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Video Tutorials</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Video Tutorials</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -324,7 +324,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Market Analysis</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Market Analysis</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -402,7 +402,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">Trading Psychology</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">Trading Psychology</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg
@@ -480,7 +480,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="text-2xl font-heading font-bold text-rtp-text mb-4">FAQ & Support</h3>
+				<h2 class="text-2xl font-heading font-bold text-rtp-text mb-4">FAQ & Support</h2>
 				<ul class="space-y-3 text-rtp-muted">
 					<li class="flex items-start gap-2">
 						<svg

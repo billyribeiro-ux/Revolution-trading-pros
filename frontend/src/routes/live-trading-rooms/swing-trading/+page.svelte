@@ -330,7 +330,7 @@
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>
-							<h3 class="text-2xl font-bold text-white">Swing Alert 🚀</h3>
+							<h2 class="text-2xl font-bold text-white">Swing Alert 🚀</h2>
 							<p class="text-rtp-emerald text-sm font-bold">High Probability Setup</p>
 						</div>
 						<div

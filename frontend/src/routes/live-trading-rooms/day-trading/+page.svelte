@@ -585,7 +585,7 @@
 								✓
 							</div>
 							<div>
-								<h4 class="text-white font-bold">Favorable Tax Treatment</h4>
+								<h3 class="text-white font-bold">Favorable Tax Treatment</h3>
 								<p class="text-sm text-rtp-muted">
 									SPX options fall under Section 1256, meaning 60% of gains are taxed at the lower
 									long-term capital gains rate, regardless of holding period.
@@ -599,7 +599,7 @@
 								✓
 							</div>
 							<div>
-								<h4 class="text-white font-bold">Cash Settled & No Early Assignment</h4>
+								<h3 class="text-white font-bold">Cash Settled & No Early Assignment</h3>
 								<p class="text-sm text-rtp-muted">
 									You can never be assigned shares. The index settles to cash, eliminating the risk
 									of overnight gap risk in physical shares.
@@ -613,7 +613,7 @@
 								✓
 							</div>
 							<div>
-								<h4 class="text-white font-bold">Institutional Liquidity</h4>
+								<h3 class="text-white font-bold">Institutional Liquidity</h3>
 								<p class="text-sm text-rtp-muted">
 									Massive volume ensures tight bid/ask spreads, allowing for rapid entries and exits
 									even with large position sizes.

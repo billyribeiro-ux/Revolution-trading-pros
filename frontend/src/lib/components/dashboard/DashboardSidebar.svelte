@@ -268,7 +268,7 @@
 		<ul>
 			<li></li>
 			<ul class="dash_main_links">
-				{#each mainLinks as link}
+				{#each mainLinks as link (link.href)}
 					<li class:is-active={isActive(link.href)}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
