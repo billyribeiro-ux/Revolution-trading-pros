@@ -58,7 +58,7 @@
 		onClose?: () => void;
 	}
 
-	let props: Props = $props();
+	let { courseSlug, quizId, onComplete, onClose }: Props = $props();
 
 	let quizData: QuizData | null = $state(null);
 	let currentQuestionIndex = $state(0);
@@ -103,7 +103,7 @@
 			isLoading = true;
 			error = '';
 			const res = await apiFetch<QuizStartResponse>(
-				`/member/courses/${props.courseSlug}/quizzes/${props.quizId}/start`,
+				`/member/courses/${courseSlug}/quizzes/${quizId}/start`,
 				{
 					method: 'POST'
 				}
@@ -170,7 +170,7 @@
 			}));
 
 			const res = await apiFetch<QuizSubmitResponse>(
-				`/member/courses/${props.courseSlug}/quizzes/${props.quizId}/attempts/${quizData.attempt_id}/submit`,
+				`/member/courses/${courseSlug}/quizzes/${quizId}/attempts/${quizData.attempt_id}/submit`,
 				{
 					method: 'POST',
 					body: JSON.stringify({ answers })
@@ -179,7 +179,7 @@
 
 			if (res.success && res.data) {
 				result = res.data;
-				props.onComplete?.(res.data);
+				onComplete?.(res.data);
 			} else {
 				error = res.error || 'Failed to submit quiz';
 			}
@@ -223,7 +223,7 @@
 				/>
 			</svg>
 			<p>{error}</p>
-			<button class="btn secondary" onclick={props.onClose}>Close</button>
+			<button class="btn secondary" onclick={onClose}>Close</button>
 		</div>
 	{:else if result}
 		<div class="result">
@@ -291,7 +291,7 @@
 				</div>
 			{/if}
 			<div class="result-actions">
-				<button class="btn primary" onclick={props.onClose}>Continue Learning</button>
+				<button class="btn primary" onclick={onClose}>Continue Learning</button>
 			</div>
 		</div>
 	{:else if quizData && currentQuestion}

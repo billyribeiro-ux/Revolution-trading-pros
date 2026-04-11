@@ -349,7 +349,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 						{:else}
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-								{#each products as product}
+								{#each products as product (product.id)}
 									<div
 										class="border border-rtp-border rounded-lg p-4 hover:shadow-lg transition-all"
 									>

@@ -8,7 +8,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// Svelte 5 January 2026 best practice - no destructuring
 	interface Props {
 		videoUrl: string;
 		videoTitle: string;
@@ -19,34 +18,42 @@
 		poster?: string;
 	}
 
-	let props: Props = $props();
+	let {
+		videoUrl,
+		videoTitle,
+		videoId,
+		overlayTitle,
+		overlayDescription,
+		showOverlay = false,
+		poster
+	}: Props = $props();
 </script>
 
 <div class="class-video-container current current-vid">
-	{#if props.showOverlay && props.overlayTitle}
+	{#if showOverlay && overlayTitle}
 		<div class="video-overlay">
-			<h3>{props.overlayTitle}</h3>
-			{#if props.overlayDescription}
+			<h3>{overlayTitle}</h3>
+			{#if overlayDescription}
 				<div class="class-video-description">
-					<p>{props.overlayDescription}</p>
+					<p>{overlayDescription}</p>
 				</div>
 			{/if}
 		</div>
 	{/if}
 
-	{#if props.videoId}
-		<div id={props.videoId} class="class-video-player"></div>
+	{#if videoId}
+		<div id={videoId} class="class-video-player"></div>
 	{/if}
 
 	<video
-		id={props.videoUrl}
+		id={videoUrl}
 		controls
 		width="100%"
-		poster={props.poster}
+		{poster}
 		style="aspect-ratio: 16/9;"
-		title={props.videoTitle}
+		title={videoTitle}
 	>
-		<source src={props.videoUrl} type="video/mp4" />
+		<source src={videoUrl} type="video/mp4" />
 		Your browser does not support the video tag.
 	</video>
 </div>
