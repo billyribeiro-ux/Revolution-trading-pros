@@ -223,7 +223,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight break-words"
 				>
 					Catch the <br />
 					<span

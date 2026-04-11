@@ -225,7 +225,7 @@
 
 				<h1
 					data-gsap
-					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
+					class="text-3xl xs:text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight break-words"
 				>
 					Master <span
 						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary to-emerald-400"

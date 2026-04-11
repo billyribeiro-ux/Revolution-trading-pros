@@ -224,7 +224,7 @@
 
 				<h1
 					data-gsap
-					class="text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1]"
+					class="text-4xl xs:text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1] break-words"
 				>
 					Conquer Volatility with
 					<span
