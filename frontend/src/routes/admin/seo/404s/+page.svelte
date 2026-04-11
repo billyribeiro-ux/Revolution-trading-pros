@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { browser } from '$app/environment';
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { seoApi, type Error404 } from '$lib/api/seo';
 	import { IconAlertCircle, IconTrash } from '$lib/icons';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';

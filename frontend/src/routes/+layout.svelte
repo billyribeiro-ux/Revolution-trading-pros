@@ -1,21 +1,21 @@
 <script lang="ts">
-import { logger } from '$lib/utils/logger';
 	/**
 	 * Root Layout - Apple Principal Engineer ICT Level 7 Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * Svelte 5 / SvelteKit 2.x Best Practices (January 2026)
+	 * Svelte 5 / SvelteKit 2.x Best Practices (April 2026)
 	 *
 	 * PATTERNS IMPLEMENTED:
-	 * ✅ $props() for component props with Snippet type
-	 * ✅ $state() for reactive local state
-	 * ✅ $derived() for computed values (replaces $: reactive statements)
-	 * ✅ $effect() for side effects (replaces afterUpdate/beforeUpdate)
-	 * ✅ {@render} for snippet rendering (replaces <slot>)
-	 * ✅ Rune-based store access via .current (replaces $ prefix)
-	 * ✅ page from '$app/state' (SvelteKit 2.x pattern)
-	 * ✅ Hydration-safe client-only rendering
+	 * - $props() destructuring with `LayoutProps` from `./$types`
+	 * - $state() for reactive local state
+	 * - $derived() for computed values (replaces $: reactive statements)
+	 * - $effect() for side effects (replaces afterUpdate/beforeUpdate)
+	 * - {@render} for snippet rendering (replaces <slot>)
+	 * - Rune-based store access via .current
+	 * - page from '$app/state' (SvelteKit 2.x pattern, not the deprecated `$page` store)
+	 * - Hydration-safe client-only rendering
+	 * - Typed `App.PageData` (declared in `src/app.d.ts`) so `page.data.seo` needs no cast
 	 *
-	 * @version 5.0.0 - Svelte 5 Runes Compliant
+	 * @version 6.0.0 - Svelte 5.55+ / SvelteKit 2.57+ compliant
 	 * @author Revolution Trading Pros
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
@@ -24,7 +24,6 @@ import { logger } from '$lib/utils/logger';
 	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
 	import Seo from '$lib/seo/Seo.svelte';
 	import { resolveSEO } from '$lib/seo/resolve';
-	import type { SEOInput, RouteSEOContext, SEODefaults } from '$lib/seo/types';
 	import { NavBar } from '$lib/components/nav';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import { onMount } from 'svelte';
@@ -35,26 +34,24 @@ import { logger } from '$lib/utils/logger';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth.svelte';
 	import { initializeAuth } from '$lib/api/auth';
-	import type { Snippet } from 'svelte';
 	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
-	// ICT 7: Dynamic import — svelte-render-scan is dev-only and must not run during SSR
-	let RenderScanComponent = $state<any>(null);
+	import { logger } from '$lib/utils/logger';
+	import type { LayoutProps } from './$types';
+	import type { Component } from 'svelte';
+
+	// ICT 7: Dynamic import — svelte-render-scan is dev-only and must not run during SSR.
+	// Typed as `Component | null` so the dynamic render below is type-safe.
+	let RenderScanComponent = $state<Component<{
+		initialEnabled?: boolean;
+		offsetLeft?: number;
+		duration?: number;
+	}> | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PROPS - Svelte 5 $props() Pattern (no destructuring)
+	// PROPS - Svelte 5 destructured `$props()` typed via SvelteKit-generated `LayoutProps`
 	// ═══════════════════════════════════════════════════════════════════════════
-	interface Props {
-		children: Snippet;
-		data: {
-			initialConsent?: unknown;
-			hasConsentInteraction?: boolean;
-			seoContext: RouteSEOContext;
-			seoDefaults: SEODefaults;
-			seo?: SEOInput;
-		};
-	}
-	let props: Props = $props();
+	let { data, children }: LayoutProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED - Svelte 5 $derived() Pattern (replaces $: reactive statements)
@@ -64,15 +61,16 @@ import { logger } from '$lib/utils/logger';
 	const isEmbedArea = $derived(pathname.startsWith('/embed'));
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// SEO - Unified SEO resolution (single ownership layer)
-	// Page-level SEO overrides come from page.data.seo (set in +page.server.ts)
+	// SEO - Unified SEO resolution (single ownership layer).
+	// Page-level SEO overrides come from `page.data.seo`, set in each page's
+	// `+page.server.ts` / `+page.ts` `load`. The cast is gone because
+	// `App.PageData` declares `seo?: SEOInput` (see `src/app.d.ts`).
 	// ═══════════════════════════════════════════════════════════════════════════
-	const pageSeo = $derived((page.data as { seo?: SEOInput })?.seo);
 	const resolvedSeo = $derived(
 		resolveSEO(
-			{ ...props.data.seoContext, pathname: page.url.pathname },
-			props.data.seoDefaults,
-			pageSeo
+			{ ...data.seoContext, pathname: page.url.pathname },
+			data.seoDefaults,
+			page.data.seo
 		)
 	);
 
@@ -181,7 +179,7 @@ import { logger } from '$lib/utils/logger';
      ═══════════════════════════════════════════════════════════════════════════ -->
 {#if isAdminArea || isEmbedArea}
 	<!-- Admin/Embed: Own layouts, no shared chrome -->
-	{@render props.children()}
+	{@render children()}
 {:else}
 	<!-- Dashboard + Marketing: Shared layout with NavBar + MarketingFooter -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
@@ -196,7 +194,7 @@ import { logger } from '$lib/utils/logger';
 		<NavBar />
 
 		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip">
-			{@render props.children()}
+			{@render children()}
 		</main>
 
 		<MarketingFooter />

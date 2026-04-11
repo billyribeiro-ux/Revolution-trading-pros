@@ -4,7 +4,7 @@ import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Card, Button, Badge } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 	import {
 		IconArrowLeft,

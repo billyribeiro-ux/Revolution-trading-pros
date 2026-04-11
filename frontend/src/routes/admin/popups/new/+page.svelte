@@ -2,7 +2,7 @@
 import { logger } from '$lib/utils/logger';
 	import { goto } from '$app/navigation';
 	import { Card, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
 	// Form state
