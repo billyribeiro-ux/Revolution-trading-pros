@@ -1173,7 +1173,10 @@ import { logger } from '$lib/utils/logger';
 														<img
 															src={asset.thumbnail_url || asset.cdn_url}
 															alt={asset.alt_text || asset.filename}
+															width="200"
+															height="200"
 															loading="lazy"
+															decoding="async"
 														/>
 													{:else if getAssetType(asset.mime_type) === 'video'}
 														<div class="type-preview video">
@@ -1295,7 +1298,7 @@ import { logger } from '$lib/utils/logger';
 													>
 														<td class="td-preview">
 															{#if getAssetType(asset.mime_type) === 'image'}
-																<img src={asset.thumbnail_url || asset.cdn_url} alt="" />
+																<img src={asset.thumbnail_url || asset.cdn_url} alt="" width="80" height="80" loading="lazy" decoding="async" />
 															{:else}
 																<div class="type-icon {getAssetType(asset.mime_type)}">
 																	<svg
@@ -1402,6 +1405,10 @@ import { logger } from '$lib/utils/logger';
 										<img
 											src={selectedAsset.cdn_url}
 											alt={selectedAsset.alt_text || selectedAsset.filename}
+											width="800"
+											height="600"
+											loading="lazy"
+											decoding="async"
 										/>
 									{:else if getAssetType(selectedAsset.mime_type) === 'video'}
 										<!-- svelte-ignore a11y_media_has_caption -->
@@ -1655,7 +1662,7 @@ import { logger } from '$lib/utils/logger';
 										>
 											<div class="item-preview">
 												{#if item.previewUrl}
-													<img src={item.previewUrl} alt="" />
+													<img src={item.previewUrl} alt="" width="60" height="60" loading="lazy" decoding="async" />
 												{:else}
 													<div class="file-icon">
 														<svg

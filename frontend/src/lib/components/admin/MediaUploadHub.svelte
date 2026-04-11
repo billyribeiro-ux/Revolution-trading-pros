@@ -609,7 +609,7 @@
 						<!-- Preview/Icon -->
 						<div class="item-preview">
 							{#if item.previewUrl}
-								<img src={item.previewUrl} alt={item.file.name} />
+								<img src={item.previewUrl} alt={item.file.name} width="80" height="80" loading="lazy" decoding="async" />
 							{:else}
 								<TypeIcon size={24} />
 							{/if}
