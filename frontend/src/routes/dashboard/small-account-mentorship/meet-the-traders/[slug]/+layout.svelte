@@ -11,10 +11,9 @@
 	import { getTraderBySlug } from '$lib/data/traders';
 	import TraderHeader from '$lib/components/traders/TraderHeader.svelte';
 	import TraderNav from '$lib/components/traders/TraderNav.svelte';
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	let props: { children: Snippet } = $props();
-	let children = $derived(props.children);
+	let { children }: LayoutProps = $props();
 
 	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 	let currentPath = $derived.by(() => {

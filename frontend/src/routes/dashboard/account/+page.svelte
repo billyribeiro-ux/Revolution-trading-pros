@@ -1,12 +1,7 @@
 <script lang="ts">
-	import type { AccountPageData } from './+page.d';
+	import type { PageProps } from './$types';
 
-	interface Props {
-		data: AccountPageData;
-	}
-
-	let props: Props = $props();
-	let data = $derived(props.data);
+	let { data }: PageProps = $props();
 
 	/**
 	 * Display name with fallback chain:

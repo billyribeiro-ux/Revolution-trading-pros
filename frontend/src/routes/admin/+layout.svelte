@@ -30,13 +30,10 @@
 	import ConnectionHealthPanel from '$lib/components/ConnectionHealthPanel.svelte';
 	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	// Props (Svelte 5 - no destructuring)
-	interface Props {
-		children: Snippet;
-	}
-	let props: Props = $props();
+	// Destructured `$props()` typed via SvelteKit-generated `LayoutProps`
+	let { children }: LayoutProps = $props();
 
 	// Local derived from getters
 	const unreadCount = $derived(getUnreadCount());
@@ -211,7 +208,7 @@
 
 		<!-- Content -->
 		<main id="main-content" class="admin-content">
-			{@render props.children()}
+			{@render children()}
 		</main>
 	</div>
 </div>

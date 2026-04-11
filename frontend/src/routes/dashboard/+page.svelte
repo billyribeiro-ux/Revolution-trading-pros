@@ -25,10 +25,10 @@ import { logger } from '$lib/utils/logger';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import type { PageProps } from './$types';
 
-	// SSR data from +page.server.ts
-	let props = $props();
-	let data = $derived(props.data);
+	// Destructured `$props()` typed via SvelteKit-generated `PageProps`
+	let { data }: PageProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

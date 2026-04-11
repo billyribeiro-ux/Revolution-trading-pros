@@ -10,14 +10,11 @@ import { logger } from '$lib/utils/logger';
 	 *
 	 * @version 1.1.0 - January 2026
 	 */
-	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	// Svelte 5 props pattern with typed interface
-	interface Props {
-		children: Snippet;
-	}
-	let { children }: Props = $props();
+	// Destructured `$props()` typed via SvelteKit-generated `LayoutProps`
+	let { children }: LayoutProps = $props();
 
 	// Track if component has mounted (for hydration-safe rendering)
 	let _mounted = $state(false);

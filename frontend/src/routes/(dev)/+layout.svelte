@@ -8,13 +8,9 @@
 	 * @version 1.0.0 - January 2026
 	 * @standards Apple Principal Engineer ICT Level 7+
 	 */
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	interface Props {
-		children: Snippet;
-	}
-
-	let { children }: Props = $props();
+	let { children }: LayoutProps = $props();
 </script>
 
 <div class="dev-layout">

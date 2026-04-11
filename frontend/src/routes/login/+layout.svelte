@@ -5,19 +5,15 @@
 	 * Removes navbar/footer for clean auth experience.
 	 * Theme-aware background for light/dark modes.
 	 *
-	 * @version 2.0.0 - Svelte 5 January 2026
+	 * @version 2.1.0 - Svelte 5.55+ sweep (April 2026)
 	 */
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	interface Props {
-		children: Snippet;
-	}
-
-	let props: Props = $props();
+	let { children }: LayoutProps = $props();
 </script>
 
 <div class="auth-page">
-	{@render props.children()}
+	{@render children()}
 </div>
 
 <style>
