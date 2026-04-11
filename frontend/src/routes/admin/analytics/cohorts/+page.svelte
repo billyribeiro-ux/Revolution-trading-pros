@@ -265,7 +265,7 @@
 		{:else}
 			<!-- Cohort Selector -->
 			<div class="flex gap-2 mb-8 overflow-x-auto pb-2">
-				{#each cohorts as cohort}
+				{#each cohorts as cohort (cohort.key)}
 					<button
 						onclick={() => (selectedCohort = cohort)}
 						class="px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all

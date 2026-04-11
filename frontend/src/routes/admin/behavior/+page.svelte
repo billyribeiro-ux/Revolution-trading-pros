@@ -260,7 +260,7 @@
 							</div>
 						{:else}
 							<div class="click-list">
-								{#each topClicks as click, i}
+								{#each topClicks as click, i (i)}
 									<div class="click-item">
 										<span class="click-rank">{i + 1}</span>
 										<div class="click-info">
@@ -291,7 +291,8 @@
 							</div>
 						{:else}
 							<div class="scroll-list">
-								{#each topScrolls as scroll}
+								<!-- key (i): items lack stable id -->
+								{#each topScrolls as scroll, i (i)}
 									<div class="scroll-item">
 										<div class="scroll-info">
 											<span class="scroll-page">{scroll.page}</span>
@@ -326,7 +327,8 @@
 							</div>
 						{:else}
 							<div class="recordings-grid">
-								{#each recordings as recording}
+								<!-- key (i): items lack stable id -->
+								{#each recordings as recording, i (i)}
 									<div class="recording-card">
 										<div class="recording-preview">
 											<IconPlay size={24} />

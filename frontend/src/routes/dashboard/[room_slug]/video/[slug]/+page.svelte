@@ -136,7 +136,7 @@
 
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
-					{#each tradingRooms as room}
+					{#each tradingRooms as room (room.name)}
 						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
@@ -209,7 +209,7 @@
 		<h2>Recent Day Trading Room Daily Videos</h2>
 
 		<div class="card-grid flex-grid row">
-			{#each relatedVideos as relatedVideo}
+			{#each relatedVideos as relatedVideo (relatedVideo.slug)}
 				<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 					<div class="card flex-grid-panel">
 						<figure class="card-media card-media--video">

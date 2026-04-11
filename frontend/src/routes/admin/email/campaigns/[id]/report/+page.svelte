@@ -585,7 +585,7 @@
 
 					<div class="chart-container">
 						<div class="bar-chart">
-							{#each report.engagement_over_time.slice(0, 24) as item, i}
+							{#each report.engagement_over_time.slice(0, 24) as item, i (i)}
 								{@const value = activeChartView === 'opens' ? item.opens : item.clicks}
 								{@const height = (value / maxEngagement) * 100}
 								<div class="bar-wrapper" title="{formatHour(item.hour)}: {value} {activeChartView}">
@@ -661,7 +661,7 @@
 						<span class="link-col unique-col">Unique Clicks</span>
 						<span class="link-col rate-col">Click Rate</span>
 					</div>
-					{#each report.top_links as link, i}
+					{#each report.top_links as link, i (i)}
 						{@const clickRate = (link.unique_clicks / report.metrics.unique_opens) * 100 || 0}
 						<div class="link-row" in:fly={{ x: -10, duration: 300, delay: 300 + i * 50 }}>
 							<span class="link-col url-col">
@@ -748,7 +748,8 @@
 					<div class="email-clients">
 						<h4>Email Clients</h4>
 						<div class="clients-list">
-							{#each report.email_client_breakdown as client}
+							<!-- key (i): items lack stable id -->
+							{#each report.email_client_breakdown as client, i (i)}
 								<div class="client-row">
 									<span class="client-name">{client.client}</span>
 									<div class="client-bar-wrap">
@@ -776,7 +777,7 @@
 					</div>
 
 					<div class="geo-list">
-						{#each report.geographic_distribution.slice(0, 8) as geo, i}
+						{#each report.geographic_distribution.slice(0, 8) as geo, i (i)}
 							{@const maxOpens = report.geographic_distribution[0]?.opens || 1}
 							<div class="geo-row" in:fly={{ x: 10, duration: 300, delay: 350 + i * 40 }}>
 								<div class="geo-info">

@@ -120,7 +120,7 @@ import { logger } from '$lib/utils/logger';
 				</a>
 			</div>
 		{:else}
-			{#each schemas as schema}
+			{#each schemas as schema (schema.id)}
 				<div class="schema-card">
 					<div class="card-header">
 						<div class="schema-type">{schema.schema_type}</div>
@@ -161,7 +161,7 @@ import { logger } from '$lib/utils/logger';
 	<div class="templates-section">
 		<h2>Available Schema Types</h2>
 		<div class="type-grid">
-			{#each schemaTypes as type}
+			{#each schemaTypes as type (type)}
 				<div class="type-card">
 					<div class="type-name">{type}</div>
 					<a href="/admin/seo/schema/create?type={type}" class="use-template"> Use Template </a>

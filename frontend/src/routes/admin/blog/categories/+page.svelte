@@ -471,7 +471,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="items-list">
 				{#if loading}
-					{#each Array(3) as _}
+					{#each Array(3) as _ (_)}
 						<div class="skeleton-card"></div>
 					{/each}
 				{:else if filteredCategories.length === 0}
@@ -572,7 +572,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="items-list">
 				{#if loading}
-					{#each Array(3) as _}
+					{#each Array(3) as _ (_)}
 						<div class="skeleton-card"></div>
 					{/each}
 				{:else if filteredTags.length === 0}
@@ -671,7 +671,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="error-banner">
 						<IconAlertCircle size={18} />
 						<div>
-							{#each categoryErrors as error}
+							{#each categoryErrors as error (error)}
 								<p>{error}</p>
 							{/each}
 						</div>
@@ -777,7 +777,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="error-banner">
 						<IconAlertCircle size={18} />
 						<div>
-							{#each tagErrors as error}
+							{#each tagErrors as error (error)}
 								<p>{error}</p>
 							{/each}
 						</div>

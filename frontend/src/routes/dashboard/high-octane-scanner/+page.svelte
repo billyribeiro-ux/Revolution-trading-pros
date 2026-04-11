@@ -469,7 +469,8 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each tradePlan as trade}
+								<!-- key (i): items lack stable id -->
+								{#each tradePlan as trade, i (i)}
 									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
 										<td class="ticker-cell">
 											<strong>{trade.ticker}</strong>
@@ -594,7 +595,7 @@
 			</div>
 
 			<div class="alerts-list">
-				{#each filteredAlerts as alert}
+				{#each filteredAlerts as alert (alert.id)}
 					<div
 						class="alert-card"
 						class:is-new={alert.isNew}
@@ -718,7 +719,7 @@
 			<p>Video breakdowns as we enter and exit trades</p>
 		</div>
 		<div class="updates-grid">
-			{#each latestUpdates as update}
+			{#each latestUpdates as update (update.href)}
 				<a href={update.href} class="update-card">
 					<div class="update-thumbnail" style="background-image: url('{update.image}')">
 						<div class="play-overlay">

@@ -1087,14 +1087,15 @@ import { logger } from '$lib/utils/logger';
 
 		{#if errors.length > 0}
 			<div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
-				{#each errors as error}
+				<!-- key (i): items lack stable id -->
+				{#each errors as error, i (i)}
 					<p class="text-red-400 text-sm">{error.field}: {error.message}</p>
 				{/each}
 			</div>
 		{/if}
 
 		<nav class="flex gap-1 mb-8 overflow-x-auto pb-2">
-			{#each STEPS as step, i}
+			{#each STEPS as step, i (step.key)}
 				{@const StepIcon = step.icon}
 				<button
 					class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors {activeStep ===
@@ -1268,7 +1269,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<span class="text-xs text-zinc-400">Crack time: {passwordStrength.crackTime}</span>
 						</div>
-						{#each passwordStrength.suggestions as suggestion}
+						{#each passwordStrength.suggestions as suggestion (suggestion)}
 							<p class="text-xs text-zinc-500">{suggestion}</p>
 						{/each}
 						{#if passwordStrength.isBreached}
@@ -1329,7 +1330,7 @@ import { logger } from '$lib/utils/logger';
 				{/if}
 			{:else if activeStep === 'role'}
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-					{#each ROLE_DEFINITIONS as role}
+					{#each ROLE_DEFINITIONS as role (role.key)}
 						{@const RoleIcon = role.icon}
 						<button
 							type="button"
@@ -1352,10 +1353,10 @@ import { logger } from '$lib/utils/logger';
 							</div>
 							<p class="text-sm text-zinc-400 mb-3">{role.description}</p>
 							<div class="space-y-1">
-								{#each role.permissions.slice(0, 3) as perm}
+								{#each role.permissions.slice(0, 3) as perm (perm)}
 									<p class="text-xs text-emerald-400">+ {perm}</p>
 								{/each}
-								{#each role.restrictions.slice(0, 2) as restriction}
+								{#each role.restrictions.slice(0, 2) as restriction (restriction)}
 									<p class="text-xs text-red-400">- {restriction}</p>
 								{/each}
 							</div>
@@ -1398,7 +1399,7 @@ import { logger } from '$lib/utils/logger';
 							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
 						>
 							<option value="">Select department</option>
-							{#each departments as dept}
+							{#each departments as dept (dept.id)}
 								<option value={dept.id}>{dept.name}</option>
 							{/each}
 						</select>
@@ -1411,7 +1412,7 @@ import { logger } from '$lib/utils/logger';
 							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
 						>
 							<option value="">Select team</option>
-							{#each teams as team}
+							{#each teams as team (team.id)}
 								<option value={team.id}>{team.name}</option>
 							{/each}
 						</select>
@@ -1426,7 +1427,7 @@ import { logger } from '$lib/utils/logger';
 							<option value="">
 								{loadingManagers ? 'Loading...' : 'Select manager'}
 							</option>
-							{#each managers as manager}
+							{#each managers as manager (manager.id)}
 								<option value={manager.id}>{manager.name}</option>
 							{/each}
 						</select>
@@ -1448,7 +1449,7 @@ import { logger } from '$lib/utils/logger';
 							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
 						>
 							<option value="">Select location</option>
-							{#each locations as loc}
+							{#each locations as loc (loc.id)}
 								<option value={loc.id}>{loc.name}</option>
 							{/each}
 						</select>
@@ -1534,7 +1535,7 @@ import { logger } from '$lib/utils/logger';
 							bind:value={formData.onboarding_plan}
 							class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-white"
 						>
-							{#each onboardingPlans as plan}
+							{#each onboardingPlans as plan (plan.id)}
 								<option value={plan.id}>{plan.name}</option>
 							{/each}
 						</select>
@@ -1543,7 +1544,7 @@ import { logger } from '$lib/utils/logger';
 						<!-- svelte-ignore a11y_label_has_associated_control -->
 						<label class="block text-sm text-zinc-400 mb-1">Training Modules</label>
 						<div class="flex flex-wrap gap-2">
-							{#each trainingModules as mod}
+							{#each trainingModules as mod (mod.id)}
 								<span class="px-3 py-1 bg-zinc-800 rounded-full text-xs text-zinc-300"
 									>{mod.name || mod.id}</span
 								>

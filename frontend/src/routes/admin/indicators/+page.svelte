@@ -228,7 +228,7 @@ import { logger } from '$lib/utils/logger';
 						</tr>
 					</thead>
 					<tbody>
-						{#each indicators as indicator}
+						{#each indicators as indicator (indicator.id)}
 							<tr>
 								<td class="indicator-cell">
 									{#if indicator.thumbnail}

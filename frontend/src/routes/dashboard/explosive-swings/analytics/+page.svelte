@@ -64,7 +64,7 @@
 
 			<!-- Period Selector -->
 			<div class="period-selector" role="group" aria-label="Time period selection">
-				{#each periods as period}
+				{#each periods as period (period.value)}
 					<button
 						class="period-btn"
 						class:active={analytics.selectedPeriod === period.value}

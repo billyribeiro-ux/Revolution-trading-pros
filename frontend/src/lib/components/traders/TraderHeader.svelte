@@ -33,6 +33,9 @@
 											alt={trader.name}
 											width="2000"
 											height="2000"
+											loading="eager"
+											fetchpriority="high"
+											decoding="sync"
 										/>
 									</div>
 								</div>

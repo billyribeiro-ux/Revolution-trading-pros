@@ -371,7 +371,7 @@ import { logger } from '$lib/utils/logger';
 												Previous
 											</button>
 										</li>
-										{#each pageNumbers as pageNum}
+										{#each pageNumbers as pageNum (pageNum)}
 											<li>
 												{#if pageNum === currentPage}
 													<span class="page-numbers current" aria-current="page">{pageNum}</span>

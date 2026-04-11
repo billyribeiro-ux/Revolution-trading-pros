@@ -53,7 +53,7 @@
 
 						{#if trader.specialties}
 							<div class="trader-card__specialties">
-								{#each trader.specialties as specialty}
+								{#each trader.specialties as specialty (specialty)}
 									<span class="specialty-tag">{specialty}</span>
 								{/each}
 							</div>

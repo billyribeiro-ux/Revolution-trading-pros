@@ -119,7 +119,7 @@
 
 			<!-- Navigation Pills -->
 			<nav class="trader-pills">
-				{#each traderPills as pill}
+				{#each traderPills as pill (pill.label)}
 					<a href={pill.path} class="trader-pill {pill.active ? 'trader-pill--active' : ''}">
 						{pill.label}
 					</a>
@@ -130,7 +130,7 @@
 			<div class="trader-products">
 				<h3 class="trader-products__title">Products from {trader.name}</h3>
 				<div class="trader-products__grid">
-					{#each products as product}
+					{#each products as product (product.name)}
 						<div class="product-card">
 							<figure class="product-card__image">
 								<img src={product.image} alt={product.name} width="400" height="225" loading="lazy" decoding="async" />

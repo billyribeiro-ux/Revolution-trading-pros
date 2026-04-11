@@ -175,7 +175,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 
 		<select class="sort-select" bind:value={sortBy}>
-			{#each sortOptions as option}
+			{#each sortOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>
@@ -212,7 +212,7 @@ import { logger } from '$lib/utils/logger';
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredLogs as log}
+					{#each filteredLogs as log (log.id)}
 						<tr>
 							<td>
 								<input

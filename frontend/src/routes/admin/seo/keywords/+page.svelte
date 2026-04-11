@@ -174,7 +174,7 @@ import { logger } from '$lib/utils/logger';
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredKeywords as keyword}
+					{#each filteredKeywords as keyword (keyword.id)}
 						<tr>
 							<td>
 								<div class="keyword-cell">{keyword.keyword}</div>
@@ -233,7 +233,8 @@ import { logger } from '$lib/utils/logger';
 		<div class="top-keywords-section">
 			<h2>Top Performing Keywords</h2>
 			<div class="top-keywords-grid">
-				{#each stats.top_keywords as keyword}
+				<!-- key (i): items lack stable id -->
+				{#each stats.top_keywords as keyword, i (i)}
 					<div class="top-keyword-card">
 						<div class="keyword-rank">#{keyword.current_rank}</div>
 						<div class="keyword-name">{keyword.keyword}</div>
@@ -249,7 +250,8 @@ import { logger } from '$lib/utils/logger';
 			<h2>Quick Win Opportunities</h2>
 			<p class="section-desc">Keywords ranking 11-30 with high potential</p>
 			<div class="opportunities-grid">
-				{#each stats.opportunity_keywords as keyword}
+				<!-- key (i): items lack stable id -->
+				{#each stats.opportunity_keywords as keyword, i (i)}
 					<div class="opportunity-card">
 						<div class="opp-header">
 							<span class="rank-badge top-20">#{keyword.current_rank}</span>

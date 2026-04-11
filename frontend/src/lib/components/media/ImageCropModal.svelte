@@ -529,6 +529,10 @@
 					<img
 						{src}
 						alt="Crop preview"
+						width="800"
+						height="600"
+						loading="eager"
+						decoding="sync"
 						class="crop-image"
 						style="transform: rotate({rotation}deg) scaleX({flipH ? -1 : 1}) scaleY({flipV
 							? -1

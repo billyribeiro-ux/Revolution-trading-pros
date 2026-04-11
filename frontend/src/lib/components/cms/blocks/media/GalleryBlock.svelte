@@ -428,8 +428,11 @@
 								<img
 									src={sanitizeURL(image.url)}
 									alt={image.alt}
-									class="gallery-image"
+									width="400"
+									height="300"
 									loading="lazy"
+									decoding="async"
+									class="gallery-image"
 								/>
 								<div class="gallery-item-overlay">
 									<div class="drag-handle" aria-label="Drag to reorder">
@@ -479,8 +482,11 @@
 								<img
 									src={sanitizeURL(image.url)}
 									alt={image.alt}
-									class="gallery-image"
+									width="400"
+									height="300"
 									loading="lazy"
+									decoding="async"
+									class="gallery-image"
 								/>
 								<div class="gallery-item-hover">
 									<IconPhoto size={24} />
@@ -510,6 +516,10 @@
 							<img
 								src={sanitizeURL(images[carouselIndex].url)}
 								alt={images[carouselIndex].alt}
+								width="1200"
+								height="675"
+								loading="lazy"
+								decoding="async"
 								class="carousel-image"
 							/>
 							{#if images[carouselIndex].caption}
@@ -718,7 +728,7 @@
 
 			<!-- Image Container -->
 			<div class="lightbox-image-container">
-				<img src={sanitizeURL(currentImage.url)} alt={currentImage.alt} class="lightbox-image" />
+				<img src={sanitizeURL(currentImage.url)} alt={currentImage.alt} width="1600" height="900" loading="lazy" decoding="async" class="lightbox-image" />
 			</div>
 
 			<!-- Navigation: Next -->

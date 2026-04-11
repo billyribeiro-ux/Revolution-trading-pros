@@ -170,7 +170,7 @@ import { logger } from '$lib/utils/logger';
 			</div>
 		{:else}
 			<div class="popups-grid">
-				{#each filteredPopups as popup}
+				{#each filteredPopups as popup (popup.id)}
 					<div class="popup-card">
 						<!-- Status Badge -->
 						<div class="card-header">

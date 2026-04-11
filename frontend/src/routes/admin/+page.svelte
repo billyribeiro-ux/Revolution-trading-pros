@@ -854,7 +854,7 @@ import { logger } from '$lib/utils/logger';
 					</div>
 				</div>
 				<div class="top-pages-list">
-					{#each topPages as page, i}
+					{#each topPages as page, i (i)}
 						<div class="top-page-item" in:fly={{ x: -10, duration: 300, delay: 550 + i * 50 }}>
 							<span class="top-page-rank">{i + 1}</span>
 							<span class="top-page-path">{page.path}</span>

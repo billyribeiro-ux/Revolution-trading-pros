@@ -323,7 +323,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="videos-grid">
-			{#each filteredVideos as video}
+			{#each filteredVideos as video (video.href)}
 				<a href={video.href} class="video-card">
 					<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
 						<div class="play-overlay">

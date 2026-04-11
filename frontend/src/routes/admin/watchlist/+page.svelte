@@ -383,7 +383,8 @@ import { logger } from '$lib/utils/logger';
 											<span class="rooms-badge rooms-all">All Rooms</span>
 										{:else}
 											<div class="rooms-tags">
-												{#each getRoomsByIds(item.rooms).slice(0, 2) as room}
+												<!-- key (i): items lack stable id -->
+												{#each getRoomsByIds(item.rooms).slice(0, 2) as room, i (i)}
 													<span
 														class="room-tag"
 														style="background-color: {room.color}20; color: {room.color}"

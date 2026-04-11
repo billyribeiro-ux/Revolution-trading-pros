@@ -415,7 +415,7 @@
 					</div>
 				{:else}
 					<div class="events-grid">
-						{#each Object.entries(availableEvents) as [event, label]}
+						{#each Object.entries(availableEvents) as [event, label] (event)}
 							<button
 								type="button"
 								class="event-chip"
@@ -447,7 +447,7 @@
 
 				{#if customHeaders.length > 0}
 					<div class="headers-list">
-						{#each customHeaders as header, index}
+						{#each customHeaders as header, index (header.key)}
 							<div class="header-row">
 								<input
 									id="page-header-name"

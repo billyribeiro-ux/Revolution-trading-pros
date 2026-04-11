@@ -338,7 +338,7 @@
 		{:else}
 			<!-- Quick Links Navigation -->
 			<nav class="quick-links-bar">
-				{#each quickLinks as link}
+				{#each quickLinks as link (link.name)}
 					{@const LinkIcon = link.icon}
 					<a
 						href={link.href}
@@ -410,7 +410,7 @@
 					class="filter-select"
 					bind:value={selectedStatus}
 				>
-					{#each statusOptions as option}
+					{#each statusOptions as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
@@ -420,7 +420,7 @@
 					class="filter-select"
 					bind:value={selectedLifecycle}
 				>
-					{#each lifecycleStages as stage}
+					{#each lifecycleStages as stage (stage.value)}
 						<option value={stage.value}>{stage.label}</option>
 					{/each}
 				</select>
@@ -509,7 +509,7 @@
 									<td>
 										{#if contact.tags && contact.tags.length > 0}
 											<div class="tags-preview">
-												{#each contact.tags.slice(0, 2) as tag}
+												{#each contact.tags.slice(0, 2) as tag (tag.name)}
 													<span class="tag-pill">{typeof tag === 'string' ? tag : tag.name}</span>
 												{/each}
 												{#if contact.tags.length > 2}

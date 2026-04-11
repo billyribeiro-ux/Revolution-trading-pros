@@ -474,7 +474,7 @@ import { logger } from '$lib/utils/logger';
 									>
 										{#if preset.thumbnail_url}
 											<div class="preset-thumbnail">
-												<img src={preset.thumbnail_url} alt={preset.name} loading="lazy" />
+												<img src={preset.thumbnail_url} alt={preset.name} width="200" height="112" loading="lazy" decoding="async" />
 											</div>
 										{:else}
 											<div class="preset-thumbnail placeholder">

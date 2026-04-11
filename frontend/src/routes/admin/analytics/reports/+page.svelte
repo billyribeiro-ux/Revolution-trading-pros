@@ -259,7 +259,7 @@
 			{:else}
 				<!-- Reports Grid -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{#each filteredReports as report}
+					{#each filteredReports as report (report.id)}
 						<div
 							class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow"
 						>
@@ -392,7 +392,7 @@
 				<div>
 					<span class="block text-sm font-medium text-gray-700 mb-2">Metrics</span>
 					<div class="flex flex-wrap gap-2">
-						{#each availableMetrics as metric}
+						{#each availableMetrics as metric (metric.value)}
 							<button
 								onclick={() => toggleMetric(metric.value)}
 								class="px-3 py-1.5 rounded-lg text-sm transition-all
@@ -410,7 +410,7 @@
 				<div>
 					<span class="block text-sm font-medium text-gray-700 mb-2">Dimensions</span>
 					<div class="flex flex-wrap gap-2">
-						{#each availableDimensions as dimension}
+						{#each availableDimensions as dimension (dimension.value)}
 							<button
 								onclick={() => toggleDimension(dimension.value)}
 								class="px-3 py-1.5 rounded-lg text-sm transition-all

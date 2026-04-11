@@ -288,7 +288,7 @@ import { logger } from '$lib/utils/logger';
 							</p>
 
 							<div class="space-y-3 mb-6">
-								{#each settings.default_stages as stage, index}
+								{#each settings.default_stages as stage, index (index)}
 									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
 										<input
 											id="page-stage-color"
@@ -369,7 +369,7 @@ import { logger } from '$lib/utils/logger';
 							</p>
 
 							<div class="space-y-3 mb-6">
-								{#each settings.default_labels as label, index}
+								{#each settings.default_labels as label, index (index)}
 									<div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
 										<input
 											id="page-label-color"

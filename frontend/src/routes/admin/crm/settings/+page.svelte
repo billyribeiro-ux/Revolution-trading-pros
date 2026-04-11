@@ -151,7 +151,7 @@
 	<div class="settings-layout">
 		<!-- Tabs -->
 		<div class="settings-tabs">
-			{#each tabs as tab}
+			{#each tabs as tab (tab.id)}
 				{@const TabIcon = tab.icon}
 				{#if tab.href}
 					<a href={tab.href} class="tab">

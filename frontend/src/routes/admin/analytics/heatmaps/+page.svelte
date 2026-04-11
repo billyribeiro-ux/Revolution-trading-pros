@@ -254,7 +254,7 @@
 						<h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
 							Tracked Pages
 						</h3>
-						{#each pages as page}
+						{#each pages as page (page.id)}
 							<button
 								onclick={() => loadHeatmapData(page)}
 								class="w-full text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 hover:bg-white/10 transition-all

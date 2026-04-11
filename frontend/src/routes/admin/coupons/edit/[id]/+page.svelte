@@ -429,7 +429,8 @@ import { logger } from '$lib/utils/logger';
 		<!-- Validation Errors -->
 		{#if errors.length > 0}
 			<div class="alerts" transition:slide={{ duration: 300 }}>
-				{#each errors as error}
+				<!-- key (i): items lack stable id -->
+				{#each errors as error, i (i)}
 					<div class="alert alert-{error.severity}">
 						<IconAlertCircle size={20} />
 						<span>{error.message}</span>

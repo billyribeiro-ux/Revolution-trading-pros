@@ -262,7 +262,8 @@ import { logger } from '$lib/utils/logger';
 							{importJob.errors.length} items could not be imported:
 						</h4>
 						<ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-							{#each importJob.errors.slice(0, 5) as err}
+							<!-- key (i): items lack stable id -->
+							{#each importJob.errors.slice(0, 5) as err, i (i)}
 								<li>• {err.message}</li>
 							{/each}
 							{#if importJob.errors.length > 5}
@@ -366,7 +367,7 @@ import { logger } from '$lib/utils/logger';
 					Choose Import Source
 				</h2>
 
-				{#each sources as source}
+				{#each sources as source (source.id)}
 					<button
 						onclick={() => (selectedSource = source.id)}
 						class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-left hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all flex items-center gap-4"

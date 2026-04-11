@@ -381,7 +381,7 @@
 							</p>
 
 							<div class="trader-team--container">
-								{#each traders as trader}
+								{#each traders as trader (trader.slug)}
 									<div class="team_member">
 										<a href="/traders/{trader.slug}">
 											<img src={trader.image} alt={trader.name} width="200" height="200" loading="lazy" decoding="async" />

@@ -181,7 +181,8 @@
 			</div>
 		{:else}
 			<div class="articles-list">
-				{#each articles as article}
+				<!-- key (i): items lack stable id -->
+				{#each articles as article, i (i)}
 					<div class="article-item">
 						<div class="article-status" class:included={article.inSitemap}>
 							{#if article.inSitemap}

@@ -536,14 +536,26 @@ import { logger } from '$lib/utils/logger';
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg"
 												alt="Visa"
+												width="38"
+												height="24"
+												loading="lazy"
+												decoding="async"
 											/>
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg"
 												alt="Mastercard"
+												width="38"
+												height="24"
+												loading="lazy"
+												decoding="async"
 											/>
 											<img
 												src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg"
 												alt="Amex"
+												width="38"
+												height="24"
+												loading="lazy"
+												decoding="async"
 											/>
 										</div>
 									</div>

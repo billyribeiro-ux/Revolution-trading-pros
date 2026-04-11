@@ -248,7 +248,8 @@
 		</div>
 	{:else}
 		<div class="logs-list">
-			{#each filteredLogs as log}
+			<!-- key (i): items lack stable id -->
+			{#each filteredLogs as log, i (i)}
 				{@const LevelIcon = getLevelIcon(log.level)}
 				{@const CategoryIcon = getCategoryIcon(log.category)}
 				<div class="log-entry {getLevelColor(log.level)}">

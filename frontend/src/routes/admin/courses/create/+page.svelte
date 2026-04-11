@@ -1602,7 +1602,7 @@ import { logger } from '$lib/utils/logger';
 
 				<h4>Competitor Analysis</h4>
 				<ul>
-					{#each pricingAnalysis.competitors as comp}
+					{#each pricingAnalysis.competitors as comp (comp.name)}
 						<li>{comp.name}: ${comp.price} ({comp.hours}h)</li>
 					{/each}
 				</ul>
@@ -1838,7 +1838,8 @@ import { logger } from '$lib/utils/logger';
 
 				{#if validationResults.length > 0}
 					<div class="validation-items">
-						{#each validationResults as result}
+						<!-- key (i): items lack stable id -->
+						{#each validationResults as result, i (i)}
 							<div class="validation-item {result.status}">
 								<span class="item-label">{result.message}</span>
 								<span class="item-score">+{result.score}</span>
@@ -2003,7 +2004,7 @@ import { logger } from '$lib/utils/logger';
 						</h2>
 
 						<div class="list-editor">
-							{#each course.outcomes as _, i}
+							{#each course.outcomes as _, i (_)}
 								<div class="list-item">
 									<IconCheck size={16} />
 									<input
@@ -2039,7 +2040,7 @@ import { logger } from '$lib/utils/logger';
 						</h2>
 
 						<div class="list-editor">
-							{#each course.prerequisites as _, i}
+							{#each course.prerequisites as _, i (_)}
 								<div class="list-item">
 									<IconAlertCircle size={16} />
 									<input
@@ -2071,7 +2072,7 @@ import { logger } from '$lib/utils/logger';
 						</h2>
 
 						<div class="list-editor">
-							{#each course.target_audience as _, i}
+							{#each course.target_audience as _, i (_)}
 								<div class="list-item">
 									<IconUsers size={16} />
 									<input
@@ -2295,7 +2296,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="help-text">Release modules gradually after enrollment</p>
 
 						<div class="drip-schedule">
-							{#each course.modules as module, i}
+							{#each course.modules as module, i (i)}
 								<div class="drip-item">
 									<span class="module-name">{module.title || `Module ${i + 1}`}</span>
 									<select>
@@ -2495,7 +2496,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="help-text">Add bonuses to increase perceived value</p>
 
 						<div class="bonus-list">
-							{#each course.bonuses as bonus}
+							{#each course.bonuses as bonus (bonus.id)}
 								<div class="bonus-item">
 									<select bind:value={bonus.icon} class="bonus-icon">
 										<option value="📚">📚</option>
@@ -2708,7 +2709,7 @@ import { logger } from '$lib/utils/logger';
 						<p class="help-text">Additional images to showcase course content</p>
 
 						<div class="gallery-grid">
-							{#each course.gallery as image, i}
+							{#each course.gallery as image, i (image)}
 								<div class="gallery-item">
 									<img src={image} alt="Gallery {i + 1}" width="400" height="300" loading="lazy" decoding="async" />
 									<button class="remove-btn" onclick={() => removeFromGallery(i)}>
@@ -2781,7 +2782,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="form-group">
 							<label for="keywords-input">Keywords</label>
 							<div class="tag-input">
-								{#each course.keywords as keyword, i}
+								{#each course.keywords as keyword, i (keyword)}
 									<span class="tag">
 										{keyword}
 										<button onclick={() => removeKeyword(i)}>
@@ -3086,7 +3087,7 @@ import { logger } from '$lib/utils/logger';
 						<h2>Tools & Resources Required</h2>
 
 						<div class="list-editor">
-							{#each course.tools_required as _, i}
+							{#each course.tools_required as _, i (_)}
 								<div class="list-item">
 									<IconSettings size={16} />
 									<input

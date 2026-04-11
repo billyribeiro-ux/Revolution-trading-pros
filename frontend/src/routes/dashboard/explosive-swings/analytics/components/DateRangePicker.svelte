@@ -37,7 +37,7 @@
 	<span class="picker-label">Period:</span>
 
 	<div class="period-buttons" role="radiogroup">
-		{#each periods as period}
+		{#each periods as period (period.value)}
 			<button
 				type="button"
 				class="period-btn"

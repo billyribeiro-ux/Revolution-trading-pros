@@ -368,7 +368,8 @@ import { logger } from '$lib/utils/logger';
 						</tr>
 					</thead>
 					<tbody>
-						{#each orders as order}
+						<!-- key (i): items lack stable id -->
+						{#each orders as order, i (i)}
 							<tr>
 								<td>
 									<span class="order-number">{order.order_number}</span>
@@ -542,7 +543,7 @@ import { logger } from '$lib/utils/logger';
 								</tr>
 							</thead>
 							<tbody>
-								{#each orderDetail.items as item}
+								{#each orderDetail.items as item (item.name)}
 									<tr>
 										<td>{item.name}</td>
 										<td>{item.quantity}</td>

@@ -106,14 +106,18 @@
 						type="text"
 						id="name"
 						name="name"
+						autocomplete="name"
 						bind:value={name}
 						required
+						aria-required="true"
+						aria-invalid={validationErrors.name ? 'true' : 'false'}
+						aria-describedby={validationErrors.name ? 'name-error' : undefined}
 						disabled={isLoading}
 						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="John Doe"
 					/>
 					{#if validationErrors.name}
-						<p class="mt-1 text-sm text-red-600">{validationErrors.name[0]}</p>
+						<p id="name-error" class="mt-1 text-sm text-red-600">{validationErrors.name[0]}</p>
 					{/if}
 				</div>
 
@@ -127,14 +131,19 @@
 						id="email"
 						name="email"
 						autocomplete="email"
+						inputmode="email"
+						spellcheck="false"
 						bind:value={email}
 						required
+						aria-required="true"
+						aria-invalid={validationErrors.email ? 'true' : 'false'}
+						aria-describedby={validationErrors.email ? 'email-error' : undefined}
 						disabled={isLoading}
 						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="you@example.com"
 					/>
 					{#if validationErrors.email}
-						<p class="mt-1 text-sm text-red-600">{validationErrors.email[0]}</p>
+						<p id="email-error" class="mt-1 text-sm text-red-600">{validationErrors.email[0]}</p>
 					{/if}
 				</div>
 
@@ -147,17 +156,22 @@
 						type="password"
 						id="password"
 						name="password"
-						autocomplete="current-password"
+						autocomplete="new-password"
 						bind:value={password}
 						required
+						aria-required="true"
+						aria-invalid={validationErrors.password ? 'true' : 'false'}
+						aria-describedby={validationErrors.password ? 'password-error' : 'password-hint'}
 						minlength="8"
 						disabled={isLoading}
 						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="••••••••"
 					/>
-					<p class="mt-1 text-xs text-rtp-muted">Minimum 8 characters</p>
+					<p id="password-hint" class="mt-1 text-xs text-rtp-muted">Minimum 8 characters</p>
 					{#if validationErrors.password}
-						<p class="mt-1 text-sm text-red-600">{validationErrors.password[0]}</p>
+						<p id="password-error" class="mt-1 text-sm text-red-600">
+							{validationErrors.password[0]}
+						</p>
 					{/if}
 				</div>
 
@@ -173,6 +187,7 @@
 						autocomplete="new-password"
 						bind:value={passwordConfirmation}
 						required
+						aria-required="true"
 						minlength="8"
 						disabled={isLoading}
 						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"

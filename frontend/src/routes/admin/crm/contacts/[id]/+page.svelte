@@ -797,7 +797,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 						<div class="tags-list">
 							{#if contact.tags && contact.tags.length > 0}
-								{#each contact.tags as tag}
+								{#each contact.tags as tag (tag.id)}
 									<span
 										class="tag-pill"
 										style="background-color: {tag.color || '#E6B800'}20; color: {tag.color ||
@@ -829,7 +829,7 @@ import { logger } from '$lib/utils/logger';
 						</div>
 						<div class="lists-section">
 							{#if contact.lists && contact.lists.length > 0}
-								{#each contact.lists as list}
+								{#each contact.lists as list (list.id)}
 									<div class="list-item">
 										<IconList size={16} />
 										<span>{list.name}</span>
@@ -892,7 +892,8 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else}
 						<div class="emails-list">
-							{#each emailHistory as email}
+							<!-- key (i): items lack stable id -->
+							{#each emailHistory as email, i (i)}
 								<div class="email-item">
 									<div class="email-icon">
 										<IconMail size={20} />
@@ -945,7 +946,8 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else}
 						<div class="notes-list">
-							{#each notes as note}
+							<!-- key (i): items lack stable id -->
+							{#each notes as note, i (i)}
 								<div class="note-item">
 									<div class="note-header">
 										<span class="note-author">{note.created_by?.name || 'Unknown'}</span>
@@ -974,7 +976,8 @@ import { logger } from '$lib/utils/logger';
 						</div>
 					{:else}
 						<div class="timeline">
-							{#each timeline as event}
+							<!-- key (i): items lack stable id -->
+							{#each timeline as event, i (i)}
 								<div class="timeline-item">
 									<div class="timeline-dot"></div>
 									<div class="timeline-content">
@@ -1029,7 +1032,7 @@ import { logger } from '$lib/utils/logger';
 					<p class="empty-text">No tags available</p>
 				{:else}
 					<div class="tag-options">
-						{#each availableTags as tag}
+						{#each availableTags as tag (tag.id)}
 							<button class="tag-option" onclick={() => addTag(tag.id)}>
 								<IconTag size={16} />
 								{tag.name}
@@ -1065,7 +1068,7 @@ import { logger } from '$lib/utils/logger';
 					<p class="empty-text">No lists available</p>
 				{:else}
 					<div class="list-options">
-						{#each availableLists as list}
+						{#each availableLists as list (list.id)}
 							<button class="list-option" onclick={() => addToList(list.id)}>
 								<IconList size={16} />
 								{list.name}
@@ -1162,7 +1165,7 @@ import { logger } from '$lib/utils/logger';
 						<option value="">
 							{loadingTemplates ? 'Loading templates...' : '-- Select a template --'}
 						</option>
-						{#each availableEmailTemplates as template}
+						{#each availableEmailTemplates as template (template.id)}
 							<option value={template.id}>{template.name}</option>
 						{/each}
 					</select>
