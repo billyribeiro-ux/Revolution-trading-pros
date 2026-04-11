@@ -189,10 +189,10 @@
 </script>
 
 <div
-	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
+	class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-indigo-600 selection:text-white"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
-		<div class="absolute inset-0 bg-slate-950 z-0">
+		<div class="absolute inset-0 bg-rtp-bg z-0">
 			<div
 				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 			></div>
@@ -242,7 +242,7 @@
 				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
 					<a
 						href="#pricing"
-						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 offset-slate-950 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
+						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-indigo-600 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
 					>
 						Start Your Trial
 						<svg
@@ -260,7 +260,7 @@
 					</a>
 					<a
 						href="#performance"
-						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-800 offset-slate-950"
+						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-slate-800"
 					>
 						View Results
 					</a>

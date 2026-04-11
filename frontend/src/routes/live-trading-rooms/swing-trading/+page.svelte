@@ -245,7 +245,7 @@
 				>
 					<a
 						href="#pricing"
-						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-emerald rounded-xl hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-emerald offset-rtp-bg shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
+						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-emerald rounded-xl hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-rtp-bg focus:ring-rtp-emerald shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
 					>
 						Start Trading Swings
 						<svg

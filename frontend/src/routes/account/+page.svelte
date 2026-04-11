@@ -356,7 +356,7 @@ import { logger } from '$lib/utils/logger';
 										<div class="flex items-start justify-between mb-2">
 											<h3 class="text-lg font-bold text-rtp-text">{product.name}</h3>
 											<span
-												class="px-2 py-1 rounded text-xs font-semibold bg-rtp-primarySoft text-rtp-primary capitalize"
+												class="px-2 py-1 rounded text-xs font-semibold bg-rtp-primary-soft text-rtp-primary capitalize"
 											>
 												{product.type}
 											</span>

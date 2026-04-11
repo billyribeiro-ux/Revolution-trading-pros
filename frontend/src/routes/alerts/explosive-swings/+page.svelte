@@ -200,7 +200,7 @@
 </script>
 
 <div
-	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
+	class="w-full bg-rtp-bg text-rtp-text font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
 	<section class="relative min-h-[90vh] flex items-center py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
@@ -258,7 +258,7 @@
 				>
 					<a
 						href="#pricing"
-						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-950 transition-all duration-200 bg-emerald-500 rounded-xl hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-slate-900 shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
+						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-950 transition-all duration-200 bg-emerald-500 rounded-xl hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-rtp-bg shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
 					>
 						Start Trading Swings
 						<svg
@@ -875,7 +875,7 @@
 
 			<div class="flex justify-center mb-16">
 				<div
-					class="bg-rtp-surface bg-slate-950 p-1.5 rounded-xl border border-slate-700/50 inline-flex relative"
+					class="bg-rtp-surface p-1.5 rounded-xl border border-rtp-border/50 inline-flex relative"
 				>
 					<button
 						type="button"

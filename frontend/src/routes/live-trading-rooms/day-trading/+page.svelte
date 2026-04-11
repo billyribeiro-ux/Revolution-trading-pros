@@ -249,7 +249,7 @@
 				<div data-gsap class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
 					<a
 						href="#pricing"
-						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-primary rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-primary offset-rtp-bg shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
+						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-primary rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-rtp-bg focus:ring-rtp-primary shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
 					>
 						Join the Room
 						<svg
