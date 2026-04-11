@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import { fade, slide } from 'svelte/transition';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
 	interface Stats {
@@ -40,8 +40,9 @@
 		className?: string;
 	} = $props();
 
-	// Animated savings
-	const animatedSavings = tweened(0, {
+	// Animated savings — `Tween` class API (Svelte 5.8+) replaces the
+	// deprecated `tweened` store. Read via `.current` instead of `$store`.
+	const animatedSavings = new Tween(0, {
 		duration: 1000,
 		easing: cubicOut
 	});
@@ -97,7 +98,7 @@
 				stats.savingsPercent
 			)}"
 		>
-			-{Math.round($animatedSavings)}%
+			-{Math.round(animatedSavings.current)}%
 		</span>
 	</div>
 {:else}
@@ -156,13 +157,13 @@
 						stroke-width="8"
 						stroke-linecap="round"
 						class="{getRingColor(stats.savingsPercent)} transition-all duration-1000"
-						stroke-dasharray="{$animatedSavings * 2.51} 251"
+						stroke-dasharray="{animatedSavings.current * 2.51} 251"
 						transform="rotate(-90 50 50)"
 					/>
 				</svg>
 				<div class="absolute inset-0 flex flex-col items-center justify-center">
 					<span class="text-2xl font-bold {getSavingsColor(stats.savingsPercent)}">
-						{Math.round($animatedSavings)}%
+						{Math.round(animatedSavings.current)}%
 					</span>
 					<span class="text-xs text-gray-500">smaller</span>
 				</div>

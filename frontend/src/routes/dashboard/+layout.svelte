@@ -38,27 +38,15 @@ import { logger } from '$lib/utils/logger';
 	} from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import type { Snippet } from 'svelte'; // FIXED: Separate type import for clarity
+	import type { LayoutProps } from './$types';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PROPS - Svelte 5 Pattern
+	// PROPS - Destructured `$props()` typed via SvelteKit-generated `LayoutProps`.
+	// The previous manual interface duplicated `+layout.server.ts`'s return shape
+	// AND wrapped the props object in two unnecessary `$derived` calls.
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Props {
-		children: Snippet;
-		data: {
-			user: {
-				id: string;
-				email: string;
-				name?: string;
-				role?: string;
-			} | null;
-		};
-	}
-
-	let props: Props = $props();
-	let children = $derived(props.children);
-	let data = $derived(props.data);
+	let { children, data }: LayoutProps = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE

@@ -13,18 +13,14 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
-	// Svelte 5 props with SvelteKit typing
-	interface Props {
-		data: PageData;
-	}
+	import type { PageProps } from './$types';
 
-	let props: Props = $props();
+	let { data }: PageProps = $props();
 
 	// Derived state
-	let tosTutorials = $derived(props.data.tosTutorials ?? []);
-	let tradestationTutorials = $derived(props.data.tradestationTutorials ?? []);
-	let pagination = $derived(props.data.tosPagination);
+	let tosTutorials = $derived(data.tosTutorials ?? []);
+	let tradestationTutorials = $derived(data.tradestationTutorials ?? []);
+	let pagination = $derived(data.tosPagination);
 
 	// Generate pagination URL
 	function getPageUrl(page: number): string {

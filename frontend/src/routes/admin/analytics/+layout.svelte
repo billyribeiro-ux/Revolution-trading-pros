@@ -1,16 +1,12 @@
 <script lang="ts">
 	/**
 	 * Analytics Layout - Shared navigation for analytics section
-	 * Updated to Svelte 5 syntax (November 2025)
+	 * Updated to Svelte 5.55+ destructured `$props()` (April 2026)
 	 */
 	import { page } from '$app/state';
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	// Svelte 5: Props - no destructuring
-	interface Props {
-		children: Snippet;
-	}
-	let props: Props = $props();
+	let { children }: LayoutProps = $props();
 
 	const navItems = [
 		{ href: '/admin/analytics', label: 'Dashboard', icon: '📊' },
@@ -47,5 +43,5 @@
 		</div>
 	</div>
 
-	{@render props.children()}
+	{@render children()}
 </div>
