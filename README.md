@@ -134,6 +134,7 @@ fly deploy
 - **[API Documentation](docs/api/)** - Complete API reference
 - **[Architecture](docs/ARCHITECTURE.md)** - System architecture & design decisions
 - **[Contributing](CONTRIBUTING.md)** - Contribution guidelines
+- **[AGENTS.md](AGENTS.md)** - Svelte MCP usage and Svelte 5 / SvelteKit 2 conventions for AI assistants
 - **[Testing Guide](docs/TESTING.md)** - Testing strategy & best practices
 
 ### Feature Documentation

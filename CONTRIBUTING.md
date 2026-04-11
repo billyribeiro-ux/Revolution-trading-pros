@@ -44,12 +44,11 @@ Thank you for your interest in contributing! This document outlines our developm
 git clone https://github.com/revolutiontradingpros/revolution-trading-pros.git
 cd revolution-trading-pros
 
-# Install frontend dependencies
-cd frontend
+corepack enable
 pnpm install
 
 # Install Rust dependencies
-cd ../api
+cd api
 cargo build
 
 # Set up environment variables
@@ -64,6 +63,11 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete environment variable documenta
 ---
 
 ## 📐 Coding Standards
+
+### Svelte MCP & agent guidance
+
+- Enable the **Svelte MCP** remote server in your editor (`https://mcp.svelte.dev/mcp` — see `.cursor/mcp.json` and `.mcp.json`).
+- Read **[AGENTS.md](AGENTS.md)** for tool usage (`list-sections`, `get-documentation`, `svelte-autofixer`) and project-wide Svelte 5 / SvelteKit 2 conventions.
 
 ### Frontend (TypeScript/Svelte)
 

@@ -1,10 +1,7 @@
 {
 	"mcpServers": {
 		"svelte": {
-			"type": "stdio",
-			"command": "pnpm",
-			"env": {},
-			"args": ["dlx", "-y", "@sveltejs/mcp"]
+			"url": "https://mcp.svelte.dev/mcp"
 		}
 	}
 }
