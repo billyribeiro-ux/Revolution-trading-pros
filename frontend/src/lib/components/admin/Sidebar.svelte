@@ -341,7 +341,7 @@
 	   RESPONSIVE - Mobile Drawer (< lg: 1024px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+	@media (max-width: 1023px) {
 		.admin-sidebar {
 			transform: translateX(-100%);
 		}

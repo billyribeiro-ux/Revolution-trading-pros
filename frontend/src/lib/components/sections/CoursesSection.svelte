@@ -616,7 +616,7 @@ import { logger } from '$lib/utils/logger';
 	 * MEDIUM DEVICES (768px - 1023px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 768px) and (max-width: 1023px) {
-		:global(.md\\:grid-cols-2) {
+		:global([class*='grid-cols-2']) {
 			grid-template-columns: repeat(2, 1fr) !important;
 		}
 	}
