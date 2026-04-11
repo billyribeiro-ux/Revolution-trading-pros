@@ -333,8 +333,11 @@
 							<div class="platform-header">
 								<img
 									width="200"
+									height="80"
 									src={platformDownload.logo}
 									alt={platformDownload.platform}
+									loading="lazy"
+									decoding="async"
 									onerror={(e) => {
 										const img = e.currentTarget as HTMLImageElement;
 										img.style.display = 'none';

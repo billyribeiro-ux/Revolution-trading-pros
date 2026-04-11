@@ -121,11 +121,11 @@
 
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
-		{#each menuSections as section}
+		{#each menuSections as section (section.title ?? section)}
 			{#if section.title}
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
-			{#each section.items as item}
+			{#each section.items as item (item.href)}
 				{@const Icon = item.icon}
 				<a
 					href={item.href}
