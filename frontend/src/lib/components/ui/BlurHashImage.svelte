@@ -138,6 +138,8 @@
 			bind:this={imgElement}
 			{src}
 			{alt}
+			width={typeof width === 'number' ? width : undefined}
+			height={typeof height === 'number' ? height : undefined}
 			{loading}
 			{decoding}
 			sizes={generateSizes() || sizes}
