@@ -203,7 +203,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -384,7 +384,7 @@
 	</section>
 
 	<section class="bg-rtp-surface border-y border-rtp-border relative z-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<dl class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group cursor-default">
 					<dt
@@ -425,7 +425,7 @@
 	</section>
 
 	<section class="py-24 bg-rtp-bg relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Lifestyle First</span
@@ -553,7 +553,7 @@
 	</section>
 
 	<section id="process" class="py-24 bg-rtp-surface border-t border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>How It Works</span
@@ -642,7 +642,7 @@
 	</section>
 
 	<section class="py-24 bg-rtp-bg">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
 				<div>
 					<h2 class="text-3xl font-heading font-bold text-rtp-text mb-2">Recent Verified Swings</h2>
@@ -745,7 +745,7 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-rtp-surface border-t border-rtp-border relative">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Membership</span
@@ -798,7 +798,7 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center">
 				<div
 					class="bg-rtp-bg p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
 					'monthly'

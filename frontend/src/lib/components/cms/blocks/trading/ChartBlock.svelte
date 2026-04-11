@@ -78,19 +78,19 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let mode = $derived<'embed' | 'image'>(
-		(props.block.content.chartMode as 'embed' | 'image') || 'embed'
+		(block.content.chartMode as 'embed' | 'image') || 'embed'
 	);
-	let symbol = $derived(props.block.content.chartSymbol || 'NASDAQ:AAPL');
-	let interval = $derived((props.block.content.chartInterval as ChartContent['interval']) || '1D');
+	let symbol = $derived(block.content.chartSymbol || 'NASDAQ:AAPL');
+	let interval = $derived((block.content.chartInterval as ChartContent['interval']) || '1D');
 	let themePreference = $derived(
-		(props.block.content.chartTheme as ChartContent['theme']) || 'auto'
+		(block.content.chartTheme as ChartContent['theme']) || 'auto'
 	);
-	let imageUrl = $derived(props.block.content.chartImageUrl || '');
-	let imageAlt = $derived(props.block.content.chartImageAlt || 'Trading chart');
-	let imageCaption = $derived(props.block.content.chartImageCaption || '');
-	let height = $derived((props.block.settings.chartHeight as ChartSettings['height']) || '400px');
-	let showToolbar = $derived(props.block.settings.chartShowToolbar !== false);
-	let allowFullscreen = $derived(props.block.settings.chartAllowFullscreen !== false);
+	let imageUrl = $derived(block.content.chartImageUrl || '');
+	let imageAlt = $derived(block.content.chartImageAlt || 'Trading chart');
+	let imageCaption = $derived(block.content.chartImageCaption || '');
+	let height = $derived((block.settings.chartHeight as ChartSettings['height']) || '400px');
+	let showToolbar = $derived(block.settings.chartShowToolbar !== false);
+	let allowFullscreen = $derived(block.settings.chartAllowFullscreen !== false);
 
 	// Resolve actual theme based on preference
 	let resolvedTheme = $derived(themePreference === 'auto' ? systemTheme : themePreference);
@@ -177,11 +177,11 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateSettings(updates: Partial<BlockSettings>): void {
-		props.onUpdate({ settings: { ...props.block.settings, ...updates } });
+		onUpdate({ settings: { ...block.settings, ...updates } });
 	}
 
 	function handleModeChange(newMode: 'embed' | 'image'): void {
@@ -249,8 +249,8 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load chart. Please check the symbol and try again.';
-		if (props.onError) {
-			props.onError(new Error(errorMessage));
+		if (onError) {
+			onError(new Error(errorMessage));
 		}
 	}
 
@@ -265,8 +265,8 @@
 		isLoading = false;
 		hasError = true;
 		errorMessage = 'Failed to load image. Please check the URL and try again.';
-		if (props.onError) {
-			props.onError(new Error(errorMessage));
+		if (onError) {
+			onError(new Error(errorMessage));
 		}
 	}
 
@@ -321,7 +321,7 @@
 	aria-label={chartAriaLabel}
 >
 	<!-- Header with controls -->
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="chart-settings">
 			<div class="settings-row">
 				<div class="mode-toggle">
@@ -528,7 +528,7 @@
 		{/if}
 
 		<!-- Toolbar overlay -->
-		{#if !props.isEditing && showToolbar && !hasError && ((mode === 'embed' && isValidSymbol) || (mode === 'image' && imageUrl && isValidImageUrl))}
+		{#if !isEditing && showToolbar && !hasError && ((mode === 'embed' && isValidSymbol) || (mode === 'image' && imageUrl && isValidImageUrl))}
 			<div class="chart-toolbar">
 				{#if allowFullscreen}
 					<button
@@ -559,7 +559,7 @@
 	</div>
 
 	<!-- Caption for image mode -->
-	{#if mode === 'image' && imageCaption && !props.isEditing}
+	{#if mode === 'image' && imageCaption && !isEditing}
 		<div class="chart-caption">
 			<p>{imageCaption}</p>
 		</div>

@@ -391,7 +391,7 @@ import { logger } from '$lib/utils/logger';
 				</div>
 
 				<h1
-					class="hero-title text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] mb-10 text-white"
+					class="hero-title text-5xl xs:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.95] xs:leading-[0.9] mb-8 sm:mb-10 text-white break-words"
 				>
 					<div class="hero-title-line overflow-hidden">
 						<span class="block">Market</span>
@@ -635,7 +635,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
 			<div class="text-center mb-16 relative z-10">
 				<h2
-					class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+					class="text-2xl xs:text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 break-words px-4"
 				>
 					Why the Pros Choose Us
 				</h2>
@@ -718,8 +718,8 @@ import { logger } from '$lib/utils/logger';
 		>
 			<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 			<div class="relative z-10 max-w-3xl mx-auto px-4">
-				<h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Level Up?</h2>
-				<p class="text-xl text-zinc-400 mb-10">
+				<h2 class="text-3xl xs:text-4xl md:text-5xl font-bold text-white mb-6 break-words">Ready to Level Up?</h2>
+				<p class="text-base sm:text-xl text-zinc-400 mb-8 sm:mb-10">
 					Join thousands of traders who have transformed their results. <br
 						class="hidden md:block"
 					/>

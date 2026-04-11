@@ -194,7 +194,7 @@ import { logger } from '$lib/utils/logger';
 	<title>Invoice Settings | Admin</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8 max-w-6xl">
+<div class="container mx-auto px-4 py-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px]">
 	<!-- Header -->
 	<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
 		<div>

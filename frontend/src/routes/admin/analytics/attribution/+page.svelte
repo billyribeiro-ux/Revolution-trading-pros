@@ -76,7 +76,7 @@
 	<title>Attribution Report | Analytics</title>
 </svelte:head>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
 	<!-- Header -->
 	<div class="flex items-center justify-between mb-8">
 		<div>

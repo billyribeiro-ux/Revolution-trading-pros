@@ -561,13 +561,13 @@
 
 					<div class="mb-10">
 						<div class="text-amber-600 mx-auto w-12 h-12 mb-6">{@html Icons.Check}</div>
-						<h2 class="text-4xl md:text-5xl font-serif text-white mb-4">Initiate Application</h2>
+						<h2 class="text-3xl xs:text-4xl md:text-5xl font-serif text-white mb-4 break-words">Initiate Application</h2>
 						<p class="text-slate-500 font-mono text-xs uppercase tracking-[0.2em]">
 							Reference: Q4-INST-AUDIT
 						</p>
 					</div>
 
-					<div class="grid grid-cols-2 gap-8 max-w-lg mx-auto mb-12 text-left">
+					<div class="grid grid-cols-1 xs:grid-cols-2 gap-6 sm:gap-8 max-w-lg mx-auto mb-10 sm:mb-12 text-left">
 						<div class="border-l border-amber-800/50 pl-4">
 							<div class="text-[10px] font-mono uppercase text-slate-500 mb-1">Wire Amount</div>
 							<div class="text-xl text-white font-serif">$25,000.00</div>

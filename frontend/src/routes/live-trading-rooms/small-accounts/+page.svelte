@@ -205,7 +205,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center"
+			class="relative z-10 max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -330,7 +330,7 @@
 	</section>
 
 	<section class="bg-rtp-surface border-y border-rtp-border py-12">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div
 				class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x-0 md:divide-x divide-rtp-border/50"
 			>
@@ -379,7 +379,7 @@
 	</section>
 
 	<section class="py-24 bg-rtp-bg">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="grid lg:grid-cols-2 gap-16 items-center">
 				<div>
 					<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm mb-2 block"
@@ -462,7 +462,7 @@
 	</section>
 
 	<section id="inside-the-room" class="py-24 bg-rtp-surface border-y border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
 					Inside The Room
@@ -708,7 +708,7 @@
 	</section>
 
 	<section id="pricing" class="py-24 bg-rtp-bg">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Investment</span
@@ -758,7 +758,7 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto items-center">
 				<div
 					class="bg-rtp-surface p-8 rounded-2xl border transition-all duration-300 {selectedPlan ===
 					'monthly'
