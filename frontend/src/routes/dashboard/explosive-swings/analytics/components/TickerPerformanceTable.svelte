@@ -80,7 +80,7 @@
 
 	{#if isLoading}
 		<div class="skeleton-table">
-			{#each Array(5) as _ (_)}
+			{#each Array(5) as _, i (i)}
 				<div class="skel-row"></div>
 			{/each}
 		</div>

@@ -97,7 +97,7 @@
 		<div class="skeleton-content">
 			<div class="skel-pie"></div>
 			<div class="skel-legend">
-				{#each Array(4) as _ (_)}
+				{#each Array(4) as _, i (i)}
 					<div class="skel-item"></div>
 				{/each}
 			</div>

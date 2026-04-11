@@ -471,7 +471,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="items-list">
 				{#if loading}
-					{#each Array(3) as _ (_)}
+					{#each Array(3) as _, i (i)}
 						<div class="skeleton-card"></div>
 					{/each}
 				{:else if filteredCategories.length === 0}
@@ -572,7 +572,7 @@ import { logger } from '$lib/utils/logger';
 
 			<div class="items-list">
 				{#if loading}
-					{#each Array(3) as _ (_)}
+					{#each Array(3) as _, i (i)}
 						<div class="skeleton-card"></div>
 					{/each}
 				{:else if filteredTags.length === 0}

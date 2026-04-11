@@ -883,7 +883,7 @@ import { logger } from '$lib/utils/logger';
 		{#if viewMode === 'grid'}
 			<div class="posts-grid">
 				{#if loading}
-					{#each Array(6) as _ (_)}
+					{#each Array(6) as _, i (i)}
 						<div class="post-card skeleton">
 							<div class="skeleton-image"></div>
 							<div class="skeleton-content">

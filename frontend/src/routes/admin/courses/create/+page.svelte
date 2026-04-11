@@ -2004,7 +2004,7 @@ import { logger } from '$lib/utils/logger';
 						</h2>
 
 						<div class="list-editor">
-							{#each course.outcomes as _, i (_)}
+							{#each course.outcomes as _, i (i)}
 								<div class="list-item">
 									<IconCheck size={16} />
 									<input
@@ -2040,7 +2040,7 @@ import { logger } from '$lib/utils/logger';
 						</h2>
 
 						<div class="list-editor">
-							{#each course.prerequisites as _, i (_)}
+							{#each course.prerequisites as _, i (i)}
 								<div class="list-item">
 									<IconAlertCircle size={16} />
 									<input
@@ -2072,7 +2072,7 @@ import { logger } from '$lib/utils/logger';
 						</h2>
 
 						<div class="list-editor">
-							{#each course.target_audience as _, i (_)}
+							{#each course.target_audience as _, i (i)}
 								<div class="list-item">
 									<IconUsers size={16} />
 									<input
@@ -3087,7 +3087,7 @@ import { logger } from '$lib/utils/logger';
 						<h2>Tools & Resources Required</h2>
 
 						<div class="list-editor">
-							{#each course.tools_required as _, i (_)}
+							{#each course.tools_required as _, i (i)}
 								<div class="list-item">
 									<IconSettings size={16} />
 									<input
