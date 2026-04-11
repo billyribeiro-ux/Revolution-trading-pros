@@ -998,7 +998,7 @@
 	</section>
 
 	<section class="py-24 bg-slate-900 border-y border-slate-800">
-		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-5xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Crystal Clear Execution

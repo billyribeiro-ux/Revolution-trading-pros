@@ -869,7 +869,7 @@
 				</div>
 
 				<div
-					class="bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all duration-300 {selectedPlan ===
+					class="bg-rtp-bg p-6 sm:p-10 rounded-2xl sm:rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all duration-300 {selectedPlan ===
 					'quarterly'
 						? 'border-rtp-primary shadow-rtp-primary/20 md:scale-110 opacity-100'
 						: 'border-rtp-border shadow-rtp-border/10 md:scale-100 opacity-70 hover:opacity-100'}"
@@ -1017,16 +1017,16 @@
 	>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-			<h2 class="text-4xl md:text-6xl font-heading font-extrabold mb-6">
+			<h2 class="text-3xl xs:text-4xl md:text-6xl font-heading font-extrabold mb-6 break-words">
 				Markets Open at 9:30 AM.
 			</h2>
-			<p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+			<p class="text-base sm:text-xl text-blue-100 mb-8 sm:mb-10 max-w-2xl mx-auto">
 				Don't miss the next opening bell. Join the room today and be ready for tomorrow's session.
 			</p>
 			<div class="flex flex-col sm:flex-row gap-4 justify-center">
 				<a
 					href="#pricing"
-					class="bg-white text-rtp-primary px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:-translate-y-1"
+					class="bg-white text-rtp-primary px-6 sm:px-10 py-4 min-h-11 rounded-xl font-bold text-base sm:text-lg hover:bg-blue-50 transition-all shadow-2xl hover:-translate-y-1"
 				>
 					Get Access Now
 				</a>
