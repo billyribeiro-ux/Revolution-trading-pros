@@ -290,7 +290,10 @@ import { logger } from '$lib/utils/logger';
 														<img
 															src={enrollment.course.card_image_url}
 															alt={enrollment.course.title}
+															width="400"
+															height="225"
 															loading="lazy"
+															decoding="async"
 														/>
 														<div class="completed-badge">
 															<svg
