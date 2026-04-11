@@ -221,6 +221,8 @@
 			<img
 				src={thumbnailUrl}
 				alt={video.title}
+				width="400"
+				height="225"
 				loading={loadingPriority === 'high' ? 'eager' : 'lazy'}
 				decoding="async"
 				fetchpriority={loadingPriority}

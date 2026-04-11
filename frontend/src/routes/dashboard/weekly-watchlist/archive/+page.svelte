@@ -50,7 +50,7 @@
 <!-- Archive Section -->
 <section class="archive-section">
 	<div class="archive-list">
-		{#each data.archiveEntries as { slug, title, trader }}
+		{#each data.archiveEntries as { slug, title, trader } (slug)}
 			<article class="archive-item">
 				<h4 class="archive-item__title">{title}</h4>
 				<p class="archive-item__trader"><em>With {trader}</em></p>

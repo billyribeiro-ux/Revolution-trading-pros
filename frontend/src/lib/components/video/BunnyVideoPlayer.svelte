@@ -366,6 +366,8 @@
 					<img
 						src={defaultThumbnailUrl}
 						alt={title}
+						width="1280"
+						height="720"
 						loading="eager"
 						decoding="async"
 						fetchpriority="high"

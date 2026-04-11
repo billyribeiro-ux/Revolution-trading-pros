@@ -1,5 +1,7 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
  * Dedicated Google News Sitemap Generator
+ * ═══════════════════════════════════════════════════════════════════════════════
  * Following Google News Publisher Center Guidelines (November 2025)
  *
  * Features:
@@ -9,78 +11,22 @@
  * - Stock tickers support for financial content
  * - Keyword tagging for news categorization
  * - Automatic 48-hour content window (Google News requirement)
+ * - Fetches recent blog posts from the Rust API at request time via
+ *   `$lib/seo/dynamic-routes` (no more hardcoded demo articles)
  *
- * @version 1.0.0 - November 2025 Google News Standards
+ * @version 2.0.0 - API-backed, Cloudflare-edge-cached
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
+import {
+	fetchRecentNewsArticles,
+	type NewsArticleEntry
+} from '$lib/seo/dynamic-routes';
 
 // Use environment variable - configure VITE_SITE_URL for your domain
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 const PUBLICATION_NAME = 'Revolution Trading Pros';
 const PUBLICATION_LANGUAGE = 'en';
-
-interface NewsArticle {
-	url: string;
-	title: string;
-	publicationDate: string;
-	keywords?: string[];
-	stockTickers?: string[];
-	genres?: ('PressRelease' | 'Satire' | 'Blog' | 'OpEd' | 'Opinion' | 'UserGenerated')[];
-	imageUrl?: string;
-	imageTitle?: string;
-	author?: string;
-}
-
-/**
- * Get recent news articles (within last 48 hours for Google News)
- * In production, this would fetch from a database
- */
-function getRecentNewsArticles(): NewsArticle[] {
-	const now = new Date();
-	const articles: NewsArticle[] = [
-		{
-			url: '/blog/market-analysis-november-2025',
-			title: 'S&P 500 Technical Analysis: Key Levels to Watch This Week',
-			publicationDate: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
-			keywords: ['S&P 500', 'technical analysis', 'stock market', 'trading'],
-			stockTickers: ['SPX', 'SPY', 'ES'],
-			genres: ['Blog'],
-			imageUrl: '/images/blog/sp500-analysis.jpg',
-			imageTitle: 'S&P 500 Technical Analysis Chart',
-			author: 'Revolution Trading Team'
-		},
-		{
-			url: '/blog/options-trading-strategies-2025',
-			title: 'Best Options Trading Strategies for Volatile Markets',
-			publicationDate: new Date(now.getTime() - 8 * 60 * 60 * 1000).toISOString(),
-			keywords: ['options trading', 'volatility', 'trading strategies', 'VIX'],
-			stockTickers: ['VIX', 'UVXY'],
-			genres: ['Blog'],
-			author: 'Revolution Trading Team'
-		},
-		{
-			url: '/blog/day-trading-tips-beginners',
-			title: 'Essential Day Trading Tips for Beginners: A Complete Guide',
-			publicationDate: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-			keywords: ['day trading', 'beginners', 'trading education', 'stock market'],
-			genres: ['Blog'],
-			author: 'Revolution Trading Team'
-		},
-		{
-			url: '/blog/swing-trading-momentum-stocks',
-			title: 'How to Identify Momentum Stocks for Swing Trading',
-			publicationDate: new Date(now.getTime() - 36 * 60 * 60 * 1000).toISOString(),
-			keywords: ['swing trading', 'momentum stocks', 'technical analysis'],
-			genres: ['Blog'],
-			author: 'Revolution Trading Team'
-		}
-	];
-
-	// Filter articles within last 48 hours (Google News requirement)
-	const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
-	return articles.filter((article) => new Date(article.publicationDate) > fortyEightHoursAgo);
-}
 
 /**
  * Escape XML special characters
@@ -95,12 +41,19 @@ function escapeXml(str: string): string {
 }
 
 /**
+ * Build the absolute URL for a news article. Blog posts live under /blog/{slug}.
+ */
+function articleUrl(slug: string): string {
+	return `${SITE_URL}/blog/${slug}`;
+}
+
+/**
  * Generate news sitemap URL entry
  */
-function generateNewsEntry(article: NewsArticle): string {
+function generateNewsEntry(article: NewsArticleEntry): string {
 	let entry = `
 	<url>
-		<loc>${SITE_URL}${article.url}</loc>
+		<loc>${articleUrl(article.slug)}</loc>
 		<news:news>
 			<news:publication>
 				<news:name>${escapeXml(PUBLICATION_NAME)}</news:name>
@@ -109,39 +62,32 @@ function generateNewsEntry(article: NewsArticle): string {
 			<news:publication_date>${article.publicationDate}</news:publication_date>
 			<news:title>${escapeXml(article.title)}</news:title>`;
 
-	// Add keywords (max 10)
+	// Keywords (Google News allows up to 10)
 	if (article.keywords && article.keywords.length > 0) {
 		const keywords = article.keywords.slice(0, 10).join(', ');
 		entry += `
 			<news:keywords>${escapeXml(keywords)}</news:keywords>`;
 	}
 
-	// Add stock tickers for financial news
+	// Stock tickers for financial news
 	if (article.stockTickers && article.stockTickers.length > 0) {
 		const tickers = article.stockTickers.join(', ');
 		entry += `
 			<news:stock_tickers>${escapeXml(tickers)}</news:stock_tickers>`;
 	}
 
-	// Add genres
-	if (article.genres && article.genres.length > 0) {
-		entry += `
-			<news:genres>${article.genres.join(', ')}</news:genres>`;
-	}
-
 	entry += `
 		</news:news>`;
 
-	// Add image if available (recommended by Google)
+	// Image (recommended by Google)
 	if (article.imageUrl) {
+		const imgLoc = article.imageUrl.startsWith('http')
+			? article.imageUrl
+			: `${SITE_URL}${article.imageUrl}`;
 		entry += `
 		<image:image>
-			<image:loc>${SITE_URL}${article.imageUrl}</image:loc>`;
-		if (article.imageTitle) {
-			entry += `
-			<image:title>${escapeXml(article.imageTitle)}</image:title>`;
-		}
-		entry += `
+			<image:loc>${imgLoc}</image:loc>
+			<image:title>${escapeXml(article.title)}</image:title>
 		</image:image>`;
 	}
 
@@ -154,8 +100,7 @@ function generateNewsEntry(article: NewsArticle): string {
 /**
  * Generate complete Google News sitemap
  */
-function generateNewsSitemap(): string {
-	const articles = getRecentNewsArticles();
+function generateNewsSitemap(articles: NewsArticleEntry[]): string {
 	const urlEntries = articles.map((article) => generateNewsEntry(article)).join('');
 	const generatedDate = new Date().toISOString();
 
@@ -169,26 +114,31 @@ function generateNewsSitemap(): string {
                             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
                             http://www.google.com/schemas/sitemap-news/0.9
                             http://www.google.com/schemas/sitemap-news/0.9/sitemap-news.xsd">
-	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+	<!-- ═══════════════════════════════════════════════════════════════════════ -->
 	<!-- ${PUBLICATION_NAME} - Google News Sitemap -->
 	<!-- Generated: ${generatedDate} -->
 	<!-- Total Articles: ${articles.length} -->
 	<!-- Articles within last 48 hours per Google News requirements -->
-	<!-- ═══════════════════════════════════════════════════════════════════════════ -->${urlEntries}
+	<!-- ═══════════════════════════════════════════════════════════════════════ -->${urlEntries}
 </urlset>`;
 }
 
-export const GET: RequestHandler = async () => {
-	const sitemap = generateNewsSitemap();
+export const GET: RequestHandler = async ({ fetch }) => {
+	// Pull articles from the Rust API; fetcher is defensive and returns [] on
+	// any failure so the endpoint never 500s.
+	const articles = await fetchRecentNewsArticles(fetch, 48);
+	const sitemap = generateNewsSitemap(articles);
 
 	return new Response(sitemap, {
 		headers: {
 			'Content-Type': 'application/xml; charset=utf-8',
-			'Cache-Control': 'public, max-age=900, s-maxage=1800, stale-while-revalidate=3600',
-			'X-Content-Type-Options': 'nosniff',
-			'X-Robots-Tag': 'noindex'
+			// News sitemap freshness matters — Google re-crawls frequently, so
+			// keep the edge cache short (15m fresh, 1h SWR).
+			'Cache-Control': 'public, max-age=300, s-maxage=900, stale-while-revalidate=3600',
+			'X-Content-Type-Options': 'nosniff'
 		}
 	});
 };
 
-export const prerender = false; // News sitemap needs dynamic content
+// News sitemap needs dynamic content — runs per-request on the edge.
+export const prerender = false;

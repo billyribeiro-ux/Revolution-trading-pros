@@ -183,7 +183,10 @@
 						<img
 							src={item.thumbnail_url || item.url}
 							alt={item.alt_text || item.filename}
+							width="240"
+							height="240"
 							loading="lazy"
+							decoding="async"
 						/>
 					{:else if item.file_type === 'video'}
 						<div class="type-icon video">

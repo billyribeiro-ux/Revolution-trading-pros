@@ -244,13 +244,13 @@
 			>
 				<!-- Optimized (Background) -->
 				<div class="image-layer optimized">
-					<img src={optimizedSrc} alt="Optimized version" draggable="false" />
+					<img src={optimizedSrc} alt="Optimized version" width="800" height="600" loading="lazy" decoding="async" draggable="false" />
 					<span class="image-label">Optimized</span>
 				</div>
 
 				<!-- Original (Clipped) -->
 				<div class="image-layer original" style="clip-path: inset(0 {100 - sliderPosition.current}% 0 0);">
-					<img src={originalSrc} alt="Original version" draggable="false" />
+					<img src={originalSrc} alt="Original version" width="800" height="600" loading="lazy" decoding="async" draggable="false" />
 					<span class="image-label">Original</span>
 				</div>
 
@@ -268,12 +268,12 @@
 			<!-- Side by Side Mode -->
 			<div class="side-by-side-wrapper">
 				<div class="side-panel">
-					<img src={originalSrc} alt="Original version" draggable="false" />
+					<img src={originalSrc} alt="Original version" width="800" height="600" loading="lazy" decoding="async" draggable="false" />
 					<span class="image-label">Original</span>
 					<span class="size-badge">{formatBytes(originalSize)}</span>
 				</div>
 				<div class="side-panel">
-					<img src={optimizedSrc} alt="Optimized version" draggable="false" />
+					<img src={optimizedSrc} alt="Optimized version" width="800" height="600" loading="lazy" decoding="async" draggable="false" />
 					<span class="image-label">Optimized</span>
 					<span class="size-badge">{formatBytes(optimizedSize)}</span>
 				</div>
@@ -289,11 +289,11 @@
 				tabindex="0"
 			>
 				<div class="image-layer" class:visible={!showOriginal}>
-					<img src={optimizedSrc} alt="Optimized version" draggable="false" />
+					<img src={optimizedSrc} alt="Optimized version" width="800" height="600" loading="lazy" decoding="async" draggable="false" />
 					<span class="image-label">Optimized</span>
 				</div>
 				<div class="image-layer" class:visible={showOriginal}>
-					<img src={originalSrc} alt="Original version" draggable="false" />
+					<img src={originalSrc} alt="Original version" width="800" height="600" loading="lazy" decoding="async" draggable="false" />
 					<span class="image-label">Original</span>
 				</div>
 				<div class="toggle-hint">
