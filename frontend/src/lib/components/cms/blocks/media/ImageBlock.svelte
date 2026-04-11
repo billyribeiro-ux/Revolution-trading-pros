@@ -400,6 +400,8 @@
 					{srcset}
 					sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
 					alt={imageAlt}
+					width="1200"
+					height="800"
 					loading="lazy"
 					decoding="async"
 					class="image-block__image"
@@ -423,6 +425,8 @@
 						{srcset}
 						sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1200px"
 						alt={imageAlt}
+						width="1200"
+						height="800"
 						loading="lazy"
 						decoding="async"
 						class="image-block__image"
@@ -587,6 +591,11 @@
 		<img
 			src={sanitizedURL}
 			alt={imageAlt}
+			width="1600"
+			height="1200"
+			loading="eager"
+			fetchpriority="high"
+			decoding="sync"
 			class="image-block__lightbox-image"
 			onclick={(e) => e.stopPropagation()}
 		/>

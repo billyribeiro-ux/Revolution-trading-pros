@@ -587,7 +587,7 @@ import { logger } from '$lib/utils/logger';
 						onclick={() => handleRecentAssetClick(asset)}
 						title={asset.filename}
 					>
-						<img src={asset.thumbnail_url || asset.cdn_url} alt={asset.filename} loading="lazy" />
+						<img src={asset.thumbnail_url || asset.cdn_url} alt={asset.filename} width="80" height="80" loading="lazy" decoding="async" />
 					</button>
 				{/each}
 			</div>
@@ -687,14 +687,18 @@ import { logger } from '$lib/utils/logger';
 							<!-- Show blurhash placeholder during upload -->
 							<img
 								src={renderBlurhashToDataUrl(item.blurhash, 64, 64)}
-								alt="Loading placeholder"
+								alt=""
+								width="64"
+								height="64"
+								loading="lazy"
+								decoding="async"
 								class="blurhash-preview"
 							/>
 							<div class="preview-overlay">
 								<div class="spinner"></div>
 							</div>
 						{:else if item.previewUrl}
-							<img src={item.previewUrl} alt={item.file.name} />
+							<img src={item.previewUrl} alt={item.file.name} width="200" height="200" loading="lazy" decoding="async" />
 						{:else}
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
