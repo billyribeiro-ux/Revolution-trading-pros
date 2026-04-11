@@ -148,7 +148,10 @@
 					<img
 						src={variant.url}
 						alt="{variant.sizeName} preview"
+						width={variant.width}
+						height={variant.height}
 						loading="lazy"
+						decoding="async"
 						class="w-full h-full object-cover"
 					/>
 				</div>
@@ -221,6 +224,10 @@
 			<img
 				src={hoveredVariant.url}
 				alt="Preview"
+				width="200"
+				height="150"
+				loading="eager"
+				decoding="async"
 				class="max-w-[200px] max-h-[150px] object-contain"
 			/>
 			<div
