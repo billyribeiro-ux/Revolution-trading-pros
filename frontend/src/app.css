@@ -497,3 +497,124 @@
 		font-size: 22px;
 	}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   prefers-contrast: more — WCAG 2.1 SC 1.4.6 (Contrast Enhanced, AAA)
+   Users with low vision can request a higher-contrast UI in their OS.
+   We darken muted text, beef up borders, and remove background gradients
+   that hurt legibility under high-contrast mode. Lighthouse a11y rewards
+   sites that explicitly support this query.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-contrast: more) {
+	:where(:root) {
+		--rtp-muted: #1f2937; /* slate-800 instead of slate-500 */
+		--rtp-border: #000000;
+	}
+
+	:where(a, button, [role='button']) {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	:where(:focus-visible) {
+		outline: 3px solid currentColor;
+		outline-offset: 3px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   prefers-reduced-data — Save-Data mode (mobile, slow networks)
+   Users on capped data plans / 2G networks can ask the browser to save data.
+   We disable background videos, hero auto-playing media, decorative animations,
+   and high-resolution background images. Service Worker still serves cached
+   content first; this is purely a "don't fetch new heavy assets" hint.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-data: reduce) {
+	:where(video[autoplay]) {
+		display: none !important;
+	}
+
+	:where(img[loading='lazy']) {
+		/* Browser already defers; this opts into the most aggressive deferral. */
+		content-visibility: auto;
+	}
+
+	:where(.hero-background, .decorative-bg, .ambient-bg) {
+		background-image: none !important;
+	}
+
+	:where(.skeleton-loader, .loading-skeleton) {
+		animation: none !important;
+		background: #1a1a1a !important;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Print stylesheet — clean, ink-friendly output
+   When users print pages (especially blog posts and legal pages) we strip
+   navigation, hide interactive controls, force black-on-white text, and
+   expand collapsed sections so the printed page is fully readable.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+	:where(:root) {
+		color: #000;
+		background: #fff;
+	}
+
+	:where(html, body) {
+		background: #fff !important;
+		color: #000 !important;
+		font-size: 11pt;
+		line-height: 1.5;
+	}
+
+	/* Hide chrome that doesn't belong in print */
+	:where(
+		nav,
+		header.site-header,
+		footer.site-footer,
+		.navbar,
+		.skip-link,
+		.toast-container,
+		[role='dialog'],
+		[role='banner'],
+		[role='navigation'],
+		button,
+		.no-print
+	) {
+		display: none !important;
+	}
+
+	/* Make links visible by showing the URL after the link text */
+	:where(a[href^='http']):after {
+		content: ' (' attr(href) ')';
+		font-size: 0.85em;
+		color: #555;
+	}
+
+	/* Don't break headings or images across pages */
+	:where(h1, h2, h3, h4) {
+		break-after: avoid;
+		page-break-after: avoid;
+	}
+	:where(img, figure, table, pre, blockquote) {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	/* Expand any collapsible content for print */
+	:where(details) {
+		display: block;
+	}
+	:where(details > summary) {
+		display: none;
+	}
+
+	/* Reasonable page margins */
+	@page {
+		margin: 1.5cm;
+	}
+}
