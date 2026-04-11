@@ -768,7 +768,7 @@ import { logger } from '$lib/utils/logger';
 										<tr class="recurring-totals-header">
 											<th colspan="2">Recurring Totals</th>
 										</tr>
-										{#each cartStore.items.filter((i) => i.interval) as item}
+										{#each cartStore.items.filter((i) => i.interval) as item (item.price)}
 											<tr class="recurring-total">
 												<td colspan="2">
 													{formatPrice(item.price)}

@@ -155,7 +155,7 @@
 		<div
 			class="grid md:grid-cols-3 gap-px 3xl:gap-1 bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
 		>
-			{#each products as item, i}
+			{#each products as item, i (item.title ?? i)}
 				{@const IconComponent = item.icon}
 				{#if isVisible}
 					<div
@@ -279,7 +279,7 @@
 								<div
 									class="absolute bottom-0 left-0 right-0 h-64 flex items-end justify-around px-4 pb-0"
 								>
-									{#each Array(8) as _, k}
+									{#each Array(8) as _, k (k)}
 										<div
 											class="w-8 bg-indigo-500/20 border-t border-indigo-400/30 transition-all duration-700 ease-out group-hover:h-[calc(20%+var(--h))] h-0"
 											style="--h: {k * 10}%"
@@ -332,7 +332,7 @@
 										{item.description}
 									</p>
 									<div class="space-y-2 border-l border-zinc-800 pl-4">
-										{#each item.features as feat}
+										{#each item.features as feat (feat)}
 											<div class="text-xs text-zinc-500">{feat}</div>
 										{/each}
 									</div>

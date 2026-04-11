@@ -69,7 +69,7 @@
 	</div>
 
 	<div class="categories">
-		{#each categories as category}
+		{#each categories as category (category.id)}
 			<button
 				class="category-btn"
 				class:active={selectedCategory === category.id}
@@ -87,7 +87,7 @@
 				<p>No templates found matching your criteria.</p>
 			</div>
 		{:else}
-			{#each filteredTemplates as template}
+			{#each filteredTemplates as template (template.name)}
 				<div
 					class="template-card"
 					role="button"
@@ -112,7 +112,7 @@
 					</div>
 					<div class="template-preview">
 						<div class="preview-fields">
-							{#each template.fields.slice(0, 3) as field}
+							{#each template.fields.slice(0, 3) as field (field.label)}
 								<div class="preview-field">
 									<div class="preview-label">{field.label}</div>
 									<div class="preview-input"></div>

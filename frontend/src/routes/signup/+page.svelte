@@ -85,8 +85,8 @@
 					<p class="text-red-800 text-sm">{errorMessage}</p>
 					{#if Object.keys(validationErrors).length > 0}
 						<ul class="mt-2 list-disc list-inside text-red-700 text-sm">
-							{#each Object.entries(validationErrors) as [, errors]}
-								{#each errors as error}
+							{#each Object.entries(validationErrors) as [, errors], i (i)}
+								{#each errors as error (error)}
 									<li>{error}</li>
 								{/each}
 							{/each}

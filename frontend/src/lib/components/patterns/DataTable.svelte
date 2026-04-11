@@ -62,7 +62,7 @@
 	<table class="data-table">
 		<thead>
 			<tr>
-				{#each columns as column}
+				{#each columns as column (column.key)}
 					<th
 						style:width={column.width}
 						class:sortable={column.sortable}
@@ -87,7 +87,7 @@
 					>
 				</tr>
 			{:else}
-				{#each sortedData as row}
+				{#each sortedData as row (row)}
 					<tr
 						class:clickable={!!onRowClick}
 						onclick={() => handleRowClick(row)}
@@ -95,7 +95,7 @@
 						tabindex={onRowClick ? 0 : -1}
 						role={onRowClick ? 'button' : undefined}
 					>
-						{#each columns as column}
+						{#each columns as column (column.key)}
 							<td>{row[column.key] ?? ''}</td>
 						{/each}
 					</tr>

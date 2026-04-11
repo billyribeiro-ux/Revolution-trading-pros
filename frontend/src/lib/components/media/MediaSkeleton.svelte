@@ -32,7 +32,7 @@
 {#if type === 'grid'}
 	<!-- Grid skeleton for gallery views -->
 	<div class="media-skeleton-grid gap-4 {className}" style="--columns: {columns};">
-		{#each Array(count) as _, i}
+		{#each Array(count) as _, i (i)}
 			<div
 				class="skeleton-card bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden"
 				style="animation-delay: {i * 0.05}s;"
@@ -78,7 +78,7 @@
 {:else if type === 'list'}
 	<!-- List/table skeleton -->
 	<div class="space-y-2 {className}">
-		{#each Array(count) as _, i}
+		{#each Array(count) as _, i (i)}
 			<div
 				class="skeleton-row flex items-center gap-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg"
 				style="animation-delay: {i * 0.05}s;"
@@ -106,7 +106,7 @@
 				<div class="skeleton-shimmer"></div>
 			</div>
 		</div>
-		{#each Array(count) as _, i}
+		{#each Array(count) as _, i (i)}
 			<div
 				class="skeleton-upload-item flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 last:border-0"
 				style="animation-delay: {i * 0.1}s;"

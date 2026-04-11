@@ -105,7 +105,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Style:</span>
 					<div class="button-group">
-						{#each STYLE_OPTIONS as option}
+						{#each STYLE_OPTIONS as option (option.value)}
 							<button
 								type="button"
 								class="style-btn"
@@ -123,7 +123,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Width:</span>
 					<div class="button-group">
-						{#each WIDTH_OPTIONS as option}
+						{#each WIDTH_OPTIONS as option (option.value)}
 							<button
 								type="button"
 								class="width-btn"
@@ -161,7 +161,7 @@
 						onchange={(e) => setThickness((e.target as HTMLSelectElement).value)}
 						aria-label="Line thickness"
 					>
-						{#each THICKNESS_OPTIONS as option}
+						{#each THICKNESS_OPTIONS as option (option.value)}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
@@ -170,7 +170,7 @@
 				<div class="toolbar-group">
 					<span class="toolbar-label">Spacing:</span>
 					<div class="button-group">
-						{#each ['small', 'medium', 'large'] as size}
+						{#each ['small', 'medium', 'large'] as size (size)}
 							<button
 								type="button"
 								class="spacing-btn"

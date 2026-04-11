@@ -254,11 +254,11 @@
 						<div class="absolute top-0 right-0 p-4 opacity-20 w-12 h-12 text-slate-500">
 							{@html Icons.Globe}
 						</div>
-						<h3
+						<h2
 							class="font-mono text-xs uppercase tracking-widest text-white mb-6 border-b border-white/10 pb-4"
 						>
 							Scope of Engagement
-						</h3>
+						</h2>
 						<ul class="space-y-4 text-sm font-mono text-slate-400">
 							<li class="flex justify-between items-center">
 								<span>> Execution Audit</span>

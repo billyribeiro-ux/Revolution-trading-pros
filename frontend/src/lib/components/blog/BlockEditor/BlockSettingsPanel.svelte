@@ -317,7 +317,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="section-content" style="padding: 0.75rem 1rem;">
 						<span class="field-label">Heading Level</span>
 						<div class="heading-level-buttons">
-							{#each [1, 2, 3, 4, 5, 6] as lvl}
+							{#each [1, 2, 3, 4, 5, 6] as lvl (lvl)}
 								<button
 									type="button"
 									class="level-btn"
@@ -348,7 +348,7 @@ import { logger } from '$lib/utils/logger';
 									onchange={(e: Event) =>
 										updateSetting('fontFamily', (e.currentTarget as HTMLInputElement).value)}
 								>
-									{#each fontFamilies as font}
+									{#each fontFamilies as font (font.value)}
 										<option value={font.value}>{font.label}</option>
 									{/each}
 								</select>
@@ -383,7 +383,7 @@ import { logger } from '$lib/utils/logger';
 										onchange={(e: Event) =>
 											updateSetting('fontWeight', (e.currentTarget as HTMLInputElement).value)}
 									>
-										{#each fontWeights as weight}
+										{#each fontWeights as weight (weight.value)}
 											<option value={weight.value}>{weight.label}</option>
 										{/each}
 									</select>
@@ -431,7 +431,7 @@ import { logger } from '$lib/utils/logger';
 						<div class="field">
 							<span class="field-label">Text Alignment</span>
 							<div class="button-group" role="group" aria-label="Text alignment">
-								{#each textAlignments as align}
+								{#each textAlignments as align (align.value)}
 									<button
 										class="icon-btn"
 										class:active={block.settings.textAlign === align.value}
@@ -511,7 +511,7 @@ import { logger } from '$lib/utils/logger';
 							</label>
 							{#if showColorPicker === 'text'}
 								<div class="color-palette">
-									{#each presetColors as color}
+									{#each presetColors as color (color)}
 										<button
 											type="button"
 											class="preset-color"
@@ -548,7 +548,7 @@ import { logger } from '$lib/utils/logger';
 							</label>
 							{#if showColorPicker === 'bg'}
 								<div class="color-palette">
-									{#each presetColors as color}
+									{#each presetColors as color (color)}
 										<button
 											type="button"
 											class="preset-color"
@@ -745,7 +745,7 @@ import { logger } from '$lib/utils/logger';
 										onchange={(e: Event) =>
 											updateSetting('borderStyle', (e.currentTarget as HTMLInputElement).value)}
 									>
-										{#each borderStyles as style}
+										{#each borderStyles as style (style.value)}
 											<option value={style.value}>{style.label}</option>
 										{/each}
 									</select>
@@ -794,7 +794,7 @@ import { logger } from '$lib/utils/logger';
 							</label>
 							{#if showColorPicker === 'border'}
 								<div class="color-palette">
-									{#each presetColors as color}
+									{#each presetColors as color (color)}
 										<button
 											type="button"
 											class="preset-color"
@@ -862,7 +862,7 @@ import { logger } from '$lib/utils/logger';
 									onchange={(e: Event) =>
 										updateSetting('animation', (e.currentTarget as HTMLInputElement).value)}
 								>
-									{#each animations as anim}
+									{#each animations as anim (anim.value)}
 										<option value={anim.value}>{anim.label}</option>
 									{/each}
 								</select>
@@ -1071,7 +1071,7 @@ import { logger } from '$lib/utils/logger';
 									onchange={(e: Event) =>
 										updateSetting('blendMode', (e.currentTarget as HTMLInputElement).value)}
 								>
-									{#each blendModes as mode}
+									{#each blendModes as mode (mode)}
 										<option value={mode}>{mode}</option>
 									{/each}
 								</select>
@@ -1258,7 +1258,7 @@ import { logger } from '$lib/utils/logger';
 										}}
 									>
 										<option value="">-- Select a datasource --</option>
-										{#each datasources as ds}
+										{#each datasources as ds (ds.slug)}
 											<option value={ds.slug}>
 												{ds.name} ({ds.entry_count} entries)
 											</option>
@@ -1274,7 +1274,7 @@ import { logger } from '$lib/utils/logger';
 										<span class="loading-indicator">Loading entries...</span>
 									{:else if datasourceEntries[block.settings.datasourceSlug]?.length > 0}
 										<div class="preview-entries">
-											{#each datasourceEntries[block.settings.datasourceSlug].slice(0, 5) as entry}
+											{#each datasourceEntries[block.settings.datasourceSlug].slice(0, 5) as entry (entry.value)}
 												<span class="preview-entry">
 													{entry.name} <code>({entry.value})</code>
 												</span>

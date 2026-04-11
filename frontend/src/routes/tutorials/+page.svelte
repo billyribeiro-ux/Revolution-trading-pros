@@ -101,7 +101,11 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a
+										href={tutorial.url}
+										title="Read More..."
+										aria-label="Read more about {tutorial.title}">Read More...</a
+									>
 								</div>
 							</div>
 						</div>
@@ -113,7 +117,7 @@
 				{#if pagination.totalPages > 1}
 					<div class="fl-builder-pagination">
 						<ul class="page-numbers">
-							{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
+							{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
 								{#if pageNum === pagination.page}
 									<li><span aria-current="page" class="page-numbers current">{pageNum}</span></li>
 								{:else}
@@ -166,7 +170,11 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a
+										href={tutorial.url}
+										title="Read More..."
+										aria-label="Read more about {tutorial.title}">Read More...</a
+									>
 								</div>
 							</div>
 						</div>

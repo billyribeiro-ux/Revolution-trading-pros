@@ -90,7 +90,7 @@ import { logger } from '$lib/utils/logger';
 		</div>
 	{:else}
 		<div class="indicators-grid">
-			{#each indicators as indicator}
+			{#each indicators as indicator (indicator.slug)}
 				<a href="/my/indicators/{indicator.slug}" class="indicator-card">
 					<div class="card-image">
 						{#if indicator.logo_url}

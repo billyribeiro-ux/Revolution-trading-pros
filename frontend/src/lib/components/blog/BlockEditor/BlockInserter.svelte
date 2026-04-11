@@ -293,7 +293,7 @@
 								</div>
 							{:else}
 								<div class="blocks-grid">
-									{#each filteredBlocks as type}
+									{#each filteredBlocks as type (type)}
 										{@const def = BLOCK_DEFINITIONS[type]}
 										{@const Icon = BLOCK_ICONS[type] || IconBox}
 										<button
@@ -325,7 +325,7 @@
 					{:else}
 						<!-- Category View -->
 						<div class="categories-view">
-							{#each BLOCK_CATEGORIES as category}
+							{#each BLOCK_CATEGORIES as category (category.id)}
 								<div class="category-section">
 									<button
 										type="button"
@@ -343,7 +343,7 @@
 
 									{#if activeCategory === category.id || !activeCategory}
 										<div class="category-blocks" transition:fly={{ y: -10, duration: 200 }}>
-											{#each category.blocks as type}
+											{#each category.blocks as type (type)}
 												{@const def = BLOCK_DEFINITIONS[type]}
 												{@const Icon = BLOCK_ICONS[type] || IconBox}
 												<button
@@ -388,7 +388,7 @@
 						<h4>{def.name}</h4>
 						<p>{def.description}</p>
 						<div class="preview-keywords">
-							{#each def.keywords.slice(0, 4) as keyword}
+							{#each def.keywords.slice(0, 4) as keyword (keyword)}
 								<span class="keyword">{keyword}</span>
 							{/each}
 						</div>
@@ -400,14 +400,14 @@
 {:else}
 	<!-- Inline Inserter (Sidebar) -->
 	<div class="inserter-inline">
-		{#each BLOCK_CATEGORIES as category}
+		{#each BLOCK_CATEGORIES as category (category.name)}
 			<div class="category-section">
 				<div class="category-label" style:--cat-color={category.color}>
 					<span class="category-dot"></span>
 					{category.name}
 				</div>
 				<div class="blocks-grid compact">
-					{#each category.blocks as type}
+					{#each category.blocks as type (type)}
 						{@const def = BLOCK_DEFINITIONS[type]}
 						{@const Icon = BLOCK_ICONS[type] || IconBox}
 						<button

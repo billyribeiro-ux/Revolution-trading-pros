@@ -318,7 +318,7 @@
 	<div class="relative z-10">
 		<div class="w-full bg-rtp-primary/10 border-b border-rtp-primary/20 overflow-hidden py-2">
 			<div class="flex whitespace-nowrap animate-ticker">
-				{#each [...axioms, ...axioms, ...axioms] as axiom}
+				{#each [...axioms, ...axioms, ...axioms] as axiom (axiom)}
 					<div
 						class="flex items-center mx-8 text-xs font-mono font-bold text-rtp-primary uppercase tracking-widest"
 					>
@@ -417,11 +417,11 @@
 								framework to survive variance.
 							</p>
 							<div class="p-6 border border-red-500/20 bg-red-900/5 rounded-xl">
-								<h4
+								<h3
 									class="text-red-400 font-bold mb-2 text-sm uppercase tracking-wider flex items-center gap-2"
 								>
 									{@html Icons.Brain} The Cognitive Gap
-								</h4>
+								</h3>
 								<p class="text-sm text-red-200/60">
 									Retail traders seek dopamine hits (action). Institutional traders seek boredom
 									(execution). The market is designed to transfer wealth from the impatient to the
@@ -675,7 +675,7 @@
 				</div>
 
 				<div class="grid md:grid-cols-3 gap-8">
-					{#each pillars as pillar, i}
+					{#each pillars as pillar, i (pillar.title)}
 						<div data-gsap={{ delay: i * 150 }} class="group relative h-full">
 							<div
 								class="absolute inset-0 bg-[#0f172a] rounded-2xl transform transition-transform duration-300 group-hover:scale-[1.02]"
@@ -812,7 +812,7 @@
 					</div>
 
 					<div class="lg:col-span-7 space-y-4 pt-8">
-						{#each syllabus as module, i}
+						{#each syllabus as module, i (module.title)}
 							<div
 								class="border border-white/10 rounded-xl bg-[#0a0a0a] overflow-hidden group hover:border-rtp-primary/50 transition-all duration-300"
 							>
@@ -890,15 +890,15 @@
 				</div>
 
 				<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{#each filteredGlossary as item}
+					{#each filteredGlossary as item (item.term)}
 						<div
 							class="p-6 bg-[#0a0a0a] border border-white/10 rounded-xl hover:border-white/30 transition-colors group"
 						>
-							<h4
+							<h3
 								class="text-rtp-primary font-bold mb-2 font-mono uppercase tracking-wide text-sm group-hover:text-white transition-colors"
 							>
 								{item.term}
-							</h4>
+							</h3>
 							<p class="text-sm text-slate-400 leading-relaxed">{item.def}</p>
 						</div>
 					{/each}
@@ -925,7 +925,7 @@
 						</div>
 
 						<div class="grid md:grid-cols-2 gap-x-16 gap-y-8">
-							{#each manifesto as item}
+							{#each manifesto as item (item)}
 								<div class="flex items-start gap-4 group">
 									<div
 										class="mt-1 text-emerald-500 bg-emerald-500/10 p-1 rounded-md transition-colors group-hover:bg-emerald-500 group-hover:text-white"

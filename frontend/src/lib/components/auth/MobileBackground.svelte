@@ -29,7 +29,7 @@
 
 		<!-- Animated Bars (Price movement) -->
 		<div class="price-bars">
-			{#each { length: 8 } as _, i}
+			{#each { length: 8 } as _, i (i)}
 				<div
 					class="bar"
 					class:bullish={i % 3 !== 0}
@@ -41,7 +41,7 @@
 
 		<!-- Floating Dots -->
 		<div class="floating-dots">
-			{#each { length: 12 } as _}
+			{#each { length: 12 } as _, i (i)}
 				<div
 					class="dot"
 					style="

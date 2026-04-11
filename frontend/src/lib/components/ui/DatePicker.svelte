@@ -211,13 +211,13 @@
 			</div>
 
 			<div class="calendar-weekdays">
-				{#each DAYS_OF_WEEK as day}
+				{#each DAYS_OF_WEEK as day (day)}
 					<span class="weekday">{day}</span>
 				{/each}
 			</div>
 
 			<div class="calendar-days">
-				{#each days as day}
+				{#each days as day (day)}
 					{#if day === null}
 						<span class="day-empty"></span>
 					{:else}

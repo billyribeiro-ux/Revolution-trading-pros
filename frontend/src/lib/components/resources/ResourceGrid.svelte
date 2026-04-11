@@ -260,7 +260,7 @@
 						onchange={handleFilterChange}
 						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					>
-						{#each resourceTypes as type}
+						{#each resourceTypes as type (type.value)}
 							<option value={type.value}>{type.label}</option>
 						{/each}
 					</select>
@@ -271,7 +271,7 @@
 						onchange={handleFilterChange}
 						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					>
-						{#each sectionOptions as opt}
+						{#each sectionOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>
@@ -282,7 +282,7 @@
 						onchange={handleFilterChange}
 						class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					>
-						{#each accessLevelOptions as opt}
+						{#each accessLevelOptions as opt (opt.value)}
 							<option value={opt.value}>{opt.label}</option>
 						{/each}
 					</select>
@@ -302,7 +302,7 @@
 	<!-- Loading state -->
 	{#if loading}
 		<div class="grid {gridClasses} gap-6">
-			{#each Array(perPage) as _}
+			{#each Array(perPage) as _, i (i)}
 				<div class="animate-pulse">
 					<div class="aspect-video rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
 					<div class="rounded-b-xl border border-t-0 border-gray-200 p-4 dark:border-gray-700">
@@ -412,7 +412,7 @@
 				</button>
 
 				<!-- Page numbers -->
-				{#each Array(Math.min(5, totalPages)) as _, i}
+				{#each Array(Math.min(5, totalPages)) as _, i (i)}
 					{@const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
 						<button

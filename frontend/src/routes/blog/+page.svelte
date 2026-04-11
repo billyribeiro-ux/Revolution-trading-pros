@@ -223,7 +223,7 @@ import { logger } from '$lib/utils/logger';
 
 <svelte:head>
 	<!-- Prefetch hints for common blog posts -->
-	{#each posts.slice(0, 3) as post}
+	{#each posts.slice(0, 3) as post (post.slug)}
 		<link rel="prefetch" href="/blog/{post.slug}" />
 	{/each}
 </svelte:head>
@@ -257,7 +257,7 @@ import { logger } from '$lib/utils/logger';
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>
 			</svg>
-			<h3>Oops! Something went wrong</h3>
+			<h2>Oops! Something went wrong</h2>
 			<p>{error}</p>
 			<button class="btn-retry" onclick={retryLoad}>
 				<svg

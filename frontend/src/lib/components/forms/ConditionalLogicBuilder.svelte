@@ -239,7 +239,7 @@
 
 		<!-- Rules List -->
 		<div class="rules-list">
-			{#each logic.rules as rule, index}
+			{#each logic.rules as rule, index (rule.value)}
 				<div class="rule-item">
 					<div class="rule-number">{index + 1}</div>
 
@@ -254,7 +254,7 @@
 								})}
 							class="rule-select field-select"
 						>
-							{#each getAvailableFields() as field}
+							{#each getAvailableFields() as field (field.name)}
 								<option value={field.name}>{field.label}</option>
 							{/each}
 						</select>
@@ -268,7 +268,7 @@
 								})}
 							class="rule-select operator-select"
 						>
-							{#each getOperatorsForField(rule.field) as op}
+							{#each getOperatorsForField(rule.field) as op (op.value)}
 								<option value={op.value}>{op.label}</option>
 							{/each}
 						</select>
@@ -284,7 +284,7 @@
 									class="rule-select value-select"
 								>
 									<option value="">Select value...</option>
-									{#each fieldOptions as option}
+									{#each fieldOptions as option (option)}
 										<option value={option}>{option}</option>
 									{/each}
 								</select>
@@ -360,7 +360,7 @@
 		<!-- Validation Errors -->
 		{#if validationErrors.length > 0}
 			<div class="validation-errors">
-				{#each validationErrors as error}
+				{#each validationErrors as error (error)}
 					<div class="error-item">{error}</div>
 				{/each}
 			</div>

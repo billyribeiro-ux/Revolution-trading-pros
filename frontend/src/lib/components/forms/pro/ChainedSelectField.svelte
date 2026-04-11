@@ -97,7 +97,7 @@
 	class:horizontal={layout === 'horizontal'}
 >
 	<div class="selects-container" class:horizontal={layout === 'horizontal'}>
-		{#each levels as level, index}
+		{#each levels as level, index (level.name)}
 			{@const options = getFilteredOptions(index)}
 			{@const isDisabled = isLevelDisabled(index)}
 
@@ -120,7 +120,7 @@
 					class:placeholder={!selections[level.name]}
 				>
 					<option value="">{level.placeholder || `Select ${level.label}`}</option>
-					{#each options as option}
+					{#each options as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>

@@ -109,7 +109,7 @@
 			<div class="toolbar-group">
 				<span class="toolbar-label">Layout:</span>
 				<div class="preset-buttons">
-					{#each Object.keys(PRESET_LAYOUTS) as preset}
+					{#each Object.keys(PRESET_LAYOUTS) as preset (preset)}
 						{#if preset !== 'custom'}
 							<button
 								type="button"
@@ -149,7 +149,7 @@
 					onchange={(e) => setGap((e.target as HTMLSelectElement).value)}
 					aria-label="Column gap"
 				>
-					{#each GAP_OPTIONS as option}
+					{#each GAP_OPTIONS as option (option.value)}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>

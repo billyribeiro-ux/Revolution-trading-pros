@@ -509,7 +509,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="mb-6">
 						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Tags</h3>
 						<div class="flex flex-wrap gap-1">
-							{#each resource.tags as tag}
+							{#each resource.tags as tag (tag)}
 								<span
 									class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
 								>
@@ -553,7 +553,7 @@ import { logger } from '$lib/utils/logger';
 						</h3>
 						{#if loadingVersions}
 							<div class="space-y-2">
-								{#each [1, 2, 3] as _}
+								{#each [1, 2, 3] as _, i (i)}
 									<div class="animate-pulse rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
 										<div class="mb-1 h-4 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
 										<div class="h-3 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
@@ -562,7 +562,7 @@ import { logger } from '$lib/utils/logger';
 							</div>
 						{:else if versions.length > 0}
 							<div class="space-y-2">
-								{#each versions as version}
+								{#each versions as version (version.id)}
 									<button
 										class="w-full rounded-lg border p-3 text-left transition-colors {version.id ===
 										resource.id

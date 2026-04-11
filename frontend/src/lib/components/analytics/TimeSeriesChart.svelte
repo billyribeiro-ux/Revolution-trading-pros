@@ -148,7 +148,7 @@
 	>
 		<svg {width} {height} class="overflow-visible">
 			<!-- Grid lines -->
-			{#each yTicks as tick}
+			{#each yTicks as tick (tick.y)}
 				<line
 					x1={padding.left}
 					y1={tick.y}
@@ -160,7 +160,7 @@
 			{/each}
 
 			<!-- Y-axis labels -->
-			{#each yTicks as tick}
+			{#each yTicks as tick (tick.value)}
 				<text
 					x={padding.left - 8}
 					y={tick.y}
@@ -173,7 +173,7 @@
 			{/each}
 
 			<!-- X-axis labels -->
-			{#each xLabels as item}
+			{#each xLabels as item (item)}
 				{@const index = data.indexOf(item)}
 				<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="text-xs fill-gray-500">
 					{formatDate(item.date)}
@@ -199,7 +199,7 @@
 
 			<!-- Points -->
 			{#if showPoints}
-				{#each data as point, i}
+				{#each data as point, i (point.value)}
 					<circle
 						cx={scaleX(i)}
 						cy={scaleY(point.value)}

@@ -257,7 +257,7 @@ import { logger } from '$lib/utils/logger';
 			<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 				{#if loading && sessions.length === 0}
 					<!-- Skeleton Loading -->
-					{#each Array(3) as _}
+					{#each Array(3) as _, i (i)}
 						<div class="p-6 border-b border-gray-100 last:border-b-0 animate-pulse">
 							<div class="flex items-start gap-4">
 								<div class="w-12 h-12 bg-gray-200 rounded-lg"></div>

@@ -149,7 +149,7 @@
 {/each}
 
 <!-- Floating Particles -->
-{#each { length: 30 } as _}
+{#each { length: 30 } as _, i (i)}
 	{@const x = (Math.random() - 0.5) * 80}
 	{@const y = Math.random() * 40 - 10}
 	{@const z = (Math.random() - 0.5) * 80}

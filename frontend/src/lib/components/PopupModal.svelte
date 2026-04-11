@@ -1125,7 +1125,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Form Fields -->
 				{#if currentPopup.formFields && currentPopup.formFields.length > 0}
 					<form class="popup-form" onsubmit={handleFormSubmit}>
-						{#each currentPopup.formFields as field}
+						{#each currentPopup.formFields as field (field.name)}
 							<div class="form-field">
 								{#if field.label}
 									<label for={field.name} class="form-label">{field.label}</label>
@@ -1154,7 +1154,7 @@ import { logger } from '$lib/utils/logger';
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 									>
 										<option value="">{field.placeholder}</option>
-										{#each field.options || [] as option}
+										{#each field.options || [] as option (option.value)}
 											{#if typeof option === 'string'}
 												<option value={option}>{option}</option>
 											{:else}
@@ -1211,7 +1211,7 @@ import { logger } from '$lib/utils/logger';
 				<!-- Buttons -->
 				{#if currentPopup.buttons.length > 0}
 					<div class="popup-buttons">
-						{#each currentPopup.buttons as button}
+						{#each currentPopup.buttons as button (button.text)}
 							<button
 								class="popup-btn {button.style} {button.customClass || ''}"
 								onclick={() => handleButtonClick(button)}

@@ -92,10 +92,10 @@
 			{ href: '/careers', label: 'Careers' }
 		],
 		legal: [
-			{ href: '/terms', label: 'Terms of Service' },
-			{ href: '/privacy', label: 'Privacy Policy' },
-			{ href: '/disclaimer', label: 'Risk Disclaimer' },
-			{ href: '/refund', label: 'Refund Policy' }
+			{ href: '/terms-of-service', label: 'Terms of Service' },
+			{ href: '/privacy-policy', label: 'Privacy Policy' },
+			{ href: '/cookie-policy', label: 'Cookie Policy' },
+			{ href: '/terms-of-service#risk-disclaimer', label: 'Risk Disclaimer' }
 		]
 	};
 
@@ -147,7 +147,7 @@
 					</p>
 
 					<div class="social-links" aria-label="Social links">
-						{#each socialLinks as social}
+						{#each socialLinks as social (social.label)}
 							{@const IconComponent = social.icon}
 							<a
 								href={social.href}
@@ -166,7 +166,7 @@
 				<nav class="footer-column" aria-labelledby="footer-products">
 					<h2 class="footer-heading" id="footer-products">Products</h2>
 					<ul class="footer-list">
-						{#each footerLinks.products as link}
+						{#each footerLinks.products as link (link.href)}
 							<li><a href={link.href}>{link.label}</a></li>
 						{/each}
 					</ul>
@@ -175,7 +175,7 @@
 				<nav class="footer-column" aria-labelledby="footer-company">
 					<h2 class="footer-heading" id="footer-company">Company</h2>
 					<ul class="footer-list">
-						{#each footerLinks.company as link}
+						{#each footerLinks.company as link (link.href)}
 							<li><a href={link.href}>{link.label}</a></li>
 						{/each}
 					</ul>
@@ -184,7 +184,7 @@
 				<nav class="footer-column" aria-labelledby="footer-legal">
 					<h2 class="footer-heading" id="footer-legal">Legal</h2>
 					<ul class="footer-list">
-						{#each footerLinks.legal as link}
+						{#each footerLinks.legal as link (link.href)}
 							<li><a href={link.href}>{link.label}</a></li>
 						{/each}
 					</ul>

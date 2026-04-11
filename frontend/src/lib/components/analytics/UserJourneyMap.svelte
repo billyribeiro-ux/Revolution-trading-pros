@@ -51,7 +51,7 @@
 	</div>
 
 	<div class="journey-flow">
-		{#each journeyData as step, index}
+		{#each journeyData as step, index (step.step)}
 			<div class="journey-step">
 				<div class="step-card">
 					<div class="step-header">
@@ -81,7 +81,7 @@
 					{#if step.top_actions.length > 0}
 						<div class="step-actions">
 							<div class="actions-label">Top Actions:</div>
-							{#each step.top_actions.slice(0, 3) as action}
+							{#each step.top_actions.slice(0, 3) as action (action.action)}
 								<div class="action-item">
 									<span class="action-name">{action.action}</span>
 									<span class="action-count">{formatNumber(action.count)}</span>

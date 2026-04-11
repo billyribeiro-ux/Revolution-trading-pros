@@ -275,7 +275,7 @@
 						<!-- Category Labels -->
 						<div class="resource-meta">
 							<div class="resource-categories">
-								{#each resource.categories as cat}
+								{#each resource.categories as cat (cat)}
 									<span class="label label--info">{getCategoryLabel(cat)}</span>
 								{/each}
 							</div>

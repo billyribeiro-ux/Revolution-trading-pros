@@ -717,7 +717,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="option-group">
 						<label for="ai-tone-select">Tone</label>
 						<select id="ai-tone-select" bind:value={tone} disabled={isGenerating}>
-							{#each toneOptions as option}
+							{#each toneOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>
@@ -771,7 +771,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="option-group full">
 						<label for="ai-language-select">Translate to</label>
 						<select id="ai-language-select" bind:value={targetLanguage} disabled={isGenerating}>
-							{#each languages as lang}
+							{#each languages as lang (lang.name)}
 								<option value={lang.code}>{lang.name}</option>
 							{/each}
 						</select>

@@ -106,7 +106,7 @@ import { logger } from '$lib/utils/logger';
 				<span>Calculation breakdown</span>
 			</div>
 			<div class="variables-list">
-				{#each variables as variable}
+				{#each variables as variable (variable.value)}
 					<div class="variable-row">
 						<span class="variable-label">{variable.label}:</span>
 						<span class="variable-value">{formatValue(variable.value)}</span>
@@ -131,7 +131,7 @@ import { logger } from '$lib/utils/logger';
 
 	{#if error && error.length > 0}
 		<div class="field-error">
-			{#each error as err}
+			{#each error as err (err)}
 				<p>{err}</p>
 			{/each}
 		</div>
