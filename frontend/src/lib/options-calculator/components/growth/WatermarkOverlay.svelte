@@ -95,6 +95,10 @@
 						<img
 							src="/images/rtp-logo.png"
 							alt="Revolution Trading Pros"
+							width="96"
+							height="24"
+							loading="lazy"
+							decoding="async"
 							class="h-6"
 							onerror={() => (logoFailed = true)}
 						/>

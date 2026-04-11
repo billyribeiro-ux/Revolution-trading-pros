@@ -104,7 +104,7 @@
 
 <section
 	bind:this={containerRef}
-	class="relative py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-4 sm:px-6 lg:px-8 3xl:px-12 5xl:px-16 6xl:px-20 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
 	<div class="absolute inset-0 pointer-events-none">
 		<div
@@ -112,8 +112,12 @@
 		></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto z-10">
-		<div class="max-w-3xl mx-auto text-center mb-20">
+	<div
+		class="relative max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-3xl 3xl:max-w-4xl 4xl:max-w-5xl 5xl:max-w-6xl 6xl:max-w-7xl mx-auto text-center mb-20 3xl:mb-24 5xl:mb-32"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 0, duration: 1000 }}
@@ -132,14 +136,14 @@
 
 				<h2
 					in:heavySlide={{ delay: 100 }}
-					class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6"
+					class="text-2xl xs:text-3xl sm:text-3xl md:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl font-medium tracking-tight text-white mb-6"
 				>
 					Professional Trading Environments
 				</h2>
 
 				<p
 					in:heavySlide={{ delay: 200 }}
-					class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto"
+					class="text-base md:text-lg 3xl:text-xl 5xl:text-2xl text-zinc-500 leading-relaxed font-light max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
 				>
 					Select an environment tailored to your liquidity requirements.
 					<span class="text-zinc-400">Hover over a desk to preview data feeds.</span>
@@ -148,7 +152,7 @@
 		</div>
 
 		<div
-			class="grid md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
+			class="grid md:grid-cols-3 gap-px 3xl:gap-1 bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
 		>
 			{#each products as item, i}
 				{@const IconComponent = item.icon}

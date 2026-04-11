@@ -1194,6 +1194,10 @@ import { logger } from '$lib/utils/logger';
 							<img
 								src={indicator.thumbnail_url}
 								alt="Thumbnail preview"
+								width="400"
+								height="300"
+								loading="lazy"
+								decoding="async"
 								class="thumbnail-preview"
 							/>
 							<button
@@ -1265,7 +1269,7 @@ import { logger } from '$lib/utils/logger';
 					<div class="preview-card">
 						<div class="preview-image">
 							{#if indicator.thumbnail_url}
-								<img src={indicator.thumbnail_url} alt="Preview" />
+								<img src={indicator.thumbnail_url} alt="Preview" width="400" height="300" loading="lazy" decoding="async" />
 							{:else}
 								<div class="preview-placeholder">
 									<svg

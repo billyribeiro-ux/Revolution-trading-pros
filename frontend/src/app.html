@@ -6,16 +6,27 @@
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     Resource Hints - DNS Prefetch & Preconnect
+		     Critical-path origins use preconnect (TLS+TCP warm up).
+		     Non-critical origins use dns-prefetch to save bytes.
 		     ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- Critical: fonts must render the LCP text -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+		<!-- Critical: API + R2 CDN are hit on first paint for posts/images -->
+		<link rel="preconnect" href="https://revolution-trading-pros-api.fly.dev" crossorigin />
+		<link rel="preconnect" href="https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev" crossorigin />
+
+		<!-- Non-critical: DNS resolution only (used later for video + analytics) -->
 		<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 		<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 		<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 		<link rel="dns-prefetch" href="https://iframe.mediadelivery.net" />
 		<link rel="dns-prefetch" href="https://video.bunnycdn.com" />
-
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="dns-prefetch" href="https://vz-5a23b520-193.b-cdn.net" />
+		<link rel="dns-prefetch" href="https://revolution-trading-pros-api.fly.dev" />
+		<link rel="dns-prefetch" href="https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev" />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     PWA & Mobile Configuration
@@ -87,6 +98,9 @@
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     Critical CSS
+		     Inlined to avoid render-blocking requests on first paint.
+		     Reserves the hero viewport so the <Hero> hydrating later cannot
+		     cause CLS. Matches body bg (#0a0a0a) to mask font swaps (no FOUT flash).
 		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<style>
 			/* Base HTML */
@@ -114,6 +128,12 @@
 				min-height: 100dvh;
 			}
 
+			/* Reserve hero-viewport height on first render so the Hero section
+			   hydrating later cannot push content down (CLS = 0). */
+			main > :first-child {
+				contain: layout paint;
+			}
+
 			/* Accessibility - Skip Link */
 			.skip-link {
 				position: absolute;
@@ -137,6 +157,16 @@
 				background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
 				background-size: 200% 100%;
 				animation: skeleton-loading 1.5s infinite;
+				/* Avoid compositing on every frame for users who opt out */
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.loading-skeleton {
+					animation: none;
+				}
+				html {
+					scroll-behavior: auto;
+				}
 			}
 
 			@keyframes skeleton-loading {

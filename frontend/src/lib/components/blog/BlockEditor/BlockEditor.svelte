@@ -1883,7 +1883,7 @@ import { logger } from '$lib/utils/logger';
 
 <!-- Screen Reader Live Region for Drag-Drop Announcements -->
 <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-	{#each announcements as announcement}
+	{#each announcements as announcement, i (i)}
 		<p>{announcement}</p>
 	{/each}
 </div>

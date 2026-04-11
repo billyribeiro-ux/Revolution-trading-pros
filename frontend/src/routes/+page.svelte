@@ -56,18 +56,17 @@
 		}
 	});
 
-	const siteUrl = import.meta.env['VITE_SITE_URL'] || 'https://revolution-trading-pros.pages.dev';
-
-	const homepageSchema = [
-		{
-			'@context': 'https://schema.org',
-			'@type': 'FinancialService',
-			name: 'Revolution Trading Pros',
-			description: 'Professional trading education platform',
-			url: siteUrl
-		}
-	];
+	// NOTE: SEO (meta tags + JSON-LD) is owned by the unified SEO layer via
+	// `+page.server.ts` → `page.data.seo` → `+layout.svelte` <Seo>. Do NOT emit
+	// head tags or structured data from this component.
 </script>
+
+<!-- SEO: Visually-hidden canonical H1 guarantees exactly one h1 per page
+	 (the Hero component uses marketing typography and does not own the h1). -->
+<h1 class="sr-only">
+	Revolution Trading Pros — Professional Trading Education, Live Trading Rooms,
+	and Institutional-Grade Indicators
+</h1>
 
 <Hero />
 <TradingRoomsSection />

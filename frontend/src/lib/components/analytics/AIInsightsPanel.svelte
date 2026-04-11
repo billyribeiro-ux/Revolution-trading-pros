@@ -68,7 +68,7 @@
 
 	<div class="insights-list">
 		{#if insights.length > 0}
-			{#each insights as insight}
+			{#each insights as insight (insight.id)}
 				{@const Icon = getIcon(insight.type)}
 				<div class="insight-card {getSeverityClass(insight.severity)}">
 					<div class="insight-icon">

@@ -42,6 +42,10 @@
 	<!-- Robots -->
 	<meta name="robots" content={seo.robotsContent} />
 
+	<!-- Application Name / Author (used by browsers and rich result previews) -->
+	<meta name="application-name" content={seo.og.siteName} />
+	<meta name="author" content={seo.og.siteName} />
+
 	<!-- Open Graph -->
 	<meta property="og:title" content={seo.og.title} />
 	<meta property="og:description" content={seo.og.description} />

@@ -1155,7 +1155,8 @@ import { logger } from '$lib/utils/logger';
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.slide__title {
 		font-family: var(--font-heading, system-ui);
-		font-size: clamp(2.75rem, 9vw, 5.5rem);
+		/* Mobile-first: 320px phones get ~2.25rem (36px), scales up through 9vw to 5.5rem ceiling */
+		font-size: clamp(2.25rem, 8vw, 5.5rem);
 		font-weight: 800;
 		line-height: 1;
 		color: white;
@@ -1168,6 +1169,28 @@ import { logger } from '$lib/utils/logger';
 		transform: translateZ(0);
 		transform-style: preserve-3d;
 		perspective: 1000px;
+	}
+
+	/* Higher ceilings for QHD/4K/5K displays so titles don't look stranded */
+	@media (min-width: 1920px) {
+		.slide__title {
+			font-size: clamp(5.5rem, 7vw, 7.5rem);
+		}
+	}
+	@media (min-width: 2560px) {
+		.slide__title {
+			font-size: clamp(7rem, 6.5vw, 9rem);
+		}
+	}
+	@media (min-width: 3840px) {
+		.slide__title {
+			font-size: clamp(8.5rem, 6vw, 11rem);
+		}
+	}
+	@media (min-width: 5120px) {
+		.slide__title {
+			font-size: clamp(10rem, 5.5vw, 13rem);
+		}
 	}
 
 	.slide__subtitle {
@@ -1211,6 +1234,44 @@ import { logger } from '$lib/utils/logger';
 		margin-block-end: 2.5rem;
 		transform: translateZ(0);
 		text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	/* Scale subtitle + description for QHD/4K/5K displays */
+	@media (min-width: 1920px) {
+		.slide__subtitle {
+			font-size: clamp(2.25rem, 3.5vw, 3rem);
+		}
+		.slide__description {
+			font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+			max-width: 56rem;
+		}
+	}
+	@media (min-width: 2560px) {
+		.slide__subtitle {
+			font-size: clamp(2.75rem, 3vw, 3.5rem);
+		}
+		.slide__description {
+			font-size: clamp(1.55rem, 1.5vw, 1.85rem);
+			max-width: 68rem;
+		}
+	}
+	@media (min-width: 3840px) {
+		.slide__subtitle {
+			font-size: clamp(3.25rem, 2.5vw, 4rem);
+		}
+		.slide__description {
+			font-size: clamp(1.8rem, 1.2vw, 2.1rem);
+			max-width: 80rem;
+		}
+	}
+	@media (min-width: 5120px) {
+		.slide__subtitle {
+			font-size: clamp(3.75rem, 2.2vw, 4.5rem);
+		}
+		.slide__description {
+			font-size: clamp(2.05rem, 1.1vw, 2.4rem);
+			max-width: 96rem;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════

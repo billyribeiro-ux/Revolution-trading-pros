@@ -496,7 +496,7 @@ import { logger } from '$lib/utils/logger';
 				<div class="member-profile">
 					<div class="member-avatar large">
 						{#if member.avatar}
-							<img src={member.avatar} alt={member.name} />
+							<img src={member.avatar} alt={member.name} width="96" height="96" loading="lazy" decoding="async" />
 						{:else}
 							{getMemberInitials()}
 						{/if}

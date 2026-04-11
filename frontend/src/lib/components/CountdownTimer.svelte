@@ -862,7 +862,7 @@
 		<!-- Circular Progress Format -->
 		{#if format === 'circular'}
 			<div class="circular-timer">
-				{#each Object.entries(timeUnits) as [unit, max]}
+				{#each Object.entries(timeUnits) as [unit, max] (unit)}
 					{@const typedUnit = unit as TimeUnitKey}
 					{#if (typedUnit === 'days' && showDays) || (typedUnit === 'hours' && showHours) || (typedUnit === 'minutes' && showMinutes) || (typedUnit === 'seconds' && showSeconds)}
 						{@const value = timeData[typedUnit]}
