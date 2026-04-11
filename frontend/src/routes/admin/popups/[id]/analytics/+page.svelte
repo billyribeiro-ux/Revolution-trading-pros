@@ -373,7 +373,7 @@
 
 				{#if analytics.top_pages && analytics.top_pages.length > 0}
 					<div class="space-y-3">
-						{#each analytics.top_pages as pageData, index}
+						{#each analytics.top_pages as pageData, index (pageData.url ?? index)}
 							<div
 								class="border-l-4 {index === 0
 									? 'border-yellow-500'
@@ -417,7 +417,7 @@
 
 				{#if analytics.timeline.views && analytics.timeline.views.length > 0}
 					<div class="space-y-2">
-						{#each analytics.timeline.views.slice(-15) as day}
+						{#each analytics.timeline.views.slice(-15) as day (day.date)}
 							<div class="flex items-center gap-2">
 								<span class="text-xs text-gray-600 w-20">{day.date}</span>
 								<div class="flex-1 bg-gray-200 rounded-full h-4">
@@ -446,7 +446,7 @@
 
 				{#if analytics.timeline.conversions && analytics.timeline.conversions.length > 0}
 					<div class="space-y-2">
-						{#each analytics.timeline.conversions.slice(-15) as day}
+						{#each analytics.timeline.conversions.slice(-15) as day (day.date)}
 							<div class="flex items-center gap-2">
 								<span class="text-xs text-gray-600 w-20">{day.date}</span>
 								<div class="flex-1 bg-gray-200 rounded-full h-4">
