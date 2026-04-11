@@ -347,7 +347,7 @@ import { logger } from '$lib/utils/logger';
 
 		<div
 			bind:this={cardsRef}
-			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
+			class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 3xl:gap-12 5xl:gap-16 relative"
 			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
 		>
 			<div

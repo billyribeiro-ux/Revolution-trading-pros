@@ -108,7 +108,7 @@
 				aria-label="Select programming language"
 				class="code-block__language-select"
 			>
-				{#each languages as lang}
+				{#each languages as lang (lang.value)}
 					<option value={lang.value}>{lang.label}</option>
 				{/each}
 			</select>

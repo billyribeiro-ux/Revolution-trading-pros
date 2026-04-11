@@ -144,7 +144,7 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-b border-white/5"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-6 3xl:px-12 5xl:px-16 6xl:px-20 bg-[#020202] overflow-hidden border-b border-white/5"
 	aria-label="Client Performance Ledger"
 >
 	<div
@@ -182,8 +182,12 @@
 		style="background: radial-gradient(1000px circle at var(--x) var(--y), rgba(16, 185, 129, 0.03), transparent 50%);"
 	></div>
 
-	<div class="relative max-w-[1600px] mx-auto z-10">
-		<div class="max-w-4xl mx-auto text-center mb-24">
+	<div
+		class="relative max-w-[1600px] 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] mx-auto z-10"
+	>
+		<div
+			class="max-w-4xl 3xl:max-w-[1200px] 4xl:max-w-[1600px] 5xl:max-w-[2000px] 6xl:max-w-[2400px] mx-auto text-center mb-24 3xl:mb-32 5xl:mb-40"
+		>
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 0, duration: 1000 }}
@@ -195,14 +199,14 @@
 
 				<h2
 					in:heavySlide={{ delay: 100 }}
-					class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight"
+					class="text-4xl xs:text-5xl sm:text-5xl md:text-7xl 3xl:text-8xl 4xl:text-9xl 5xl:text-[10rem] font-serif text-white mb-8 tracking-tight"
 				>
 					Performance <span class="text-slate-700">Attribution.</span>
 				</h2>
 
 				<p
 					in:heavySlide={{ delay: 200 }}
-					class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+					class="text-lg 3xl:text-xl 5xl:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl 3xl:max-w-3xl 5xl:max-w-4xl mx-auto"
 				>
 					We don't rely on marketing claims. We rely on the PnL of our desk. Verified feedback from
 					funded traders, prop managers, and institutional clients.
@@ -210,7 +214,9 @@
 			{/if}
 		</div>
 
-		<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+		<div
+			class="columns-1 md:columns-2 lg:columns-3 3xl:columns-4 5xl:columns-5 gap-6 3xl:gap-8 5xl:gap-12 space-y-6 3xl:space-y-8 5xl:space-y-12"
+		>
 			{#each reviews as review, i}
 				{#if isVisible}
 					<div

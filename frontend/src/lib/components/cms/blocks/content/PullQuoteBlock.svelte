@@ -361,7 +361,7 @@
 			{#if showColorPicker}
 				<div class="color-picker-dropdown" role="listbox" aria-label="Color presets">
 					<div class="preset-colors">
-						{#each presetColors as color}
+						{#each presetColors as color (color)}
 							<button
 								type="button"
 								class="preset-color"

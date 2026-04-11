@@ -77,7 +77,7 @@
 <section
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
-	class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
+	class="relative py-32 3xl:py-40 5xl:py-48 px-6 3xl:px-12 5xl:px-16 6xl:px-20 bg-[#020202] overflow-hidden border-t border-white/10"
 	aria-label="Account Creation Terminal"
 >
 	<div
