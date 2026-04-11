@@ -566,7 +566,7 @@
 				</p>
 			</div>
 
-			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
+			<div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl 3xl:max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto">
 				{#each courses as course (course.id)}
 					{@const Icon = course.icon}
 					{@const colors = course.colorClasses}

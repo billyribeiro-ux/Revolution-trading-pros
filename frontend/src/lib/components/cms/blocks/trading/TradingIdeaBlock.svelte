@@ -62,7 +62,7 @@
 			<IconChartCandle size={24} aria-hidden="true" />
 		</div>
 		<div class="trade-info">
-			{#if props.isEditing}
+			{#if isEditing}
 				<input
 					type="text"
 					class="symbol-input"
@@ -90,7 +90,7 @@
 		<div class="levels-section">
 			<div class="level-row entry-level">
 				<span class="level-label">Entry</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -104,7 +104,7 @@
 			</div>
 			<div class="level-row stop-level">
 				<span class="level-label"><IconShieldCheck size={14} /> Stop Loss</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -119,7 +119,7 @@
 			</div>
 			<div class="level-row target-level">
 				<span class="level-label"><IconTarget size={14} /> Target 1</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -134,7 +134,7 @@
 			</div>
 			<div class="level-row target-level">
 				<span class="level-label"><IconTarget size={14} /> Target 2</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="number"
 						step="0.01"
@@ -152,7 +152,7 @@
 		<div class="meta-section">
 			<div class="confidence-meter">
 				<span class="meta-label">Confidence</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="range"
 						min="0"
@@ -169,7 +169,7 @@
 			</div>
 			<div class="timeframe">
 				<span class="meta-label">Timeframe</span>
-				{#if props.isEditing}
+				{#if isEditing}
 					<select
 						value={timeframe}
 						onchange={(e) =>
@@ -186,12 +186,12 @@
 			</div>
 		</div>
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<div class="direction-toggle">
 				<label
 					><input
 						type="radio"
-						name="dir-{props.blockId}"
+						name="dir-{blockId}"
 						value="long"
 						checked={isLong}
 						onchange={() => updateContent({ tradeDirection: 'long' })}
@@ -200,7 +200,7 @@
 				<label
 					><input
 						type="radio"
-						name="dir-{props.blockId}"
+						name="dir-{blockId}"
 						value="short"
 						checked={!isLong}
 						onchange={() => updateContent({ tradeDirection: 'short' })}
@@ -211,7 +211,7 @@
 
 		<div class="thesis-section">
 			<span class="meta-label">Trade Thesis</span>
-			{#if props.isEditing}
+			{#if isEditing}
 				<textarea
 					placeholder="Explain your trade reasoning..."
 					value={thesis}

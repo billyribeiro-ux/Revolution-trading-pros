@@ -21,7 +21,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	interface TickerItem {
 		id: string;
@@ -40,14 +40,14 @@
 	let tickers = $state<TickerItem[]>([]);
 
 	$effect(() => {
-		const items = props.block.content.tickerItems;
+		const items = block.content.tickerItems;
 		tickers = items != null ? items : FALLBACK_TICKERS;
 	});
 
-	let layout = $derived((props.block.settings.tickerLayout as 'grid' | 'list') || 'grid');
+	let layout = $derived((block.settings.tickerLayout as 'grid' | 'list') || 'grid');
 
 	function updateContent(updates: Partial<BlockContent>): void {
-		props.onUpdate({ content: { ...props.block.content, ...updates } });
+		onUpdate({ content: { ...block.content, ...updates } });
 	}
 
 	function updateTicker(index: number, updates: Partial<TickerItem>): void {
@@ -84,7 +84,7 @@
 	}
 
 	onMount(() => {
-		if (!props.isEditing) {
+		if (!isEditing) {
 			const interval = setInterval(simulatePriceUpdate, 3000);
 			return () => clearInterval(interval);
 		}
@@ -111,7 +111,7 @@
 		{#each tickers as ticker, index (ticker.id)}
 			{@const isPositive = ticker.change >= 0}
 			<div class="ticker-card" class:positive={isPositive} class:negative={!isPositive}>
-				{#if props.isEditing}
+				{#if isEditing}
 					<input
 						type="text"
 						class="ticker-symbol-input"
@@ -176,7 +176,7 @@
 			</div>
 		{/each}
 
-		{#if props.isEditing}
+		{#if isEditing}
 			<button type="button" class="add-ticker" onclick={addTicker} aria-label="Add ticker">
 				<IconPlus size={20} />
 				<span>Add Ticker</span>
@@ -184,16 +184,16 @@
 		{/if}
 	</div>
 
-	{#if props.isEditing && props.isSelected}
+	{#if isEditing && isSelected}
 		<div class="ticker-settings">
 			<label class="setting-field">
 				<span>Layout:</span>
 				<select
 					value={layout}
 					onchange={(e) =>
-						props.onUpdate({
+						onUpdate({
 							settings: {
-								...props.block.settings,
+								...block.settings,
 								tickerLayout: (e.target as HTMLSelectElement).value as 'grid' | 'list'
 							}
 						})}

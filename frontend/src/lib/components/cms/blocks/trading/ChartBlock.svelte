@@ -37,7 +37,7 @@
 		onError?: (error: Error) => void;
 	}
 
-	let props: Props = $props();
+	let { block, blockId, isSelected, isEditing, onUpdate, onError }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Content Interfaces

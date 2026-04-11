@@ -342,7 +342,7 @@
 	</div>
 
 	<section id="about-content" class="relative z-10 pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
-		<section class="max-w-[1600px] mx-auto mb-32 lg:mb-48 relative">
+		<section class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48 relative">
 			<div
 				class="absolute top-20 -left-[20%] -right-[20%] h-[500px] grid-floor pointer-events-none parallax-layer z-0"
 			></div>
@@ -449,7 +449,7 @@
 			{/if}
 		</section>
 
-		<section class="max-w-[1400px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center">
+		<section class="max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2200px] 6xl:max-w-[2600px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center">
 			{#if isVisible}
 				<div
 					in:heavySlide={{ delay: 200 }}
@@ -551,7 +551,7 @@
 			{/if}
 		</section>
 
-		<section id="how-it-works" class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
+		<section id="how-it-works" class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48">
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 400 }} class="border-t border-white/10 pt-20">
 					<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
@@ -616,7 +616,7 @@
 			{/if}
 		</section>
 
-		<section class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
+		<section class="max-w-[1600px] 4xl:max-w-[2000px] 5xl:max-w-[2400px] 6xl:max-w-[2800px] mx-auto mb-32 lg:mb-48">
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 500 }} class="border-t border-white/10 pt-20">
 					<div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">

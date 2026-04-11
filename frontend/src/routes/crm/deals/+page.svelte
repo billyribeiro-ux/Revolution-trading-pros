@@ -95,7 +95,7 @@ import { logger } from '$lib/utils/logger';
 </svelte:head>
 
 <div class="bg-slate-950/95 text-slate-50">
-	<div class="mx-auto max-w-7xl px-6 py-8">
+	<div class="mx-auto max-w-7xl 3xl:max-w-[1800px] 4xl:max-w-[2200px] 5xl:max-w-[2600px] 6xl:max-w-[3200px] px-6 py-8">
 		<!-- Header -->
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
 			<div class="flex items-center gap-3">
