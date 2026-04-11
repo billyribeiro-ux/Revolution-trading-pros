@@ -286,6 +286,8 @@
 										alt="ThinkorSwim"
 										width="184"
 										height="71"
+										loading="lazy"
+										decoding="async"
 									/>
 								</div>
 								<div class="copy-column">
@@ -304,6 +306,8 @@
 										alt="tastytrade"
 										width="200"
 										height="37"
+										loading="lazy"
+										decoding="async"
 									/>
 								</div>
 								<div class="copy-column">
@@ -321,6 +325,8 @@
 										alt="TradeStation"
 										width="184"
 										height="71"
+										loading="lazy"
+										decoding="async"
 									/>
 								</div>
 								<div class="copy-column">
