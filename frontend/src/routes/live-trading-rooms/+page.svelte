@@ -10,11 +10,18 @@ import { logger } from '$lib/utils/logger';
 	/**
 	 * Svelte 5 Runes & SSR/SSG Pattern
 	 */
+	interface Symbol {
+		sym: string;
+		price: string;
+		change: string;
+		up: boolean;
+	}
+
 	interface Props {
 		data: {
-			rooms: unknown[];
-			benefits: unknown[];
-			symbols: unknown[];
+			rooms: Array<Record<string, unknown>>;
+			benefits: Array<Record<string, unknown>>;
+			symbols: Symbol[];
 		};
 	}
 	let { data }: Props = $props();

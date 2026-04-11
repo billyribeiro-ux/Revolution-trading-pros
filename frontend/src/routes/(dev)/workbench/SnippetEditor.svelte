@@ -77,7 +77,7 @@
 				<!-- Templates -->
 				<div class="templates">
 					<span class="templates-label">Templates:</span>
-					{#each templates as template}
+					{#each templates as template (template.name)}
 						<button class="template-btn" onclick={() => applyTemplate(template.content)}>
 							{template.name}
 						</button>

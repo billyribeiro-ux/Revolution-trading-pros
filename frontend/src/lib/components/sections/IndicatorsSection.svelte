@@ -398,6 +398,7 @@ import { logger } from '$lib/utils/logger';
 
 <section
 	bind:this={sectionRef}
+	aria-label="Indicator Suite"
 	class="relative py-16 sm:py-24 lg:py-32 3xl:py-40 5xl:py-48 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
 >
 	<!-- Ambient Background -->

@@ -183,7 +183,7 @@
 			{#if calc.strategyBreakevens.length > 0}
 				<div class="flex items-center gap-2 flex-wrap">
 					<span class="text-[10px]" style="color: var(--calc-text-muted);">B/E:</span>
-					{#each calc.strategyBreakevens as be}
+					{#each calc.strategyBreakevens as be, i (i)}
 						<span
 							class="text-xs px-1.5 py-0.5 rounded"
 							style="background: var(--calc-surface-hover); color: var(--calc-warning); font-family: var(--calc-font-mono);"

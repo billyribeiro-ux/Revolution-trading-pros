@@ -744,7 +744,13 @@ import { logger } from '$lib/utils/logger';
 	});
 </script>
 
-<section bind:this={heroSection} id="hero" class="hero-section" class:hero-animating={isAnimating}>
+<section
+	bind:this={heroSection}
+	id="hero"
+	aria-label="Revolution Trading Pros hero"
+	class="hero-section"
+	class:hero-animating={isAnimating}
+>
 	<!-- Ambient Background Layers -->
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
